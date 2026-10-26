@@ -1,0 +1,117 @@
+{
+ "prereg": {
+  "schema": "ABLATION_EPISODIC_ROUTE_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "requests": 300,
+  "entities": 12,
+  "tasks": 4,
+  "paraphrases": 3,
+  "p_preference": 0.4,
+  "p_correct_when_wrong": 0.5,
+  "primary": "route accuracy over the second half of the requests",
+  "win_rule": "episodic beats scaffold, no_entity_guard and latest_any in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "per_seed": {
+  "13": {
+   "episodic": {
+    "primary": 0.97333
+   },
+   "scaffold": {
+    "primary": 0.67333
+   },
+   "no_entity_guard": {
+    "primary": 0.83333
+   },
+   "latest_any": {
+    "primary": 0.22667
+   }
+  },
+  "14": {
+   "episodic": {
+    "primary": 0.94
+   },
+   "scaffold": {
+    "primary": 0.52667
+   },
+   "no_entity_guard": {
+    "primary": 0.84667
+   },
+   "latest_any": {
+    "primary": 0.26
+   }
+  },
+  "15": {
+   "episodic": {
+    "primary": 0.96667
+   },
+   "scaffold": {
+    "primary": 0.66
+   },
+   "no_entity_guard": {
+    "primary": 0.88667
+   },
+   "latest_any": {
+    "primary": 0.20667
+   }
+  },
+  "16": {
+   "episodic": {
+    "primary": 0.96
+   },
+   "scaffold": {
+    "primary": 0.56667
+   },
+   "no_entity_guard": {
+    "primary": 0.94667
+   },
+   "latest_any": {
+    "primary": 0.28
+   }
+  },
+  "17": {
+   "episodic": {
+    "primary": 0.97333
+   },
+   "scaffold": {
+    "primary": 0.57333
+   },
+   "no_entity_guard": {
+    "primary": 0.93333
+   },
+   "latest_any": {
+    "primary": 0.22
+   }
+  }
+ },
+ "wins_of_5": {
+  "scaffold": 5,
+  "no_entity_guard": 5,
+  "latest_any": 5
+ },
+ "summary": {
+  "episodic": {
+   "mean": 0.9627,
+   "sd": 0.0138
+  },
+  "scaffold": {
+   "mean": 0.6,
+   "sd": 0.0636
+  },
+  "no_entity_guard": {
+   "mean": 0.8893,
+   "sd": 0.0505
+  },
+  "latest_any": {
+   "mean": 0.2387,
+   "sd": 0.0303
+  }
+ },
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic templated German requests, one session, BOOT MIN_RELEVANCE; no consolidation path"
+}

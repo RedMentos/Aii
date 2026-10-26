@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'body_question', 'body_question_derived', 'body_question_tool', 'eligibility_live', 'tool_answer_first', 'runner_seed')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -172,8 +172,163 @@ def b2_offer(text):
     return t
 
 
+QUOTE_SPAN = """def quote_span(quote,source,context_chars=0):
+    \"\"\"(start,end) of a body quote inside source, or None. context_chars 0 (live): exact substring only.
+    context_chars>0 (cfg offer_quote_context_chars, 2026-10-20 STEP2 B2->C3 transport): a quote that differs from the
+    source only in letter case or whitespace still verifies, and a quote of >= 12 chars grows to its whole sentences,
+    then to neighbouring sentences of the same source while the span stays within context_chars. The quote is only a
+    pointer; the transported text is always the exact source span (Qwen B2 split, cut or re-cased the earlier
+    rule, so its full text reached C3 in only 7/30 STEP2 retain offers).\"\"\"
+    if not isinstance(quote,str) or not quote:return None
+    if quote in source:a=source.index(quote);b=a+len(quote)
+    elif not context_chars:return None
+    else:
+        q=' '.join(quote.split()).casefold()
+        if len(q)<12:return None
+        flat=[];at=[]
+        for i,ch in enumerate(source):
+            if ch.isspace() and i and source[i-1].isspace():continue
+            piece=' ' if ch.isspace() else ch.casefold();flat.append(piece);at+=[i]*len(piece)
+        j=''.join(flat).find(q)
+        if j<0:return None
+        a,b=at[j],at[j+len(q)-1]+1
+    if not context_chars or b-a<12:return a,b
+    sents=[(m.start(),m.end()) for m in re.finditer(r'\\S.*?(?:[.!?](?=\\s|$)|$)',source,re.S)]
+    inside=[k for k,(s,e) in enumerate(sents) if e>a and s<b]
+    if not inside:return a,b
+    i,k=inside[0],inside[-1]
+    if sents[k][1]-sents[i][0]>context_chars:return a,b
+    grew=True
+    while grew:
+        grew=False
+        if k+1<len(sents) and sents[k+1][1]-sents[i][0]<=context_chars:k+=1;grew=True
+        if i>0 and sents[k][1]-sents[i-1][0]<=context_chars:i-=1;grew=True
+    return sents[i][0],sents[k][1]
+"""
+
+
+def quote_context(text):
+    """2026-10-20 STEP2 B2->C3 thread: cfg offer_quote_context_chars (0 = off = previous behaviour, byte-for-byte the
+    old verification) lets a body quote point at its exact source sentences instead of having to copy them."""
+    if 'def quote_span(' in text:
+        raise ValueError('Integrated anchor changed: quote_context already applied')
+    t = _replace(text, 'class Cognition:\n', QUOTE_SPAN+'class Cognition:\n')
+    t = _replace(t, "        for quote in obj['quotes'][:3]:\n",
+                 "        wide=self.r.cfg.get('offer_quote_context_chars',0)\n"
+                 "        for quote in obj['quotes'][:3]:\n"
+                 "            if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses\n"
+                 "                match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)\n"
+                 "                if not match:rejected+=1;continue\n"
+                 "                source,base,(a,b)=match;ref=base|{'char_start':base['char_start']+a,'char_end':base['char_start']+b}\n"
+                 "                if ref not in refs:self.s.read_source(ref);refs.append(ref)  # two quotes may point at the same sentences\n"
+                 "                continue\n")
+    t = _replace(t, "        p.update(context_offer_ids=query_packet['context_offer_ids'],",
+                 "        if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer\n"
+                 "        p.update(context_offer_ids=query_packet['context_offer_ids'],")
+    anchor = "                text=self.s.read_source(ref)\n                if text not in offer['offer'].get('quotes',[]):raise"
+    if anchor in t:  # analyst_context exists only on the SourceHandoff-changed side of the frozen candidate views
+        t = _replace(t, anchor,
+                     "                text=self.s.read_source(ref);wide=offer.get('quote_context_chars',0)\n"
+                     "                if wide and text not in offer['offer'].get('quotes',[]) and len(text)<=wide and any(quote_span(q,text,wide) for q in offer['offer'].get('quotes',[])):\n"
+                     "                    # 2026-10-21: an exact source span the offered quote points into (live turn failed 'differs from offered quote' without this)\n"
+                     "                    verified.append({'text':text,'source_ref':dict(ref),'verification':'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE','semantic_truth_authority':False});continue\n"
+                     "                if text not in offer['offer'].get('quotes',[]):raise")
+    return t
+B1_RECENT_METHOD = '    def b1_recent_context(self,e):\n        """WP-Z2 (cfg b1_recent_source_chars, 0 = off, live): B1\'s short horizon keeps the exact source of its own\n        last retained turn, up to N chars, instead of only its 240-char hypothesis. Timescale split of Canon §85.1:\n        B1 = one recent turn at fine width (exactness), B2 = up to b2_state_slots turns at 240-char excerpts.\n        Same session/generation/model/topic checks as B2; quotes may cite it; never a fact promotion."""\n        previous,_=self.s.state(\'B1_DETAIL:\'+self.r.session,{})\n        pid=previous.get(\'packet_id\')\n        row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind=\'OfferPacket\'",(pid,)) if pid else None\n        if not row:return []\n        p=json.loads(row[\'payload\'])\n        event=self.s.one(\'SELECT session_id,packet FROM events WHERE id=?\',(p[\'event_id\'],))\n        if not event or event[\'session_id\']!=self.r.session or p[\'event_id\']==e[\'event_id\']:return []\n        if p[\'role\']!=\'B1_DETAIL\' or p[\'brain_generation_id\']!=e[\'brain_generation_id\'] or p.get(\'model_revision\')!=self.r.models.revision(\'B1_DETAIL\'):return []\n        ref=json.loads(event[\'packet\'])[\'source_ref\']\n        try:\n            current_text,source=self.s.read_source(e[\'source_ref\']),self.s.read_source(ref)\n            if looks_like_terminal_log(source):return []\n            current_entities,prior_entities=entities(current_text),entities(source)\n            related=bool(current_entities&prior_entities) if current_entities and prior_entities else relevance(current_text,source)>=self.r.cfg[\'memory_threshold\']\n            if not related:return []\n            excerpt_ref=ref|{\'char_end\':min(ref[\'char_end\'],ref[\'char_start\']+self.r.cfg[\'b1_recent_source_chars\'])}\n            excerpt=self.s.read_source(excerpt_ref)\n        except (ValueError,OSError):return []\n        return [{\'offer_id\':pid,\'source_ref\':excerpt_ref,\'native_context\':{\'exact_source_excerpt\':excerpt,\'authority\':\'RECENT_SOURCE_NOT_FACT\'}}]\n'
+B1_RECENT_QUERY = "        if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:\n            query['recent_source']=[x['native_context'] for x in context]\n            instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'\n"
+
+
+def b1_recent(text):
+    """2026-10-21 WP-Z2: cfg b1_recent_source_chars (0 = off = previous behaviour) gives B1 the exact source of its own
+    last turn on the same topic (short exact horizon) next to B2's long coarse window (Canon §85.1 timescale split)."""
+    if 'def b1_recent_context(' in text:
+        raise ValueError('Integrated anchor changed: b1_recent already applied')
+    t = _replace(text, "        if role!='B2_GIST' or not self.r.cfg['b2_state_slots']",
+                 "        if role=='B1_DETAIL' and self.r.cfg.get('b1_recent_source_chars',0):return self.b1_recent_context(e)\n"
+                 "        if role!='B2_GIST' or not self.r.cfg['b2_state_slots']")
+    t = _replace(t, '    def retain_body_offer(self,p):\n', B1_RECENT_METHOD+'    def retain_body_offer(self,p):\n')
+    t = _replace(t, "        if broadcast:\n            query['executive_broadcast']", B1_RECENT_QUERY+"        if broadcast:\n            query['executive_broadcast']")
+    t = _replace(t, "context_chars=len(dumps(query['earlier_context'])) if context else 0",
+                 "context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0")
+    return t
+
+
+
+def body_question(text):
+    """2026-10-21 WP-Z2c: cfg body_question_b1 / body_question_b2 ('' = off = previous behaviour) give a body a standing
+    executive question (jef_query, kind FILL_GAP) on every offer without a re-entry focus. Same QUERY_PACKET path the
+    WP-Z2b runner patch used (+.23 both_exact, CI > 0, 0 wrong committed)."""
+    if "key='body_question_b1'" in text:
+        raise ValueError('Integrated anchor changed: body_question already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)\n"
+                    "        if focus is None and self.r.cfg.get(key,''):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
+
+
+def body_question_derived(text):
+    """2026-10-26 WP-Z2f: cfg body_question_mode='derived' builds the standing body question from the current message by a
+    fixed rule (v13/bodyq.py: entities + pointed-at phrases, no model). A text in body_question_b1/_b2 and a re-entry focus
+    win; '' (default) = previous behaviour."""
+    if 'DERIVED_FROM_CURRENT_MESSAGE' in text or 'bodyq.focus' in text:
+        raise ValueError('Integrated anchor changed: body_question_derived already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        if focus is None and self.r.cfg.get('body_question_mode','')=='derived':\n"
+                    "            from . import bodyq;focus=bodyq.focus(role,text)  # WP-Z2f: question built from the current message, never a fact\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
+
+
+def body_question_tool(text):
+    """2026-10-26 WP-Z2g: cfg body_question_mode='tool' asks the bodies what the tool triggered by the current message needs
+    (bodyq.tool_focus; nothing when no tool trigger matches). '' (default) = previous behaviour."""
+    if 'bodyq.tool_focus' in text:
+        raise ValueError('Integrated anchor changed: body_question_tool already applied')
+    return _replace(text, "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET",
+                    "        if focus is None and self.r.cfg.get('body_question_mode','')=='tool':\n"
+                    "            from . import bodyq;focus=bodyq.tool_focus(role,text)  # WP-Z2g: the triggered tool's question, never a fact\n"
+                    "        if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET")
+
+
+def eligibility_live(sources):
+    """2026-10-21 thread Q: ToolStep.plan gets the selected body offers and the state version, so the eligibility tool
+    can use their source-verified quotes as earlier exact evidence (it only acts when the user enabled `eligibility`)."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], 'try:tool_plan=toolctl.ToolStep(self).plan(e,text)  #',
+                                     'try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  #')
+    return out
+
+
+def tool_answer_first(sources):
+    """2026-10-22 (thread „STEP2-Nutzen Engpass“): with cfg tool_answer_first the executed eligibility decision is the first
+    visible sentence of the answer (ToolStep.lead), the body only continues; for UNKNOWN/NONE the fixed text is the whole
+    answer (ToolStep.lead_final, no generation); default off = unchanged turn."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], "                leading_output=''\n                lw=latewatch.start(",
+        "                leading_output=''\n"
+        "                lead=toolctl.ToolStep(self).lead(tool_result) if tool_result and tool_result.get('result') is not None else None\n"
+        "                if lead:  # cfg tool_answer_first: the exact tool decision is the first visible sentence, the body continues\n"
+        "                    txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns()\n"
+        "                    final=toolctl.ToolStep(self).lead_final(tool_result);lead=final or lead\n"
+        "                    self.store.append_message(mid,lead+('' if final else ' '));output=lead+('' if final else ' ');meta['tool_answer_first']='FINAL' if final else 'LEAD'\n"
+        "                lw=latewatch.start(")
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], 'for token in runner.generate(messages,self.cancel_event,deadline,**output_kwargs):',
+                                     "for token in (() if meta.get('tool_answer_first')=='FINAL' else runner.generate(messages,self.cancel_event,deadline,**output_kwargs)):")
+    return out
+
+
+def runner_seed(sources):
+    """2026-10-22 (WP-Z2b offen c): the native runner used seed 13 whatever cfg['seed'] said (STEP2 body offers ignored
+    their seed). A call without an explicit seed now uses cfg['seed']; the default cfg seed is 13, so default turns are
+    unchanged."""
+    out = dict(sources)
+    t = _replace(out['v13/runners.py'], "def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):",
+                 "def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=None,first_token_bias=None,confidence_field='summary'):")
+    out['v13/runners.py'] = _replace(t, '"seed":seed,', '"seed":self.cfg.get("seed",13) if seed is None else seed,')
+    return out
+
+
 def _later(sources):
-    return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
+    return runner_seed(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
 
 
 def _baseline(root):
@@ -222,7 +377,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b2_offer(out['v13/cognition.py'])
+        out['v13/cognition.py'] = body_question_tool(body_question_derived(body_question(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))))
     return out
 
 

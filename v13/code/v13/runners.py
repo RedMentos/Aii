@@ -267,7 +267,7 @@ class LlamaRunner:
             if len(tokens)+reserve+16<=self.cfg["context_tokens"]:return p,len(tokens),truncated
             if len(work)>2:work.pop(1);truncated=True
             else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
-    def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
+    def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=None,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
         audit_requested=self.cfg.get('native_memory_audit',False) is True
         audit_locked=False
@@ -336,7 +336,7 @@ class LlamaRunner:
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
         self.phase='template';self.phase_started=time.monotonic();cap=max_tokens or self.cfg["answer_tokens"];prompt,n,truncated=self._prompt(messages,cancel,deadline,cap)
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
-        payload={"prompt":prompt,"n_predict":cap,"stream":True,"temperature":self.cfg["temperature"],"top_k":50,"repeat_penalty":1.05,"seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
+        payload={"prompt":prompt,"n_predict":cap,"stream":True,"temperature":self.cfg["temperature"],"top_k":50,"repeat_penalty":1.05,"seed":self.cfg.get("seed",13) if seed is None else seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
         if self.role=='C3_LANGUAGE' and not schema and self.cfg.get('c3_sampling','anti_echo')=='anti_echo':
             from .guards import C3_DECODER
             payload.update(C3_DECODER)  # WP-V3: v4 §65 start values against query echo

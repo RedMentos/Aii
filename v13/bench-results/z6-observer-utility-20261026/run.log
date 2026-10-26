@@ -1,0 +1,917 @@
+{"arm": "none", "fixture": "summary00", "pass": true, "turn_s": 3.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary01", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary02", "pass": false, "turn_s": 1.21, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary03", "pass": false, "turn_s": 1.21, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary04", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary05", "pass": false, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary06", "pass": false, "turn_s": 1.21, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary07", "pass": true, "turn_s": 2.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary08", "pass": true, "turn_s": 3.33, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary09", "pass": false, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary10", "pass": false, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary11", "pass": false, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary12", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary13", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "summary14", "pass": true, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long00", "pass": true, "turn_s": 2.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long01", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long02", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long03", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long04", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long05", "pass": true, "turn_s": 2.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long06", "pass": true, "turn_s": 2.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long07", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long08", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long09", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long10", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long11", "pass": true, "turn_s": 2.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long12", "pass": true, "turn_s": 2.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long13", "pass": true, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "long14", "pass": true, "turn_s": 1.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes00", "pass": true, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes01", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes02", "pass": false, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes03", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes04", "pass": true, "turn_s": 0.9, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes05", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes06", "pass": true, "turn_s": 1.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes07", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes08", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes09", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes10", "pass": true, "turn_s": 2.21, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes11", "pass": true, "turn_s": 1.81, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes12", "pass": true, "turn_s": 0.9, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes13", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "notes14", "pass": true, "turn_s": 0.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare00", "pass": false, "turn_s": 2.72, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare01", "pass": false, "turn_s": 2.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare02", "pass": true, "turn_s": 2.73, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare03", "pass": true, "turn_s": 1.2, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare04", "pass": false, "turn_s": 1.21, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare05", "pass": false, "turn_s": 3.82, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare06", "pass": false, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare07", "pass": false, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare08", "pass": false, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare09", "pass": false, "turn_s": 1.02, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare10", "pass": false, "turn_s": 1.91, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare11", "pass": true, "turn_s": 1.51, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare12", "pass": false, "turn_s": 1.0, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare13", "pass": true, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "compare14", "pass": false, "turn_s": 1.31, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction00", "pass": true, "turn_s": 3.72, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction01", "pass": true, "turn_s": 2.81, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction02", "pass": true, "turn_s": 3.12, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction03", "pass": true, "turn_s": 2.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction04", "pass": false, "turn_s": 2.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction05", "pass": false, "turn_s": 2.62, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction06", "pass": true, "turn_s": 2.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction07", "pass": false, "turn_s": 2.41, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction08", "pass": false, "turn_s": 2.01, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction09", "pass": false, "turn_s": 2.42, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction10", "pass": true, "turn_s": 1.11, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction11", "pass": false, "turn_s": 1.61, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction12", "pass": false, "turn_s": 2.72, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction13", "pass": false, "turn_s": 2.72, "offer_roles": [], "reentries": 0}
+{"arm": "none", "fixture": "correction14", "pass": true, "turn_s": 1.21, "offer_roles": [], "reentries": 0}
+{
+ "arms": {
+  "none": {
+   "n": 75,
+   "passed": 48,
+   "mean_turn_s": 1.68,
+   "by_kind": {
+    "compare": 4,
+    "correction": 7,
+    "long": 15,
+    "notes": 14,
+    "summary": 8
+   },
+   "observer_turns": 0,
+   "offers": 0,
+   "reentries": 0,
+   "conflict_detection": "0/45",
+   "correction_pickup_answer": "7/15",
+   "correction_seen_by_observer": "0/15",
+   "missed_useful": []
+  }
+ },
+ "paired": {}
+}
+ARM_DONE none
+{"arm": "A", "fixture": "summary00", "pass": false, "turn_s": 6.64, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary01", "pass": false, "turn_s": 6.64, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary02", "pass": false, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary03", "pass": false, "turn_s": 6.93, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary04", "pass": true, "turn_s": 6.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary05", "pass": false, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary06", "pass": true, "turn_s": 6.93, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary07", "pass": false, "turn_s": 6.55, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary08", "pass": true, "turn_s": 6.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary09", "pass": false, "turn_s": 6.73, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary10", "pass": false, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary11", "pass": true, "turn_s": 6.23, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary12", "pass": false, "turn_s": 6.62, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary13", "pass": false, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "summary14", "pass": true, "turn_s": 6.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long00", "pass": true, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long01", "pass": true, "turn_s": 5.43, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long02", "pass": true, "turn_s": 5.52, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long03", "pass": true, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long04", "pass": true, "turn_s": 5.73, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long05", "pass": true, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long06", "pass": true, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long07", "pass": true, "turn_s": 6.03, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long08", "pass": true, "turn_s": 5.22, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long09", "pass": true, "turn_s": 5.93, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long10", "pass": true, "turn_s": 5.73, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long11", "pass": true, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long12", "pass": true, "turn_s": 6.64, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long13", "pass": true, "turn_s": 5.62, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "long14", "pass": true, "turn_s": 4.92, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes00", "pass": true, "turn_s": 5.02, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes01", "pass": false, "turn_s": 4.92, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes02", "pass": false, "turn_s": 5.22, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes03", "pass": true, "turn_s": 4.51, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes04", "pass": false, "turn_s": 5.13, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes05", "pass": false, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes06", "pass": true, "turn_s": 4.52, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes07", "pass": false, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes08", "pass": true, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes09", "pass": true, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes10", "pass": false, "turn_s": 6.02, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes11", "pass": true, "turn_s": 5.03, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes12", "pass": true, "turn_s": 4.43, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes13", "pass": true, "turn_s": 4.32, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "notes14", "pass": true, "turn_s": 4.22, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare00", "pass": false, "turn_s": 6.24, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare01", "pass": false, "turn_s": 6.33, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare02", "pass": true, "turn_s": 6.53, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare03", "pass": false, "turn_s": 7.24, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare04", "pass": false, "turn_s": 7.03, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare05", "pass": false, "turn_s": 6.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare06", "pass": true, "turn_s": 7.54, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare07", "pass": true, "turn_s": 7.33, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare08", "pass": true, "turn_s": 7.13, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare09", "pass": true, "turn_s": 6.84, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare10", "pass": false, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare11", "pass": true, "turn_s": 6.73, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare12", "pass": true, "turn_s": 7.04, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare13", "pass": true, "turn_s": 6.93, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "compare14", "pass": false, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction00", "pass": false, "turn_s": 7.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction01", "pass": true, "turn_s": 7.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction02", "pass": false, "turn_s": 8.34, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction03", "pass": false, "turn_s": 8.04, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction04", "pass": false, "turn_s": 10.04, "offer_roles": ["B1_DETAIL"], "reentries": 1}
+{"arm": "A", "fixture": "correction05", "pass": false, "turn_s": 10.94, "offer_roles": ["B1_DETAIL"], "reentries": 1}
+{"arm": "A", "fixture": "correction06", "pass": false, "turn_s": 6.23, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction07", "pass": true, "turn_s": 7.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction08", "pass": false, "turn_s": 7.94, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction09", "pass": false, "turn_s": 6.24, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction10", "pass": true, "turn_s": 9.46, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction11", "pass": true, "turn_s": 7.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "A", "fixture": "correction12", "pass": false, "turn_s": 10.44, "offer_roles": ["B1_DETAIL"], "reentries": 1}
+{"arm": "A", "fixture": "correction13", "pass": false, "turn_s": 10.54, "offer_roles": ["B1_DETAIL"], "reentries": 1}
+{"arm": "A", "fixture": "correction14", "pass": true, "turn_s": 7.93, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{
+ "arms": {
+  "none": {
+   "n": 75,
+   "passed": 48,
+   "mean_turn_s": 1.68,
+   "by_kind": {
+    "compare": 4,
+    "correction": 7,
+    "long": 15,
+    "notes": 14,
+    "summary": 8
+   },
+   "observer_turns": 0,
+   "offers": 0,
+   "reentries": 0,
+   "conflict_detection": "0/45",
+   "correction_pickup_answer": "7/15",
+   "correction_seen_by_observer": "0/15",
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare12",
+    "correction07",
+    "correction11",
+    "summary06",
+    "summary11"
+   ]
+  },
+  "A": {
+   "n": 75,
+   "passed": 42,
+   "mean_turn_s": 6.59,
+   "by_kind": {
+    "compare": 8,
+    "correction": 5,
+    "long": 15,
+    "notes": 9,
+    "summary": 5
+   },
+   "observer_turns": 75,
+   "offers": 79,
+   "reentries": 4,
+   "conflict_detection": "29/45",
+   "correction_pickup_answer": "5/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.91,
+   "missed_useful": []
+  }
+ },
+ "paired": {
+  "A_vs_none": {
+   "n": 75,
+   "first_only_pass": 9,
+   "second_only_pass": 15,
+   "sign_test_p": 0.3075
+  }
+ }
+}
+ARM_DONE A
+{"arm": "B", "fixture": "summary00", "pass": true, "turn_s": 8.36, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary01", "pass": true, "turn_s": 5.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary02", "pass": false, "turn_s": 5.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary03", "pass": true, "turn_s": 5.82, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary04", "pass": true, "turn_s": 5.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary05", "pass": false, "turn_s": 5.62, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary06", "pass": false, "turn_s": 4.72, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary07", "pass": true, "turn_s": 5.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary08", "pass": true, "turn_s": 5.62, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary09", "pass": false, "turn_s": 5.53, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary10", "pass": false, "turn_s": 6.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary11", "pass": false, "turn_s": 5.12, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary12", "pass": true, "turn_s": 5.13, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary13", "pass": true, "turn_s": 6.64, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "summary14", "pass": false, "turn_s": 5.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long00", "pass": true, "turn_s": 8.74, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "long01", "pass": true, "turn_s": 7.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long02", "pass": true, "turn_s": 6.52, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long03", "pass": true, "turn_s": 7.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long04", "pass": true, "turn_s": 10.64, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "long05", "pass": true, "turn_s": 6.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long06", "pass": true, "turn_s": 4.82, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long07", "pass": true, "turn_s": 7.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long08", "pass": true, "turn_s": 6.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long09", "pass": true, "turn_s": 7.24, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long10", "pass": true, "turn_s": 8.54, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "long11", "pass": true, "turn_s": 6.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long12", "pass": true, "turn_s": 5.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long13", "pass": true, "turn_s": 7.54, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "long14", "pass": true, "turn_s": 6.93, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes00", "pass": true, "turn_s": 6.93, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes01", "pass": false, "turn_s": 7.94, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes02", "pass": true, "turn_s": 6.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes03", "pass": true, "turn_s": 7.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes04", "pass": false, "turn_s": 6.95, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes05", "pass": false, "turn_s": 7.13, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes06", "pass": true, "turn_s": 6.84, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes07", "pass": true, "turn_s": 6.83, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes08", "pass": true, "turn_s": 6.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes09", "pass": true, "turn_s": 7.04, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes10", "pass": false, "turn_s": 7.84, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes11", "pass": false, "turn_s": 6.13, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes12", "pass": true, "turn_s": 6.92, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes13", "pass": true, "turn_s": 7.04, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "notes14", "pass": true, "turn_s": 7.04, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare00", "pass": false, "turn_s": 5.83, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare01", "pass": false, "turn_s": 7.44, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "compare02", "pass": false, "turn_s": 6.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare03", "pass": false, "turn_s": 5.12, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare04", "pass": false, "turn_s": 5.23, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare05", "pass": false, "turn_s": 6.24, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare06", "pass": false, "turn_s": 4.53, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare07", "pass": false, "turn_s": 5.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare08", "pass": false, "turn_s": 10.28, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare09", "pass": false, "turn_s": 5.23, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare10", "pass": true, "turn_s": 7.13, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare11", "pass": false, "turn_s": 5.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare12", "pass": false, "turn_s": 7.84, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare13", "pass": true, "turn_s": 6.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "compare14", "pass": false, "turn_s": 7.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction00", "pass": false, "turn_s": 6.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction01", "pass": false, "turn_s": 5.32, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction02", "pass": false, "turn_s": 5.72, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction03", "pass": false, "turn_s": 5.32, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction04", "pass": false, "turn_s": 9.45, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "correction05", "pass": false, "turn_s": 8.85, "offer_roles": ["B2_GIST"], "reentries": 1}
+{"arm": "B", "fixture": "correction06", "pass": false, "turn_s": 7.24, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction07", "pass": false, "turn_s": 7.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction08", "pass": false, "turn_s": 5.93, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction09", "pass": false, "turn_s": 6.23, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction10", "pass": false, "turn_s": 5.32, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction11", "pass": false, "turn_s": 5.62, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction12", "pass": false, "turn_s": 6.22, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction13", "pass": false, "turn_s": 6.33, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "B", "fixture": "correction14", "pass": false, "turn_s": 5.55, "offer_roles": ["B2_GIST"], "reentries": 0}
+{
+ "arms": {
+  "none": {
+   "n": 75,
+   "passed": 48,
+   "mean_turn_s": 1.68,
+   "by_kind": {
+    "compare": 4,
+    "correction": 7,
+    "long": 15,
+    "notes": 14,
+    "summary": 8
+   },
+   "observer_turns": 0,
+   "offers": 0,
+   "reentries": 0,
+   "conflict_detection": "0/45",
+   "correction_pickup_answer": "7/15",
+   "correction_seen_by_observer": "0/15",
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare10",
+    "compare12",
+    "correction07",
+    "correction11",
+    "notes02",
+    "summary03",
+    "summary06",
+    "summary11"
+   ]
+  },
+  "A": {
+   "n": 75,
+   "passed": 42,
+   "mean_turn_s": 6.59,
+   "by_kind": {
+    "compare": 8,
+    "correction": 5,
+    "long": 15,
+    "notes": 9,
+    "summary": 5
+   },
+   "observer_turns": 75,
+   "offers": 79,
+   "reentries": 4,
+   "conflict_detection": "29/45",
+   "correction_pickup_answer": "5/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.91,
+   "missed_useful": [
+    "compare10",
+    "notes02",
+    "summary03"
+   ]
+  },
+  "B": {
+   "n": 75,
+   "passed": 35,
+   "mean_turn_s": 6.56,
+   "by_kind": {
+    "compare": 2,
+    "correction": 0,
+    "long": 15,
+    "notes": 10,
+    "summary": 8
+   },
+   "observer_turns": 75,
+   "offers": 81,
+   "reentries": 6,
+   "conflict_detection": "45/45",
+   "correction_pickup_answer": "0/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.88,
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare12",
+    "correction07",
+    "correction11",
+    "summary06",
+    "summary11"
+   ]
+  }
+ },
+ "paired": {
+  "A_vs_none": {
+   "n": 75,
+   "first_only_pass": 9,
+   "second_only_pass": 15,
+   "sign_test_p": 0.3075
+  },
+  "B_vs_none": {
+   "n": 75,
+   "first_only_pass": 3,
+   "second_only_pass": 16,
+   "sign_test_p": 0.0044
+  }
+ }
+}
+ARM_DONE B
+{"arm": "AB", "fixture": "summary00", "pass": true, "turn_s": 10.66, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary01", "pass": true, "turn_s": 10.45, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary02", "pass": true, "turn_s": 10.75, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary03", "pass": false, "turn_s": 10.65, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary04", "pass": true, "turn_s": 10.85, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary05", "pass": false, "turn_s": 10.74, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary06", "pass": false, "turn_s": 10.26, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary07", "pass": false, "turn_s": 11.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary08", "pass": false, "turn_s": 10.75, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary09", "pass": false, "turn_s": 12.85, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary10", "pass": false, "turn_s": 10.95, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary11", "pass": true, "turn_s": 10.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary12", "pass": true, "turn_s": 11.86, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary13", "pass": false, "turn_s": 10.85, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "summary14", "pass": true, "turn_s": 10.64, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long00", "pass": true, "turn_s": 16.48, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "long01", "pass": true, "turn_s": 11.15, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long02", "pass": true, "turn_s": 11.96, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long03", "pass": true, "turn_s": 10.25, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long04", "pass": true, "turn_s": 14.96, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "long05", "pass": true, "turn_s": 9.64, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long06", "pass": true, "turn_s": 12.25, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long07", "pass": true, "turn_s": 12.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long08", "pass": true, "turn_s": 10.65, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long09", "pass": true, "turn_s": 12.14, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long10", "pass": true, "turn_s": 12.45, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long11", "pass": true, "turn_s": 9.94, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long12", "pass": true, "turn_s": 11.66, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long13", "pass": true, "turn_s": 12.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "long14", "pass": true, "turn_s": 10.85, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes00", "pass": true, "turn_s": 10.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes01", "pass": false, "turn_s": 10.85, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes02", "pass": false, "turn_s": 11.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes03", "pass": true, "turn_s": 9.94, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes04", "pass": true, "turn_s": 10.65, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes05", "pass": false, "turn_s": 10.95, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes06", "pass": true, "turn_s": 10.16, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes07", "pass": false, "turn_s": 10.86, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes08", "pass": true, "turn_s": 9.34, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes09", "pass": true, "turn_s": 10.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes10", "pass": false, "turn_s": 11.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes11", "pass": false, "turn_s": 9.96, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes12", "pass": true, "turn_s": 10.26, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes13", "pass": true, "turn_s": 9.94, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "notes14", "pass": false, "turn_s": 11.05, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare00", "pass": false, "turn_s": 10.44, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare01", "pass": false, "turn_s": 12.15, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare02", "pass": true, "turn_s": 11.34, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare03", "pass": true, "turn_s": 11.25, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare04", "pass": false, "turn_s": 11.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare05", "pass": false, "turn_s": 12.96, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "AB", "fixture": "compare06", "pass": true, "turn_s": 10.56, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare07", "pass": false, "turn_s": 12.25, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare08", "pass": true, "turn_s": 10.44, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare09", "pass": true, "turn_s": 10.96, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare10", "pass": false, "turn_s": 11.25, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare11", "pass": false, "turn_s": 12.66, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "AB", "fixture": "compare12", "pass": true, "turn_s": 11.06, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare13", "pass": false, "turn_s": 11.96, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "compare14", "pass": true, "turn_s": 10.26, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction00", "pass": true, "turn_s": 11.55, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction01", "pass": false, "turn_s": 14.26, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction02", "pass": false, "turn_s": 11.05, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction03", "pass": false, "turn_s": 11.54, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction04", "pass": false, "turn_s": 15.07, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "correction05", "pass": false, "turn_s": 17.38, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "correction06", "pass": false, "turn_s": 12.55, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction07", "pass": true, "turn_s": 11.87, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction08", "pass": false, "turn_s": 11.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction09", "pass": false, "turn_s": 12.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction10", "pass": false, "turn_s": 11.07, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction11", "pass": false, "turn_s": 12.35, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "AB", "fixture": "correction12", "pass": false, "turn_s": 15.37, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "correction13", "pass": false, "turn_s": 14.36, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "AB", "fixture": "correction14", "pass": true, "turn_s": 11.15, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{
+ "arms": {
+  "none": {
+   "n": 75,
+   "passed": 48,
+   "mean_turn_s": 1.68,
+   "by_kind": {
+    "compare": 4,
+    "correction": 7,
+    "long": 15,
+    "notes": 14,
+    "summary": 8
+   },
+   "observer_turns": 0,
+   "offers": 0,
+   "reentries": 0,
+   "conflict_detection": "0/45",
+   "correction_pickup_answer": "7/15",
+   "correction_seen_by_observer": "0/15",
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare10",
+    "compare12",
+    "compare14",
+    "correction07",
+    "correction11",
+    "notes02",
+    "summary02",
+    "summary03",
+    "summary06",
+    "summary11"
+   ]
+  },
+  "A": {
+   "n": 75,
+   "passed": 42,
+   "mean_turn_s": 6.59,
+   "by_kind": {
+    "compare": 8,
+    "correction": 5,
+    "long": 15,
+    "notes": 9,
+    "summary": 5
+   },
+   "observer_turns": 75,
+   "offers": 79,
+   "reentries": 4,
+   "conflict_detection": "29/45",
+   "correction_pickup_answer": "5/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.91,
+   "missed_useful": [
+    "compare10",
+    "compare14",
+    "notes02",
+    "summary02",
+    "summary03"
+   ]
+  },
+  "B": {
+   "n": 75,
+   "passed": 35,
+   "mean_turn_s": 6.56,
+   "by_kind": {
+    "compare": 2,
+    "correction": 0,
+    "long": 15,
+    "notes": 10,
+    "summary": 8
+   },
+   "observer_turns": 75,
+   "offers": 81,
+   "reentries": 6,
+   "conflict_detection": "45/45",
+   "correction_pickup_answer": "0/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.88,
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare12",
+    "compare14",
+    "correction07",
+    "correction11",
+    "summary02",
+    "summary06",
+    "summary11"
+   ]
+  },
+  "AB": {
+   "n": 75,
+   "passed": 40,
+   "mean_turn_s": 11.53,
+   "by_kind": {
+    "compare": 7,
+    "correction": 3,
+    "long": 15,
+    "notes": 8,
+    "summary": 7
+   },
+   "observer_turns": 75,
+   "offers": 154,
+   "reentries": 6,
+   "conflict_detection": "45/45",
+   "correction_pickup_answer": "3/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 9.85,
+   "missed_useful": [
+    "compare07",
+    "compare10",
+    "correction11",
+    "notes02",
+    "summary03",
+    "summary06"
+   ]
+  }
+ },
+ "paired": {
+  "A_vs_none": {
+   "n": 75,
+   "first_only_pass": 9,
+   "second_only_pass": 15,
+   "sign_test_p": 0.3075
+  },
+  "B_vs_none": {
+   "n": 75,
+   "first_only_pass": 3,
+   "second_only_pass": 16,
+   "sign_test_p": 0.0044
+  },
+  "AB_vs_none": {
+   "n": 75,
+   "first_only_pass": 8,
+   "second_only_pass": 16,
+   "sign_test_p": 0.1516
+  }
+ }
+}
+ARM_DONE AB
+{"arm": "adaptive", "fixture": "summary00", "pass": true, "turn_s": 7.74, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary01", "pass": true, "turn_s": 5.85, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary02", "pass": false, "turn_s": 5.83, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary03", "pass": true, "turn_s": 5.02, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary04", "pass": true, "turn_s": 5.72, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary05", "pass": false, "turn_s": 5.64, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary06", "pass": false, "turn_s": 5.32, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary07", "pass": true, "turn_s": 5.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary08", "pass": true, "turn_s": 4.92, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary09", "pass": false, "turn_s": 5.84, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary10", "pass": true, "turn_s": 6.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary11", "pass": true, "turn_s": 5.21, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary12", "pass": true, "turn_s": 5.34, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary13", "pass": true, "turn_s": 6.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "summary14", "pass": true, "turn_s": 4.94, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long00", "pass": true, "turn_s": 15.26, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "adaptive", "fixture": "long01", "pass": true, "turn_s": 15.47, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "adaptive", "fixture": "long02", "pass": true, "turn_s": 5.52, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long03", "pass": true, "turn_s": 5.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long04", "pass": true, "turn_s": 17.07, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "adaptive", "fixture": "long05", "pass": true, "turn_s": 5.92, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long06", "pass": true, "turn_s": 6.13, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long07", "pass": true, "turn_s": 6.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long08", "pass": true, "turn_s": 6.02, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long09", "pass": true, "turn_s": 6.43, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long10", "pass": true, "turn_s": 11.55, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long11", "pass": true, "turn_s": 7.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long12", "pass": true, "turn_s": 6.83, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long13", "pass": true, "turn_s": 6.32, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "long14", "pass": true, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes00", "pass": false, "turn_s": 5.42, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes01", "pass": false, "turn_s": 4.82, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes02", "pass": false, "turn_s": 5.32, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes03", "pass": true, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes04", "pass": false, "turn_s": 5.13, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes05", "pass": false, "turn_s": 5.12, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes06", "pass": true, "turn_s": 5.33, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes07", "pass": false, "turn_s": 4.82, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes08", "pass": true, "turn_s": 5.32, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes09", "pass": true, "turn_s": 5.32, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes10", "pass": false, "turn_s": 7.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes11", "pass": false, "turn_s": 5.62, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes12", "pass": true, "turn_s": 5.02, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes13", "pass": true, "turn_s": 5.03, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "notes14", "pass": false, "turn_s": 5.52, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare00", "pass": false, "turn_s": 6.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare01", "pass": false, "turn_s": 12.58, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare02", "pass": true, "turn_s": 6.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare03", "pass": false, "turn_s": 5.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare04", "pass": false, "turn_s": 5.53, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare05", "pass": false, "turn_s": 6.22, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare06", "pass": false, "turn_s": 4.62, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare07", "pass": false, "turn_s": 4.62, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare08", "pass": false, "turn_s": 5.22, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare09", "pass": false, "turn_s": 5.13, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare10", "pass": true, "turn_s": 4.93, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare11", "pass": false, "turn_s": 4.32, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare12", "pass": true, "turn_s": 5.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare13", "pass": false, "turn_s": 5.42, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "compare14", "pass": true, "turn_s": 6.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction00", "pass": false, "turn_s": 5.83, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction01", "pass": false, "turn_s": 6.03, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction02", "pass": false, "turn_s": 6.22, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction03", "pass": false, "turn_s": 6.73, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction04", "pass": false, "turn_s": 15.56, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "adaptive", "fixture": "correction05", "pass": false, "turn_s": 13.56, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction06", "pass": false, "turn_s": 5.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction07", "pass": false, "turn_s": 7.43, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction08", "pass": false, "turn_s": 5.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction09", "pass": false, "turn_s": 6.63, "offer_roles": ["B1_DETAIL"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction10", "pass": false, "turn_s": 6.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction11", "pass": false, "turn_s": 7.45, "offer_roles": ["B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction12", "pass": false, "turn_s": 18.48, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 1}
+{"arm": "adaptive", "fixture": "correction13", "pass": false, "turn_s": 13.67, "offer_roles": ["B1_DETAIL", "B2_GIST"], "reentries": 0}
+{"arm": "adaptive", "fixture": "correction14", "pass": false, "turn_s": 6.63, "offer_roles": ["B2_GIST"], "reentries": 0}
+{
+ "arms": {
+  "none": {
+   "n": 75,
+   "passed": 48,
+   "mean_turn_s": 1.68,
+   "by_kind": {
+    "compare": 4,
+    "correction": 7,
+    "long": 15,
+    "notes": 14,
+    "summary": 8
+   },
+   "observer_turns": 0,
+   "offers": 0,
+   "reentries": 0,
+   "conflict_detection": "0/45",
+   "correction_pickup_answer": "7/15",
+   "correction_seen_by_observer": "0/15",
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare10",
+    "compare12",
+    "compare14",
+    "correction07",
+    "correction11",
+    "notes02",
+    "summary02",
+    "summary03",
+    "summary06",
+    "summary10",
+    "summary11"
+   ]
+  },
+  "A": {
+   "n": 75,
+   "passed": 42,
+   "mean_turn_s": 6.59,
+   "by_kind": {
+    "compare": 8,
+    "correction": 5,
+    "long": 15,
+    "notes": 9,
+    "summary": 5
+   },
+   "observer_turns": 75,
+   "offers": 79,
+   "reentries": 4,
+   "conflict_detection": "29/45",
+   "correction_pickup_answer": "5/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.91,
+   "missed_useful": [
+    "compare10",
+    "compare14",
+    "notes02",
+    "summary02",
+    "summary03",
+    "summary10"
+   ]
+  },
+  "B": {
+   "n": 75,
+   "passed": 35,
+   "mean_turn_s": 6.56,
+   "by_kind": {
+    "compare": 2,
+    "correction": 0,
+    "long": 15,
+    "notes": 10,
+    "summary": 8
+   },
+   "observer_turns": 75,
+   "offers": 81,
+   "reentries": 6,
+   "conflict_detection": "45/45",
+   "correction_pickup_answer": "0/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 4.88,
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "compare12",
+    "compare14",
+    "correction07",
+    "correction11",
+    "summary02",
+    "summary06",
+    "summary10",
+    "summary11"
+   ]
+  },
+  "AB": {
+   "n": 75,
+   "passed": 40,
+   "mean_turn_s": 11.53,
+   "by_kind": {
+    "compare": 7,
+    "correction": 3,
+    "long": 15,
+    "notes": 8,
+    "summary": 7
+   },
+   "observer_turns": 75,
+   "offers": 154,
+   "reentries": 6,
+   "conflict_detection": "45/45",
+   "correction_pickup_answer": "3/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 9.85,
+   "missed_useful": [
+    "compare07",
+    "compare10",
+    "correction11",
+    "notes02",
+    "summary03",
+    "summary06",
+    "summary10"
+   ]
+  },
+  "adaptive": {
+   "n": 75,
+   "passed": 36,
+   "mean_turn_s": 6.85,
+   "by_kind": {
+    "compare": 4,
+    "correction": 0,
+    "long": 15,
+    "notes": 6,
+    "summary": 11
+   },
+   "observer_turns": 75,
+   "offers": 89,
+   "reentries": 5,
+   "conflict_detection": "41/45",
+   "correction_pickup_answer": "0/15",
+   "correction_seen_by_observer": "15/15",
+   "unnecessary_observer_turns": "48/48",
+   "extra_turn_s_vs_none": 5.17,
+   "missed_useful": [
+    "compare06",
+    "compare07",
+    "compare08",
+    "compare09",
+    "correction07",
+    "correction11",
+    "notes02",
+    "summary02",
+    "summary06"
+   ]
+  }
+ },
+ "paired": {
+  "A_vs_none": {
+   "n": 75,
+   "first_only_pass": 9,
+   "second_only_pass": 15,
+   "sign_test_p": 0.3075
+  },
+  "B_vs_none": {
+   "n": 75,
+   "first_only_pass": 3,
+   "second_only_pass": 16,
+   "sign_test_p": 0.0044
+  },
+  "AB_vs_none": {
+   "n": 75,
+   "first_only_pass": 8,
+   "second_only_pass": 16,
+   "sign_test_p": 0.1516
+  },
+  "adaptive_vs_none": {
+   "n": 75,
+   "first_only_pass": 6,
+   "second_only_pass": 18,
+   "sign_test_p": 0.0227
+  },
+  "adaptive_vs_AB": {
+   "n": 75,
+   "first_only_pass": 6,
+   "second_only_pass": 10,
+   "sign_test_p": 0.4545
+  }
+ },
+ "criteria": {
+  "O1_always_pass_beats_none": false,
+  "O2_adaptive_cheaper_not_worse": true,
+  "O3_always_pass_does_not_hurt": true
+ },
+ "verdict": "ADAPTIVE_PREFERRED"
+}
+ARM_DONE adaptive

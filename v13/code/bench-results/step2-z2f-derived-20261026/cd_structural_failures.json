@@ -1,0 +1,80 @@
+{
+ "CD_s27": {
+  "status": "UTILITY_FAIL",
+  "all_structural_checks_passed": false,
+  "error_rows": [
+   {
+    "fixture": "Nimbus",
+    "variant": "b1_only",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "b2_only",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "both_none",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "both_exact",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "both_control",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "same_policy_dual",
+    "error": "native prior preparation failed"
+   },
+   {
+    "fixture": "Nimbus",
+    "variant": "prompt_only_dual",
+    "error": "native prior preparation failed"
+   }
+  ],
+  "preparation_errors": [
+   {
+    "i": 3,
+    "error_type": "JSONDecodeError",
+    "error": "Unterminated string starting at: line 4 column 3 (char 210)"
+   }
+  ],
+  "paired_no_tool_mean_utility": {
+   "b1_only": 0.35,
+   "b2_only": 0.25833333333333336,
+   "both_control": 0.35833333333333334,
+   "both_exact": 0.4,
+   "both_none": 0.4,
+   "prompt_only_dual": 0.36666666666666664,
+   "same_policy_dual": 0.38333333333333336
+  }
+ },
+ "CD_s28": {
+  "status": "UTILITY_FAIL",
+  "all_structural_checks_passed": false,
+  "error_rows": [
+   {
+    "fixture": "Tycho",
+    "variant": "both_none",
+    "error": "Expecting ',' delimiter: line 10 column 13 (char 384)"
+   }
+  ],
+  "preparation_errors": [],
+  "paired_no_tool_mean_utility": {
+   "b1_only": 0.4416666666666667,
+   "b2_only": 0.2583333333333333,
+   "both_control": 0.4083333333333333,
+   "both_exact": 0.45,
+   "both_none": 0.425,
+   "prompt_only_dual": 0.4583333333333333,
+   "same_policy_dual": 0.475
+  }
+ }
+}

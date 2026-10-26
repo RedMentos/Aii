@@ -1,0 +1,23 @@
+{
+ "schema": "ABLATION_REFLEX_BREAKER_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "hours": 24,
+ "mean_gap_s": 30,
+ "streams": {
+  "outage": "healthy exp(2h, p_fail .02) / outage exp(10min, p_fail .95)",
+  "flaky": "iid p_fail .25"
+ },
+ "cost": {
+  "failed_call": 1.0,
+  "skipped_call": 0.3,
+  "ok_call": 0.0
+ },
+ "primary": "mean cost per turn on the outage stream (lower is better)",
+ "win_rule": "breaker beats never, skip_all and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}
