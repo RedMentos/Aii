@@ -39,7 +39,7 @@ def safe_rel(name):
             "\\" not in name and
             all(part not in ("", ".", "..") for part in name.split("/")),
             "UNSAFE_EXPORT_PATH")
-    require("models" not in name.split("/") and
+    require(not any(part.casefold() == "models" for part in name.split("/")) and
             not name.lower().endswith(FORBIDDEN_EXT), "MODEL_PATH_IN_EXPORT")
     return name
 

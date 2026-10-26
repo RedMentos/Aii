@@ -118,6 +118,8 @@ def export(work, installed, destination):
                             dirs.remove(name)
                         else:
                             require(path.is_dir(), "NON_DIRECTORY_CHILD")
+                            require(name.casefold() != "models",
+                                    "MODEL_OR_MANIFEST_FILE_IN_WORK:" + str(path.relative_to(work)))
                     dirs.sort()
                     for name in sorted(files):
                         path = here / name
@@ -126,7 +128,7 @@ def export(work, installed, destination):
                         require(path.is_file(), "NONREGULAR_FILE:" + str(rel))
                         require(name != MANIFEST and
                                 not name.lower().endswith(FORBIDDEN_EXT) and
-                                "models" not in rel.parts,
+                                not any(part.casefold() == "models" for part in rel.parts),
                                 "MODEL_OR_MANIFEST_FILE_IN_WORK:" + str(rel))
                         copied[str(rel)] = _copy_regular(path, stage / rel)
                 require(copied, "EMPTY_EXPORT")

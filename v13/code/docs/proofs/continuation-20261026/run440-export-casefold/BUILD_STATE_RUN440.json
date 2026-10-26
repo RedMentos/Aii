@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN440_EXPORT_MODEL_PATH_CASEFOLD_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run440-export-model-path-casefold-20261026",
+  "base_commit": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "tested_source_head": "4b4d505569dac9cf1fdc0140260e1caaf2cea8a5",
+  "pr": 439,
+  "scope": "Source-only candidate: mixed-case model-directory exclusion for Run409 export and independent Run413 safe_rel; no native or model execution.",
+  "red": {
+    "head": "3f3d9dff4caae25360254cfc9ef5370a3a0a0b26",
+    "actions_run": 40267140572,
+    "tests_total": 26,
+    "expected_failures": 5,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12626319753,
+    "raw_artifact_sha256": "41ad45b1561e2a5a26807673d256078b090d17147fd4cc998e19d36fafaeeb50"
+  },
+  "green": {
+    "head": "4b4d505569dac9cf1fdc0140260e1caaf2cea8a5",
+    "actions_run": 40267273437,
+    "tests_total": 26,
+    "passed": 26,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12626449714,
+    "raw_artifact_sha256": "c851caf27b2ff4e75dea74c756786284a31dff83369f77d50735f177ec99ccbd",
+    "inherited_actions": [
+      40267273319,
+      40267273385
+    ],
+    "source_sha256": {
+      "v13/code/scripts/run409_safe_export.py": "fab43a14ca2e55e023094479698e8c0065359137b33ae5daf8e345d3078d2032",
+      "v13/code/scripts/run413_export_receipt_gate.py": "4c9209b9b82dd2f7035a0b292b99e68adeb0d8c36f9974012af7adacdfa45ad8",
+      "v13/code/tests/test_run440_model_path_casefold.py": "387b8684f8da6b9dbfae49cfb512689d0b670958af15c3f9c120e98dcb95ef80"
+    }
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "active_native_owner": "Run437 / PR436 exclusive P_s21 Actions 40266365717 in_progress at last observation; untouched",
+  "next": "Observe exact-head focused source CI, preserve original Run437 owner, review PR439 and integrate only after pinned native cohort permits. Independent next package: inspect organ bridge restore symlink/out-of-home write path with RED-first tests; no registered source pin changes.",
+  "exact_next_command": "python3 -m unittest -v tests.test_run440_model_path_casefold tests.test_run409_safe_export tests.test_run413_export_receipt_gate",
+  "prerequisites": "PYTHONPATH=v13/code:v13/code/scripts; isolated Python numpy==2.3.5 prompt-toolkit==3.0.52; no model downloads."
+}
