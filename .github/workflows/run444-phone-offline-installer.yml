@@ -38,6 +38,7 @@ jobs:
         run: |
           cd "$RUNNER_TEMP/run444-extracted/V13-Phone"
           export PYTHONPATH="$PWD:$PWD/scripts"
+          export PATH="$RUNNER_TEMP/run444/bin:$PATH"
           sha256sum tests/test_run444_phone_offline_setup.py | tee "$RUNNER_TEMP/run444-source-sha256.txt"
           set +e
           "$RUNNER_TEMP/run444/bin/python" -m unittest -v tests.test_run444_phone_offline_setup tests.test_installed_source_preflight_run194 > "$RUNNER_TEMP/run444-tests.txt" 2>&1
