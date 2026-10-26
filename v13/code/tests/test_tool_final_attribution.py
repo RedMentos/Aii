@@ -6,9 +6,11 @@ import ast
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
+from unittest.mock import MagicMock, patch
 
 from v13.agi import eligibility
 from v13.toolstep import ToolStep
+from v13.broker import Broker, decide, egress_type
 
 RUNTIME = Path(__file__).resolve().parents[1] / 'v13' / 'runtime.py'
 
@@ -112,6 +114,46 @@ class ToolFinalAttributionTests(unittest.TestCase):
                             'meta.get(\'model_generated\')' in _source(n.value) and
                             'runner.role' in _source(n.value)
                             for n in nodes))
+
+    def test_broker_preserves_distinct_tool_authority_in_real_finalize(self):
+        self.assertEqual(decide(['ELIGIBILITY_TOOL_FINAL'])['selected'], 'ELIGIBILITY_TOOL_FINAL')
+        self.assertEqual(egress_type('ELIGIBILITY_TOOL_FINAL'), 'TEXT_REPORT')
+        store = MagicMock()
+        store.add_packet.return_value = {'packet_id': 'broker-packet'}
+        runtime = SimpleNamespace(store=store, cfg={}, session='test')
+        b = Broker(runtime)
+        e = {'event_id': 'event', 'brain_generation_id': 'generation', 'source_ref': {'source_id': 'src'}}
+        for action in ('UNKNOWN', 'NONE'):
+            with self.subTest(action=action):
+                tool = _tool(action)
+                output = eligibility.final_text(tool['args'], tool['result'])
+                meta = {'output_authority': 'ELIGIBILITY_TOOL_FINAL',
+                        'tool_answer_first': 'FINAL', 'model_generated': False,
+                        'output_committed': True}
+                with patch.object(Broker, '_check', return_value={'ok': True, 'violations': []}):
+                    receipt = b.finalize(e, 'message', meta, 'FINAL', output, tool_result=tool)
+                self.assertEqual(receipt['authority'], 'ELIGIBILITY_TOOL_FINAL')
+                self.assertEqual(receipt['egress_type'], 'TEXT_REPORT')
+                self.assertEqual(receipt['conflicts'], [])
+                self.assertEqual(receipt['late'], [])
+        self.assertEqual(store.add_packet.call_count, 2)
+
+    def test_broker_refuses_unbound_or_model_generated_tool_claim(self):
+        store = MagicMock()
+        store.add_packet.return_value = {'packet_id': 'broker-packet'}
+        b = Broker(SimpleNamespace(store=store, cfg={}, session='test'))
+        e = {'event_id': 'event', 'brain_generation_id': 'generation', 'source_ref': {'source_id': 'src'}}
+        tool = _tool('UNKNOWN')
+        output = eligibility.final_text(tool['args'], tool['result'])
+        with patch.object(Broker, '_check', return_value={'ok': True, 'violations': []}):
+            for bad in ({'model_generated': True}, {'tool_answer_first': 'LEAD'},
+                        {'output_authority': 'MODEL_ANSWER'}):
+                meta = dict(output_authority='ELIGIBILITY_TOOL_FINAL',
+                            tool_answer_first='FINAL', model_generated=False, **bad) if False else {
+                                'output_authority': 'ELIGIBILITY_TOOL_FINAL',
+                                'tool_answer_first': 'FINAL', 'model_generated': False, **bad}
+                receipt = b.finalize(e, 'message', meta, 'FINAL', output, tool_result=tool)
+                self.assertNotEqual(receipt['authority'], 'ELIGIBILITY_TOOL_FINAL')
 
     def test_original_frozen_gates_not_redefined_by_this_candidate(self):
         self.assertTrue(RUNTIME.exists())
