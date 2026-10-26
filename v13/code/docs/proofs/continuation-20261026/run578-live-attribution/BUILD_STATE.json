@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN578_TRUE_LIVE_NATIVE_ATTRIBUTION_REVIEW_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation12 independent review",
+  "base_branch": "assistant/v13-run575-true-live-source-20261026",
+  "base_head": "afbaa344e4ca8b27f2b8cac82b5c8bb0255a95f6",
+  "review_branch": "codex/run578-true-live-attribution-review-20261026",
+  "review_pr": 576,
+  "prereg_commit": "d624795e0396fbdb615cacf9c8f4f94975d16202",
+  "source_tested_head": "1658a38616adafe6ea67a5de0aabffa26b62e8be",
+  "source_blobs": {
+    "scripts/run575_true_live_pilot.py": "a838125bb5a9ce5aae67f8c7d7946ead20f3a97d",
+    "tests/test_run575_true_live_pilot.py": "95788d33d59e48f8f8116069c162c6fe9fc52e54"
+  },
+  "tests": {
+    "workflow_run": 40380506900,
+    "job_id": 121775132729,
+    "conclusion": "SUCCESS",
+    "software_unittest_methods": 12,
+    "artifact_id": 12676654371,
+    "artifact_sha256": "149a5b3d0e0168c3e32352689495cb2722b6f6441e2cfea5f242fc7424ac3a62",
+    "scope": "Actual Python source-only fake Runtime/SQLite observer, negative synthetic native-claim tests, compileall, privacy scan, SHA-closed raw",
+    "native_executed": false
+  },
+  "correction": {
+    "prior_defect": "Run575 run_dialogue and execute hardcoded native_executed=True for FakeRuntime FINAL rows",
+    "new_behavior": "Persisted C3 runner metadata observed separately, native_executed=False until independently bound process/model/raw proof",
+    "original_owner_files_unchanged": true
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "full_scope_complete": false
+  },
+  "limitations": [
+    "Source-only metadata observation is not independently verified native inference; a fake could forge metadata.",
+    "No native model, Android/Termux, training or end-to-end STEP2 utility execution occurred.",
+    "Review branch is stacked on another owner's unmerged Run575 source and is not production integrated.",
+    "Current complete historical suite separately RED; this focused review does not override it."
+  ],
+  "open_questions": [
+    "Run575 owner should review PR576 and independently bind actual native process/model/raw to event before claiming Linux-native evidence.",
+    "Actual current-default versus legacy live cohort remains unexecuted and must be preregistered/serialized after active owner clears.",
+    "B1/B2 different-model native Body-JEPA and Redmi sustained gates remain open."
+  ],
+  "next_exact_command": "Review PR576 and successful Actions 40380506900; retain source-only native_executed=false until independent original native raw/process audit. Do not merge automatically. Continue another independent canonical package (STEP2 source sufficiency/B1-B2 learning/Context OS) rather than treating this guard as completion."
+}
