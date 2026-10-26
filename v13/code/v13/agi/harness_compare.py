@@ -13,7 +13,7 @@ import math
 from . import harness
 from .blind_select import blind_select, verify as verify_blind
 
-REVISION = "hx2-blind-harness-lab-v1"
+REVISION = "hx2-blind-harness-lab-v2"
 MAX_TASKS = 512
 MAX_OUTPUT = 8192
 MIN_PAIRED = 30
@@ -73,14 +73,30 @@ def _provenance(tasks, excluded_ids, solver_revision, judge_revision):
             "judge_revision": judge_revision}
 
 
+def _baseline(baseline):
+    """Validate and snapshot every reference target before sealing inputs."""
+    if baseline is None:
+        values = {name: harness.default(name) for name in harness.TARGETS}
+    elif isinstance(baseline, dict) and set(baseline) == set(harness.TARGETS):
+        values = baseline
+    else:
+        raise ValueError("HX2_BASELINE_INVALID")
+    return copy.deepcopy(harness.candidate(values))
+
+
 def preregister(tasks, diff, seed, *, excluded_ids=(),
-                solver_revision="UNPINNED", judge_revision="UNPINNED"):
+                solver_revision="UNPINNED", judge_revision="UNPINNED",
+                baseline=None):
     """Immutable comparison input commitment; a hash is not an approval."""
     clean, checked = _validate(tasks, diff, seed)
     provenance = _provenance(clean, excluded_ids, solver_revision, judge_revision)
+    base = _baseline(baseline)
+    baseline_sha256 = _hash(base)
     data = {"revision": REVISION, "tasks": clean, "diff": checked,
-            "seed": seed, "provenance": provenance}
+            "seed": seed, "provenance": provenance,
+            "baseline_sha256": baseline_sha256}
     return {"revision": REVISION, "input_sha256": _hash(data),
+            "baseline_sha256": baseline_sha256,
             "task_ids_sha256": _hash([t["id"] for t in clean]),
             **provenance,
             "target": next(iter(checked)), "task_count": len(clean),
@@ -112,17 +128,12 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None,
     independent judge. Every error and disagreement remains in the report.
     """
     clean, checked = _validate(tasks, diff, seed)
+    base = _baseline(baseline)
     expected = preregister(clean, checked, seed, excluded_ids=excluded_ids,
                            solver_revision=solver_revision,
-                           judge_revision=judge_revision)
+                           judge_revision=judge_revision, baseline=base)
     if not isinstance(preregistration, dict) or preregistration != expected:
         raise ValueError("HX2_PREREGISTRATION_MISMATCH")
-    if baseline is None:
-        base = {name: harness.default(name) for name in harness.TARGETS}
-    elif isinstance(baseline, dict) and set(baseline) == set(harness.TARGETS):
-        base = harness.candidate(baseline)
-    else:
-        raise ValueError("HX2_BASELINE_INVALID")
     target = next(iter(checked))
     variant = dict(base)
     variant.update(checked)
@@ -132,11 +143,12 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None,
     wins = losses = ties = inconsistent = no_pick = 0
     for index, task in enumerate(clean):
         task_seed = seed + index
+        digests = {}
         try:
             reference = _output(solver(dict(task), copy.deepcopy(base), task_seed))
+            digests["reference"] = hashlib.sha256(reference.encode()).hexdigest()
             changed = _output(solver(dict(task), copy.deepcopy(variant), task_seed))
-            digests = {"reference": hashlib.sha256(reference.encode()).hexdigest(),
-                       "candidate": hashlib.sha256(changed.encode()).hexdigest()}
+            digests["candidate"] = hashlib.sha256(changed.encode()).hexdigest()
             if reference == changed:
                 outcome, selection, commitment = "TIE", None, None
                 ties += 1
@@ -168,7 +180,6 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None,
                     no_pick += 1
         except Exception as exc:
             outcome, selection, commitment = "NO_PICK", None, None
-            digests = {}
             no_pick += 1
             error = type(exc).__name__
         else:
@@ -187,6 +198,7 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None,
               else "NOT_SUPPORTED")
     return {"revision": REVISION, "status": status,
             "input_sha256": expected["input_sha256"],
+            "baseline_sha256": expected["baseline_sha256"],
             "excluded_id_hashes_sha256": expected["excluded_id_hashes_sha256"],
             "excluded_count": expected["excluded_count"],
             "solver_revision": expected["solver_revision"],
