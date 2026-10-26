@@ -1431,4 +1431,42 @@
     "next_command": "Review PR552 exact head and Actions; serialize pinned native C3/STEP2 next, no gate promotion; preserve inherited Run132 RED.",
     "proof": "docs/proofs/continuation-20261026/run553-user-goal-operator/RESULT.md"
   }
+,
+  "continuation_20261026_run610": {
+    "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+    "owner": "GPT automation11",
+    "base_pr": 604,
+    "review_pr": 605,
+    "base_sha": "ef440efc0dc510ee0491fec16a88ac9991b5d905",
+    "prereg_commit": "1916a8a59bb3bad3ecfcd252401f91ecc6721493",
+    "test_before_fix_commit": "b9d005f3cc4c14bfacefce1f393e46235acf51f9",
+    "fix_commit": "4ecd8ebe23d9d213bff4da49eb37dcc78b674d52",
+    "verified_ci_head": "522906bbf8001bbed00aef64eb87967e72fa919d",
+    "ci_run": 40404858588,
+    "tests": "68 Linux SQLite/Runtime PASS, privacy CLEAN",
+    "ci_artifact_id": 12691690663,
+    "ci_artifact_sha256": "cf52f5b74e0f143ee08fac951bf8d43cde2d7307d48ec418600118ef68cacbf6",
+    "artifact_manifest": "7/7 SHA256 verified",
+    "pre_fix_red": "NOT_EXECUTED",
+    "source_change": "FINAL assistant with unfinished user row is deferred and revalidated after finalization; revoked completed sources remain excluded",
+    "negative_gates": {
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "V13": "INCOMPLETE",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "proof": "docs/proofs/continuation-20261026/run610-sleep-partial-pair/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=$PWD python -m unittest -v tests.test_run610_sleep_partial_pair tests.test_run609_sleep_digest_backlog tests.test_sleep_offline tests.test_history_lineage tests.test_context_os tests.test_sleep_scheduler tests.test_sleep_validation",
+    "open_questions": [
+      "Bounded pending-ID fail-closed >128 remains; do not drop data silently",
+      "Current phone/Redmi native validation unavailable",
+      "Independent review and production integration pending",
+      "Run596 historical fullsuite RED not reclassified"
+    ],
+    "next_owner": "unassigned after review"
+  }
 }

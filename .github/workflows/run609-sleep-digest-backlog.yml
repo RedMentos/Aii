@@ -3,11 +3,13 @@ on:
   push:
     branches:
       - codex/automation11-run609-sleep-digest-backlog-20261026
+      - codex/automation11-run610-sleep-pair-finality-20261026
     paths:
       - '.github/workflows/run609-sleep-digest-backlog.yml'
       - 'v13/code/v13/history.py'
       - 'v13/code/v13/sleep_offline.py'
       - 'v13/code/tests/test_run609_sleep_digest_backlog.py'
+      - 'v13/code/tests/test_run610_sleep_partial_pair.py'
 permissions:
   contents: read
 jobs:
@@ -29,7 +31,7 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN609_HEAD.txt"
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
-          sha256sum v13/code/v13/history.py v13/code/v13/sleep_offline.py v13/code/tests/test_run609_sleep_digest_backlog.py v13/code/docs/proofs/continuation-20261026/run609-sleep-digest-backlog/PREREG.md > "$RUNNER_TEMP/RUN609_SOURCE_SHA256.txt"
+          sha256sum v13/code/v13/history.py v13/code/v13/sleep_offline.py v13/code/tests/test_run610_sleep_partial_pair.py v13/code/tests/test_run609_sleep_digest_backlog.py v13/code/docs/proofs/continuation-20261026/run609-sleep-digest-backlog/PREREG.md > "$RUNNER_TEMP/RUN609_SOURCE_SHA256.txt"
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN609_HOST.txt"
       - name: Isolated pinned Python dependencies
         run: |
@@ -41,7 +43,7 @@ jobs:
         run: |
           set +e
           "$RUNNER_TEMP/run609venv/bin/python" -m compileall -q v13 tests
-          PYTHONPATH="$PWD" timeout -s TERM -k 10s 480s "$RUNNER_TEMP/run609venv/bin/python" -m unittest -v             tests.test_run609_sleep_digest_backlog             tests.test_sleep_offline             tests.test_history_lineage             tests.test_context_os             tests.test_sleep_scheduler             tests.test_sleep_validation > "$RUNNER_TEMP/RUN609_TEST_RAW.log" 2>&1
+          PYTHONPATH="$PWD" timeout -s TERM -k 10s 480s "$RUNNER_TEMP/run609venv/bin/python" -m unittest -v             tests.test_run610_sleep_partial_pair tests.test_run609_sleep_digest_backlog             tests.test_sleep_offline             tests.test_history_lineage             tests.test_context_os             tests.test_sleep_scheduler             tests.test_sleep_validation > "$RUNNER_TEMP/RUN609_TEST_RAW.log" 2>&1
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN609_TEST_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
@@ -50,7 +52,7 @@ jobs:
         id: privacy
         run: |
           set +e
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 81cd5417380251b3633aab474b4e1a672480ea2c --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN609_PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ef440efc0dc510ee0491fec16a88ac9991b5d905 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN609_PRIVACY_RAW.log" 2>&1
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RUN609_PRIVACY_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"

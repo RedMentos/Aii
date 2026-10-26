@@ -1,0 +1,82 @@
+name: V13 Run610 Sleep A backlog real SQLite source-bound regression
+on:
+  push:
+    branches:
+      - codex/automation11-run610-sleep-partial-pair-20261026
+    paths:
+      - '.github/workflows/run610-sleep-partial-pair.yml'
+      - 'v13/code/v13/history.py'
+      - 'v13/code/v13/sleep_offline.py'
+      - 'v13/code/tests/test_run610_sleep_partial_pair.py'
+permissions:
+  contents: read
+jobs:
+  bounded-backlog:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Source and Canon frozen
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN610_HEAD.txt"
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/history.py v13/code/v13/sleep_offline.py v13/code/tests/test_run609_sleep_digest_backlog.py v13/code/docs/proofs/continuation-20261026/run610-sleep-partial-pair/PREREG.md > "$RUNNER_TEMP/RUN610_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN610_HOST.txt"
+      - name: Isolated pinned Python dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run610venv"
+          "$RUNNER_TEMP/run610venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Actual SQLite/Runtime partial-pair and existing Sleep/Context OS tests
+        id: test
+        working-directory: v13/code
+        run: |
+          set +e
+          "$RUNNER_TEMP/run610venv/bin/python" -m compileall -q v13 tests
+          PYTHONPATH="$PWD" timeout -s TERM -k 10s 480s "$RUNNER_TEMP/run610venv/bin/python" -m unittest -v             tests.test_run610_sleep_partial_pair tests.test_run609_sleep_digest_backlog             tests.test_sleep_offline             tests.test_history_lineage             tests.test_context_os             tests.test_sleep_scheduler             tests.test_sleep_validation > "$RUNNER_TEMP/RUN610_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN610_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ef440efc0dc510ee0491fec16a88ac9991b5d905 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN610_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN610_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA close raw tests and failures
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for key in TEST PRIVACY; do
+            test -f "RUN610_${key}_EXIT.txt" || echo 2 > "RUN610_${key}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN610_*' ! -name 'RUN610_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN610_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run610-Sleep-Backlog-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN610_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce real SQLite and privacy exits
+        if: always()
+        run: |
+          set -euo pipefail
+          for key in TEST PRIVACY; do
+            echo "RUN610 $key exit: $(cat "$RUNNER_TEMP/RUN610_${key}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN610_${key}_EXIT.txt")" = 0
+          done
