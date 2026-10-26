@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN429_SOURCE_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run429-stage4-168-verifier-20261026",
+  "base_pr": 426,
+  "base_head": "f98db0c7bca16c005bc987bcc507aa3abbdf66f4",
+  "source_head": "6db4817e857096de7150a31e64992675ab611ea0",
+  "source_sha256": {
+    "v13/code/scripts/run429_verify_native168.py": "38b3576720f759e5ca4abe45c7edfa25529c2c2666922bbf678b7c7c98c0793e",
+    "v13/code/tests/test_run429_verify_native168.py": "010a6dd8a558abb9c6a93c45c9326c5a9b9475390db22992854c052899f2ae14"
+  },
+  "source_only": {
+    "actions": 40263560522,
+    "conclusion": "success",
+    "tests": "4/4 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12625233363,
+    "artifact_zip_sha256": "60a213ae07c76ee8b05a5a73b86d8c3d49d260cf12f768a9109a1f9656271fe5",
+    "focused_actions": 40263560489,
+    "focused_conclusion": "success"
+  },
+  "actual_native": {
+    "run427_actions": 40263042202,
+    "status_last_observed": "IN_PROGRESS",
+    "source_168_evidence": "PENDING",
+    "new_native_job_started": false
+  },
+  "scope": [
+    "Strict Run421 native report 168 rows and exact prefix O/P/S_s20,O_s21",
+    "Safe-export file inventory, no symlinks/model hashes",
+    "Run397 full source/tool/summary/row receipts per arm",
+    "No STEP2/B3/Body-JEPA/Age/Redmi promotion"
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Wait for Run427 Actions 40263042202. If successful, fetch exact artifact IDs/ZIP SHA256, create read-only fresh-runner importer for 168 and execute Run429 verify; do not fabricate inputs or launch parallel native. If Run427 RED, preserve raw and do not claim 168."
+}
