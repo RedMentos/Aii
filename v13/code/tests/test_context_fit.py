@@ -107,10 +107,10 @@ class ContextFitTests(unittest.TestCase):
         self.assertEqual(how,'ESTIMATE');count([{'role':'user','content':'x'}]);self.assertEqual(count.sources,['ESTIMATE'])
 
     def test_exact_count_optin_is_validated_and_legacy_default_unchanged(self):
-        self.assertEqual(DEFAULTS['context_fit_count_mode'],'legacy_quick')
-        validate(dict(DEFAULTS,context_fit_count_mode='exact'))
+        self.assertEqual(DEFAULTS['context_fit_exact_count'],0)
+        validate(dict(DEFAULTS,context_fit_exact_count=1))
         with self.assertRaises(ValueError):
-            validate(dict(DEFAULTS,context_fit_count_mode='unsafe_guess'))
+            validate(dict(DEFAULTS,context_fit_exact_count=2))
 
     def test_exact_count_optin_disables_quick_accept_even_under_byte_bound(self):
         calls=[]
