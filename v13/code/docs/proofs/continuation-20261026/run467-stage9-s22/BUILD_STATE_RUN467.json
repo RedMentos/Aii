@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN467_FINAL_S22_STAGE9_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only final stage9; exclusive native owner Run464 unchanged",
+  "branch": "codex/automation11-run467-stage9-s22-source-20261026",
+  "base": "f620322a1c2022ab49a05365197dd52ceb59e7fa",
+  "tested_source_head": "36e3d6ed7f80fdcaa9225388789d926fb13ad240",
+  "pr": 466,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run467_stage9_s22.py": "0fdd14fd73d5122c9f39c6cc08c8d1b2adbbb8b2",
+    "v13/code/tests/test_run467_stage9_s22.py": "c50afa8aa47a0579891b937540f0d61185033f3f",
+    ".github/workflows/run467-stage9-s22-source.yml": "ebf1ceb995c6ca739ca87156c7d13cf72abc764f"
+  },
+  "actions": {
+    "id": 40273517765,
+    "conclusion": "success",
+    "tests": "147/147 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629441324,
+    "raw_artifact_sha256": "cb3fb98725faa2813b97ce6e2fa506102a0b94c4e3cb3624d90b7fc33b8a201e"
+  },
+  "result": "Exact ninth/final S_s22 native Stage9 source path 336→378/378; uses real Run397 terminal structural status ALL_ARMS_STRUCTURALLY_RECORDED but preserves STEP2 UTILITY_FAIL. Synthetic final success test proves no gate promotion.",
+  "scope": "Software/synthetic Linux CI only; actual native378 and utility acceptance absent.",
+  "active_native": {
+    "run_id": 40273136245,
+    "status_at_checkpoint": "in_progress",
+    "owner": "Run464 exclusive S_s21 retry"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run464 native252 result still pending; no actual 252 safe archive yet.",
+    "All later arms O_s22/P_s22/S_s22 must be executed serially with unchanged registered assets and independent receipts.",
+    "A structurally complete 378-row cohort is not semantic STEP2 utility or full V13 acceptance."
+  ],
+  "next_command": "Monitor Run464; on actual 252 GREEN verify original safe artifact, run Run458 import, then Stage7 O_s22, Stage8 P_s22, Stage9 S_s22 under exclusive native ownership. Independently prepare final nine-receipt 378 verifier and paired utility analysis."
+}
