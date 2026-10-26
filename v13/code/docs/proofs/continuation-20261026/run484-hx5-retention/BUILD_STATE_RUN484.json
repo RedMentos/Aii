@@ -25,8 +25,13 @@
   },
   "tests": {
     "independent_counterexample": "Original retention predicate returned RETENTION_PASS for missing metrics and NaN metrics in isolated Python reproduction.",
-    "github_ci": "PENDING source-only 9 new + inherited HX5/HX2/HX tests, official privacy scan",
-    "full_repo_suite": "NOT RUN by this reviewer; container cannot resolve github.com for clone, existing Run455 full checkout is RED with 70 errors, no claim of full suite green."
+    "github_ci": "SOURCE_CI_GREEN 41/41 PASS, privacy CLEAN; no native/model, full suite not run",
+    "full_repo_suite": "NOT RUN by this reviewer; container cannot resolve github.com for clone, existing Run455 full checkout is RED with 70 errors, no claim of full suite green.",
+    "source_run_id": 40284124928,
+    "source_job_id": 121443705667,
+    "raw_artifact_id": 12632769941,
+    "raw_zip_sha256": "475a8ed94b97739d015078e6cdf6df298cfc6b720a5711f68eb9130a646ef522",
+    "tested_source_head": "63b9ee97cfaaebe3f25ad5c1aa18b06482e9acbe"
   },
   "negative_gates": {
     "hx2": "HX2_INVALID",
@@ -45,5 +50,5 @@
     "HarnessData.approve() assumes a trusted human-only caller; authentication/authorization must be proven at the operator boundary before any live enablement.",
     "No native HX5 learning or retention measured; all approval and age gates remain enforced."
   ],
-  "exact_next_command": "Open draft review PR targeting Claude HX2/HX5 branch; inspect raw focused CI and privacy, then record verified findings in PRUEFUNG_GPT_FUER_CLAUDE.md. Continue Run479 native378 utility when the exclusive job closes."
+  "exact_next_command": "Verify post-checkpoint CI and remote bytes; independent review and coordinate with Claude before integration; retain HX2_INVALID/HX5_LOCKED and all canonical negative gates."
 }
