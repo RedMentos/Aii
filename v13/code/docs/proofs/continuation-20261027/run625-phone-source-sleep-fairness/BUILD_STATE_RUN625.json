@@ -1,0 +1,54 @@
+{
+  "run": "Run625",
+  "date_utc": "2026-10-26T23:18:00Z",
+  "owner": "GPT-6 automation; exclusive Run625 workflow/proof files only",
+  "status": "EXACT_CURRENT_SOURCE_ZIP_VERIFIED_PRIVATE_BACKUP",
+  "parent_pr": 619,
+  "parent_head": "7422985fa3fd97e74b58ad635c28f49faf5dadb3",
+  "review_pr": 620,
+  "branch": "codex/automation11-run625-phone-source-sleep-fairness-20261027",
+  "prereg_commit": "16cdc5609e288fb452944afc070d7a8d903e6267",
+  "workflow_commit": "e5523a9c4348b54a2d8a05d0d99cfc52897a2a5f",
+  "report_commit": "6837a78e569fc9c2791096340c8758d31a7e1247",
+  "ci": {
+    "run_id": 40418542048,
+    "checkout_head": "e5523a9c4348b54a2d8a05d0d99cfc52897a2a5f",
+    "conclusion": "success",
+    "pack_exit": 0,
+    "verify_exit": 0,
+    "test_exit": 0,
+    "privacy_exit": 0,
+    "package_tests": "15/15",
+    "extracted_tests": "37/37",
+    "source_file_count": 1328,
+    "zip_sha256": "82ddbc58f67da3b9da613f8b56e85042e8883faf87a264282d23ab0a5505eae9",
+    "zip_bytes": 13665163,
+    "raw_artifact_id": 12696880784,
+    "raw_artifact_sha256": "eac77fedea5eeb99686023045d4790500ad3596b394cf330be2cf266e40e101e",
+    "sha_manifest_entries_verified": 14,
+    "private_library_roundtrip": "PASS"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "source_bindings": {
+    "sleep_offline_blob": "0525bffc887efd91a26a67f94a38f7eab2cdfd0f",
+    "run624_test_blob": "bea79648409efc7d6f23fa02a110a74fa09ea5a7",
+    "operator_blob": "9b928d1cce3dfc1466b564cf20130cb9e7af8706",
+    "packager_blob": "06167e0bcb82b36cb08841cd31b9618c4ba0926e",
+    "verifier_blob": "880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "backup": "Private Library /V13-Checkpoints/2026-10-27/Run625/run625-actions-source-zip-e5523a9-SHA_eac77fed.zip, materialized byte-roundtrip PASS; GitHub PR620 and Actions artifact 12696880784.",
+  "pending": [
+    "Independent review/merge chain Run623->Run624->Run625",
+    "Real Redmi install and sustained phone proof",
+    "Native sparse B1/B2 learning and semantic JEPA utility, STEP2 complementary benefit"
+  ],
+  "next_command": "From newest verified PR620 head, inspect current remote ownership, then implement opt-in Context OS source-valid query-conditioned digest selection with prereg, real SQLite and heldout retrieval baseline; do not change default or promote any gate. Continue subsequent canonical packages."
+}
