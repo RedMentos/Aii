@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/tool-final-attribution.yml'
       - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/broker.py'
       - 'v13/code/tests/test_tool_final_attribution.py'
       - 'v13/code/docs/proofs/continuation-20261026/tool-final-attribution/**'
 permissions:
@@ -32,7 +33,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/TOOL_FINAL_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/tool-final-attribution/PREREG.md)" = 2865c3e56b565bca93a4ac7445b944f15c2ae506
           test "$(git hash-object v13/code/v13/runtime.py)" = 2547807197f5e9f2295cfdb14458f32a0aeb1a31
-          test "$(git hash-object v13/code/tests/test_tool_final_attribution.py)" = 7e0b4f50f6734a07ca734046d8336e7ae993024f
+          test "$(git hash-object v13/code/tests/test_tool_final_attribution.py)" = 11a4119266fc5d43f4f9c0e2894cc3ca4ca6ae62
+          test "$(git hash-object v13/code/v13/broker.py)" = dbd87e5a48a6fee61cf3b80e7a0a39d827872f0a
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/TOOL_FINAL_HOST.txt"
       - name: Source and behavioral unit tests, no models
