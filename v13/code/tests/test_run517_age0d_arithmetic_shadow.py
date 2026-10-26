@@ -126,10 +126,12 @@ class LiveShadowIntegration(unittest.TestCase):
     def test_committed_mismatch_ring_persists_after_runtime_restart(self):
         self.commit("5")
         self.system.late_offer(self.event["event_id"], self.offer, "5")
-        self.assertEqual(len(self.ring()), 1)
+        before = self.ring()
+        self.assertEqual(len(before), 1)
+        self.r.close()  # Release the exclusive Store lock before restart.
         other = Runtime(Path(self.tmp.name))
         try:
-            self.assertEqual(other.store.state(S.ARITH_SHADOW_KEY, [])[0], self.ring())
+            self.assertEqual(other.store.state(S.ARITH_SHADOW_KEY, [])[0], before)
         finally:
             other.close()
 
