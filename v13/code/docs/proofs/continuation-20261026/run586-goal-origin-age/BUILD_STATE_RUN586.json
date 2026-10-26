@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN586_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run586-goal-origin-age-20261026",
+  "base_branch": "codex/automation11-run585-goal-wake-scope-20261026",
+  "base_sha": "f0171ac0e990768bbd3b60c1efe49242f2e50418",
+  "verified_code_head": "b4ff1189930eebbcd30d8ddb51766bdec5609611",
+  "pr": 582,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/582",
+  "prereg_commit": "b0e1e05fa941333417f59c39871b77636b6473f9",
+  "changed_source_blobs": {
+    "v13/code/v13/agi/goals.py": "1e49c1b34ff7f4e086300cbe5e1a56116ce2c9e9",
+    "v13/code/tests/test_run586_goal_origin_age.py": "b4555588a3ea5a1c4a9c6c0b1551e144297be4fd"
+  },
+  "observed_ci": {
+    "run": 40386591473,
+    "job": 121796370884,
+    "head": "b4ff1189930eebbcd30d8ddb51766bdec5609611",
+    "conclusion": "success",
+    "new_tests": "6/6 PASS",
+    "run585_regressions": "6/6 PASS",
+    "test_growth": "24/24 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12681531708,
+    "raw_artifact_sha256": "aa763c1e56526caafcb23500a87f8ea13edf60eb14cec07e88769ada27508564"
+  },
+  "preserved_failed_attempts": [
+    {
+      "run": 40386402561,
+      "head": "e40c948637f1d8946e910e46e7a930d15c467476",
+      "reason": "legacy internal job test omits kind; explicit kind check rejected synthetic direct call",
+      "correction": "missing kind accepted for internal direct call, explicit wrong kind refused; stored origin and Age checks unchanged"
+    }
+  ],
+  "changes": [
+    "Persisted goal origin binds GOAL_WAKE event origin; USER cannot activate SELF/SYSTEM goal",
+    "Independent resume_open_goals Age right checked before activation",
+    "Wrong action/kind rejected; minimal internal direct-hook compatibility retained",
+    "Real scheduler forged USER-origin event counterexample refused"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "additional_readonly_finding": "Original Run573 full unfiltered suite raw ZIP SHA256 28cdb224... independently verified: 4038 tests, 4 FAIL, 65 ERROR, 14 skipped; all 69 terminal exceptions are frozen/live source lineage mismatches (36 Live sources differ, 27 Runtime neither exact frozen nor candidate, 2 Current reviewed source digest changed, 4 exact digest assertions). This is classification, not a suite pass or permission to edit frozen expectations.",
+  "open_questions": [
+    "Independent review and integration of PR581/582 needed",
+    "Unfiltered source suite remains RED; source-frozen historical tests must not be silently excluded or retuned",
+    "Native Body-JEPA and Redmi sustained gates remain open"
+  ],
+  "next_command": "Review PR582 against PR581; continue substantive blueprint work in a new preregistered branch; do not edit frozen native cohorts or promote gates.",
+  "prerequisites": [
+    "No competing native jobs",
+    "Keep model/source/seed hashes and original failed evidence unchanged"
+  ]
+}
