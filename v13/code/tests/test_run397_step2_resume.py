@@ -16,6 +16,8 @@ from tests.test_run396_step2_pilot_audit import make_synthetic, write
 
 
 def synthetic_source(folder):
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
     folder = make_synthetic(folder)
     for arm in resume.r394.ARMS:
         rid = arm + "_s20"
