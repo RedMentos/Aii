@@ -46,7 +46,7 @@ def read_original(path):
         lines = z.read("RUN608_SHA256SUMS.txt").decode().splitlines()
         manifest = {}
         for line in lines:
-            match = re.fullmatch(r"([a-f0-9]{64})  (?:\\./)?(RUN608_[A-Za-z0-9_.-]+)", line)
+            match = re.fullmatch(r"([a-f0-9]{64})  (?:[.]/)?(RUN608_[A-Za-z0-9_.-]+)", line)
             if not match or match.group(2) in manifest:
                 raise ValueError("Original Run608 manifest malformed")
             manifest[match.group(2)] = match.group(1)
