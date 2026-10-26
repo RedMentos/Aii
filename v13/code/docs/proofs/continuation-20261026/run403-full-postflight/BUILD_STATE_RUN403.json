@@ -1,0 +1,56 @@
+{
+  "run": "Run403",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_378_ROW_FULL_POSTFLIGHT_NOT_NATIVE",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run403-step2-full-postflight-20261026",
+  "pr": 398,
+  "base": {
+    "branch": "codex/run402-step2-native-stage-restore-20261026",
+    "sha": "b213c1231373f666d9246584841737cf252ddcfa",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "59d9648e89a664e821faa68d86a42570659a3492",
+  "source_commit": "ce0a36aa3be8ad2d78108aa8becd2566bd4d15a2",
+  "tests_commit": "0be489d150ccda9fa1ca8d06c6a913ffa0300ed9",
+  "workflow_commit": "1c9e93fd66fba25496a0aa82215217ac82d55a06",
+  "proof": {
+    "run": 40251169757,
+    "job": 121343171376,
+    "source_head": "1c9e93fd66fba25496a0aa82215217ac82d55a06",
+    "tests": "70/70 PASS, 8 new full-cohort synthetic",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "artifact": 12620526768,
+    "zip_sha256": "74ca16987f2c1b822e216a96f944e5d2d5b1d5b8073d049eab7faa627dd94cc1",
+    "zip_crc": "PASS",
+    "member_sha": "6/6 PASS",
+    "private_byte_identity": "SHA256 MATCH"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run403_Full_Postflight_20261026/SOURCE_GREEN_RAW.zip",
+  "native_dependency": {
+    "run401_actions": 40250662450,
+    "run401_source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "stage1_artifact": "UNKNOWN_NOT_YET_OBSERVED",
+    "full_cohort_completed": false
+  },
+  "scope": "read-only registered full 378-row structural/paired postflight; tests entirely synthetic",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run401 actual O_s20 job still active at checkpoint",
+    "8 more native arms require serialized staged resume with raw artifacts",
+    "Run402 archive restore must be checked against actual GitHub ZIP layout",
+    "Full 378 native results and preregistered utility gate remain unproven"
+  ],
+  "next_command": "python3 v13/code/scripts/run403_full_postflight.py --work <verified full Run397 work tree with 9 completed attempts> --output <private RUN403_NATIVE_POSTFLIGHT.json>",
+  "next_prerequisites": "Run401 observed artifact ID/digest; Run402 verified restore; no concurrent native owner; all nine exact registered arm/seed receipts; external native provenance"
+}
