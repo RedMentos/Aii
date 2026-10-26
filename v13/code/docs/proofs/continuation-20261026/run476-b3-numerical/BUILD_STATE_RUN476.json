@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN476_B3_NUMERICAL_INTEGRITY_CANDIDATE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run476-b3-numerical-integrity-20261026",
+  "base_ref": "codex/run474-b3-bridge-geometry-20261026",
+  "base_commit_at_branch_creation": "99f2de76f3076ce8d132170cc62a0b05471caf73",
+  "owner": "Run476 isolated source-only B3 verifier candidate; no native/model owner",
+  "source_files": {
+    "v13/code/scripts/run471_bridge_key_candidate.py": "d41f2d3021e1e52eba12fd25449b2c28fa989170",
+    "v13/code/tests/test_run471_bridge_key_candidate.py": "c042a96d3c4054c7b28dac010ae6a977e2cd0587"
+  },
+  "finding": "A self-consistent NPZ/manifest digest can attest nonfinite weights, zero input scale or an unlisted tensor; a forged enormous geometry or compressed NPZ can allocate before the prior verifier rejects it.",
+  "changes": [
+    "Bound manifest and compressed NPZ sizes, declared geometry and Age-0 BF16 budget before Bridge.load.",
+    "Require exact NPZ inventory and bounded total uncompressed member bytes.",
+    "Require all loaded tensors to be finite floating arrays and positive input/calibration scales."
+  ],
+  "tests_added": [
+    "self-consistent NaN Q",
+    "self-consistent zero input standard deviation",
+    "infinite calibrated OOD threshold",
+    "huge forged manifest d before allocation",
+    "unlisted NPZ member",
+    "small compressed archive with oversized uncompressed tensor",
+    "reverse forged calibrated=false with real calibration tensors"
+  ],
+  "tests_status": "GITHUB_CI_SOURCE_GREEN: 36/36 PASS, privacy CLEAN; focused source-bound proofs GREEN; source/synthetic Linux only",
+  "source_scope": "Candidate only. Production b3bridge.py/bodyport.py and native STEP2 cohort untouched.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Candidate still lacks hostile-concurrent-rename/TOCTOU guarantees.",
+    "Independent review and production migration/native B3 L1/retention proofs required before integration.",
+    "Exact original native378 STEP2 utility acceptance still separate; no gate promotion."
+  ],
+  "next_command": "Independent reviewer: inspect PR #474 source and original RED 40280456173, confirm source CI 40280563194 and focused CI 40280563304; do not merge into frozen production BodyPort before explicit migration and native B3 L1/retention. Continue independent blueprint package.",
+  "remote_checkpoint_verified": true,
+  "failed_attempts": [
+    {
+      "run_id": 40280456173,
+      "conclusion": "failure",
+      "test": "test_forged_calibration_flag_refused",
+      "cause": "New NPZ inventory check ran before existing BRIDGE_CALIBRATION_FLAG_MISMATCH check; old regression expected precise refusal",
+      "raw_artifact_id": 12632187087,
+      "raw_zip_sha256": "261cc251ef28e403f14ab54c768aa00af67ebe22f1979f4cffa14f4a5e86da08",
+      "privacy": "CLEAN",
+      "repair": "Check calibrated flag against archive calibration members before exact inventory; add reverse regression"
+    }
+  ],
+  "verified_ci": {
+    "source_run_id": 40280563194,
+    "source_job_id": 121432702054,
+    "source_conclusion": "success",
+    "tests": "36/36 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12631024286,
+    "raw_zip_sha256": "3c3c57f10b7910a8f0f2f67b444af909f411183976b47ea52b04c371d9a15925",
+    "focused_run_id": 40280563304,
+    "focused_job_id": 121432898379,
+    "focused_conclusion": "success",
+    "focused_artifact_id": 12631289968,
+    "focused_artifact_sha256": "3df67045fa0567a16b5871475f006b434e6db98607d3033958b839b058f600bc",
+    "tested_source_head": "bfb138bd6b39df96e0569b2bf06cc2028cf72751",
+    "claim_limit": "Source/synthetic/Linux CI only; no B3 native or Redmi"
+  },
+  "pr": 474
+}
