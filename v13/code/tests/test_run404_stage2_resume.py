@@ -41,6 +41,19 @@ class Run404Stage2Tests(unittest.TestCase):
                     "attempts/O_s20/attempt-0001/RUN397_ATTEMPT.json"):
             self.assertEqual((original / rel).read_bytes(), (self.work / rel).read_bytes())
 
+    def test_stage1_reuse_checks_executable_hash_not_release_archive_hash(self):
+        # The runner catalog SHA is the release archive, not the extracted
+        # executable whose bytes the frozen Run401 receipt actually records.
+        from v13.models import catalog
+        import run402_stage_restore as frozen_restore
+        archive_sha = catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+        self.assertNotEqual(archive_sha, frozen_restore.RUN401_EXECUTABLE_SHA256)
+        with patch.object(resume, "previous_success", wraps=resume.previous_success) as checked:
+            report = stage.stage2(self.archive, self.sha, self.work)
+        self.assertEqual(report["status"], "STAGE2_READY_NO_NATIVE", report["errors"])
+        self.assertEqual(checked.call_args.kwargs["current_runner_sha"],
+                         frozen_restore.RUN401_EXECUTABLE_SHA256)
+
     def test_wrong_sha_fails_before_creating_destination(self):
         r = stage.stage2(self.archive, "0" * 64, self.work)
         self.assertEqual(r["status"], "STAGE2_RED_PRESERVED")

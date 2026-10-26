@@ -8,7 +8,6 @@ import run394_step2_fresh as r394
 import run397_step2_resume as resume
 import run402_stage_restore as restore
 from run396_step2_pilot_audit import load, sha
-from v13.models import catalog
 
 
 def require(ok, reason):
@@ -32,7 +31,7 @@ def stage2(archive, expected_sha, work, installed=None, execute=False):
                 "STAGE1_ARCHIVE_NOT_VERIFIED:" + ";".join(restored.get("errors", [])))
         work = Path(work)
         manifest = load(work / "RUN394_PREREGISTERED_FIXTURES.json")
-        runner_sha = catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+        runner_sha = restore.RUN401_EXECUTABLE_SHA256
         first, failed = resume.previous_success(work, "O", 20, r394.FIXTURES,
                                                 manifest, current_runner_sha=runner_sha)
         require(first is not None and not failed and first["validated"]["rows"] == 42,
