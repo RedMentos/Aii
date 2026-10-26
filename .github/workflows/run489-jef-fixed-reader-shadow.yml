@@ -1,0 +1,123 @@
+name: V13 Run489 JEF fixed-reader shadow native378 replay
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run489-jef-fixed-reader-shadow.yml'
+      - 'v13/code/scripts/run489_jef_fixed_reader_shadow.py'
+      - 'v13/code/tests/test_run489_jef_fixed_reader_shadow.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  shadow:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run489-jef-fixed-reader-shadow-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin predeclared shadow reader and original frozen source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run489-jef-fixed-reader/PREREG.md)" = 'b80dbdb41c1e27922693a6b25200ff474bc7af8d'
+          test "$(git hash-object v13/code/scripts/run489_jef_fixed_reader_shadow.py)" = '8d766160bb8e7e99a6621d67fd0516b1be6c085f'
+          test "$(git hash-object v13/code/tests/test_run489_jef_fixed_reader_shadow.py)" = 'a3e0af76346e7d800a7a45a845c1aa09cf8168a0'
+          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = '1778752f4a92de660a48a3c208134ef601bcbb9f'
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = 'fae7aed612108a554d8566b2917ebf31022df423'
+          test "$(git hash-object v13/code/scripts/run488_native378_independent_rescore.py)" = 'abe4f57edf8b5995298824894dc0199fa539fcc4'
+          gh api repos/RedMentos/Aii/actions/artifacts/12633269066 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN489_ORIGINAL_META.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          m=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN489_ORIGINAL_META.json').read_text())
+          assert m=={'id':12633269066,'digest':'sha256:a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe','expired':False}
+          PY
+      - name: Deterministic JEF source and role-drop unit tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s v13/code/tests -p 'test_run489_jef_fixed_reader_shadow.py' -v > "$RUNNER_TEMP/RUN489_UNIT_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/run489_jef_fixed_reader_shadow.py
+      - name: Download original unchanged native safe ZIP
+        id: download
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12633269066/zip' -o "$RUNNER_TEMP/run489-original-safe378.zip"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe  $RUNNER_TEMP/run489-original-safe378.zip" | sha256sum -c - > "$RUNNER_TEMP/RUN489_SAFE_SHA.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN489_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Shadow-replay original native B1/B2 verified quotes through JEF
+        id: replay
+        if: steps.download.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/run489_jef_fixed_reader_shadow.py "$RUNNER_TEMP/run489-original-safe378.zip" > "$RUNNER_TEMP/RUN489_SHADOW.json" 2> "$RUNNER_TEMP/RUN489_SHADOW_RAW.log"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN489_ASSERT_RAW.log" 2>&1
+          import json,math,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN489_SHADOW.json').read_text())
+          assert d['status']=='FIXED_JEF_SHADOW_REPLAY_DIAGNOSTIC_ONLY' and d['rows']==378
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          assert set(d['summary'])=={'O','P','S'}
+          for arm in 'OPS':
+            assert len(d['summary'][arm])==7
+            for metrics in d['summary'][arm].values():
+              assert 0<=metrics['mean_utility']<=1
+              assert all(0<=metrics[k]<=18 for k in ('exact','wrong_committed','unknown','unsupported'))
+            assert set(d['both_exact_role_ablations'][arm])=={'without_B1','without_B2'}
+          print('RUN489_FIXED_JEF_SHADOW_378_REPLAY_COMPLETE_NO_GATE_PROMOTION')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN489_REPLAY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN489_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN489_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN489_*' ! -name RUN489_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN489_SHA256SUMS.txt
+      - name: Preserve raw logs and results even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run489-jef-fixed-reader-shadow-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN489_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce shadow replay and privacy
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN489_REPLAY_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN489_REPLAY_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN489_PRIVACY_EXIT.txt")" = '0'
