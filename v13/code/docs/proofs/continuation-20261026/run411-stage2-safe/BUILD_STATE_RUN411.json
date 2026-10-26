@@ -1,0 +1,51 @@
+{
+  "run": "Run411",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_STAGE2_NOT_NATIVE_EXECUTED",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run411-stage2-safe-resume-20261026",
+  "pr": 406,
+  "merge": {
+    "sha": "4b53666966cf5407d32cc60689846536726080fc",
+    "parents": [
+      "cc67f49a88a6242bca9dc3efb111700bf00a3658",
+      "8104688000d0eef28ea97b64b4a49cf61a8d6136"
+    ],
+    "tree": "3b682b21d1972380b69cb90b88f394a18d23404e",
+    "force_push": false
+  },
+  "plan_commit": "acbc82cd04e5f2d7601e58e4014883833755629c",
+  "source_commit": "2ad26e1b9e3b7b77aa90a5e60b8f126f7606bf86",
+  "tests_commit": "0111452ca9faa49e7a6e84f37aa51eebfaf8f403",
+  "workflow_commit": "d9bf22792f0b3b8ddd2f338ea0a8dd8689abc69d",
+  "green": {
+    "run": 40254090347,
+    "job": 121352094233,
+    "artifact": 12621921340,
+    "artifact_sha256": "463da9bc5cfb1560b6f4ca34c66050fdbf25e141a50744c6a1ed0ab3f2b9af52",
+    "tests": "108/108 PASS",
+    "privacy": "CLEAN",
+    "compileall": "PASS"
+  },
+  "actual_run401": {
+    "artifact": 12620379581,
+    "sha256": "65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a",
+    "run410_audit": "IN_PROGRESS",
+    "native_stage2": "NOT_RUN"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "full V13 not complete"
+  ],
+  "open_questions": [
+    "Run410 actual 1.46GB ZIP full SHA/CRC/receipt proof pending",
+    "Potential Run402 runner tarball SHA vs actual executable SHA mismatch requires exact observed RED and fix",
+    "No native P_s20 until Run410 actual GREEN and safe exporter integrated into workflow"
+  ],
+  "next_command": "Inspect Run410 Actions 40253913089; if RED runner identity, bind actual executable SHA observed in Run401 installed log (79e312...), add adversarial tests, rerun actual audit; only then opt-in Run411 native stage2 with safe export.",
+  "next_prerequisites": "Run410 actual GREEN, pinned installed models and runner, exclusive native owner, no-model artifact export"
+}
