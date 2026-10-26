@@ -93,6 +93,19 @@ class B2OfferCollectorSource(unittest.TestCase):
             collector.collect_verified_quote_records(
                 bad, FakeStore("Budget 117 euros."), fixture, mapping)
 
+    def test_base_arm_cannot_inherit_standing_body_question(self):
+        with patch("v13.config.initialize", return_value={
+            "body_question_b1": "INJECTED",
+            "body_question_b2": "INJECTED",
+            "learning_mode": "ACTIVE",
+        }):
+            cfg = collector.native_config(Path("/unused"), 41)
+        self.assertEqual(cfg["body_question_b1"], "")
+        self.assertEqual(cfg["body_question_b2"], "")
+        self.assertEqual(cfg["learning_mode"], "RECORD_ONLY")
+        self.assertFalse(cfg["teacher_enabled"])
+        self.assertEqual(cfg["seed"], 41)
+
     def test_source_only_cli_refuses_overwrite_and_native_without_home(self):
         with tempfile.TemporaryDirectory() as tmp:
             work = Path(tmp)
