@@ -1,0 +1,42 @@
+{
+  "schema": "V13_RUN510_QUOTE_METRIC_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run510-b2-quote-metric-source-20261026",
+  "base_branch": "codex/run509-b2-rule-quote-prereg-20261026",
+  "base_sha": "01aca91015409c9178b05d02a10438bc2a776747",
+  "status": "SOURCE_STAGED_CI_PENDING",
+  "scope": {
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "synthetic_rows_for_test": 60,
+    "native_rows_run510": 0,
+    "primary_paired_rows": 24,
+    "threshold_gain_rows": 6
+  },
+  "source": {
+    "prereg_blob": "723238b5bc72996a261649419423c05dec91958e",
+    "script_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6",
+    "test_blob": "a57a8da6121a2620c62d2866da16a766eae3a7c6",
+    "run509_blob": "ec8860d2333bd3c4a16caccb9537073a310f32da"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Source-only strict quote metric staged; native provenance deliberately not claimed",
+    "No model calls or changes to frozen Run509/Run491",
+    "Run507 owns separate active native A_s31 job"
+  ],
+  "blockers": [
+    "Run510 source-only CI pending",
+    "Run509 B2 offer native collector not yet implemented",
+    "Run507 native active",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run510 against Run509, verify source-only CI synthetic 60-row metric, private backup; independently audit Run507 native on completion. Next implement actual native quote collector with source refs under separate prereg and owner check.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
