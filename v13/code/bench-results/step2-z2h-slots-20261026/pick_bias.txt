@@ -1,0 +1,5 @@
+Exploratory diagnosis after the preregistered verdict (not preregistered):
+B2 picked ids per offer (all B2 offers, 3 seeds): P2 150 offers, 253 ids, 120 of them ids 1-3 (current task sentences), 41 offers pick exactly 1..n
+P4 150 offers, 352 ids, 167 ids 1-3, 56 offers pick exactly 1..n.
+REVISED/TWICE P4 quotes by kind (178 picked sentences): current task 88, data sheet 42, kickoff 39, revision note 9.
+both_exact REVISED/TWICE rows where B2 quotes carry all current rules: P2 0/15, P4 1/15.

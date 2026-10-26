@@ -1,0 +1,1418 @@
+{
+  "run": "CQP_s26",
+  "arm": "CQP",
+  "seed": 26,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 26,
+    "b2_quote_select": "pointer",
+    "b2_context_chars": 1536
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.6083333333333333,
+      "b2_only": 0.24166666666666664,
+      "both_control": 0.5583333333333333,
+      "both_exact": 0.6083333333333333,
+      "both_none": 0.5916666666666667,
+      "prompt_only_dual": 0.6083333333333333,
+      "same_policy_dual": 0.6166666666666667
+    },
+    "best_solo": 0.6083333333333333,
+    "gain_over_best_solo": {
+      "both_none": -0.016666666666666607,
+      "both_exact": 0.0,
+      "both_control": -0.04999999999999993
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5166666666666667,
+      "b2_only": 0.13333333333333333,
+      "both_control": 0.475,
+      "both_exact": 0.575,
+      "both_none": 0.45,
+      "prompt_only_dual": 0.5,
+      "same_policy_dual": 0.5
+    },
+    "best_solo": 0.5166666666666667,
+    "gain_over_best_solo": {
+      "both_none": -0.06666666666666671,
+      "both_exact": 0.05833333333333324,
+      "both_control": -0.04166666666666674
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.5166666666666667,
+      "exact_fixtures": []
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.13333333333333333,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 1,
+      "unknown": 9,
+      "mean_utility": 0.475,
+      "exact_fixtures": []
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 6,
+      "unknown": 4,
+      "mean_utility": 0.575,
+      "exact_fixtures": []
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 1,
+      "unknown": 9,
+      "mean_utility": 0.45,
+      "exact_fixtures": []
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.5,
+      "exact_fixtures": []
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.5,
+      "exact_fixtures": []
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 1.0
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.26666666666666666
+    },
+    "both_control": {
+      "rule_fields_correct": 0.06,
+      "option_fields_correct": 0.9
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.26,
+      "option_fields_correct": 0.9333333333333333
+    },
+    "both_none": {
+      "rule_fields_correct": 0.06,
+      "option_fields_correct": 0.85
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 1.0
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 1.0
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10
+    },
+    "b2_only": {
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 0,
+    "both_exact": 0,
+    "both_control": 0,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 0
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Kochab:b1_only": 0.5,
+    "Kochab:b2_only": 0.08333333333333333,
+    "Kochab:both_none": 0.5,
+    "Kochab:both_exact": 0.5,
+    "Kochab:both_control": 0.5,
+    "Kochab:same_policy_dual": 0.5,
+    "Kochab:prompt_only_dual": 0.5,
+    "Lesath:b1_only": 0.5833333333333334,
+    "Lesath:b2_only": 0.0,
+    "Lesath:both_none": 0.5,
+    "Lesath:both_exact": 0.5,
+    "Lesath:both_control": 0.5,
+    "Lesath:same_policy_dual": 0.5,
+    "Lesath:prompt_only_dual": 0.5,
+    "Merak:b1_only": 0.5,
+    "Merak:b2_only": 0.25,
+    "Merak:both_none": 0.16666666666666666,
+    "Merak:both_exact": 0.16666666666666666,
+    "Merak:both_control": 0.16666666666666666,
+    "Merak:same_policy_dual": 0.5,
+    "Merak:prompt_only_dual": 0.5,
+    "Nunki:b1_only": 0.5,
+    "Nunki:b2_only": 0.16666666666666666,
+    "Nunki:both_none": 0.5,
+    "Nunki:both_exact": 0.75,
+    "Nunki:both_control": 0.4166666666666667,
+    "Nunki:same_policy_dual": 0.5,
+    "Nunki:prompt_only_dual": 0.5,
+    "Phact:b1_only": 0.5,
+    "Phact:b2_only": 0.16666666666666666,
+    "Phact:both_none": 0.75,
+    "Phact:both_exact": 0.75,
+    "Phact:both_control": 0.75,
+    "Phact:same_policy_dual": 0.5,
+    "Phact:prompt_only_dual": 0.5,
+    "Rigel:b1_only": 0.5,
+    "Rigel:b2_only": 0.25,
+    "Rigel:both_none": 0.5,
+    "Rigel:both_exact": 0.75,
+    "Rigel:both_control": 0.5,
+    "Rigel:same_policy_dual": 0.5,
+    "Rigel:prompt_only_dual": 0.5,
+    "Sabik:b1_only": 0.5,
+    "Sabik:b2_only": 0.16666666666666666,
+    "Sabik:both_none": 0.16666666666666666,
+    "Sabik:both_exact": 0.5833333333333334,
+    "Sabik:both_control": 0.4166666666666667,
+    "Sabik:same_policy_dual": 0.5,
+    "Sabik:prompt_only_dual": 0.5,
+    "Tarazed:b1_only": 0.5,
+    "Tarazed:b2_only": 0.08333333333333333,
+    "Tarazed:both_none": 0.5,
+    "Tarazed:both_exact": 0.75,
+    "Tarazed:both_control": 0.5,
+    "Tarazed:same_policy_dual": 0.5,
+    "Tarazed:prompt_only_dual": 0.5,
+    "Unuk:b1_only": 0.5,
+    "Unuk:b2_only": 0.08333333333333333,
+    "Unuk:both_none": 0.4166666666666667,
+    "Unuk:both_exact": 0.5,
+    "Unuk:both_control": 0.5,
+    "Unuk:same_policy_dual": 0.5,
+    "Unuk:prompt_only_dual": 0.5,
+    "Vega:b1_only": 0.5833333333333334,
+    "Vega:b2_only": 0.08333333333333333,
+    "Vega:both_none": 0.5,
+    "Vega:both_exact": 0.5,
+    "Vega:both_control": 0.5,
+    "Vega:same_policy_dual": 0.5,
+    "Vega:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2e": {
+    "b2_quote_select": "pointer",
+    "b2_rule_rows": {
+      "Kochab:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Kochab:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Kochab:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Kochab:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Lesath:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lesath:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Lesath:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Lesath:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Merak:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Merak:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Merak:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Merak:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Nunki:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Nunki:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nunki:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Nunki:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Phact:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Phact:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Phact:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Phact:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rigel:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Rigel:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Rigel:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Rigel:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Sabik:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sabik:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sabik:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Sabik:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Tarazed:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Tarazed:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Tarazed:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Tarazed:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Unuk:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Unuk:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Unuk:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Unuk:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vega:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vega:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vega:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Vega:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      }
+    },
+    "b2_rule_rate": 0.0,
+    "superseded_quoted_rows": 15,
+    "invented_value_rows": 0,
+    "picked_ids": 86,
+    "wrong_committed_tool": 8,
+    "wrong_committed_rows": [
+      {
+        "fixture": "Lesath",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "both_exact",
+        "action": "A"
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "both_exact",
+        "action": "NONE"
+      }
+    ],
+    "b2_prompt_tokens": [
+      942,
+      943,
+      984,
+      953,
+      558,
+      937,
+      934,
+      984,
+      945,
+      554,
+      930,
+      931,
+      977,
+      943,
+      557,
+      938,
+      940,
+      990,
+      945,
+      555,
+      936,
+      934,
+      981,
+      945,
+      554,
+      941,
+      941,
+      989,
+      952,
+      559,
+      1053,
+      1052,
+      1101,
+      1060,
+      552,
+      1068,
+      1067,
+      1114,
+      1080,
+      559,
+      934,
+      932,
+      976,
+      943,
+      556,
+      917,
+      917,
+      967,
+      928,
+      547
+    ],
+    "source_sha256": {
+      "scripts/step2_z2e_pointer_hard.py": "11a14d1c919c8379ee90886454e42634cd5d8211384f48ea03e6f35a5cb1fc7b",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2_timescale.py": "0139eb7edd060fc11d3e239c1e84d5293fa10b4b75b0223285a8d5509d7de032",
+      "v13/cognition.py": "1fe06d21a6d8154cbe47d8bad3455eae5d0a815d60632e72feab4f8d767ec8c8"
+    }
+  },
+  "z2g": {
+    "b2_context_chars": 1536,
+    "validity": {
+      "offers": 40,
+      "kickoff_in_context": 40
+    },
+    "pairs": [
+      {
+        "fixture": "Kochab",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Kochab",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Lesath",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Merak",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Nunki",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Phact",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Phact",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Phact",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Phact",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Phact",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "b1_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "b2_only",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "both_none",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "both_exact",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "A",
+        "off": "A",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "local_only:superseded"
+        ]
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "both_control",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "same_policy_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Rigel",
+        "variant": "prompt_only_dual",
+        "type": "REVISED",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "B",
+        "off": "B",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "budget:superseded"
+        ]
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Sabik",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "b1_only",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "b2_only",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "both_none",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "both_exact",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "NONE",
+        "off": "NONE",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": [
+          "deadline:superseded"
+        ]
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "both_control",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "same_policy_dual",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Tarazed",
+        "variant": "prompt_only_dual",
+        "type": "TWICE",
+        "oracle": "B",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Unuk",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "NONE",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "b1_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "b2_only",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "both_none",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "both_exact",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "both_control",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "same_policy_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      },
+      {
+        "fixture": "Vega",
+        "variant": "prompt_only_dual",
+        "type": "CONFIRM",
+        "oracle": "A",
+        "recorded": "UNKNOWN",
+        "off": "UNKNOWN",
+        "on": "UNKNOWN",
+        "extracted": true,
+        "superseded_rejections": []
+      }
+    ],
+    "consistent": true,
+    "off": {
+      "exact": 0,
+      "wrong": 8,
+      "unknown": 62,
+      "rows": 70
+    },
+    "on": {
+      "exact": 0,
+      "wrong": 0,
+      "unknown": 70,
+      "rows": 70
+    },
+    "source_sha256": {
+      "scripts/step2_z2g_recency.py": "71ec85826f1bb45846073e749370e95bf9f2522c06382117731bbd1963c5cb4f",
+      "v13/agi/eligibility.py": "2ca4edaa574c896da01159335c14f12b8490317bf0ee53b4af57756400bd5202"
+    }
+  }
+}

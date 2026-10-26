@@ -1,0 +1,2174 @@
+{"run_start": "A4_s32"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.3333333333333333,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.25,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.3333333333333333,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "E4_s32"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "N4_s32"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "A4_s33"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.08333333333333333,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "E4_s33"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.8333333333333334,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":1.0,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "N4_s33"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "A4_s34"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.25,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.3333333333333333,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.25,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"run_start": "E4_s34"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.25,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":1.0,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":1.0,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"run_start": "N4_s34"}
+{"starting":"Hamal","variant":"b1_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Hamal","variant":"b2_only"}
+{"finished":"Hamal","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Hamal","variant":"both_none"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Hamal","variant":"both_exact"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Hamal","variant":"both_control"}
+{"finished":"Hamal","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Hamal","variant":"same_policy_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Hamal","variant":"prompt_only_dual"}
+{"finished":"Hamal","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Keid","variant":"b1_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Keid","variant":"b2_only"}
+{"finished":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Keid","variant":"both_none"}
+{"finished":"Keid","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"starting":"Keid","variant":"both_exact"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Keid","variant":"both_control"}
+{"finished":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Keid","variant":"same_policy_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Keid","variant":"prompt_only_dual"}
+{"finished":"Keid","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Mebsuta","variant":"b1_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Mebsuta","variant":"b2_only"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Mebsuta","variant":"both_none"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Mebsuta","variant":"both_exact"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Mebsuta","variant":"both_control"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Mebsuta","variant":"same_policy_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Mebsuta","variant":"prompt_only_dual"}
+{"finished":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Nashira","variant":"b1_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Nashira","variant":"b2_only"}
+{"finished":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Nashira","variant":"both_none"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Nashira","variant":"both_exact"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Nashira","variant":"both_control"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Nashira","variant":"same_policy_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Nashira","variant":"prompt_only_dual"}
+{"finished":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"starting":"Okab","variant":"b1_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Okab","variant":"b2_only"}
+{"finished":"Okab","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Okab","variant":"both_none"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Okab","variant":"both_exact"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Okab","variant":"both_control"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Okab","variant":"same_policy_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Okab","variant":"prompt_only_dual"}
+{"finished":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Pollux","variant":"b1_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Pollux","variant":"b2_only"}
+{"finished":"Pollux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Pollux","variant":"both_none"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Pollux","variant":"both_exact"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Pollux","variant":"both_control"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Pollux","variant":"same_policy_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Pollux","variant":"prompt_only_dual"}
+{"finished":"Pollux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Rasalas","variant":"b1_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Rasalas","variant":"b2_only"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Rasalas","variant":"both_none"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Rasalas","variant":"both_exact"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Rasalas","variant":"both_control"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Rasalas","variant":"same_policy_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Rasalas","variant":"prompt_only_dual"}
+{"finished":"Rasalas","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Sadr","variant":"b1_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"starting":"Sadr","variant":"b2_only"}
+{"finished":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Sadr","variant":"both_none"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Sadr","variant":"both_exact"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Sadr","variant":"both_control"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Sadr","variant":"same_policy_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Sadr","variant":"prompt_only_dual"}
+{"finished":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Tureis","variant":"b1_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Tureis","variant":"b2_only"}
+{"finished":"Tureis","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Tureis","variant":"both_none"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Tureis","variant":"both_exact"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Tureis","variant":"both_control"}
+{"finished":"Tureis","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Tureis","variant":"same_policy_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.75,"variant":"same_policy_dual"}
+{"starting":"Tureis","variant":"prompt_only_dual"}
+{"finished":"Tureis","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Wasat","variant":"b1_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Wasat","variant":"b2_only"}
+{"finished":"Wasat","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Wasat","variant":"both_none"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Wasat","variant":"both_exact"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Wasat","variant":"both_control"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Wasat","variant":"same_policy_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Wasat","variant":"prompt_only_dual"}
+{"finished":"Wasat","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Hamal","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Keid","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Keid","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Mebsuta","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Nashira","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Okab","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Okab","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"b1_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Pollux","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Rasalas","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Sadr","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Tureis","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wasat","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{
+ "status": "Z2I_CHOICES_HELP",
+ "best_candidate": "N4",
+ "structural": true,
+ "consistent": true,
+ "current_picked_in_candidates": {
+  "E4": 0,
+  "N4": 0
+ },
+ "validity": {
+  "kickoff_in_context_share": {
+   "A4": 1.0,
+   "E4": 1.0,
+   "N4": 1.0
+  },
+  "required": 0.9
+ },
+ "wrong_guard_on": {
+  "A4": 0,
+  "E4": 0,
+  "N4": 0
+ },
+ "vs_control": {
+  "E4": {
+   "rule_rate_minus_control": {
+    "mean": 0.025000000000000012,
+    "ci95": [
+     -0.0833333333333333,
+     0.16666666666666669
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_minus_control": {
+    "mean": 0.03333333333333333,
+    "ci95": [
+     0.0,
+     0.1
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_guarded_exact": {
+    "E4": 4,
+    "A4": 3
+   },
+   "helps": false,
+   "rate_only": false
+  },
+  "N4": {
+   "rule_rate_minus_control": {
+    "mean": 0.2666666666666667,
+    "ci95": [
+     0.11645833333333351,
+     0.4416666666666667
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_minus_control": {
+    "mean": 0.03333333333333333,
+    "ci95": [
+     0.0,
+     0.1
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_guarded_exact": {
+    "N4": 4,
+    "A4": 3
+   },
+   "helps": true,
+   "rate_only": false
+  }
+ },
+ "b2_rule_rate": {
+  "A4": 0.125,
+  "E4": 0.15,
+  "N4": 0.39166666666666666
+ },
+ "all_rows": {
+  "A4": {
+   "off": {
+    "exact": 7,
+    "wrong": 11,
+    "unknown": 192,
+    "rows": 210
+   },
+   "on": {
+    "exact": 7,
+    "wrong": 0,
+    "unknown": 203,
+    "rows": 210
+   }
+  },
+  "E4": {
+   "off": {
+    "exact": 12,
+    "wrong": 18,
+    "unknown": 180,
+    "rows": 210
+   },
+   "on": {
+    "exact": 12,
+    "wrong": 0,
+    "unknown": 198,
+    "rows": 210
+   }
+  },
+  "N4": {
+   "off": {
+    "exact": 14,
+    "wrong": 43,
+    "unknown": 153,
+    "rows": 210
+   },
+   "on": {
+    "exact": 14,
+    "wrong": 0,
+    "unknown": 196,
+    "rows": 210
+   }
+  }
+ },
+ "by_type": {
+  "A4": {
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 7,
+     "unknown": 98,
+     "rows": 105
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 105,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 4,
+     "unknown": 38,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exact": 1,
+     "wrong": 0,
+     "unknown": 20,
+     "rows": 21
+    },
+    "on": {
+     "exact": 1,
+     "wrong": 0,
+     "unknown": 20,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 6,
+     "wrong": 0,
+     "unknown": 36,
+     "rows": 42
+    },
+    "on": {
+     "exact": 6,
+     "wrong": 0,
+     "unknown": 36,
+     "rows": 42
+    }
+   }
+  },
+  "E4": {
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 16,
+     "unknown": 89,
+     "rows": 105
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 105,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 2,
+     "unknown": 40,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 17,
+     "rows": 21
+    },
+    "on": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 17,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 8,
+     "wrong": 0,
+     "unknown": 34,
+     "rows": 42
+    },
+    "on": {
+     "exact": 8,
+     "wrong": 0,
+     "unknown": 34,
+     "rows": 42
+    }
+   }
+  },
+  "N4": {
+   "REVISED": {
+    "off": {
+     "exact": 1,
+     "wrong": 33,
+     "unknown": 71,
+     "rows": 105
+    },
+    "on": {
+     "exact": 1,
+     "wrong": 0,
+     "unknown": 104,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 10,
+     "unknown": 32,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exact": 3,
+     

@@ -1,0 +1,506 @@
+{
+  "gate": {
+    "status": "Z2I_CHOICES_HELP",
+    "best_candidate": "N4",
+    "structural": true,
+    "consistent": true,
+    "current_picked_in_candidates": {
+      "E4": 0,
+      "N4": 0
+    },
+    "validity": {
+      "kickoff_in_context_share": {
+        "A4": 1.0,
+        "E4": 1.0,
+        "N4": 1.0
+      },
+      "required": 0.9
+    },
+    "wrong_guard_on": {
+      "A4": 0,
+      "E4": 0,
+      "N4": 0
+    },
+    "vs_control": {
+      "E4": {
+        "rule_rate_minus_control": {
+          "mean": 0.025000000000000012,
+          "ci95": [
+            -0.0833333333333333,
+            0.16666666666666669
+          ],
+          "episodes": 10,
+          "seeds": 1
+        },
+        "both_exact_minus_control": {
+          "mean": 0.03333333333333333,
+          "ci95": [
+            0.0,
+            0.1
+          ],
+          "episodes": 10,
+          "seeds": 1
+        },
+        "both_exact_guarded_exact": {
+          "E4": 4,
+          "A4": 3
+        },
+        "helps": false,
+        "rate_only": false
+      },
+      "N4": {
+        "rule_rate_minus_control": {
+          "mean": 0.2666666666666667,
+          "ci95": [
+            0.11645833333333351,
+            0.4416666666666667
+          ],
+          "episodes": 10,
+          "seeds": 1
+        },
+        "both_exact_minus_control": {
+          "mean": 0.03333333333333333,
+          "ci95": [
+            0.0,
+            0.1
+          ],
+          "episodes": 10,
+          "seeds": 1
+        },
+        "both_exact_guarded_exact": {
+          "N4": 4,
+          "A4": 3
+        },
+        "helps": true,
+        "rate_only": false
+      }
+    },
+    "b2_rule_rate": {
+      "A4": 0.125,
+      "E4": 0.15,
+      "N4": 0.39166666666666666
+    },
+    "all_rows": {
+      "A4": {
+        "off": {
+          "exact": 7,
+          "wrong": 11,
+          "unknown": 192,
+          "rows": 210
+        },
+        "on": {
+          "exact": 7,
+          "wrong": 0,
+          "unknown": 203,
+          "rows": 210
+        }
+      },
+      "E4": {
+        "off": {
+          "exact": 12,
+          "wrong": 18,
+          "unknown": 180,
+          "rows": 210
+        },
+        "on": {
+          "exact": 12,
+          "wrong": 0,
+          "unknown": 198,
+          "rows": 210
+        }
+      },
+      "N4": {
+        "off": {
+          "exact": 14,
+          "wrong": 43,
+          "unknown": 153,
+          "rows": 210
+        },
+        "on": {
+          "exact": 14,
+          "wrong": 0,
+          "unknown": 196,
+          "rows": 210
+        }
+      }
+    },
+    "by_type": {
+      "A4": {
+        "REVISED": {
+          "off": {
+            "exact": 0,
+            "wrong": 7,
+            "unknown": 98,
+            "rows": 105
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 105,
+            "rows": 105
+          }
+        },
+        "TWICE": {
+          "off": {
+            "exact": 0,
+            "wrong": 4,
+            "unknown": 38,
+            "rows": 42
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 42,
+            "rows": 42
+          }
+        },
+        "LONG": {
+          "off": {
+            "exact": 1,
+            "wrong": 0,
+            "unknown": 20,
+            "rows": 21
+          },
+          "on": {
+            "exact": 1,
+            "wrong": 0,
+            "unknown": 20,
+            "rows": 21
+          }
+        },
+        "CONFIRM": {
+          "off": {
+            "exact": 6,
+            "wrong": 0,
+            "unknown": 36,
+            "rows": 42
+          },
+          "on": {
+            "exact": 6,
+            "wrong": 0,
+            "unknown": 36,
+            "rows": 42
+          }
+        }
+      },
+      "E4": {
+        "REVISED": {
+          "off": {
+            "exact": 0,
+            "wrong": 16,
+            "unknown": 89,
+            "rows": 105
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 105,
+            "rows": 105
+          }
+        },
+        "TWICE": {
+          "off": {
+            "exact": 0,
+            "wrong": 2,
+            "unknown": 40,
+            "rows": 42
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 42,
+            "rows": 42
+          }
+        },
+        "LONG": {
+          "off": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 17,
+            "rows": 21
+          },
+          "on": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 17,
+            "rows": 21
+          }
+        },
+        "CONFIRM": {
+          "off": {
+            "exact": 8,
+            "wrong": 0,
+            "unknown": 34,
+            "rows": 42
+          },
+          "on": {
+            "exact": 8,
+            "wrong": 0,
+            "unknown": 34,
+            "rows": 42
+          }
+        }
+      },
+      "N4": {
+        "REVISED": {
+          "off": {
+            "exact": 1,
+            "wrong": 33,
+            "unknown": 71,
+            "rows": 105
+          },
+          "on": {
+            "exact": 1,
+            "wrong": 0,
+            "unknown": 104,
+            "rows": 105
+          }
+        },
+        "TWICE": {
+          "off": {
+            "exact": 0,
+            "wrong": 10,
+            "unknown": 32,
+            "rows": 42
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 42,
+            "rows": 42
+          }
+        },
+        "LONG": {
+          "off": {
+            "exact": 3,
+            "wrong": 0,
+            "unknown": 18,
+            "rows": 21
+          },
+          "on": {
+            "exact": 3,
+            "wrong": 0,
+            "unknown": 18,
+            "rows": 21
+          }
+        },
+        "CONFIRM": {
+          "off": {
+            "exact": 10,
+            "wrong": 0,
+            "unknown": 32,
+            "rows": 42
+          },
+          "on": {
+            "exact": 10,
+            "wrong": 0,
+            "unknown": 32,
+            "rows": 42
+          }
+        }
+      }
+    },
+    "picked_kinds_changed": {
+      "A4": {
+        "current": 79,
+        "kickoff": 35,
+        "note": 87,
+        "sheet": 7,
+        "other": 0
+      },
+      "E4": {
+        "current": 0,
+        "kickoff": 85,
+        "note": 63,
+        "sheet": 63,
+        "other": 0
+      },
+      "N4": {
+        "current": 0,
+        "kickoff": 222,
+        "note": 19,
+        "sheet": 31,
+        "other": 0
+      }
+    },
+    "picked_mean": {
+      "A4": 2.1533333333333333,
+      "E4": 2.24,
+      "N4": 2.74
+    },
+    "superseded_quoted_rows": {
+      "A4": 22,
+      "E4": 45,
+      "N4": 74
+    },
+    "b2_prompt_tokens_mean": {
+      "A4": 885.8533333333334,
+      "E4": 844.1066666666667,
+      "N4": 847.1533333333333
+    },
+    "utility": {
+      "A4": {
+        "b1_only": 0.48611111111111116,
+        "b2_only": 0.11944444444444442,
+        "both_exact": 0.5611111111111111
+      },
+      "E4": {
+        "b1_only": 0.5194444444444445,
+        "b2_only": 0.11666666666666665,
+        "both_exact": 0.638888888888889
+      },
+      "N4": {
+        "b1_only": 0.5194444444444445,
+        "b2_only": 0.11388888888888889,
+        "both_exact": 0.6611111111111111
+      }
+    },
+    "canonical_gate_pass": false
+  },
+  "runs": {
+    "A4_s32": {
+      "on": {
+        "exact": 4,
+        "wrong": 0,
+        "unknown": 66,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 36,
+        "kickoff": 23,
+        "note": 41,
+        "sheet": 4,
+        "other": 0
+      },
+      "b2_rule_rate": 0.225
+    },
+    "A4_s33": {
+      "on": {
+        "exact": 1,
+        "wrong": 0,
+        "unknown": 69,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 46,
+        "kickoff": 14,
+        "note": 25,
+        "sheet": 7,
+        "other": 0
+      },
+      "b2_rule_rate": 0.025
+    },
+    "A4_s34": {
+      "on": {
+        "exact": 2,
+        "wrong": 0,
+        "unknown": 68,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 28,
+        "kickoff": 31,
+        "note": 35,
+        "sheet": 1,
+        "other": 0
+      },
+      "b2_rule_rate": 0.125
+    },
+    "E4_s32": {
+      "on": {
+        "exact": 3,
+        "wrong": 0,
+        "unknown": 67,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 39,
+        "note": 34,
+        "sheet": 30,
+        "other": 0
+      },
+      "b2_rule_rate": 0.125
+    },
+    "E4_s33": {
+      "on": {
+        "exact": 3,
+        "wrong": 0,
+        "unknown": 67,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 37,
+        "note": 30,
+        "sheet": 34,
+        "other": 0
+      },
+      "b2_rule_rate": 0.15
+    },
+    "E4_s34": {
+      "on": {
+        "exact": 6,
+        "wrong": 0,
+        "unknown": 64,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 52,
+        "note": 11,
+        "sheet": 29,
+        "other": 0
+      },
+      "b2_rule_rate": 0.175
+    },
+    "N4_s32": {
+      "on": {
+        "exact": 6,
+        "wrong": 0,
+        "unknown": 64,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 97,
+        "note": 7,
+        "sheet": 16,
+        "other": 0
+      },
+      "b2_rule_rate": 0.425
+    },
+    "N4_s33": {
+      "on": {
+        "exact": 5,
+        "wrong": 0,
+        "unknown": 65,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 96,
+        "note": 11,
+        "sheet": 16,
+        "other": 0
+      },
+      "b2_rule_rate": 0.4
+    },
+    "N4_s34": {
+      "on": {
+        "exact": 3,
+        "wrong": 0,
+        "unknown": 67,
+        "rows": 70
+      },
+      "picked_kinds": {
+        "current": 0,
+        "kickoff": 115,
+        "note": 9,
+        "sheet": 9,
+        "other": 0
+      },
+      "b2_rule_rate": 0.35
+    }
+  }
+}

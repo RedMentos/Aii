@@ -1,0 +1,907 @@
+{"run_start": "A4_s37"}
+{"starting":"Alcor","variant":"b1_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Alcor","variant":"b2_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Alcor","variant":"both_none"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Alcor","variant":"both_exact"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Alcor","variant":"both_control"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Alcor","variant":"same_policy_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Alcor","variant":"prompt_only_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Baham","variant":"b1_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Baham","variant":"b2_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Baham","variant":"both_none"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Baham","variant":"both_exact"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Baham","variant":"both_control"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Baham","variant":"same_policy_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Baham","variant":"prompt_only_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Chara","variant":"b1_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Chara","variant":"b2_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Chara","variant":"both_none"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Chara","variant":"both_exact"}
+{"finished":"Chara","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Chara","variant":"both_control"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Chara","variant":"same_policy_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Chara","variant":"prompt_only_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Dabih","variant":"b1_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Dabih","variant":"b2_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Dabih","variant":"both_none"}
+{"finished":"Dabih","status":"RECORDED","utility":0.25,"variant":"both_none"}
+{"starting":"Dabih","variant":"both_exact"}
+{"finished":"Dabih","status":"RECORDED","utility":0.25,"variant":"both_exact"}
+{"starting":"Dabih","variant":"both_control"}
+{"finished":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Dabih","variant":"same_policy_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Dabih","variant":"prompt_only_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Elnath","variant":"b1_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Elnath","variant":"b2_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Elnath","variant":"both_none"}
+{"finished":"Elnath","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"starting":"Elnath","variant":"both_exact"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Elnath","variant":"both_control"}
+{"finished":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"both_control"}
+{"starting":"Elnath","variant":"same_policy_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Elnath","variant":"prompt_only_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Fafnir","variant":"b1_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Fafnir","variant":"b2_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Fafnir","variant":"both_none"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"starting":"Fafnir","variant":"both_exact"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"starting":"Fafnir","variant":"both_control"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"starting":"Fafnir","variant":"same_policy_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Fafnir","variant":"prompt_only_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Grumium","variant":"b1_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Grumium","variant":"b2_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Grumium","variant":"both_none"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Grumium","variant":"both_exact"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Grumium","variant":"both_control"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Grumium","variant":"same_policy_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Grumium","variant":"prompt_only_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Heze","variant":"b1_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Heze","variant":"b2_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Heze","variant":"both_none"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Heze","variant":"both_exact"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Heze","variant":"both_control"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Heze","variant":"same_policy_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Heze","variant":"prompt_only_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Iklil","variant":"b1_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Iklil","variant":"b2_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Iklil","variant":"both_none"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Iklil","variant":"both_exact"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Iklil","variant":"both_control"}
+{"finished":"Iklil","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"starting":"Iklil","variant":"same_policy_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Iklil","variant":"prompt_only_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Jishui","variant":"b1_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Jishui","variant":"b2_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Jishui","variant":"both_none"}
+{"finished":"Jishui","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"starting":"Jishui","variant":"both_exact"}
+{"finished":"Jishui","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"starting":"Jishui","variant":"both_control"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Jishui","variant":"same_policy_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Jishui","variant":"prompt_only_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.3333333333333333,"variant":"prompt_only_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Chara","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Chara","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.8333333333333334,"variant":"both_control"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "O4_s37"}
+{"starting":"Alcor","variant":"b1_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Alcor","variant":"b2_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Alcor","variant":"both_none"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Alcor","variant":"both_exact"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Alcor","variant":"both_control"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Alcor","variant":"same_policy_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Alcor","variant":"prompt_only_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Baham","variant":"b1_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Baham","variant":"b2_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Baham","variant":"both_none"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Baham","variant":"both_exact"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Baham","variant":"both_control"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Baham","variant":"same_policy_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Baham","variant":"prompt_only_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Chara","variant":"b1_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Chara","variant":"b2_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Chara","variant":"both_none"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Chara","variant":"both_exact"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Chara","variant":"both_control"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Chara","variant":"same_policy_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Chara","variant":"prompt_only_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Dabih","variant":"b1_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Dabih","variant":"b2_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Dabih","variant":"both_none"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Dabih","variant":"both_exact"}
+{"finished":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Dabih","variant":"both_control"}
+{"finished":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Dabih","variant":"same_policy_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Dabih","variant":"prompt_only_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Elnath","variant":"b1_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Elnath","variant":"b2_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Elnath","variant":"both_none"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Elnath","variant":"both_exact"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Elnath","variant":"both_control"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Elnath","variant":"same_policy_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"starting":"Elnath","variant":"prompt_only_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Fafnir","variant":"b1_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"b1_only"}
+{"starting":"Fafnir","variant":"b2_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"starting":"Fafnir","variant":"both_none"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Fafnir","variant":"both_exact"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Fafnir","variant":"both_control"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Fafnir","variant":"same_policy_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Fafnir","variant":"prompt_only_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Grumium","variant":"b1_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Grumium","variant":"b2_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Grumium","variant":"both_none"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Grumium","variant":"both_exact"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Grumium","variant":"both_control"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Grumium","variant":"same_policy_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Grumium","variant":"prompt_only_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Heze","variant":"b1_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"starting":"Heze","variant":"b2_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Heze","variant":"both_none"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Heze","variant":"both_exact"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Heze","variant":"both_control"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Heze","variant":"same_policy_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Heze","variant":"prompt_only_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Iklil","variant":"b1_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Iklil","variant":"b2_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Iklil","variant":"both_none"}
+{"finished":"Iklil","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Iklil","variant":"both_exact"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Iklil","variant":"both_control"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Iklil","variant":"same_policy_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Iklil","variant":"prompt_only_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Jishui","variant":"b1_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Jishui","variant":"b2_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Jishui","variant":"both_none"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Jishui","variant":"both_exact"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Jishui","variant":"both_control"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Jishui","variant":"same_policy_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Jishui","variant":"prompt_only_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"both_exact"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"same_policy_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Heze","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "S4_s37"}
+{"starting":"Alcor","variant":"b1_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Alcor","variant":"b2_only"}
+{"finished":"Alcor","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Alcor","variant":"both_none"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Alcor","variant":"both_exact"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Alcor","variant":"both_control"}
+{"finished":"Alcor","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Alcor","variant":"same_policy_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Alcor","variant":"prompt_only_dual"}
+{"finished":"Alcor","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Baham","variant":"b1_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Baham","variant":"b2_only"}
+{"finished":"Baham","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Baham","variant":"both_none"}
+{"finished":"Baham","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"starting":"Baham","variant":"both_exact"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Baham","variant":"both_control"}
+{"finished":"Baham","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"starting":"Baham","variant":"same_policy_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Baham","variant":"prompt_only_dual"}
+{"finished":"Baham","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"starting":"Chara","variant":"b1_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Chara","variant":"b2_only"}
+{"finished":"Chara","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Chara","variant":"both_none"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Chara","variant":"both_exact"}
+{"finished":"Chara","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Chara","variant":"both_control"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Chara","variant":"same_policy_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Chara","variant":"prompt_only_dual"}
+{"finished":"Chara","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Dabih","variant":"b1_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Dabih","variant":"b2_only"}
+{"finished":"Dabih","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Dabih","variant":"both_none"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Dabih","variant":"both_exact"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Dabih","variant":"both_control"}
+{"finished":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Dabih","variant":"same_policy_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Dabih","variant":"prompt_only_dual"}
+{"finished":"Dabih","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Elnath","variant":"b1_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Elnath","variant":"b2_only"}
+{"finished":"Elnath","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Elnath","variant":"both_none"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Elnath","variant":"both_exact"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Elnath","variant":"both_control"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Elnath","variant":"same_policy_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Elnath","variant":"prompt_only_dual"}
+{"finished":"Elnath","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Fafnir","variant":"b1_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Fafnir","variant":"b2_only"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Fafnir","variant":"both_none"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"starting":"Fafnir","variant":"both_exact"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Fafnir","variant":"both_control"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Fafnir","variant":"same_policy_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Fafnir","variant":"prompt_only_dual"}
+{"finished":"Fafnir","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Grumium","variant":"b1_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Grumium","variant":"b2_only"}
+{"finished":"Grumium","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Grumium","variant":"both_none"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Grumium","variant":"both_exact"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Grumium","variant":"both_control"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Grumium","variant":"same_policy_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Grumium","variant":"prompt_only_dual"}
+{"finished":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Heze","variant":"b1_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Heze","variant":"b2_only"}
+{"finished":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Heze","variant":"both_none"}
+{"finished":"Heze","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Heze","variant":"both_exact"}
+{"finished":"Heze","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Heze","variant":"both_control"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Heze","variant":"same_policy_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Heze","variant":"prompt_only_dual"}
+{"finished":"Heze","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Iklil","variant":"b1_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Iklil","variant":"b2_only"}
+{"finished":"Iklil","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Iklil","variant":"both_none"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Iklil","variant":"both_exact"}
+{"finished":"Iklil","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Iklil","variant":"both_control"}
+{"finished":"Iklil","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"starting":"Iklil","variant":"same_policy_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Iklil","variant":"prompt_only_dual"}
+{"finished":"Iklil","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Jishui","variant":"b1_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Jishui","variant":"b2_only"}
+{"finished":"Jishui","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"starting":"Jishui","variant":"both_none"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Jishui","variant":"both_exact"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Jishui","variant":"both_control"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Jishui","variant":"same_policy_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Jishui","variant":"prompt_only_dual"}
+{"finished":"Jishui","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Alcor","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Baham","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"fixture":"Baham","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Baham","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Baham","status":"RECORDED","utility":0.3333333333333333,"variant":"prompt_only_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Chara","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Chara","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Chara","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Dabih","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Elnath","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.8333333333333334,"variant":"both_none"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.8333333333333334,"variant":"both_control"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Fafnir","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"fixture":"Grumium","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Heze","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Heze","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Heze","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Heze","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Iklil","status":"RECORDED","utility":1.0,"variant":"both_control"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Iklil","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Jishui","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{
+ "status": "Z2J_CHOICES_HELP",
+ "best_candidate": "S4",
+ "structural": true,
+ "consistent": true,
+ "current_picked_in_candidates": {
+  "O4": 0,
+  "S4": 0
+ },
+ "validity": {
+  "kickoff_in_context_share": {
+   "A4": 1.0,
+   "O4": 1.0,
+   "S4": 1.0
+  },
+  "required": 0.9
+ },
+ "wrong_guard_on": {
+  "A4": 0,
+  "O4": 0,
+  "S4": 0
+ },
+ "vs_control": {
+  "O4": {
+   "rule_rate_minus_control": {
+    "mean": 0.21666666666666665,
+    "ci95": [
+     0.09166666666666666,
+     0.35
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_minus_control": {
+    "mean": 0.1,
+    "ci95": [
+     0.0,
+     0.23333333333333334
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_guarded_exact": {
+    "O4": 5,
+    "A4": 2
+   },
+   "helps": true,
+   "rate_only": false
+  },
+  "S4": {
+   "rule_rate_minus_control": {
+    "mean": 0.5916666666666667,
+    "ci95": [
+     0.4666666666666667,
+     0.7083333333333333
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_minus_control": {
+    "mean": 0.2,
+    "ci95": [
+     0.0,
+     0.4333333333333333
+    ],
+    "episodes": 10,
+    "seeds": 1
+   },
+   "both_exact_guarded_exact": {
+    "S4": 8,
+    "A4": 2
+   },
+   "helps": true,
+   "rate_only": false
+  }
+ },
+ "b2_rule_rate": {
+  "A4": 0.11666666666666667,
+  "O4": 0.3333333333333333,
+  "S4": 0.7083333333333334
+ },
+ "all_rows": {
+  "A4": {
+   "off": {
+    "exact": 8,
+    "wrong": 16,
+    "unknown": 186,
+    "rows": 210
+   },
+   "on": {
+    "exact": 8,
+    "wrong": 0,
+    "unknown": 202,
+    "rows": 210
+   }
+  },
+  "O4": {
+   "off": {
+    "exact": 15,
+    "wrong": 47,
+    "unknown": 148,
+    "rows": 210
+   },
+   "on": {
+    "exact": 15,
+    "wrong": 0,
+    "unknown": 195,
+    "rows": 210
+   }
+  },
+  "S4": {
+   "off": {
+    "exact": 22,
+    "wrong": 48,
+    "unknown": 140,
+    "rows": 210
+   },
+   "on": {
+    "exact": 22,
+    "wrong": 0,
+    "unknown": 188,
+    "rows": 210
+   }
+  }
+ },
+ "by_type": {
+  "A4": {
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 11,
+     "unknown": 94,
+     "rows": 105
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 105,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 5,
+     "unknown": 37,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exact": 1,
+     "wrong": 0,
+     "unknown": 20,
+     "rows": 21
+    },
+    "on": {
+     "exact": 1,
+     "wrong": 0,
+     "unknown": 20,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 7,
+     "wrong": 0,
+     "unknown": 35,
+     "rows": 42
+    },
+    "on": {
+     "exact": 7,
+     "wrong": 0,
+     "unknown": 35,
+     "rows": 42
+    }
+   }
+  },
+  "O4": {
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 30,
+     "unknown": 75,
+     "rows": 105
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 105,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 17,
+     "unknown": 25,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exact": 5,
+     "wrong": 0,
+     "unknown": 16,
+     "rows": 21
+    },
+    "on": {
+     "exact": 5,
+     "wrong": 0,
+     "unknown": 16,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 10,
+     "wrong": 0,
+     "unknown": 32,
+     "rows": 42
+    },
+    "on": {
+     "exact": 10,
+     "wrong": 0,
+     "unknown": 32,
+     "rows": 42
+    }
+   }
+  },
+  "S4": {
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 31,
+     "unknown": 74,
+     "rows": 105
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 105,
+     "rows": 105
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 17,
+     "unknown": 25,
+     "rows": 42
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 42,
+     "rows": 42
+    }
+   },
+   "LONG": {
+    "off": {
+     "exac

@@ -10,6 +10,7 @@ KNOBS={
  "observer_tokens":(160,"COUNT",32,256,"Structured offer budget"),
  "b2_state_slots":(4,"COUNT",0,8,"BOOT retained source-bound B2 offers; 0 disables cross-turn context"),
  "b2_context_chars":(768,"COUNT",0,4096,"BOOT total serialized earlier B2 context character cap"),
+ "b2_quote_slots":(2,"COUNT",2,4,"WP-Z2h sentences B2 may pick with b2_quote_select=pointer"),
  "threads":(4,"COUNT",1,8,"Native CPU threads"),
  "deadline_seconds":(90,"DURATION_S",5,600,"Absolute user deadline"),
  "observer_seconds":(35,"DURATION_S",2,180,"Observer budget per role"),
@@ -109,6 +110,8 @@ def validate(cfg):
     if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
     if not (isinstance(cfg.get("offer_quote_context_chars",0),int) and not isinstance(cfg.get("offer_quote_context_chars",0),bool) and 0<=cfg.get("offer_quote_context_chars",0)<=400):raise ValueError("offer_quote_context_chars 0..400")
     if not (isinstance(cfg.get("b1_recent_source_chars",0),int) and not isinstance(cfg.get("b1_recent_source_chars",0),bool) and 0<=cfg.get("b1_recent_source_chars",0)<=960):raise ValueError("b1_recent_source_chars 0..960")
+    if cfg.get("b2_quote_select","off") not in {"off","anchor","pointer"}:raise ValueError("b2_quote_select off|anchor|pointer")
+    if cfg.get("b2_quote_choices","all") not in {"all","earlier","earlier_oldest","sources"}:raise ValueError("b2_quote_choices all|earlier|earlier_oldest|sources")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):

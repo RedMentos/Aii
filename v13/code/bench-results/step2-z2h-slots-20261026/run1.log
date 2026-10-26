@@ -1,0 +1,1482 @@
+{"run_start": "P2_s29"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "P4_s29"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"run_start": "P2_s30"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.25,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.4166666666666667,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.25,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.25,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.0,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.3333333333333333,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "P4_s30"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.75,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.08333333333333333,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.25,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.25,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "P2_s31"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.08333333333333333,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.4166666666666667,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.4166666666666667,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"run_start": "P4_s31"}
+{"starting":"Wezen","variant":"b1_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Wezen","variant":"b2_only"}
+{"finished":"Wezen","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Wezen","variant":"both_none"}
+{"finished":"Wezen","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"starting":"Wezen","variant":"both_exact"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"starting":"Wezen","variant":"both_control"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Wezen","variant":"same_policy_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.3333333333333333,"variant":"same_policy_dual"}
+{"starting":"Wezen","variant":"prompt_only_dual"}
+{"finished":"Wezen","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Yed","variant":"b1_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Yed","variant":"b2_only"}
+{"finished":"Yed","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Yed","variant":"both_none"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Yed","variant":"both_exact"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Yed","variant":"both_control"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Yed","variant":"same_policy_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Yed","variant":"prompt_only_dual"}
+{"finished":"Yed","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Zaniah","variant":"b1_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Zaniah","variant":"b2_only"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"starting":"Zaniah","variant":"both_none"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Zaniah","variant":"both_exact"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Zaniah","variant":"both_control"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Zaniah","variant":"same_policy_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Zaniah","variant":"prompt_only_dual"}
+{"finished":"Zaniah","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Acrux","variant":"b1_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Acrux","variant":"b2_only"}
+{"finished":"Acrux","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Acrux","variant":"both_none"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_none"}
+{"starting":"Acrux","variant":"both_exact"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_exact"}
+{"starting":"Acrux","variant":"both_control"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Acrux","variant":"same_policy_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Acrux","variant":"prompt_only_dual"}
+{"finished":"Acrux","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"starting":"Botein","variant":"b1_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Botein","variant":"b2_only"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Botein","variant":"both_none"}
+{"finished":"Botein","status":"RECORDED","utility":0.08333333333333333,"variant":"both_none"}
+{"starting":"Botein","variant":"both_exact"}
+{"finished":"Botein","status":"RECORDED","utility":0.4166666666666667,"variant":"both_exact"}
+{"starting":"Botein","variant":"both_control"}
+{"finished":"Botein","status":"RECORDED","utility":0.08333333333333333,"variant":"both_control"}
+{"starting":"Botein","variant":"same_policy_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"starting":"Botein","variant":"prompt_only_dual"}
+{"finished":"Botein","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Caph","variant":"b1_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"b1_only"}
+{"starting":"Caph","variant":"b2_only"}
+{"finished":"Caph","status":"RECORDED","utility":0.3333333333333333,"variant":"b2_only"}
+{"starting":"Caph","variant":"both_none"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Caph","variant":"both_exact"}
+{"finished":"Caph","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Caph","variant":"both_control"}
+{"finished":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"both_control"}
+{"starting":"Caph","variant":"same_policy_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"starting":"Caph","variant":"prompt_only_dual"}
+{"finished":"Caph","status":"RECORDED","utility":0.25,"variant":"prompt_only_dual"}
+{"starting":"Diphda","variant":"b1_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"b1_only"}
+{"starting":"Diphda","variant":"b2_only"}
+{"finished":"Diphda","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Diphda","variant":"both_none"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Diphda","variant":"both_exact"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Diphda","variant":"both_control"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Diphda","variant":"same_policy_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.6666666666666666,"variant":"same_policy_dual"}
+{"starting":"Diphda","variant":"prompt_only_dual"}
+{"finished":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Errai","variant":"b1_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Errai","variant":"b2_only"}
+{"finished":"Errai","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Errai","variant":"both_none"}
+{"finished":"Errai","status":"RECORDED","utility":0.3333333333333333,"variant":"both_none"}
+{"starting":"Errai","variant":"both_exact"}
+{"finished":"Errai","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"starting":"Errai","variant":"both_control"}
+{"finished":"Errai","status":"RECORDED","utility":0.6666666666666666,"variant":"both_control"}
+{"starting":"Errai","variant":"same_policy_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Errai","variant":"prompt_only_dual"}
+{"finished":"Errai","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"starting":"Furud","variant":"b1_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Furud","variant":"b2_only"}
+{"finished":"Furud","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"starting":"Furud","variant":"both_none"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Furud","variant":"both_exact"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Furud","variant":"both_control"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Furud","variant":"same_policy_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Furud","variant":"prompt_only_dual"}
+{"finished":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"starting":"Gienah","variant":"b1_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"starting":"Gienah","variant":"b2_only"}
+{"finished":"Gienah","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"starting":"Gienah","variant":"both_none"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_none"}
+{"starting":"Gienah","variant":"both_exact"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_exact"}
+{"starting":"Gienah","variant":"both_control"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"both_control"}
+{"starting":"Gienah","variant":"same_policy_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"same_policy_dual"}
+{"starting":"Gienah","variant":"prompt_only_dual"}
+{"finished":"Gienah","status":"RECORDED","utility":0.6666666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.25,"variant":"both_none"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.25,"variant":"same_policy_dual"}
+{"fixture":"Wezen","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.25,"variant":"b2_only"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Yed","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Zaniah","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Acrux","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Botein","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_exact"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"both_control"}
+{"fixture":"Botein","status":"RECORDED","utility":0.16666666666666666,"variant":"same_policy_dual"}
+{"fixture":"Botein","status":"RECORDED","utility":0.3333333333333333,"variant":"prompt_only_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"b1_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.16666666666666666,"variant":"b2_only"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Caph","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"both_control"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"same_policy_dual"}
+{"fixture":"Caph","status":"RECORDED","utility":0.0,"variant":"prompt_only_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5833333333333334,"variant":"b1_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.75,"variant":"both_exact"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Diphda","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Errai","status":"RECORDED","utility":0.16666666666666666,"variant":"both_none"}
+{"fixture":"Errai","status":"RECORDED","utility":0.16666666666666666,"variant":"both_exact"}
+{"fixture":"Errai","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Errai","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.08333333333333333,"variant":"b2_only"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_none"}
+{"fixture":"Furud","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Furud","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Furud","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.0,"variant":"b2_only"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.0,"variant":"both_none"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Gienah","status":"RECORDED","utility":0.5833333333333334,"variant":"prompt_only_dual"}
+{
+ "status": "Z2H_SLOTS_NO_GAIN",
+ "structural": true,
+ "consistent": true,
+ "slots_used": true,
+ "validity": {
+  "kickoff_in_context_share": {
+   "P2": 1.0,
+   "P4": 1.0
+  },
+  "required": 0.9
+ },
+ "wrong_guard_on": {
+  "P2": 0,
+  "P4": 0
+ },
+ "b2_rule_rate": {
+  "P2": 0.23333333333333334,
+  "P4": 0.275
+ },
+ "rule_rate_minus_control": {
+  "mean": 0.041666666666666664,
+  "ci95": [
+   -0.08333333333333334,
+   0.15833333333333335
+  ],
+  "episodes": 10,
+  "seeds": 1
+ },
+ "both_exact_guarded_exact": {
+  "P2": 5,
+  "P4": 5
+ },
+ "both_exact_minus_control": {
+  "mean": 1.1102230246251566e-17,
+  "ci95": [
+   -0.13333333333333333,
+   0.16666666666666669
+  ],
+  "episodes": 10,
+  "seeds": 1
+ },
+ "all_rows": {
+  "P2": {
+   "off": {
+    "exact": 11,
+    "wrong": 18,
+    "unknown": 181,
+    "rows": 210
+   },
+   "on": {
+    "exact": 11,
+    "wrong": 0,
+    "unknown": 199,
+    "rows": 210
+   }
+  },
+  "P4": {
+   "off": {
+    "exact": 12,
+    "wrong": 15,
+    "unknown": 183,
+    "rows": 210
+   },
+   "on": {
+    "exact": 12,
+    "wrong": 0,
+    "unknown": 198,
+    "rows": 210
+   }
+  }
+ },
+ "by_type": {
+  "P2": {
+   "LONG": {
+    "off": {
+     "exact": 7,
+     "wrong": 0,
+     "unknown": 56,
+     "rows": 63
+    },
+    "on": {
+     "exact": 7,
+     "wrong": 0,
+     "unknown": 56,
+     "rows": 63
+    }
+   },
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 9,
+     "unknown": 75,
+     "rows": 84
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 84,
+     "rows": 84
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 9,
+     "unknown": 12,
+     "rows": 21
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 21,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 38,
+     "rows": 42
+    },
+    "on": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 38,
+     "rows": 42
+    }
+   }
+  },
+  "P4": {
+   "LONG": {
+    "off": {
+     "exact": 8,
+     "wrong": 0,
+     "unknown": 55,
+     "rows": 63
+    },
+    "on": {
+     "exact": 8,
+     "wrong": 0,
+     "unknown": 55,
+     "rows": 63
+    }
+   },
+   "REVISED": {
+    "off": {
+     "exact": 0,
+     "wrong": 11,
+     "unknown": 73,
+     "rows": 84
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 84,
+     "rows": 84
+    }
+   },
+   "TWICE": {
+    "off": {
+     "exact": 0,
+     "wrong": 4,
+     "unknown": 17,
+     "rows": 21
+    },
+    "on": {
+     "exact": 0,
+     "wrong": 0,
+     "unknown": 21,
+     "rows": 21
+    }
+   },
+   "CONFIRM": {
+    "off": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 38,
+     "rows": 42
+    },
+    "on": {
+     "exact": 4,
+     "wrong": 0,
+     "unknown": 38,
+     "rows": 42
+    }
+   }
+  }
+ },
+ "picked_mean": {
+  "P2": 1.6866666666666668,
+  "P4": 2.3466666666666667
+ },
+ "superseded_quoted_rows": {
+  "P2": 11,
+  "P4": 21
+ },
+ "b2_prompt_tokens_mean": {
+  "P2": 865.94,
+  "P4": 865.9866666666667
+ },
+ "utility": {
+  "P2": {
+   "b1_only": 0.4888888888888889,
+   "b2_only": 0.12777777777777777,
+   "both_exact": 0.5833333333333334
+  },
+  "P4": {
+   "b1_only": 0.43333333333333335,
+   "b2_only": 0.125,
+   "both_exact": 0.5722222222222223
+  }
+ },
+ "canonical_gate_pass": false
+}

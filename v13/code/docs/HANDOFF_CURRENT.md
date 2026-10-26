@@ -1,3 +1,39 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2l — Kombination ja, zweiter Körper nein
+
+Ganze Kette (1536 + `sources` + Wächter + `newest_quoted`): Kombination schlägt besten Einzelkörper (+.24, CI > 0, 0 falsch); zwei verschiedene Körper nicht besser als ein Körper mit zwei Zuständen (+.04, CI schließt 0 ein). Offen: Nutzer-Entscheidung + Redmi-Messung, bevor etwas live geht. Befund `docs/proofs/continuation-20261026/step2-z2l-chain/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2k — geänderte Regeln erstmals richtig
+
+Kette 1536 Zeichen + `b2_quote_choices=sources` + Wächter (`history`) + `rule_reader='newest_quoted'`: `Z2K_READER_CONFIRMED`, exakt 8 → 36/210, geänderte Regeln 0 → 28, 0 falsch. Nächstes WP-Z2l (ganze Kette gegen STEP2 mit Ein-Körper-Kontrolle). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2k-reader/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2j — ganze Quellen helfen, C3 liest alte Werte
+
+`b2_quote_choices=sources`: B2-Regelquote .12 → .71, exakte Entscheidungen 22 vs 8 von 210, 0 falsch mit Wächter. Bei geänderten Regeln zieht C3 den alten Wert (10/10) → UNKNOWN. Nächstes: WP-Z2k jüngster Regelwert deterministisch. Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2j-sources/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2i formal HELP mit Benennungsfehler → WP-Z2j läuft
+
+Z2i: Liste ohne aktuelle Aufgabe, Kickoff vorn hebt die Regelquote (.13 → .39), aber nur bei LONG/CONFIRM; der Arm hieß fälschlich „newest first“ (behoben: `earlier_oldest`). Z2j misst `b2_quote_choices=sources` (ganze frühere Quellen). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2i-choices/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2h kein Gewinn → WP-Z2i läuft
+
+Z2h: vier statt zwei Zeiger-Plätze ändern nichts (`Z2H_SLOTS_NO_GAIN`), B2 wählt nach Position (meist die Sätze der aktuellen Aufgabe). Wächter zweimal bestätigt. Z2i misst eine Auswahlliste ohne aktuelle Aufgabe (`b2_quote_choices`). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2h-slots/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2g — Aktualitäts-Wächter bestätigt
+
+`eligibility.decide/tool(..., history=...)` (leer = aus). Frische Episoden, CQ/CQP, Seeds 26–28: `Z2G_GUARD_CONFIRMED`, falsche Festlegungen 24 → 0, exakte 8 → 8. Aber fast alles UNKNOWN: B2 liefert mit zwei Zeiger-Plätzen selten alle aktuellen Regeln. Nächstes: WP-Z2h (mehr Zeiger-Plätze, Wächter an). Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2g-recency/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2f — mehr B2-Gedächtnis macht veraltete Regeln gefährlich
+
+Mit `b2_context_chars` 1536 kommt die alte Regel an, der Zeiger hält aber nicht (.26 vs. .09). Wichtig: 27 falsche Entscheidungen, alle nach überholten Regeln (B2 zitiert die alte Notiz, nicht die Änderung). Explorativer Aktualitäts-Wächter: 27 → 0 ohne Verlust. Nächstes: WP-Z2g bestätigen. Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.
+
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2e Zeiger auf schweren Aufgaben nicht aussagefähig → WP-Z2f läuft
+
+Z2e (`a3a7a67`): B2-Regelquote 0/96 in allen Armen, weil die alte Regel-Notiz wegen `b2_context_chars`=768 nie in B2s Kontext kam (288/288). Live-`analyst_context` nimmt erweiterte Zitate jetzt an. Z2f wiederholt mit 1536 und Gültigkeitsprüfung, Seeds 23–25. Schalter bleiben aus. Befund `docs/proofs/continuation-20261022/step2-z2e-pointer-hard/BEFUND.md`.
+
+# Aktuell 2026-10-21 (Thread „B2 zitiert Regel selten“): WP-Z2d B2 liefert das Regel-Zitat — Zeiger behebt den Engpass
+
+Ursache: B2 schreibt die alte Regel um statt sie wörtlich zu zitieren (110/384 Z2b-Angebote), die Zitatprüfung verwirft das. Neuer Schalter `b2_quote_select` (`off` Standard | `anchor` | `pointer`, Kettenglied `integrated_candidates.b2_quote_select`). Vorregistrierter Lauf CQ/CQA/CQP × Seeds 17–19 (630 Zeilen): B2-Regelquote .167 → Anker .542 (teilweise) → **Zeiger .969** (`Z2C_B2_RULE_QUOTE_FIXED`, CI > 0, 0 falsch). STEP2 zwei Körper `both_exact` .881 vs. b1_only .581 (+.30, CI > 0, alle Seeds), 27/30 exakte Entscheidungen. STEP2 bleibt formal FAIL (Kriterium 3, Ein-Körper-Kontrolle offen). Schalter aus bis Nutzerentscheidung; live-`analyst_context` nimmt erweiterte Zitate noch nicht an. Befund `docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`, Branch `claude/project-thread-0fckhc`. Merge-Hinweis: Thread „B1-Frage als Schalter“ (Branch `4ttld7`, auch „WP-Z2c“ genannt) hängt ein eigenes Kettenglied `body_question` an `cognition.py`; beim Zusammenführen beide Glieder in `integrated_candidates.rebase` hintereinander anwenden.
+
 # Aktuell 2026-10-21 (Thread „Z2b STEP2 mit mehreren Seeds“): Rauschband + gezielte Fragen — Gate FAIL, Frage hilft
 
 Vorregistrierter Lauf (C/D/CQ/DQ × Seeds 14–16, 840 Zeilen, echte Modelle, Linux-Cloud): `Z2B_DIVERGENCE_NOT_SUPPORTED`. Z2-Abstände lagen im Rauschband. Eine feste gezielte Frage an die Körper hebt den Werkzeug-Nutzen um +.23 (CI > 0), vor allem weil B1 dann die Optionswerte zitiert; B2 zitiert die alte Regel weiter selten (Engpass). 0 falsch festgelegt. Befund `docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`, Branch `claude/project-thread-s439sv`.

@@ -1,0 +1,520 @@
+{
+  "run": "CQ_s20",
+  "arm": "CQ",
+  "seed": 20,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 20
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.4833333333333333,
+      "b2_only": 0.16666666666666666,
+      "both_control": 0.6166666666666667,
+      "both_exact": 0.5583333333333333,
+      "both_none": 0.5583333333333333,
+      "prompt_only_dual": 0.5166666666666667,
+      "same_policy_dual": 0.575
+    },
+    "best_solo": 0.4833333333333333,
+    "gain_over_best_solo": {
+      "both_none": 0.07500000000000007,
+      "both_exact": 0.07500000000000007,
+      "both_control": 0.13333333333333341
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.4166666666666667,
+      "b2_only": 0.11666666666666665,
+      "both_control": 0.4583333333333333,
+      "both_exact": 0.5333333333333333,
+      "both_none": 0.4916666666666667,
+      "prompt_only_dual": 0.45,
+      "same_policy_dual": 0.5
+    },
+    "best_solo": 0.4166666666666667,
+    "gain_over_best_solo": {
+      "both_none": 0.07500000000000001,
+      "both_exact": 0.11666666666666664,
+      "both_control": 0.04166666666666663
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.4166666666666667,
+      "exact_fixtures": [
+        "Jabbah"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.11666666666666665,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.4583333333333333,
+      "exact_fixtures": []
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5333333333333333,
+      "exact_fixtures": [
+        "Izar",
+        "Jabbah"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.4916666666666667,
+      "exact_fixtures": [
+        "Jabbah"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.45,
+      "exact_fixtures": [
+        "Izar"
+      ]
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.5,
+      "exact_fixtures": [
+        "Jabbah"
+      ]
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.75
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.23333333333333334
+    },
+    "both_control": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.9
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 0.9
+    },
+    "both_none": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.9
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.8166666666666667
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.9
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 6
+    },
+    "b2_only": {
+      "B2_GIST:rules": 1,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8,
+      "B2_GIST:rules": 1,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 0,
+      "B2_GIST:options": 0
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 1,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 0,
+      "B1_DETAIL:options": 8,
+      "B2_GIST:rules": 2,
+      "B2_GIST:options": 0
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 0,
+    "both_exact": 0,
+    "both_control": 1,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 2
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Altair:b1_only": 0.5,
+    "Altair:b2_only": 0.16666666666666666,
+    "Altair:both_none": 0.5,
+    "Altair:both_exact": 0.5,
+    "Altair:both_control": 0.5,
+    "Altair:same_policy_dual": 0.5,
+    "Altair:prompt_only_dual": 0.5,
+    "Bellatrix:b1_only": 0.5,
+    "Bellatrix:b2_only": 0.08333333333333333,
+    "Bellatrix:both_none": 0.5,
+    "Bellatrix:both_exact": 0.16666666666666666,
+    "Bellatrix:both_control": 0.5,
+    "Bellatrix:same_policy_dual": 0.5,
+    "Bellatrix:prompt_only_dual": 0.16666666666666666,
+    "Capella:b1_only": 0.5,
+    "Capella:b2_only": 0.16666666666666666,
+    "Capella:both_none": 0.5,
+    "Capella:both_exact": 0.5,
+    "Capella:both_control": 0.5,
+    "Capella:same_policy_dual": 0.5,
+    "Capella:prompt_only_dual": 0.3333333333333333,
+    "Deneb:b1_only": 0.5,
+    "Deneb:b2_only": 0.16666666666666666,
+    "Deneb:both_none": 0.5,
+    "Deneb:both_exact": 0.5,
+    "Deneb:both_control": 0.5,
+    "Deneb:same_policy_dual": 0.5,
+    "Deneb:prompt_only_dual": 0.5,
+    "Electra:b1_only": 0.5,
+    "Electra:b2_only": 0.08333333333333333,
+    "Electra:both_none": 0.5,
+    "Electra:both_exact": 0.5,
+    "Electra:both_control": 0.5,
+    "Electra:same_policy_dual": 0.5,
+    "Electra:prompt_only_dual": 0.5,
+    "Fomalhaut:b1_only": 0.08333333333333333,
+    "Fomalhaut:b2_only": 0.0,
+    "Fomalhaut:both_none": 0.5,
+    "Fomalhaut:both_exact": 0.5,
+    "Fomalhaut:both_control": 0.5,
+    "Fomalhaut:same_policy_dual": 0.5,
+    "Fomalhaut:prompt_only_dual": 0.25,
+    "Gemma:b1_only": 0.3333333333333333,
+    "Gemma:b2_only": 0.16666666666666666,
+    "Gemma:both_none": 0.3333333333333333,
+    "Gemma:both_exact": 0.3333333333333333,
+    "Gemma:both_control": 0.5,
+    "Gemma:same_policy_dual": 0.3333333333333333,
+    "Gemma:prompt_only_dual": 0.3333333333333333,
+    "Hadar:b1_only": 0.25,
+    "Hadar:b2_only": 0.16666666666666666,
+    "Hadar:both_none": 0.5,
+    "Hadar:both_exact": 0.5,
+    "Hadar:both_control": 0.5833333333333334,
+    "Hadar:same_policy_dual": 0.5833333333333334,
+    "Hadar:prompt_only_dual": 0.5,
+    "Izar:b1_only": 0.08333333333333333,
+    "Izar:b2_only": 0.08333333333333333,
+    "Izar:both_none": 0.16666666666666666,
+    "Izar:both_exact": 0.9166666666666666,
+    "Izar:both_control": 0.08333333333333333,
+    "Izar:same_policy_dual": 0.16666666666666666,
+    "Izar:prompt_only_dual": 0.9166666666666666,
+    "Jabbah:b1_only": 0.9166666666666666,
+    "Jabbah:b2_only": 0.08333333333333333,
+    "Jabbah:both_none": 0.9166666666666666,
+    "Jabbah:both_exact": 0.9166666666666666,
+    "Jabbah:both_control": 0.4166666666666667,
+    "Jabbah:same_policy_dual": 0.9166666666666666,
+    "Jabbah:prompt_only_dual": 0.5
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2e": {
+    "b2_quote_select": "off",
+    "b2_rule_rows": {
+      "Altair:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Fomalhaut:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Fomalhaut:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Fomalhaut:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Fomalhaut:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Gemma:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Gemma:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Gemma:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Gemma:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Hadar:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Hadar:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Hadar:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Hadar:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      }
+    },
+    "b2_rule_rate": 0.0,
+    "superseded_quoted_rows": 0,
+    "invented_value_rows": 0,
+    "picked_ids": 0,
+    "wrong_committed_tool": 0,
+    "wrong_committed_rows": [],
+    "b2_prompt_tokens": [
+      531,
+      532,
+      579,
+      540,
+      455,
+      533,
+      536,
+      582,
+      549,
+      453,
+      536,
+      533,
+      585,
+      548,
+      458,
+      537,
+      535,
+      586,
+      550,
+      453,
+      596,
+      599,
+      643,
+      609,
+      455,
+      596,
+      596,
+      644,
+      607,
+      453,
+      587,
+      589,
+      594,
+      601,
+      450,
+      607,
+      609,
+      658,
+      623,
+      458,
+      600,
+      599,
+      646,
+      609,
+      468,
+      612,
+      612,
+      658,
+      622,
+      474
+    ],
+    "source_sha256": {
+      "scripts/step2_z2e_pointer_hard.py": "11a14d1c919c8379ee90886454e42634cd5d8211384f48ea03e6f35a5cb1fc7b",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2_timescale.py": "0139eb7edd060fc11d3e239c1e84d5293fa10b4b75b0223285a8d5509d7de032",
+      "v13/cognition.py": "1fe06d21a6d8154cbe47d8bad3455eae5d0a815d60632e72feab4f8d767ec8c8"
+    }
+  }
+}

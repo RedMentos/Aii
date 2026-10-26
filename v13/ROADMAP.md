@@ -1212,6 +1212,43 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Engpass jetzt B2: zitiert die alte Regel nur in ~¼ der Zeilen, mit oder ohne Frage. Befund `code/docs/proofs/continuation-20261021/step2-z2b-seeds/BEFUND.md`.
 - Offen: (a) Nutzerentscheidung: gezielte B1-Frage als Schalter (aus) in den Live-Pfad; (b) neues Paket „B2 liefert Regel-Zitat“; (c) `cognition.offer` soll `cfg['seed']` übergeben.
 
+### WP-Z2d B2 liefert das Regel-Zitat (im Code/Prereg „z2c“; umbenannt, weil Thread „B1-Frage als Schalter“ parallel WP-Z2c vergab) (Cloud, Modelle) — ERLEDIGT 2026-10-21, `Z2C_B2_RULE_QUOTE_FIXED` (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
+- **Ursache** (Diagnose auf 384 Z2b-B2-Angeboten): nur 115 trugen die volle alte Regel; 110 scheiterten an einer **Umschreibung/kaputten Kopie des richtigen Satzes** („Project Kestrel has a budget of 100 euros“), 65 zitierten den aktuellen Aufgabentext. B2 kennt die Regel, kopiert sie aber nicht wörtlich.
+- Neu: Schalter `b2_quote_select` `off` (Standard, byte-gleich) | `anchor` (`cognition.anchor_span`: nicht passendes Zitat → exakte Quellsätze mit allen Zahlen + ≥ 60 % Wörtern) | `pointer` (`quote_choices`: B2 wählt nummerierte exakte Sätze per Schema-enum). Nur B2 in eigener Policy. Kettenglied `integrated_candidates.b2_quote_select`, Config validiert, Tests `tests/test_b2_quote_select.py` 7/7.
+- Vorregistriert (`8cc006d`), CQ/CQA/CQP × neue Seeds 17–19 = 630 Zeilen: B2-Regelquote **.167 → Anker .542 (IMPROVED_PARTIAL) → Zeiger .969 (FIXED, +.80 [+.69, +.91])**; 0 falsche Regelwerte, 0 falsch festgelegt.
+- Folge für STEP2 (sekundär): Zeiger `both_exact` .881 vs. b1_only .581, **+.30 [+.21, +.38], jeder Seed** → Z2b-Kriterium 1 fällt erstmals; 27/30 exakte Entscheidungen (SPLIT 15/18). Kriterium 3 (Fehlerprofile, für diese Fixtures streng) bleibt ✗; Ein-Körper-Kontrolle mit Zeiger nicht gemessen → STEP2 formal weiter FAIL. Kosten B2-Prompt +~35 % Tokens.
+- Grenze: Zeiger wirkt mit der Zitat-Erweiterung zusammen (B2 wählt oft Kopfzeile der kurzen Regel-Notiz); längere Notizen ungetestet. Befund `code/docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`.
+- Offen: (a) Nutzerentscheidung `b2_quote_select=pointer` (+ `offer_quote_context_chars=200` usw.) in den Live-Pfad; vorher live-`analyst_context` für erweiterte Zitate reparieren; (b) neues Prereg: Zeiger mit Ein-Körper-Kontrolle (D/DQ), längere/geänderte Regeln, frische Episoden; (c) Handy-Kosten messen.
+
+### WP-Z2e B2-Zeiger auf schwereren Aufgaben (Cloud, Modelle) — ERLEDIGT 2026-10-26, `Z2E_POINTER_FAILS`, für den Zeiger **nicht aussagefähig** (Thread „B2 zitiert Regel selten“, Branch `claude/project-thread-0fckhc`)
+- Nutzerentscheidung 22.10.: erst härter prüfen. Vorher Live-Reparatur: `analyst_context` nimmt erweiterte Zitate an (gleiche Zeilen wie `e6603fc`/dq33gk, im Kettenglied `quote_context`).
+- Vorregistriert (`a3a7a67`), 10 neue Episoden (4 lange Regel-Notizen, 4 nachträglich geänderte Regeln, 2 DETAIL), CQ/CQP/DQP × Seeds 20–22: B2-Regelquote 0/96 in allen Armen, 0 falsch festgelegt.
+- **Ursache:** Die alte Regel-Notiz kam in 288/288 B2-Angeboten gar nicht in B2s Kontext — `b2_context_chars` 768 füllt vom jüngsten Zug her, die älteste Notiz fällt raus. B2s „4 Slots“ sind praktisch ~2 längere Züge. Das ist der nächste STEP2-Engpass vor der Zitat-Auswahl. Plus: Zeiger wählte den geänderten Regelsatz 9/48 (Kontrolle 0).
+- Pannen (Zeitlimit durch parallele Tests, Auswertungsfehler, abgebrochener Modell-Output, zwei Umgebungs-Neustarts) offen im Befund `code/docs/proofs/continuation-20261022/step2-z2e-pointer-hard/BEFUND.md`.
+
+### WP-Z2f wie Z2e mit `b2_context_chars` 1536 + Gültigkeitsprüfung (Cloud, Modelle) — ERLEDIGT 2026-10-26, `Z2F_UNSAFE_OR_INVALID` (gleicher Thread/Branch)
+- Gültig (Regel-Notiz in 100 % im B2-Kontext). Zeiger: B2-Regelquote .26 vs. Kontrolle .09 (CI schließt 0 ein), LONG .46, REVISED .06 → hält nicht.
+- **Sicherheitsbefund:** 27 falsch festgelegte Entscheidungen (CQ 7, CQP 18, DQP 2), alle in Episoden mit geänderter Regel und alle nach der **alten** Regel: B2 zitiert die alte Notiz, nicht die Änderung; das Werkzeug prüft nur gegen den aktuellen Text. Mehr Gedächtnis ohne Aktualitätsprüfung ist unsicher.
+- Explorativ: Aktualitäts-Wächter (jüngere behaltene Quelle mit anderem Wert → UNKNOWN) senkt falsch 27 → 0 ohne Trefferverlust; auf Z2b/Z2d-Daten keine Änderung. Befund `code/docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.
+
+### WP-Z2g Aktualitäts-Wächter im Eignungs-Werkzeug (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `9954346b`)
+- `eligibility.decide/tool(..., history=...)`: Regelwert zählt nur, wenn die jüngste frühere Quelle dieser Regel ihn nennt (leer = aus). Bestätigung auf 10 frischen Episoden (REVISED/TWICE/CONFIRM), CQ/CQP, Seeds 26–28: **`Z2G_GUARD_CONFIRMED`** — falsch 24 → 0, exakt 8 → 8, 0 Fehlverwerfungen. Aber fast alles UNKNOWN (B2 liefert mit zwei Zeiger-Plätzen selten alle aktuellen Regeln). Befund `code/docs/proofs/continuation-20261026/step2-z2g-recency/BEFUND.md`.
+
+### WP-Z2h B2-Zeiger mit mehr Plätzen, Wächter an (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `83c23664`)
+- Schalter `b2_quote_slots` (2..4, Standard 2). P2 vs P4, Seeds 29–31, frische Episoden: **`Z2H_SLOTS_NO_GAIN`** (Regelquote .23 → .28, CI schließt 0 ein; exakt 5 = 5). Wächter zum zweiten Mal bestätigt (33 → 0 falsch). Ursache: B2 wählt nach Position (Hälfte der Nummern = Sätze der aktuellen Aufgabe; 9/178 aus der Änderungsnotiz). Befund `code/docs/proofs/continuation-20261026/step2-z2h-slots/BEFUND.md`.
+
+### WP-Z2i Auswahlliste für den B2-Zeiger (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `b3bfa25a`)
+- Schalter `b2_quote_choices`. A4/E4/N4, Seeds 32–34: formal **`Z2I_CHOICES_HELP`** (N4 Regelquote .13 → .39, CI > 0; exakt 4 vs 3), aber N4 war falsch benannt (Liste älteste zuerst, Anweisung „newest first“; behoben, Modus heißt `earlier_oldest`). Gewinn nur LONG/CONFIRM, geänderte Regeln weiter ~0 exakt. Wächter: 72 → 0 falsch. Befund `code/docs/proofs/continuation-20261026/step2-z2i-choices/BEFUND.md`.
+
+### WP-Z2j B2 wählt ganze frühere Quellen (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `62972192`)
+- `b2_quote_choices=sources`: **`Z2J_CHOICES_HELP`** — B2-Regelquote .12 → .71 (CI > 0), exakt bewacht 8 vs 2 (`both_exact`), alle Zeilen 22 vs 8, 0 falsch mit Wächter (48 ohne). Geänderte Regeln weiter 0 exakt: C3 liest in 10/10 Fällen den alten Wert. Befund `code/docs/proofs/continuation-20261026/step2-z2j-sources/BEFUND.md`.
+
+### WP-Z2k Jüngster Regelwert deterministisch statt von C3 (Cloud) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `7087f616`)
+- `rule_reader='newest_quoted'`: **`Z2K_READER_CONFIRMED`** — S4 exakt 8 → 36/210 (REVISED 0 → 22, TWICE 0 → 6), +.93 [+.43, +1.50] je Episode, 0 falsch, 0 verloren; A4 ohne Gewinn. Befund `code/docs/proofs/continuation-20261026/step2-z2k-reader/BEFUND.md`.
+
+### WP-Z2l Ganze Kette gegen STEP2-Kriterien mit Ein-Körper-Kontrolle (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `d09474ce`)
+- **`Z2L_COMBINATION_ONLY`**: Kombination schlägt besten Einzelkörper +.24 [+.15, +.33], 0 falsch; zwei verschiedene Körper vs. ein Körper/zwei Zustände +.04 [−.08, +.15] → ein Körper reicht (B2-Regelquote DS .95 > CS .71). Kandidat fürs Handy: ein Körper + Kette; vorher Redmi-Messung + Nutzer-Entscheidung. Befund `code/docs/proofs/continuation-20261026/step2-z2l-chain/BEFUND.md`.
+
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
 - Ergebnis entscheidet §29 Nr. 6 (kleiner JEF-Sprachkörper) und speist §31 R9 / §24.34.

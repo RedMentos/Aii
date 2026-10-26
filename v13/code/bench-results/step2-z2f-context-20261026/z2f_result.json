@@ -1,0 +1,316 @@
+{
+  "gate": {
+    "status": "Z2F_UNSAFE_OR_INVALID",
+    "safe": false,
+    "primary": {
+      "rate": 0.2604166666666667,
+      "control_rate": 0.09375,
+      "minus_control": {
+        "mean": 0.16666666666666669,
+        "ci95": [
+          -0.02083333333333334,
+          0.39583333333333337
+        ],
+        "episodes": 8,
+        "seeds": 1
+      },
+      "status": "POINTER_FAILS"
+    },
+    "by_type": {
+      "LONG": {
+        "rate": 0.4583333333333333,
+        "control_rate": 0.16666666666666669,
+        "minus_control": {
+          "mean": 0.2916666666666667,
+          "ci95": [
+            -0.10416666666666667,
+            0.6875000000000001
+          ],
+          "episodes": 4,
+          "seeds": 1
+        },
+        "status": "POINTER_FAILS"
+      },
+      "REVISED": {
+        "rate": 0.0625,
+        "control_rate": 0.020833333333333332,
+        "minus_control": {
+          "mean": 0.041666666666666664,
+          "ci95": [
+            0.0,
+            0.08333333333333333
+          ],
+          "episodes": 4,
+          "seeds": 1
+        },
+        "status": "POINTER_FAILS"
+      }
+    },
+    "wrong_committed_tool": {
+      "CQ": 7,
+      "CQP": 18,
+      "DQP": 2
+    },
+    "invented_value_rows": {
+      "CQ": 0,
+      "CQP": 0,
+      "DQP": 0
+    },
+    "superseded_quoted_rows": {
+      "CQ": 15,
+      "CQP": 33,
+      "DQP": 2
+    },
+    "shared_body_pointer_rate": 0.03125,
+    "mode_used": true,
+    "step2_z2b_criteria": {
+      "checks": {
+        "combination_beats_best_single": false,
+        "each_body_wins_an_episode": false,
+        "complementary_error_profiles": false,
+        "beats_same_model_same_policy": false,
+        "beats_same_model_prompt_only": false,
+        "structural": true
+      },
+      "all_pass": false,
+      "best_single": "b1_only",
+      "both_exact_mean": 0.6194444444444445,
+      "best_single_mean": 0.5861111111111111,
+      "error_profile": {
+        "b1_only": {
+          "rule_fields_correct": 0.20000000000000004,
+          "option_fields_correct": 0.9944444444444445
+        },
+        "b2_only": {
+          "rule_fields_correct": 0.0,
+          "option_fields_correct": 0.18888888888888888
+        }
+      },
+      "ci": {
+        "vs_best_single": {
+          "mean": 0.033333333333333326,
+          "ci95": [
+            -0.11666666666666667,
+            0.1472222222222222
+          ],
+          "episodes": 10,
+          "seeds": 3
+        },
+        "vs_same_policy_dual": {
+          "mean": 0.030555555555555548,
+          "ci95": [
+            -0.1166666666666667,
+            0.14444444444444443
+          ],
+          "episodes": 10,
+          "seeds": 3
+        },
+        "vs_shared_prompt_only_dual": {
+          "mean": 0.13055555555555554,
+          "ci95": [
+            -0.03055555555555558,
+            0.3111111111111111
+          ],
+          "episodes": 10,
+          "seeds": 3
+        },
+        "vs_shared_body_pointer": {
+          "mean": 0.09444444444444441,
+          "ci95": [
+            -0.038888888888888896,
+            0.21388888888888888
+          ],
+          "episodes": 10,
+          "seeds": 3
+        }
+      },
+      "two_bodies_worth_cost": false,
+      "cheaper_shared_body_enough": true
+    },
+    "utility": {
+      "CQ": {
+        "b1_only": 0.5722222222222223,
+        "b2_only": 0.0861111111111111,
+        "both_none": 0.5305555555555556,
+        "both_exact": 0.5527777777777777,
+        "both_control": 0.5416666666666666,
+        "same_policy_dual": 0.5694444444444445,
+        "prompt_only_dual": 0.49722222222222223
+      },
+      "CQP": {
+        "b1_only": 0.5861111111111111,
+        "b2_only": 0.09444444444444444,
+        "both_none": 0.6277777777777778,
+        "both_exact": 0.6194444444444445,
+        "both_control": 0.6055555555555555,
+        "same_policy_dual": 0.5888888888888889,
+        "prompt_only_dual": 0.48333333333333334
+      },
+      "DQP": {
+        "b1_only": 0.5888888888888889,
+        "b2_only": 0.09722222222222221,
+        "both_none": 0.49444444444444446,
+        "both_exact": 0.5249999999999999,
+        "both_control": 0.48333333333333334,
+        "same_policy_dual": 0.5944444444444444,
+        "prompt_only_dual": 0.4888888888888889
+      }
+    },
+    "canonical_gate_pass": false,
+    "validity": {
+      "kickoff_in_context_share": {
+        "CQ": 1.0,
+        "CQP": 1.0,
+        "DQP": 1.0
+      },
+      "required": 0.9,
+      "valid": true
+    }
+  },
+  "runs": {
+    "CQ_s23": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.08333333333333333,
+        "both_control": 0.5833333333333333,
+        "both_exact": 0.6333333333333333,
+        "both_none": 0.5333333333333333,
+        "prompt_only_dual": 0.5333333333333333,
+        "same_policy_dual": 0.5583333333333333
+      },
+      "b2_rule_rate": 0.03125,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "CQ_s24": {
+      "tool": {
+        "b1_only": 0.5416666666666667,
+        "b2_only": 0.1,
+        "both_control": 0.4666666666666667,
+        "both_exact": 0.5083333333333333,
+        "both_none": 0.5166666666666667,
+        "prompt_only_dual": 0.4166666666666667,
+        "same_policy_dual": 0.5583333333333333
+      },
+      "b2_rule_rate": 0.15625,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "CQ_s25": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.075,
+        "both_control": 0.575,
+        "both_exact": 0.5166666666666667,
+        "both_none": 0.5416666666666667,
+        "prompt_only_dual": 0.5416666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "b2_rule_rate": 0.09375,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "CQP_s23": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.075,
+        "both_control": 0.6,
+        "both_exact": 0.525,
+        "both_none": 0.5583333333333333,
+        "prompt_only_dual": 0.4166666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "b2_rule_rate": 0.1875,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "CQP_s24": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.11666666666666665,
+        "both_control": 0.525,
+        "both_exact": 0.5666666666666667,
+        "both_none": 0.6333333333333333,
+        "prompt_only_dual": 0.4833333333333333,
+        "same_policy_dual": 0.5833333333333333
+      },
+      "b2_rule_rate": 0.1875,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "CQP_s25": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.09166666666666666,
+        "both_control": 0.6916666666666667,
+        "both_exact": 0.7666666666666666,
+        "both_none": 0.6916666666666667,
+        "prompt_only_dual": 0.55,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "b2_rule_rate": 0.40625,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "DQP_s23": {
+      "tool": {
+        "b1_only": 0.6,
+        "b2_only": 0.10833333333333332,
+        "both_control": 0.4083333333333333,
+        "both_exact": 0.5833333333333333,
+        "both_none": 0.5,
+        "prompt_only_dual": 0.4583333333333333,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "b2_rule_rate": 0.03125,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "DQP_s24": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.075,
+        "both_control": 0.5666666666666667,
+        "both_exact": 0.4083333333333333,
+        "both_none": 0.475,
+        "prompt_only_dual": 0.5083333333333333,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "b2_rule_rate": 0.0,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    },
+    "DQP_s25": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.10833333333333332,
+        "both_control": 0.475,
+        "both_exact": 0.5833333333333333,
+        "both_none": 0.5083333333333333,
+        "prompt_only_dual": 0.5,
+        "same_policy_dual": 0.6
+      },
+      "b2_rule_rate": 0.0625,
+      "validity": {
+        "offers": 32,
+        "kickoff_in_context": 32
+      }
+    }
+  }
+}
