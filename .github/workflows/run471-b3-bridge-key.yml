@@ -33,7 +33,7 @@ jobs:
         working-directory: v13/code
         run: |
           set +e
-          export PYTHONPATH="$PWD:$PWD/scripts"
+          export PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests"
           "$RUNNER_TEMP/run471/bin/python" -m unittest -v tests.test_run471_bridge_key_candidate tests.test_bodyport tests.test_b3bridge > "$RUNNER_TEMP/run471-tests.txt" 2>&1
           rc=$?
           cat "$RUNNER_TEMP/run471-tests.txt"
