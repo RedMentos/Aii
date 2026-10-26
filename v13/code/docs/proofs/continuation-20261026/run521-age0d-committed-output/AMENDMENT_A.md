@@ -1,0 +1,5 @@
+# Run521 Amendment A — restart test must release Store's exclusive lock
+
+Initial Run521 source-only Actions 40317110061: 74 tests, **73 pass / 1 ERROR**, privacy CLEAN. The failure was in the newly added restart test, which opened a second Runtime on the same home while the first still held Store's exclusive file lock; the code correctly raised `RuntimeError("V13 läuft bereits mit diesem Speicher")`. This is a **test lifecycle error**, not an implementation or model failure. Preserve original RED artifact ZIP SHA256 `080b86541348ef4f09d63a2afa13d92eed5169c3de3877dd3118b790cd620c97`, private backup `/V13-Checkpoints/2026-10-26/Run521/Run521_initial_RED_lock_sha080b8654.zip`.
+
+Correction: explicitly close the original Runtime (releasing Store's exclusive lock) **before** reopening from the same directory. `Runtime.close()` is idempotent, so registered test cleanup remains safe. No runtime code, learning, Age authority, native model, fixture or gate changes. Rerun exact pinned source-only CI; do not suppress the original failure.
