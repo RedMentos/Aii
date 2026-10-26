@@ -41,7 +41,8 @@ einmal `active` (nachher), nacheinander auf derselben Cloud-Maschine.
   Gekürzt wurden nur Stufe 1 (32) und Stufe 2 (63 alte Hypothesen); Hypothesen-Schicht, Zitate, Memories nie.
 - **Einordnung:** Die Trefferquote auf passenden Turns ist identisch (62,7 %). Der ganze Gewinn (+23) kommt daher, dass die
   vorher übergelaufenen Turns jetzt normal beantwortet werden. Der Wert entspricht „ohne Hypothesen“ aus Z5c (188).
-- Kein Zusatzaufwand sichtbar (Median-Turn gleich); die zusätzliche Token-Zählung läuft nur bei Prompts über 1,5 Zeichen/Token-Grenze.
+- Kein Zusatzaufwand sichtbar (Median-Turn gleich).
+- **Nachtrag Review 2026-10-26:** Die gemessene Version übersprang die native Zählung unter 1,5 Zeichen/Token; das ist keine bewiesene Schranke (Emoji/seltene Unicode-Zeichen können dichter tokenisieren). Seit Commit nach `7b7a06e` darf nur noch die harte Obergrenze überspringen (UTF-8-Bytes + Template-Zuschlag; Byte-BPE erzeugt höchstens ein Token je Byte), sonst wird nativ gezählt. Jeder Bericht trägt `count_source` = `UPPER_BOUND` / `MEASURED` / `ESTIMATED` (mind. ein Fallback auf die Schätzung). Die 300er-Messung oben bleibt unverändert und gilt für die alte Abkürzung; die 0 Overflows sind das beobachtete Ergebnis dieser Aufgaben, keine Garantie für jede Eingabe.
 - Die Sitzungen laufen ab dem ersten Unterschied auseinander (andere Antworten → andere offene Hypothesen); deshalb überlappen
   die 37 Overflow-Turns vorher und die 32 Eingriffe nachher nur teilweise (10). Vorher-Lauf reproduziert Z5c (165 vs. 166, 37 vs. 41).
 

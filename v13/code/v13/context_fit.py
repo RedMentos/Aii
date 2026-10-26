@@ -25,7 +25,8 @@ import copy
 from .common import dumps
 
 CHARS_PER_TOKEN=3.0  # same BOOT estimate as context_os; only used when the runner cannot count tokens
-SURE_CHARS_PER_TOKEN=1.5  # below limit*1.5 chars a prompt fits for any of the pinned tokenizers: no native count needed
+TEMPLATE_TOKENS=64        # chat-template wrapper allowance (special/role tokens) on top of the message bytes
+TEMPLATE_TOKENS_PER_MESSAGE=16
 MODES=('off','shadow','active')
 TASK_POINTER='(same as the current user message)'
 
@@ -35,6 +36,11 @@ def budget(cfg,reserve=None):
 
 def build(stable,volatile,history,text):
     return [{'role':'system','content':stable+''.join(h+dumps(p) for _,h,p in volatile)}]+list(history)+[{'role':'user','content':text}]
+
+def upper_bound(messages):
+    """Token count the prompt cannot exceed: byte-level BPE / byte-fallback tokenizers (all pinned bodies) emit at most one
+    token per UTF-8 byte of content, plus the template wrapper allowance. Only this bound may skip the native count."""
+    return sum(len(m['content'].encode('utf-8')) for m in messages)+TEMPLATE_TOKENS+TEMPLATE_TOKENS_PER_MESSAGE*len(messages)
 
 def estimate(messages):
     return int(sum(len(m['content']) for m in messages)/CHARS_PER_TOKEN)+8*len(messages)
@@ -71,13 +77,13 @@ def _steps(vol,text):
         while len(vol[i][2])>1:
             vol[i][2].pop();yield 'MEMORIES',1
 
-def fit(mode,stable,volatile,history,text,count,limit,sure=SURE_CHARS_PER_TOKEN):
+def fit(mode,stable,volatile,history,text,count,limit):
     """Return (volatile to use, report). ``count(messages)`` -> prompt tokens; ``limit`` = allowed prompt tokens."""
     if mode not in MODES:raise ValueError('context_fit '+'|'.join(MODES))
     report={'mode':mode,'limit_tokens':limit,'applied':False,'fits':None,'steps':{}}
     if mode=='off':return volatile,report
-    if sum(len(m['content']) for m in build(stable,volatile,history,text))<=limit*sure:
-        report.update(fits=True,quick=True);return volatile,report
+    if upper_bound(build(stable,volatile,history,text))<=limit:
+        report.update(fits=True,quick=True,count_source='UPPER_BOUND');return volatile,report
     before=count(build(stable,volatile,history,text));report['tokens_before']=before
     if before<=limit:report.update(fits=True,tokens_after=before);return volatile,report
     work=[(layer,head,copy.deepcopy(body)) for layer,head,body in volatile];now=before
@@ -86,17 +92,25 @@ def fit(mode,stable,volatile,history,text,count,limit,sure=SURE_CHARS_PER_TOKEN)
         now=count(build(stable,work,history,text))
         if now<=limit:break
     report.update(fits=now<=limit,tokens_after=now)
+    src=getattr(count,'sources',None)
+    if src is not None:  # provenance: every count native (MEASURED) or at least one heuristic fallback (ESTIMATED)
+        report['count_sources']={k:src.count(k) for k in ('EXACT','ESTIMATE') if k in src}
+        report['count_source']='MEASURED' if src and all(x=='EXACT' for x in src) else 'ESTIMATED'
+    else:report['count_source']='ESTIMATED'
     if mode=='active' and report['steps']:
         report['applied']=True;return work,report
     return volatile,report
 
 def counter(runner,cancel,deadline):
-    """Exact token count through the runner's own template + tokenizer when available, else the char estimate."""
+    """Exact token count through the runner's own template + tokenizer when available, else the char estimate.
+    The returned callable records per call whether the count was native ('EXACT') or a fallback ('ESTIMATE') in ``.sources``."""
     exact=getattr(runner,'prompt_tokens',None)
-    if exact is None:return estimate,'ESTIMATE'
     def count(messages):
-        try:return exact(messages,cancel,deadline)
-        except Exception:
-            if cancel.is_set():raise
-            return estimate(messages)  # no native count (runner unavailable, HTTP error): conservative estimate
-    return count,'EXACT'
+        if exact is not None:
+            try:
+                n=exact(messages,cancel,deadline);count.sources.append('EXACT');return n
+            except Exception:
+                if cancel.is_set():raise
+        count.sources.append('ESTIMATE');return estimate(messages)  # no native count (runner unavailable, HTTP error): heuristic, labelled
+    count.sources=[]
+    return count,('EXACT' if exact is not None else 'ESTIMATE')
