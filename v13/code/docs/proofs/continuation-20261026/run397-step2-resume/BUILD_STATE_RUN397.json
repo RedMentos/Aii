@@ -1,7 +1,7 @@
 {
   "run": "Run397",
   "date": "2026-10-26",
-  "stage": "SOURCE_ONLY_GREEN_NATIVE_RESTART_UNPROVEN",
+  "stage": "SOURCE_ONLY_GREEN3_NATIVE_RESTART_UNPROVEN",
   "owner": "GPT scheduled continuation",
   "branch": "codex/run397-step2-resumable-native-20261026",
   "pr": 392,
@@ -35,6 +35,13 @@
       "artifact": 12619139852,
       "sha256": "ef2b143374ccba74d654709e9f9c7afb8e03668d429bdafefc979f5a519ea889",
       "fixed_by": "ad3b8a842143334fc09eb300f41d3c02ca79e9bf"
+    },
+    {
+      "type": "SYMLINKED_OWNER_AND_ATTEMPT_ROOT",
+      "run": 40249096971,
+      "artifact": 12619188261,
+      "sha256": "a3a3b498dfddad44eba7cb4d31456515733ddb192d4b309fdb76ea7322211b63",
+      "fixed_by": "5f5183109db1352c9faa2e4a4ceea34f68c853f2"
     }
   ],
   "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run397_STEP2_20261026/",
@@ -57,6 +64,20 @@
     "Decide full 378-row cohort resource budget from measured pilot runtime",
     "Verify runtime library binding on resume if needed"
   ],
-  "next_command": "PYTHONPATH=v13/code:v13/code/scripts python3 v13/code/scripts/run397_step2_resume.py --work <private fresh cohort dir> --installed-home <verified installed home> --full --execute",
-  "next_prerequisites": "Review Run395 native pilot and installed model hashes; no concurrent native owner, no paid provisioning"
+  "next_command": "PYTHONPATH=v13/code:v13/code/scripts python3 v13/code/scripts/run397_step2_resume.py --work <private fresh cohort dir> --installed-home <verified installed home> --full --execute --max-new-arms 1",
+  "next_prerequisites": "Run395 pilot complete and reviewed; no concurrent native owner; installed public artifacts deep-hash verified; native restart still requires measured proof",
+  "proof_latest": {
+    "source_head": "d04db80ba84bc8d2507ebe0f84986d6682388f21",
+    "run": 40249150310,
+    "job": 121337017938,
+    "tests": "33/33 PASS, compileall PASS, privacy CLEAN",
+    "artifact": 12620112079,
+    "zip_sha256": "7f5aaac53f4c78257a9c9a4b5f415f6d3028aba41bf9cef53b731aca6e5a61a9",
+    "raw": "ZIP CRC PASS, four internal SHA256 PASS, private Library byte-identical"
+  },
+  "additional_features": [
+    "Optional --max-new-arms N allows staged durable continuation; default unbounded",
+    "Reject symlinked work lock, attempt tree, receipt, evidence, manifest and journal",
+    "Three separate synthetic invocations complete O/P/S with no duplicate native-shaped rows"
+  ]
 }
