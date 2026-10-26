@@ -22,8 +22,8 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN616_HEAD.txt"
-          test "$(git hash-object v13/code/v13/gist_similarity.py)" = 44db3f3b947013007c691d6a44b99c5548f25081
-          test "$(git hash-object v13/code/tests/test_gist_similarity_run616.py)" = 95a1f11779d0afb5542d11b8b48198a6cdf71b19
+          test "$(git hash-object v13/code/v13/gist_similarity.py)" = b22721a5d36875e471113b459e7f791727adb3f7
+          test "$(git hash-object v13/code/tests/test_gist_similarity_run616.py)" = 2b879db35bfacd0a459b824b7fd45c37f45890c2
           test "$(git hash-object v13/code/v13/gist.py)" = 57eb638a6baded0766fd365fd0c569fffdd41b60
           test "$(git hash-object v13/code/v13/operator.py)" = 60892780b4beb6ad62efcdd3215e5b646b16efab
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
