@@ -24,6 +24,12 @@ GENERIC_QUESTION = "Apply earlier project rules. " + OPTIONS
 
 
 class ProjectScopePure(unittest.TestCase):
+    def test_project_heading_is_not_incidental_project_rules_phrase(self):
+        self.assertEqual(E.project_labels(MIRA_QUESTION), frozenset({"mira"}))
+        self.assertEqual(E.project_labels(GENERIC_QUESTION), frozenset())
+        self.assertEqual(E.project_labels("Project Mira. Project Orion. " + OPTIONS),
+                         frozenset({"mira", "orion"}))
+
     def test_case_insensitive_same_project_and_other_project_excluded(self):
         h, q = E.scope_earlier("PROJECT mIrA. " + OPTIONS, [ORION, MIRA],
                                [ORION, "Project MIRA. Budget 61 euros.", "Budget 100 euros."])
