@@ -62,7 +62,7 @@ class Run546MetacognitionLabels(unittest.TestCase):
         adjusted = live.before_effort(self.runtime, event, info, signal)
         self.assertEqual(adjusted['uncertainty'], 0.8)
         self.assertTrue(info['metacog_abstain'])
-        self.assertEqual(self.meta.report('answer')['components']['answer']['n'], 40)
+        self.assertEqual(self.meta.report(live.ANSWER_GROUNDED)['components'][live.ANSWER_GROUNDED]['n'], 40)
 
 
 if __name__ == '__main__':
