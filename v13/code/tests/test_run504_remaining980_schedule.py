@@ -29,7 +29,8 @@ class Remaining980Schedule(unittest.TestCase):
                          [42] * 23 + [14])
         reserved = set(result["reserved_stage_ids"])
         future = [sid for b in result["batches"] for sid in b["stage_ids"]]
-        self.assertEqual(len(future), len(set(future)) == 70)
+        self.assertEqual(len(future), 70)
+        self.assertEqual(len(set(future)), 70)
         self.assertFalse(set(future) & reserved)
         self.assertEqual(set(future) | reserved, {s["id"] for s in full["stages"]})
         self.assertEqual(result["full_stage_map_sha256"], schedule.digest(full))
@@ -48,7 +49,8 @@ class Remaining980Schedule(unittest.TestCase):
             self.assertEqual(batch["row_keys_sha256"], schedule.digest(keys))
             self.assertFalse(batch["native_executed"])
             future.extend(tuple(k) for k in keys)
-        self.assertEqual(len(future), len(set(future)) == 980)
+        self.assertEqual(len(future), 980)
+        self.assertEqual(len(set(future)), 980)
         self.assertEqual(plan["remaining_row_keys_sha256"],
                          schedule.digest([list(k) for k in future]))
         reserved = {tuple(k) for stage in full["stages"]
