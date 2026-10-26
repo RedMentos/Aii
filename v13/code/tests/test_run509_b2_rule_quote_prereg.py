@@ -40,6 +40,9 @@ class FreshQuotePrereg(unittest.TestCase):
         self.assertEqual(x["seeds"], [41, 42, 43])
         self.assertEqual(x["arms"], ["BASE", "RULE_FOCUS"])
         self.assertEqual(x["planned_b2_offer_observations"], 60)
+        self.assertTrue(x["fixture_hash_frozen"])
+        self.assertEqual(x["fixture_sha256"], new.EXPECTED_FIXTURE_SHA256)
+        self.assertEqual(x["status"], "SOURCE_ONLY_FROZEN_NO_NATIVE")
         self.assertEqual(x["model_sha256_expected_not_retrieved"],
                          old.MODEL_SHA256)
         self.assertEqual(x["runner_sha256_expected_not_retrieved"],
@@ -64,6 +67,14 @@ class FreshQuotePrereg(unittest.TestCase):
                     (200, 4, True), specs[0][4])
         with patch.object(new, "SPECS", tuple(specs)):
             with self.assertRaisesRegex(ValueError, "FRESH_ORACLE_ACTION_DRIFT"):
+                new.fixtures()
+
+    def test_same_action_but_changed_fixture_fails_frozen_sha(self):
+        specs = list(new.SPECS)
+        name, kind, rules, a, b = specs[0]
+        specs[0] = (name, kind, (rules[0] + 1, rules[1], rules[2]), a, b)
+        with patch.object(new, "SPECS", tuple(specs)):
+            with self.assertRaisesRegex(ValueError, "FRESH_FIXTURE_HASH_DRIFT"):
                 new.fixtures()
 
     def test_source_only_cli_exclusive_output(self):
