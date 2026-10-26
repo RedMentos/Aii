@@ -108,7 +108,7 @@ def short_text(stage, check, results, trace):
             'NOT_BUILT': 'noch nicht gebaut', 'SKIPPED_DONE': 'schon fertig (übersprungen)'}
     for r in results:
         lines.append('- %s: %s%s' % (TITLES[r['step']], word.get(r['status'], r['status']), ', %.0f min' % r['minutes'] if r.get('minutes') else ''))
-    lines += ['', 'Nur Messung: nichts wurde eingeschaltet, keine Lernrechte vergeben.', 'Bitte diese ZIP-Datei in den Claude-Chat hochladen.']
+    lines += ['', 'Messung; einzige Änderung: Eignungs-Werkzeug an (Nutzerentscheidung 22.10., nur SHADOW bei Age 0), keine Lernrechte vergeben.', 'Bitte diese ZIP-Datei in den Claude-Chat hochladen.']
     return '\n'.join(lines)+'\n'
 
 
