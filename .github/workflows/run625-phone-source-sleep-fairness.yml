@@ -1,0 +1,132 @@
+name: V13 Run625 exact-current Termux source ZIP and extracted Sleep A integration
+on:
+  push:
+    branches:
+      - codex/automation11-run625-phone-source-sleep-fairness-20261027
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run625-phone-source-sleep-fairness.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/run625-phone-source-sleep-fairness/**'
+permissions:
+  contents: read
+jobs:
+  phone-source:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run625-phone-source-sleep-fairness-20261027' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact Run624 source, Run623 operator, packager and frozen Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN625_HEAD.txt"
+          test "$(git hash-object v13/code/v13/sleep_offline.py)" = 0525bffc887efd91a26a67f94a38f7eab2cdfd0f
+          test "$(git hash-object v13/code/tests/test_run624_sleep_session_fairness.py)" = bea79648409efc7d6f23fa02a110a74fa09ea5a7
+          test "$(git hash-object v13/code/v13/operator.py)" = 9b928d1cce3dfc1466b564cf20130cb9e7af8706
+          test "$(git hash-object v13/code/scripts/package_source.py)" = 06167e0bcb82b36cb08841cd31b9618c4ba0926e
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = 880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run625-phone-source-sleep-fairness/PREREG.md)" = 26dd4429ea4145f92f89ff048739cdb81ddd1f16
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/v13/sleep_offline.py v13/code/v13/operator.py v13/code/tests/test_run624_sleep_session_fairness.py v13/code/scripts/package_source.py > "$RUNNER_TEMP/RUN625_SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN625_HOST.txt"
+      - name: Isolated pinned source-only dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run625venv"
+          "$RUNNER_TEMP/run625venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build exact-current immutable Termux source-only ZIP
+        run: |
+          set +e
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Run625.zip" --phone-install > "$RUNNER_TEMP/RUN625_PACK_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN625_PACK_EXIT.txt"
+          exit 0
+      - name: Independent full-member SHA and negative-gate verification
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN625_PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run625.zip" --root v13/code --out "$RUNNER_TEMP/RUN625_VERIFY.json" > "$RUNNER_TEMP/RUN625_VERIFY_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=2
+          fi
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/run625venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN625_VERIFY_RAW.log" 2>&1
+          import json,os,zipfile
+          from pathlib import Path
+          tmp=Path(os.environ['RUNNER_TEMP'])
+          d=json.loads((tmp/'RUN625_VERIFY.json').read_text())
+          assert d['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
+          assert d['all_member_hashes']=='PASS' and d['checkout_byte_parity']=='PASS' and d['crc']=='PASS'
+          assert d['native_model_inference'] is False and d['redmi_measured'] is False
+          assert d['gates']=={'STEP2':'UTILITY_FAIL','B3_L1':'FAIL','Body_JEPA':'UNAVAILABLE','jepa_weight':0,'V13':'INCOMPLETE'}
+          with zipfile.ZipFile(tmp/'V13-Phone-Run625.zip') as z:
+              m=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              for name in ('v13/sleep_offline.py','v13/operator.py','tests/test_run624_sleep_session_fairness.py','tests/test_operator_config_atomic_run623.py'):
+                  assert name in m['files'],name
+          print('RUN625_ALL_MEMBER_SHA_PARITY_AND_NEGATIVE_GATES_VERIFIED',d['file_count'])
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN625_VERIFY_EXIT.txt"
+          exit 0
+      - name: Packaging regressions and extracted real SQLite Runtime integration
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD" "$RUNNER_TEMP/run625venv/bin/python" -m unittest -v tests.test_package_source tests.test_phone_zip_current_run268) > "$RUNNER_TEMP/RUN625_PACKAGE_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN625_VERIFY_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/extracted"
+            unzip -q "$RUNNER_TEMP/V13-Phone-Run625.zip" -d "$RUNNER_TEMP/extracted" >> "$RUNNER_TEMP/RUN625_PACKAGE_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            (cd "$RUNNER_TEMP/extracted/V13-Phone" && bash -n STARTEN.sh setup.sh KNOEPFE_EINRICHTEN.sh && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run625venv/bin/python" -m unittest -v tests.test_run624_sleep_session_fairness.SleepSessionFairness tests.test_run609_sleep_digest_backlog.SleepBacklog.test_interleaved_unfinished_assistant_is_deferred_and_later_recovered tests.test_run609_sleep_digest_backlog.SleepBacklog.test_revoked_source_never_enters_digest_but_cursor_progresses tests.test_run610_sleep_partial_pair.PartialUserPair tests.test_run612_sleep_backlog_status.SleepProgressStatus tests.test_operator_config_atomic_run623.AtomicConfigTests tests.test_language_operator_run620.LanguageOperatorTests tests.test_prompts tests.test_gist_similarity_run616.SimilarityTests) > "$RUNNER_TEMP/RUN625_EXTRACTED_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN625_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy scan
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7422985fa3fd97e74b58ad635c28f49faf5dadb3 --head HEAD > "$RUNNER_TEMP/RUN625_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN625_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close ZIP and original raw hashes
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in PACK VERIFY TEST PRIVACY; do
+            test -f "RUN625_${k}_EXIT.txt" || echo 2 > "RUN625_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN625_*' ! -name 'RUN625_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN625_SHA256SUMS.txt
+          if [ -f V13-Phone-Run625.zip ]; then sha256sum V13-Phone-Run625.zip >> RUN625_SHA256SUMS.txt; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run625-Current-Phone-Source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Run625.zip
+            ${{ runner.temp }}/RUN625_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source ZIP, extracted SQLite, and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in PACK VERIFY TEST PRIVACY; do
+            echo "RUN625 $k exit: $(cat "$RUNNER_TEMP/RUN625_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN625_${k}_EXIT.txt")" = 0
+          done
