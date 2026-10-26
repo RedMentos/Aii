@@ -1,0 +1,55 @@
+name: V13 Run481 B2 ranked exact quote shadow candidate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run481-b2-ranked-quotes.yml'
+      - 'v13/code/scripts/run481_ranked_quote_choices_candidate.py'
+      - 'v13/code/tests/test_run481_ranked_quote_choices_candidate.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run481-b2-ranked-quotes/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pin frozen Cognition and install isolated source deps
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/v13/cognition.py)" = '1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf'
+          sha256sum v13/code/scripts/run481_ranked_quote_choices_candidate.py v13/code/tests/test_run481_ranked_quote_choices_candidate.py > "$RUNNER_TEMP/run481-source-sha256.txt"
+          python3 -m venv "$RUNNER_TEMP/run481"
+          "$RUNNER_TEMP/run481/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source-disjoint ranking and existing exact quote regressions
+        working-directory: v13/code
+        run: |
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests"
+          "$RUNNER_TEMP/run481/bin/python" -m unittest -v tests.test_run481_ranked_quote_choices_candidate tests.test_b2_quote_select.Anchor tests.test_quote_context.QuoteSpan tests.test_context_exact_quotes_run93 > "$RUNNER_TEMP/run481-tests.txt" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/run481-tests.txt"
+          echo "EXIT=$rc" > "$RUNNER_TEMP/run481-exit.txt"
+          exit "$rc"
+      - name: Public repository privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Preserve raw tests and RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run481-b2-ranked-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run481-source-sha256.txt
+            ${{ runner.temp }}/run481-tests.txt
+            ${{ runner.temp }}/run481-exit.txt
+          if-no-files-found: warn
+          retention-days: 30
