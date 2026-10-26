@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from v13.agi import eligibility
 from v13.toolstep import ToolStep
-from v13.broker import Broker, decide, egress_type
+from v13.broker import Broker, decide, egress_type, exact_tool_final
 
 RUNTIME = Path(__file__).resolve().parents[1] / 'v13' / 'runtime.py'
 
@@ -153,6 +153,38 @@ class ToolFinalAttributionTests(unittest.TestCase):
                 meta.update(bad)
                 receipt = b.finalize(e, 'message', meta, 'FINAL', output, tool_result=tool)
                 self.assertNotEqual(receipt['authority'], 'ELIGIBILITY_TOOL_FINAL')
+
+    def test_exact_tool_authority_refuses_tampered_visible_answer(self):
+        store = MagicMock()
+        store.add_packet.return_value = {'packet_id': 'broker-packet'}
+        b = Broker(SimpleNamespace(store=store, cfg={'tool_conflict_policy': 'log'}, session='test'))
+        e = {'event_id': 'event', 'brain_generation_id': 'generation',
+             'source_ref': {'source_id': 'src'}}
+        tool = _tool('UNKNOWN')
+        expected = eligibility.final_text(tool['args'], tool['result'])
+        self.assertTrue(exact_tool_final(tool, expected))
+        for output in (expected+' Choose Option A.', expected[:-1], 'Choose Option B.'):
+            with self.subTest(output=output):
+                self.assertFalse(exact_tool_final(tool, output))
+                meta = {'output_authority': 'ELIGIBILITY_TOOL_FINAL',
+                        'tool_answer_first': 'FINAL', 'model_generated': False}
+                with patch.object(Broker, '_check', return_value={'ok': True, 'violations': []}):
+                    receipt = b.finalize(e, 'message', meta, 'FINAL', output, tool_result=tool)
+                self.assertIsNone(receipt['authority'])
+
+    def test_malformed_tool_results_never_get_fixed_tool_authority(self):
+        tool = _tool('UNKNOWN')
+        text = eligibility.final_text(tool['args'], tool['result'])
+        malformed = [None, [], {}, {'tool': 'calc', 'result': tool['result']},
+                     {'tool': 'eligibility', 'result': None},
+                     {'tool': 'eligibility', 'result': {'action': 'UNKNOWN'}},
+                     {'tool': 'eligibility', 'result': {'action': 'A'}, 'args': tool['args']},
+                     {'tool': 'eligibility', 'result': tool['result'], 'args': None},
+                     {'tool': 'eligibility', 'result': tool['result'], 'args': {}}]
+        for value in malformed:
+            with self.subTest(value=value):
+                self.assertFalse(exact_tool_final(value, text))
+        self.assertFalse(exact_tool_final(tool, None))
 
     def test_original_frozen_gates_not_redefined_by_this_candidate(self):
         self.assertTrue(RUNTIME.exists())
