@@ -1,0 +1,18 @@
+{
+  "schema": "V13_RUN434_CLI_RED_FIRST_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "red_head": "5adf3831471b090da6649b39c3c2f78ac775aace",
+  "red_actions": 40266144461,
+  "red_artifact_id": 12626855087,
+  "red_artifact_sha256": "e62423c4c2d5f3703470dc889adedf954766c17565772ec1ffe91bef1766641e",
+  "red_tests": "51 total, 1 expected FAIL: real argparse/main stage5 --stage4-report source-only integration",
+  "privacy": "CLEAN",
+  "upstream_native_red": {
+    "actions": 40265963506,
+    "artifact_id": 12625924197,
+    "reason": "Run434 CLI still required --stage3-report, no native inference attempted",
+    "P_s21_rows": 0
+  },
+  "next_command": "Fix only Run434 argparse --stage4-report spelling, rerun 51 tests and privacy, verify exact remote source. Do not auto-retry closed Run435 PR."
+}
