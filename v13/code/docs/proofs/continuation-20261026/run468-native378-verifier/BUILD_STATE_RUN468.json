@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN468_NINE_RECEIPT_NATIVE378_STRUCTURAL_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 source-only full structural verifier, separate from Run464 native owner",
+  "branch": "codex/automation11-run468-native378-verifier-20261026",
+  "base": "b0b7b4fccad0bae6eef122a38f173b471a89d64e",
+  "tested_source_head": "643ef6a8909143ad7483b01467a3bdd1bd3c5a3d",
+  "pr": 467,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74",
+    "v13/code/tests/test_run468_verify_native378_adversarial.py": "49fdad9cb6cea80310cbce8ce44c69ace4f976e8",
+    ".github/workflows/run468-native378-verifier.yml": "da64910eb119392ce43c13068d42585f94fb3b7a"
+  },
+  "actions": {
+    "id": 40273685208,
+    "conclusion": "success",
+    "tests": "162/162 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12629561355,
+    "raw_artifact_sha256": "dc05bc633c650a59eec6e31afc359351e60c18e2796b39910fd234d601e0b526"
+  },
+  "result": "Final frozen nine-receipt native378 structural postflight source verifies exact 9×42 rows, Run397 terminal ALL_ARMS_STRUCTURALLY_RECORDED, safe-export inventory and identity, no utility/STEP2 promotion.",
+  "scope": "Software/synthetic Linux CI only, actual native378 has not run.",
+  "active_native": {
+    "run_id": 40273136245,
+    "status_at_checkpoint": "in_progress",
+    "owner": "Run464 exclusive S_s21 native retry"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Actual 252→294→336→378 native path still blocked by sequential model work; Run464 first.",
+    "Even full 378 structural proof is not three-seed utility acceptance.",
+    "Need pinned-read descriptive paired 378 utility and pre-registered utility gate independent of structural receipts."
+  ],
+  "next_command": "Monitor Run464. On verified safe native252, resume exact serial arms and preserve each original artifact. Independently implement nine-arm SHA-pinned descriptive paired utility for full 378 cohort, with no gate promotion."
+}
