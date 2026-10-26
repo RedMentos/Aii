@@ -68,9 +68,21 @@ def recipe(budget, deadline, local_only, options):
     return (min(eligible, key=lambda o: (o['cost'], o['entity']))['entity'] if eligible else 'NONE'), out
 
 
-def decide(rules, options, current, quotes=()):
+def newest_values(rule, history):
+    """Values of the newest source in history (oldest -> newest) that states this rule, or an empty set."""
+    for text in reversed(history):
+        found = stated_values(rule, text)
+        if found: return found
+    return set()
+
+
+def decide(rules, options, current, quotes=(), history=()):
     """rules: {'budget','deadline','local_only'} extracted (None = model says unavailable).
-    current: current source text; quotes: verified exact quotes. Returns action, options, rejected reasons."""
+    current: current source text; quotes: verified exact quotes. Returns action, options, rejected reasons.
+    history (WP-Z2g recency guard, empty = previous behaviour): earlier exact sources of this session, oldest -> newest.
+    A rule value not stated in the current source counts only if the newest earlier source that states that rule
+    states this value; an exact but superseded quote ('Budget 60 euros' before 'New budget 80 euros') -> unavailable.
+    WP-Z2f: with more B2 context, 27/27 wrong decisions came from such stale quotes."""
     texts = [current, *quotes]; rejected = []; kept = {}
     for rule in ('budget', 'deadline', 'local_only'):
         v = rules.get(rule)
@@ -78,21 +90,23 @@ def decide(rules, options, current, quotes=()):
         override = stated_values(rule, current)
         if override and v not in override: rejected.append(rule+':conflicts_current'); kept[rule] = None
         elif not any(stated(rule, v, t) for t in texts): rejected.append(rule+':not_stated'); kept[rule] = None
+        elif history and not override and (newest := newest_values(rule, history)) and v not in newest: rejected.append(rule+':superseded'); kept[rule] = None
         else: kept[rule] = v
     for o in options:
         if not option_stated(o, texts): rejected.append(o['entity']+':option_not_stated')
     if any(r.endswith('option_not_stated') for r in rejected): kept['budget'] = None
     action, out = recipe(kept['budget'], kept['deadline'], kept['local_only'], options)
-    return {'action': action, 'options': out, 'rejected': rejected, 'revision': REVISION}
+    return {'action': action, 'options': out, 'rejected': rejected, 'revision': REVISION+('+recency' if history else '')}
 
 
-def tool(current, a_cost, a_days, a_local, b_cost, b_days, b_local, quotes='', budget=None, deadline=None, local_only=None):
-    """ToolRegistry entry point (scalar typed args; quotes joined by newlines; omitted rule = unavailable)."""
+def tool(current, a_cost, a_days, a_local, b_cost, b_days, b_local, quotes='', budget=None, deadline=None, local_only=None, history=''):
+    """ToolRegistry entry point (scalar typed args; quotes and history joined by newlines; omitted rule = unavailable;
+    empty history = recency guard off)."""
     options = [{'entity': 'A', 'cost': a_cost, 'days': a_days, 'local': a_local},
                {'entity': 'B', 'cost': b_cost, 'days': b_days, 'local': b_local}]
     return decide({'budget': budget, 'deadline': deadline, 'local_only': local_only}, options, current,
-                  [q for q in quotes.split('\n') if q])
+                  [q for q in quotes.split('\n') if q], [h for h in history.split('\n') if h])
 
 
 SCHEMA = {'current': 'text', 'quotes': 'text?', 'a_cost': 'int', 'a_days': 'int', 'a_local': 'bool',
-          'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?'}
+          'b_cost': 'int', 'b_days': 'int', 'b_local': 'bool', 'budget': 'int?', 'deadline': 'int?', 'local_only': 'bool?', 'history': 'text?'}
