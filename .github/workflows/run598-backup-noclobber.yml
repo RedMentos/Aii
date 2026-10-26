@@ -1,0 +1,69 @@
+name: V13 Run598 atomic no-clobber backup publication
+on:
+  push:
+    branches:
+      - codex/automation11-run598-backup-noclobber-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run598-backup-noclobber.yml'
+      - 'v13/code/v13/backup.py'
+      - 'v13/code/tests/test_run598_backup_noclobber.py'
+permissions:
+  contents: read
+jobs:
+  backup-noclobber:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run598-backup-noclobber-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install isolated model-free dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'prompt_toolkit==3.0.52'
+      - name: Exact-head backup, restore and crash regressions
+        shell: bash
+        run: |
+          mkdir -p run598-raw
+          git rev-parse HEAD > run598-raw/source_head.txt
+          sha256sum v13/code/v13/backup.py v13/code/tests/test_run598_backup_noclobber.py v13/code/docs/proofs/continuation-20261026/run598-backup-noclobber/PREREG.md > run598-raw/source_sha256.txt
+          set +e
+          (cd v13/code && python -m unittest discover -s tests -p test_run598_backup_noclobber.py -v) > run598-raw/new-tests.log 2>&1
+          echo "$?" > run598-raw/new-tests.exit
+          (cd v13/code && python -m unittest discover -s tests -p test_backup_source_closure_run304.py -v && python -m unittest discover -s tests -p test_backup_restore_memory_run210.py -v && python -m unittest discover -s tests -p test_multichat_backup_restore_run217.py -v && python -m unittest discover -s tests -p test_restore_crash_journal_run211.py -v) > run598-raw/regressions.log 2>&1
+          echo "$?" > run598-raw/regressions.exit
+          python -m compileall -q v13/code/v13/backup.py v13/code/tests/test_run598_backup_noclobber.py > run598-raw/compile.log 2>&1
+          echo "$?" > run598-raw/compile.exit
+          python v13/code/scripts/public_repo_privacy_scan.py --base "2d438472661b2ed012302bec956db35510c04c2c" --head "${{ github.event.pull_request.head.sha || github.sha }}" --no-worktree > run598-raw/privacy.log 2>&1
+          echo "$?" > run598-raw/privacy.exit
+          set -e
+          cat run598-raw/new-tests.log run598-raw/regressions.log run598-raw/privacy.log
+      - name: Close raw evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p run598-raw
+          (cd run598-raw && sha256sum *.txt *.log *.exit > RAW_SHA256SUMS.txt)
+          cat run598-raw/RAW_SHA256SUMS.txt
+      - name: Preserve raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run598-backup-noclobber-raw
+          path: run598-raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused checks
+        run: |
+          test "$(cat run598-raw/new-tests.exit)" = 0
+          test "$(cat run598-raw/regressions.exit)" = 0
+          test "$(cat run598-raw/compile.exit)" = 0
+          test "$(cat run598-raw/privacy.exit)" = 0
