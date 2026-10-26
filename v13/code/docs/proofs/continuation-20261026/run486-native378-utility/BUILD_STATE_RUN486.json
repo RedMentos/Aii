@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN486_ACTUAL_NATIVE378_READONLY_UTILITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run486-native378-utility-readonly-20261026",
+  "base_ref": "codex/run479-native-s22-20261026",
+  "base_sha": "55d7f672aafec8b92ce0878253f88f9681d8bf22",
+  "owner": "Run486 independent no-model utility analysis of original Run479 completed native378; no native/model owner",
+  "actual_original_native_evidence": {
+    "run_id": 40281793150,
+    "job_id": 121436496802,
+    "run_conclusion": "success",
+    "source_head_sha": "55d7f672aafec8b92ce0878253f88f9681d8bf22",
+    "safe_artifact_id": 12633269066,
+    "safe_artifact_sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+    "raw_artifact_id": 12633398520,
+    "raw_artifact_sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf",
+    "rows_structurally_verified": 378,
+    "arms_structurally_verified": 9,
+    "source_evidence_class": "actual Linux-native inference, NOT Redmi and NOT canonical STEP2 acceptance"
+  },
+  "changes": [
+    "One-shot source-only workflow downloads only original SHA-pinned Run479 safe no-model and raw evidence ZIPs, after GitHub artifact metadata and successful native run identity checks.",
+    "Validate archive members before extraction, original Stage9 report and unchanged negative gates.",
+    "Run original frozen Run468 verifier via Run469 then independently re-read SHA-pinned tool rows for Run470 within-arm and between-arm utility.",
+    "Preserve original and derived raw logs/hashes on failure; no models downloaded, no native rerun, no cohort/source/seed edits."
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run394_step2_fresh.py": "fae7aed612108a554d8566b2917ebf31022df423",
+    "v13/code/scripts/run397_step2_resume.py": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74",
+    "v13/code/scripts/run469_native378_utility.py": "b11819e5dfe6a6022177923c2f151ce9f53f01b8",
+    "v13/code/scripts/run470_step2_complementarity.py": "bc49f6aab3455dc4656c98ef8df5b6a038631b48",
+    ".github/workflows/run486-native378-utility.yml": "42b805fa5904dda1e1fe5dd2a98d013bd501b00f"
+  },
+  "tests": {
+    "github_source_and_original_native_artifact_analysis": "PENDING; original Run479 native378 GREEN is verified by GitHub run, Run486 has not yet analyzed utility",
+    "expected": "Frozen Run468/469/470 source tests, actual nine-receipt read-only paired utility and complementarity, privacy scan, raw artifact"
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "This 378-row exploratory Run394/397 cohort is not the original ten-episode scoped STEP2 acceptance; even favorable utility cannot promote STEP2.",
+    "Structural nine-receipt native GREEN does not imply actual B1/B2 complementarity or B3/Body-JEPA progress.",
+    "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available."
+  ],
+  "exact_next_command": "Open PR to trigger Run486 once; inspect source tests, raw logs and original native378 paired utility, close hashes and preserve negative gates. Follow with independent review and a new preregistered acceptance cohort only if justified."
+}
