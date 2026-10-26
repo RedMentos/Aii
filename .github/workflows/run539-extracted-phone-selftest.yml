@@ -1,0 +1,140 @@
+name: V13 Run539 immutable extracted phone ZIP full selftest
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run539-extracted-phone-selftest.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run539-extracted-phone-selftest/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  extracted-selftest:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run539-extracted-phone-selftest-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify prereg and source identity
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run539-extracted-phone-selftest/PREREG.md)" = '6b0720e929942be948ba69816b71a2985a3c6271'
+          test "$(git hash-object v13/code/tests/test_run534_independent_z12a_audit.py)" = '3b8b6aff78cc24a08ea105948e09f09b3b24754b'
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = '880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1'
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN539_HEAD.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN539_HOST.txt"
+      - name: Isolated source-only dependencies without torch or model
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run539venv"
+          timeout 240s "$RUNNER_TEMP/run539venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN539_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run539venv/bin/python" -c "import importlib.util; assert importlib.util.find_spec('torch') is None" >> "$RUNNER_TEMP/RUN539_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN539_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retrieve exact original Run538 ZIP, verify outer and inner SHA
+        id: input
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run539_artifact" "$RUNNER_TEMP/run539_extract"
+          curl -fsSL --retry 0 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12653240571/zip" \
+            -o "$RUNNER_TEMP/run539-outer.zip" > "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "2c925e43c6c1d81e1a04e36ab2be1c30eeb0e7a49d1a0040f8a474e19eb42c0d  $RUNNER_TEMP/run539-outer.zip" | sha256sum -c - >> "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            unzip -q "$RUNNER_TEMP/run539-outer.zip" -d "$RUNNER_TEMP/run539_artifact" >> "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo "b66aa4be0ea5d0855f2c9167111e9f8e3a1bec18007ed3a232a801191d1616b3  $RUNNER_TEMP/run539_artifact/V13-Phone-Run538.zip" | sha256sum -c - >> "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/run539_artifact/V13-Phone-Run538.zip" --root v13/code --out "$RUNNER_TEMP/RUN539_VERIFY.json" >> "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            unzip -q "$RUNNER_TEMP/run539_artifact/V13-Phone-Run538.zip" -d "$RUNNER_TEMP/run539_extract" >> "$RUNNER_TEMP/RUN539_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN539_INPUT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Full unfiltered selftest from extracted immutable source ZIP
+        id: selftest
+        if: ${{ steps.deps.outputs.rc == '0' && steps.input.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$RUNNER_TEMP/run539_extract/V13-Phone"
+          export V13_HOME="$RUNNER_TEMP/run539_home"
+          unset RUN534_RAW_JSON
+          cd "$RUNNER_TEMP/run539_extract/V13-Phone"
+          timeout --signal=TERM --kill-after=10s 900s "$RUNNER_TEMP/run539venv/bin/python" -m v13 --home "$V13_HOME" selftest > "$RUNNER_TEMP/RUN539_SELFTEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN539_SELFTEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public diff privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN539_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN539_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN539_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw proof
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN539_*' ! -name RUN539_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN539_SHA256SUMS.txt
+      - name: Preserve all raw even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run539-extracted-phone-selftest-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN539_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source ZIP selftest and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN539_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN539_INPUT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN539_SELFTEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN539_PRIVACY_EXIT.txt")" = 0
