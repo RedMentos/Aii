@@ -1,0 +1,300 @@
+name: V13 Run572 NEW CURRENT versus LEGACY 84-row serialized Linux-native comparison
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run572-current-legacy-native.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-paired:
+    if: ${{ github.event.pull_request.head.ref == 'assistant/v13-run572-current-legacy-native-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact original and new prereg/source/model/Canon pins
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN572_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run572-current-legacy-native/PREREG.md)" = 'bbe80979288006bde1b6e9bd8cf4081e6d4a8284'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run571-current-default-executor/PREREG.md)" = 'bc20229b3f9ef798e5ed4f0671d270bb024e4aa3'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run570-current-default-source/PREREG.md)" = 'beeabb51bcef040e8abb989238c24033afc3e648'
+          test "$(git hash-object v13/code/scripts/run571_current_default_native.py)" = '813dfe55997db2116b7cd79365a744b2635440b6'
+          test "$(git hash-object v13/code/tests/test_run571_current_default_native.py)" = 'acab4ea3b0898af7c6c4ee3ef18645770ffc3177'
+          test "$(git hash-object v13/code/scripts/run570_current_default_cohort.py)" = '64a76175da9f14c65c0e7fdfaf647e47e7e56715'
+          test "$(git hash-object v13/code/tests/test_run570_current_default_cohort.py)" = '7a65e45981f8d452aac8ececea6200192fbc3a3c'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN572_HOST.txt"
+          sha256sum v13/code/scripts/run570_current_default_cohort.py v13/code/scripts/run571_current_default_native.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN572_SOURCE_SHA256.txt"
+      - name: Isolated pinned Python dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run572venv"
+          timeout 240s "$RUNNER_TEMP/run572venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN572_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Source-only adversarial tests and exclusive new cohort plan
+        id: fixture
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout 450s "$RUNNER_TEMP/run572venv/bin/python" -m unittest -v tests.test_run570_current_default_cohort tests.test_run571_current_default_native tests.test_run496_heldout10_native_pilot tests.test_run491_step2_heldout10 > "$RUNNER_TEMP/RUN572_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run572venv/bin/python" scripts/run571_current_default_native.py --plan --work "$RUNNER_TEMP/run572-work" > "$RUNNER_TEMP/RUN572_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run572venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN572_PLAN_RAW.log" 2>&1
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'run572-work'/'RUN570_PLAN.json'
+          d=json.loads(p.read_text())
+          assert d['schema']=='V13_RUN570_DISJOINT_CURRENT_LEGACY_SOURCE_PLAN_V1'
+          assert d['planned_native_consumer_rows']==84 and len(d['row_keys'])==84
+          assert d['arms']==['CURRENT','LEGACY'] and d['seed']==41
+          assert d['native_executed'] is False and d['canonical_gate_pass'] is False
+          assert d['step2_exit']=='UTILITY_FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          assert all(set(f)=={'id','type','history','current'} for f in d['source_fixtures'])
+          print('RUN572_SOURCE_ONLY_DISJOINT_84_ROW_PLAN',hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN572_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-download original pinned public GGUF/Needle and b10964 runner
+        id: bootstrap
+        if: ${{ steps.fixture.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run572installed"
+          timeout -s TERM -k 30s 1500s "$RUNNER_TEMP/run572venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN572_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run572venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN572_INSTALLED_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from run496_heldout10_native_pilot import verify_installed
+          d=verify_installed(Path(os.environ['V13_HOME']))
+          assert d['native_executed'] is False and len(d['runtime_library_sha256'])>0
+          print(json.dumps({'status':'ORIGINAL_MODEL_AND_RUNNER_SHA_VERIFIED',
+                            'model_sha256':d['model_sha256'],'runner_sha256':d['runner_sha256']},sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN572_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute exactly 84 NEW disjoint paired Linux-native consumer rows
+        id: native
+        if: ${{ steps.bootstrap.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run572installed"
+          timeout -s TERM -k 30s 5400s "$RUNNER_TEMP/run572venv/bin/python" scripts/run571_current_default_native.py --execute --work "$RUNNER_TEMP/run572-work" --installed-home "$V13_HOME" > "$RUNNER_TEMP/RUN572_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent structural postflight of exact 84 original NEW rows
+        id: audit
+        if: ${{ steps.native.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN572_AUDIT_RAW.log" 2>&1
+          import hashlib,json,math,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run572-work'
+          sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+          plan=json.loads((root/'RUN570_PLAN.json').read_text())
+          attempt=json.loads((root/'RUN571_ATTEMPT.json').read_text())
+          preflight=json.loads((root/'RUN571_INSTALLED_PREFLIGHT.json').read_text())
+          result=json.loads((root/'RUN571_RESULT.json').read_text())
+          progress=[json.loads(x) for x in (root/'RUN571_PROGRESS.jsonl').read_text().splitlines()]
+          assert plan['native_executed'] is False and plan['canonical_gate_pass'] is False
+          assert plan['planned_native_consumer_rows']==84 and len(plan['row_keys'])==84
+          assert attempt['state']=='CLAIMED_BEFORE_MODEL_PREFLIGHT'
+          assert attempt['plan_sha256']==sha(root/'RUN570_PLAN.json')
+          assert preflight['model_sha256']==plan['original_model_sha256_expected_not_retrieved']
+          assert preflight['runner_sha256']==plan['original_runner_sha256_expected_not_retrieved']
+          assert len(preflight['runtime_library_sha256'])>0
+          assert result['schema']=='V13_RUN571_NEW_CURRENT_LEGACY_NATIVE_STRUCTURAL_V1'
+          assert result['native_executed'] is True and result['rows_verified']==84
+          assert result['canonical_gate_pass'] is False and result['step2_exit']=='UTILITY_FAIL'
+          assert result['jepa_weight']==0 and result['redmi_measured'] is False
+          assert result['row_keys_sha256']==plan['row_keys_sha256']
+          assert result['source_plan_sha256']==sha(root/'RUN570_PLAN.json')
+          assert [(p['arm'],p['state']) for p in progress]==[
+              ('CURRENT','STARTED'),('CURRENT','FINISHED'),
+              ('LEGACY','STARTED'),('LEGACY','FINISHED')]
+          assert len(result['receipts'])==2
+          assert [r['arm'] for r in result['receipts']]==['CURRENT','LEGACY']
+          assert all(r['rows']==42 and r['wrong_committed']==0 for r in result['receipts'])
+          for r in result['receipts']:
+              arm=r['arm'];rid=f'{arm}_s41'
+              assert r['source_sha256']==sha(root/f'step2_{rid}.json')
+              assert r['tool_sha256']==sha(root/f'tool_{rid}.json')
+              assert r['summary_sha256']==sha(root/f'summary_{rid}.json')
+              assert all(type(u) in (float,int) and math.isfinite(u) and 0<=u<=1
+                         for u in r['mean_utility'].values())
+          report={'status':'RUN572_84_NATIVE_ROWS_STRUCTURAL_ONLY',
+                  'source_head':(Path(os.environ['RUNNER_TEMP'])/'RUN572_HEAD.txt').read_text().strip(),
+                  'rows':84,'arms':['CURRENT','LEGACY'],
+                  'wrong_committed':0,'native_executed':True,
+                  'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL',
+                  'jepa_weight':0,'redmi_measured':False,
+                  'plan_sha256':sha(root/'RUN570_PLAN.json'),
+                  'receipt_sha256':sha(root/'RUN571_RESULT.json')}
+          (Path(os.environ['RUNNER_TEMP'])/'RUN572_POSTFLIGHT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bounded raw synthetic receipts without model homes or symlinks, even RED
+        id: raw
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN572_RAW_EXPORT.log" 2>&1
+          import hashlib,json,os,shutil,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run572-work'
+          dest=Path(os.environ['RUNNER_TEMP'])/'run572-raw'
+          dest.mkdir(exist_ok=False)
+          copied={};total=0
+          if root.is_dir() and not root.is_symlink():
+              for p in sorted(root.iterdir()):
+                  if not p.is_file() or p.is_symlink():continue
+                  st=p.lstat()
+                  assert stat.S_ISREG(st.st_mode) and st.st_nlink==1
+                  assert st.st_size<=12_000_000
+                  total+=st.st_size
+                  assert total<=40_000_000
+                  shutil.copyfile(p,dest/p.name)
+                  copied[p.name]=hashlib.sha256((dest/p.name).read_bytes()).hexdigest()
+          (Path(os.environ['RUNNER_TEMP'])/'RUN572_RAW_FILE_MANIFEST.json').write_text(json.dumps(
+              {'files':copied,'total_bytes':total,'model_homes_copied':False},sort_keys=True,indent=2)+'\n')
+          print('RAW_SYNTHETIC_FILES',len(copied),'BYTES',total)
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_RAW_EXPORT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Export only bounded no-model metadata
+        id: safe
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN572_SAFE_RAW.log" 2>&1
+          import hashlib,json,os,shutil,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run572-work'
+          dest=Path(os.environ['RUNNER_TEMP'])/'run572-safe'
+          dest.mkdir(exist_ok=False)
+          names=['RUN571_ATTEMPT.json','RUN571_INSTALLED_PREFLIGHT.json','RUN571_RESULT.json']
+          copied={}
+          for name in names:
+              p=root/name
+              if not p.is_file():continue
+              st=p.lstat()
+              assert stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size<=500_000
+              shutil.copyfile(p,dest/name)
+              copied[name]=hashlib.sha256((dest/name).read_bytes()).hexdigest()
+          p=Path(os.environ['RUNNER_TEMP'])/'RUN572_POSTFLIGHT.json'
+          if p.is_file():
+              shutil.copyfile(p,dest/p.name)
+              copied[p.name]=hashlib.sha256((dest/p.name).read_bytes()).hexdigest()
+          assert len(copied)>=1
+          (dest/'RUN572_SAFE_MANIFEST.json').write_text(json.dumps(
+              {'files':copied,'no_model_outputs':True,'redmi_measured':False,
+               'canonical_gate_pass':False},sort_keys=True,indent=2)+'\n')
+          print('SAFE_NO_MODEL_FILES',len(copied))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_SAFE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN572_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN572_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close all raw evidence including RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN572_*' ! -name RUN572_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN572_SHA256SUMS.txt
+          if [ -d run572-raw ]; then
+            find run572-raw -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum > RUN572_RAW_MEMBERS_SHA256SUMS.txt
+          fi
+      - name: Preserve raw synthetic and failed attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run572-current-legacy-native-raw-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/RUN572_*
+            ${{ runner.temp }}/run572-raw/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve bounded safe metadata only after full native success
+        if: ${{ steps.audit.outputs.rc == '0' && steps.safe.outputs.rc == '0' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run572-current-legacy-safe-no-model-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/run572-safe/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native success and no gate promotion
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          for item in DEPS FIXTURE BOOTSTRAP NATIVE AUDIT RAW_EXPORT SAFE PRIVACY; do
+            test -f "$RUNNER_TEMP/RUN572_${item}_EXIT.txt"
+            test "$(cat "$RUNNER_TEMP/RUN572_${item}_EXIT.txt")" = 0
+          done
