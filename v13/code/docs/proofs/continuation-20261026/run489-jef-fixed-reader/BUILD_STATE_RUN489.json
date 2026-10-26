@@ -1,0 +1,104 @@
+{
+  "schema": "V13_RUN489_JEF_FIXED_READER_SHADOW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run489 isolated JEF fixed-reader shadow replay; no native/model jobs",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run489-jef-fixed-reader-shadow-20261026",
+  "base_branch": "codex/run488-native378-independent-rescore-20261026",
+  "base_sha": "0220824cf54ad9ee549e873303923305ede6eeb5",
+  "review_pr": 487,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run489-jef-fixed-reader/PREREG.md",
+    "blob_sha": "b80dbdb41c1e27922693a6b25200ff474bc7af8d",
+    "status": "post-hoc retrospective preregistration committed before Run489 script/CI; not blinded"
+  },
+  "failed_attempt": {
+    "run_id": 40293592025,
+    "raw_artifact_id": 12637246338,
+    "cause": "Existing eligibility.fixed_read picks nonnumeric current 'Option A and Option B' mention over later verified option quotes, returning UNSUPPORTED in three original unit cases.",
+    "preserved": true
+  },
+  "postfailure_addendum": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run489-jef-fixed-reader/ADDENDUM_AFTER_FAILURE.md",
+    "blob_sha": "06dc2b290fccebc3116e7137d910fd044d8a4725",
+    "scope": "Original fixed_read arm unchanged; additional exploratory read_fixed arm registered after observed failure, no claim of prospective testing."
+  },
+  "source_blobs": {
+    "v13/code/scripts/run489_jef_fixed_reader_shadow.py": "cd117a31834462a7b7d2f43ac3ead8f1e7ef090e",
+    "v13/code/tests/test_run489_jef_fixed_reader_shadow.py": "70fdc40b4f16feb16e686c5e2bd937e673a3f00c",
+    ".github/workflows/run489-jef-fixed-reader-shadow.yml": "a487240619b0eedebcf3cabad40c39971073f4b8",
+    "v13/code/v13/agi/eligibility.py": "1778752f4a92de660a48a3c208134ef601bcbb9f",
+    "v13/code/scripts/run488_native378_independent_rescore.py": "abe4f57edf8b5995298824894dc0199fa539fcc4"
+  },
+  "original_native_evidence": {
+    "run_id": 40281793150,
+    "safe_artifact_id": 12633269066,
+    "safe_sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+    "native_rows": 378,
+    "source_and_model_unchanged": true
+  },
+  "verified_ci": {
+    "run_id": 40293805090,
+    "head": "2ec53ceaaac138fa3f9706a69a0733e014ec5706",
+    "result": "GREEN: 378 original SHA-bound native source rows, fixed_read + read_fixed separate shadow arms and B1/B2 quote-drop ablations, 11 unit tests, privacy CLEAN; no model/native rerun",
+    "artifact_id": 12637885939,
+    "artifact_sha256": "ad06546800cbfadc662a364f2866d4671fff6cb3f22166b97c28af64aa9b7103"
+  },
+  "observed": {
+    "fixed_read_original_P_both_exact": {
+      "utility": 0.4444444444444444,
+      "exact": 8,
+      "unsupported": 10
+    },
+    "read_fixed_secondary_P_both_exact": {
+      "utility": 0.7962962962962963,
+      "exact": 12,
+      "wrong_committed": 0,
+      "unknown": 4,
+      "unsupported": 2
+    },
+    "read_fixed_secondary_P_b1_only": {
+      "utility": 0.7592592592592593,
+      "exact": 9
+    },
+    "read_fixed_secondary_P_same_policy_dual": {
+      "utility": 0.7037037037037037,
+      "exact": 8
+    },
+    "read_fixed_secondary_P_without_B2": {
+      "utility": 0.7037037037037037
+    },
+    "read_fixed_secondary_O_both_exact": {
+      "utility": 0.7962962962962963,
+      "exact": 12
+    },
+    "read_fixed_secondary_S_both_exact": {
+      "utility": 0.7916666666666666,
+      "exact": 9
+    },
+    "interpretation": "Existing non-generative read_fixed shadow path improves over original C3 extraction and B1-only on same frozen quotes, with no wrong committed decisions in replay; retrospective and no native/live acceptance."
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run489/RUN489_JEF_SHADOW_40293805090.zip",
+    "library_file_id": "libfile_81541a90ddb481918bbdd5aaec866f83",
+    "sha256": "ad06546800cbfadc662a364f2866d4671fff6cb3f22166b97c28af64aa9b7103",
+    "verified": "re-materialized from private Library, SHA256 and byte equality checked",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Shadow read_fixed is already available in production eligibility module, but this run did not execute the live end-to-end tool path or train C3/Bodies.",
+    "Original native quotes often lack the full local-only rule; quote selection/revision provenance and real complementary held-out native cases remain to be proven.",
+    "No new preregistered ten-episode STEP2 acceptance, B3 receiver, native Body-JEPA, or current Redmi sustained proof."
+  ],
+  "exact_next_command": "On a fresh review branch from this verified Run489 head, inspect live ToolStep eligibility_reader=fixed and source-backed quote path; implement an isolated end-to-end fixed-reader integration test that uses genuine Runtime turn/ToolStep and no oracle, then preregister a fresh ten-episode native held-out STEP2 comparison with distinct B1/B2 and same-policy controls. Keep original native378 and all negative gates unchanged."
+}
