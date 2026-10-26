@@ -75,6 +75,8 @@ def quote_provenance(rows, fixture):
             require(isinstance(quotes, list), "missing B2 verified quotes")
             for q in quotes:
                 require(type(q) is str, "non-string verified quote")
+                require(q in fixture["history"] or q == fixture["current"],
+                        "B2 verified quote not exact frozen source")
                 if rule in q:
                     require(rule in fixture["history"][0], "historical quote not in frozen source")
                     historical += 1
