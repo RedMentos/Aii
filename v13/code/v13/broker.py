@@ -62,6 +62,20 @@ def conflicts(output,status,tool_result=None,pending=None,egress=None):
     if egress and not egress['ok']:out+=['EGRESS:'+v for v in egress['violations']]
     return out
 
+def exact_tool_final(tool_result, output):
+    """Fixed-tool authority requires exact rendered bytes, not just a claimed metadata flag."""
+    if not isinstance(tool_result, dict) or tool_result.get('tool') != 'eligibility':
+        return False
+    result = tool_result.get('result')
+    if not isinstance(result, dict) or result.get('action') not in ('UNKNOWN', 'NONE'):
+        return False
+    try:
+        from .agi import eligibility
+        return isinstance(output, str) and output == eligibility.final_text(tool_result['args'], result)
+    except (KeyError, TypeError, ValueError, IndexError, AttributeError):
+        return False
+
+
 def preview_text(pending):
     pv=pending.get('preview') or {};cid=pending['call_id']
     what={'CREATE':'neue Datei','REPLACE':'ersetzt bestehende Datei'}.get(pv.get('effect'),pv.get('effect') or 'Wirkung unbekannt')
@@ -106,9 +120,7 @@ class Broker:
         if exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
         if (meta.get('output_authority')=='ELIGIBILITY_TOOL_FINAL' and
                 meta.get('tool_answer_first')=='FINAL' and not meta.get('model_generated') and
-                tool_result and tool_result.get('tool')=='eligibility' and
-                isinstance(tool_result.get('result'),dict) and
-                tool_result['result'].get('action') in ('UNKNOWN','NONE')):
+                exact_tool_final(tool_result,output)):
             cands.append('ELIGIBILITY_TOOL_FINAL')
         if meta.get('model_generated') and output:cands.append('MODEL_ANSWER')
         if meta.get('output_authority')=='SOURCE_SYSTEM_REPORT':cands.append('SOURCE_SYSTEM_REPORT')
