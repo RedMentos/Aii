@@ -335,19 +335,22 @@ def b2_quote_slots(text):
 
 
 def b2_quote_choices(text):
-    """2026-10-26 WP-Z2i: cfg b2_quote_choices all|earlier|earlier_newest (all = previous behaviour), pointer only.
+    """2026-10-26 WP-Z2i: cfg b2_quote_choices all|earlier|earlier_oldest (all = previous behaviour), pointer only.
     WP-Z2h: B2 picked mostly by position (about half of all ids were 1-3, the current task sentences C3 gets anyway;
-    9/178 picks from the revision note). earlier lists only earlier source excerpts, earlier_newest also newest first."""
+    9/178 picks from the revision note). earlier lists only earlier source excerpts in context order (newest first,
+    body_context fills from the newest retained offer); earlier_oldest lists them oldest first. The WP-Z2i run used the
+    name earlier_newest for the oldest-first order with a prompt that wrongly said 'newest first'. WP-Z2j: sources offers
+    each earlier excerpt whole as one choice, oldest first (B2 picks by position, so it then carries kickoff and revision)."""
     if "b2_quote_choices" in text:
         raise ValueError('Integrated anchor changed: b2_quote_choices already applied')
     t = _replace(text, "        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2\n",
                  "        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2\n"
                  "        order=self.r.cfg.get('b2_quote_choices','all') if choices and len(choice_sources)>1 else 'all'\n"
                  "        if order!='all':  # WP-Z2i: the current source reaches the answer component anyway\n"
-                 "            idx=list(range(1,len(choice_sources)))[::-1 if order=='earlier_newest' else 1]\n"
-                 "            choices=[(si,a,b) for si in idx for a,b in sentence_spans(choice_sources[si])][:24] or choices\n")
+                 "            idx=list(range(1,len(choice_sources)))[::-1 if order in ('earlier_oldest','sources') else 1]\n"
+                 "            choices=([(si,0,len(choice_sources[si])) for si in idx if choice_sources[si]] if order=='sources' else [(si,a,b) for si in idx for a,b in sentence_spans(choice_sources[si])][:24]) or choices\n")
     t = _replace(t, "quote_choices are numbered exact sentences of the current source and the earlier source excerpts.",
-                 "quote_choices are numbered exact sentences of '+({'all':'the current source and the earlier source excerpts','earlier':'the earlier source excerpts (the current source reaches the answer component anyway)','earlier_newest':'the earlier source excerpts, newest first (the current source reaches the answer component anyway)'}[order])+'.")
+                 "quote_choices are numbered exact sentences of '+({'all':'the current source and the earlier source excerpts','earlier':'the earlier source excerpts, newest first (the current source reaches the answer component anyway)','earlier_oldest':'the earlier source excerpts, oldest first (the current source reaches the answer component anyway)','sources':'whole earlier source excerpts, one per id, oldest first (the current source reaches the answer component anyway)'}[order])+'.")
     return t
 
 

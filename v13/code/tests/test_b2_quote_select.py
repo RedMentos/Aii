@@ -79,10 +79,33 @@ class OfferPath(unittest.TestCase):
         p,ev,seen=self.run_mode('pointer',reply|{'quotes':[5]},choices='earlier')  # no earlier source -> the previous list and prompt
         self.assertIn('exact sentences of the current source and the earlier source excerpts.',seen['system']);self.assertEqual(seen['query']['quote_choices'][4]['text'],'Budget 100 euros.')
         from v13.config import validate,DEFAULTS
-        for ok in ('all','earlier','earlier_newest'):validate(DEFAULTS|{'b2_quote_choices':ok})
-        with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_choices':'newest'})
+        for ok in ('all','earlier','earlier_oldest','sources'):validate(DEFAULTS|{'b2_quote_choices':ok})
+        with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_choices':'earlier_newest'})
         for bad in (1,5):
             with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_slots':bad})
+    def test_choice_lists_with_earlier_sources(self):
+        """WP-Z2i/Z2j b2_quote_choices with a real B2 session context (newest first in body_context)."""
+        from v13.runtime import Runtime
+        K='Project Kestrel kickoff notes. Budget 100 euros. Deadline 5 days. Local-only requirement: true.'
+        N='Project Kestrel status note. The steering group revised one rule on Monday. New budget 80 euros. All other project rules are unchanged.'
+        T='Project Kestrel. Decide between Option A and Option B, using the earlier project rules.'
+        firsts={'all':'Project Kestrel.','earlier':'Project Kestrel status note.','earlier_oldest':'Project Kestrel kickoff notes.','sources':K}
+        for mode,first in firsts.items():
+            with tempfile.TemporaryDirectory() as d:
+                r=Runtime(Path(d))
+                try:
+                    r.cfg.update(b2_quote_select='pointer',offer_quote_context_chars=200,b2_quote_slots=4,b2_quote_choices=mode,b2_context_chars=1536);seen={}
+                    def generate(messages,cancel,deadline,tokens,schema,*a,**k):
+                        seen['q']=json.loads(messages[1]['content']);seen['sys']=messages[0]['content'];return iter([json.dumps({'summary':'s','quotes':[1,2],'uncertainty':'u','needs_reentry':False})])
+                    r.pool.get=Mock(return_value=SimpleNamespace(role='B2_GIST',last_metrics={},generate=generate))
+                    for text in (K,N,T):e=r.store.event(r.session,text);p=r.cognition.offer('B2_GIST',e,0,time.monotonic()+30)
+                    ch=[c['text'] for c in seen['q']['quote_choices']];self.assertEqual(ch[0],first,mode)
+                    if mode!='all':self.assertNotIn(T,' '.join(ch))
+                    if mode=='sources':
+                        self.assertEqual(ch,[K,N]);self.assertEqual(p['offer']['quotes'],[K,N]);self.assertIn('one per id, oldest first',seen['sys'])
+                        self.assertEqual([q['text'] for q in r.cognition.analyst_context([p],e,0)[0]['verified_quotes']],[K,N])
+                    if mode=='earlier':self.assertIn('excerpts, newest first',seen['sys'])
+                finally:r.close()
     def test_b1_is_never_touched(self):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:

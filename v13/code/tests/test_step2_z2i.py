@@ -16,7 +16,7 @@ class Z2i(unittest.TestCase):
         z=self.z;ids={f['id'] for f in z.FIXTURES};used={x[0] for x in z.h.EPISODES}|{x[0] for x in z.g.EPISODES}|{x[0] for x in z.z.EPISODES}
         self.assertEqual(len(ids),10);self.assertFalse(ids&used);self.assertEqual(z.SEEDS,(32,33,34))
         from v13.config import validate,DEFAULTS
-        for arm,c in (('A4','all'),('E4','earlier'),('N4','earlier_newest')):
+        for arm,c in (('A4','all'),('E4','earlier'),('N4','earlier_oldest')):
             s=z.z.z2b.settings(arm,32);self.assertEqual((s['b2_quote_select'],s['b2_quote_slots'],s['b2_quote_choices'],s['b2_context_chars']),('pointer',4,c,1536))
             validate(DEFAULTS|{k:v for k,v in s.items() if k in DEFAULTS})
     def test_superseded_change_action_guard_gives_oracle(self):

@@ -1,13 +1,16 @@
-"""WP-Z2i: which sentences B2 may pick from (cfg b2_quote_choices all|earlier|earlier_newest), four slots, recency guard on.
+"""WP-Z2i: which sentences B2 may pick from (cfg b2_quote_choices all|earlier|earlier_oldest), four slots, recency guard on.
 
 WP-Z2h (scripts/step2_z2h_slots.py) found more slots useless because B2 picks mostly by position: about half of all
 picked ids were 1-3, the current task sentences that C3 receives anyway; only 9/178 picks on changed-rule episodes came
 from the revision note. Here the choice list leaves out the current source (earlier) and also lists the newest earlier
-source first (earlier_newest).
+source first (named earlier_newest in the recorded run).
+Correction after the run: body_context lists earlier sources newest first, so 'earlier' already was newest first and the
+recorded 'earlier_newest' arm was in fact OLDEST first, with a prompt that wrongly said 'newest first' (E4's prompt named
+no order). The mode is now earlier_oldest with matching prompts; rerunning this script uses the corrected prompts.
 
 Ten fresh episodes (never run before), new seeds 32-34, b2_context_chars=1536, pointer with 4 slots in every arm:
   REVISED 5, TWICE 2 (same rule revised twice), LONG 1, CONFIRM 2
-Arms A4 (all = the WP-Z2h P4 pointer), E4 (earlier), N4 (earlier_newest). Every recorded extraction is re-decided with
+Arms A4 (all = the WP-Z2h P4 pointer), E4 (earlier), N4 (earlier_oldest, recorded as earlier_newest). Every recorded extraction is re-decided with
 the recency guard on (and off, consistency), as in WP-Z2g. Preregistration:
 docs/proofs/continuation-20261026/step2-z2i-choices/PREREG.md. Diagnosis only (Linux cloud, no Redmi).
 """
@@ -25,7 +28,7 @@ def _private(name,path):
 h=_private('step2_z2h_for_z2i','scripts/step2_z2h_slots.py')
 g,z=h.g,h.z
 SEEDS=(32,33,34)
-CHOICES={'A4':'all','E4':'earlier','N4':'earlier_newest'}
+CHOICES={'A4':'all','E4':'earlier','N4':'earlier_oldest'}
 ARMS={a:('C','pointer') for a in CHOICES}
 CONTROL='A4';CANDIDATES=('E4','N4')
 TYPES=('REVISED','TWICE','LONG','CONFIRM')

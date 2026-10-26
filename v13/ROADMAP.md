@@ -1237,8 +1237,11 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 ### WP-Z2h B2-Zeiger mit mehr Plätzen, Wächter an (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `83c23664`)
 - Schalter `b2_quote_slots` (2..4, Standard 2). P2 vs P4, Seeds 29–31, frische Episoden: **`Z2H_SLOTS_NO_GAIN`** (Regelquote .23 → .28, CI schließt 0 ein; exakt 5 = 5). Wächter zum zweiten Mal bestätigt (33 → 0 falsch). Ursache: B2 wählt nach Position (Hälfte der Nummern = Sätze der aktuellen Aufgabe; 9/178 aus der Änderungsnotiz). Befund `code/docs/proofs/continuation-20261026/step2-z2h-slots/BEFUND.md`.
 
-### WP-Z2i Auswahlliste für den B2-Zeiger (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
-- Schalter `b2_quote_choices` all|earlier|earlier_newest (Standard all). A4/E4/N4, Seeds 32–34, frische Episoden, Wächter an; Ziel mehr exakte Entscheidungen bei geänderten Regeln.
+### WP-Z2i Auswahlliste für den B2-Zeiger (Cloud, Modelle) — ERLEDIGT 2026-10-26 (gleicher Thread/Branch, Vorreg. `b3bfa25a`)
+- Schalter `b2_quote_choices`. A4/E4/N4, Seeds 32–34: formal **`Z2I_CHOICES_HELP`** (N4 Regelquote .13 → .39, CI > 0; exakt 4 vs 3), aber N4 war falsch benannt (Liste älteste zuerst, Anweisung „newest first“; behoben, Modus heißt `earlier_oldest`). Gewinn nur LONG/CONFIRM, geänderte Regeln weiter ~0 exakt. Wächter: 72 → 0 falsch. Befund `code/docs/proofs/continuation-20261026/step2-z2i-choices/BEFUND.md`.
+
+### WP-Z2j B2 wählt ganze frühere Quellen (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
+- `b2_quote_choices=sources` (eine Wahl je früherer Quelle) und `earlier_oldest` mit korrekter Anweisung gegen `all`, Seeds 35–37, frische Episoden, Wächter an.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
