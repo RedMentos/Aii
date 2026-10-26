@@ -1,0 +1,86 @@
+{
+  "run": "Run400",
+  "date": "2026-10-26",
+  "stage": "SOURCE_GREEN_ACTUAL_LINUX_NATIVE_PILOT_POSTFLIGHT_VERIFIED_NO_GATE_PROMOTION",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run400-step2-quote-substring-postflight-20261026",
+  "pr": 395,
+  "base": {
+    "branch": "codex/run399-step2-actual-native-postflight-20261026",
+    "sha": "14545c6990141b58c6807b2f3055a88918ab4f79",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "d436aa42167d0b76b6bb1a66c302c8106b87062f",
+  "red_tests_commit": "bdd707482235042b964052db1810eb1b5dc36c4d",
+  "red_workflow_commit": "683ab619ae2c0fbeab8163705941da9e16ff864b",
+  "fix_commit": "cb6bd9ee0038e4ae7ab43b53406f2ebc4b0f97a8",
+  "run395": {
+    "head": "48d2119dbbc7077da10b625ca4ff5819bfc74730",
+    "workflow": 40247992605,
+    "job": 121333557565,
+    "artifact": 12619659510,
+    "zip_sha256": "6a0ae4311db51d7165e372b370e57a6faf8223c0e214c87be5f6e1ad5ba46b6f",
+    "status": "SUCCESS_REAL_LINUX_NATIVE_42_ROWS"
+  },
+  "run399_red": {
+    "run": 40250214439,
+    "job": 121340253414,
+    "artifact": 12620490121,
+    "zip_sha256": "4dce2c14091064baab43add5c41093272e2d0023fa0d45559ef6dfc6e31a2ba5",
+    "reason": "B2 exact source substring rejected by whole-list membership"
+  },
+  "run400_red": {
+    "run": 40250351938,
+    "job": 121340665410,
+    "artifact": 12620710095,
+    "zip_sha256": "7e9b9f0d75b4ab3b266e2ebacacbfd4db5b39f1afbde6442f5a371b3651c99fc",
+    "tests": "51 tests, 3 expected errors",
+    "audit": "PILOT_RED_PRESERVED",
+    "privacy": "CLEAN"
+  },
+  "run400_green": {
+    "source_head": "cb6bd9ee0038e4ae7ab43b53406f2ebc4b0f97a8",
+    "run": 40250408193,
+    "job": 121340840779,
+    "artifact": 12620144232,
+    "zip_sha256": "4874a83b71737d5dfc990d6850f29c5305c5040d8a322ad0165b998eaef0c230",
+    "tests": "51/51 PASS",
+    "privacy": "CLEAN",
+    "zip_crc": "PASS",
+    "raw_sha": "14/14 PASS",
+    "native_zip_sha": "VERIFIED",
+    "actual_rows": 42,
+    "audit": "PILOT_POSTFLIGHT_VERIFIED",
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "redmi_measured": false
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run400_Quote_Substring_20261026/",
+  "private_byte_identity": "RED and GREEN ZIPs materialized and SHA256 byte-identical",
+  "pilot_paired_both_exact": {
+    "pointer_minus_off": 0.20833333333333337,
+    "pointer_minus_shared_body": 0.5833333333333333,
+    "per_fixture_P_minus_O": {
+      "Alder": 0.41666666666666663,
+      "Delta": 0
+    }
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "No Redmi proof",
+    "Age0/approval unchanged",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Full 378-row native preregistered cohort not run; pilot only 42 rows",
+    "Run397 native resume not yet proven on interrupted real inference",
+    "Causal B2 pointer utility not established from 2 fixtures",
+    "Whole blueprint implementation incomplete"
+  ],
+  "next_command": "Review Run400 actual postflight raw; measure Run395 native pilot runtime and select next canonical independent implementation package, or prepare Run397 --full --execute --max-new-arms 1 only after owner/budget verification",
+  "next_prerequisites": "No competing native owner; exact frozen model/source hashes; preserve original negative gates"
+}
