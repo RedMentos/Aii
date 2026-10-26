@@ -10,6 +10,7 @@ KNOBS={
  "observer_tokens":(160,"COUNT",32,256,"Structured offer budget"),
  "b2_state_slots":(4,"COUNT",0,8,"BOOT retained source-bound B2 offers; 0 disables cross-turn context"),
  "b2_context_chars":(768,"COUNT",0,4096,"BOOT total serialized earlier B2 context character cap"),
+ "b2_quote_slots":(2,"COUNT",2,4,"WP-Z2h sentences B2 may pick with b2_quote_select=pointer"),
  "threads":(4,"COUNT",1,8,"Native CPU threads"),
  "deadline_seconds":(90,"DURATION_S",5,600,"Absolute user deadline"),
  "observer_seconds":(35,"DURATION_S",2,180,"Observer budget per role"),

@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'b2_quote_slots')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -317,6 +317,23 @@ def b2_quote_select(text):
     return t
 
 
+def b2_quote_slots(text):
+    """2026-10-26 WP-Z2h: cfg b2_quote_slots (2..4, default 2 = previous behaviour) for the pointer only. WP-Z2g: with
+    changed rules B2 has to carry the unchanged kickoff rules and the revision; two picked sentences rarely held all
+    current rules, so the guarded tool said UNKNOWN in 412/420 rows."""
+    if "b2_quote_slots" in text:
+        raise ValueError('Integrated anchor changed: b2_quote_slots already applied')
+    t = _replace(text, "choices=quote_choices(choice_sources) if select=='pointer' else []\n",
+                 "choices=quote_choices(choice_sources) if select=='pointer' else []\n"
+                 "        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2\n")
+    t = _replace(t, "quotes are the ids of at most two choices that carry",
+                 "quotes are the ids of at most '+('two' if slots==2 else str(slots))+' choices that carry")
+    t = _replace(t, "        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))}\n",
+                 "        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))};schema['properties']['quotes']['maxItems']=slots\n")
+    t = _replace(t, "        for quote in obj['quotes'][:3]:\n", "        for quote in obj['quotes'][:max(3,slots)]:\n")
+    return t
+
+
 def _later(sources):
     return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
 
@@ -367,7 +384,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))
+        out['v13/cognition.py'] = b2_quote_slots(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))))
     return out
 
 

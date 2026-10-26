@@ -35,19 +35,20 @@ class Anchor(unittest.TestCase):
         self.assertEqual(text([TASK,RULE],c[3]),'Project Kestrel kickoff notes.');self.assertEqual(len(quote_choices([RULE]*10)),24)
 
 class OfferPath(unittest.TestCase):
-    def offer(self,r,mode,reply):
+    def offer(self,r,mode,reply,slots=None):
         r.cfg['b2_quote_select']=mode;r.cfg['offer_quote_context_chars']=200;seen={}
+        if slots:r.cfg['b2_quote_slots']=slots
         def generate(messages,cancel,deadline,tokens,schema,*a,**k):
-            seen['query']=json.loads(messages[1]['content']);seen['schema']=schema;return iter([json.dumps(reply)])
+            seen['query']=json.loads(messages[1]['content']);seen['schema']=schema;seen['system']=messages[0]['content'];return iter([json.dumps(reply)])
         r.pool.get=Mock(return_value=SimpleNamespace(role='B2_GIST',last_metrics={},generate=generate))
         e=r.store.event(r.session,TASK+' '+RULE);p=r.cognition.offer('B2_GIST',e,0,time.monotonic()+30)
         seen['analyst']=r.cognition.analyst_context([p],e,0)  # the live consumer path must accept the widened exact spans
         return p,[r.store.read_source(x) for x in p['evidence_refs']],seen
-    def run_mode(self,mode,reply):
+    def run_mode(self,mode,reply,slots=None):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:
             r=Runtime(Path(d))
-            try:return self.offer(r,mode,reply)
+            try:return self.offer(r,mode,reply,slots)
             finally:r.close()
     def test_off_anchor_pointer(self):
         para={'summary':'s','quotes':['Project Kestrel has a budget of 100 euros'],'uncertainty':'u','needs_reentry':False}
@@ -63,6 +64,20 @@ class OfferPath(unittest.TestCase):
         self.assertEqual(seen['schema']['properties']['quotes']['items']['enum'],list(range(1,len(ch)+1)))
         self.assertEqual(p['b2_quote_select']['picked'],[5]);self.assertIn(RULE,ev[0]);self.assertEqual(p['offer']['quotes'],['Budget 100 euros.'])
         self.assertEqual([q['text'] for q in seen['analyst'][0]['verified_quotes']],ev);self.assertEqual(seen['analyst'][0]['verified_quotes'][0]['verification'],'EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE')
+    def test_pointer_slots(self):
+        """WP-Z2h b2_quote_slots: default 2 keeps the previous prompt and schema; 4 lets B2 pick four sentences."""
+        reply={'summary':'s','quotes':[4,5,6,7],'uncertainty':'u','needs_reentry':False}
+        p,ev,seen=self.run_mode('pointer',reply|{'quotes':[5]})
+        self.assertIn('ids of at most two choices',seen['system']);self.assertEqual(seen['schema']['properties']['quotes']['maxItems'],2)
+        p,ev,seen=self.run_mode('pointer',reply,slots=4)
+        self.assertIn('ids of at most 4 choices',seen['system']);self.assertEqual(seen['schema']['properties']['quotes']['maxItems'],4)
+        self.assertEqual(p['b2_quote_select']['picked'],[4,5,6,7]);self.assertEqual(len(p['offer']['quotes']),4)
+        self.assertTrue(all(x in RULE for x in p['offer']['quotes']));self.assertEqual(p['rejected_quotes'],0)
+        p,ev,seen=self.run_mode('off',{'summary':'s','quotes':['Budget 100 euros.'],'uncertainty':'u','needs_reentry':False},slots=4)
+        self.assertEqual(seen['schema']['properties']['quotes']['maxItems'],2)
+        from v13.config import validate,DEFAULTS
+        for bad in (1,5):
+            with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_slots':bad})
     def test_b1_is_never_touched(self):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:
@@ -83,7 +98,8 @@ class OfferPath(unittest.TestCase):
         live=(ROOT/'v13/cognition.py').read_text()
         baseline,changed=sh.sources();self.assertIn(live,(baseline['v13/cognition.py'],changed['v13/cognition.py']))
         with self.assertRaises(ValueError):ic.b2_quote_select(live)
-        self.assertIn('b2_quote_select',ic.INTEGRATED)
+        self.assertIn('b2_quote_select',ic.INTEGRATED);self.assertIn('b2_quote_slots',ic.INTEGRATED)
+        with self.assertRaises(ValueError):ic.b2_quote_slots(live)
 
 class Gate(unittest.TestCase):
     def runs(self,rate,wrong=0,picked=5):

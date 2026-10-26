@@ -298,9 +298,10 @@ class Cognition:
             instructions+=' Earlier context separates exact source excerpts from fallible prior hypotheses. Use relevant earlier source excerpts when current text leaves a rule unstated; prefer an explicit current-source revision when the same rule changes. Never treat a prior hypothesis as a fact. Select short exact quotes carrying the source rules needed by your summary; only your verified quotes, not the full earlier context, are passed to the answer component. If required evidence is absent, state that uncertainty and request re-entry rather than inventing it. Quotes may cite only current source text or an exact earlier source excerpt, never own-state or hypotheses.'
         select=self.r.cfg.get('b2_quote_select','off') if role=='B2_GIST' and policy=='B2_GIST' else 'off'
         choice_sources=[text]+[x['native_context']['exact_source_excerpt'] for x in context];choices=quote_choices(choice_sources) if select=='pointer' else []
+        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2
         if choices:  # WP-Z2c: select exact sentences by number instead of copying them
             query['quote_choices']=[{'id':n+1,'text':choice_sources[si][a:b]} for n,(si,a,b) in enumerate(choices)]
-            instructions+=' quote_choices are numbered exact sentences of the current source and the earlier source excerpts. quotes are the ids of at most two choices that carry the source rules your summary needs; their exact text is copied for you.'
+            instructions+=' quote_choices are numbered exact sentences of the current source and the earlier source excerpts. quotes are the ids of at most '+('two' if slots==2 else str(slots))+' choices that carry the source rules your summary needs; their exact text is copied for you.'
         if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
             query['recent_source']=[x['native_context'] for x in context]
             instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
@@ -330,7 +331,7 @@ class Cognition:
         if local_gist:query_packet['local_gist']=local_gist
         self.s.add_packet('QueryPacket',query_packet)
         schema=offer_schema(self.r.cfg['observer_tokens'],**({'quote_min_chars':q} if (q:=self.r.cfg.get('offer_quote_min_chars',0)) else {}))
-        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))}
+        if choices:schema['properties']['quotes']['items']={'type':'integer','enum':list(range(1,len(choices)+1))};schema['properties']['quotes']['maxItems']=slots
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
@@ -352,7 +353,7 @@ class Cognition:
                 if any(quote_span(quote,source,wide) for source,_ in sources):continue
                 hit=anchor_span(quote,[source for source,_ in sources])
                 if hit:obj['quotes'][n]=sources[hit[0]][0][hit[1]:hit[2]];selected['anchored']+=1
-        for quote in obj['quotes'][:3]:
+        for quote in obj['quotes'][:max(3,slots)]:
             if wide:  # quote as pointer; the exact-substring lines below stay byte-identical for closed harnesses
                 match=next(((source,ref,span) for source,ref in sources if (span:=quote_span(quote,source,wide))),None)
                 if not match:rejected+=1;continue
