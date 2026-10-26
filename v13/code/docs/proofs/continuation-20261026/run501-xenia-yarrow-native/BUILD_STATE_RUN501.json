@@ -1,0 +1,82 @@
+{
+  "schema": "V13_RUN501_NATIVE_STAGE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "LINUX_NATIVE_XENIA_YARROW_GREEN_14_NEW_ROWS_INDEPENDENTLY_RESCORED",
+  "branch": "codex/run501-xenia-yarrow-native-20261026",
+  "base_branch": "codex/run500-heldout1050-stage-map-20261026",
+  "base_sha": "457b4a70a556e5a41e9a41272b1f40804585d202",
+  "source": {
+    "prereg_blob": "4cf56ec87a660d1f833fa3a60678f0e788639719",
+    "test_blob": "654d96da62d91dca68af83e36492d87cba849779",
+    "workflow_blob": "04927070944f7dc0ece305cf47d5e697ac3bb760",
+    "stage_runner_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "frozen_fixture_script_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "models_spec_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "evidence": {
+    "run499_native_actions": 40304564958,
+    "run499_raw_artifact": 12643015136,
+    "run499_safe_artifact": 12641923870,
+    "run500_source_actions": 40305428323,
+    "run500_source_artifact": 12642395808,
+    "run501_native_actions": 40305980830,
+    "run501_native_rows_verified": 14,
+    "run501_raw_artifact": 12642787541,
+    "run501_safe_artifact": 12642802842,
+    "raw_sha256": "794fbe4a3af15dad916b7dd7c38e0600c0fa622d1669ca763f38c6bd4c45d4e7",
+    "safe_sha256": "fa83c88a621a4608c31fea6b2019b874fa9a781c2f5ce473ef23d371ab538928",
+    "raw_sha_manifest_entries": 22,
+    "native_library_hash_count": 38,
+    "combined_disjoint_C_s31_rows_with_Run499": 28,
+    "independent_rescore": {
+      "b1_only": 0.5,
+      "b2_only": 0.16666666666666666,
+      "both_none": 0.9166666666666666,
+      "both_exact": 0.9166666666666666,
+      "both_control": 0.9166666666666666,
+      "same_policy_dual": 0.4583333333333333,
+      "prompt_only_dual": 0.5,
+      "wrong_committed": 0,
+      "scope": "XENIA_YARROW_TWO_EPISODE_STAGE_ONLY"
+    },
+    "private_library": "/V13-Checkpoints/2026-10-26/Run501/"
+  },
+  "scope": {
+    "stage_id": "C_s31_p01",
+    "fixtures": [
+      "Xenia",
+      "Yarrow"
+    ],
+    "arm": "C",
+    "seed": 31,
+    "variants": 7,
+    "planned_rows": 14,
+    "full_cohort_rows": 1050
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run499 native 14-row pilot GREEN, raw/safe SHA independently verified and privately persisted",
+    "Run500 source-only 75 stages / 1050 rows GREEN, 21 tests, raw SHA independently verified",
+    "Run501 source prereg/test/workflow blobs fetched and SHA matched",
+    "no active GitHub Actions at native preflight",
+    "Run501 native Actions 40305980830 GREEN, seven mandatory exit files all 0 and independent workflow audit PASS",
+    "Downloaded raw 12642787541 and safe 12642802842, 22 SHA256 entries independently verified",
+    "Independent 14-row rescore, original source row hashes and consumer-message quote hashes verified, wrong committed 0",
+    "28 unique disjoint C_s31 row keys across Run499 and Run501, not 1050",
+    "Private Library raw/safe ZIPs uploaded and re-materialized byte-identical"
+  ],
+  "blockers": [
+    "Full 1050-row STEP2 cohort still incomplete",
+    "Redmi phone unavailable",
+    "C_s31 only 28 rows from four fixtures; full utility acceptance not proven"
+  ],
+  "next_command": "Run502 PR #500 reviewed source-only 42-row serial batch GREEN; after owner check, preregister Run503 one-shot native batch C_s31_p02/p03/p04, 42 disjoint rows, preserve raw RED/PASS and independent rescore.",
+  "stop_reason": "INTERMEDIATE_VERIFIED_CHECKPOINT_CONTINUE"
+}

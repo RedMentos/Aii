@@ -1,0 +1,254 @@
+name: V13 Run501 Xenia-Yarrow C_s31_p01 14-row Linux-native stage
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run501-xenia-yarrow-native.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-run131-serialized
+  cancel-in-progress: false
+jobs:
+  native-pilot:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run501-xenia-yarrow-native-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen Run491/Run496 source and host contract
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN501_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run501-xenia-yarrow-native/PREREG.md)" = '4cf56ec87a660d1f833fa3a60678f0e788639719'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/tests/test_run501_workflow_contract.py)" = '654d96da62d91dca68af83e36492d87cba849779'
+          test "$(git hash-object v13/code/tests/test_run496_heldout10_native_pilot.py)" = 'bde33c39d4aebbd1bc21738e42fa4447985af2be'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/step2_z2_timescale.py)" = '2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/tests/integration_step2_utility.py)" = 'a7ba12a8807a1ca8236f1c70d54dedb65c212caa'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          { date -u -Iseconds; uname -a; python3 --version; free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true; } > "$RUNNER_TEMP/RUN501_HOST.txt"
+          sha256sum v13/code/scripts/run491_step2_heldout10.py v13/code/scripts/run496_heldout10_native_pilot.py v13/code/specs/models.json > "$RUNNER_TEMP/RUN501_SOURCE_SHA256.txt"
+      - name: Install isolated Python dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run501venv"
+          timeout 240s "$RUNNER_TEMP/run501venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN501_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN501_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Exact source-only tests and pilot prereg manifest
+        id: fixture
+        if: ${{ steps.deps.outcome == 'success' && steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run501venv/bin/python" -m unittest -v tests.test_run491_step2_heldout10 tests.test_run496_heldout10_native_pilot tests.test_run498_runner_symlink tests.test_run500_step2_stage_map tests.test_run501_workflow_contract > "$RUNNER_TEMP/RUN501_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run501venv/bin/python" scripts/run500_step2_stage_map.py --fixture-only --work "$RUNNER_TEMP/run501-stage" > "$RUNNER_TEMP/RUN501_FIXTURE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            cp "$RUNNER_TEMP/run501-stage/RUN500_STAGE_MAP.json" "$RUNNER_TEMP/RUN501_STAGE_MAP.json"
+            "$RUNNER_TEMP/run501venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN501_FIXTURE_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'RUN501_STAGE_MAP.json'
+          d=json.loads(p.read_text())
+          assert d['original_fixture_sha256']=='c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63'
+          assert d['stage_count']==75 and d['expected_native_rows']==1050
+          assert next(x for x in d['stages'] if x['id']=='C_s31_p01')['fixture_ids']==['Xenia','Yarrow']
+          assert d['native_executed'] is False and d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          print('RUN501_XENIA_YARROW_STAGE_SOURCE_ONLY_VERIFIED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN501_FIXTURE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-download original pinned public GGUF/needle and b10964 runner
+        id: bootstrap
+        if: ${{ steps.fixture.outcome == 'success' && steps.fixture.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run501installed"
+          timeout -s TERM -k 30s 1500s "$RUNNER_TEMP/run501venv/bin/python" -m v13.bootstrap --home "$V13_HOME" > "$RUNNER_TEMP/RUN501_BOOTSTRAP_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run501venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN501_INSTALLED_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from run496_heldout10_native_pilot import verify_installed
+          result=verify_installed(Path(os.environ['V13_HOME']))
+          assert result['native_executed'] is False
+          print(json.dumps({'status':'ACTUAL_MODEL_AND_RUNNER_BYTES_VERIFIED','model_sha256':result['model_sha256'],
+                            'runner_sha256':result['runner_sha256'],
+                            'native_library_count':len(result['runtime_library_sha256'])},sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN501_BOOTSTRAP_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Execute exactly 14 frozen Linux-native consumer rows
+        id: native
+        if: ${{ steps.bootstrap.outcome == 'success' && steps.bootstrap.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts" V13_HOME="$RUNNER_TEMP/run501installed"
+          timeout -s TERM -k 30s 3600s "$RUNNER_TEMP/run501venv/bin/python" scripts/run500_step2_stage_map.py --work "$RUNNER_TEMP/run501-stage" --installed-home "$V13_HOME" --stage-id C_s31_p01 --execute > "$RUNNER_TEMP/RUN501_NATIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN501_NATIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent exact 14-row postflight, no gate promotion
+        id: audit
+        if: ${{ steps.native.outcome == 'success' && steps.native.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN501_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run501-stage'/'stage_C_s31_p01'
+          result=json.loads((root/'RUN500_STAGE_RESULT.json').read_text())
+          tool=json.loads((root/'tool_C_s31.json').read_text())
+          summary=json.loads((root/'summary_C_s31.json').read_text())
+          variants={'b1_only','b2_only','both_none','both_exact','both_control','same_policy_dual','prompt_only_dual'}
+          expected={(f,v) for f in ('Xenia','Yarrow') for v in variants}
+          rows=tool['rows']
+          assert len(rows)==14 and {(r['fixture'],r['variant']) for r in rows}==expected
+          assert tool['installed_artifacts_unchanged'] is True
+          assert summary['run']=='C_s31' and summary['arm']=='C' and summary['seed']==31
+          assert sum(v['wrong_committed'] for v in summary['tool_summary'].values())==0
+          assert result['status']=='STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY' and result['stage_id']=='C_s31_p01' and result['rows_verified']==14
+          assert result['tool_sha256']==hashlib.sha256((root/'tool_C_s31.json').read_bytes()).hexdigest()
+          assert result['summary_sha256']==hashlib.sha256((root/'summary_C_s31.json').read_bytes()).hexdigest()
+          assert result['canonical_gate_pass'] is False and result['step2_exit']=='UTILITY_FAIL'
+          assert result['jepa_weight']==0 and result['redmi_measured'] is False
+          receipt={'status':'RUN501_XENIA_YARROW_14_NATIVE_ROWS_INDEPENDENTLY_VERIFIED',
+                   'rows':14,'fixtures':['Xenia','Yarrow'],'arm':'C','seed':31,
+                   'native_execution_performed':True,'canonical_gate_pass':False,
+                   'step2_exit':'UTILITY_FAIL','redmi_measured':False,'jepa_weight':0,
+                   'tool_sha256':result['tool_sha256'],'summary_sha256':result['summary_sha256']}
+          (Path(os.environ['RUNNER_TEMP'])/'RUN501_INDEPENDENT_REPORT.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(receipt,sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN501_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve only bounded synthetic no-model JSON, including RED attempts
+        id: safe
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN501_SAFE_AUDIT_RAW.log" 2>&1
+          import hashlib,json,os,shutil,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run501-stage'/'stage_C_s31_p01'
+          dest=Path(os.environ['RUNNER_TEMP'])/'run501-safe'
+          dest.mkdir(exist_ok=False)
+          allowed=('RUN500_STAGE_MAP.json','RUN500_STAGE_PREREG.json','RUN500_INSTALLED_PREFLIGHT.json',
+                   'RUN500_STAGE_RESULT.json','step2_C_s31.json','tool_C_s31.json','summary_C_s31.json')
+          copied={};total=0
+          for name in allowed:
+              p=(root.parent/name if name=='RUN500_STAGE_MAP.json' else root/name)
+              if not p.exists():continue
+              st=p.lstat()
+              assert stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size<=12_000_000
+              data=p.read_bytes()
+              assert len(data)==st.st_size
+              json.loads(data)
+              total+=len(data)
+              assert total<=40_000_000
+              (dest/name).write_bytes(data)
+              copied[name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+          assert copied and 'RUN500_STAGE_MAP.json' in copied and 'RUN500_STAGE_PREREG.json' in copied
+          receipt={'status':'SYNTHETIC_NO_MODEL_WORK_ONLY','copied':copied,'total_bytes':total,
+                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL'}
+          (dest/'RUN501_SAFE_MANIFEST.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          (Path(os.environ['RUNNER_TEMP'])/'RUN501_SAFE_AUDIT.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'status':receipt['status'],'files':len(copied),'bytes':total}))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN501_SAFE_EXIT.txt"
+          echo "ready=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN501_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN501_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN501_*' ! -name RUN501_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN501_SHA256SUMS.txt
+      - name: Upload raw evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run501-heldout10-native-raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN501_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload only verified safe no-model work
+        if: ${{ always() && steps.safe.outcome == 'success' && steps.safe.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run501-heldout10-safe-no-model-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/run501-safe/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native and independent receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = 'success'
+          test "${{ steps.deps.outcome }}" = 'success'
+          test "${{ steps.fixture.outcome }}" = 'success'
+          test "${{ steps.bootstrap.outcome }}" = 'success'
+          test "${{ steps.native.outcome }}" = 'success'
+          test "${{ steps.audit.outcome }}" = 'success'
+          test "${{ steps.safe.outcome }}" = 'success'
+          test "${{ steps.privacy.outcome }}" = 'success'
+          test "$(cat "$RUNNER_TEMP/RUN501_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_FIXTURE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_BOOTSTRAP_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_NATIVE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_AUDIT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_SAFE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN501_PRIVACY_EXIT.txt")" = 0
