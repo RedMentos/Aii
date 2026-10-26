@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN435_P21_NATIVE_PREEXEC_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run435-native-p21-serialized-20261026",
+  "base_pr": 433,
+  "base_head": "f436873120a60836227bc7829f7900d5cd221a8e",
+  "preflight": {
+    "run434_source_actions": 40265706361,
+    "run434_source_tests": "50/50 PASS",
+    "run433_independent_actions": 40265361929,
+    "run433_independent_result": "RUN429_NATIVE_168_INDEPENDENTLY_VERIFIED",
+    "run427_native_actions": 40263042202,
+    "run427_native_head": "f98db0c7bca16c005bc987bcc507aa3abbdf66f4",
+    "raw_id": 12626041558,
+    "raw_sha256": "3f7b66330778bd2129673c74d2917dcfe9b6ef8e2281df7f8557fd5c89bcecf5",
+    "safe_id": 12626146409,
+    "safe_sha256": "405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7",
+    "frozen_source_blobs": {
+      "run394": "fae7aed612108a554d8566b2917ebf31022df423",
+      "run397": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+      "models": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+    },
+    "run434_source_sha256": "c1b6ca23a0fcea24f4be9f717041b586e8669305f5de36864a372f9b0a0c37ad",
+    "native_owner_active_at_preparation": false,
+    "exclusive_group": "v13-native-c3-run131-serialized",
+    "cancel_in_progress": false
+  },
+  "planned_execution": {
+    "next_arm": "P_s21",
+    "max_new_arms": 1,
+    "expected_total_rows": 210,
+    "expected_remaining_arms": 4,
+    "native_model_downloads": "only pinned public artifacts in isolated GitHub Actions runner",
+    "source_only": false,
+    "safe_export": "no-model archive on RED or GREEN after independent inventory validation",
+    "raw_evidence": "small closed logs and hashes, no private model weights",
+    "no_auto_retry": true
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Create review-only PR based on Run434, let exclusive Run435 native Actions run, inspect actual job/source/raw IDs and ZIP SHA. If RED, preserve failures and do not silently retry. If GREEN, independent no-model 210-row postflight before S_s21."
+}
