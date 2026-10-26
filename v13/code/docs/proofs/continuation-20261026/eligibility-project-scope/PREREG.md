@@ -1,0 +1,11 @@
+# Run576 — eligibility project-source isolation candidate (2026-10-26)
+
+Owner: automation12; source files: `v13/code/v13/agi/eligibility.py`, `v13/code/v13/toolstep.py`; new focused test `v13/code/tests/test_eligibility_project_scope_run576.py`. No other owner files or frozen evidence are modified. Starting source: `e55a2e64b0c82e3dd7ac71fcff84f57361464acf` (review PR574).
+
+## Problem and preregistered behavior
+
+The live fixed eligibility reader currently accepts earlier user messages/verified quotes from the same session even if they explicitly belong to a *different* named project. This can import another project's budget, deadline or local-only constraint and yield a confident A/B decision. Preserve the existing fixed, model and fixed_strict readers, tool permission/age gates, and the deterministic recipe. Narrow only the evidence passed from the live eligibility proposer to those earlier exact sources that share the current explicit project label (English `Project <name>`). A missing, ambiguous or different label is not evidence for that project. If current has no project label, earlier project-labelled sources must not leak into generic decisions; unlabelled sources retain legacy behavior. No semantic entity resolution or global project-memory claim.
+
+Pre-registered tests: (1) exact earlier same-project reuse, (2) cross-project refusal to transfer rules, (3) mixed-history selection of only matching source, (4) no-project generic prompt refuses project-tagged source, (5) conflicting/multiple labels fail closed, (6) verified quote separation, (7) existing fixed-reader and tool-final tests unchanged. Actual `Runtime`/SQLite plan/shadow test, no model/native calls. Run `python -m unittest tests.test_eligibility_project_scope_run576 tests.test_eligibility_fixed tests.test_eligibility_live tests.test_tool_final_attribution tests.test_tool_final_live_software` from `v13/code` with pinned software dependencies; compileall and public privacy scan.
+
+Success: source-only regression PASS with no changed model/seed/experiment cohort, no new approval/age rights. Failures retained; no hidden baseline retuning. Source-only test is not STEP2 utility, Body-JEPA, B3, Redmi or whole V13 proof. No production integration/merge is authorized by this review branch alone.
