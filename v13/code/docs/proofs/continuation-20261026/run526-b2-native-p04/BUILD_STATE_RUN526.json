@@ -35,12 +35,14 @@
   },
   "heavy_owner": {
     "p03_actions": 40318195227,
-    "status": "IN_PROGRESS_AT_PREREG",
+    "p03_conclusion": "SUCCESS",
+    "p03_independent_review": "VERIFIED",
     "p04_pr_not_opened": true,
     "p04_native_not_started": true,
+    "heavy_in_progress_before_pr": 0,
     "concurrency": "v13-native-c3-run131-serialized"
   },
-  "evidence": "SOURCE_ONLY_P04_PREREG_PERSISTED_NO_NATIVE",
+  "evidence": "P04_PREREG_PERSISTED_P03_NATIVE_INDEPENDENTLY_VERIFIED_P04_NOT_STARTED",
   "gates": {
     "step2": "UTILITY_FAIL",
     "b3_l1": "FAIL",
@@ -55,6 +57,15 @@
     "Run510 full 60-row paired score pending",
     "Redmi and JEPA gates remain negative"
   ],
-  "next_command": "Wait for Run525 p03 native job to complete, independently audit raw/safe, confirm no heavy owner, then open Run526 PR once to trigger p04; no automatic retry.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Open p04 PR once, run final DETAIL negative-control native stage, independently verify raw/safe and aggregate original frozen 60 rows with Run516/Run510 without promoting canonical gates.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "prior_p03": {
+    "raw_zip_sha256": "5e960d0bcf1ca1023e3454f94526ed9e5c07c6579b7c3c17c95bbc04a2b34e9c",
+    "safe_zip_sha256": "007299f558f98e45971dbd33cce5ab023428f9eab59d13faa4e3af8781518fc2",
+    "raw_entries_verified": 32,
+    "safe_entries_verified": 13,
+    "quote_refs_with_raw_ancestry": 15,
+    "independent_audit_sha256": "5c471cfa97430fc8dc8d91f92aa7f1907bef820e7ca9e98dca28c4b9b2a9b7fd",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run525/"
+  }
 }
