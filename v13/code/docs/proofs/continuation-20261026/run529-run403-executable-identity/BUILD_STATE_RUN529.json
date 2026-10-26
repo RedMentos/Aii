@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN529_FULL_POSTFLIGHT_EXECUTABLE_IDENTITY_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run529-run403-executable-identity-20261026",
+  "base_sha": "89f3a3f3445dde8ffd3386528058abcf76b06ecc",
+  "pr": 528,
+  "tested_head": "d2109d5f91d633cd3af1d9c49ae76f584076d496",
+  "root_cause": "Run403 and its synthetic 378-row fixture used release tarball SHA where Run397 expected frozen installed executable SHA",
+  "source_blob": "22b74f879850211759086e8e89f95a2334744443",
+  "test_blob": "3d89012646491ea70bde246acade53b19c32e65f",
+  "frozen_runner_executable_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "actions": {
+    "run": 40321563279,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12648978436,
+    "artifact_zip_sha256": "955ecbdba78cea328c8c31dd0de20bc6905ccc9fac812e2018611eaf2be7eaf2",
+    "sha_manifest_entries_verified": 7,
+    "tests_passed": 47,
+    "privacy": "CLEAN",
+    "inherited_run403_source_controls": "SUCCESS",
+    "inherited_run405_failure_history": "SUCCESS"
+  },
+  "local_reproduction": {
+    "before": "Run403 8 ERROR in Run523 full source-wide; fixture mixed tarball and executable identities",
+    "after": "47/47 Run397/402/403/404 PASS plus 6 Run405 PASS",
+    "native_execution": false
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run529/Run529_GREEN_sha955ECBDB.zip",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "Run523 full suite still has historical frozen source-handoff pin drift and missing LP3 helper, not covered by this patch",
+    "Real 378-row native evidence and STEP2 acceptance remain separate",
+    "No Redmi proof"
+  ],
+  "next_command": "Continue from exact latest branch, inspect remaining source-wide failures without changing frozen source/model hashes; select next independent substantive blueprint package; keep original Run523 RED and all negative gates.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
