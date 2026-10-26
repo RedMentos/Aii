@@ -2,7 +2,7 @@ name: V13 Run473 exact P_s22 native Stage8 from verified 294 rows
 on:
   pull_request:
     paths:
-      - '.github/workflows/run473-native-o22.yml'
+      - '.github/workflows/run473-native-p22.yml'
 permissions:
   contents: read
   actions: read
