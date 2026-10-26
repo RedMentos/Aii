@@ -30,6 +30,7 @@ def fake_run_child(command, log_path, timeout_s=3600):
         "status": "STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY",
         "stage_id": stage_id, "rows_verified": 14,
         "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
+        "native_execution_performed": True,
     }))
     Path(log_path).write_text("MOCKED_SOURCE_ONLY_NO_NATIVE\n")
     return 0
@@ -105,6 +106,29 @@ class BatchSourceOnly(unittest.TestCase):
             self.assertEqual(progress[-1]["rc"], 17)
             with self.assertRaisesRegex(ValueError, "REFUSE_BATCH_RERUN_OR_PARTIAL"):
                 B.execute(work, installed)
+
+    def test_invalid_stage_receipt_is_recorded_red_before_next_stage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = fixture_work(tmp)
+            S.write_new(work / "RUN502_BATCH_PLAN.json", B.plan(work))
+            installed = work / "installed"; installed.mkdir()
+            def invalid_receipt(command, log_path, timeout_s=3600):
+                rc = fake_run_child(command, log_path, timeout_s)
+                stage_id = command[command.index("--stage-id") + 1]
+                receipt = work / ("stage_" + stage_id) / "RUN500_STAGE_RESULT.json"
+                data = json.loads(receipt.read_text())
+                data["native_execution_performed"] = False
+                receipt.write_text(json.dumps(data))
+                return rc
+            with patch("run496_heldout10_native_pilot.verify_installed", return_value={"synthetic": True}), \
+                 patch.object(B, "run_child", side_effect=invalid_receipt) as native:
+                with self.assertRaisesRegex(RuntimeError, "BATCH_STOPPED_AT_C_s31_p02_RC_98"):
+                    B.execute(work, installed)
+            self.assertEqual(native.call_count, 1)
+            progress = [json.loads(line) for line in (work / "RUN502_BATCH_PROGRESS.jsonl").read_text().splitlines()]
+            self.assertEqual(len(progress), 2)
+            self.assertEqual(progress[-1]["rc"], 98)
+            self.assertFalse((work / "stage_C_s31_p03").exists())
 
     def test_existing_stage_or_tampered_batch_plan_fails_before_preflight(self):
         with tempfile.TemporaryDirectory() as tmp:
