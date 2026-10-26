@@ -42,6 +42,31 @@ def read_regular(root, relative):
     return path.read_bytes()
 
 
+
+def canonical_digest(value):
+    """Match Run500/504 canonical JSON hash without importing native dependencies."""
+    return sha(json.dumps(value, ensure_ascii=False, sort_keys=True,
+                          separators=(",", ":"), allow_nan=False).encode("utf-8"))
+
+
+def exact_row_coverage(rows, stage, source):
+    """Require all and only the registered fixture x variant keys; count alone is insufficient."""
+    expected = stage.get("row_keys")
+    if (type(expected) is not list or len(expected) != 14
+            or any(type(k) is not list or len(k) != 4
+                   or k[:2] != [stage["arm"], stage["seed"]]
+                   or type(k[2]) is not str or type(k[3]) is not str for k in expected)):
+        raise ValueError("STAGE_PREREG_ROW_KEYS_INVALID:" + stage["id"])
+    required = [(key[2], key[3]) for key in expected]
+    if (len(set(required)) != 14 or type(rows) is not list or len(rows) != 14
+            or any(type(r) is not dict or type(r.get("fixture")) is not str
+                   or type(r.get("variant")) is not str for r in rows)):
+        raise ValueError("STAGE_ROW_COVERAGE_INVALID:" + source)
+    observed = [(row["fixture"], row["variant"]) for row in rows]
+    if len(set(observed)) != 14 or set(observed) != set(required):
+        raise ValueError("STAGE_ROW_COVERAGE_INVALID:" + source)
+
+
 def collect(work):
     work = Path(work)
     if not work.is_dir() or work.is_symlink():
@@ -50,7 +75,29 @@ def collect(work):
     def load(name):
         return json.loads(files[name])
     full, plan, batch = load("RUN500_STAGE_MAP.json"), load("RUN558_BATCH_PLAN.json"), load("RUN558_BATCH_RESULT.json")
+    schedule = load("RUN504_SCHEDULE.json")
     stage_ids = plan["stage_ids"]
+    if (plan.get("full_stage_map_sha256") != canonical_digest(full)
+            or plan.get("source_schedule_sha256") != canonical_digest(schedule)
+            or schedule.get("full_stage_map_sha256") != canonical_digest(full)
+            or plan.get("batch_id") != batch.get("batch_id")):
+        raise ValueError("FROZEN_BATCH_SOURCE_BINDING_CHANGED")
+    scheduled = next((item for item in schedule.get("batches", [])
+                      if item.get("id") == plan["batch_id"]), None)
+    if scheduled is None or scheduled.get("stage_ids") != stage_ids:
+        raise ValueError("FROZEN_BATCH_SCHEDULE_CHANGED")
+    selected = [next((stage for stage in full["stages"] if stage["id"] == sid), None)
+                for sid in stage_ids]
+    if any(stage is None for stage in selected):
+        raise ValueError("STAGE_NOT_REGISTERED")
+    keys = [key for stage in selected for key in stage["row_keys"]]
+    if (plan.get("fixture_pairs") != [stage["fixture_ids"] for stage in selected]
+            or scheduled.get("fixture_pairs") != plan["fixture_pairs"]
+            or plan.get("expected_rows") != 14 * len(stage_ids)
+            or scheduled.get("expected_rows") != plan["expected_rows"]
+            or plan.get("row_keys_sha256") != canonical_digest(keys)
+            or scheduled.get("row_keys_sha256") != plan["row_keys_sha256"]):
+        raise ValueError("FROZEN_BATCH_ROW_KEYS_CHANGED")
     if (type(stage_ids) is not list or not 1 <= len(stage_ids) <= 3
             or len(stage_ids) != len(set(stage_ids)) or batch["stage_ids"] != stage_ids
             or batch["rows_verified"] != 14 * len(stage_ids)
@@ -58,7 +105,7 @@ def collect(work):
             or batch["step2_exit"] != "UTILITY_FAIL"):
         raise ValueError("FROZEN_BATCH_CHANGED")
     receipt_map = {r["stage_id"]: r for r in batch["stage_receipts"]}
-    if set(receipt_map) != set(stage_ids):
+    if len(receipt_map) != len(batch["stage_receipts"]) or set(receipt_map) != set(stage_ids):
         raise ValueError("STAGE_RECEIPT_SET_CHANGED")
     for stage_id in stage_ids:
         registered = next((s for s in full["stages"] if s["id"] == stage_id), None)
@@ -75,6 +122,8 @@ def collect(work):
         tool = json.loads(files[folder + f"tool_{stage_id[0]}_s{seed}.json"])
         report = json.loads(files[folder + f"step2_{stage_id[0]}_s{seed}.json"])
         summary = json.loads(files[folder + f"summary_{stage_id[0]}_s{seed}.json"])
+        exact_row_coverage(tool.get("rows"), registered, stage_id + ":tool")
+        exact_row_coverage(report.get("rows"), registered, stage_id + ":step2")
         if (prereg != registered or result["stage_id"] != stage_id
                 or result["rows_verified"] != 14
                 or result["canonical_gate_pass"] is not False

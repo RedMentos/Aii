@@ -14,13 +14,34 @@ def write(path, value):
     path.write_text(json.dumps(value, sort_keys=True) + "\n")
 
 
+VARIANTS = ("b1_only", "b2_only", "both_none", "both_exact", "both_control",
+            "same_policy_dual", "prompt_only_dual")
+
+
 def fixture(root):
     root = Path(root)
-    stages = [{"id": sid, "seed": 33, "fixture_ids": [sid + "-1", sid + "-2"]}
-              for sid in STAGES]
-    write(root / "RUN500_STAGE_MAP.json", {"stages": stages})
-    write(root / "RUN504_SCHEDULE.json", {})
-    write(root / "RUN558_BATCH_PLAN.json", {"stage_ids": list(STAGES)})
+    stages = []
+    for i, sid in enumerate(STAGES):
+        ids = [f"fixture{i}a", f"fixture{i}b"]
+        keys = [["A", 33, fid, variant] for fid in ids for variant in VARIANTS]
+        stages.append({"id": sid, "arm": "A", "seed": 33,
+                       "fixture_ids": ids, "row_keys": keys})
+    full = {"stages": stages}
+    write(root / "RUN500_STAGE_MAP.json", full)
+    all_keys = [key for stage in stages for key in stage["row_keys"]]
+    pairs = [stage["fixture_ids"] for stage in stages]
+    scheduled = {"id": "FUTURE_005", "stage_ids": list(STAGES),
+                 "fixture_pairs": pairs, "expected_rows": 42,
+                 "row_keys_sha256": R.canonical_digest(all_keys)}
+    schedule = {"full_stage_map_sha256": R.canonical_digest(full),
+                "batches": [scheduled]}
+    write(root / "RUN504_SCHEDULE.json", schedule)
+    write(root / "RUN558_BATCH_PLAN.json",
+          {"batch_id": "FUTURE_005", "stage_ids": list(STAGES),
+           "fixture_pairs": pairs, "expected_rows": 42,
+           "row_keys_sha256": R.canonical_digest(all_keys),
+           "full_stage_map_sha256": R.canonical_digest(full),
+           "source_schedule_sha256": R.canonical_digest(schedule)})
     write(root / "RUN558_INSTALLED_PREFLIGHT.json", {})
     (root / "RUN558_BATCH_PROGRESS.jsonl").write_text(
         "".join(json.dumps({"stage_id": sid}) + "\n" for sid in STAGES))
@@ -33,9 +54,10 @@ def fixture(root):
         tool = folder / "tool_A_s33.json"
         summary = folder / "summary_A_s33.json"
         report = folder / "step2_A_s33.json"
-        write(tool, {"rows": [{}] * 14})
+        rows = [{"fixture": key[2], "variant": key[3]} for key in stage["row_keys"]]
+        write(tool, {"rows": rows})
         write(summary, {"seed": 33})
-        write(report, {"rows": [{}] * 14})
+        write(report, {"rows": rows})
         result = {"stage_id": sid, "rows_verified": 14,
                   "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
                   "tool_sha256": R.sha(tool.read_bytes()),
@@ -44,11 +66,10 @@ def fixture(root):
         write(result_path, result)
         receipts.append({"stage_id": sid, "receipt_sha256": R.sha(result_path.read_bytes())})
     write(root / "RUN558_BATCH_RESULT.json",
-          {"stage_ids": list(STAGES), "rows_verified": 42,
+          {"batch_id": "FUTURE_005", "stage_ids": list(STAGES), "rows_verified": 42,
            "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
            "stage_receipts": receipts})
     return root
-
 
 class Run582Bundle(unittest.TestCase):
     def test_complete_three_stage_bundle_includes_all_raw(self):
@@ -76,7 +97,7 @@ class Run582Bundle(unittest.TestCase):
             data = json.loads(stage_map.read_text())
             data["stages"][0]["seed"] = 32
             write(stage_map, data)
-            with self.assertRaisesRegex(ValueError, "STAGE_ID_SEED_MISMATCH"):
+            with self.assertRaisesRegex(ValueError, "FROZEN_BATCH_SOURCE_BINDING_CHANGED"):
                 R.collect(root)
 
     def test_missing_p02_tool_is_fatal(self):
@@ -125,6 +146,70 @@ class Run582Bundle(unittest.TestCase):
             R.required_stage_names("A_s33_p02", 32)
         with self.assertRaisesRegex(ValueError, "STAGE_ID_SEED_MISMATCH"):
             R.required_stage_names("../A_s33_p02", 33)
+
+
+    def test_duplicate_tool_row_cannot_be_complete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "stage_A_s33_p02/tool_A_s33.json"
+            value = json.loads(path.read_text())
+            value["rows"][1] = dict(value["rows"][0])
+            write(path, value)
+            # Even if an attacker updates the per-stage receipt and hashes,
+            # the registered 2 x 7 row-key set must still be enforced.
+            with self.assertRaisesRegex(ValueError, "STAGE_ROW_COVERAGE_INVALID"):
+                R.collect(root)
+
+    def test_wrong_fixture_in_step2_report_cannot_be_complete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "stage_A_s33_p03/step2_A_s33.json"
+            value = json.loads(path.read_text())
+            value["rows"][0]["fixture"] = "other_project"
+            write(path, value)
+            with self.assertRaisesRegex(ValueError, "STAGE_ROW_COVERAGE_INVALID"):
+                R.collect(root)
+
+    def test_non_dict_row_cannot_be_complete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "stage_A_s33_p04/step2_A_s33.json"
+            value = json.loads(path.read_text())
+            value["rows"][0] = ["fixture", "variant"]
+            write(path, value)
+            with self.assertRaisesRegex(ValueError, "STAGE_ROW_COVERAGE_INVALID"):
+                R.collect(root)
+
+    def test_plan_fixture_pair_drift_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "RUN558_BATCH_PLAN.json"
+            value = json.loads(path.read_text())
+            value["fixture_pairs"][0] = ["wrong", "pair"]
+            write(path, value)
+            with self.assertRaisesRegex(ValueError, "FROZEN_BATCH_ROW_KEYS_CHANGED"):
+                R.collect(root)
+
+    def test_schedule_mismatch_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "RUN504_SCHEDULE.json"
+            value = json.loads(path.read_text())
+            value["batches"][0]["stage_ids"].reverse()
+            write(path, value)
+            with self.assertRaisesRegex(ValueError, "FROZEN_BATCH_SOURCE_BINDING_CHANGED"):
+                R.collect(root)
+
+    def test_duplicate_receipt_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            path = root / "RUN558_BATCH_RESULT.json"
+            value = json.loads(path.read_text())
+            value["stage_receipts"].append(dict(value["stage_receipts"][0]))
+            write(path, value)
+            with self.assertRaisesRegex(ValueError, "STAGE_RECEIPT_SET_CHANGED"):
+                R.collect(root)
+
 
 
 if __name__ == "__main__":

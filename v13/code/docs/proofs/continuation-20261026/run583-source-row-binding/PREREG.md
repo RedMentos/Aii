@@ -1,0 +1,11 @@
+# Run583 — independent Run582 source/row binding review (2026-10-26)
+
+Owner: GPT automation13. Parent: Run582 review-only head `65c1dfa292101eee29d533c83e70a2b0d8542a06` (PR579). No edits to registered Run491/500/504/558, native owners, model/seed/fixture hashes, age/tool rights, or Canon.
+
+Read-only finding before implementation: Run582 `collect()` accepts 14 empty dictionaries as `tool.rows` and `step2.rows`; it compares counts but not the stage's preregistered `fixture_ids` x `variants`. A forged or mismatched 14-row set can be packaged as `COMPLETE_STAGE_SOURCE_BUNDLE_ONLY` even though original Run500 `verify_stage` requires unique exact row coverage. The current synthetic positive test uses `[{}] * 14`, masking this gap. Run582 also does not check the stage map/schedule binding or the expected batch row keys, so "source completeness" must not be interpreted as row completeness.
+
+Prospective correction: retain existing Run582 artifact interface and source-only status; require exact `(fixture, variant)` coverage in tool and STEP2 rows against each frozen stage `row_keys`, reject duplicate/wrong/missing keys and non-dict rows, check `plan.fixture_pairs`, `plan.expected_rows`, `plan.row_keys_sha256` against selected stages, and verify selected stages are the exact schedule batch. Preserve original bytes; no retroactive repair or native proof. Use fail-closed validation and ensure fixtures in synthetic tests follow the registered 2 x 7 layout.
+
+Prospective tests: valid synthetic three-stage batch with 42 distinct keys passes; duplicated fixture/variant in tool or STEP2 fails; wrong variant/fixture fails; changed batch plan/schedule fails; missing source and seed32 typo remain rejected. Run existing Run582 tests and new negative controls in source-only CI, no models. GitHub Actions source pin, privacy scan, SHA-closed evidence if technically possible. No gate promotion: STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, Redmi UNMEASURED, full V13 INCOMPLETE.
+
+This is a review candidate on its own branch, not an owner-branch overwrite.
