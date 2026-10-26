@@ -1,0 +1,72 @@
+{
+  "schema": "V13_RUN472_NATIVE294_PROJECT_PREFIX_COUNTERFACTUAL_V1",
+  "date_utc": "2026-10-26",
+  "source_safe_zip_sha256": "e2e044840b9ac7acdb54102bd7df069fbc6491ca8b758421c3958730090e2136",
+  "source_manifest_sha256": "86181d07f3ba7cf27f50eb395f6bf009c3b217a1e16ca42f4d80d1cfe3bcbdf1",
+  "method": "Read-only: for every actually native-generated row, recompute original v13.utility.score_decision, then only if answer.project == 'Project '+oracle.project replace with bare oracle.project and recompute. No original artifact or frozen scorer modified.",
+  "total_rows": 294,
+  "project_values": {
+    "prefixed": "280/294",
+    "bare": "14/294",
+    "other": "0/294"
+  },
+  "by_variant": {
+    "b1_only": {
+      "rows": 42,
+      "prefix_project": 37,
+      "corrected_project_true": 37,
+      "original_mean": 0.6607142857142858,
+      "counterfactual_mean": 0.734126984126984
+    },
+    "b2_only": {
+      "rows": 42,
+      "prefix_project": 41,
+      "corrected_project_true": 41,
+      "original_mean": 0.08730158730158728,
+      "counterfactual_mean": 0.16865079365079363
+    },
+    "both_control": {
+      "rows": 42,
+      "prefix_project": 42,
+      "corrected_project_true": 31,
+      "original_mean": 0.26388888888888884,
+      "counterfactual_mean": 0.3253968253968255
+    },
+    "both_exact": {
+      "rows": 42,
+      "prefix_project": 41,
+      "corrected_project_true": 36,
+      "original_mean": 0.5238095238095238,
+      "counterfactual_mean": 0.5952380952380951
+    },
+    "both_none": {
+      "rows": 42,
+      "prefix_project": 42,
+      "corrected_project_true": 34,
+      "original_mean": 0.29563492063492064,
+      "counterfactual_mean": 0.36309523809523814
+    },
+    "prompt_only_dual": {
+      "rows": 42,
+      "prefix_project": 42,
+      "corrected_project_true": 35,
+      "original_mean": 0.34920634920634913,
+      "counterfactual_mean": 0.4186507936507938
+    },
+    "same_policy_dual": {
+      "rows": 42,
+      "prefix_project": 35,
+      "corrected_project_true": 35,
+      "original_mean": 0.7023809523809524,
+      "counterfactual_mean": 0.7718253968253966
+    }
+  },
+  "finding": "A formatting ambiguity systematically penalizes 'Project X' while the oracle expects bare 'X'; the hypothetical correction raises scores but both_exact still trails B1 and same-policy controls. Address in a new preregistered cohort; retain original failures.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "canonical_gate_pass": false,
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "claim_limit": "Descriptive counterfactual, not a validated new scorer, not a causal utility claim, and not permission to rewrite Run394/397 results."
+}
