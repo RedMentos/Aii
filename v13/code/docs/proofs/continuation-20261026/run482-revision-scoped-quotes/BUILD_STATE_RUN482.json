@@ -21,8 +21,17 @@
   "tests": {
     "local_standalone_boundary": "7/7 PASS, Python unittest; no model and no full V13 checkout",
     "local_raw_log_sha256": "6a18b414ad5b6c5cb7f3e7d334d322e8209c8d649d243ab8cb1351df13052bce",
-    "github_ci": "PENDING at checkpoint creation; workflow executes Run482, Run481 and 13 inherited quote tests with pinned source checks and privacy scan",
-    "evidence_class": "software/synthetic only; no native, Redmi, learned utility, or production integration"
+    "github_ci": "SOURCE_CI_GREEN 27/27 PASS, privacy CLEAN; focused source-bound CI 401/401 + 115/115 PASS, privacy CLEAN; no native/model or Redmi",
+    "evidence_class": "software/synthetic only; no native, Redmi, learned utility, or production integration",
+    "github_source_run_id": 40283477101,
+    "github_source_job_id": 121441706099,
+    "github_raw_artifact_id": 12632578823,
+    "github_raw_zip_sha256": "7fa74901bca511f45a1ed3596f407103e0644a6e99f522be5234b33fdce48455",
+    "github_focused_run_id": 40283477071,
+    "github_focused_job_id": 121441705986,
+    "github_focused_artifact_id": 12632793722,
+    "github_focused_zip_sha256": "c05ba29531a1fb8b3dcac9cf8b76150aa50c8fb35799fe09c24f6d55e2d09c7d",
+    "tested_source_head": "55ac35541c570767af446e7b9f515dff88fcbad4"
   },
   "negative_gates": {
     "canonical_architecture_complete": false,
@@ -42,5 +51,5 @@
     "Run479 Stage9 native job remains independently owned; do not start a competing heavy job.",
     "Private Library upload from this container failed with container_session_unavailable; GitHub remote branch is the durable source checkpoint, not a private raw-log backup."
   ],
-  "next_command": "Open review PR from codex/run482-revision-scoped-b2-quotes-20261026 to codex/run481-b2-ranked-quotes-shadow-20261026; inspect Actions test and privacy logs and verify exact remote tree/commit; then independent adversarial review. Check Run479 native Stage9 status separately without competing."
+  "next_command": "Verify post-checkpoint CI and remote head; independent review PR #479 and the current SHA-pin trust boundary. No production integration until a new preregistered native utility cohort. Check Run479 Stage9 without starting competing native work."
 }
