@@ -1,4 +1,4 @@
-# Vorregistrierung WP-Z2e: allgemeine Körper-Frage statt STEP2-spezifischer (2026-10-22)
+# Vorregistrierung WP-Z2-Q1 (Skript z2e): allgemeine Körper-Frage statt STEP2-spezifischer (2026-10-22)
 
 Vor jeder Inferenz geschrieben und gepusht. Linux-Cloud, gleiche Modelle/Runner wie Z2b/Z2c, kein Redmi.
 
@@ -25,3 +25,5 @@ Nur berichtet: b1_only/b2_only, Zitat-Zählungen, KI von CG − CL.
 ## Folge
 Bei SUPPORTED schlage ich vor, die allgemeine Frage als Standard einzuschalten (nach Nutzerfreigabe). Sonst bleibt der
 Schalter aus. Grenze: nur STEP2-Episoden. Ob die Frage normalen Chat stört, ist hier nicht gemessen.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).

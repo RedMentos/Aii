@@ -1,4 +1,4 @@
-# Befund WP-Z2e: allgemeine Körper-Frage (2026-10-22, ausgewertet 2026-10-26)
+# Befund WP-Z2-Q1 (Skript z2e): allgemeine Körper-Frage (2026-10-22, ausgewertet 2026-10-26)
 
 Vorregistriert in `b2876f5` (vor dem Lauf gepusht). Seeds 23/24/25, 10 Z2-Episoden, 3 Arme, 630 Zeilen + Werkzeug-Replay.
 Lauf 1 brach nach 8 von 9 Läufen am Zeitlimit ab; der fehlende Lauf CG/25 lief unverändert von vorn (`run2_resume.log`).
@@ -29,3 +29,5 @@ die spezifische Frage auf frischen Seeds gemessen.
 
 ## Grenzen
 Nur STEP2-Episoden, Linux-Cloud, kein Handy.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).

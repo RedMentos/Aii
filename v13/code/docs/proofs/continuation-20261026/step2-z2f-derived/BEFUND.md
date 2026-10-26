@@ -1,4 +1,4 @@
-# Befund WP-Z2f: Körper-Frage fest aus der aktuellen Nachricht (2026-10-26)
+# Befund WP-Z2-Q2 (Skript z2f): Körper-Frage fest aus der aktuellen Nachricht (2026-10-26)
 
 Vorregistriert in `0b14fd6`. Seeds 26/27/28, Arme C (keine Frage), CL (spezifische Frage), CD (abgeleitete Frage).
 Daten `bench-results/step2-z2f-derived-20261026/`.
@@ -31,3 +31,5 @@ stehen nicht in der Nachricht, wohl aber im Werkzeug-Schema (das eligibility-Wer
 ## Folge
 Schalter `body_question_mode` bleibt aus. Nächster Ansatz: Die Frage aus dem Werkzeug ableiten, das die Nachricht
 auslöst (`eligibility.question()` → benötigte Felder), und ungültiges Körper-JSON robust behandeln.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).

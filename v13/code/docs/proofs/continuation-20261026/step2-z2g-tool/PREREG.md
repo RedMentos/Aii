@@ -1,4 +1,4 @@
-# Vorregistrierung WP-Z2g: Körper-Frage aus dem ausgelösten Werkzeug (2026-10-26)
+# Vorregistrierung WP-Z2-Q3 (Skript z2g): Körper-Frage aus dem ausgelösten Werkzeug (2026-10-26)
 
 Vor jeder Inferenz geschrieben und gepusht. Linux-Cloud, gleiche Modelle/Runner, kein Redmi.
 
@@ -25,3 +25,5 @@ Replay ab, ist das Urteil NOT_SUPPORTED.
 ## Folge
 Bei SUPPORTED schlage ich vor, `body_question_mode=tool` als Standard einzuschalten. Es wirkt nur bei Werkzeug-Fragen,
 der Nutzer hat das Werkzeug fürs Handy gewählt.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).

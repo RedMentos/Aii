@@ -1,6 +1,6 @@
 # Aktuell 2026-10-26 (Thread „STEP2-Nutzen Engpass“): allgemeine Körper-Frage hilft nicht
 
-WP-Z2e NOT_SUPPORTED: eine aufgabenneutrale Körper-Frage bringt +.03 (KI schließt 0 ein), die spezifische STEP2-Frage +.33. Seed-Fehler der Runner behoben (`runner_seed`). Befund `docs/proofs/continuation-20261022/step2-z2e-general/BEFUND.md`.
+WP-Z2-Q1 (Skript z2e) NOT_SUPPORTED: eine aufgabenneutrale Körper-Frage bringt +.03 (KI schließt 0 ein), die spezifische STEP2-Frage +.33. Seed-Fehler der Runner behoben (`runner_seed`). Befund `docs/proofs/continuation-20261022/step2-z2e-general/BEFUND.md`.
 
 # Aktuell 2026-10-22 (Thread „STEP2-Nutzen Engpass“): Werkzeug-Entscheidung vorn
 

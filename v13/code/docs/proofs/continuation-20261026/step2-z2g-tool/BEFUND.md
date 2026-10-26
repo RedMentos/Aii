@@ -1,4 +1,4 @@
-# Befund WP-Z2g: Körper-Frage aus dem ausgelösten Werkzeug (2026-10-26)
+# Befund WP-Z2-Q3 (Skript z2g): Körper-Frage aus dem ausgelösten Werkzeug (2026-10-26)
 
 Vorregistriert in `09c7364`. Seeds 29/30/31, 10 Z2-Episoden, Arme C/CL/CT, 630 Zeilen + Werkzeug-Replay.
 Lauf 1 stoppte am Zeitlimit im letzten Lauf (CT/31). Dieser lief unverändert von vorn (`run2_resume.log`).
@@ -28,3 +28,5 @@ freigegeben hat (gemessen ohne Freigabe). Linux-Cloud, kein Handy.
 ## Folge
 Vorschlag an den Nutzer: `body_question_mode=tool` einschalten, am besten zusammen mit dem Eignungs-Werkzeug im Handy-Paket.
 Bis zur Antwort bleibt der Standard aus.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).

@@ -1462,18 +1462,18 @@ Sicherheits-/Moralregeln sind nie änderbar. Alles vorregistriert, Autorität 0 
 - Standard jetzt `eligibility_reader=fixed`, `tool_answer_first=true` (alt in `LEGACY_PRE_20261022`); Werkzeug selbst weiter nur nach `:growth enable eligibility`. Suite grün. Befund `code/docs/proofs/continuation-20261022/eligibility-first/BEFUND.md`.
 - Offen: Handy-Paket (WP-Z7) mit beidem (Nutzer: „Ja, beide an im Handy-Paket“); andere Wortformen über den Regel-Leser-Strang.
 
-### WP-Z2e Allgemeine Körper-Frage + Seed-Fehler (Cloud, Modelle) — ERLEDIGT 2026-10-26, **NOT_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+### WP-Z2-Q1 Allgemeine Körper-Frage + Seed-Fehler (Cloud, Modelle) — ERLEDIGT 2026-10-26, **NOT_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
 - Seed-Fehler behoben (Z2b offen c): Runner nutzt `cfg['seed']`, wenn ein Aufruf keinen Seed nennt (Kettenglied `runner_seed`, `85468a9`; Standard-Seed 13 → Standardzüge unverändert).
 - Z2/Z2c (B1-Fenster, Körper-Frage-Schalter) in dq33gk zusammengeführt (`7164c1b`).
 - Vorregistriert `b2876f5`, Seeds 23–25, Arme C/CL/CG: allgemeine Frage both_exact .361 gegen keine Frage .328 (+.03, KI [−.07, +.15]) und spezifische Frage .661 (−.30). Spezifische Frage repliziert: +.33, KI [+.18, +.50]. 0 falsch.
 - Folge: Gewinn kommt vom Benennen der gebrauchten Werte. Schalter bleibt aus. Nächstes Paket: JEF bildet die Körper-Frage fest aus der aktuellen Nachricht. Befund `code/docs/proofs/continuation-20261022/step2-z2e-general/BEFUND.md`.
 
-### WP-Z2f Körper-Frage fest aus der Nachricht (Cloud, Modelle) — ERLEDIGT 2026-10-26, **NOT_SUPPORTED** (CD nicht auswertbar; Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+### WP-Z2-Q2 Körper-Frage fest aus der Nachricht (Cloud, Modelle) — ERLEDIGT 2026-10-26, **NOT_SUPPORTED** (CD nicht auswertbar; Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
 - `v13/bodyq.py` + Schalter `body_question_mode='derived'` (Standard aus, Kettenglied `body_question_derived`). Vorregistriert `0b14fd6`, Seeds 26–28.
 - CD hatte in 2 von 3 Läufen ungültiges Körper-JSON (abgeschnittene Zitate), C/CL nie → Werkzeug-Replay verweigert, Urteil NOT_SUPPORTED. Seed 26 beschreibend: CD .45 zwischen C .325 und CL .55; B1-Optionszitate 4 gegen CL 8.
 - Folge: Frage muss die Merkmale nennen (aus dem ausgelösten Werkzeug, nicht aus der Nachricht); ungültige Körper-Angebote abfangen. Befund `code/docs/proofs/continuation-20261026/step2-z2f-derived/BEFUND.md`.
 
-### WP-Z2g Körper-Frage aus dem ausgelösten Werkzeug (Cloud, Modelle) — ERLEDIGT 2026-10-26, **TOOL_QUESTION_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
+### WP-Z2-Q3 Körper-Frage aus dem ausgelösten Werkzeug (Cloud, Modelle) — ERLEDIGT 2026-10-26, **TOOL_QUESTION_SUPPORTED** (Thread „STEP2-Nutzen Engpass“, Branch `claude/project-thread-dq33gk`)
 - `body_question_mode='tool'` (Standard aus): `bodyq.tool_focus` fragt die Körper nur, wenn `eligibility.question()` auslöst, mit `eligibility.BODY_QUESTIONS`. Kettenglied `body_question_tool`. Vorregistriert `09c7364`, Seeds 29–31.
 - both_exact: C .342, fester Text .622, **Werkzeug-Frage .608**; CT − C +.27 [+.09, +.46], CT − CL −.01. 0 falsch, keine Strukturfehler.
 - Offen: Nutzerentscheidung Einschalten (mit dem Eignungs-Werkzeug im Handy-Paket). Befund `code/docs/proofs/continuation-20261026/step2-z2g-tool/BEFUND.md`.

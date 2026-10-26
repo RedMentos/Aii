@@ -1,4 +1,4 @@
-# Vorregistrierung WP-Z2f: Körper-Frage fest aus der aktuellen Nachricht gebildet (2026-10-26)
+# Vorregistrierung WP-Z2-Q2 (Skript z2f): Körper-Frage fest aus der aktuellen Nachricht gebildet (2026-10-26)
 
 Vor jeder Inferenz geschrieben und gepusht. Linux-Cloud, gleiche Modelle/Runner wie Z2b–Z2e, kein Redmi.
 
@@ -25,3 +25,5 @@ Episoden), (2) CD − CL Mittel ≥ −0,05, (3) 0 falsch festgelegte Werkzeug-Z
 
 ## Grenzen
 Nur STEP2-Episoden (englisch, „Option A/B“-Wortform). Ob die Frage im normalen Chat hilft oder stört, misst das nicht.
+
+> Paketname geändert (Name geändert: Thread „B2 zitiert Regel selten“ vergab Z2e/Z2f parallel; Code/Skripte heißen weiter z2e/z2f/z2g).
