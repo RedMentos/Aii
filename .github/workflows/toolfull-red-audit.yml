@@ -1,0 +1,118 @@
+name: V13 independent immutable RED fullsuite evidence audit
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/toolfull-red-audit.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/toolfull-red-audit/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-red:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-toolfull-red-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify prereg and original source anchor
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RED_AUDIT_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/toolfull-red-audit/PREREG.md)" = dff64f7982955984c5df501415e520d701eee240
+          test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+      - name: Retrieve exact original RED artifact without reexecution
+        id: input
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 0 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12676810516/zip" -o "$RUNNER_TEMP/original-fullsuite-red.zip" > "$RUNNER_TEMP/RED_AUDIT_INPUT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "28cdb224cc0d820b30c1b76c5cd245633776b12c6c694fd54edb0ce7f2fb93ea  $RUNNER_TEMP/original-fullsuite-red.zip" | sha256sum -c - >> "$RUNNER_TEMP/RED_AUDIT_INPUT_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RED_AUDIT_INPUT_EXIT.txt"
+          exit 0
+      - name: Independent original exit and bounded failure inventory
+        id: audit
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RED_AUDIT_REPORT_RAW.log" 2>&1
+          import hashlib,json,os,re,subprocess,zipfile
+          from pathlib import Path
+          tmp=Path(os.environ['RUNNER_TEMP']);archive=tmp/'original-fullsuite-red.zip'
+          assert (tmp/'RED_AUDIT_INPUT_EXIT.txt').read_text().strip()=='0'
+          dest=tmp/'original-raw';dest.mkdir(exist_ok=False)
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              names=z.namelist()
+              assert len(names)==len(set(names))
+              assert all('/' not in n and '\\' not in n and n.startswith('TOOLFULL_') for n in names)
+              for n in names:(dest/n).write_bytes(z.read(n))
+          proc=subprocess.run(['sha256sum','-c','TOOLFULL_SHA256SUMS.txt'],cwd=dest,capture_output=True,text=True)
+          assert proc.returncode==0, 'original raw SHA closure mismatch'
+          keys=['DEPS','INPUT','RUN147','LP3','TEST','PRIVACY']
+          exits={k:(dest/('TOOLFULL_'+k+'_EXIT.txt')).read_text().strip() for k in keys}
+          assert all(exits[k]=='0' for k in keys if k!='TEST'),exits
+          assert exits['TEST']!='0','original full suite was not RED'
+          log=(dest/'TOOLFULL_TESTS_RAW.log').read_text(errors='replace')
+          runs=re.findall(r'^Ran (\d+) tests in ([\d.]+)s',log,re.M)
+          failure_ids=re.findall(r'^(?:FAIL|ERROR): ([^\n]+)',log,re.M)
+          end=re.findall(r'^(?:FAILED \([^\n]+\)|OK(?: \([^\n]+\))?)$',log,re.M)
+          report={'schema':'V13_TOOLFULL_ORIGINAL_RED_INDEPENDENT_AUDIT_V1',
+                  'source_workflow_run':40376727122,'source_head':'1ee3f247d52acb1a63a15fba6cf89dcf7a2f3bc6',
+                  'source_artifact_id':12676810516,'source_artifact_sha256':'28cdb224cc0d820b30c1b76c5cd245633776b12c6c694fd54edb0ce7f2fb93ea',
+                  'original_sha256_closure':'PASS','original_exits':exits,
+                  'tests':int(runs[-1][0]) if runs else None,'duration_s':float(runs[-1][1]) if runs else None,
+                  'failure_count':len(failure_ids),'failure_ids_bounded':failure_ids[:30],
+                  'summary_bounded':end[-1:] if end else [],
+                  'test_log_sha256':hashlib.sha256(log.encode()).hexdigest(),
+                  'status':'ORIGINAL_RED_CONFIRMED','native_executed':False,'redmi_measured':False,
+                  'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL','jepa_weight':0}
+          (tmp/'RED_AUDIT_REPORT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({k:report[k] for k in ('status','original_exits','tests','failure_count','failure_ids_bounded','summary_bounded')},sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RED_AUDIT_REPORT_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RED_AUDIT_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RED_AUDIT_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close audit outputs without copying original raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RED_AUDIT_*' ! -name RED_AUDIT_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RED_AUDIT_SHA256SUMS.txt
+      - name: Preserve independent bounded audit even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: toolfull-original-red-audit-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RED_AUDIT_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce truthful original RED receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RED_AUDIT_INPUT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RED_AUDIT_REPORT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RED_AUDIT_PRIVACY_EXIT.txt")" = 0
