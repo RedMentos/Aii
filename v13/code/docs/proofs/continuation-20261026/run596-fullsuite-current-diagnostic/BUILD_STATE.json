@@ -1,0 +1,77 @@
+{
+  "schema": "V13_RUN596_FULL_SOURCE_RED_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "review_pr": 591,
+  "review_branch": "codex/automation11-run596-fullsuite-current-diagnostic-20261026",
+  "evidence_branch": "codex/automation11-run596-evidence-20261026",
+  "tested_source_head": "5a339a83c354da110d3bf1312531bc8b5989fa8f",
+  "workflow_run": 40393740879,
+  "job": 121821180763,
+  "workflow_conclusion": "failure",
+  "artifact_id": 12685997539,
+  "artifact_sha256": "25ede1735dfa5f39e31fec35a6adb798f16d2e6012da086362e3dbcb58ac9904",
+  "raw_manifest_files_verified": 15,
+  "raw_manifest_failures": 0,
+  "raw_tests_sha256": "9bc0f2ad00cf1954b5ce503f7ff84686b4fd463c98e772bad14f812864bb4c8c",
+  "raw_source_sha256_manifest": "a5e5c272e94a6cb115eb767697328e400516617681dc0230a6c7cff5fa1e6920",
+  "observed": {
+    "source_verification": "PASS",
+    "canonical_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+    "dependencies_exit": 0,
+    "run531_fixture_exit": 0,
+    "run147_fixture_exit": 0,
+    "lp3_helper_exit": 0,
+    "privacy_exit": 0,
+    "unfiltered_tests_exit": 1,
+    "tests_run": 4131,
+    "failures": 4,
+    "errors": 65,
+    "skipped": 14,
+    "elapsed_seconds": 314.886
+  },
+  "failure_classification": {
+    "value_error_live_sources_differ_from_complete_baseline_candidate": 36,
+    "value_error_runtime_neither_exact_frozen_baseline_nor_complete_reviewed_candidate": 27,
+    "value_error_current_reviewed_source_digest_changed_runtime": 2,
+    "assertion_frozen_runtime_or_store_chain_mismatch": 4,
+    "other_observed_test_failure_classes": 0
+  },
+  "root_cause": "The exact historical source-lineage tests deliberately pin the frozen runtime/store integration chain. Current runtime.py SHA256 76a0ce382eb47c74bb4e431303b6ec18e892c1a053365bb28311862cbf7057bb differs from frozen reviewed e5e4952e4cbee30202fda7f75377ec804ac4bcffb7aad07c94faa20573023cc0; 4 FAIL/65 ERROR are expected fail-closed source pin mismatches, not evidence of newly failing native behavior. Do not rewrite frozen cohorts or test expectations to force GREEN.",
+  "historical_comparison": {
+    "run573": 40370220505,
+    "head": "a1c235372f1aa1155e8dbeb9bd2baebd4f99385a",
+    "artifact_id": 12673530608,
+    "artifact_sha256": "85f67034b9c912854445fe3e2a02513d365c4aff78871e1fe02a289e87e4d872",
+    "tests_run": 4020,
+    "skipped": 14,
+    "conclusion": "PASS",
+    "note": "Historical exact head was source-only GREEN, not RED. Later branch source changed; current RED is real and must remain visible."
+  },
+  "claim_limits": {
+    "source_suite": "RED_4_FAIL_65_ERROR",
+    "native_inference": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false
+  },
+  "owner_and_next": {
+    "current_owner": "GPT automation11",
+    "open_questions": [
+      "Whether current reviewed runtime/store chain should have a new separately registered lineage, without rewriting frozen cohorts",
+      "Actual native/Redmi acceptance and receiver effect remain unavailable",
+      "Independent review/merge stacked PR588–592 and Claude PR38"
+    ],
+    "next_command": "Keep Run596 raw immutable; independently register a new source lineage only if user/canon authorizes, otherwise retain RED and continue unrelated functional V13 organs. Do not rerun unchanged full suite merely to consume budget.",
+    "prerequisites": [
+      "Preserve failed evidence",
+      "No force push or anyone-writable Drive",
+      "No native claim from source tests"
+    ]
+  },
+  "checkpoint_reason": "Saved to separate evidence branch to avoid automatically rerunning the 5-minute full suite on a docs-only commit to the workflow branch."
+}
