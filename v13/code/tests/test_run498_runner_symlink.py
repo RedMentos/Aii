@@ -53,6 +53,15 @@ class RunnerSymlink(unittest.TestCase):
         self.runner.symlink_to(intermediate)
         self.assertFalse(P.runner_target_within_bin(self.home, self.runner))
 
+    def test_bin_directory_symlink_outside_home_refused(self):
+        other_home = Path(self.tmp.name) / "evilhome"
+        other_home.mkdir()
+        outside_bin = Path(self.tmp.name) / "outside-bin"
+        outside_bin.mkdir()
+        (outside_bin / "llama-server").write_bytes(b"pinned-test-binary")
+        (other_home / "bin").symlink_to(outside_bin, target_is_directory=True)
+        self.assertFalse(P.runner_target_within_bin(other_home, other_home / "bin" / "llama-server"))
+
     def test_verify_installed_still_enforces_exact_hash_and_metadata(self):
         self.runner.symlink_to(self.target)
         (self.home / "config").mkdir()
