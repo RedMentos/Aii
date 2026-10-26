@@ -1,0 +1,52 @@
+{
+  "schema": "V13_RUN512_SOURCE_BINDING_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "base_pr": 509,
+  "base_head": "8ba35fd980831c49d94b84d79688bf15b81358ab",
+  "branch": "codex/run512-b2-source-binding-20261026",
+  "prereg_committed_first": "9f03ee9ba63da34ea1cda313269a247187be0f1d",
+  "scope": "Run511 B2 native-offer collector source-only full four-slot provenance",
+  "observed_gap": "Run511 native raw rows contained only history0 SHA; history1/history2/current exact source IDs, SHA, full text and bounds absent. Source-slot mapping alone did not verify full underlying text.",
+  "changes": [
+    "Reject empty or duplicate source IDs",
+    "Verify full four source refs against exact fixture SHA, range, modality and actual Store.read_source text before B2 offer",
+    "Persist four complete source-slot records in each native row",
+    "Add seven adversarial tests and pinned source-only CI; original Run509/510 registration and metric unchanged"
+  ],
+  "source_blobs": {
+    "prereg": "95eafcbe6accc70fad951ad31b5b7edcf092889d",
+    "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "tests": "f8c59acccb636cb68efa12ba0fccb2e0b440cd34"
+  },
+  "evidence": "SOURCE_ONLY_GREEN_24_TESTS_FIVE_PLANS_PRIVACY_CLEAN",
+  "native_owner": "Run507 PR505 Actions40309409260 in_progress at discovery; no new heavy run",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "No Redmi available",
+    "Run507 separate native owner; do not overlap",
+    "No native Run511/512 receipt yet"
+  ],
+  "next_command": "Review Run513 source-only postflight against this exact Run512 GREEN base, test and SHA-close synthetic evidence; Run507 native owner remains separate.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "workflow_run": 40312012167,
+    "head": "b7121ff021f09b2ac09f9b15559efaf08ee8941d",
+    "status": "SUCCESS",
+    "focused_tests_pass": 24,
+    "plan_count": 5,
+    "planned_keys": 60,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12644564001,
+    "raw_zip_sha256": "6125171110ec99f14afaa9fa5e6dd5e7638fb211393486139ff7e7cb50e326a7",
+    "manifest_entries_verified": 11,
+    "raw_exit_codes": "0/0/0",
+    "private_library_backup": "/V13_Run512_SOURCE_ONLY_PROOF_20261026_sha61251711.zip"
+  }
+}

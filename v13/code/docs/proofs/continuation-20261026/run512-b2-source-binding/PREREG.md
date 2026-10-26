@@ -1,0 +1,11 @@
+# Run512 prereg — complete source-slot provenance for frozen Run511 B2 offers
+
+Date 2026-10-26. Base: Run511 PR #509, source-only GREEN Actions 40311033691, commit 8ba35fd980831c49d94b84d79688bf15b81358ab. Run507 PR #505 retains the separate native heavy owner (Actions 40309409260 in progress at prereg). No model calls, downloads, native execution or gate promotion in this change.
+
+**Observed gap:** Run511 PREREG requires exact source IDs/SHA and verified source-slot text for all history0/history1/history2/current. Its existing row records only history0 SHA, verified quote excerpts and offer evidence refs; current and history1/2 complete slot bindings are not persisted. Existing `source_slot_map` also checks uniqueness but not the full underlying source bytes/offset for each slot. Consequently the raw receipt cannot independently demonstrate that every mapped source ID actually resolves to its designated frozen text.
+
+**Bounded fix:** Add `verified_source_slots(store, prep, current_event, fixture)` using the original store's `read_source` for all four slots. Require distinct nonempty source IDs, full-text SHA256 equal to each frozen fixture source, exact 0..len(text) span, text modality and exact returned text. Persist all four source-slot records in every Run511 native observation, including original source ID, full SHA, bounds and exact synthetic source text. Keep the registered fixture/seed/arm/focus/model/runner hashes, native config, native model calls, frozen Run510 scorer, safety and negative gates unchanged. No oracle may enter native prompt. Reject any mismatch before the B2 offer; retain fail-stop/no-overwrite.
+
+**Prospective source-only tests:** complete four-slot mapping with fake refs, collision/empty ID, wrong SHA, truncated span, wrong modality and swapped source text. Verify output schema is sufficient for independent postflight. CI only executes isolated tests and source plan, no model download. The prior Run511 source-only workflow is intentionally branch-specific and must remain unchanged. A new Run512 workflow will close raw test/plan/privacy logs and enforce exit codes. Native evidence remains absent until a separately registered one-shot and exclusive heavy-owner check.
+
+All original gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, full V13 incomplete.
