@@ -68,7 +68,7 @@ def audit(texts=None):
     producer = function(trees['producer'], 'run_one')
     replay = function(trees['replay'], 'run')
     tool = function(trees['replay'], 'tool_answer')
-    runtime = method(trees['runtime'], 'submit', 'Runtime')
+    runtime = method(trees['runtime'], 'Runtime', 'submit')
     live_turn = method(trees['runtime'], 'Runtime', '_turn')
     # The call chain is the specific measured scope. Any change requires a
     # new review rather than silently treating historical replay as live.
