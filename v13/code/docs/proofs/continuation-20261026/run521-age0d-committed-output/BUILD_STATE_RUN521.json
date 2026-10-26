@@ -1,0 +1,33 @@
+{
+  "schema": "V13_RUN521_AGE0D_FINAL_OUTPUT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run521-age0d-committed-output-binding-20261026",
+  "base_branch": "codex/run520-b2-quote-lineage-20261026",
+  "base_sha": "7c743cd7cc6e9bf258e6ae856793f2c40a35fd38",
+  "prereg_blob": "d9e8563cc0a2f7872fe499803d591dede71d9650",
+  "source": {
+    "selfmodel": "aab1d1905c98ce1d276e5136975a97f62e8e21dc",
+    "test_run517": "7cdd148360293c28788ac4d032695c99e440f53d",
+    "frozen_run134_evaluator": "3cec2c4b6883e3f02f449cc74cf44d5584a6affb"
+  },
+  "implementation": "Before SHADOW arithmetic diagnosis, require most recent persisted same-event same-session assistant message with status FINAL and byte-exact text equal to late_offer output. No notice, learning or Age authority.",
+  "tests": "SHA-pinned source-only CI pending: Run517 modified + Run134/150/184/late_correction/selfmodel, privacy scan. No models.",
+  "evidence": "SOURCE_ONLY_CI_PENDING",
+  "heavy_owner": {
+    "pr": 517,
+    "run": 40316152651,
+    "stage": "p01",
+    "no_interference": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age0d_deliver_recommended": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Open Run521 source-only PR stacked on Run520, verify CI and SHA raw artifact, repair any failing tests, retain Run519 heavy ownership; independently audit p01 on completion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
