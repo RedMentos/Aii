@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN496_HELDOUT10_NATIVE_PILOT_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run496 source-only native pilot harness; native execution not started",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run496-heldout10-native-pilot-source-20261026",
+  "base_branch": "codex/run494-hf-license-name-failclosed-20261026",
+  "base_sha": "7233403b7db7eefa272423f178bee31783cc1bdb",
+  "review_pr": 494,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run496-heldout-pilot-source/PREREG.md",
+    "blob_sha": "fa209037d95e6f744f1ce79c5211c46904dbee93"
+  },
+  "source_blobs": {
+    "v13/code/scripts/run496_heldout10_native_pilot.py": "fd47ae42ab9505940a64864c73860b995f18754d",
+    "v13/code/tests/test_run496_heldout10_native_pilot.py": "bde33c39d4aebbd1bc21738e42fa4447985af2be",
+    "v13/code/scripts/run491_step2_heldout10.py": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "v13/code/scripts/step2_z2_timescale.py": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7",
+    "v13/code/scripts/step2_z2b_seeds.py": "7c299616495450e4a38f9aab9921f7176ba67556",
+    "v13/code/specs/models.json": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "validation": {
+    "run_id": 40301555638,
+    "status": "GREEN: 15 source-only unit tests, 14-row pilot prereg manifest, privacy CLEAN",
+    "artifact_id": 12641065481,
+    "artifact_sha256": "3b13f52509add1ffffec2977b4917fa66a60a007e2dfa8c18e4115ce45a5cf90",
+    "pilot_fixture_sha256": "816c3a4cc8e8c85a7188b5c4524b13638d6bd4d353c782d296a363366702f774",
+    "full_fixture_sha256": "c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63",
+    "pilot_ids": [
+      "Vesper",
+      "Willow"
+    ],
+    "arm": "C",
+    "seed": 31,
+    "planned_rows": 14,
+    "model_bytes_downloaded": 0,
+    "native_executed": false,
+    "focused_ci_run": 40301555561,
+    "focused_ci_status": "SUCCESS"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run496/RUN496_HELDOUT10_PILOT_SOURCE_GREEN_40301555638.zip",
+    "library_file_id": "libfile_b8f6ce8298d08191882c89e3476c5558",
+    "sha256": "3b13f52509add1ffffec2977b4917fa66a60a007e2dfa8c18e4115ce45a5cf90",
+    "verified": "materialized private Library and byte-compared",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Run496 harness source-only validated, but no real GGUF bytes, runner binary or native shared libraries installed/verified on this branch yet.",
+    "Run494 public pinned HF API LFS metadata GREEN does not replace actual payload SHA256 or user license acceptance.",
+    "Need serialized GitHub Actions native job after current owner check; preserve failed attempts and safe no-model export. Source-only synthetic structural verifier cannot promote STEP2.",
+    "Potential native execution issue: ModelManager runner may use symlinked paths; verify actual byte hashes and runtime library provenance before any inference."
+  ],
+  "exact_next_command": "Run497: branch from this verified Run496 checkpoint; preregister one Vesper+Willow/arm C/seed31 14-row native pilot, use existing v13.bootstrap with original pinned GGUF/needle/runner and isolated numpy/prompt-toolkit, verify ModelManager deep SHA + runner b10964 executable and libs, execute scripts/run496_heldout10_native_pilot.py --fixture-only --work ... then --execute --installed-home ... under serialized v13-native-c3-run131-serialized GitHub Actions, close/upload raw logs and safe no-model work on PASS/RED. No full 1050 rows until pilot review."
+}
