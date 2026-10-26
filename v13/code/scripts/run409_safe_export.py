@@ -47,8 +47,8 @@ def _copy_regular(source, target):
     fd = os.open(source, flags)
     try:
         before = os.fstat(fd)
-        require(stat.S_ISREG(before.st_mode) and before.st_nlink >= 1,
-                "NONREGULAR_SOURCE_FILE")
+        require(stat.S_ISREG(before.st_mode), "NONREGULAR_SOURCE_FILE")
+        require(before.st_nlink == 1, "HARDLINK_SOURCE_REJECTED")
         h = hashlib.sha256()
         size = 0
         with os.fdopen(os.dup(fd), "rb") as reader, target.open("xb") as writer:
