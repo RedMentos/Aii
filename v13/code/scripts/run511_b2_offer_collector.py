@@ -103,10 +103,46 @@ def source_slot_map(prep, current_event):
     mapping = {}
     for slot, ref in zip(slots, refs):
         source_id = ref["source_id"]
-        require(type(source_id) is str and source_id not in mapping,
-                "SOURCE_ID_COLLISION")
+        require(type(source_id) is str and bool(source_id) and
+                source_id not in mapping, "SOURCE_ID_COLLISION")
         mapping[source_id] = slot
     return mapping
+
+
+def verified_source_slots(store, prep, current_event, fixture):
+    """Bind every source ID to exact frozen full text before native B2 inference.
+
+    These are raw synthetic fixture sources for independent postflight, not
+    extra model prompt context and not semantic truth inferred from a body.
+    """
+    mapping = source_slot_map(prep, current_event)
+    refs = [event["source_ref"] for event in prep["prior_events"]] + [
+        current_event["source_ref"]]
+    originals = list(fixture["history"]) + [fixture["current"]]
+    require(len(originals) == len(refs) == 4, "FOUR_SOURCE_SLOTS_REQUIRED")
+    records = []
+    for slot, ref, original in zip(
+            ("history0", "history1", "history2", "current"), refs, originals):
+        require(type(original) is str and bool(original) and
+                type(ref) is dict and
+                type(ref.get("source_id")) is str and
+                bool(ref["source_id"]) and
+                ref["sha256"] == sha(original.encode("utf-8")) and
+                type(ref.get("char_start")) is int and
+                ref["char_start"] == 0 and
+                type(ref.get("char_end")) is int and
+                ref["char_end"] == len(original) and
+                ref.get("modality") == "text",
+                "SOURCE_SLOT_REF_DRIFT")
+        require(store.read_source(ref) == original, "SOURCE_SLOT_TEXT_DRIFT")
+        require(mapping[ref["source_id"]] == slot, "SOURCE_SLOT_MAPPING_DRIFT")
+        records.append({
+            "source_slot": slot, "source_id": ref["source_id"],
+            "source_sha256": ref["sha256"],
+            "char_start": ref["char_start"], "char_end": ref["char_end"],
+            "source_text": original,
+        })
+    return records, mapping
 
 
 def collect_verified_quote_records(offer, store, fixture, mapping):
@@ -196,7 +232,8 @@ def native_pair_seed(harness, installed, work, fixture, seed, progress, raw, pin
                 harness.states(r), prep["state_before_restart"]),
                 "PREPARED_STATE_CLONE_DRIFT")
             event = r.store.event(r.session, fixture["current"])
-            mapping = source_slot_map(prep, event)
+            source_slots, mapping = verified_source_slots(
+                r.store, prep, event, fixture)
             deadline = time.monotonic() + cfg["observer_seconds"]
             focus = frozen.focus_packet() if arm == "RULE_FOCUS" else None
             offer = r.cognition.offer("B2_GIST", event, 0, deadline,
@@ -208,6 +245,7 @@ def native_pair_seed(harness, installed, work, fixture, seed, progress, raw, pin
                 "status": "RECORDED",
                 "source_history0_sha256":
                     sha(fixture["history"][0].encode("utf-8")),
+                "source_slots": source_slots,
                 "quotes": quotes,
                 "native_metrics": offer["native_metrics"],
                 "model_revision": offer["model_revision"],
