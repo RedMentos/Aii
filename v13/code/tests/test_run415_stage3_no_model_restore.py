@@ -208,6 +208,66 @@ class Run415Stage3RestoreTests(unittest.TestCase):
         self.assertEqual(report["status"], "STAGE3_RED_PRESERVED")
         self.assertIn("STAGE3_PREFLIGHT_RECEIPT_INVALID", str(report["errors"]))
 
+    def test_manifest_resealed_but_not_frozen_blocks_native(self):
+        prereg = self.source / "RUN394_PREREGISTERED_FIXTURES.json"
+        prereg.write_text("{}")
+        raw = prereg.read_bytes()
+        self.manifest["copied"][prereg.name] = {
+            "sha256": sha(raw), "bytes": len(raw)}
+        self.report["safe_export"]["copied_bytes"] = sum(
+            v["bytes"] for v in self.manifest["copied"].values())
+        self.reseal()
+        installed = self.root / "installed"
+        (installed / "bin").mkdir(parents=True)
+        (installed / "bin/llama-server").write_bytes(b"synthetic")
+        original_sha = stage.safe.sha_file
+
+        def selective_sha(path):
+            return (stage.RUN401_EXECUTABLE_SHA256
+                    if Path(path).name == "llama-server" else original_sha(path))
+
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \
+             mock.patch.object(stage.resume, "run") as native, \
+             mock.patch.object(stage.safe, "export", return_value={
+                 "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []}):
+            report = stage.stage3(self.source, self.report, self.root / "work",
+                                  installed=installed, execute=True,
+                                  export_dest=self.root / "out")
+        native.assert_not_called()
+        self.assertEqual(report["status"], "STAGE3_RED_PRESERVED")
+        self.assertIn("STAGE3_FROZEN_MANIFEST_MISMATCH", str(report["errors"]))
+
+    def test_progress_attempt_traversal_blocks_native(self):
+        progress_file = self.source / "RUN397_PROGRESS.json"
+        progress = json.loads(progress_file.read_text())
+        progress["completed"]["O_s20"]["attempt"] = "../outside"
+        progress_file.write_text(json.dumps(progress))
+        raw = progress_file.read_bytes()
+        self.manifest["copied"][progress_file.name] = {
+            "sha256": sha(raw), "bytes": len(raw)}
+        self.report["safe_export"]["copied_bytes"] = sum(
+            v["bytes"] for v in self.manifest["copied"].values())
+        self.reseal()
+        installed = self.root / "installed"
+        (installed / "bin").mkdir(parents=True)
+        (installed / "bin/llama-server").write_bytes(b"synthetic")
+        original_sha = stage.safe.sha_file
+
+        def selective_sha(path):
+            return (stage.RUN401_EXECUTABLE_SHA256
+                    if Path(path).name == "llama-server" else original_sha(path))
+
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \
+             mock.patch.object(stage.resume, "run") as native, \
+             mock.patch.object(stage.safe, "export", return_value={
+                 "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []}):
+            report = stage.stage3(self.source, self.report, self.root / "work",
+                                  installed=installed, execute=True,
+                                  export_dest=self.root / "out")
+        native.assert_not_called()
+        self.assertEqual(report["status"], "STAGE3_RED_PRESERVED")
+        self.assertIn("STAGE3_PREVIOUS_ATTEMPT_PATH_INVALID", str(report["errors"]))
+
     def test_synthetic_native_failure_preserves_red_and_attempts(self):
         installed = self.root / "installed"
         (installed / "bin").mkdir(parents=True)
