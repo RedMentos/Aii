@@ -13,3 +13,7 @@ A successful Run418 native wrapper must not be treated as whole STEP2 completion
 ## Proof limitations and next
 
 Source-only tests are not actual native postflight. Only after Run418 S_s20 finishes and its small raw and safe-work artifacts are independently downloaded, SHA-verified and restored through the Run418 importer may this verifier establish actual 126-row evidence. The next native arm is O_s21, but must be scheduled separately after 126-row GREEN, installed pinned models and exclusive owner. Full STEP2 requires the remaining six arms and original paired utility gate. STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, Redmi unmeasured and V13 incomplete remain unchanged.
+
+## Lossless transport to the independent gate
+
+`run419_import_stage3_artifact.py` accepts a pinned outer Actions ZIP SHA256 and actual Run415 S_s20 report, rejects extra/missing/duplicate/traversal/symlink/oversized members, reconstructs only directories listed in the hash-bound Run409 manifest (Actions may omit empty entries), streams all file SHA256 and CRC, calls the full independent 126-row verifier on the staged tree, then atomically publishes a fresh work tree. New source-only tests exercise transport failures and the three receipt calls. This is not a second native S_s20 execution.
