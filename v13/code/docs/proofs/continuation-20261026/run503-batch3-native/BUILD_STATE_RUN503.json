@@ -1,0 +1,74 @@
+{
+  "schema": "V13_RUN503_BATCH_NATIVE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "status": "SOURCE_STAGED_NATIVE_NOT_YET_EXECUTED",
+  "branch": "codex/run503-batch3-native-20261026",
+  "base_branch": "codex/run502-heldout-batch3-source-20261026",
+  "base_sha": "a0e23dc2367eca43de4d6eb40a7e99ae01fe76ce",
+  "source": {
+    "prereg_blob": "0b3e4d7534f81d173dfc9d7024f5574cde66000d",
+    "test_blob": "88424e69659194ea0675faeaee31948eba9adf6f",
+    "workflow_blob": "7a109dc27ba5f03ca1331c9c04fd59f87882b184",
+    "batch_script_blob": "5c01768ccedbe63cb3c2eebde5a75347e3a67abd",
+    "stage_runner_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "frozen_fixture_script_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b"
+  },
+  "evidence": {
+    "run499_native_actions": 40304564958,
+    "run501_native_actions": 40305980830,
+    "run501_native_raw_artifact": 12642787541,
+    "run501_native_safe_artifact": 12642802842,
+    "run501_unique_native_rows": 14,
+    "run499_and_run501_disjoint_rows": 28,
+    "run502_reviewed_source_actions": 40306857736,
+    "run502_reviewed_source_tests": 27,
+    "run503_native_actions": null,
+    "run503_native_rows_verified": 0
+  },
+  "scope": {
+    "stage_ids": [
+      "C_s31_p02",
+      "C_s31_p03",
+      "C_s31_p04"
+    ],
+    "fixtures": [
+      [
+        "Crescent",
+        "Asteria"
+      ],
+      [
+        "Boreal",
+        "Cascade"
+      ],
+      [
+        "Drift",
+        "Eon"
+      ]
+    ],
+    "arm": "C",
+    "seed": 31,
+    "planned_new_rows": 42,
+    "full_cohort_rows": 1050
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run501 14-row native GREEN, independent quote/utility rescore, 22 raw SHA entries, private raw/safe byte backup verified",
+    "Run502 reviewed source-only GREEN 27 tests, 42-row batch plan SHA verified, no native Run502",
+    "Run503 source prereg/test/workflow blobs fetched and SHA matched",
+    "no active GitHub Actions at Run503 native preflight"
+  ],
+  "blockers": [
+    "Run503 42-row native batch not yet executed",
+    "full 1050-row STEP2 cohort incomplete",
+    "Redmi phone unavailable"
+  ],
+  "next_command": "Open draft PR Run503 head codex/run503-batch3-native-20261026 base codex/run502-heldout-batch3-source-20261026; inspect serialized native Actions; preserve per-stage raw logs and partial RED; independently rescore 42 rows if GREEN; no gate promotion",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
