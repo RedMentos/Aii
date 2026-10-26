@@ -642,7 +642,7 @@ class Runtime:
                 try:selfctl.controller(self).observe(eid,[{'channel':'action_status','value':status},{'channel':'duration_s','value':time.monotonic()-action_started}],close=[aid])  # WP-N9 self vs world
                 except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'attribution','error':type(exc).__name__})
                 try:  # WP-F: circuit-breaker evidence, cerebellar update, procedural lifecycle
-                    rx=reflexctl.controller(self);rr=runner.role if runner and meta.get('model_generated') else None
+                    rx=reflexctl.controller(self);rr=runner.role if runner and meta.get('tool_answer_first')!='FINAL' else None
                     if rr and status=='FINAL':rx.record_success(rr)
                     elif rr and status in ('ERROR','DEADLINE'):rx.record_failure(rr,eid,status)
                     for f in meta.get('reflex',[]):rx.outcome(f['reflex'],status)
