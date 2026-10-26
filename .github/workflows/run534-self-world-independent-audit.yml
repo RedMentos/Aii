@@ -1,0 +1,121 @@
+name: V13 Run534 independent frozen Z12a raw process audit
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run534-self-world-independent-audit.yml'
+      - 'v13/code/scripts/run534_independent_z12a_audit.py'
+      - 'v13/code/tests/test_run534_independent_z12a_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run534-self-world-independent-audit/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run534-self-world-independent-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      RUN534_RAW_JSON: ${{ runner.temp }}/run534_input/RUN531_FULL.json
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify frozen prereg and auditor source
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run534-self-world-independent-audit/PREREG.md)" = '3966735f6c4a0dca56605c62840172a7ad77e9c3'
+          test "$(git hash-object v13/code/scripts/run534_independent_z12a_audit.py)" = 'dfd4e9bcb675f656a131e440d43879c4d175d85a'
+          test "$(git hash-object v13/code/tests/test_run534_independent_z12a_audit.py)" = 'b035136b47b9eccaa9f63d5bdd622c883008a086'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN534_HOST.txt"
+      - name: Fetch only original pinned Run531 artifact and verify all hashes
+        id: input
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run534_input"
+          curl -fsSL --retry 0 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12649564483/zip" \
+            -o "$RUNNER_TEMP/run534-original.zip" > "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "c5361ce461260e5ba2740d0f60197b60bf2c5995573912afa58f25f923640f96  $RUNNER_TEMP/run534-original.zip" | sha256sum -c - >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            unzip -q "$RUNNER_TEMP/run534-original.zip" -d "$RUNNER_TEMP/run534_input" >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            (cd "$RUNNER_TEMP/run534_input" && sha256sum -c RUN531_SHA256SUMS.txt) >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo "73ba92ea8e2a28a00d639dcb21caca5f8991472c4513233ad659fab65e947ea7  $RUN534_RAW_JSON" | sha256sum -c - >> "$RUNNER_TEMP/RUN534_FETCH_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN534_FETCH_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent re-score and adversarial raw tamper tests
+        id: audit
+        if: ${{ steps.input.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          python3 scripts/run534_independent_z12a_audit.py "$RUN534_RAW_JSON" --output "$RUNNER_TEMP/RUN534_AUDIT.json" > "$RUNNER_TEMP/RUN534_AUDIT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 -m unittest -v tests.test_run534_independent_z12a_audit > "$RUNNER_TEMP/RUN534_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN534_AUDIT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public diff privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN534_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN534_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN534_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close all raw audit evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN534_*' ! -name RUN534_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN534_SHA256SUMS.txt
+      - name: Preserve raw proof even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run534-independent-self-world-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN534_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce pinned raw audit and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN534_FETCH_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN534_AUDIT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN534_PRIVACY_EXIT.txt")" = 0
