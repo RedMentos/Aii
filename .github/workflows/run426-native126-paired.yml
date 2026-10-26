@@ -2,8 +2,10 @@ name: V13 Run426 actual native126 seed20 paired utility diagnostic
 on:
   pull_request:
     paths:
-      - '.github/workflows/run426-actual-native126-audit.yml'
-      - 'v13/code/docs/proofs/continuation-20261026/run426-native126-actual/**'
+      - '.github/workflows/run426-native126-paired.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run426-native126-paired/**'
+      - 'v13/code/scripts/run426_native126_paired.py'
+      - 'v13/code/tests/test_run426_native126_paired.py'
 permissions:
   contents: read
   actions: read
