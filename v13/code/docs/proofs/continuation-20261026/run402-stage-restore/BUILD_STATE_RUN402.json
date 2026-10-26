@@ -1,0 +1,57 @@
+{
+  "run": "Run402",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_REAL_NATIVE_STAGE1_ARTIFACT_PENDING",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run402-step2-native-stage-restore-20261026",
+  "pr": 397,
+  "base": {
+    "branch": "codex/run401-step2-full-native-stage1-20261026",
+    "sha": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "integration": "stacked review only, not main"
+  },
+  "plan_commit": "37460cc1d4172a60491a10d15fb94ad7812ec8c5",
+  "source_commit": "2ae00a8c2bc792f0c225e90d64bc512184b20e6c",
+  "tests_commit": "cfbf1f311d545717a3d2d906ad4941191e2449bd",
+  "workflow_commit": "62d6a168fe6fc98baa81272283616ce63d0aaea8",
+  "proof": {
+    "run": 40250851154,
+    "job": 121342195457,
+    "source_head": "62d6a168fe6fc98baa81272283616ce63d0aaea8",
+    "tests": "62/62 PASS, 11 new adversarial synthetic",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "artifact": 12619409876,
+    "zip_sha256": "d1865f566e2c16878dcae4809804f4aaef5eca3351872bc11454fd106db80e46",
+    "zip_crc": "PASS",
+    "member_sha": "6/6 PASS",
+    "private_byte_identity": "SHA256 MATCH"
+  },
+  "private_library": "/V13_PRIVATE_CHECKPOINTS_20261024/Run402_Stage_Restore_20261026/SOURCE_GREEN_RAW.zip",
+  "native_dependency": {
+    "run401_actions": 40250662450,
+    "run401_source_head": "c0facf60c3286064e15bc06de104c85d9344382a",
+    "artifact_id": "UNKNOWN_NOT_YET_OBSERVED",
+    "artifact_sha256": "UNKNOWN_NOT_YET_OBSERVED",
+    "owner": "Run401 serialized native stage1"
+  },
+  "scope": "read-only ZIP integrity + actual-shaped synthetic restore; no native resume proof",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run401 actual native artifact not yet completed/verified",
+    "GitHub artifact ZIP path layout must be checked against Run402 exact manifest",
+    "Native resume of P_s20 must be serialized and use restored original append-only work tree",
+    "Full 378-row cohort and causal utility still unproven"
+  ],
+  "next_command": "python3 v13/code/scripts/run402_stage_restore.py --archive <observed Run401 ZIP> --expected-sha256 <observed SHA256> --output <private RUN402_NATIVE_AUDIT.json> --destination <fresh work directory>",
+  "next_prerequisites": "Run401 completed; observed artifact ID/digest and original raw downloaded; no concurrent native owner; verified registered models before next inference"
+}

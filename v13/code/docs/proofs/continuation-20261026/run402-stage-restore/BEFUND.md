@@ -1,0 +1,13 @@
+# Run402 — staged STEP2 archive verifier, source-only GREEN (2026-10-26)
+
+**Scope:** New `scripts/run402_stage_restore.py` verifies and atomically restores a future **observed** Run401 native stage-1 artifact. It does not download models, run native inference, restore a real artifact yet, or promote any canonical gate. Run401/PR396 native job `40250662450` was active when this package was built; its owner and workflow were not modified.
+
+**Implementation:** Verifies exact observed ZIP SHA256 (caller must supply), ZIP CRC, no duplicate/unsafe/symlink/oversized paths, every raw manifest SHA and no unhashed/missing files, exact Run401 source head `c0facf60c3286064e15bc06de104c85d9344382a`, five prerequisite/native/audit/privacy zero exits, original full six-fixture/three-seed/three-arm manifest, exactly one `O_s20` Run397 completed attempt, all 42 fixture×variant rows with model/source/runner/consumer/receipt hashes, zero wrong committed actions, and explicit nonpromotion. Only then atomically installs the verified `run401-full/` bytes into a fresh operator-owned work directory. Never overwrites an existing work tree.
+
+**Synthetic proof:** Exact-head Actions `40250851154`, job `121342195457`, head `62d6a168fe6fc98baa81272283616ce63d0aaea8`: **62/62 PASS** (51 inherited + 11 new adversarial tests), compileall PASS, privacy CLEAN. Tests synthesize 42 native-shaped rows; they do **not** prove native inference or actual interrupted restart. Adversarial cases cover wrong archive SHA, missing source file, wrong head, nonzero native exit, forged receipt, existing destination, path traversal, symlink and duplicate member. No production Runtime/Model/Cohort edits.
+
+**Raw closure:** GitHub Actions artifact `12619409876`, SHA256 `d1865f566e2c16878dcae4809804f4aaef5eca3351872bc11454fd106db80e46`, ZIP CRC PASS, 6/6 internal SHA256 PASS. Private Library `/V13_PRIVATE_CHECKPOINTS_20261024/Run402_Stage_Restore_20261026/SOURCE_GREEN_RAW.zip` materialized byte-identical (SHA verified).
+
+**Next:** Wait for Run401 actual native completion. Inspect job/artifact ID/digest and raw. Only then invoke `python3 v13/code/scripts/run402_stage_restore.py --archive <observed ZIP> --expected-sha256 <observed SHA> --output <private JSON> --destination <fresh work dir>`. If it fails, preserve RED and diagnose; do not launch another heavy native owner or silently restart from scratch. If verified, Run397 `--full --execute --max-new-arms 1` can proceed to `P_s20` in a separate serialized job with fresh pinned installed models.
+
+**Gates:** STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA/jepa_weight=0; Age0/approval unchanged; Run389 full-suite RED; no Redmi proof; `canonical_architecture_complete=false`; `user_full_scope_complete=false`.
