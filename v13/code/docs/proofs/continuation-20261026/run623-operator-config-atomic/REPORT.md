@@ -10,6 +10,6 @@ Actual Linux SQLite Runtime on original Run601 phone source base with the **same
 - Combined new atomicity + Run620 language + original prompts + Run616 gist + Gist readout: **36/36 PASS**, raw SHA256 `13284f7cc46863232dec69f668042994ba75501b646289399e0622042d68205d`. No model inference.
 - Remote exact-current operator blob `9b928d1cce3dfc1466b564cf20130cb9e7af8706`, test blob `540b566d9d10edd41ef7c4e4de84561986a0a08f`. Source-only hash-bound Actions workflow added; **CI status UNVERIFIED**.
 
-**Limit:** local executed Runtime base is historical Run601 with same patch, not full current remote checkout; no native/Redmi run. Canon unchanged, no STEP2/B3/Body-JEPA gate promotion; jepa_weight=0, Redmi UNMEASURED, V13 INCOMPLETE.
+Private Library `/V13-Checkpoints/2026-10-26/Run623/run623-local-closed.zip` SHA256 `e8ff3947ab1681f391752279fb343dd9e0b0917b0d45515a5d8047237aff0508`; original RED, patched/combined green, test source, SHA manifest. **Byte-for-byte readback verified**.\n\n**Limit:** local executed Runtime base is historical Run601 with same patch, not full current remote checkout; no native/Redmi run. Canon unchanged, no STEP2/B3/Body-JEPA gate promotion; jepa_weight=0, Redmi UNMEASURED, V13 INCOMPLETE.
 
 Next: verify exact Run623 Actions PR head and raw tests/privacy; independent review of other live-config changes only if a concrete source inconsistency is found, otherwise move to substantive Canon learning/utility. No main integration.
