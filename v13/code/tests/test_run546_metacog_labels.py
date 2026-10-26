@@ -3,7 +3,6 @@
 Source-only, no model inference, no age/tool authority change.
 """
 from pathlib import Path
-import math
 import tempfile
 import unittest
 
