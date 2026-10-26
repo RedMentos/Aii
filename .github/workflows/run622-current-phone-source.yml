@@ -127,7 +127,7 @@ jobs:
       - name: Public repository privacy scan
         run: |
           set +e
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 405c7d8be42d34b98b80a83e48c79a49cc20aa27 --head "$GITHUB_SHA" > "$RUNNER_TEMP/RUN622_PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 405c7d8be42d34b98b80a83e48c79a49cc20aa27 --head HEAD > "$RUNNER_TEMP/RUN622_PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/RUN622_PRIVACY_EXIT.txt"
           exit 0
       - name: Close raw and ZIP SHA including RED
