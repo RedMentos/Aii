@@ -484,16 +484,22 @@ class SleepCycle:
                 if mode in {'full','a'} and report['phases'][-1]['status']!='INTERRUPTED':  # WP-S7 offline compute: day digest, predictor passes, TTT candidates
                     from . import sleep_offline
                     report['phases'].append(sleep_offline.run(self,state,cancel,deadline,resource,origin))
-            if mode in {'full','b'} and state!='PRESSURE':
+            # A cancelled full night must not enter later phases or consume
+            # the full-sleep interval. This includes interrupted offline work.
+            def interrupted():
+                return any(p.get('status')=='INTERRUPTED' for p in report['phases'])
+            if mode in {'full','b'} and state!='PRESSURE' and not interrupted():
                 from .inputs import paused
                 if paused(self.s,'traum'):report['phases'].append({'phase':'SLEEP_B','status':'SKIPPED_PAUSED_TRAUM'})
                 elif origin=='USER' or self._allowed('short_dream',state):report['phases'].append(self.sleep_b(st,policy,cancel,deadline,resource))
                 else:report['phases'].append({'phase':'SLEEP_B','status':'SKIPPED_AGE_RIGHT','right':'short_dream'})
-            if mode in {'full','c'}:report['phases'].append(self.sleep_c(st,policy,cancel,deadline,resource))
-            if mode=='full':st['last_full']=self.clock()
+            if mode in {'full','c'} and not interrupted():
+                report['phases'].append(self.sleep_c(st,policy,cancel,deadline,resource))
             st['cycles']+=1
             statuses={p['status'] for p in report['phases']}
-            report['status']='INTERRUPTED' if 'INTERRUPTED' in statuses else ('SKIPPED_RESOURCE_YELLOW' if state=='PRESSURE' and mode not in {'full','c'} else 'DONE')
+            # PRESSURE permits C maintenance, not a complete A/B/C night.
+            report['status']='INTERRUPTED' if 'INTERRUPTED' in statuses else ('SKIPPED_RESOURCE_YELLOW' if state=='PRESSURE' and mode!='c' else 'DONE')
+            if mode=='full' and report['status']=='DONE':st['last_full']=self.clock()
         except BaseException as exc:
             report['status']='ERROR';report['error']=type(exc).__name__+': '+str(exc)[:500];raise
         finally:self._finish(report,st,v,started)
