@@ -161,7 +161,10 @@ def for_offer(runtime,text,ref,conflict):
         runtime.store.log('gist_unavailable',None,{'error':type(exc).__name__});return None,None
 
 def operator_command(r,args):
-    """:gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]]"""
+    """:gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]|similar [1..5]]"""
+    if args and args[0]=='similar':
+        from .gist_similarity import operator_command as similarity_command
+        return similarity_command(r,args[1:])
     if args and args[0]=='readout':
         from .gist_readout import operator_command as readout_command
         return readout_command(r,args[1:])
@@ -171,4 +174,4 @@ def operator_command(r,args):
     if args==['shadow']:return dumps({'mode':g.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':g.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args[0]=='preview' and len(args)>1:return dumps(g.report(' '.join(args[1:])))
-    raise ValueError(':gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]]')
+    raise ValueError(':gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]|similar [1..5]]')
