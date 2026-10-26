@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN472_NATIVE294_INDEPENDENT_LOCAL_ZIP_AUDIT_V1",
+  "date_utc": "2026-10-26",
+  "run_id": 40276284227,
+  "source_head": "76fd13970d1570c36c1b348c64a847332886e75e",
+  "status": "INDEPENDENT_LOCAL_RUN472_294_ARTIFACTS_VERIFIED",
+  "safe_artifact_id": 12630443252,
+  "safe_zip_sha256": "e2e044840b9ac7acdb54102bd7df069fbc6491ca8b758421c3958730090e2136",
+  "raw_artifact_id": 12630901885,
+  "raw_zip_sha256": "3fad8bf5a20ff9acd8ed1f43a318f507fb12ee1f80571e830e7e61f8942dffbf",
+  "raw_entries": 33,
+  "raw_sha256s_checked": 32,
+  "safe_members": 180,
+  "safe_file_sha256s_checked": 179,
+  "safe_uncompressed_copied_bytes": 96564731,
+  "safe_manifest_sha256": "86181d07f3ba7cf27f50eb395f6bf009c3b217a1e16ca42f4d80d1cfe3bcbdf1",
+  "stage7_report_sha256": "37ff2bc7fef87ddea9eb51852daff534110bc2103c8bdc8055ed5c72b826e278",
+  "independent_report_sha256": "30e10d9b06e2d4697749fbd6a5af2f23dc10b5e9dee8b7f667f8843b32c2cd68",
+  "verified_rows": 294,
+  "completed_arms": [
+    "O_s20",
+    "P_s20",
+    "S_s20",
+    "O_s21",
+    "P_s21",
+    "S_s21",
+    "O_s22"
+  ],
+  "negative_gates": {
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "method": "Downloaded original GitHub Actions artifact ZIPs through connected GitHub account, independently checked both outer SHA256 against GitHub digest, all 32 raw log SHA256SUMS, all 179 safe-export member SHA256/bytes, no duplicate ZIP members or special files/path traversal, original safe manifest SHA256 equal to Stage7 and independent verifier reports; verified exit codes zero and seven arms/294 structural rows.",
+  "claim_limit": "Independent artifact integrity and actual Linux-native structural 294 rows; not original ten-episode STEP2 acceptance, distinct B1/B2, B3 L1, Body-JEPA or Redmi."
+}
