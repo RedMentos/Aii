@@ -1,0 +1,54 @@
+{
+  "schema": "V13_RUN484_INDEPENDENT_HX5_REVIEW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run484-hx5-retention-failclosed-review-20261026",
+  "base_ref": "claude/project-thread-gqty8y",
+  "base_sha": "7585dd34ba82871a9842a557b505a08be887ce4a",
+  "owner": "Independent GPT/Codex review of Claude WP-HX5, no native/model ownership and no production runtime change",
+  "confirmed_findings": [
+    "HX5 retention_gate returned RETENTION_PASS when base_eval, candidate_eval, forgetting and near_miss_leak were entirely absent but learned_recall > base_recall.",
+    "NaN candidate overall, forgetting rate and near-miss leak were not rejected and could also yield RETENTION_PASS.",
+    "HX5 item() used truthiness for accepted, so strings such as 'false' and integers could enter proposed training data."
+  ],
+  "changes": [
+    "Require finite bounded base/candidate overall and unseen retention, forgetting and near-miss leak; refuse absent values.",
+    "Require finite nonnegative KL when explicit max_kl is supplied; report kl_checked=false if no threshold was specified.",
+    "Require accepted to be an actual boolean and reject malformed message records; preserve approved valid items.",
+    "Retain HX2_PASS plus human approval locks, no dataset export or training execution, no model/seed changes."
+  ],
+  "source_blobs": {
+    "v13/code/v13/agi/harness.py": "dc55d65b53a3cd01743f405fe3f7f1a7c7b34eba",
+    "v13/code/v13/agi/harness_probe.py": "1e6ec8eb04db99d50a0bd27beffd1ac0a5df596a",
+    "v13/code/v13/agi/harness_data.py": "8d791e045224348f8cfed31404a7c1aaf128e4b1",
+    "v13/code/tests/test_run484_hx5_retention_failclosed.py": "4880bf2aeb322876f373b77531e67a9a57ee6db5",
+    ".github/workflows/run484-hx5-retention.yml": "c07aa7deae8ced5139d543c87ef5aa8b2b31c2d5"
+  },
+  "tests": {
+    "independent_counterexample": "Original retention predicate returned RETENTION_PASS for missing metrics and NaN metrics in isolated Python reproduction.",
+    "github_ci": "SOURCE_CI_GREEN 41/41 PASS, privacy CLEAN; no native/model, full suite not run",
+    "full_repo_suite": "NOT RUN by this reviewer; container cannot resolve github.com for clone, existing Run455 full checkout is RED with 70 errors, no claim of full suite green.",
+    "source_run_id": 40284124928,
+    "source_job_id": 121443705667,
+    "raw_artifact_id": 12632769941,
+    "raw_zip_sha256": "475a8ed94b97739d015078e6cdf6df298cfc6b720a5711f68eb9130a646ef522",
+    "tested_source_head": "63b9ee97cfaaebe3f25ad5c1aa18b06482e9acbe"
+  },
+  "negative_gates": {
+    "hx2": "HX2_INVALID",
+    "hx5_export": "LOCKED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "HX2 PASS evidence is currently a self-contained JSON file; independent attestation of preregistration and native utility is required before trusting it to unlock HX5.",
+    "HarnessData.approve() assumes a trusted human-only caller; authentication/authorization must be proven at the operator boundary before any live enablement.",
+    "No native HX5 learning or retention measured; all approval and age gates remain enforced."
+  ],
+  "exact_next_command": "Verify post-checkpoint CI and remote bytes; independent review and coordinate with Claude before integration; retain HX2_INVALID/HX5_LOCKED and all canonical negative gates."
+}
