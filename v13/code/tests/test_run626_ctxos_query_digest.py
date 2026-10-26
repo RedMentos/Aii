@@ -102,6 +102,26 @@ class QueryDigestTests(unittest.TestCase):
         self.assertNotIn('black lantern', seen[-1].lower())
         self.assertEqual(json.loads(self.r.last_answer()['metadata'])['digest_lines'], 1)
 
+    def test_equal_lexical_score_prefers_newer_and_bounded_cap(self):
+        self.turn_text('The amber lantern hangs by the eastern bridge.')
+        self.turn_text('The amber lantern hangs by the western bridge.')
+        S.digest(self.r.store)
+        selected = self.selected('query', 'amber lantern', cap=180)
+        self.assertEqual(len(selected), 1)
+        self.assertIn('western bridge', selected[0])
+        self.assertNotIn('eastern bridge', selected[0])
+
+    def test_invalid_query_selector_fails_without_state_mutation(self):
+        self.turn_text('Source-bound first turn.')
+        S.digest(self.r.store)
+        before = self.r.store.state(S.KEY, None)
+        for opts in ({'selection': 'semantic', 'query': QUERY},
+                     {'selection': 'query', 'query': None},
+                     {'selection': 'query', 'query': 'x' * 8193}):
+            with self.subTest(opts=str(opts)[:30]), self.assertRaises(ValueError):
+                S.context_items(self.r.store, self.r.session, **opts)
+        self.assertEqual(self.r.store.state(S.KEY, None), before)
+
     def test_revoked_source_and_other_session_never_surface(self):
         self.seed()
         self.assertIn('amber lantern', '\n'.join(self.selected('query')).lower())
