@@ -148,6 +148,7 @@ def previous_success(work, arm, seed, fixtures, manifest, current_runner_sha=Non
 
 def journal(work, record):
     path = Path(work) / "RUN397_EVENTS.jsonl"
+    require(not path.is_symlink(), "UNSAFE_EVENTS_SYMLINK")
     line = dumps(record) + "\n"
     with path.open("ab") as f:
         f.write(line.encode())
