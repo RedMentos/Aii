@@ -1,0 +1,169 @@
+name: V13 Run406 observed Run401 native ZIP inventory without inference
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run406-stage1-archive-inventory.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run406-stage1-inventory/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inventory-observed-stage1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      ARTIFACT_ID: '12620379581'
+      EXPECTED_SHA256: '65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a'
+      EXPECTED_SOURCE_HEAD: 'c0facf60c3286064e15bc06de104c85d9344382a'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 40
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact frozen source and observed artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN406_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID" \
+            --jq '{id,name,size_in_bytes,expired,digest,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' \
+            | tee "$RUNNER_TEMP/RUN406_ARTIFACT_METADATA.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"RUN406_ARTIFACT_METADATA.json").read_text())
+          assert d["id"]==int(os.environ["ARTIFACT_ID"]) and not d["expired"]
+          assert d["digest"]=="sha256:"+os.environ["EXPECTED_SHA256"]
+          assert d["workflow_run"]["id"]==40250662450
+          assert d["workflow_run"]["head_sha"]==os.environ["EXPECTED_SOURCE_HEAD"]
+          PY
+      - name: Download observed ZIP; never rerun native or publish ZIP copy
+        id: download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 1400s gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID/zip" \
+            > "$RUNNER_TEMP/RUN401_ACTUAL.zip" 2> "$RUNNER_TEMP/RUN406_DOWNLOAD_STDERR.log"
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN406_DOWNLOAD_EXIT.txt"
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/RUN401_ACTUAL.zip" | tee "$RUNNER_TEMP/RUN406_ACTUAL_SHA256.txt"
+            echo "$EXPECTED_SHA256  $RUNNER_TEMP/RUN401_ACTUAL.zip" | sha256sum -c - \
+              > "$RUNNER_TEMP/RUN406_ZIP_HASH_CHECK.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN406_HASH_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Bounded metadata inventory only, no extraction or CRC claim
+        id: inventory
+        if: steps.download.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN406_INVENTORY_RAW.log"
+          import json, os, re, stat, zipfile
+          from pathlib import Path
+          archive=Path(os.environ['RUNNER_TEMP'])/'RUN401_ACTUAL.zip'
+          report={'run':'Run406','source_run':'Run401','evidence':'ACTUAL_LINUX_NATIVE_ARCHIVE_METADATA_ONLY',
+                  'archive_sha256':os.environ['EXPECTED_SHA256'],
+                  'artifact_id':int(os.environ['ARTIFACT_ID']),
+                  'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL',
+                  'body_jepa_pass':False,'redmi_measured':False,'native_inference_started':False}
+          entries=[]
+          model_members=[]
+          seen=set()
+          with zipfile.ZipFile(archive) as z:
+              for i in z.infolist():
+                  n=i.filename
+                  assert n and not n.startswith(('/', '\\')) and '\\' not in n, 'UNSAFE_PATH'
+                  parts=n.split('/')
+                  assert all(p not in ('', '.', '..') for p in parts), 'PATH_TRAVERSAL'
+                  assert ((len(parts)==1 and n.startswith('RUN401_')) or
+                          (len(parts)>1 and parts[0]=='run401-full')), 'UNEXPECTED_MEMBER'
+                  assert n not in seen, 'DUPLICATE_MEMBER'
+                  seen.add(n)
+                  assert not i.is_dir(), 'DIRECTORY_MEMBER'
+                  assert stat.S_IFMT(i.external_attr>>16) != stat.S_IFLNK, 'SYMLINK_MEMBER'
+                  assert not i.flag_bits & 1, 'ENCRYPTED_MEMBER'
+                  if n.lower().endswith(('.gguf','.safetensors','.ckpt','.pth','.pt')):
+                      model_members.append({'name':n,'bytes':i.file_size})
+                  assert 0 <= i.file_size <= 8_000_000_000, 'MEMBER_OVERSIZED'
+                  entries.append({'name':n,'bytes':i.file_size,'compressed_bytes':i.compress_size})
+              assert len(entries) > 0 and 'RUN401_SHA256SUMS.txt' in seen, 'MISSING_MANIFEST'
+              assert 'RUN401_HEAD.txt' in seen and 'RUN401_POSTFLIGHT.json' in seen, 'MISSING_NATIVE_PROOF'
+              assert sum(x['bytes'] for x in entries) <= 12_000_000_000, 'TOTAL_OVERSIZED'
+              assert z.getinfo('RUN401_HEAD.txt').file_size < 1024, 'HEAD_OVERSIZED'
+              assert z.read('RUN401_HEAD.txt').decode().strip()==os.environ['EXPECTED_SOURCE_HEAD'], 'WRONG_NATIVE_SOURCE'
+              assert z.getinfo('RUN401_SHA256SUMS.txt').file_size < 1_000_000, 'MANIFEST_OVERSIZED'
+              manifest=z.read('RUN401_SHA256SUMS.txt').decode()
+              paths=[]
+              for line in manifest.splitlines():
+                  m=re.fullmatch(r'([0-9a-f]{64})  (?:\./)?(.+)',line)
+                  assert m, 'MALFORMED_MANIFEST'
+                  paths.append(m.group(2))
+              assert len(paths)==len(set(paths)), 'DUPLICATE_MANIFEST_PATH'
+          unlisted=sorted(seen-set(paths)-{'RUN401_SHA256SUMS.txt'})
+          missing=sorted(set(paths)-seen)
+          report.update({'status':'MODEL_WEIGHTS_PRESENT_BLOCKED' if model_members else 'INVENTORY_ONLY_NOT_RESTORE',
+                         'unlisted_in_original_sha_manifest':unlisted,
+                         'missing_from_zip_but_in_sha_manifest':missing,
+                         'model_members':model_members,'member_count':len(entries),
+                         'uncompressed_bytes':sum(x['bytes'] for x in entries),
+                         'compressed_member_bytes':sum(x['compressed_bytes'] for x in entries),
+                         'largest_members':sorted(entries,key=lambda x:x['bytes'],reverse=True)[:18],
+                         'sha_manifest_entries':len(paths),'zip_crc_checked':False,
+                         'all_member_sha_checked':False,'stage2_authorized':False})
+          out=Path(os.environ['RUNNER_TEMP'])/'RUN406_INVENTORY.json'
+          out.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          assert not missing and not [n for n in unlisted if n not in {x['name'] for x in model_members}], 'UNHASHED_NONMODEL_OR_MISSING'
+          assert not model_members, 'MODEL_WEIGHTS_IN_ARTIFACT'
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN406_INVENTORY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN406_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN406_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Hash-close raw inventory, including failures, but exclude original ZIP
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN406_*' ! -name RUN406_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN406_SHA256SUMS.txt
+      - name: Upload only small inventory and negative evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run406-Stage1-Inventory-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN406_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce observed ZIP, inventory and privacy without gate promotion
+        if: always()
+        run: |
+          test "${{ steps.download.outputs.rc }}" = "0"
+          test "${{ steps.inventory.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
