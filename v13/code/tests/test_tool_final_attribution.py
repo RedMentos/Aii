@@ -111,7 +111,7 @@ class ToolFinalAttributionTests(unittest.TestCase):
                             'runner' in _source(n.test)
                             for n in nodes))
         self.assertTrue(any(isinstance(n, ast.Assign) and
-                            'meta.get(\'model_generated\')' in _source(n.value) and
+                            "meta.get('tool_answer_first')" in _source(n.value) and
                             'runner.role' in _source(n.value)
                             for n in nodes))
 
