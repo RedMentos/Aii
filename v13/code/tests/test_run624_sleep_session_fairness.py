@@ -31,7 +31,7 @@ class SleepSessionFairness(unittest.TestCase):
         self.assertEqual(first['sessions'], S.SESSIONS_MAX)
         self.assertEqual(first['turns'], S.SESSIONS_MAX)
         second = S.digest(self.r.store)
-        self.assertEqual(second['sessions'], S.SESSIONS_MAX)
+        self.assertEqual(second['sessions'], 4)  # completed hot sessions are skipped
         self.assertEqual(second['turns'], 4)
         entries = self.entries(ids)
         self.assertEqual([len(entries[sid]) for sid in ids], [1] * 12)
