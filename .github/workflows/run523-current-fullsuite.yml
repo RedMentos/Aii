@@ -1,0 +1,84 @@
+name: V13 Run523 exact-current-chain full source-wide regression
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run523-current-fullsuite.yml'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run523-current-sourcewide-fullsuite-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Source identity and isolated Python
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN523_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run523-current-fullsuite/PREREG.md)" = 'b149ea946ba54614aceb74177957740556850473'
+          test "$(git hash-object v13/code/scripts/run513_b2_receipt_postflight.py)" = '76c92573867429d6a2c13f7493c456c06d4b6890'
+          test "$(git hash-object v13/code/tests/test_run520_b2_quote_lineage.py)" = '3c38db4d776f13a29e235b9c415d8df79b9df936'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          test "$(git hash-object v13/code/tests/test_run517_age0d_arithmetic_shadow.py)" = '47a6468c03f2b3e65a3b960b7966ddfc7868871e'
+          sha256sum v13/code/v13/agi/tools.py v13/code/v13/agi/grounding.py v13/code/v13/agi/grounding_preaction.py v13/code/v13/agi/skills.py v13/code/v13/agi/abstraction.py | tee "$RUNNER_TEMP/RUN523_SOURCE_HASHES.txt"
+          python3 -m venv "$RUNNER_TEMP/run523venv"
+          "$RUNNER_TEMP/run523venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN523_DEPS_RAW.log" 2>&1
+          timeout 420s "$RUNNER_TEMP/run523venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu' >> "$RUNNER_TEMP/RUN523_DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/v13
+      - name: Full source-only unittest discovery (bounded, record failures)
+        id: suite
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          timeout --signal=TERM --kill-after=10s 900s env PYTHONPATH="$PWD" "$RUNNER_TEMP/run523venv/bin/python" -m unittest discover -s tests -p 'test_*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/RUN523_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "TEST_EXIT=$rc" | tee "$RUNNER_TEMP/RUN523_EXIT.txt"
+          exit 0
+      - name: Privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN523_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN523_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw SHA
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN523_*' ! -name RUN523_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN523_SHA256SUMS.txt
+      - name: Upload exact-head raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run523-SourceWide-Raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN523_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy (expected RED is visible)
+        if: always()
+        run: |
+          test "${{ steps.privacy.outputs.rc }}" = "0"
+          test "${{ steps.suite.outputs.rc }}" = "0"
