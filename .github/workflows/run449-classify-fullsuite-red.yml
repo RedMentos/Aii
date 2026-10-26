@@ -1,0 +1,80 @@
+name: V13 Run449 classify actual Run446 RED without promotion
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run449-classify-fullsuite-red.yml'
+      - 'v13/code/scripts/run449_classify_fullsuite_red.py'
+      - 'v13/code/tests/test_run449_classify_fullsuite_red.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run449-fullsuite-red/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify and unpack exact original Run446 RED raw artifact
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627339234/zip' -o "$RUNNER_TEMP/run449-run446-original.zip"
+          printf 'ae917ed846fc35d89a2f1c5d84b7fe1bbf9f4863e00cbbaef6a7dad4d1e2389c  %s\n' "$RUNNER_TEMP/run449-run446-original.zip" | sha256sum --check -
+          python3 - <<'PY'
+          import os,stat,zipfile
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          with zipfile.ZipFile(root/'run449-run446-original.zip') as z:
+              infos=z.infolist()
+              assert set(i.filename for i in infos)=={'run446-tests.txt','run446-exit.txt','run446-head.txt'}
+              assert len(infos)==3
+              for i in infos:
+                  assert i.file_size<5_000_000 and stat.S_IFMT((i.external_attr>>16)&0xffff) in (0,stat.S_IFREG)
+                  (root/i.filename).write_bytes(z.read(i))
+          assert (root/'run446-exit.txt').read_text().strip()=='EXIT=1'
+          print('ORIGINAL_RUN446_RED_BYTES_VERIFIED')
+          PY
+      - name: Classify original 3430-test RED and run independent negative tests
+        run: |
+          set -euo pipefail
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          sha256sum scripts/run449_classify_fullsuite_red.py tests/test_run449_classify_fullsuite_red.py | tee "$RUNNER_TEMP/run449-source-sha256.txt"
+          python3 -m unittest -v tests.test_run449_classify_fullsuite_red > "$RUNNER_TEMP/run449-tests.txt" 2>&1
+          cat "$RUNNER_TEMP/run449-tests.txt"
+          python3 scripts/run449_classify_fullsuite_red.py --log "$RUNNER_TEMP/run446-tests.txt" --exit-file "$RUNNER_TEMP/run446-exit.txt" --output "$RUNNER_TEMP/run449-classification.json" | tee "$RUNNER_TEMP/run449-summary.txt"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'run449-classification.json').read_text())
+          assert (d['tests_run'],d['failures'],d['errors'],d['skipped'])==(3430,5,84,19)
+          assert d['status']=='RED_FULL_SUITE_UNRESOLVED' and d['canonical_gate_pass'] is False
+          assert d['unclassified']==0
+          assert sum(d['categories'].values())==89
+          assert d['categories']['STAGE1_SYNTHETIC_RECEIPT_NOT_REUSABLE']==5
+          assert d['step2_exit']=='UTILITY_FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          print('ACTUAL_RUN446_RED_CLASSIFIED_NOT_FIXED')
+          PY
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain small actual RED classification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run449-red-classification-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run449-source-sha256.txt
+            ${{ runner.temp }}/run449-tests.txt
+            ${{ runner.temp }}/run449-summary.txt
+            ${{ runner.temp }}/run449-classification.json
+          if-no-files-found: warn
+          retention-days: 30
