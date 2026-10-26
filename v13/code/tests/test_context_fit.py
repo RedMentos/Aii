@@ -194,6 +194,14 @@ class ContextFitTests(unittest.TestCase):
                     F.require_final_exact(messages,lambda _:bad,100)
         self.assertEqual(F.require_final_exact(messages,lambda _:100,100),100)
 
+    def test_exact_mode_rejects_unverified_causal_decoder_budget(self):
+        self.assertIsNone(F.require_native_count_compatible("C3_LANGUAGE","server"))
+        self.assertIsNone(F.require_native_count_compatible("B1_DETAIL","same_causal_zero"))
+        for mode in ("same_causal_zero","same_causal"):
+            with self.subTest(mode=mode):
+                with self.assertRaisesRegex(ValueError,"EXACT_COUNT_CAUSAL_MODE_UNVERIFIED"):
+                    F.require_native_count_compatible("C3_LANGUAGE",mode)
+
     def test_budget_matches_runner_rule(self):
         self.assertEqual(F.budget({'context_tokens':2048,'answer_tokens':256}),2048-256-16)
 
