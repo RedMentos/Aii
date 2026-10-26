@@ -1,0 +1,128 @@
+name: V13 Run559 offline native batch verifier source and original report
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run559-offline-review.yml'
+      - 'v13/code/scripts/run559_offline_review.py'
+      - 'v13/code/tests/test_run559_offline_review.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run559-offline-audit/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run559-step2-offline-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source, prereg, historical report and original frozen pins
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN559_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run559-offline-audit/PREREG.md)" = '3b52f52bc90787fc7abef1d8789bd69ef5cddbb9'
+          test "$(git hash-object v13/code/scripts/run559_offline_review.py)" = '1043f856e5c8b20585f09266400ad59c0363bc0b'
+          test "$(git hash-object v13/code/tests/test_run559_offline_review.py)" = 'f550ac8581242afa1a509daa4e25023eb3ca08da'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run559-offline-audit/RUN559_RUN507_REPORT.json)" = 'cb0e3b4b7a429de9710ed093c94a78e370df9506'
+          test "$(git hash-object v13/code/scripts/run514_review.py)" = 'b99c92625c2849132f64fec6e6dc1abc96fdc652' || { echo 'Historical Run514 pin drift; inspect'; exit 1; }
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN559_HOST.txt"
+      - name: Install isolated portable dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run559venv"
+          timeout 240s "$RUNNER_TEMP/run559venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN559_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN559_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Adversarial ZIP/oracle and frozen future partition source tests
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run559venv/bin/python" -m compileall -q scripts/run559_offline_review.py tests/test_run559_offline_review.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run559venv/bin/python" -m unittest -v tests.test_run559_offline_review tests.test_run558_future_batch tests.test_run556_future002_batch tests.test_run505_future001_batch tests.test_run504_remaining980_schedule tests.test_run500_step2_stage_map > "$RUNNER_TEMP/RUN559_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN559_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Verify preserved original actual Run507 descriptive report contract
+        id: report
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run559venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN559_REPORT_RAW.log" 2>&1
+          import json
+          from pathlib import Path
+          p=Path('docs/proofs/continuation-20261026/run559-offline-audit/RUN559_RUN507_REPORT.json')
+          d=json.loads(p.read_text())
+          assert d['batch_id']=='FUTURE_001' and d['rows_verified']==42
+          assert d['wrong_committed']==0 and d['native_execution_performed_by_this_audit'] is False
+          assert d['raw_zip_sha256']=='bae7d108bf211eb25b99694e4746f93ed0b240aeaacda3d289b1e1c051dc4227'
+          assert d['safe_zip_sha256']=='406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b'
+          assert d['mean_utility']['both_exact'] < d['mean_utility']['b1_only']
+          assert d['step2_exit']=='UTILITY_FAIL' and d['canonical_gate_pass'] is False
+          print('PRESERVED_ACTUAL_RUN507_REPORT_CONTRACT_VALID; ORIGINAL_ZIPS_NOT_RERUN_IN_CI')
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN559_REPORT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN559_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN559_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close raw evidence including RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN559_*' ! -name RUN559_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN559_SHA256SUMS.txt
+      - name: Retain every result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run559-offline-review-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN559_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source, tests, report and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN559_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN559_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN559_REPORT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN559_PRIVACY_EXIT.txt")" = 0
