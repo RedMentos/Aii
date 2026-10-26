@@ -221,6 +221,12 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
 
 ## 9 Einstellungen
 
+:language [status|en|de]
+    Sprache für die Modell-Prompts und Antworten anzeigen oder bewusst wechseln.
+    Standard ist Englisch (`en`); `de` wählt Deutsch. Die Oberfläche bleibt Deutsch.
+    Das ist KEIN Sprachtraining und kein Nachweis, dass V13 Deutsch gelernt hat.
+    Wechsel nur im Leerlauf, Einstellung bleibt nach Neustart gespeichert.
+
 :route auto|simple|detail|gist|both   Wer antwortet: automatisch, nur Sprache, oder mit Denk-Körpern.
 :observers <Art>                        Wie die Beobachter mitlaufen (off, background, nacheinander, …).
 :effort [disabled|low|adaptive|high|max] Wie gründlich V13 nachdenkt.
