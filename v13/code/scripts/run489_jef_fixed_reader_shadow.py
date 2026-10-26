@@ -60,16 +60,19 @@ def source_packet(source_row):
     return packet['current_source'], quotes
 
 
-def shadow(source_row, allowed_roles=ROLES):
+def shadow(source_row, allowed_roles=ROLES, reader_mode='fixed_read'):
     """Produce a decision using source text only; never receives fixture oracle."""
     require(set(allowed_roles) <= set(ROLES), 'UNKNOWN_ROLE_ABLATION')
+    require(reader_mode in ('fixed_read', 'read_fixed'), 'UNKNOWN_READER_MODE')
     current, all_quotes = source_packet(source_row)
     quotes = [q for role, q in all_quotes if role in allowed_roles]
     match = re.fullmatch(r'Project ([A-Za-z]+)\..*', current, re.S)
     require(match is not None, 'PROJECT_NOT_SOURCE_BOUND')
     project = match.group(1)
     try:
-        read = E.fixed_read(current, history=(), quotes=quotes)
+        read = (E.fixed_read(current, history=(), quotes=quotes)
+                if reader_mode == 'fixed_read'
+                else E.read_fixed(current, earlier=quotes))
         require(type(read) is dict and set(read) == {'budget', 'deadline', 'local_only', 'options'},
                 'FIXED_READER_SCHEMA')
         decision = E.decide({k: read[k] for k in ('budget', 'deadline', 'local_only')},
@@ -89,8 +92,8 @@ def shadow(source_row, allowed_roles=ROLES):
                 'b2_quotes': sum(role == 'B2_GIST' for role, _ in all_quotes if role in allowed_roles)}
 
 
-def evaluate(source_row, roles=ROLES):
-    decision = shadow(source_row, roles)
+def evaluate(source_row, roles=ROLES, reader_mode='fixed_read'):
+    decision = shadow(source_row, roles, reader_mode)
     # Oracle is only used after shadow has returned its source-only decision.
     expected = r488.oracle(source_row['fixture'])
     score = (r488.score_answer(decision['answer'], expected)
@@ -125,8 +128,10 @@ def audit(path):
     prior = r488.audit(path)
     require(prior['rows'] == 378 and prior['canonical_gate_pass'] is False and
             prior['step2_exit'] == 'UTILITY_FAIL', 'ORIGINAL_ANSWER_AUDIT_NOT_GREEN')
-    by_arm = {arm: {variant: [] for variant in VARIANTS} for arm in ARMS}
-    ablations = {arm: {'without_B1': [], 'without_B2': []} for arm in ARMS}
+    modes = ('fixed_read', 'read_fixed')
+    by_mode = {mode: {arm: {v: [] for v in VARIANTS} for arm in ARMS} for mode in modes}
+    ablations = {mode: {arm: {'without_B1': [], 'without_B2': []} for arm in ARMS}
+                 for mode in modes}
     statuses = {}
     with zipfile.ZipFile(path) as z:
         progress = json.loads(z.read('RUN397_PROGRESS.json'))
@@ -148,24 +153,34 @@ def audit(path):
                             row.get('status') == 'RECORDED', 'NATIVE_SOURCE_STATUS_OR_LEAK')
                     require(digest(dumps(row['consumer_messages'])) ==
                             tool_row['consumer_messages_sha256'], 'CONSUMER_MESSAGES_HASH_CHANGED')
-                    result = evaluate(row)
-                    by_arm[arm][variant].append(result)
-                    statuses[(arm, seed, fixture, variant)] = result['status']
-                    if variant == 'both_exact':
-                        ablations[arm]['without_B1'].append(evaluate(row, ('B2_GIST',)))
-                        ablations[arm]['without_B2'].append(evaluate(row, ('B1_DETAIL',)))
-    require(len(statuses) == 378 and
-            all(len(values) == 18 for arm in by_arm.values() for values in arm.values()),
+                    for mode in modes:
+                        result = evaluate(row, reader_mode=mode)
+                        by_mode[mode][arm][variant].append(result)
+                        statuses[(mode, arm, seed, fixture, variant)] = result['status']
+                        if variant == 'both_exact':
+                            ablations[mode][arm]['without_B1'].append(
+                                evaluate(row, ('B2_GIST',), mode))
+                            ablations[mode][arm]['without_B2'].append(
+                                evaluate(row, ('B1_DETAIL',), mode))
+    require(len(statuses) == 756 and
+            all(len(values) == 18 for mode in by_mode.values()
+                for arm in mode.values() for values in arm.values()),
             'FROZEN_378_ROW_COHORT_INCOMPLETE')
-    summary = {arm: {v: summarize(rows) for v, rows in variants.items()}
-               for arm, variants in by_arm.items()}
-    controls = {arm: {k: summarize(rows) for k, rows in variants.items()}
-                for arm, variants in ablations.items()}
+    summary = {mode: {arm: {v: summarize(rows) for v, rows in variants.items()}
+                      for arm, variants in arms.items()}
+               for mode, arms in by_mode.items()}
+    controls = {mode: {arm: {k: summarize(rows) for k, rows in variants.items()}
+                       for arm, variants in arms.items()}
+                for mode, arms in ablations.items()}
     return {'schema': 'V13_RUN489_JEF_FIXED_READER_SHADOW_NATIVE378_V1',
             'status': 'FIXED_JEF_SHADOW_REPLAY_DIAGNOSTIC_ONLY',
             'rows': 378, 'original_safe_zip_sha256': EXPECTED_ZIP,
-            'reader_revision': E.REVISION, 'summary': summary,
-            'both_exact_role_ablations': controls,
+            'reader_revision': E.REVISION,
+            'summary': summary['fixed_read'],
+            'both_exact_role_ablations': controls['fixed_read'],
+            'secondary_read_fixed': summary['read_fixed'],
+            'secondary_read_fixed_role_ablations': controls['read_fixed'],
+            'secondary_scope': 'POST_FAILURE_ADDENDUM_NOT_ORIGINAL_PREREG',
             'canonical_gate_pass': False, 'step2_exit': 'UTILITY_FAIL',
             'b3_l1': 'FAIL', 'body_jepa': 'UNAVAILABLE',
             'jepa_weight': 0, 'latent_authority': 0,
