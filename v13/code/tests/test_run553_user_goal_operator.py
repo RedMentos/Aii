@@ -76,6 +76,18 @@ class Run553UserGoalOperator(unittest.TestCase):
                         self.command(action, gid)
             self.assertEqual(self.g.goals.get(gid)['status'], 'OPEN')
 
+    def test_actual_tty_operator_route_and_origin_boundary(self):
+        from v13.operator import Operator
+        op = Operator(self.r)
+        self.assertIn('goal status|done|abandon|reopen', op.run(':help'))
+        out = op.run(':growth goal Plan Aurora')
+        gid = out.split()[-1]
+        self.assertEqual(json.loads(op.run(':growth goal done '+gid))['status'], 'DONE')
+        self.assertEqual(json.loads(op.run(':growth goal reopen '+gid))['status'], 'OPEN')
+        with self.assertRaises(ValueError):
+            op.run(':growth goal done '+gid, origin='MODEL')
+        self.assertEqual(self.g.goals.get(gid)['status'], 'OPEN')
+
     def test_assistant_message_is_not_a_typed_operator_command(self):
         gid = self.create()
         e = self.r.store.event(self.r.session, 'Unrelated conversation')
