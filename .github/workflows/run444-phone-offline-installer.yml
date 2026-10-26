@@ -1,0 +1,64 @@
+name: V13 Run444 packaged Phone offline installer acceptance
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run444-phone-offline-installer.yml'
+      - 'v13/code/tests/test_run444_phone_offline_setup.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run444-phone-offline/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run444"
+          "$RUNNER_TEMP/run444/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Package and verify complete Phone source before running installer
+        run: |
+          set -euo pipefail
+          cd v13/code
+          "$RUNNER_TEMP/run444/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run444.zip" --phone-install | tee "$RUNNER_TEMP/run444-packager.jsonl"
+          unzip -tqq "$RUNNER_TEMP/V13-Phone-Run444.zip"
+          sha256sum "$RUNNER_TEMP/V13-Phone-Run444.zip" | tee "$RUNNER_TEMP/run444-zip-sha256.txt"
+          mkdir -p "$RUNNER_TEMP/run444-extracted"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run444.zip" -d "$RUNNER_TEMP/run444-extracted"
+      - name: Execute actual extracted setup offline, doctor, and integrity regressions
+        run: |
+          cd "$RUNNER_TEMP/run444-extracted/V13-Phone"
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          sha256sum tests/test_run444_phone_offline_setup.py | tee "$RUNNER_TEMP/run444-source-sha256.txt"
+          set +e
+          "$RUNNER_TEMP/run444/bin/python" -m unittest -v tests.test_run444_phone_offline_setup tests.test_installed_source_preflight_run194 > "$RUNNER_TEMP/run444-tests.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run444-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run444-exit.txt"
+          exit "$status"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain model-free installer raw source proof only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run444-offline-installer-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run444-tests.txt
+            ${{ runner.temp }}/run444-exit.txt
+            ${{ runner.temp }}/run444-source-sha256.txt
+            ${{ runner.temp }}/run444-zip-sha256.txt
+            ${{ runner.temp }}/run444-packager.jsonl
+          if-no-files-found: warn
+          retention-days: 30
