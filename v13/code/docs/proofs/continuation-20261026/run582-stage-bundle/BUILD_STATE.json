@@ -41,5 +41,20 @@
     "Independent code review for parent-directory symlink and exact stage-source receipt proof.",
     "Next actual live Runtime.submit native pilot and B1/B2 learning/Context OS utility still required."
   ],
-  "next_exact_command": "Review PR579 and Actions 40382329388; add parent-directory symlink refusal and stage source integrity checks if needed, checkpoint again. For future native, require source bundler before uploading raw/safe; never claim Run568 42-row independent proof."
+  "next_exact_command": "Review PR579 and successful Run583 Actions 40382533377, preserve original Run568 AUDIT=1 and 14 p02 unavailable. Integrate complete-source bundler only for separately preregistered future native cohort. Next highest-value independent package: disjoint true-live Runtime.submit/_turn current-default versus legacy, then native Body-JEPA/B1-B2 learning and Redmi acceptance; do not substitute source-only tests.",
+  "run583": {
+    "prereg_commit": "1675a2168c0448d9623861d39b14085263f5a958",
+    "prereg_sha": "d57abfc7512229575de3cebb6e4737a7bd35ca0b",
+    "tested_head": "c1558a91576fd6fb04bd412b3de2722ffe6f7af6",
+    "source_sha": "17019b74e33e1c21d637bcac0bf5fa0110fa8db8",
+    "test_sha": "5719e22729153ea0a693549a64c0d8417666f3f8",
+    "workflow_run": 40382533377,
+    "job_id": 121782262903,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12678413404,
+    "artifact_sha256": "a1b2f5c514cb55397a29c54f5b4b20cd7336660672d859adc7d5eea2eed7ca45",
+    "synthetic_test_methods": 8,
+    "negative": "Intermediate stage-directory symlink and traversal ZIP rejected; original p02 raw still refused",
+    "native_executed": false
+  }
 }
