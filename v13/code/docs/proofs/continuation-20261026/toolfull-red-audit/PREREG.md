@@ -1,0 +1,5 @@
+# Prospective independent offline audit of original RED full source suite
+
+2026-10-26. Original exact-head source-only full suite on tool-final candidate `1ee3f247d52acb1a63a15fba6cf89dcf7a2f3bc6`: Actions `40376727122` **FAILURE**. All source/dependency/pinned-input/helper/privacy/upload steps returned success; final enforcement failed. Original raw artifact `12676810516`, GitHub SHA256 `28cdb224cc0d820b30c1b76c5cd245633776b12c6c694fd54edb0ce7f2fb93ea`, must remain immutable. Do not rerun or relabel original.
+
+Goal: independent no-model audit retrieves only this original artifact with read-only GitHub Actions token, checks exact ZIP SHA, member integrity and original `TOOLFULL_SHA256SUMS.txt`, reports exact exit flags, test count, bounded failure IDs and error categories (not private text). Preserve original RED; audit workflow succeeds only when it accurately identifies and verifies the evidence. Do not modify frozen cohorts/tests or source. No native/model inference, no Redmi, no gate promotion, no main merge. This audit runs on separate branch and cannot cancel the original full suite.
