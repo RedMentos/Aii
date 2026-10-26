@@ -1,0 +1,43 @@
+{
+  "schema": "V13_PHONE_EXTRACTED_SOFTWARE_SMOKE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 independent source archive software smoke",
+  "branch": "codex/automation11-phone-extract-smoke-20261026",
+  "base_head": "d69c0f6486473d768bf6395da67c277be70cc7ad",
+  "prereg_commit": "59e6c36406bf4aa8a6418ee03bc6b417bf2fb041",
+  "verified_head": "034d57af57ae0291fb5a6fbfa6264c13fdee3bda",
+  "original_phone_artifact": {
+    "id": 12675152877,
+    "sha256": "2d87f7853b996f56813ca4e85d45185f5e0a54098f4eb3e2c23ecc5706b00f9a"
+  },
+  "tests": {
+    "workflow_run": 40378352107,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12676946634,
+    "artifact_sha256": "832c79e7dcaa211592816fea4e7b04584f8b65bf9ddfab392764ca21f52af2c9",
+    "scope": "Linux extracted ZIP software tests: runtime_queue, actual synthetic tool-final Runtime.submit, broker",
+    "checks": [
+      "original outer artifact digest",
+      "nested ZIP safety",
+      "nested ZIP CRC",
+      "member/source parity",
+      "pinned isolated NumPy/prompt-toolkit",
+      "unittest PASS",
+      "privacy PASS"
+    ]
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Actual Android/Termux setup and native models not executed; user-controlled Redmi required.",
+    "Full source unfiltered suite original RED 4038 tests, 4 FAIL and 65 ERROR, under independent audit.",
+    "Source ZIP is review-only, not integrated production release."
+  ],
+  "next_exact_command": "Independently classify original unfiltered source RED by test error type, preserve frozen tests and all original raw; reconcile source-bound expected failures before integration. On Redmi, user-controlled setup/phone_acceptance only after review. Do not promote any native or hardware gates."
+}
