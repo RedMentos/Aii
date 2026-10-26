@@ -163,7 +163,11 @@ def _verify_and_stage(archive, expected_sha, temporary):
                                 "sha256": actual, "registered_roles": sorted(matches)})
         require(small["RUN401_HEAD.txt"].decode("utf-8").strip() == stage.SOURCE_HEAD,
                 "STAGE1_SOURCE_HEAD_MISMATCH")
-        native = stage._validate_native_tree(root, small)
+        # The stream accumulator is mutable bytearray; Run402's independent
+        # native receipt validator intentionally accepts only immutable bytes.
+        # Freeze every already SHA/CRC-checked small report at this boundary.
+        native = stage._validate_native_tree(
+            root, {name: bytes(data) for name, data in small.items()})
         return {"native": native, "members_verified": len(infos) - 1,
                 "omitted_unlisted_in_manifest": [n for n in unlisted if _model_path(n)],
                 "unlisted_binary_members": [n for n in unlisted if _binary_path(n)],

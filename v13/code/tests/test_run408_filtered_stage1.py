@@ -80,6 +80,20 @@ class Run408FilteredTests(unittest.TestCase):
         self.assertTrue((dest / "RUN397_PROGRESS.json").is_file())
         self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(), digest)
 
+    def test_streamed_small_reports_use_immutable_bytes_for_strict_native_validator(self):
+        # Run411's merged Run402 validator requires exact bytes, while the
+        # streaming Run408 collector accumulates bytearray chunks.
+        digest = self.zip()
+        def strict_validator(root, small):
+            for name in m.base.SMALL:
+                self.assertIs(type(small[name]), bytes, name)
+            return {"rows_verified": 42, "completed": ["O_s20"]}
+        with mock.patch.object(m, "catalog", return_value=self.catalog), \
+             mock.patch.object(m.stage, "_validate_native_tree",
+                               side_effect=strict_validator):
+            result = m.audit_or_restore(self.archive, digest)
+        self.assertEqual(result["status"], "FILTERED_STAGE1_VERIFIED_NO_PROMOTION")
+
     def test_unknown_model_filename_rejected(self):
         digest = self.zip(extra={"run401-full/attempts/O_s20/attempt-0001/"
                                  "arm_home/models/unknown.gguf": b"x"})
