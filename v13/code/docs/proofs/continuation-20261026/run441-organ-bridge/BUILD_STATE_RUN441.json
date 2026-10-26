@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN441_ORGAN_BRIDGE_SYMLINK_INTEGRITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run441-organ-bridge-symlink-integrity-20261026",
+  "pr": 440,
+  "base_commit": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "tested_source_head": "2a12971504045986713fad45d879137b7bc67ce0",
+  "scope": "Source-only organ snapshot/check/restore bridge symlink confinement. Runtime test files are synthetic; no model weights.",
+  "red": {
+    "head": "8892776000786c9ae08c7ffb03f7a0074ccc71eb",
+    "actions_run": 40267410754,
+    "tests_total": 27,
+    "expected_failures": 4,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12627235967,
+    "raw_artifact_sha256": "991db235236004139ce28afe3242f689c6cac941c088499640c9b49cd9a02bd2"
+  },
+  "green": {
+    "head": "2a12971504045986713fad45d879137b7bc67ce0",
+    "actions_run": 40267475701,
+    "tests_total": 27,
+    "passed": 27,
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12626926594,
+    "raw_artifact_sha256": "6d0988fa23eb9375d709c2174653943562c90374bdf45d3e21cc254e25446b81",
+    "inherited_organ_actions": 40267475654,
+    "source_sha256": {
+      "v13/code/v13/organ.py": "b68aa58e0d5217ea564b2363e79afd31dcd029057ce3ba740772726af670388c",
+      "v13/code/tests/test_run441_organ_bridge_symlinks.py": "c99920a4e0453d7ab63d180c4da5d9363a9315473a9191d8589228cba4df6a8e"
+    }
+  },
+  "changes": [
+    "Refuse b3 root symlink/escape before snapshot/check/restore.",
+    "Refuse role bridge file symlink and hardlink before hashing or copying.",
+    "Treat symlinked or hardlinked backed-up artifacts as CHANGED, not intact.",
+    "Restore with external bridge symlink now refuses before generation commit; temporary outside file unchanged."
+  ],
+  "residual_risk": "This patch closes static symlink inputs. Concurrent untrusted mutation of b3 paths between preflight and legacy shutil.copy2 is not proven safe; follow-up atomic dirfd publication requires independent tests. No claim of full transaction atomicity.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "active_native_owner": "Run437/PR436 exclusive P_s21 Actions 40266365717 in_progress at last observation; untouched",
+  "exact_next_command": "PYTHONPATH=v13/code:v13/code/scripts python3 -m unittest -v tests.test_run441_organ_bridge_symlinks tests.test_organ tests.test_standstill",
+  "prerequisites": "Isolated numpy==2.3.5 prompt-toolkit==3.0.52; no model download. Observe exact-head focused source/phone ZIP CI and cross-review before merge.",
+  "next": "After durable checkpoint, prioritize functional end-to-end V13 work on an independent branch, not further model-export helper elaboration. Preserve native owner and all registered pins."
+}
