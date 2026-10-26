@@ -81,25 +81,25 @@ class ApprovedSandboxWorldSession:
         # not claim completion; the operator can correct and explicitly retry.
         issued = action_tx in self._issued
         if issued:
-            file_rows = self.port.observe(self.selfsys, self.event_id)
+            # Attribute the real scan and verified status in one call. The
+            # port commits its baseline only after SelfSystem returns; a
+            # corrupt state before attribution must not lose the file change.
+            name = saved["args"].get("name")
+            rows = self.port.observe(
+                self.selfsys, self.event_id,
+                extra_observations=[
+                    {"channel": "status:" + name, "value": saved["status"], "t": time.time()}],
+                close=[action_tx])
         else:
             # The tool may execute even if its optional pre-effect hook failed.
             # Never attribute that action using an unrelated old corollary.
             # Consume the real scan, but do not write false Self packets.
-            file_rows = [
+            rows = [
                 {"channel": o["channel"], "class": "UNCLEAR",
                  "reason": "no_current_corollary", "action_ids": []}
                 for o in self.port.poll()
             ]
-        name = saved["args"].get("name")
-        status_rows = []
-        if issued:
-            status_rows = self.selfsys.observe(
-                self.event_id,
-                [{"channel": "status:" + name, "value": saved["status"], "t": time.time()}],
-                close=[action_tx])
         self._collected.add(action_tx)
-        rows = file_rows + status_rows
         return {"status": saved["status"], "action_tx": action_tx,
                 "authority": "SHADOW_ONLY", "observations": [
                     {"channel": x["channel"], "class": x["class"],
