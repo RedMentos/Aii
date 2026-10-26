@@ -99,6 +99,19 @@ def import_stage5(archive, expected_sha256, report, destination):
             checked = audit.verify(stage, report)
             require(checked["status"] == "RUN436_NATIVE_210_INDEPENDENTLY_VERIFIED",
                     "NATIVE_210_NOT_VERIFIED")
+            # The incoming export manifest authenticates this staging tree but
+            # is NOT a Run397 work file. A subsequent Run409 export must mint
+            # its own manifest. Retain the original in the SHA-pinned ZIP and
+            # returned receipt; strip only the verified private staging copy.
+            previous_manifest = stage / gate.MANIFEST
+            require(previous_manifest.is_file() and
+                    not previous_manifest.is_symlink() and
+                    previous_manifest.stat().st_nlink == 1 and
+                    audit.sha_file(previous_manifest) == manifest_sha,
+                    "RESTORED_MANIFEST_CHANGED_BEFORE_STRIP")
+            previous_manifest.unlink()
+            require(not previous_manifest.exists(),
+                    "RESTORED_MANIFEST_NOT_STRIPPED")
             safe._rename_noreplace(stage, dest)
     return {"run": "Run438", "status": "RUN438_STAGE5_ARTIFACT_IMPORTED_VERIFIED",
             "artifact_sha256": expected_sha256,
