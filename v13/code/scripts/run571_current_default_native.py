@@ -22,6 +22,7 @@ PLAN = 'RUN570_PLAN.json'
 RESULT = 'RUN571_RESULT.json'
 PROGRESS = 'RUN571_PROGRESS.jsonl'
 PREFLIGHT = 'RUN571_INSTALLED_PREFLIGHT.json'
+ATTEMPT = 'RUN571_ATTEMPT.json'  # exclusive O_EXCL claim before any model preflight
 ARMS = new.ARMS
 VARIANTS = set(new.VARIANTS)
 ROWS_PER_ARM = 6 * len(VARIANTS)
@@ -149,10 +150,16 @@ def execute(work, installed):
     work = Path(work)
     require(not work.is_symlink() and work.is_dir(), 'WORK_DIRECTORY_REQUIRED')
     plan = exact_plan(work)
-    require(not any((work / p).exists() for p in (RESULT, PROGRESS, PREFLIGHT)),
+    require(not any((work / p).exists() for p in (RESULT, PROGRESS, PREFLIGHT, ATTEMPT)),
             'REFUSE_REUSE_OR_PARTIAL_NATIVE_ATTEMPT')
     require(not any((work / (z2b.run_id(arm, new.SEED) + '-home')).exists()
                     for arm in ARMS), 'REFUSE_REUSE_NATIVE_ARM_HOME')
+    # Exclusive durable claim closes concurrent execute race, including before preflight.
+    # A failed attempt is never silently retried in the same work directory.
+    write_new(work / ATTEMPT, {'schema': 'V13_RUN571_EXCLUSIVE_ATTEMPT_V1',
+                               'state': 'CLAIMED_BEFORE_MODEL_PREFLIGHT',
+                               'plan_sha256': hashlib.sha256((work / PLAN).read_bytes()).hexdigest(),
+                               'native_executed': False, 'canonical_gate_pass': False})
     preflight = original_native.verify_installed(installed)
     require(preflight['model_sha256'] == plan['original_model_sha256_expected_not_retrieved'] and
             preflight['runner_sha256'] == plan['original_runner_sha256_expected_not_retrieved'] and
