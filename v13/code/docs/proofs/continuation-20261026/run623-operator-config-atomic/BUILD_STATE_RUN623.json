@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN623_BRANCH_SCOPED_BUILD_STATE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/automation11-run623-operator-config-atomic-20261026",
+  "base_pr": 617,
+  "base_head": "4dd297e74ddd218848e05578a9834ea152d6bb90",
+  "owner": "GPT automation11 operator.py and new Run623 test/workflow/proof only",
+  "source_blob": "9b928d1cce3dfc1466b564cf20130cb9e7af8706",
+  "test_blob": "540b566d9d10edd41ef7c4e4de84561986a0a08f",
+  "status": "LOCAL_SQLITE_RED_TO_GREEN_36_PASS",
+  "evidence_level": "LOCAL_LINUX_SQLITE_RUN601_BASE_WITH_IDENTICAL_PATCH",
+  "baseline_exit": 1,
+  "baseline_log_sha256": "d53bd0e691ead122ef51c96864b70b74dd55863d2d7c416e52322efa8f595f5f",
+  "patched_tests": 5,
+  "combined_tests": 36,
+  "combined_exit": 0,
+  "combined_log_sha256": "13284f7cc46863232dec69f668042994ba75501b646289399e0622042d68205d",
+  "ci_status": "GITHUB_PUSH_PR_WORKFLOW_UNVERIFIED",
+  "native_inference_new": false,
+  "redmi_measured": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "main_integrated": false,
+  "next_command": "Verify Run623 Actions exact branch head and raw exits, then continue distinct functional Canon package",
+  "open_questions": [
+    "Exact current-head Actions CI status unverified",
+    "Live mid-turn config race resolved for four operator settings; broader policy switches not audited"
+  ]
+}
