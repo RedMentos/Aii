@@ -75,6 +75,14 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
+          for item in NEW REGRESSIONS COMPILE PRIVACY; do
+            echo "RUN600 ${item} exit: $(cat "$RUNNER_TEMP/CHAT_${item}_EXIT.txt")"
+            if [ "$(cat "$RUNNER_TEMP/CHAT_${item}_EXIT.txt")" != 0 ]; then
+              tail -n 120 "$RUNNER_TEMP/CHAT_${item}_RAW.log"
+            else
+              grep -E 'Ran [0-9]+ tests|^OK|CLEAN' "$RUNNER_TEMP/CHAT_${item}_RAW.log" || true
+            fi
+          done
           test "$(cat "$RUNNER_TEMP/CHAT_NEW_EXIT.txt")" = 0
           test "$(cat "$RUNNER_TEMP/CHAT_REGRESSIONS_EXIT.txt")" = 0
           test "$(cat "$RUNNER_TEMP/CHAT_COMPILE_EXIT.txt")" = 0
