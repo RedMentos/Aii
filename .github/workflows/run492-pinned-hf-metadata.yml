@@ -1,0 +1,94 @@
+name: V13 Run492 pinned HF model metadata preflight
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run492-pinned-hf-metadata.yml'
+      - 'v13/code/scripts/run492_pinned_hf_metadata.py'
+      - 'v13/code/tests/test_run492_pinned_hf_metadata.py'
+permissions:
+  contents: read
+jobs:
+  metadata:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run492-pinned-hf-model-metadata-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '0'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin preregistered source and public metadata contract
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run492-hf-metadata/PREREG.md)" = '998d396a4c9d61abc94028f7b553000614cb0b1f'
+          test "$(git hash-object v13/code/scripts/run492_pinned_hf_metadata.py)" = 'e387b2cc77392552463fb8d0a7c6b5610bf2fa85'
+          test "$(git hash-object v13/code/tests/test_run492_pinned_hf_metadata.py)" = '0d82be0d771066a546434316d257707a62b8228c'
+      - name: No-network adversarial metadata and negative-gate tests
+        working-directory: v13/code
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -p 'test_run492_pinned_hf_metadata.py' -v > "$RUNNER_TEMP/RUN492_UNIT_RAW.log" 2>&1
+          python3 -m py_compile scripts/run492_pinned_hf_metadata.py
+      - name: Live primary-source pinned Hugging Face metadata only
+        id: live
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/run492_pinned_hf_metadata.py --output "$RUNNER_TEMP/RUN492_METADATA.json" > "$RUNNER_TEMP/RUN492_LIVE_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN492_ASSERT_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN492_METADATA.json').read_text())
+          assert d['status']=='PINNED_PUBLIC_MODEL_METADATA_VERIFIED'
+          assert set(d['models'])=={'B1_DETAIL','B2_GIST','C3_LANGUAGE'}
+          assert d['model_bytes_downloaded']==0 and d['native_executed'] is False
+          assert d['runner_verified'] is False and d['license_accepted_by_user'] is None
+          assert d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['b3_l1']=='FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          print('RUN492_PINNED_PUBLIC_MODEL_LFS_METADATA_MATCH_NO_MODEL_BYTES')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN492_LIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN492_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN492_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw metadata evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN492_*' ! -name RUN492_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN492_SHA256SUMS.txt
+      - name: Preserve metadata evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run492-pinned-hf-metadata-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN492_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce metadata and privacy without model downloads
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN492_LIVE_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN492_LIVE_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN492_PRIVACY_EXIT.txt")" = '0'
