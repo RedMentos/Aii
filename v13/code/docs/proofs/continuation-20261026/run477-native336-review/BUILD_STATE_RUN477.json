@@ -75,7 +75,20 @@
       "fixture": "Cypress",
       "field": "B.days"
     },
-    "limitations": "Correlated within-arm/fixture scores, six fused rows with no parsed field checks; no causal inference or final gate."
+    "limitations": "Correlated within-arm/fixture scores, six fused rows with no parsed field checks; no causal inference or final gate.",
+    "offer_quote_diagnostic": {
+      "method": "Literal markers in original b1_only/b2_only source offers across eight arms x six fixtures; does not assess semantic correctness or replace registered scorer.",
+      "b2_offer_rows": 48,
+      "b2_quotes_with_any_explicit_budget_deadline_or_local_rule": 11,
+      "b2_quotes_with_all_three_rule_types": 0,
+      "b2_quotes_with_budget": 8,
+      "b2_quotes_with_deadline": 2,
+      "b2_quotes_with_local_only": 3,
+      "b2_offers_with_only_project_title_or_kickoff_memo_phrases": 30,
+      "b1_offer_rows": 48,
+      "b1_quotes_with_both_option_A_and_B": 43,
+      "interpretation": "Potential B2 evidence-selection/quote grounding bottleneck: requested prior rules rarely appear in source quotes, while B1 options often do. Investigate on a new registered source-disjoint cohort; no retroactive tuning."
+    }
   },
   "negative_gates": {
     "canonical_gate_pass": false,
@@ -94,7 +107,8 @@
   "open_questions": [
     "Finish exact frozen S_s22 native Stage9 under separate serialized owner.",
     "Run original full 378-row preregistered paired utility and within-arm complementarity analysis; do not promote STEP2 from partial descriptive data.",
-    "Investigate why B2 contributes only one unique correct field and why JEF fusion loses B1-correct fields using a NEW preregistered source-disjoint cohort, not retroactive tuning."
+    "Investigate why B2 contributes only one unique correct field and why JEF fusion loses B1-correct fields using a NEW preregistered source-disjoint cohort, not retroactive tuning.",
+    "Check B2_GIST quote selection and source-view routing: only 11/48 native336 B2-only offers quote any explicit rule and 0/48 all three, versus B1 both options in 43/48; literal markers only."
   ],
   "exact_next_command": "After Run475 native Stage9 owner releases and publishes verified 378 safe artifact, independently run Run468 structural verifier then Run469/470 paired utility; preserve failed attempts and all gates."
 }
