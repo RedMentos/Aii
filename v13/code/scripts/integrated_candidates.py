@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'b2_quote_slots')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'b2_quote_slots', 'b2_quote_choices')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -334,6 +334,23 @@ def b2_quote_slots(text):
     return t
 
 
+def b2_quote_choices(text):
+    """2026-10-26 WP-Z2i: cfg b2_quote_choices all|earlier|earlier_newest (all = previous behaviour), pointer only.
+    WP-Z2h: B2 picked mostly by position (about half of all ids were 1-3, the current task sentences C3 gets anyway;
+    9/178 picks from the revision note). earlier lists only earlier source excerpts, earlier_newest also newest first."""
+    if "b2_quote_choices" in text:
+        raise ValueError('Integrated anchor changed: b2_quote_choices already applied')
+    t = _replace(text, "        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2\n",
+                 "        slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2\n"
+                 "        order=self.r.cfg.get('b2_quote_choices','all') if choices and len(choice_sources)>1 else 'all'\n"
+                 "        if order!='all':  # WP-Z2i: the current source reaches the answer component anyway\n"
+                 "            idx=list(range(1,len(choice_sources)))[::-1 if order=='earlier_newest' else 1]\n"
+                 "            choices=[(si,a,b) for si in idx for a,b in sentence_spans(choice_sources[si])][:24] or choices\n")
+    t = _replace(t, "quote_choices are numbered exact sentences of the current source and the earlier source excerpts.",
+                 "quote_choices are numbered exact sentences of '+({'all':'the current source and the earlier source excerpts','earlier':'the earlier source excerpts (the current source reaches the answer component anyway)','earlier_newest':'the earlier source excerpts, newest first (the current source reaches the answer component anyway)'}[order])+'.")
+    return t
+
+
 def _later(sources):
     return b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))
 
@@ -384,7 +401,7 @@ def rebase(texts, root=ROOT):
     out = _chain(full)
     out = {k: (out[k] if k in NAMES else v) for k, v in texts.items()}
     if 'v13/cognition.py' in out:  # cognition.py is bound exactly by source_handoff_candidate, not by NAMES
-        out['v13/cognition.py'] = b2_quote_slots(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py'])))))
+        out['v13/cognition.py'] = b2_quote_choices(b2_quote_slots(b2_quote_select(b1_recent(quote_context(b2_offer(out['v13/cognition.py']))))))
     return out
 
 

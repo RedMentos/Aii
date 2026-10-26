@@ -299,9 +299,13 @@ class Cognition:
         select=self.r.cfg.get('b2_quote_select','off') if role=='B2_GIST' and policy=='B2_GIST' else 'off'
         choice_sources=[text]+[x['native_context']['exact_source_excerpt'] for x in context];choices=quote_choices(choice_sources) if select=='pointer' else []
         slots=int(self.r.cfg.get('b2_quote_slots',2)) if choices else 2
+        order=self.r.cfg.get('b2_quote_choices','all') if choices and len(choice_sources)>1 else 'all'
+        if order!='all':  # WP-Z2i: the current source reaches the answer component anyway
+            idx=list(range(1,len(choice_sources)))[::-1 if order=='earlier_newest' else 1]
+            choices=[(si,a,b) for si in idx for a,b in sentence_spans(choice_sources[si])][:24] or choices
         if choices:  # WP-Z2c: select exact sentences by number instead of copying them
             query['quote_choices']=[{'id':n+1,'text':choice_sources[si][a:b]} for n,(si,a,b) in enumerate(choices)]
-            instructions+=' quote_choices are numbered exact sentences of the current source and the earlier source excerpts. quotes are the ids of at most '+('two' if slots==2 else str(slots))+' choices that carry the source rules your summary needs; their exact text is copied for you.'
+            instructions+=' quote_choices are numbered exact sentences of '+({'all':'the current source and the earlier source excerpts','earlier':'the earlier source excerpts (the current source reaches the answer component anyway)','earlier_newest':'the earlier source excerpts, newest first (the current source reaches the answer component anyway)'}[order])+'. quotes are the ids of at most '+('two' if slots==2 else str(slots))+' choices that carry the source rules your summary needs; their exact text is copied for you.'
         if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
             query['recent_source']=[x['native_context'] for x in context]
             instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'

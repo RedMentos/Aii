@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2h kein Gewinn → WP-Z2i läuft
+
+Z2h: vier statt zwei Zeiger-Plätze ändern nichts (`Z2H_SLOTS_NO_GAIN`), B2 wählt nach Position (meist die Sätze der aktuellen Aufgabe). Wächter zweimal bestätigt. Z2i misst eine Auswahlliste ohne aktuelle Aufgabe (`b2_quote_choices`). Schalter live Standard/aus. Befund `docs/proofs/continuation-20261026/step2-z2h-slots/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2g — Aktualitäts-Wächter bestätigt
 
 `eligibility.decide/tool(..., history=...)` (leer = aus). Frische Episoden, CQ/CQP, Seeds 26–28: `Z2G_GUARD_CONFIRMED`, falsche Festlegungen 24 → 0, exakte 8 → 8. Aber fast alles UNKNOWN: B2 liefert mit zwei Zeiger-Plätzen selten alle aktuellen Regeln. Nächstes: WP-Z2h (mehr Zeiger-Plätze, Wächter an). Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2g-recency/BEFUND.md`.

@@ -1,0 +1,304 @@
+{
+  "gate": {
+    "status": "Z2H_SLOTS_NO_GAIN",
+    "structural": true,
+    "consistent": true,
+    "slots_used": true,
+    "validity": {
+      "kickoff_in_context_share": {
+        "P2": 1.0,
+        "P4": 1.0
+      },
+      "required": 0.9
+    },
+    "wrong_guard_on": {
+      "P2": 0,
+      "P4": 0
+    },
+    "b2_rule_rate": {
+      "P2": 0.23333333333333334,
+      "P4": 0.275
+    },
+    "rule_rate_minus_control": {
+      "mean": 0.041666666666666664,
+      "ci95": [
+        -0.08333333333333334,
+        0.15833333333333335
+      ],
+      "episodes": 10,
+      "seeds": 1
+    },
+    "both_exact_guarded_exact": {
+      "P2": 5,
+      "P4": 5
+    },
+    "both_exact_minus_control": {
+      "mean": 1.1102230246251566e-17,
+      "ci95": [
+        -0.13333333333333333,
+        0.16666666666666669
+      ],
+      "episodes": 10,
+      "seeds": 1
+    },
+    "all_rows": {
+      "P2": {
+        "off": {
+          "exact": 11,
+          "wrong": 18,
+          "unknown": 181,
+          "rows": 210
+        },
+        "on": {
+          "exact": 11,
+          "wrong": 0,
+          "unknown": 199,
+          "rows": 210
+        }
+      },
+      "P4": {
+        "off": {
+          "exact": 12,
+          "wrong": 15,
+          "unknown": 183,
+          "rows": 210
+        },
+        "on": {
+          "exact": 12,
+          "wrong": 0,
+          "unknown": 198,
+          "rows": 210
+        }
+      }
+    },
+    "by_type": {
+      "P2": {
+        "LONG": {
+          "off": {
+            "exact": 7,
+            "wrong": 0,
+            "unknown": 56,
+            "rows": 63
+          },
+          "on": {
+            "exact": 7,
+            "wrong": 0,
+            "unknown": 56,
+            "rows": 63
+          }
+        },
+        "REVISED": {
+          "off": {
+            "exact": 0,
+            "wrong": 9,
+            "unknown": 75,
+            "rows": 84
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 84,
+            "rows": 84
+          }
+        },
+        "TWICE": {
+          "off": {
+            "exact": 0,
+            "wrong": 9,
+            "unknown": 12,
+            "rows": 21
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 21,
+            "rows": 21
+          }
+        },
+        "CONFIRM": {
+          "off": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 38,
+            "rows": 42
+          },
+          "on": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 38,
+            "rows": 42
+          }
+        }
+      },
+      "P4": {
+        "LONG": {
+          "off": {
+            "exact": 8,
+            "wrong": 0,
+            "unknown": 55,
+            "rows": 63
+          },
+          "on": {
+            "exact": 8,
+            "wrong": 0,
+            "unknown": 55,
+            "rows": 63
+          }
+        },
+        "REVISED": {
+          "off": {
+            "exact": 0,
+            "wrong": 11,
+            "unknown": 73,
+            "rows": 84
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 84,
+            "rows": 84
+          }
+        },
+        "TWICE": {
+          "off": {
+            "exact": 0,
+            "wrong": 4,
+            "unknown": 17,
+            "rows": 21
+          },
+          "on": {
+            "exact": 0,
+            "wrong": 0,
+            "unknown": 21,
+            "rows": 21
+          }
+        },
+        "CONFIRM": {
+          "off": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 38,
+            "rows": 42
+          },
+          "on": {
+            "exact": 4,
+            "wrong": 0,
+            "unknown": 38,
+            "rows": 42
+          }
+        }
+      }
+    },
+    "picked_mean": {
+      "P2": 1.6866666666666668,
+      "P4": 2.3466666666666667
+    },
+    "superseded_quoted_rows": {
+      "P2": 11,
+      "P4": 21
+    },
+    "b2_prompt_tokens_mean": {
+      "P2": 865.94,
+      "P4": 865.9866666666667
+    },
+    "utility": {
+      "P2": {
+        "b1_only": 0.4888888888888889,
+        "b2_only": 0.12777777777777777,
+        "both_exact": 0.5833333333333334
+      },
+      "P4": {
+        "b1_only": 0.43333333333333335,
+        "b2_only": 0.125,
+        "both_exact": 0.5722222222222223
+      }
+    },
+    "canonical_gate_pass": false
+  },
+  "runs": {
+    "P2_s29": {
+      "on": {
+        "exact": 1,
+        "wrong": 0,
+        "unknown": 69,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 1.76,
+        "max": 2
+      },
+      "b2_rule_rate": 0.2
+    },
+    "P2_s30": {
+      "on": {
+        "exact": 5,
+        "wrong": 0,
+        "unknown": 65,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 1.62,
+        "max": 2
+      },
+      "b2_rule_rate": 0.25
+    },
+    "P2_s31": {
+      "on": {
+        "exact": 5,
+        "wrong": 0,
+        "unknown": 65,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 1.68,
+        "max": 2
+      },
+      "b2_rule_rate": 0.25
+    },
+    "P4_s29": {
+      "on": {
+        "exact": 5,
+        "wrong": 0,
+        "unknown": 65,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 2.14,
+        "max": 4
+      },
+      "b2_rule_rate": 0.325
+    },
+    "P4_s30": {
+      "on": {
+        "exact": 3,
+        "wrong": 0,
+        "unknown": 67,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 2.36,
+        "max": 4
+      },
+      "b2_rule_rate": 0.2
+    },
+    "P4_s31": {
+      "on": {
+        "exact": 4,
+        "wrong": 0,
+        "unknown": 66,
+        "rows": 70
+      },
+      "picked": {
+        "offers": 50,
+        "mean": 2.54,
+        "max": 4
+      },
+      "b2_rule_rate": 0.3
+    }
+  }
+}

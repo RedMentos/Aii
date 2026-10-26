@@ -35,20 +35,21 @@ class Anchor(unittest.TestCase):
         self.assertEqual(text([TASK,RULE],c[3]),'Project Kestrel kickoff notes.');self.assertEqual(len(quote_choices([RULE]*10)),24)
 
 class OfferPath(unittest.TestCase):
-    def offer(self,r,mode,reply,slots=None):
+    def offer(self,r,mode,reply,slots=None,choices=None):
         r.cfg['b2_quote_select']=mode;r.cfg['offer_quote_context_chars']=200;seen={}
         if slots:r.cfg['b2_quote_slots']=slots
+        if choices:r.cfg['b2_quote_choices']=choices
         def generate(messages,cancel,deadline,tokens,schema,*a,**k):
             seen['query']=json.loads(messages[1]['content']);seen['schema']=schema;seen['system']=messages[0]['content'];return iter([json.dumps(reply)])
         r.pool.get=Mock(return_value=SimpleNamespace(role='B2_GIST',last_metrics={},generate=generate))
         e=r.store.event(r.session,TASK+' '+RULE);p=r.cognition.offer('B2_GIST',e,0,time.monotonic()+30)
         seen['analyst']=r.cognition.analyst_context([p],e,0)  # the live consumer path must accept the widened exact spans
         return p,[r.store.read_source(x) for x in p['evidence_refs']],seen
-    def run_mode(self,mode,reply,slots=None):
+    def run_mode(self,mode,reply,slots=None,choices=None):
         from v13.runtime import Runtime
         with tempfile.TemporaryDirectory() as d:
             r=Runtime(Path(d))
-            try:return self.offer(r,mode,reply,slots)
+            try:return self.offer(r,mode,reply,slots,choices)
             finally:r.close()
     def test_off_anchor_pointer(self):
         para={'summary':'s','quotes':['Project Kestrel has a budget of 100 euros'],'uncertainty':'u','needs_reentry':False}
@@ -75,7 +76,11 @@ class OfferPath(unittest.TestCase):
         self.assertTrue(all(x in RULE for x in p['offer']['quotes']));self.assertEqual(p['rejected_quotes'],0)
         p,ev,seen=self.run_mode('off',{'summary':'s','quotes':['Budget 100 euros.'],'uncertainty':'u','needs_reentry':False},slots=4)
         self.assertEqual(seen['schema']['properties']['quotes']['maxItems'],2)
+        p,ev,seen=self.run_mode('pointer',reply|{'quotes':[5]},choices='earlier')  # no earlier source -> the previous list and prompt
+        self.assertIn('exact sentences of the current source and the earlier source excerpts.',seen['system']);self.assertEqual(seen['query']['quote_choices'][4]['text'],'Budget 100 euros.')
         from v13.config import validate,DEFAULTS
+        for ok in ('all','earlier','earlier_newest'):validate(DEFAULTS|{'b2_quote_choices':ok})
+        with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_choices':'newest'})
         for bad in (1,5):
             with self.assertRaises(ValueError):validate(DEFAULTS|{'b2_quote_slots':bad})
     def test_b1_is_never_touched(self):
@@ -100,6 +105,8 @@ class OfferPath(unittest.TestCase):
         with self.assertRaises(ValueError):ic.b2_quote_select(live)
         self.assertIn('b2_quote_select',ic.INTEGRATED);self.assertIn('b2_quote_slots',ic.INTEGRATED)
         with self.assertRaises(ValueError):ic.b2_quote_slots(live)
+        self.assertIn('b2_quote_choices',ic.INTEGRATED)
+        with self.assertRaises(ValueError):ic.b2_quote_choices(live)
 
 class Gate(unittest.TestCase):
     def runs(self,rate,wrong=0,picked=5):
