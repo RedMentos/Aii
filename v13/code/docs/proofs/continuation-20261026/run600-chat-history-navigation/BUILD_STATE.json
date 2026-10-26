@@ -1,0 +1,68 @@
+{
+  "schema": "V13_RUN600_CHAT_NAVIGATION_VERIFIED_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run600-chat-history-navigation-20261026",
+  "base_branch": "codex/automation11-run599-current-phone-source-zip-20261026",
+  "base_sha": "1b04791e0bfb30c4fec4a76e5b953dd3f41da2d6",
+  "verified_code_head": "8ba60fe6289ea83c0a2ebe52d1f8529f4a242fe1",
+  "pr": 595,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/595",
+  "prereg_commit": "1221589f8b75aae5c153d33635b943c2e26f5f57",
+  "observed_ci": {
+    "run": 40396799951,
+    "job": 121831869854,
+    "conclusion": "success",
+    "new_tests": "8/8 PASS",
+    "regressions": "17/17 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12687226260,
+    "raw_artifact_sha256": "71f8efbfe69f15f0712fff82db0430032a8dc3c634907ac4dab13fe32dd2af80",
+    "raw_manifest_entries": 10,
+    "raw_manifest_mismatches": 0
+  },
+  "source_sha256": {
+    "v13/code/v13/operator.py": "64262a92979660da0918f5cdf336562845e3ea8079c217d218757fb43b1ecd9e",
+    "v13/code/v13/chat_export.py": "51071a0afecb1e127fc5e766dfdfa46ccee0fa4932ee46dedd4ff771a181eea2",
+    "v13/code/tests/test_run600_chat_history_navigation.py": "d3757c722be3db19de170f66d2e6e8a64834bacf18267b9bbebb282122197328"
+  },
+  "changes": [
+    "Message-id cursor paging across old chat matches; literal LIKE escaping and strict SQLite int64 bounds",
+    "Historical named-session JSON/Markdown export without active session or last_session mutation",
+    "Operator help and German command guide updated"
+  ],
+  "failed_attempts": [
+    {
+      "run": 40396529901,
+      "head": "bdf84baaf94b83d093390b0ceb09ac2ad6f41f77",
+      "reason": "Test-only Python percent-formatting error in synthetic wildcard regression; runtime unaffected",
+      "raw_artifact_id": 12686079573,
+      "raw_sha256": "62b0be17fec3692cb5355a9aba9c493c8d9e736899da311d3affefb05b6c8951"
+    }
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_model_inference": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "fullsuite": "Run596 RED 4 FAIL/65 ERROR due frozen source chain mismatch"
+  },
+  "open_questions": [
+    "Build exact-current phone source ZIP including Run600 UI changes; verify independent complete byte parity and extracted Operator smoke",
+    "Independent review and merge stacked PR588–595 plus Claude PR38",
+    "Native/Redmi phone tests, actual Body-JEPA and STEP2/B3 utility remain unproven"
+  ],
+  "next_command": "From exact Run600 verified head 8ba60fe6, preregister current phone source ZIP using pinned package_source.py --phone-install and Run268 independent byte parity verifier; include extracted Run600 operator tests and preserve all negative gates.",
+  "prerequisites": [
+    "No anyone-writable Drive",
+    "No force push",
+    "Do not modify frozen cohort/model/source hashes",
+    "No claim of Redmi or native execution"
+  ]
+}
