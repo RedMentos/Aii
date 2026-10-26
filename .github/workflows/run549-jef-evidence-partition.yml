@@ -8,6 +8,7 @@ on:
       - 'v13/code/v13/agi/maturity.py'
       - 'v13/code/tests/test_agi_live.py'
       - 'v13/code/tests/test_run549_quality_fact_partition.py'
+      - 'v13/code/tests/test_run546_metacog_labels.py'
       - 'v13/code/docs/proofs/continuation-20261026/run549-jef-evidence-partition/**'
 permissions:
   contents: read
@@ -38,6 +39,7 @@ jobs:
           test "$(git hash-object v13/code/v13/agi/maturity.py)" = 'd0bfeb47ff9e2d32bd6dd0e48784ee538c86bea2'
           test "$(git hash-object v13/code/tests/test_agi_live.py)" = '308a22aab99985dcf9e8d80ac1e77c309797f684'
           test "$(git hash-object v13/code/tests/test_run549_quality_fact_partition.py)" = '3ee6a127decbf5a2c5374abe9c6cf8c4f996b343'
+          test "$(git hash-object v13/code/tests/test_run546_metacog_labels.py)" = '8305b35c30fd8cef29958e0e8b16f23db253bdbb'
           test "$(git hash-object v13/code/v13/agi/metacog.py)" = 'd20542e2ecc7cfbdedbed629afc80fc8bab1f8f0'
           test "$(git hash-object v13/code/scripts/integrated_candidates.py)" = '9ba7ea2eca522304b05a347ac749f0dff95c5236'
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
