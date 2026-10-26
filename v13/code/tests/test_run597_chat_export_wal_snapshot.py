@@ -90,7 +90,8 @@ class ChatExportWalSnapshot(unittest.TestCase):
     def test_missing_session_does_not_create_partial_export(self):
         with self.assertRaisesRegex(ValueError, "Chat-ID"):
             CE.export_chat(self.r.store, "chat_missing", page_size=2)
-        self.assertFalse((self.home / "exports").exists())
+        self.assertFalse((self.home / "exports" / "chat_missing.json").exists())
+        self.assertEqual(list((self.home / "exports").glob(".pending-chat-*")), [])
 
 
 if __name__ == "__main__":
