@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN510_QUOTE_METRIC_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run510-b2-quote-metric-source-20261026",
+  "base_branch": "codex/run509-b2-rule-quote-prereg-20261026",
+  "base_sha": "01aca91015409c9178b05d02a10438bc2a776747",
+  "status": "SOURCE_CI_GREEN_SYNTHETIC_ONLY_PRIVATE_BACKUP_VERIFIED",
+  "scope": {
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "synthetic_rows_for_test": 60,
+    "native_rows_run510": 0,
+    "primary_paired_rows": 24,
+    "threshold_gain_rows": 6
+  },
+  "source": {
+    "prereg_blob": "723238b5bc72996a261649419423c05dec91958e",
+    "script_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6",
+    "test_blob": "a57a8da6121a2620c62d2866da16a766eae3a7c6",
+    "run509_blob": "ec8860d2333bd3c4a16caccb9537073a310f32da"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Source-only strict quote metric staged; native provenance deliberately not claimed",
+    "No model calls or changes to frozen Run509/Run491",
+    "Run507 owns separate active native A_s31 job",
+    "Run510 source-only Actions 40310391735 GREEN 11 tests, privacy CLEAN",
+    "Downloaded artifact and independently recomputed 9 SHA256 entries; synthetic 60-row metric output explicitly not native",
+    "Private Library source ZIP backup uploaded"
+  ],
+  "blockers": [
+    "Run509 B2 offer native collector not yet implemented",
+    "Run507 native active",
+    "Redmi unavailable"
+  ],
+  "next_command": "Inspect Run507 native Actions 40309409260 and audit actual raw/safe bytes; then implement source-verified B2 native offer collector in separate prereg with 60 Run509 observations, bounded per-stage resource owner, and Run510 metric. Do not treat synthetic 24/24 as empirical result.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "actions_run": 40310391735,
+    "conclusion": "success",
+    "tests_passed": 11,
+    "privacy": "CLEAN",
+    "artifact_id": 12645115506,
+    "artifact_zip_sha256": "5d6ec5c0824c7e428fd3378f5b403aa3e0dd99b8e5beddb3027b093c4bcddb08",
+    "raw_sha_entries": 9,
+    "synthetic_observations": 60,
+    "synthetic_quote_records": 72,
+    "synthetic_focus_success": 24,
+    "synthetic_baseline_success": 0,
+    "native_evidence_verified": false,
+    "private_library_backup": "/V13-Checkpoints/2026-10-26/Run510/run510-synthetic-source-56e31fec-sha-closed.zip",
+    "private_library_file_id": "libfile_f260f6d72e80819181624bd23f7e474e"
+  }
+}
