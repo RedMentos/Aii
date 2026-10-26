@@ -152,8 +152,10 @@ class Operator:
                               'historical_replay':False,'learning_authorized':False})
             if action==['poll']:
                 if port is None:raise ValueError('Self/World Beobachtung erst mit :self world start starten')
+                # Validate persisted Self state before consuming the in-memory
+                # scan baseline: a corrupt state must not silently lose changes.
+                opened=list(self_controller(r)._load()[0]['open'].values())
                 observations=port.poll()
-                opened=list(self_controller(r)._load()[0]['open'].values()) if observations else []
                 recent=[]
                 for obs in observations[-8:]:
                     result=attribute(opened,obs)
