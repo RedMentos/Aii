@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 from scripts import run582_stage_source_bundle as R
 
 STAGES = ("A_s33_p02", "A_s33_p03", "A_s33_p04")
@@ -100,6 +101,24 @@ class Run582Bundle(unittest.TestCase):
             dest.mkdir()
             with self.assertRaisesRegex(ValueError, "REFUSE_EXISTING_BUNDLE"):
                 R.bundle(root, dest)
+
+    def test_intermediate_stage_directory_symlink_refused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = fixture(Path(temp) / "work")
+            stage = root / "stage_A_s33_p02"
+            moved = Path(temp) / "external_stage"
+            stage.rename(moved)
+            stage.symlink_to(moved, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "UNSAFE_STAGE_PARENT"):
+                R.collect(root)
+
+    def test_inspector_refuses_zip_traversal(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / "unsafe.zip"
+            with zipfile.ZipFile(archive, "w") as z:
+                z.writestr("../RUN558_BATCH_PLAN.json", "{}")
+            with self.assertRaisesRegex(ValueError, "SAFE_ZIP_INVALID"):
+                R.inspect_safe_zip(archive)
 
     def test_stage_name_must_match_seed(self):
         with self.assertRaisesRegex(ValueError, "STAGE_ID_SEED_MISMATCH"):
