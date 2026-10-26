@@ -103,7 +103,7 @@ def _validate_native_tree(root, files):
     installed_log = files.get("RUN401_INSTALLED_RAW.log", b"")
     require(type(installed_log) is bytes and len(installed_log) <= 1_000_000,
             "STAGE1_RUNNER_LOG_MISSING_OR_OVERSIZED")
-    observed = re.findall(rb"(?m)^RUNNER_VERIFIED ([0-9a-f]{64})\\s*$", installed_log)
+    observed = re.findall(rb"(?m)^RUNNER_VERIFIED ([0-9a-f]{64})$", installed_log)
     require(len(observed) == 1 and observed[0].decode() == RUN401_EXECUTABLE_SHA256,
             "STAGE1_RUNNER_LOG_IDENTITY_MISMATCH")
     actual = resume.validate_completed(attempt, "O", 20, r394.FIXTURES,
