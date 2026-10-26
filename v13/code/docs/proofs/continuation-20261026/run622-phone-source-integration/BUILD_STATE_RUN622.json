@@ -7,7 +7,7 @@
   "owner": "GPT automation11 Run622 workflow/proof only",
   "scope": "REVIEW_BRANCH_SOURCE_ONLY_PHONE_ZIP_INTEGRATION",
   "prereg_commit": "b19dc8eebccd1ea24d5559fdacdb41317168ad11",
-  "workflow_commit": "e4d93aec030a2d0ad181fc0556c715ad5c23bd4a",
+  "workflow_commit": "e7046b5ef9ad350bc9c40febbfee658fff3fc539",
   "ci_status": "PENDING_UNVERIFIED",
   "local_proof": {
     "source_base": "Run601 phone source fdcbefc129b28b085fcfa84a4bc3ee44cce74b62 with exact Run619/620/621 overlays",
@@ -44,5 +44,7 @@
     "library_path": "/V13-Checkpoints/2026-10-26/Run622/run622-local-evidence-closed.zip",
     "sha256": "d2b7165644b497308d4494e7e53835f108b81e25d9a960dc82855488a573eae3",
     "readback_verified": true
-  }
+  },
+  "workflow_blob": "1b93134d4aa3e6024e2fcd8c945af1ef8b50a275",
+  "workflow_pr_event_privacy_target": "HEAD_EXACT_CHECKED_OUT"
 }
