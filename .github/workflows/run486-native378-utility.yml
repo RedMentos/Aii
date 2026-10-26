@@ -1,0 +1,224 @@
+name: V13 Run486 read-only actual native378 STEP2 utility and complementarity
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run486-native378-utility.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pinned-utility:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run486-native378-utility-readonly-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin frozen analyzers and original actual Linux-native artifact identity
+        id: pin
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/scripts/run469_native378_utility.py)" = 'b11819e5dfe6a6022177923c2f151ce9f53f01b8'
+          test "$(git hash-object v13/code/scripts/run470_step2_complementarity.py)" = 'bc49f6aab3455dc4656c98ef8df5b6a038631b48'
+          test "$(git hash-object v13/code/scripts/run468_verify_native378.py)" = 'eedc307a6e6f3c36fea43894dcfa41e983fa4c74'
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = 'fae7aed612108a554d8566b2917ebf31022df423'
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = 'f1946054135cb6fdf48c06477308f518e2e62ad9'
+          gh api repos/RedMentos/Aii/actions/runs/40281793150 --jq '{conclusion,head_sha}' > "$RUNNER_TEMP/RUN486_NATIVE_SOURCE.json"
+          gh api repos/RedMentos/Aii/actions/artifacts/12633269066 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN486_SAFE_META.json"
+          gh api repos/RedMentos/Aii/actions/artifacts/12633398520 --jq '{id,digest,expired}' > "$RUNNER_TEMP/RUN486_RAW_META.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          get=lambda n:json.loads((root/n).read_text())
+          assert get('RUN486_NATIVE_SOURCE.json')=={'conclusion':'success','head_sha':'55d7f672aafec8b92ce0878253f88f9681d8bf22'}
+          assert get('RUN486_SAFE_META.json')=={'id':12633269066,'digest':'sha256:a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe','expired':False}
+          assert get('RUN486_RAW_META.json')=={'id':12633398520,'digest':'sha256:24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf','expired':False}
+          print('RUN486_ORIGINAL_NATIVE378_ARTIFACT_IDENTITY_VERIFIED')
+          PY
+          sha256sum v13/code/scripts/run469_native378_utility.py v13/code/scripts/run470_step2_complementarity.py > "$RUNNER_TEMP/RUN486_SOURCE_SHA256.txt"
+      - name: Isolated dependencies and frozen analyzer regressions
+        id: deps
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run486venv"
+          timeout 240s "$RUNNER_TEMP/run486venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN486_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts:$PWD/tests" "$RUNNER_TEMP/run486venv/bin/python" -m unittest -v tests.test_run469_native378_utility tests.test_run469_native378_pinned_reads tests.test_run470_step2_complementarity tests.test_run470_pinned_replay tests.test_run468_verify_native378_adversarial > "$RUNNER_TEMP/RUN486_SOURCE_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN486_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Download and SHA-check original native378 raw and safe ZIPs
+        id: download
+        if: steps.deps.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12633269066/zip' -o "$RUNNER_TEMP/run486-safe378.zip"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe  $RUNNER_TEMP/run486-safe378.zip" | sha256sum -c - > "$RUNNER_TEMP/RUN486_SAFE_SHA.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            curl -fsSL --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12633398520/zip' -o "$RUNNER_TEMP/run486-raw378.zip"
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf  $RUNNER_TEMP/run486-raw378.zip" | sha256sum -c - > "$RUNNER_TEMP/RUN486_RAW_SHA.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN486_DOWNLOAD_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Safe extraction and original Stage9 report identity
+        id: extract
+        if: steps.download.outputs.rc == '0'
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN486_EXTRACT_RAW.log" 2>&1
+          import json,os,stat,zipfile
+          from pathlib import Path,PurePosixPath
+          root=Path(os.environ['RUNNER_TEMP'])
+          export=root/'run486-export';export.mkdir()
+          with zipfile.ZipFile(root/'run486-safe378.zip') as z:
+              entries=z.infolist()
+              assert len(entries)==len(set(i.filename for i in entries)) and len(entries)<1000
+              total=0
+              for i in entries:
+                  rel=PurePosixPath(i.filename)
+                  assert i.filename and not rel.is_absolute() and '..' not in rel.parts and '\\' not in i.filename
+                  mode=i.external_attr>>16
+                  assert stat.S_IFMT(mode) in (0,stat.S_IFREG,stat.S_IFDIR)
+                  assert i.file_size<=16_000_000
+                  total+=i.file_size;assert total<=256_000_000
+              z.extractall(export)
+          # GitHub upload-artifact omits empty directories. Recreate ONLY those
+          # explicitly listed by the SHA-pinned Run409 export manifest.
+          manifest=json.loads((export/'RUN409_EXPORT_MANIFEST.json').read_bytes())
+          assert manifest['schema']=='RUN409_SAFE_NATIVE_EXPORT_V1'
+          declared=manifest['directories']
+          assert type(declared) is list and len(declared)==len(set(declared)) and len(declared)<1000
+          assert set(manifest['copied'])=={i.filename for i in entries if not i.is_dir() and i.filename!='RUN409_EXPORT_MANIFEST.json'}
+          for name in declared:
+              assert type(name) is str and name
+              if name=='.':continue
+              rel=PurePosixPath(name)
+              assert not rel.is_absolute() and '..' not in rel.parts and '\\' not in name
+              dest=export.joinpath(*rel.parts)
+              assert not dest.is_symlink()
+              dest.mkdir(parents=True,exist_ok=True)
+          assert (export/'RUN409_EXPORT_MANIFEST.json').is_file()
+          with zipfile.ZipFile(root/'run486-raw378.zip') as z:
+              names=z.namelist()
+              assert len(names)==len(set(names)) and len(names)<100
+              assert 'RUN479_STAGE9_REPORT.json' in names
+              raw=z.read('RUN479_STAGE9_REPORT.json')
+          assert 0<len(raw)<2_000_000
+          d=json.loads(raw)
+          assert d['status']=='STAGE9_NATIVE_378_STRUCTURAL_NO_PROMOTION'
+          assert d['native_execution_performed'] is True and d['rows_verified']==378
+          assert d['errors']==[] and d['canonical_gate_pass'] is False and d['step2_exit']=='UTILITY_FAIL'
+          assert d['jepa_weight']==0 and d['redmi_measured'] is False
+          (root/'RUN486_ORIGINAL_STAGE9_REPORT.json').write_bytes(raw)
+          print('ORIGINAL_NATIVE378_STAGE9_REPORT_VERIFIED',len(entries),total)
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN486_EXTRACT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Read-only nine-receipt paired utility and within-arm complementarity
+        id: analyze
+        if: steps.extract.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run486venv/bin/python" scripts/run469_native378_utility.py --export "$RUNNER_TEMP/run486-export" --stage9-report "$RUNNER_TEMP/RUN486_ORIGINAL_STAGE9_REPORT.json" --output "$RUNNER_TEMP/RUN486_UTILITY.json" > "$RUNNER_TEMP/RUN486_UTILITY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run486venv/bin/python" scripts/run470_step2_complementarity.py --export "$RUNNER_TEMP/run486-export" --stage9-report "$RUNNER_TEMP/RUN486_ORIGINAL_STAGE9_REPORT.json" --output "$RUNNER_TEMP/RUN486_COMPLEMENTARITY.json" > "$RUNNER_TEMP/RUN486_COMPLEMENTARITY_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN486_SUMMARY_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          a=json.loads((root/'RUN486_UTILITY.json').read_text())
+          b=json.loads((root/'RUN486_COMPLEMENTARITY.json').read_text())
+          assert a['status']=='RUN469_NATIVE378_UTILITY_DESCRIPTIVE_NO_GATE_PROMOTION'
+          assert b['status']=='RUN470_FROZEN_COHORT_COMPLEMENTARITY_DIAGNOSTIC_ONLY'
+          assert a['rows_verified']==378 and b['rows']==378
+          assert a['canonical_gate_pass'] is False and b['canonical_gate_pass'] is False
+          assert a['step2_exit']==b['step2_exit']=='UTILITY_FAIL'
+          assert a['jepa_weight']==b['jepa_weight']==0
+          assert a['redmi_measured'] is False and b['redmi_measured'] is False
+          assert a['manifest_sha256']==b['manifest_sha256']
+          assert a['progress_sha256']==b['progress_sha256']
+          summary={'status':'RUN486_ACTUAL_LINUX_NATIVE378_UTILITY_DESCRIPTIVE_NO_GATE_PROMOTION',
+                   'rows':378,'arms':9,'seeds':[20,21,22],
+                   'arm_mean_utility':a['arm_mean_utility'],
+                   'within_arm_primary_minus_controls':b['within_arm_primary_minus_controls'],
+                   'between_arm_primary':b['between_arm_primary'],
+                   'exploratory_strict_dominance':b['exploratory_strict_dominance'],
+                   'manifest_sha256':a['manifest_sha256'],'progress_sha256':a['progress_sha256'],
+                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL',
+                   'b3_l1':'FAIL','body_jepa':'UNAVAILABLE','jepa_weight':0,
+                   'redmi_measured':False,
+                   'claim_limit':'Original Run394/397 exploratory cohort, not preregistered ten-episode STEP2 acceptance; descriptive native utility only.'}
+          (root/'RUN486_SUMMARY.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+          print(json.dumps({'status':summary['status'],'rows':378,'dominance':summary['exploratory_strict_dominance']},sort_keys=True))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN486_ANALYZE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Official public repository privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN486_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN486_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw evidence with SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN486_*' ! -name RUN486_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN486_SHA256SUMS.txt
+      - name: Preserve raw source and utility evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run486-native378-readonly-raw-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN486_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce original native and descriptive utility checks
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/RUN486_ANALYZE_EXIT.txt"
+          test "$(cat "$RUNNER_TEMP/RUN486_ANALYZE_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN486_PRIVACY_EXIT.txt")" = '0'

@@ -1,0 +1,128 @@
+{
+  "schema": "V13_RUN486_ACTUAL_NATIVE378_READONLY_UTILITY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run486-native378-utility-readonly-20261026",
+  "base_ref": "codex/run479-native-s22-20261026",
+  "base_sha": "55d7f672aafec8b92ce0878253f88f9681d8bf22",
+  "owner": "Run486 independent no-model utility analysis of original Run479 completed native378; no native/model owner",
+  "actual_original_native_evidence": {
+    "run_id": 40281793150,
+    "job_id": 121436496802,
+    "run_conclusion": "success",
+    "source_head_sha": "55d7f672aafec8b92ce0878253f88f9681d8bf22",
+    "safe_artifact_id": 12633269066,
+    "safe_artifact_sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+    "raw_artifact_id": 12633398520,
+    "raw_artifact_sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf",
+    "rows_structurally_verified": 378,
+    "arms_structurally_verified": 9,
+    "source_evidence_class": "actual Linux-native inference, NOT Redmi and NOT canonical STEP2 acceptance"
+  },
+  "changes": [
+    "One-shot source-only workflow downloads only original SHA-pinned Run479 safe no-model and raw evidence ZIPs, after GitHub artifact metadata and successful native run identity checks.",
+    "Validate archive members before extraction, original Stage9 report and unchanged negative gates.",
+    "Run original frozen Run468 verifier via Run469 then independently re-read SHA-pinned tool rows for Run470 within-arm and between-arm utility.",
+    "Preserve original and derived raw logs/hashes on failure; no models downloaded, no native rerun, no cohort/source/seed edits.",
+    "Follow-up only reconstructs manifest-declared empty directories after SHA-pinned ZIP extraction; never creates or changes measured file bytes. First RED preserved."
+  ],
+  "source_blobs": {
+    "v13/code/scripts/run394_step2_fresh.py": "fae7aed612108a554d8566b2917ebf31022df423",
+    "v13/code/scripts/run397_step2_resume.py": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74",
+    "v13/code/scripts/run469_native378_utility.py": "b11819e5dfe6a6022177923c2f151ce9f53f01b8",
+    "v13/code/scripts/run470_step2_complementarity.py": "bc49f6aab3455dc4656c98ef8df5b6a038631b48",
+    ".github/workflows/run486-native378-utility.yml": "0f7c13fafef7e9c16dc12bfdb9830b8ddf4e58b9"
+  },
+  "tests": {
+    "github_source_and_original_native_artifact_analysis": "SOURCE_CI_GREEN Run486 Actions 40284808262; actual original native378 SHA-pinned Run468/469/470 analysis completed; 38/38 analyzer source tests PASS; privacy CLEAN; no native rerun",
+    "expected": "Frozen Run468/469/470 source tests, actual nine-receipt read-only paired utility and complementarity, privacy scan, raw artifact",
+    "first_attempt_run_id": 40284529482,
+    "first_attempt_raw_artifact_id": 12633219653,
+    "first_attempt_raw_zip_sha256": "9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b",
+    "first_attempt_failure": "EXPORT_INVENTORY_MISMATCH: 64 manifest-declared empty directories absent from GitHub ZIP, 211/211 manifest-copied files present",
+    "green_run_id": 40284808262,
+    "green_raw_artifact_id": 12632384691,
+    "green_raw_zip_sha256": "8004a6027ade69f18ccb704b22631a3b4995c6f4c9db0bb1786ba1415b5e854e",
+    "first_green_run_id": 40284773270,
+    "first_green_raw_artifact_id": 12633323035,
+    "first_green_raw_zip_sha256": "6bcf24ca0e28e091c8105cec455552681a38b553d5998437277734832e765bb4",
+    "utility_status": "RUN469_NATIVE378_UTILITY_DESCRIPTIVE_NO_GATE_PROMOTION",
+    "complementarity_status": "RUN470_FROZEN_COHORT_COMPLEMENTARITY_DIAGNOSTIC_ONLY",
+    "results": {
+      "arm_mean_both_exact": {
+        "O": 0.5092592592592592,
+        "P": 0.5972222222222222,
+        "S": 0.4212962962962963
+      },
+      "arm_mean_b1_only": {
+        "O": 0.6805555555555556,
+        "P": 0.7037037037037037,
+        "S": 0.6203703703703703
+      },
+      "arm_mean_b2_only": {
+        "O": 0.09722222222222222,
+        "P": 0.09722222222222222,
+        "S": 0.08796296296296297
+      },
+      "paired_both_exact_pointer_minus_off": 0.08796296296296297,
+      "paired_both_exact_pointer_minus_shared": 0.17592592592592593,
+      "pointer_both_exact_minus_b1_only": -0.10648148148148148,
+      "pointer_both_exact_minus_same_policy_dual": -0.060185185185185196,
+      "strict_dominance": {
+        "O": false,
+        "P": false,
+        "S": false
+      },
+      "canonical_complementarity_proven": false
+    }
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "This 378-row exploratory Run394/397 cohort is not the original ten-episode scoped STEP2 acceptance; even favorable utility cannot promote STEP2.",
+    "Structural nine-receipt native GREEN does not imply actual B1/B2 complementarity or B3/Body-JEPA progress.",
+    "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available.",
+    "Actual native378 pointer both_exact utility improves over off (+.088) and shared-body (+.176), but is below B1-only and same-policy dual controls; exploratory strict dominance fails in all arms. Do not claim B1/B2 complementarity."
+  ],
+  "exact_next_command": "Independent review PR #484; use source-attested native378 descriptive results to design a new preregistered canonical ten-episode STEP2 acceptance with genuine B1/B2 complementarity and C3 controls. Do not rerun original nine native arms or promote gates.",
+  "private_backup": {
+    "provider": "ChatGPT private Library (not rejected anyone-writable Drive)",
+    "folder": "/V13-Checkpoints/2026-10-26/Run486",
+    "verified_files": [
+      {
+        "name": "RUN479_ORIGINAL_NATIVE378_SAFE_NO_MODEL.zip",
+        "sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN479_ORIGINAL_NATIVE378_RAW.zip",
+        "sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN486_GREEN_RAW_40284808262.zip",
+        "sha256": "8004a6027ade69f18ccb704b22631a3b4995c6f4c9db0bb1786ba1415b5e854e",
+        "verified_by": "re-materialized from Library and SHA256 rehashed"
+      },
+      {
+        "name": "RUN486_GREEN_RAW_40284773270.zip",
+        "sha256": "6bcf24ca0e28e091c8105cec455552681a38b553d5998437277734832e765bb4",
+        "verified_by": "GitHub source SHA and successful Library upload"
+      },
+      {
+        "name": "RUN486_FIRST_RED_40284529482.zip",
+        "sha256": "9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b",
+        "verified_by": "GitHub source SHA and successful Library upload"
+      }
+    ],
+    "anyone_writable_drive_used": false
+  }
+}
