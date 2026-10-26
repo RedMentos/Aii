@@ -1,0 +1,96 @@
+name: V13 Run532 local operator Age0d arithmetic shadow read-only view
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run532-age0d-shadow-operator.yml'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_run532_arithmetic_shadow_operator.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run532-age0d-shadow-operator/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run532-age0d-shadow-operator-view-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact local operator and Age0d source pins
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run532-age0d-shadow-operator/PREREG.md)" = 'dd0c27dda4aab895bb3e3ec734eed45ad28d5bcf'
+          test "$(git hash-object v13/code/v13/operator.py)" = '4cabe84e4808a4630498ccc5772992dbd56110ec'
+          test "$(git hash-object v13/code/tests/test_run532_arithmetic_shadow_operator.py)" = '5fdc2911ac6b04facb7a72be3d1bd96e0212e3f8'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          test "$(git hash-object v13/code/v13/agi/answer_arithmetic_shadow.py)" = '3cec2c4b6883e3f02f449cc74cf44d5584a6affb'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN532_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run532venv"
+          timeout 240s "$RUNNER_TEMP/run532venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN532_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN532_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run local-only command, Run517 and original selfmodel regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run532venv/bin/python" -m unittest -v tests.test_run532_arithmetic_shadow_operator tests.test_run517_age0d_arithmetic_shadow tests.test_selfmodel > "$RUNNER_TEMP/RUN532_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN532_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan on exact source-only diff
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN532_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN532_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN532_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN532_*' ! -name RUN532_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN532_SHA256SUMS.txt
+      - name: Preserve raw proof even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run532-age0d-shadow-operator-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN532_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact pins, tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN532_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN532_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN532_PRIVACY_EXIT.txt")" = 0

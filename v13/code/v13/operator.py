@@ -61,7 +61,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :regeln (deine Regeln + was ich ohne Nachfrage tun würde) / :regel <Text> (Verbot oder „frag vorher“ speichern) / :regel aus|verbot|fragen|nein <Nr>
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
-:self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
+:self [status|model|body|messages|arithmetic|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
 :download all|needle|language|body|gist|embedding / :import model <Rolle> <Pfad>
 :export model <Rolle> <Ziel> / :unload [Rolle] / :gc / :clear-logs
 :backup / :restore <Pfad> (zeigt Offline-Befehl)
@@ -118,6 +118,15 @@ class Operator:
         if cmd=='objectives':
             from .objectives import report as objective_report
             return dumps(objective_report(r.cfg))
+        if cmd=='self' and args==['arithmetic']:
+            # Local-operator-only, read-only view of the already persisted Age0d
+            # arithmetic SHADOW diagnostics. No new correction/delivery rights.
+            from .selfmodel import ARITH_SHADOW_KEY
+            ring,_=s.state(ARITH_SHADOW_KEY,[])
+            if not isinstance(ring,list):raise ValueError('Age0d shadow state invalid')
+            return dumps({'status':'SHADOW_ONLY','total':len(ring),'recent':ring[-8:],
+                          'user_notified':False,'learning_authorized':False,
+                          'age_reopen_authorized':False})
         if cmd=='self' and args:  # bare :self keeps the F3 self_state view below
             from .selfmodel import operator_command
             return operator_command(r,args)
