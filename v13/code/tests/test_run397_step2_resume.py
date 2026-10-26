@@ -143,7 +143,7 @@ class Run397ResumeTests(unittest.TestCase):
                 super().__init__(*args, **kwargs)
                 self.installed["gist"]["exact_revision"] = "unregistered-swap"
         fake = FakeNative(self.native)
-        with patch.object(resume, "ModelManager", SwappedModels), \\
+        with patch.object(resume, "ModelManager", SwappedModels), \
              patch.object(r394, "configure", return_value=fake):
             with self.assertRaisesRegex(ValueError, "INSTALLED_CATALOG_IDENTITY_MISMATCH"):
                 resume.run(self.work, self.installed, pilot=True, execute=True)
