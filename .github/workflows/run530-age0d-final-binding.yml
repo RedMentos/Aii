@@ -1,0 +1,100 @@
+name: V13 Run530 integrate reviewed Age0d FINAL-bound shadow into native B2 chain
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run530-age0d-final-binding.yml'
+      - 'v13/code/v13/selfmodel.py'
+      - 'v13/code/tests/test_run517_age0d_arithmetic_shadow.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run530-age0d-final-binding/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run530-age0d-final-binding-integration-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact reviewed Run521 source and frozen Run529 stage fixes
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run530-age0d-final-binding/PREREG.md)" = '816d5968e3765f1366ff606c5a93585cfdfcd621'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          test "$(git hash-object v13/code/tests/test_run517_age0d_arithmetic_shadow.py)" = '47a6468c03f2b3e65a3b960b7966ddfc7868871e'
+          test "$(git hash-object v13/code/v13/agi/answer_arithmetic_shadow.py)" = '3cec2c4b6883e3f02f449cc74cf44d5584a6affb'
+          test "$(git hash-object v13/code/tests/test_age0d_answer_arithmetic_run134.py)" = '7022699b8dc63622a910a7dd785cb2cf0188ac99'
+          test "$(git hash-object v13/code/tests/test_run184_age0d_strict_shadow.py)" = 'bfa82321da8b252f2eaa36c8fe251a2defb3ed50'
+          test "$(git hash-object v13/code/scripts/run403_full_postflight.py)" = '22b74f879850211759086e8e89f95a2334744443'
+          test "$(git hash-object v13/code/scripts/run404_stage2_resume.py)" = '50f53021387298385ed6ed58003a8dda82ae2d59'
+          test ! -e v13/code/v13/answer_audit.py
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN530_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run530venv"
+          timeout 240s "$RUNNER_TEMP/run530venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN530_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN530_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original Run521 Age0d FINAL shadow plus Run529 stage resume regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run530venv/bin/python" -m unittest -v tests.test_run517_age0d_arithmetic_shadow tests.test_age0d_answer_arithmetic_run134 tests.test_age0d_history_shadow_audit_run150 tests.test_run184_age0d_strict_shadow tests.test_late_correction tests.test_selfmodel tests.test_run403_full_postflight tests.test_run404_stage2_resume tests.test_run402_stage_restore tests.test_run397_step2_resume > "$RUNNER_TEMP/RUN530_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN530_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan on exact cross-branch integration diff
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN530_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN530_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN530_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw source-only proof
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN530_*' ! -name RUN530_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN530_SHA256SUMS.txt
+      - name: Preserve raw proof even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run530-age0d-final-binding-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN530_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source pins, all tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN530_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN530_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN530_PRIVACY_EXIT.txt")" = 0

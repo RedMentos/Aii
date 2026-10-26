@@ -271,6 +271,16 @@ class SelfSystem:
             if not row or row['session_id']!=self.r.session:return
             event=json.loads(row['packet'])
             if event.get('event_id')!=event_id or event.get('authority')!='AUTHORITATIVE':return
+            # The supplied late-offer output is not itself a committed-answer
+            # receipt. Bind it to the last persisted FINAL assistant message
+            # for this exact event/session before recording any diagnostic.
+            committed=self.s.one(
+                "SELECT session_id,text,status FROM messages "
+                "WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",
+                (event_id,))
+            if (not committed or committed['session_id']!=self.r.session or
+                    committed['status']!='FINAL' or type(output) is not str or
+                    committed['text']!=output):return
             question=self.s.read_source(event['source_ref'])
             result=evaluate(question,output)
             if result['status']!='MISMATCH' or result['may_deliver'] is not False:return
