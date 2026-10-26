@@ -41,15 +41,25 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
-            tests.test_world_corrupt_packet_recovery_run420 \
-            tests.test_world_recovery_invalid_run109 \
-            tests.test_world_modulator_atomicity_run349 \
-            tests.test_world_multiaction_recovery_run343 \
-            tests.test_world_observation_integrity_run202 \
-            tests.test_world_state tests.test_world_model \
-            2>&1 | tee "$RUNNER_TEMP/RUN420_TESTS_RAW.log"
-          rc=${PIPESTATUS[0]}
+          python3 -m venv "$RUNNER_TEMP/run420venv"
+          timeout 240s "$RUNNER_TEMP/run420venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-input \
+            'numpy==2.3.5' 'prompt-toolkit==3.0.52' \
+            2>&1 | tee "$RUNNER_TEMP/RUN420_DEPS_RAW.log"
+          dep_rc=${PIPESTATUS[0]}
+          if [ "$dep_rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run420venv/bin/python" -m unittest -v \
+              tests.test_world_corrupt_packet_recovery_run420 \
+              tests.test_world_recovery_invalid_run109 \
+              tests.test_world_modulator_atomicity_run349 \
+              tests.test_world_multiaction_recovery_run343 \
+              tests.test_world_observation_integrity_run202 \
+              tests.test_world_state tests.test_world_model \
+              2>&1 | tee "$RUNNER_TEMP/RUN420_TESTS_RAW.log"
+            rc=${PIPESTATUS[0]}
+          else
+            rc=2
+          fi
           echo "$rc" > "$RUNNER_TEMP/RUN420_TESTS_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
