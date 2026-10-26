@@ -87,9 +87,6 @@ class RuntimeToolFinalSoftware(unittest.TestCase):
         for text, expected_action in ((UNKNOWN, 'UNKNOWN'), (NONE, 'NONE')):
             with self.subTest(action=expected_action):
                 row, meta, broker = self._turn(text)
-                calls = self.r.store.rows(
-                    "SELECT payload FROM packets WHERE kind='ToolResult' AND event_id=?",
-                    (row['event_id'],))
                 self.assertEqual(self.runner.calls, 0, 'fixed tool final must not invoke native answer')
                 self.assertIs(meta.get('model_generated'), False)
                 self.assertIs(meta.get('native_answer_skipped'), True)
@@ -98,8 +95,11 @@ class RuntimeToolFinalSoftware(unittest.TestCase):
                 self.assertEqual(broker['authority'], 'ELIGIBILITY_TOOL_FINAL')
                 self.assertEqual(broker['conflicts'], [])
                 self.assertEqual(broker['egress_type'], 'TEXT_REPORT')
-                self.assertTrue(row['text'])
-                self.assertIn(expected_action, ('UNKNOWN', 'NONE'))
+                values = eligibility.read_fixed(text, ())
+                args = eligibility.args_for(values, text, ())
+                decision = eligibility.tool(**args)
+                self.assertEqual(decision['action'], expected_action)
+                self.assertEqual(row['text'], eligibility.final_text(args, decision))
                 self.assertEqual(meta.get('tool_answer_first'), 'FINAL')
 
     def test_a_choice_still_uses_native_continuation_stub(self):
