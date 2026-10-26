@@ -1,0 +1,30 @@
+{
+  "schema": "V13_RUN431_RED_FIRST_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run431-world-valid-recent-window-20261026",
+  "base_head": "ce8b402dc4fad188b7143657bda6b09e103c803a",
+  "red_test_head": "5f5cdece06816dcaf2a22d317edf2e5b212d682a",
+  "red_actions": 40264877387,
+  "red_artifact_id": 12625901958,
+  "red_artifact_zip_sha256": "5228e2cc1c2754cc260993a2d2d33efc70abac327ab2d5dc969d50f5107e1b72",
+  "red_result": {
+    "tests_total": 39,
+    "failed": 2,
+    "expected_counterexamples": [
+      "140 malformed newer receipts: recent length 0 instead of 1, valid count 1",
+      "sole receipt corrupted: mode OBSERVED_DIGITAL_ACTIONS instead of NO_OBSERVATIONS"
+    ],
+    "privacy": "CLEAN",
+    "native_execution": false
+  },
+  "raw_retention": "Actions artifact 12625901958; do not delete or rewrite original RED evidence",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Fix v13/code/v13/world.py source-only; rerun Run431 and inherited World tests; inspect raw and verify remote SHA."
+}

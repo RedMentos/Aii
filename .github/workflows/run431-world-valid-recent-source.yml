@@ -1,0 +1,90 @@
+name: V13 Run431 WorldState valid-recent source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run431-world-valid-recent-source.yml'
+      - 'v13/code/v13/world.py'
+      - 'v13/code/tests/test_world_valid_recent_window_run431.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run431-world-valid-recent/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Bind frozen source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN431_HEAD.txt"
+          git merge-base --is-ancestor ce8b402dc4fad188b7143657bda6b09e103c803a HEAD
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/v13/world.py v13/code/tests/test_world_valid_recent_window_run431.py | tee "$RUNNER_TEMP/RUN431_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/v13/world.py v13/code/tests/test_world_valid_recent_window_run431.py
+      - name: RED-first focused and inherited restart tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run431venv"
+          timeout 240s "$RUNNER_TEMP/run431venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' 2>&1 | tee "$RUNNER_TEMP/RUN431_DEPS_RAW.log"
+          dep_rc=${PIPESTATUS[0]}
+          if [ "$dep_rc" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run431venv/bin/python" -m unittest -v \
+              tests.test_world_valid_recent_window_run431 \
+              tests.test_world_receipt_binding_run424 \
+              tests.test_world_corrupt_packet_recovery_run420 \
+              tests.test_world_recovery_invalid_run109 \
+              tests.test_world_modulator_atomicity_run349 \
+              tests.test_world_multiaction_recovery_run343 \
+              tests.test_world_observation_integrity_run202 \
+              tests.test_world_state tests.test_world_model \
+              2>&1 | tee "$RUNNER_TEMP/RUN431_TESTS_RAW.log"
+            rc=${PIPESTATUS[0]}
+          else
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN431_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN431_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN431_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN431_*' ! -name RUN431_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN431_SHA256SUMS.txt
+      - name: Upload source raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run431-WorldRecent-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN431_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

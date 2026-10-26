@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN431_GREEN_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run431-world-valid-recent-window-20261026",
+  "base_pr": 422,
+  "base_head": "ce8b402dc4fad188b7143657bda6b09e103c803a",
+  "red": {
+    "head": "5f5cdece06816dcaf2a22d317edf2e5b212d682a",
+    "actions": 40264877387,
+    "tests": "39 total, 2 expected RED",
+    "artifact_id": 12625901958,
+    "artifact_zip_sha256": "5228e2cc1c2754cc260993a2d2d33efc70abac327ab2d5dc969d50f5107e1b72"
+  },
+  "green": {
+    "tested_head": "f07f850091351e8f891d535f56b97fedc61ec270",
+    "actions": 40264990186,
+    "tests": "39/39 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12626106468,
+    "artifact_zip_sha256": "b422a3fbd44407524ace9cb59b662c906369f9388e84e024c5003d3756252186",
+    "source_sha256": {
+      "v13/code/v13/world.py": "877ec14472d0edff94fb31d560a990eca8dda7db16828a3292772034c0c2924d",
+      "v13/code/tests/test_world_valid_recent_window_run431.py": "591d85f5fdc8a7457cc727fc0a08347033bd45966bd88ba77f47ad145b0c975e"
+    },
+    "inherited_world_actions_success": [40264990246,40264990231,40264990212,40264990209,40264990203,40264990188,40264990184],
+    "focused_source_actions": 40264990262,
+    "evidence_class": "source-only SQLite / GitHub Actions; NOT native model or Redmi"
+  },
+  "changes": [
+    "Source-bind receipts in SQL before selecting bounded latest 128 valid rows",
+    "Preserve bounded 128 raw packet corruption telemetry",
+    "Clear stale materialized WorldState if no valid receipts remain",
+    "Retain original corrupt SQLite packet bytes and atomic ModulatorPacket+PredictionOutcome writes"
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Check exact-head Run431/focused source CI after checkpoint commit; independently review World diff and merge only through authorized stacked review. Run427 native O_s21 Actions 40263042202 is separate exclusive owner; if GREEN, bind actual 168 artifact IDs/SHA and run Run430 importer/Run429 verifier. Otherwise continue independent safety package."
+}
