@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN517_AGE0D_LIVE_SHADOW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run517-age0d-arithmetic-shadow-20261026",
+  "base_branch": "codex/run516-b2-60-aggregate-source-20261026",
+  "base_sha": "c411f00b675793f954fcf001798c43453d31b9f5",
+  "prereg_initial": "21d8b4fea16705a9df48ce455b017fd34aa20852",
+  "amendment": "e66b2a3d4fcca08e85dc05e5b7c9c5536b1024ba",
+  "design_correction": "Initial duplicate CALC parser was deleted before PR; reused existing Run134 answer arithmetic evaluator, Run184/Run150 source audits remain unchanged.",
+  "source": {
+    "selfmodel_blob": "e2e558eb675bb30c6a5c9eae21230d1dfbd540fd",
+    "live_tests_blob": "595e11357f79d0f94436df09708e61713ea5be33",
+    "frozen_run134_evaluator_blob": "3cec2c4b6883e3f02f449cc74cf44d5584a6affb"
+  },
+  "implementation": [
+    "Late offer sees committed output and authoritative event question from exact session and SHA-bound Store.read_source",
+    "Existing Run134 evaluator only; MISMATCH records numeric shadow ring, no user notice",
+    "No change to existing correction off/shadow/deliver messaging, Age rights, learning or tools",
+    "Dedup, bounded ring, no raw question/answer in diagnostic, missing/forged/cross-session abstain"
+  ],
+  "evidence": "SOURCE_ONLY_CI_PENDING_NO_NATIVE",
+  "heavy_owner": {
+    "pr": 513,
+    "run": 40313344309,
+    "status": "IN_PROGRESS_NATIVE_EXCLUSIVE"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "age0d_deliver_recommended": false
+  },
+  "next_command": "Open review PR, verify Run517 source-only tests and SHA raw evidence, then independently inspect Run515 native p00 as soon as it closes; do not overlap native owners.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
