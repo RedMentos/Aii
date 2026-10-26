@@ -69,6 +69,10 @@ jobs:
           raw_log=(dest/'TOOLFULL_TESTS_RAW.log').read_bytes();log=raw_log.decode(errors='replace')
           runs=re.findall(r'^Ran (\d+) tests in ([\d.]+)s',log,re.M)
           failure_ids=re.findall(r'^(?:FAIL|ERROR): ([^\n]+)',log,re.M)
+          fail_only=re.findall(r'^FAIL: ([^\n]+)',log,re.M)
+          error_only=re.findall(r'^ERROR: ([^\n]+)',log,re.M)
+          error_classes=re.findall(r'^([A-Za-z_][A-Za-z_0-9.]*(?:Error|Exception)):',log,re.M)
+          class_counts={name:error_classes.count(name) for name in sorted(set(error_classes))}
           end=re.findall(r'^(?:FAILED \([^\n]+\)|OK(?: \([^\n]+\))?)$',log,re.M)
           report={'schema':'V13_TOOLFULL_ORIGINAL_RED_INDEPENDENT_AUDIT_V1',
                   'source_workflow_run':40376727122,'source_head':'1ee3f247d52acb1a63a15fba6cf89dcf7a2f3bc6',
@@ -76,12 +80,14 @@ jobs:
                   'original_sha256_closure':'PASS','original_exits':exits,
                   'tests':int(runs[-1][0]) if runs else None,'duration_s':float(runs[-1][1]) if runs else None,
                   'failure_count':len(failure_ids),'failure_ids_bounded':failure_ids[:30],
+                  'failures_bounded':fail_only[:15],'errors_bounded':error_only[:15],
+                  'error_class_counts':class_counts,
                   'summary_bounded':end[-1:] if end else [],
                   'test_log_sha256':hashlib.sha256(raw_log).hexdigest(),
                   'status':'ORIGINAL_RED_CONFIRMED','native_executed':False,'redmi_measured':False,
                   'canonical_gate_pass':False,'step2_exit':'UTILITY_FAIL','jepa_weight':0}
           (tmp/'RED_AUDIT_REPORT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
-          print(json.dumps({k:report[k] for k in ('status','original_exits','tests','failure_count','failure_ids_bounded','summary_bounded')},sort_keys=True))
+          print(json.dumps({k:report[k] for k in ('status','original_exits','tests','failure_count','failures_bounded','errors_bounded','error_class_counts','summary_bounded')},sort_keys=True))
           PY
           rc=$?
           echo "$rc" > "$RUNNER_TEMP/RED_AUDIT_REPORT_EXIT.txt"
