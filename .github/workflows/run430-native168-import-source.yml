@@ -1,0 +1,93 @@
+name: V13 Run430 atomic native168 no-model ZIP importer source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run430-native168-import-source.yml'
+      - 'v13/code/scripts/run430_import_stage4_artifact.py'
+      - 'v13/code/tests/test_run430_import_stage4_artifact.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run430-native168-import/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact frozen source and importer code
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN430_HEAD.txt"
+          git merge-base --is-ancestor 80ce8032bb3e038a1a022f8cb20380a4ac87adf1 HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run429_verify_native168.py \
+            v13/code/scripts/run430_import_stage4_artifact.py \
+            v13/code/tests/test_run430_import_stage4_artifact.py \
+            | tee "$RUNNER_TEMP/RUN430_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run430_import_stage4_artifact.py \
+            v13/code/tests/test_run430_import_stage4_artifact.py
+      - name: Isolated adversarial ZIP import tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run430venv"
+          timeout 240s "$RUNNER_TEMP/run430venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-input 'numpy==2.3.5' \
+            2>&1 | tee "$RUNNER_TEMP/RUN430_DEPS_RAW.log"
+          d=${PIPESTATUS[0]}
+          if [ "$d" -eq 0 ]; then
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run430venv/bin/python" -m unittest -v \
+              tests.test_run430_import_stage4_artifact tests.test_run429_verify_native168 \
+              2>&1 | tee "$RUNNER_TEMP/RUN430_TESTS_RAW.log"
+            t=${PIPESTATUS[0]}
+          else
+            t=2
+          fi
+          rc=$((d+t))
+          echo "$rc" > "$RUNNER_TEMP/RUN430_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN430_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN430_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN430_*' ! -name RUN430_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN430_SHA256SUMS.txt
+      - name: Upload small source-only receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run430-Import-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN430_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce source-only proof and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
