@@ -1,0 +1,13 @@
+# Run404 — opt-in STEP2 P_s20 continuation, source-only GREEN (2026-10-26)
+
+**Scope:** New `scripts/run404_stage2_resume.py` binds the future observed Run401 stage1 archive SHA to Run402 safe restore and the unchanged Run397 append-only full-cohort runner. Default preview verifies the original 42-row O_s20 receipt and preserves work bytes without model execution or rewriting the journal/progress. Explicit `--execute --installed-home <verified home>` alone permits one new native P_s20 attempt, then requires 84 validated rows and seven pending arms. A failed native attempt remains in its original work directory, never silently overwritten. No source/model/seed/cohort/age/gate changes.
+
+**Source-only proof:** Exact-head Actions `40251444915`, job `121344039087`, head `21020045806f6d66ca6a3aa14b61afc94a50ef4a`: **78/78 PASS** (70 inherited + 8 new), compileall PASS, privacy CLEAN. New tests use a **synthetic** 42-row archive and mocked native stage2; they prove preview/no-model calls, byte-preserving restore, wrong-SHA rejection, no overwrite, explicit installed-home requirement, one bounded mocked P_s20 invocation, wrong-arm and native-exception RED. These are NOT native inference or interrupted-restart evidence.
+
+**Raw closure:** GitHub Actions artifact `12620432455`, ZIP SHA256 `48842695035b027e1156eca2b30b08dbfe3a04299bccc6e7a70e849b2da59122`, CRC PASS, 6/6 internal SHA256 PASS. Private Library `/V13_PRIVATE_CHECKPOINTS_20261024/Run404_Stage2_Prep_20261026/SOURCE_GREEN_RAW.zip` materialized byte-identical (SHA verified).
+
+**Native prerequisite:** Run401 Actions `40250662450` stage1 O_s20 is still active at this checkpoint. Its artifact ID/digest remain UNKNOWN, so no real stage2 run was launched or claimed. Run402 must first verify the actual ZIP layout, original manifest, model/source/receipt hashes and restore a fresh work tree. No concurrent heavy owner is permitted.
+
+**Gates:** STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA/jepa_weight=0; Age0/approval unchanged; Run389 full suite RED; no Redmi proof; `canonical_architecture_complete=false`, `user_full_scope_complete=false`.
+
+**Next exact CLI (only after observed artifact):** `PYTHONPATH=v13/code:v13/code/scripts python3 v13/code/scripts/run404_stage2_resume.py --archive <observed Run401 ZIP> --expected-sha256 <observed SHA> --work <fresh private directory> --output <private RUN404_PREVIEW.json>`. Then, only if preview PASS and pinned models are installed/verified, rerun with a **different fresh** work directory and `--installed-home <verified home> --execute`. The stage2 native workflow is not created/activated until those prerequisites are observed.
