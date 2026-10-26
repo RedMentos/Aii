@@ -13,6 +13,8 @@ import stat
 import zipfile
 from pathlib import Path
 
+import numpy as np
+
 DIRECTIONS = {'B1_TO_B2': ('B1_DETAIL', 'B2_GIST'),
               'B2_TO_B1': ('B2_GIST', 'B1_DETAIL')}
 HEX = re.compile(r'[a-f0-9]{64}\Z')
@@ -66,7 +68,7 @@ def exact_identity(manifest, specs):
 
 def verify_file(path, specs):
     """Read-only local artifact proof; no hostile-concurrent-rename guarantee."""
-    from v13.b3bridge import Bridge
+    from v13.b3bridge import Bridge, AGE0_MAX_BYTES, budget
     path = Path(path)
     if path.suffix in ('.json', '.npz'):
         path = path.with_suffix('')
@@ -79,8 +81,37 @@ def verify_file(path, specs):
         info = item.stat()
         require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1,
                 'BRIDGE_FILE_HARDLINK_OR_NONREGULAR')
+    # The production loader constructs arrays from untrusted manifest geometry.
+    # Reject pathological dimensions and NPZ expansion *before* Bridge.load.
+    require(manpath.stat().st_size <= 64 * 1024 and
+            weightpath.stat().st_size <= 8 * AGE0_MAX_BYTES,
+            'BRIDGE_ARTIFACT_TOO_LARGE')
     manifest = json.loads(manpath.read_bytes())
     result = exact_identity(manifest, specs)
+    fields = ('d', 'K', 'r', 'h', 'classes', 'aux')
+    require(all(type(manifest.get(k)) is int for k in fields) and
+            all(manifest[k] > 0 for k in fields[:-1]) and manifest['aux'] >= 0,
+            'BRIDGE_GEOMETRY_INVALID')
+    d, K, rank, h, classes, aux = (manifest[k] for k in fields)
+    size = budget(d, K, rank, h, classes)
+    require(size['total_bytes'] + 2 * h * aux <= AGE0_MAX_BYTES,
+            'BRIDGE_AGE0_BUDGET_EXCEEDED')
+    required = {'p_Q.npy', 'p_P.npy', 'p_Pr.npy', 'p_gamma.npy',
+                'p_Wu.npy', 'in_mu.npy', 'in_sd.npy'}
+    if aux:
+        required.add('p_Wa.npy')
+    if manifest.get('calibrated') is True:
+        required.update(('cal_mu.npy', 'cal_sd.npy', 'cal_tau.npy'))
+    with zipfile.ZipFile(weightpath) as archive:
+        members = archive.infolist()
+        names = [item.filename for item in members]
+        head = {'head_W.npy', 'head_b.npy'}
+        require((set(names) == required or set(names) == required | head) and
+                len(names) == len(set(names)),
+                'BRIDGE_NPZ_INVENTORY_INVALID')
+        require(sum(item.file_size for item in members) <= 8 * AGE0_MAX_BYTES,
+                'BRIDGE_NPZ_EXPANSION_EXCEEDED')
+
     require(path.name == manifest['direction'], 'BRIDGE_PATH_DIRECTION_MISMATCH')
     sender, receiver = DIRECTIONS[manifest['direction']]
     bridge = Bridge.load(path, specs[sender]['revision'], specs[receiver]['revision'])
@@ -110,6 +141,16 @@ def verify_file(path, specs):
         require(bridge.cal['mu'].shape == (bridge.K * bridge.r,) and
                 bridge.cal['sd'].shape == (bridge.K * bridge.r,),
                 'BRIDGE_CAL_SHAPE_MISMATCH')
+    # Self-consistent digests also attest NaNs and zero divisors; such weights
+    # are not a usable sender/receiver interface even with correct shapes.
+    for name, array in bridge._arrays().items():
+        require(array.dtype.kind == 'f' and np.isfinite(array).all(),
+                'BRIDGE_TENSOR_NONFINITE:' + name)
+    require(np.all(bridge.in_sd > 0), 'BRIDGE_INPUT_SCALE_NONPOSITIVE')
+    if bridge.cal is not None:
+        require(np.all(bridge.cal['sd'] > 0) and
+                bridge.cal['ood_tau'] >= 0,
+                'BRIDGE_CALIBRATION_SCALE_INVALID')
     require(bridge.digest() == result['bridge_weights_sha256'],
             'BRIDGE_WEIGHTS_NOT_ATTESTED')
     require((manifest.get('calibrated') is True) == (bridge.cal is not None),
