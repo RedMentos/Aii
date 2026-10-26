@@ -167,6 +167,18 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'BRIDGE_CALIBRATION_FLAG_MISMATCH'):
             A.verify_file(self.path, self.specs)
 
+    def test_calibration_flag_false_with_real_calibration_refused(self):
+        bridge = Bridge(4, K=2, r=2, h=3, classes=2, seed=4)
+        bridge.cal = {'mu': np.zeros(4), 'sd': np.ones(4),
+                      'ood_tau': 2.0}
+        a, b = self.specs['B1_DETAIL'], self.specs['B2_GIST']
+        man = bridge.save(self.path, a['revision'], b['revision'], {
+            'sender_bridge_key': bridge_key('B1_DETAIL', a),
+            'receiver_bridge_key': bridge_key('B2_GIST', b)})
+        self.path.with_suffix('.json').write_text(json.dumps(dict(man, calibrated=False)))
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_CALIBRATION_FLAG_MISMATCH'):
+            A.verify_file(self.path, self.specs)
+
     def test_weights_tamper_refused(self):
         p = self.path.with_suffix('.npz')
         with np.load(p, allow_pickle=False) as original:
