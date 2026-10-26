@@ -1,0 +1,79 @@
+{
+  "schema": "V13_RUN567_ORIGINAL_NATIVE004_INDEPENDENT_OFFLINE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "assistant / Run567 source-only independent original Run562 FUTURE_004 replay",
+  "branch": "assistant/v13-run567-original-native004-offline-20261026",
+  "pr": 564,
+  "base_branch": "codex/automation11-run566-future005-prep-20261026",
+  "base_head": "c5546e6859f0f5e405737c6ff65d3b30c83f02c4",
+  "prereg": {
+    "original_commit": "2a70889cd361d604dd509c79b59641394d78a6e7",
+    "original_blob": "bb93b18a27cdcdcbfa72825d6fca4c8dbd917a9e",
+    "import_commit": "df5bfb1e20d11f864bee88a8e22568138330439f"
+  },
+  "workflow": {
+    "source_commit": "1d0ee2f4a1c0f8ebc3ff890f9b9f1e09ed861390",
+    "source_blob": "201168ff84332b92d79a780818acfe986d1d5e7d",
+    "unchanged_independent_auditor_blob": "4c8ebb3a00ffdf5454f11dbf4f1706ff95f7be92"
+  },
+  "original_linux_native": {
+    "run": 40361273235,
+    "head": "39d6bf8176979dc0d0bf69b3dab0012a8c8b986d",
+    "conclusion": "SUCCESS",
+    "batch": "FUTURE_004",
+    "stage_ids": [
+      "A_s32_p04",
+      "A_s33_p00",
+      "A_s33_p01"
+    ],
+    "rows": 42,
+    "raw_artifact_id": 12668869702,
+    "raw_zip_sha256": "78d568814bc336a7283613a5570bb525fc070f61caa9f9bfa7d08aaf82f2f0cd",
+    "safe_artifact_id": 12669786996,
+    "safe_zip_sha256": "5e3199eaa09b003e9bbaf45de5caa444f7e3780e445481c7ea2ceb80239f5294"
+  },
+  "independent": {
+    "run": 40365523608,
+    "conclusion": "SUCCESS",
+    "source_head": "1d0ee2f4a1c0f8ebc3ff890f9b9f1e09ed861390",
+    "tests_passed": 40,
+    "rows_verified": 42,
+    "wrong_committed": 0,
+    "raw_manifest_entries": 27,
+    "safe_manifest_entries": 24,
+    "artifact_id": 12670880295,
+    "artifact_sha256": "e3f2c4fdcaaeb307d1a178b1c755ab46cc7cbded52ff9017ddf4323407d6f4b3",
+    "artifact_manifest_entries": 16,
+    "privacy": "CLEAN",
+    "native_inference_by_audit": false,
+    "mean_utility": {
+      "b1_only": 0.13888888888888887,
+      "b2_only": 0.15277777777777776,
+      "both_exact": 0.09722222222222221,
+      "both_none": 0.06944444444444443,
+      "both_control": 0.06944444444444443,
+      "same_policy_dual": 0.15277777777777776,
+      "prompt_only_dual": 0.18055555555555555
+    }
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run567/ (original raw/safe ZIPs and independent evidence ZIP; three files listed)",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Frozen FUTURE_005..024 and B/C/D/E remain incomplete",
+    "Current live/default pointer/fixed reader needs NEW disjoint end-to-end controlled native cohort vs frozen legacy; no inference from legacy UNKNOWN to current path",
+    "Body-JEPA, B3, Redmi and complete learning/age proofs remain open"
+  ],
+  "next_exact_command": "Verify no active native owner; independently inspect existing Run566 dormant source-only FUTURE_005 plan and row SHA 0d3904aeced77afaa55e05819592ba2f40c3cb1aa41c30b8540c1e665f9f3180; only then separately preregister one-shot serialized native FUTURE_005, preserve exact original Run491/500/504 model/runner pins, and independently audit original raw/safe after completion. In parallel prepare NEW disjoint current-default vs legacy live FINAL cohort.",
+  "prerequisites": [
+    "No main merge/force push/paid provisioning",
+    "Do not modify frozen original cohorts or overwrite other owners",
+    "No STEP2/B3/JEPA/Redmi/learning/age promotion"
+  ]
+}
