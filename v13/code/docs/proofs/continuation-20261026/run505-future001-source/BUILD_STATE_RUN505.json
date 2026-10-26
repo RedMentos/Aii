@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN505_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run505-future001-batch-source-20261026",
+  "base_branch": "codex/run504-heldout980-remaining-map-20261026",
+  "base_sha": "bcd795bd79e3e0fbca5b84d91a9606373e50fc72",
+  "status": "SOURCE_STAGED_CI_PENDING",
+  "scope": {
+    "batch_id": "FUTURE_001",
+    "stage_ids": [
+      "A_s31_p00",
+      "A_s31_p01",
+      "A_s31_p02"
+    ],
+    "arm": "A",
+    "seed": 31,
+    "planned_rows": 42,
+    "actual_run505_native_rows": 0,
+    "remaining_cohort_rows_planned": 980
+  },
+  "source": {
+    "run491_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "run500_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "run502_blob": "5c01768ccedbe63cb3c2eebde5a75347e3a67abd",
+    "run504_blob": "5f447908ec6197760d55c347ffb949ae42ad1ed8",
+    "run505_script_blob": "8694c566247a6709d80a504ad172c608889775d6",
+    "run505_test_blob": "097e2346db176f21b025947193cfc4db2ad431e2",
+    "prereg_blob": "9345f32b0a40c6c7f9e9d53954265c8f89d6bc06"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run505 prereg committed before implementation",
+    "No Run505 native execution, model download or paid provisioning",
+    "Run503 native Actions 40307435396 separate owner; do not overlap"
+  ],
+  "blockers": [
+    "Run505 source-only CI pending",
+    "Run503 native 42-row postflight pending",
+    "Full 1050-row STEP2 cohort incomplete",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run505 based on Run504; inspect source-only Actions and independently verify 42-key plan; inspect Run503 native completion and preserve raw PASS/RED; only separate preregistered Run506 native after no active heavy owner",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
