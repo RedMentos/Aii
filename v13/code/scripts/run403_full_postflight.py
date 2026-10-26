@@ -26,6 +26,31 @@ def mean(values):
     return sum(values) / len(values)
 
 
+def validated_failed_attempts(work, progress, ids):
+    """Preserve negative history: every claimed failed attempt must still have raw bytes."""
+    failures = progress.get("failures_preserved")
+    require(type(failures) is dict, "FAILED_HISTORY_NOT_A_MAP")
+    for rid, entries in failures.items():
+        require(rid in ids and type(entries) is list and bool(entries),
+                "FAILED_HISTORY_ARM_INVALID:" + str(rid))
+        for entry in entries:
+            require(type(entry) is dict and type(entry.get("attempt")) is str,
+                    "FAILED_ATTEMPT_POINTER_INVALID:" + rid)
+            rel = Path(entry["attempt"])
+            require(not rel.is_absolute() and ".." not in rel.parts and
+                    rel.parts[:2] == ("attempts", rid) and len(rel.parts) == 3 and
+                    rel.parts[2].startswith("attempt-") and rel.parts[2][8:].isdigit(),
+                    "UNSAFE_FAILED_ATTEMPT_POINTER:" + rid)
+            directory = Path(work) / rel
+            require(not directory.is_symlink() and directory.is_dir(),
+                    "FAILED_ATTEMPT_RAW_MISSING:" + rid)
+            children = list(directory.iterdir())
+            require(bool(children) and not any(p.is_symlink() for p in children) and
+                    any(p.is_file() for p in children),
+                    "FAILED_ATTEMPT_RAW_MISSING_OR_UNSAFE:" + rid)
+    return failures
+
+
 def _audit(work):
     work = Path(work)
     expected_manifest = r394.manifest(r394.FIXTURES, False, list(ARMS), list(SEEDS))
@@ -36,6 +61,7 @@ def _audit(work):
     progress_path = work / "RUN397_PROGRESS.json"
     progress = load(progress_path)
     ids = {f"{arm}_s{seed}" for seed in SEEDS for arm in ARMS}
+    failed_history = validated_failed_attempts(work, progress, ids)
     require(progress.get("status") == "ALL_ARMS_STRUCTURALLY_RECORDED" and
             set(progress.get("completed", {})) == ids, "FULL_COHORT_INCOMPLETE")
     require(progress.get("canonical_gate_pass") is False and
@@ -104,7 +130,7 @@ def _audit(work):
             "variants": list(VARIANTS), "rows_verified": 378,
             "completed_attempts": 9, "arm_mean_utility": arm_mean,
             "paired_differences": paired, "attempts": bound,
-            "failed_attempts_preserved": progress.get("failures_preserved", {}),
+            "failed_attempts_preserved": failed_history,
             "manifest_sha256": sha(manifest_path), "progress_sha256": sha(progress_path),
             "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
             "redmi_measured": False, "jepa_weight": 0,
