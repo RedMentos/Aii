@@ -288,6 +288,69 @@ jobs:
           echo "$rc" > "$RUNNER_TEMP/RUN435_EXPORT_EXIT.txt"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
+      - name: Validate no-model work for archival even on a native RED
+        id: archive
+        if: always()
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/RUN435_ARCHIVE_RAW.log"
+          import os,json,hashlib,stat,pathlib
+          from run413_export_receipt_gate import safe_rel,registered_model_hashes,MANIFEST,MAX_FILE,MAX_TOTAL
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          export=root/"run435-safe-export"
+          assert export.is_dir() and not export.is_symlink()
+          mp=export/MANIFEST
+          assert mp.is_file() and not mp.is_symlink()
+          manifest=json.loads(mp.read_text())
+          assert manifest["schema"]=="RUN409_SAFE_NATIVE_EXPORT_V1"
+          assert manifest["source_run"]=="Run397"
+          assert manifest["canonical_gate_pass"] is False
+          assert manifest["step2_exit"]=="UTILITY_FAIL"
+          copied=manifest["copied"];seen=set();dirs=set();total=0;models=registered_model_hashes()
+          for current,folders,files in os.walk(export,topdown=True,followlinks=False):
+              here=pathlib.Path(current);dirs.add(here.relative_to(export).as_posix())
+              for name in folders:
+                  p=here/name
+                  assert not p.is_symlink() and p.is_dir()
+              for name in files:
+                  p=here/name
+                  assert not p.is_symlink()
+                  info=p.stat()
+                  assert stat.S_ISREG(info.st_mode) and info.st_nlink==1
+                  rel=p.relative_to(export).as_posix()
+                  if rel==MANIFEST:continue
+                  safe_rel(rel)
+                  assert rel in copied and info.st_size==copied[rel]["bytes"]
+                  assert info.st_size<=MAX_FILE
+                  digest=hashlib.sha256(p.read_bytes()).hexdigest()
+                  assert digest==copied[rel]["sha256"] and digest not in models
+                  total+=info.st_size
+                  assert total<=MAX_TOTAL
+                  seen.add(rel)
+          assert seen==set(copied) and dirs==set(manifest["directories"])
+          progress=json.loads((export/"RUN397_PROGRESS.json").read_text())
+          assert progress["canonical_gate_pass"] is False
+          assert progress["step2_exit"]=="UTILITY_FAIL"
+          if (root/"RUN435_STAGE5_REPORT.json").is_file():
+              report=json.loads((root/"RUN435_STAGE5_REPORT.json").read_text())
+              assert report["canonical_gate_pass"] is False
+              assert report["step2_exit"]=="UTILITY_FAIL"
+              assert report.get("safe_export",{}).get("status")=="EXPORT_VERIFIED_NO_MODEL_WEIGHTS"
+              assert report["safe_export"]["manifest_sha256"]==hashlib.sha256(mp.read_bytes()).hexdigest()
+          result={"status":"SAFE_WORK_ARCHIVE_VERIFIED","files":len(seen),"bytes":total,
+                  "manifest_sha256":hashlib.sha256(mp.read_bytes()).hexdigest(),
+                  "completed":sorted(progress.get("completed",{})),
+                  "failed_attempt_groups":len(progress.get("failures_preserved",{})),
+                  "canonical_gate_pass":False,"step2_exit":"UTILITY_FAIL"}
+          (root/"RUN435_ARCHIVE_VERIFICATION.json").write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
+          print(json.dumps(result,sort_keys=True))
+          PY
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN435_ARCHIVE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
       - name: Public repo privacy scan
         id: privacy
         run: |
@@ -316,7 +379,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
       - name: Upload verified no-model work, including RED attempts
-        if: steps.export.outputs.rc == '0'
+        if: steps.archive.outputs.rc == '0'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: V13-Run435-P21-Safe-Work-${{ github.event.pull_request.head.sha }}
@@ -333,4 +396,5 @@ jobs:
           test "${{ steps.import.outputs.rc }}" = "0"
           test "${{ steps.native.outputs.rc }}" = "0"
           test "${{ steps.export.outputs.rc }}" = "0"
+          test "${{ steps.archive.outputs.rc }}" = "0"
           test "${{ steps.privacy.outputs.rc }}" = "0"
