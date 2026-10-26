@@ -1,0 +1,148 @@
+name: V13 Run531 independent real-file Self/World corollary replication
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run531-self-world-real.yml'
+      - 'v13/code/scripts/z12a_self_world_real.py'
+      - 'v13/code/tests/test_z12a_self_world.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run531-self-world-real/**'
+permissions:
+  contents: read
+jobs:
+  real-file-source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run531-self-world-real-replication-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact Claude Z12a source and current runtime provenance pins
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run531-self-world-real/PREREG.md)" = '1fe7723ca74c827db15a9621e71c4f14f06262ba'
+          test "$(git hash-object v13/code/scripts/z12a_self_world_real.py)" = '21af521e0ee40f0d079d68e572fd596d23db7d5c'
+          test "$(git hash-object v13/code/tests/test_z12a_self_world.py)" = 'd95a7da13a7285e4ce43cdddcf18bd39297f01f6'
+          test "$(git hash-object v13/code/v13/selfmodel.py)" = 'aab1d1905c98ce1d276e5136975a97f62e8e21dc'
+          test "$(git hash-object v13/code/v13/agi/tools.py)" = '172ad8c9cf3b3be4d36734f4a60cc25da3755ac3'
+          test "$(git hash-object v13/code/v13/runtime.py)" = '0be34417865d64ee8ff6b7ba26631d18aa279e3a'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN531_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run531venv"
+          timeout 240s "$RUNNER_TEMP/run531venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN531_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN531_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original two deterministic Z12a helper tests
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run531venv/bin/python" -m unittest -v tests.test_z12a_self_world > "$RUNNER_TEMP/RUN531_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN531_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: One-seed seven-episode real temp-file/independent-world smoke
+        id: smoke
+        if: ${{ steps.tests.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout --signal=TERM --kill-after=5s 75s "$RUNNER_TEMP/run531venv/bin/python" scripts/z12a_self_world_real.py "$RUNNER_TEMP/RUN531_SMOKE.json" --seeds 61 --episodes 7 > "$RUNNER_TEMP/RUN531_SMOKE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN531_SMOKE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Replicate original 3 seeds x 70 real-file episodes, same fixed cohort
+        id: full
+        if: ${{ steps.smoke.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          timeout --signal=TERM --kill-after=10s 780s "$RUNNER_TEMP/run531venv/bin/python" scripts/z12a_self_world_real.py "$RUNNER_TEMP/RUN531_FULL.json" --seeds 61,62,63 --episodes 70 > "$RUNNER_TEMP/RUN531_FULL_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN531_FULL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Enforce original fixed K1-K6, no false native/phone claim
+        id: metric
+        if: ${{ steps.full.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 - <<'PY' > "$RUNNER_TEMP/RUN531_METRIC_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'RUN531_FULL.json'
+          d=json.loads(p.read_text())
+          assert d['kind']=='V13_Z12A_SELF_WORLD_REAL'
+          assert d['seeds']=='61,62,63' and d['episodes']==70
+          assert d['phone_measured'] is False
+          assert d['verdict']=='Z12A_SELF_WORLD_REAL_PASS'
+          assert len(d['criteria'])==6 and all(v is True for v in d['criteria'].values())
+          assert d['metrics']['unknown_truth']==0
+          assert d['metrics']['n_observations']>=210
+          print(json.dumps({'verdict':d['verdict'],'metrics':d['metrics'],'criteria':d['criteria'],'claim_limit':d['claim_limit']},sort_keys=True))
+          PY
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN531_METRIC_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan on exact source-only diff
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN531_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN531_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN531_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close raw tests and bounded real-file results
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN531_*' ! -name RUN531_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN531_SHA256SUMS.txt
+      - name: Preserve raw evidence even if real-world process RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run531-self-world-real-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN531_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact source, real-file replication, privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          for n in DEPS TEST SMOKE FULL METRIC PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/RUN531_${n}_EXIT.txt")" = 0
+          done
