@@ -1,0 +1,45 @@
+{
+  "schema": "V13_RUN417_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run417-context-final-token-gate-20261026",
+  "base_pr": 410,
+  "base_commit": "94be24431d447ad146ad5fb5f107fbc28f6134c0",
+  "verified_source_head": "04b8ee21905f37c8ffe836ccb79557531a0a9625",
+  "source_sha256": {
+    "v13/code/v13/context_fit.py": "05862034e63b4874d083fb3cc44b7a7d5ca9b020e89d44a0776cbbdd14e7a3db",
+    "v13/code/v13/runtime.py": "18b1eb8020372131a86bede370e868a671078db57254b0f18163be21948dec27",
+    "v13/code/tests/test_context_fit.py": "cc28fcfe4706eb4c3cfb6393bc63ddb5b44ace336f8c6e1a677ddc38caab26b9"
+  },
+  "source_only_evidence": {
+    "workflow_run_id": 40259968458,
+    "conclusion": "success",
+    "tests": "41/41 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624625920,
+    "artifact_zip_sha256": "00e87bd2c3bae85914db23ee57612a429e226b1e81da5758e2f06d6f87dd9634",
+    "scope": "software only; no native token benchmark"
+  },
+  "changes": [
+    "strict opt-in counter errors stop the turn instead of silent generation",
+    "actual post-Context-OS final messages must fit native token budget",
+    "C3 causal-stream separate 512-token ABI is explicitly unsupported for exact opt-in",
+    "legacy default unchanged"
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Native post-plan tokenizer count latency/utility paired against legacy default",
+    "Whether C3 causal-stream template and 512-token cap can be proven equivalent to server count",
+    "Potential planner modifications after exact fit require further native regression"
+  ],
+  "next_command": "On an isolated pinned Linux host, compare exact opt-in vs legacy Context OS on a preregistered disjoint long-session cohort with native token counts, overflow and latency; do not alter frozen Run394/397 or PR407 300-row historical results.",
+  "checkpoint_note": "This state-file commit follows verified source-only head 04b8ee; rerun exact-head CI for any subsequent commits."
+}
