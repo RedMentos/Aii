@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN583_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation13 independent review",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation13-run583-source-row-binding-20261026",
+  "base_branch": "codex/run582-future-stage-source-bundle-20261026",
+  "base_sha": "65c1dfa292101eee29d533c83e70a2b0d8542a06",
+  "verified_code_head": "5b43ad8f17ab37618e004ac576a187b43ad27d58",
+  "pr": 580,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/580",
+  "prereg_commit": "7687715cfa328256bb2667d498d6dc07cd4d97bb",
+  "changed_source_blobs": {
+    "v13/code/scripts/run582_stage_source_bundle.py": "bd59187fcad234e98be3066782dd10342f62a00b",
+    "v13/code/tests/test_run582_stage_source_bundle.py": "37843496b1f2b978de5fd353fe11456a15215120"
+  },
+  "observed_ci": {
+    "run": 40383832053,
+    "job": 121786738566,
+    "head": "5b43ad8f17ab37618e004ac576a187b43ad27d58",
+    "conclusion": "success",
+    "unittest": "14 tests PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12677754857,
+    "raw_artifact_sha256": "5de92ce2b6bbb9224bcc91582d2b72a77ce82e0d1f960d74276f26bf8c666ad3"
+  },
+  "changes": [
+    "Exact registered fixture x variant keys for tool and STEP2 14-row reports",
+    "Batch schedule, map and fixture/row-key digest binding",
+    "Duplicate receipt rejection",
+    "Six adversarial negative tests"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false
+  },
+  "open_questions": [
+    "Native future stage bundle must be separately preregistered and run by owner; original Run568 p02 source remains unavailable.",
+    "Original full-suite baseline RED (4 FAIL, 65 ERROR) requires independent triage; source-only focused suite is not full acceptance."
+  ],
+  "next_command": "Review PR #580 against PR #579; continue independent substantive V13 package on separate branch without merging or changing frozen sources.",
+  "prerequisites": [
+    "Preserve original native owner and original failed evidence",
+    "No models, source/seed retuning or gate promotion"
+  ]
+}
