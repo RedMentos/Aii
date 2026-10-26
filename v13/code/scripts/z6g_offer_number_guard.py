@@ -30,7 +30,7 @@ def guard_summary(summary, source):
     return NUM.sub(lambda m: m.group(0) if m.group(0) in allowed else '[?]', summary)
 
 
-def install_guard(on, hide=False):
+def install_guard(on, hide=False, quotes=False):
     from v13.cognition import Cognition
     orig = getattr(Cognition, '_z6g_orig', None) or Cognition.analyst_context
     Cognition._z6g_orig = orig
@@ -39,6 +39,9 @@ def install_guard(on, hide=False):
     def guarded(self, offers, e, version):
         out = orig(self, offers, e, version)
         if hide: MASKED['calls'] += 1; return []  # control: bodies still run, C3 sees no hypotheses
+        if quotes:  # WP-Z6h: keep only source-verified quotes, drop the model hypothesis text
+            MASKED['calls'] += 1
+            return [dict(o, hypothesis={'summary': '', 'uncertainty': o['hypothesis'].get('uncertainty'), 'needs_reentry': o['hypothesis'].get('needs_reentry')}) for o in out if o['verified_quotes']]
         src = self.s.read_source(e['source_ref'])
         for o in out:
             old = o['hypothesis'].get('summary') or ''; new = guard_summary(old, src)
@@ -75,7 +78,7 @@ def main():
     prev = json.loads(out.read_text()) if out.exists() else {'rows': []}; arms = a.arms.split(',')
     rows = [r for r in prev['rows'] if r['arm'] not in arms]; masked = prev.get('guard_hook', {})
     for arm in arms:
-        mode, _, flag = arm.partition('+'); install_guard(flag in ('guard', 'hide'), hide=flag == 'hide'); MASKED.update(calls=0, numbers=0)
+        mode, _, flag = arm.partition('+'); install_guard(flag in ('guard', 'hide', 'quotes'), hide=flag == 'hide', quotes=flag == 'quotes'); MASKED.update(calls=0, numbers=0)
         try: new = run_arm(installed, mode, fx)
         finally: install_guard(False)
         for r in new: r['arm'] = arm
