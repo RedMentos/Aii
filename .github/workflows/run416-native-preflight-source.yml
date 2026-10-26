@@ -1,0 +1,84 @@
+name: V13 Run416 pre-native 84-row receipt preflight source proofs
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run416-native-preflight-source.yml'
+      - 'v13/code/scripts/run415_stage3_no_model_restore.py'
+      - 'v13/code/tests/test_run415_stage3_no_model_restore.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run416-stage3-preflight/**'
+permissions:
+  contents: read
+jobs:
+  source-only-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen cohort and compile
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN416_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run415_stage3_no_model_restore.py \
+            v13/code/tests/test_run415_stage3_no_model_restore.py \
+            | tee "$RUNNER_TEMP/RUN416_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run415_stage3_no_model_restore.py \
+            v13/code/tests/test_run415_stage3_no_model_restore.py
+      - name: Inherited and new adversarial tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run409_safe_export tests.test_run411_safe_stage2 \
+            tests.test_run412_stage1_inventory_gate tests.test_run413_export_receipt_gate \
+            tests.test_run415_stage3_no_model_restore \
+            2>&1 | tee "$RUNNER_TEMP/RUN416_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN416_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repository privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN416_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN416_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close raw source evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN416_*' ! -name RUN416_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN416_SHA256SUMS.txt
+      - name: Upload source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run416-Preflight-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN416_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

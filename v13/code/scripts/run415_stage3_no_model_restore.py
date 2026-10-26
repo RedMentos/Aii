@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import tempfile
 from pathlib import Path
@@ -86,6 +87,39 @@ def restore(export_root, run411_report, destination):
             "step2_exit": "UTILITY_FAIL", "redmi_measured": False}
 
 
+
+def verify_restored_native_receipts(work, runner_sha):
+    """Fail closed before scheduling any native arm: O/P must really be reusable."""
+    root = Path(work).absolute()
+    manifest = json.loads((root / "RUN394_PREREGISTERED_FIXTURES.json").read_text())
+    expected = r394.manifest(r394.FIXTURES, False, list(r394.ARMS), list(r394.SEEDS))
+    require(manifest == expected, "STAGE3_FROZEN_MANIFEST_MISMATCH")
+    progress = json.loads((root / "RUN397_PROGRESS.json").read_text())
+    require(progress.get("canonical_gate_pass") is False and
+            progress.get("step2_exit") == "UTILITY_FAIL" and
+            set(progress.get("completed", {})) == {"O_s20", "P_s20"} and
+            not progress.get("failures_preserved"), "STAGE3_PREVIOUS_PROGRESS_INVALID")
+    for arm in ("O", "P"):
+        info = progress["completed"][arm + "_s20"]
+        require(type(info) is dict and type(info.get("attempt")) is str and
+                re.fullmatch(r"attempts/" + arm + r"_s20/attempt-[0-9]+",
+                             info["attempt"]) is not None,
+                "STAGE3_PREVIOUS_ATTEMPT_PATH_INVALID")
+        directory = root / info["attempt"]
+        require(not directory.is_symlink() and
+                directory.resolve().is_relative_to(root.resolve()),
+                "STAGE3_PREVIOUS_ATTEMPT_ESCAPE")
+        actual = resume.validate_completed(
+            directory, arm, 20, r394.FIXTURES, manifest,
+            current_runner_sha=runner_sha)
+        require(actual == info.get("validated") and actual["rows"] == 42,
+                "STAGE3_PREFLIGHT_RECEIPT_INVALID:" + arm)
+    return {"status": "STAGE3_PREVIOUS_84_ROWS_VERIFIED",
+            "completed": ["O_s20", "P_s20"], "rows_verified": 84,
+            "runner_sha256": runner_sha, "canonical_gate_pass": False,
+            "step2_exit": "UTILITY_FAIL"}
+
+
 def stage3(export_root, run411_report, work, installed=None, execute=False, export_dest=None):
     report = {"run": "Run415", "status": "STAGE3_RED_PRESERVED",
               "errors": [], "native_execute_requested": bool(execute),
@@ -110,6 +144,8 @@ def stage3(export_root, run411_report, work, installed=None, execute=False, expo
             installed = Path(installed)
             require(safe.sha_file(installed / "bin/llama-server") ==
                     RUN401_EXECUTABLE_SHA256, "INSTALLED_RUNNER_SHA_MISMATCH")
+            report["native_preflight"] = verify_restored_native_receipts(
+                work, RUN401_EXECUTABLE_SHA256)
             report["native_execute_attempted"] = True
             result = resume.run(work, installed, pilot=False, execute=True, max_new_arms=1)
             require(result.get("status") == "INCOMPLETE" and
