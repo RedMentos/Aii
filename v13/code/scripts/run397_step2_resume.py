@@ -10,6 +10,7 @@ import time
 
 import run394_step2_fresh as r394
 import run396_step2_pilot_audit as audit
+from step2_z2_timescale import harness as z2_harness
 from v13.common import atomic_write, digest, dumps
 from v13.models import ModelManager, catalog, platform_tag
 
@@ -58,7 +59,7 @@ def validate_completed(directory, arm, seed, fixtures, expected_manifest, curren
     require(source.get("fixtures") == fixtures, "SOURCE_FIXTURE_MISMATCH")
     # Preserve the full native runtime/harness identity, not only the wrapper
     # and model catalog. A prior arm from changed source cannot be reused.
-    require(source.get("source_hashes") == r394.z2.harness().source_hashes(),
+    require(source.get("source_hashes") == z2_harness().source_hashes(),
             "RECORDED_RUNTIME_SOURCE_HASH_MISMATCH")
     # A self-consistent report from another valid installed model is not a
     # reusable result for this preregistered cohort. Bind actual role hashes.
