@@ -20,7 +20,19 @@ class Metacognition:
     def __init__(self,store):
         self.box=StateBox(store,KEY,REVISION,lambda:{'components':{}})
     def record(self,component,confidence,correct,evidence=None):
-        c,k=clamp01(confidence),int(bool(correct))
+        # Only a measured probability and an explicit binary outcome can
+        # become calibration evidence. In particular, bool("incorrect") and
+        # clamp01(NaN) must never create a false correctness label.
+        if (type(confidence) not in (int,float)
+                or not 0 <= confidence <= 1 or not math.isfinite(confidence)):
+            raise ValueError('METACOG_CONFIDENCE_NOT_FINITE_PROBABILITY')
+        if type(correct) is bool:
+            k=int(correct)
+        elif type(correct) is int and correct in (0,1):
+            k=correct
+        else:
+            raise ValueError('METACOG_CORRECTNESS_NOT_BINARY')
+        c=clamp01(confidence)
         def f(st):
             comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
             comp['pairs']=(comp['pairs']+[[c,k]])[-WINDOW:];comp['calibrator']=self._fit(comp['pairs'])
