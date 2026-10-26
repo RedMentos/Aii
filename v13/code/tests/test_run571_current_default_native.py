@@ -79,6 +79,11 @@ class CurrentDefaultExecutor(unittest.TestCase):
                 native.assert_not_called()
             self.assertFalse((work / runner.PROGRESS).exists())
             self.assertFalse((work / runner.RESULT).exists())
+            attempt = json.loads((work / runner.ATTEMPT).read_text())
+            self.assertEqual(attempt['state'], 'CLAIMED_BEFORE_MODEL_PREFLIGHT')
+            self.assertFalse(attempt['native_executed'])
+            with self.assertRaisesRegex(ValueError, 'REFUSE_REUSE_OR_PARTIAL_NATIVE_ATTEMPT'):
+                runner.execute(work, work / 'installed')
 
     def test_first_native_failure_stops_without_retry_or_next_arm(self):
         with tempfile.TemporaryDirectory() as tmp:
