@@ -1,0 +1,83 @@
+name: V13 Run405 RED-first failed-attempt history full postflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run405-failure-history.yml'
+      - 'v13/code/scripts/run403_full_postflight.py'
+      - 'v13/code/tests/test_run405_failure_history.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run405-failure-history/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact source and syntax
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN405_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          sha256sum v13/code/scripts/run403_full_postflight.py v13/code/tests/test_run405_failure_history.py \
+            | tee "$RUNNER_TEMP/RUN405_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run403_full_postflight.py \
+            v13/code/tests/test_run405_failure_history.py
+      - name: RED-first inherited and adversarial source-only tests
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run394_step2_fresh tests.test_run396_step2_pilot_audit \
+            tests.test_run397_step2_resume tests.test_run398_native_artifact_audit \
+            tests.test_run400_quote_substrings tests.test_run402_stage_restore \
+            tests.test_run403_full_postflight tests.test_run404_stage2_resume \
+            tests.test_run405_failure_history 2>&1 | tee "$RUNNER_TEMP/RUN405_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN405_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN405_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN405_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close all raw on RED or GREEN
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN405_*' ! -name RUN405_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN405_SHA256SUMS.txt
+      - name: Upload source-only raw, no weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run405-FailureHistory-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN405_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
