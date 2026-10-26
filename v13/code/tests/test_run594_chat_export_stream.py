@@ -60,12 +60,13 @@ class ChatExportStream(unittest.TestCase):
         original = path.read_bytes()
         self.insert(1, prefix="AFTER")
         real_rows = self.r.store.rows
-        calls = 0
+        pages = 0
         def fail_second_page(sql, args=()):
-            nonlocal calls
-            calls += 1
-            if calls == 2:
-                raise RuntimeError("simulated SQLite read failure")
+            nonlocal pages
+            if "SELECT * FROM messages WHERE session_id=?" in sql:
+                pages += 1
+                if pages == 2:
+                    raise RuntimeError("simulated SQLite read failure")
             return real_rows(sql, args)
         with patch.object(self.r.store, "rows", side_effect=fail_second_page):
             with self.assertRaisesRegex(RuntimeError, "simulated"):
@@ -76,13 +77,14 @@ class ChatExportStream(unittest.TestCase):
     def test_high_water_excludes_append_during_export(self):
         self.insert(300)
         real_rows = self.r.store.rows
-        calls = 0
+        pages = 0
         def append_once(sql, args=()):
-            nonlocal calls
+            nonlocal pages
             result = real_rows(sql, args)
-            calls += 1
-            if calls == 1:
-                self.insert(1, prefix="LATE")
+            if "SELECT * FROM messages WHERE session_id=?" in sql:
+                pages += 1
+                if pages == 1:
+                    self.insert(1, prefix="LATE")
             return result
         with patch.object(self.r.store, "rows", side_effect=append_once):
             rows = json.loads(Path(self.op.run(":export chat json")).read_text())
