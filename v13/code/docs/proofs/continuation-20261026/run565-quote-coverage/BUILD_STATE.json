@@ -1,0 +1,81 @@
+{
+  "schema": "V13_RUN565_ORIGINAL_126_ROW_QUOTE_DIAGNOSTIC_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 / Run565 source-only 126 original native consumer rows",
+  "branch": "codex/automation11-run565-step2-quote-coverage-20261026",
+  "pr": 563,
+  "base_branch": "codex/automation11-run563-native003-offline-20261026",
+  "base_head": "915c01b308067878bb8abdd8aee2ad210e3bd1cd",
+  "prereg_commit": "b75ac5a28a806fb7239006a6142aba84e43bc3cb",
+  "source_script_git_blob": "420eaec40fa754a69724806e509ea064f4d5014b",
+  "tests_git_blob": "37a4c6afbfb9ba3e7017d500b2056a69831f822e",
+  "workflow_git_blob": "6407a0fe705bf1338bccc7b208a389702867223f",
+  "original_safe_artifacts": [
+    {
+      "batch": "FUTURE_001",
+      "id": 12644358345,
+      "sha256": "406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b"
+    },
+    {
+      "batch": "FUTURE_002",
+      "id": 12665895129,
+      "sha256": "ecd1ece00a2e82396bbd716b4fab93c84efe81ce60d9e853b8b450a437d4eb03"
+    },
+    {
+      "batch": "FUTURE_003",
+      "id": 12666848624,
+      "sha256": "503a1a4c0ad900f71758b42cfda40ff75b440240db7d469f06fe8b976877ed77"
+    }
+  ],
+  "verified": {
+    "actions_run": 40363093211,
+    "source_head": "5a0919868d742e7cb878cc4ac2b3ec0c215a6981",
+    "status": "SUCCESS",
+    "tests_passed": 7,
+    "rows": 126,
+    "variants": 7,
+    "action_UNKNOWN": 126,
+    "complete_five_inputs_exact": 0,
+    "primary_both_exact_all_three_rules": 2,
+    "primary_both_exact_all_two_options": 4,
+    "primary_both_exact_complete_five": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12669935636,
+    "artifact_sha256": "8a186fbba190882218a2b9bb8b890c22848093b3262c2fc828c76171435eb815",
+    "sha_manifest_entries": 12,
+    "sha_manifest_verified": true,
+    "report_sha256": "1204ed8ad5cc28ca545f3c3e3cceae43aa8f881b6a170c430da2b4384cf1c3ce",
+    "native_execution_performed": false
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-26/Run565/Run565_original_126_quote_SHA_8a186fbb.zip",
+  "caveat": "Exact complete-sentence source coverage is conservative and not a semantic sufficiency test; missing five-input exact coverage cannot prove model incapacity.",
+  "prior_failed_interim_runs": [
+    40363023817,
+    40363055971
+  ],
+  "active_native_owner": {
+    "run": 40361273235,
+    "batch": "FUTURE_004",
+    "branch": "codex/automation11-run562-future004-prep-20261026",
+    "status": "IN_PROGRESS_AT_CHECKPOINT"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Run562 original FUTURE_004 native conclusion and independent raw/safe audit pending",
+    "Test source pointer/complete input controlled consumer on new disjoint cohort after registered frozen work",
+    "Remaining FUTURE_005..024 and B/C/D/E arms, native Body-JEPA, Redmi sustained proof open"
+  ],
+  "next_exact_command": "When Run562 Actions 40361273235 terminates, retrieve original raw/safe artifact IDs/names/SHA256 and exact head; follow Run564 prereg branch codex/automation11-run564-native004-offline-prep-20261026 to create independent no-model frozen-source oracle audit --batch FUTURE_004 --prefix RUN562 --head 39d6bf8176979dc0d0bf69b3dab0012a8c8b986d; preserve RED and do not trigger FUTURE_005 before independent PASS.",
+  "prerequisites": [
+    "Do not mutate active Run562 native owner",
+    "No main merge, force push, paid provisioning, or private data publication",
+    "No STEP2/JEPA/B3/Redmi/learning/age gate promotion"
+  ]
+}
