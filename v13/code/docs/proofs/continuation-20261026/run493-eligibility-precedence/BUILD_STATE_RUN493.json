@@ -1,0 +1,71 @@
+{
+  "schema": "V13_RUN493_JEF_SOURCE_PRECEDENCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run493 isolated source authority candidate; production runtime frozen pending review",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run493-eligibility-source-precedence-20261026",
+  "base_branch": "codex/run492-pinned-hf-model-metadata-20261026",
+  "base_sha": "122e1ed62ba2b04841ae567051754da399282c7e",
+  "review_pr": 491,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run493-eligibility-precedence/PREREG.md",
+    "blob_sha": "fde13456f3edc1ed19e979a356a10f035f98390c"
+  },
+  "source_blobs": {
+    "v13/code/v13/agi/eligibility.py": "e6422f684b98324b73c2c1f7f6f5539782ddc779",
+    "v13/code/v13/toolstep.py": "acf22f2c7c06129882a64938212da721d3a5212a",
+    "v13/code/tests/test_run493_eligibility_source_precedence.py": "91611e15e35fe777be6ec9672c1cd446b34f1f6c"
+  },
+  "original_red": {
+    "run_id": 40299956340,
+    "artifact_id": 12639288988,
+    "artifact_sha256": "16b4880f96e317ee4042f5ad972717777ef03f553e177b190f1ec4b37f7aa05f",
+    "observed": "29 tests: 2 failures (stale quote superseded direct user; conflicting quote picked arbitrary budget) and 7 errors (candidate reader absent)",
+    "preserved": true
+  },
+  "intermediate_red": {
+    "run_id": 40300284496,
+    "artifact_id": 12639264332,
+    "artifact_sha256": "6a208a0b44083a1161ca26891648097eb8095ab91dc14db0a7f5e9db125bacb0",
+    "observed": "30 tests passed, one test errored on incorrect telemetry column SELECT payload; corrected to SELECT id",
+    "preserved": true
+  },
+  "validation": {
+    "run_id": 40300559844,
+    "status": "GREEN: 31 source/Runtime/ToolStep tests, privacy CLEAN",
+    "artifact_id": 12639534253,
+    "artifact_sha256": "b9a915d7dc3c8b036c426cf7a56591d069047437b5b919c4ab27eeebd6014d11",
+    "focused_ci_run": 40300559885,
+    "focused_ci_status": "SUCCESS",
+    "other_ci": {
+      "run294": 40300559798,
+      "run101": 40300559776,
+      "run363": 40300559799
+    },
+    "native_executed": false
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run493/RUN493_SOURCE_PRECEDENCE_GREEN_40300559844.zip",
+    "library_file_id": "libfile_1b4a7a79431c8191b1c3a7e7454774eb",
+    "sha256": "b9a915d7dc3c8b036c426cf7a56591d069047437b5b919c4ab27eeebd6014d11",
+    "verified": "materialized private Library and byte-compared",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "ToolStep.earlier_parts currently truncates the combined history+body-quote list to MAX_EARLIER=6, so a high quote count can still evict newer direct user history before the new provenance-aware reader sees it. This requires a separate bounded source-retention fix and adversarial test.",
+    "Noncanonical option wording still uses existing guarded C3 option fallback; not evidence of model learning or STEP2 utility.",
+    "Candidate changes production Runtime modules on a review branch only; frozen SourceHandoff registered cohort must not be silently modified or reattributed.",
+    "No native model/Redmi execution, no tool Age-right promotion, no learning gate changes."
+  ],
+  "exact_next_command": "Run495: reproduce earlier_parts quote-crowding user-history loss with actual Runtime + source-verified offers, implement bounded provenance-preserving evidence retention or fail-closed overflow, test with conflicting quotes and C3 fallback, then independent review/CI/remote checkpoint. Keep frozen Run491 native cohort and model/seed hashes unchanged."
+}
