@@ -8,19 +8,20 @@
   "source_git_blob_sha1": {
     "v13/code/scripts/run470_step2_complementarity.py": "bc49f6aab3455dc4656c98ef8df5b6a038631b48",
     "v13/code/tests/test_run470_step2_complementarity.py": "037ff31f159e0c36c472ba8ebdda8e6d3e297c45",
-    ".github/workflows/run470-step2-complementarity.yml": "98e466f7ffb96e161719427839a003debaee902f"
+    ".github/workflows/run470-step2-complementarity.yml": "bd601999376c8adb892e7769ba37ca7664826af0",
+    "v13/code/tests/test_run470_pinned_replay.py": "e9db82c8f858474392989818878238b5b402d5ad"
   },
   "verified_ci": {
-    "run_id": 40275078851,
-    "job_id": 121415999244,
+    "run_id": 40275354829,
+    "job_id": 121416837916,
     "conclusion": "success",
-    "tests": "181/181 PASS",
+    "tests": "185/185 PASS (seven matrix + four full replay + 174 inherited)",
     "privacy": "CLEAN",
-    "raw_artifact_id": 12629483952,
-    "raw_artifact_sha256": "8a87c976c90dc041f4f826a3ef91ee765999786e34198cfe1db34fb63edc767a",
-    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40275078851/artifacts/12629483952"
+    "raw_artifact_id": 12629881993,
+    "raw_artifact_sha256": "673d62b844d4e8735c39766e53f79021401464a2dad5fd8e2a023a5dd18b5af8",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40275354829/artifacts/12629881993"
   },
-  "result": "Exact frozen 378-row three-seed within-arm both_exact minus all six controls, per-seed/per-fixture paired wins/ties/losses, B1/B2 solo-unique coverage, P-O and P-S primary contrasts; original Run469 verifier and SHA-pinned reads reused, matrix recomputed. No native data synthesized.",
+  "result": "Exact frozen 378-row three-seed within-arm both_exact minus all six controls, per-seed/per-fixture paired wins/ties/losses, B1/B2 solo-unique coverage, P-O and P-S primary contrasts; original Run469 verifier and SHA-pinned reads reused, matrix recomputed. No native data synthesized. Four additional full synthetic export replay and post-verifier tamper tests, with duplicate inherited discovery removed.",
   "scope": "Source-only software/synthetic Linux CI, not a native378 result or canonical STEP2 acceptance.",
   "active_native": {
     "run_id": 40273136245,
@@ -41,5 +42,17 @@
     "Run470 descriptive strict dominance is not preregistered ten-episode acceptance, causal complementarity or distinct-body proof.",
     "Actual distinct B1/B2 representation and native Body-JEPA train-runner/Redmi proof remain open."
   ],
-  "next_command": "Fetch GitHub Actions run 40273136245 and artifact inventory. If complete GREEN, verify exact safe 252 ZIP and Stage6 report hashes, invoke Run458 import and Run459 Stage7 source preflight under released exclusive owner. Independently review Run470 PR469 and verify remote commit/tree; continue other blueprint packages if native still busy."
+  "next_command": "First check Run464 native S_s21 Actions 40273136245 and preserve raw/SAFE export even on RED. After owner release, use original 252 ZIP/report with Run458 and sequential Stage7 O_s22. Independently review Run470 PR469 and current frozen source. No STEP2 promotion from source CI.",
+  "full_source_ci": {
+    "run_id": 40275354827,
+    "job_id": 121416865908,
+    "conclusion": "success",
+    "software_tests": "401 PASS",
+    "extracted_phone_tests": "115 PASS",
+    "phone_source_manifest_files": 1197,
+    "independent_phone_archive_sha256": "ab6924c7920f5ee06ca78f57d41d31eb4b7439f3a71e2971e8719c58159d5ce0",
+    "phone_zip_artifact_id": 12630405144,
+    "phone_zip_artifact_sha256": "71827b0bdd2664dd5ac2b91c4cdcafa257e7e07b3321f6532983e58b2f7a05c5",
+    "privacy": "CLEAN"
+  }
 }
