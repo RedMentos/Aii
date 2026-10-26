@@ -1,0 +1,52 @@
+{
+  "schema": "V13_RUN504_SOURCE_ONLY_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run504-heldout980-remaining-map-20261026",
+  "base_branch": "codex/run503-batch3-native-20261026",
+  "base_sha": "5fdc8347eb2bf6c0b81cd3018ab3d020fa0f03ce",
+  "status": "SOURCE_STAGED_CI_PENDING",
+  "scope": {
+    "original_cohort_rows": 1050,
+    "original_stages": 75,
+    "reserved_stage_ids": [
+      "C_s31_p00",
+      "C_s31_p01",
+      "C_s31_p02",
+      "C_s31_p03",
+      "C_s31_p04"
+    ],
+    "reserved_rows_planned": 70,
+    "remaining_stages": 70,
+    "remaining_rows_planned": 980,
+    "future_batches": 24,
+    "actual_run504_native_rows": 0
+  },
+  "source": {
+    "run491_blob": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "run500_blob": "504a4a8492bdb383869b164b82c05d13e00f6823",
+    "prereg_blob": "08f7892088e7b53ae9ad5999f8a981deb4678fb5",
+    "schedule_blob": "5f447908ec6197760d55c347ffb949ae42ad1ed8",
+    "test_blob": "e1854594a6af6a3c3ccbf4668433bbc3d627654f"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "verification": [
+    "Run504 prereg persisted before source implementation",
+    "source-only schedule/test/workflow created; GitHub Actions not yet run",
+    "Run503 native job 40307435396 in progress when Run504 started; no new native owner"
+  ],
+  "blockers": [
+    "Run503 42-row native independent postflight pending",
+    "Run504 source-only CI pending",
+    "full 1050-row native cohort not completed",
+    "Redmi unavailable"
+  ],
+  "next_command": "Open draft PR Run504 against codex/run503-batch3-native-20261026, inspect Run504 source-only Actions, independently recompute 980-row schedule and artifact SHA256; inspect Run503 native job and preserve RED or PASS; then select next authorized package",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
