@@ -1,0 +1,120 @@
+name: V13 Run556 FUTURE_002 source-only batch executor proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run556-future002-source.yml'
+      - 'v13/code/scripts/run556_future002_batch.py'
+      - 'v13/code/tests/test_run556_future002_batch.py'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run556-step2-future002-source-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen original and source identity
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run556-future002-source/PREREG.md)" = 'a003c8e50b33f7446707bb3a4dccd877f4753db3'
+          test "$(git hash-object v13/code/scripts/run556_future002_batch.py)" = '0a3b0dc953bb0d2ac15bcedbf11a1cfa57454175'
+          test "$(git hash-object v13/code/tests/test_run556_future002_batch.py)" = '9b96acde8fb55d2d5a9084a2e3f889852f3fc50c'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/scripts/run502_step2_batch.py)" = '5c01768ccedbe63cb3c2eebde5a75347e3a67abd'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+      - name: Isolated source dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Mock-only source tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run556_future002_batch tests.test_run505_future001_batch tests.test_run504_remaining980_schedule tests.test_run502_step2_batch tests.test_run500_step2_stage_map > "$RUNNER_TEMP/RUN556_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN556_TEST_EXIT.txt"
+          exit 0
+      - name: Create exact source-only map, schedule and first future batch
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python scripts/run500_step2_stage_map.py --fixture-only --work "$RUNNER_TEMP/run556-source" > "$RUNNER_TEMP/RUN556_PLAN_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python scripts/run504_remaining980_schedule.py --output "$RUNNER_TEMP/run556-source/RUN504_SCHEDULE.json" >> "$RUNNER_TEMP/RUN556_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            ../../.venv/bin/python scripts/run556_future002_batch.py --work "$RUNNER_TEMP/run556-source" --plan >> "$RUNNER_TEMP/RUN556_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            cp "$RUNNER_TEMP/run556-source/RUN500_STAGE_MAP.json" "$RUNNER_TEMP/RUN556_FULL_MAP.json"
+            cp "$RUNNER_TEMP/run556-source/RUN504_SCHEDULE.json" "$RUNNER_TEMP/RUN556_SCHEDULE.json"
+            cp "$RUNNER_TEMP/run556-source/RUN556_BATCH_PLAN.json" "$RUNNER_TEMP/RUN556_BATCH_PLAN.json"
+            ../../.venv/bin/python - <<'PY' >> "$RUNNER_TEMP/RUN556_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          full=json.loads((root/'RUN556_FULL_MAP.json').read_text())
+          sched=json.loads((root/'RUN556_SCHEDULE.json').read_text())
+          plan=json.loads((root/'RUN556_BATCH_PLAN.json').read_text())
+          assert full['stage_count']==75 and full['expected_native_rows']==1050
+          assert sched['remaining_planned_rows']==980 and sched['native_executed'] is False
+          assert plan['batch_id']=='FUTURE_002'
+          assert plan['stage_ids']==['A_s31_p03','A_s31_p04','A_s32_p00']
+          assert plan['expected_rows']==42 and plan['native_executed'] is False
+          assert plan['canonical_gate_pass'] is False and plan['step2_exit']=='UTILITY_FAIL'
+          print('RUN556_FUTURE002_42_PLANNED_NOT_EXECUTED')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN556_PLAN_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN556_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN556_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN556_*' ! -name RUN556_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN556_SHA256SUMS.txt
+      - name: Preserve source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run556-future002-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN556_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only tests plan and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN556_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN556_PLAN_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN556_PRIVACY_EXIT.txt")" = '0'

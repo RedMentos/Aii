@@ -1,0 +1,11 @@
+# Run556 source-only result — frozen FUTURE_002 ready for separate native run
+
+Preregistered before code at `7cd517878207e2ac8c215b0d82d2f1ec034a03ba`, exact Run555 base `8fa4b48496aff2d20031bca4ccef536ad55a8755`. PR #555 head tested `76f334f4c34031180db08f086e2e16a9316e342e`. Branch-scoped review, not main.
+
+Added `scripts/run556_future002_batch.py` blob `0a3b0dc953bb0d2ac15bcedbf11a1cfa57454175` and `tests/test_run556_future002_batch.py` blob `9b96acde8fb55d2d5a9084a2e3f889852f3fc50c`. Existing Run491/500/502/504/505 and registered model/runner/fixture bytes untouched. Fixed three-stage selection: `A_s31_p03` Boreal/Cascade, `A_s31_p04` Drift/Eon, `A_s32_p00` Vesper/Willow. Exactly 42 disjoint row keys, SHA256 `cbf6ee6fb2237f9de025a0a37029d37758280da77614d6364c5e0767be15a873`; stage-specific seeds 31,31,32. Does not overlap Run507 FUTURE_001 or Run503 C_s31.
+
+Local: 29/29 source-only tests PASS; real plan generation 75-stage map, 24-batch future schedule and exact FUTURE_002 plan PASS, no native assets required or downloaded. GitHub Actions `40350244533` SUCCESS on exact head: 29/29 mock/source tests PASS, plan and privacy exits 0, raw artifact `12662833008` with 9/9 SHA members independently verified; ZIP SHA256 `acf3b9bd0b1e3bee54eb99290e88bbef9537dbdca56127e866e841efe231fd2f`. Private Library backup `/V13/checkpoints/2026-10-26/V13_Run556_SOURCE_GREEN_raw_sha_acf3b9bd.zip`. No native call or model proof in this package.
+
+Next command in exact checkout: `cd v13/code && PYTHONPATH=.:scripts python -m unittest -v tests.test_run556_future002_batch tests.test_run505_future001_batch tests.test_run504_remaining980_schedule tests.test_run502_step2_batch tests.test_run500_step2_stage_map`. Next owner: separate Run557 native experiment must preregister, check active native group and original Run507 receipts, use pinned unchanged bootstrap and source hashes, execute only FUTURE_002, independently audit each of 42 rows, preserve RED/partial raw, privacy scan, no force-push. No heavy job claimed by Run556.
+
+Negative gates unchanged: `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body_JEPA=UNAVAILABLE`, `jepa_weight=0`, `Redmi=UNMEASURED`, `V13=INCOMPLETE`. Neither this batch nor any partial STEP2 stage promotes the canonical ten-episode complementarity gate.
