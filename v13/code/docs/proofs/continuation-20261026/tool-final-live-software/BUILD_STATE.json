@@ -1,0 +1,38 @@
+{
+  "schema": "V13_TOOL_FINAL_LIVE_SOFTWARE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 isolated software integration",
+  "branch": "codex/automation11-tool-final-live-software-20261026",
+  "base_head": "1ee3f247d52acb1a63a15fba6cf89dcf7a2f3bc6",
+  "prereg_commit": "3a2ef81dcaf0ffd5e25ee7e8a6e03100c8db8c5e",
+  "clarification_commit": "ad2e30e7b354c64d9e09ab4a70daba74bea41655",
+  "verified_head": "8cdf29bf1eebb12aedd2e254c60f6160c031c200",
+  "tests": {
+    "workflow_run": 40377209522,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12675237335,
+    "artifact_sha256": "8847ee5188cb5ab80877a79f3ef6077cd0313964c1fb2710e1084b802f7fbff2",
+    "scope": "Actual Runtime.submit software with temp Store/ActionGate/ToolStep/Broker and synthetic approved READ_LOCAL seam; fake C3 sentinel; no native model, no Redmi",
+    "privacy": "PASS"
+  },
+  "verified_behaviors": [
+    "Unpatched Age-0 policy refuses autonomous eligibility tool execution",
+    "Synthetic explicitly approved UNKNOWN/NONE uses exact fixed final text without native answer generation",
+    "Persisted output model_generated=false and native_answer_skipped=true",
+    "Persisted broker recognizes exact ELIGIBILITY_TOOL_FINAL authority",
+    "A/B LEAD still uses synthetic C3 continuation and MODEL_ANSWER authority"
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "blocked": [
+    "Native/Redmi hardware unavailable in this run; software-only synthetic runner cannot prove native latency or correctness.",
+    "Original Run568 Linux-native FUTURE_005 workflow RED; independent original evidence preserved."
+  ],
+  "next_exact_command": "Check parent PR570 full unfiltered Actions 40376727122; preserve raw and report GREEN/RED without changing frozen tests. Independently review PR571 source and decide integration order only after parent source-wide checks. Continue next canonical blueprint package on new branch without merging main or promoting gates."
+}
