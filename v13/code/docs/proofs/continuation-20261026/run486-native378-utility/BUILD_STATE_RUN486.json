@@ -34,12 +34,47 @@
     ".github/workflows/run486-native378-utility.yml": "0f7c13fafef7e9c16dc12bfdb9830b8ddf4e58b9"
   },
   "tests": {
-    "github_source_and_original_native_artifact_analysis": "Run486 attempt1 RED preserved: Actions 40284529482, raw artifact 12633219653 SHA256 9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b; Run469 refused EXPORT_INVENTORY_MISMATCH because GitHub Actions artifact ZIP omitted 64 empty directories listed by original SHA-pinned Run409 manifest. No utility claims.",
+    "github_source_and_original_native_artifact_analysis": "SOURCE_CI_GREEN Run486 Actions 40284808262; actual original native378 SHA-pinned Run468/469/470 analysis completed; 38/38 analyzer source tests PASS; privacy CLEAN; no native rerun",
     "expected": "Frozen Run468/469/470 source tests, actual nine-receipt read-only paired utility and complementarity, privacy scan, raw artifact",
     "first_attempt_run_id": 40284529482,
     "first_attempt_raw_artifact_id": 12633219653,
     "first_attempt_raw_zip_sha256": "9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b",
-    "first_attempt_failure": "EXPORT_INVENTORY_MISMATCH: 64 manifest-declared empty directories absent from GitHub ZIP, 211/211 manifest-copied files present"
+    "first_attempt_failure": "EXPORT_INVENTORY_MISMATCH: 64 manifest-declared empty directories absent from GitHub ZIP, 211/211 manifest-copied files present",
+    "green_run_id": 40284808262,
+    "green_raw_artifact_id": 12632384691,
+    "green_raw_zip_sha256": "8004a6027ade69f18ccb704b22631a3b4995c6f4c9db0bb1786ba1415b5e854e",
+    "first_green_run_id": 40284773270,
+    "first_green_raw_artifact_id": 12633323035,
+    "first_green_raw_zip_sha256": "6bcf24ca0e28e091c8105cec455552681a38b553d5998437277734832e765bb4",
+    "utility_status": "RUN469_NATIVE378_UTILITY_DESCRIPTIVE_NO_GATE_PROMOTION",
+    "complementarity_status": "RUN470_FROZEN_COHORT_COMPLEMENTARITY_DIAGNOSTIC_ONLY",
+    "results": {
+      "arm_mean_both_exact": {
+        "O": 0.5092592592592592,
+        "P": 0.5972222222222222,
+        "S": 0.4212962962962963
+      },
+      "arm_mean_b1_only": {
+        "O": 0.6805555555555556,
+        "P": 0.7037037037037037,
+        "S": 0.6203703703703703
+      },
+      "arm_mean_b2_only": {
+        "O": 0.09722222222222222,
+        "P": 0.09722222222222222,
+        "S": 0.08796296296296297
+      },
+      "paired_both_exact_pointer_minus_off": 0.08796296296296297,
+      "paired_both_exact_pointer_minus_shared": 0.17592592592592593,
+      "pointer_both_exact_minus_b1_only": -0.10648148148148148,
+      "pointer_both_exact_minus_same_policy_dual": -0.060185185185185196,
+      "strict_dominance": {
+        "O": false,
+        "P": false,
+        "S": false
+      },
+      "canonical_complementarity_proven": false
+    }
   },
   "negative_gates": {
     "canonical_architecture_complete": false,
@@ -54,7 +89,8 @@
   "open_questions": [
     "This 378-row exploratory Run394/397 cohort is not the original ten-episode scoped STEP2 acceptance; even favorable utility cannot promote STEP2.",
     "Structural nine-receipt native GREEN does not imply actual B1/B2 complementarity or B3/Body-JEPA progress.",
-    "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available."
+    "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available.",
+    "Actual native378 pointer both_exact utility improves over off (+.088) and shared-body (+.176), but is below B1-only and same-policy dual controls; exploratory strict dominance fails in all arms. Do not claim B1/B2 complementarity."
   ],
-  "exact_next_command": "Inspect Run486 synchronize CI triggered by empty-directory reconstruction, verify original native378 receipt integrity and derived utility. Preserve further RED if any; no native rerun or gate promotion."
+  "exact_next_command": "Independently review PR #484 and raw artifact 12632384691; preregister canonical ten-episode STEP2 acceptance with distinct B1/B2 information and C3 consumer controls. No native rerun, no gate promotion."
 }
