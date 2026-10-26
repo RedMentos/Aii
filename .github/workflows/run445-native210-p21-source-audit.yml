@@ -1,0 +1,66 @@
+name: V13 Run445 actual native210 P21 source identity audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run445-native210-p21-source-audit.yml'
+      - 'v13/code/scripts/run442_native_seed_variance.py'
+      - 'v13/code/scripts/run445_native210_p21_source_audit.py'
+      - 'v13/code/tests/test_run445_native210_p21_source_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run445-native210/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Retrieve pinned existing actual native210 no-model artifact
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12627626352/zip' -o "$RUNNER_TEMP/run445-native210.zip"
+          printf '280bcf57f5dd956f9776174143acdbeb1e8df0c6adad18d0824db893e8ba32b7  %s\n' "$RUNNER_TEMP/run445-native210.zip" | sha256sum --check -
+          stat -c 'PINNED_NATIVE210_ARCHIVE_BYTES=%s' "$RUNNER_TEMP/run445-native210.zip"
+      - name: Replay all source/tool rows, controls and negative cases
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          export RUN445_ARCHIVE="$RUNNER_TEMP/run445-native210.zip"
+          sha256sum scripts/run442_native_seed_variance.py scripts/run445_native210_p21_source_audit.py tests/test_run445_native210_p21_source_audit.py | tee "$RUNNER_TEMP/run445-source-sha256.txt"
+          set +e
+          python3 -m unittest -v tests.test_run445_native210_p21_source_audit > "$RUNNER_TEMP/run445-tests.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run445-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run445-exit.txt"
+          if [ "$status" -ne 0 ]; then exit "$status"; fi
+          python3 scripts/run445_native210_p21_source_audit.py --archive "$RUN445_ARCHIVE" --output "$RUNNER_TEMP/run445-report.json"
+          if python3 scripts/run445_native210_p21_source_audit.py --archive "$RUN445_ARCHIVE" --expected-sha256 "$(printf '0%.0s' {1..64})" --output "$RUNNER_TEMP/run445-negative.json"; then
+            echo 'INVALID_SHA_UNEXPECTEDLY_ACCEPTED'; exit 3
+          fi
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="RED_PRESERVED" and d["canonical_gate_pass"] is False' "$RUNNER_TEMP/run445-negative.json"
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain only aggregate report and raw test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run445-aggregate-native210-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run445-tests.txt
+            ${{ runner.temp }}/run445-exit.txt
+            ${{ runner.temp }}/run445-source-sha256.txt
+            ${{ runner.temp }}/run445-report.json
+            ${{ runner.temp }}/run445-negative.json
+          if-no-files-found: warn
+          retention-days: 30
