@@ -281,6 +281,66 @@ def read_fixed(current, earlier=()):
     return out
 
 
+
+def read_fixed_sources(current, user_history=(), verified_quotes=()):
+    """Read fixed values with explicit evidence authority, not concatenated source order.
+
+    Priority: current > newest direct user message > source-verified body quotes.
+    Contradictory statements within the highest available tier refuse (None).
+    Quotes have no trusted temporal order and must agree, including option values.
+    A partial/conflicting higher-tier option cannot be repaired from old quotes.
+    `ambiguous_options` blocks a model fallback from choosing one of conflicting
+    source quotes; missing options without conflict may use the existing guarded
+    model-option fallback. No model is used by this reader.
+    """
+    history = [str(x) for x in user_history]
+    quotes = [str(x) for x in verified_quotes]
+    current = str(current)
+    out = {}
+    for rule in ('budget', 'deadline', 'local_only'):
+        current_values = stated_values(rule, current)
+        if current_values:
+            out[rule] = _one(current_values)
+            continue
+        for source in reversed(history):
+            found = stated_values(rule, source)
+            if found:
+                out[rule] = _one(found)
+                break
+        else:
+            quote_values = set().union(*(stated_values(rule, q) for q in quotes)) if quotes else set()
+            out[rule] = _one(quote_values)
+
+    options = []
+    ambiguous = False
+    for entity in ('A', 'B'):
+        found_higher = False
+        value = None
+        for source in (current, *reversed(history)):
+            statements = [c for c in option_clauses(entity, source) if _option_statement(c)]
+            if statements:
+                found_higher = True
+                value = fixed_option(entity, source)
+                if value is None:
+                    ambiguous = True
+                break
+        if not found_higher:
+            quote_values = []
+            for source in quotes:
+                statements = [c for c in option_clauses(entity, source) if _option_statement(c)]
+                if statements:
+                    quote_values.append(fixed_option(entity, source))
+            if quote_values:
+                if all(v is not None and v == quote_values[0] for v in quote_values):
+                    value = quote_values[0]
+                else:
+                    ambiguous = True
+        options.append(value)
+    out['options'] = options if all(o is not None for o in options) else None
+    out['ambiguous_options'] = ambiguous
+    return out
+
+
 def with_fixed_rules(values, fixed):
     """Model-read options, rules only from the fixed reader (the model's rule values are discarded)."""
     return dict(values, **{k: fixed[k] for k in ('budget', 'deadline', 'local_only')})
