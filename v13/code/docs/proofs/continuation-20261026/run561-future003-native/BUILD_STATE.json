@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN561_NATIVE003_BUILD_STATE_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 / Run561 serialized native FUTURE_003",
+  "base_verified_head": "c52603f14ca510eded0b9d0828d69d501d8e7a4d",
+  "branch": "codex/automation11-run561-future003-native-20261026",
+  "prereg_sha_git_blob": "d6fc0d3e9dc4d3f28274188ca74cb3525f3eb6be",
+  "workflow_sha_git_blob": "92c54dae4d30e16d2113a73a6b23a8b0db8193a4",
+  "workflow": ".github/workflows/run561-future003-native.yml",
+  "native_group": "v13-native-c3-run131-serialized",
+  "native_started": false,
+  "source_only_plan": {
+    "batch_id": "FUTURE_003",
+    "stage_ids": [
+      "A_s32_p01",
+      "A_s32_p02",
+      "A_s32_p03"
+    ],
+    "fixture_pairs": [
+      [
+        "Xenia",
+        "Yarrow"
+      ],
+      [
+        "Crescent",
+        "Asteria"
+      ],
+      [
+        "Boreal",
+        "Cascade"
+      ]
+    ],
+    "seed": 32,
+    "arm": "A",
+    "expected_rows": 42,
+    "prior_future_001_002_reserved_disjoint": true
+  },
+  "previous_verified": {
+    "run560_source_tests": 40,
+    "run560_original_native002_offline_rows": 42,
+    "run560_wrong_committed": 0,
+    "run560_privacy": "CLEAN",
+    "run560_artifact_sha256": "e5fe65ac8b862cf56f65aaca74e8563c50debe9d354897cb4a57078f51728f92"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Native FUTURE_003 execution and independent raw/safe audit pending",
+    "Run560 full source-wide Actions CI still pending at prereg time",
+    "All remaining FUTURE_004..024 not executed"
+  ],
+  "next_exact_command": "Create draft PR from codex/automation11-run561-future003-native-20261026 onto codex/automation11-run560-fixture-origin-native002-audit-20261026 to trigger one-shot serialized native Actions; monitor raw and safe artifacts; independently run run559_offline_review.py --batch FUTURE_003 --prefix RUN561 with exact original ZIP SHA and Actions head.",
+  "prerequisites": [
+    "No active native owner observed (GitHub Actions status=in_progress query at prereg)",
+    "No model changes, only pinned public original bootstrap",
+    "Preserve RED and SHA close all raw, never rerun same cohort automatically"
+  ]
+}
