@@ -154,3 +154,7 @@ Vorregistriert (`bench-results/z5-focal-controls-20261021/PREREGISTRATION.md`), 
 ## Ergänzung 2026-10-22 Thread „Z5 Koalition gegen Voll-Kontext“: WP-Z5c lange Sitzung — Gate-Regel erfüllt mit Vorbehalt
 
 `scripts/z5_focal_controls.py --session`, Beleg `bench-results/z5c-focal-session-20261022/`. 60 Aufgaben je Lauf in einer Sitzung, 5 Läufe, Kapazität bindet 295/300. Koalition 166, Voll-Kontext 82 (158 Overflow), feste Slots 181, Retrieval 185, ohne Hypothesen 188. Regel „schlägt Voll-Kontext“ erfüllt (97:13), aber nur über Platz (83:82 wenn beides passt); Koalition schlechter als ohne Hypothesen (p 0,006); Live-Pfad läuft 41/300 über. Nicht ohne Vorbehalt grün führen. Offen: Live-Overflow-Fix, Schaden der Hypothesen-Schicht in langen Sitzungen.
+
+## Ergänzung 2026-10-22 Thread „Überlauf im langen Gespräch“: WP-Z5d Live-Overflow behoben
+
+`v13/context_fit.py` kürzt vor der Antwort nur, wenn der Prompt nicht ins native Fenster passt (exakte Tokenzahl), älteste ungelöste Hypothesen früherer Aufgaben zuerst; Schalter `context_fit` off|shadow|active (Standard active). Beleg `bench-results/z5d-context-fit-20261022/`: Z5c-Sitzung 5 × 60, vorher 165/300 und 37 Overflows, nachher 188/300 und 0 Overflows (48:25, p 0,0095); Trefferquote auf passenden Turns unverändert 62,7 %. Wer `runtime.py`/`runners.py` ändert: Änderung auch als Schritt in `scripts/integrated_candidates.py::_later` eintragen, sonst scheitern die eingefrorenen Kandidaten-Tests. Branch `claude/project-thread-jrdawq`.
