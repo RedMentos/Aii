@@ -1,0 +1,7 @@
+# Run438 — atomic no-model native210 import preparation (source-only)
+
+Date 2026-10-26. Owner GPT. Clean review branch based on corrected Run434/PR433 checkpoint `7916b29f7f3904689fd2d484f397bd3db1b00a27`, independent of active exclusive Run437/PR436 native P_s21. This is **not** actual 210-row evidence and does not guess Run437 artifact IDs/hashes.
+
+Carry forward byte-identical Run436 independent 210-row verifier and synthetic tests from source-only PR435, whose 56/56 source tests passed (Actions 40266083149) but which was stacked on the closed Run435 native RED. Implement Run438 atomic ZIP importer analogous to Run430, requiring a future real `Run434 STAGE5_NATIVE_PARTIAL_NO_PROMOTION` report with 210 rows, exact externally supplied artifact SHA256, safe ZIP inventory/manifest/file SHA and source-bound five-arm Run436 independent verifier **before** no-clobber publication. Reject traversal, symlinks/hardlinks/special files, oversized/unlisted/duplicate members, missing declared directories, wrong row/status/gates and forged receipt. Preserve raw on RED. No models or native inference.
+
+Once actual Run437 succeeds, a *separate* postflight workflow must bind observed Run437 producer head/run/artifact IDs and hashes and run Run438/Run436 on a fresh runner. No S_s21 until that independent GREEN. Negative gates remain STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured.
