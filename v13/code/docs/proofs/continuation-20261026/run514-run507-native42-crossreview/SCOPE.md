@@ -1,0 +1,9 @@
+# Run514 — retrospective independent review of Run507 native 42-row batch
+
+Date 2026-10-26. Retrospective analysis, **not a preregistered new experiment**. Source-only continuation based on Run513 PR #511 (source-only GREEN Actions 40312547921). The reviewed native owner is Run507 PR #505, Actions 40309409260, commit 28dbc83775ef3c764fffdbeb219fad567dff49c4, which completed SUCCESS. No new native inference, model downloads or private data. Original frozen Run491/Run505 cohort/model/runner/seed/arm untouched.
+
+Review the original raw Actions ZIP artifact 12644872590 (SHA256 bae7d108bf211eb25b99694e4746f93ed0b240aeaacda3d289b1e1c051dc4227) and safe no-model ZIP 12644358345 (SHA256 406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b). Verify raw SHA manifest and safe per-file manifest, all three stage receipts and exact source row hashes, 42 disjoint fixture/variant rows, original frozen fixture oracles, all 12 score fields independently from stored native answers, process status/metrics and negative gates. Do not silently repair failures or infer Redmi/Body-JEPA utility from Linux-native rows. Compute per-variant descriptive utility; arm A is an original baseline, not a completed 1,050-row gate.
+
+Offline reviewer script reads only those two exact ZIPs from local working directory; no network and no native models. Reproduce with `python run514_review.py` after placing ZIPs at its declared paths. The report is evidence about preserved bytes; it does not itself prove the original inference environment independently of Actions and installed artifact preflight.
+
+Original negative gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, canonical full V13 incomplete. The reviewed raw and safe ZIPs are also backed up privately in the user's Library; do not use rejected anyone-writable Drive destination.

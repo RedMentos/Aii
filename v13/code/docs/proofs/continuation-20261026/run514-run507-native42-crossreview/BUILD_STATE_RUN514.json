@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN514_NATIVE42_RETROSPECTIVE_CROSSREVIEW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run514-run507-native42-crossreview-20261026",
+  "base_branch": "codex/run513-b2-receipt-postflight-20261026",
+  "base_sha": "d2ae0dabf22980583f7e36ba969348806aeab6a9",
+  "reviewed_native": {
+    "pr": 505,
+    "actions_run": 40309409260,
+    "head": "28dbc83775ef3c764fffdbeb219fad567dff49c4",
+    "conclusion": "SUCCESS",
+    "raw_artifact": 12644872590,
+    "raw_zip_sha256": "bae7d108bf211eb25b99694e4746f93ed0b240aeaacda3d289b1e1c051dc4227",
+    "safe_artifact": 12644358345,
+    "safe_zip_sha256": "406c5e6467c8666e257be73842c3bbf0b5ab53c73d7b46fb7e7cc155beb6677b"
+  },
+  "independent_review": {
+    "status": "OFFLINE_STRUCTURAL_PASS_NOT_REEXECUTED",
+    "raw_manifest_entries": 27,
+    "safe_manifest_entries": 24,
+    "rows_recomputed_against_original_oracles": 42,
+    "stage_count": 3,
+    "wrong_committed": 0,
+    "report_sha256": "eb6103a3ffbd335271e9d614827c2f2301b2d50ce6c7e042c5d1ae42163134b9",
+    "source_git_blob": "b99c92625c2849132f64fec6e6dc1abc96fdc652",
+    "mean_utility_arm_A_seed31": {
+      "b1_only": 0.09722222222222221,
+      "b2_only": 0.08333333333333333,
+      "both_exact": 0.08333333333333333,
+      "both_none": 0.1111111111111111,
+      "both_control": 0.08333333333333333,
+      "same_policy_dual": 0.09722222222222221,
+      "prompt_only_dual": 0.09722222222222221
+    },
+    "claim_limit": "Retrospective original A arm Linux-native rows; 1,050-row STEP2 gate not met"
+  },
+  "private_library_backups": [
+    "/V13_Run507_NATIVE42_RAW_20261026_shaBAE7D108.zip",
+    "/V13_Run507_NATIVE42_SAFE_20261026_sha406C5E64.zip",
+    "/V13_Run514_NATIVE42_INDEPENDENT_REVIEW_20261026_shaEB6103A3.json",
+    "/V13_Run514_PORTABLE_REVIEW_SCRIPT_20261026.py"
+  ],
+  "ci": {
+    "status": "SOURCE_ONLY_GREEN",
+    "run": 40313023100,
+    "head": "3a9348ced7527faa193feaafc46607b5d50e3b9b",
+    "artifact": 12644094970,
+    "artifact_zip_sha256": "29a344b27b1bf8dcfd957f728bd50a8a84ed4f1be0b9bfb893bd363b38962df2",
+    "manifest_entries_verified": 4,
+    "privacy": "CLEAN",
+    "test_exit": 0,
+    "private_backup": "/V13_Run514_SOURCE_ONLY_GREEN_20261026_sha29A344B2.zip"
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Run507 heavy owner completed and independently reviewed; verify no other native owner before separate preregistered Run515 first B2 quote-focus native p00 stage. Do not promote any gates.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
