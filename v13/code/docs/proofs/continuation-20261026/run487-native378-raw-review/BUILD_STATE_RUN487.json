@@ -1,0 +1,53 @@
+{
+  "schema": "V13_RUN487_INDEPENDENT_NATIVE378_RAW_REVIEW_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run487-native378-raw-stdlib-review-20261026",
+  "base_ref": "codex/run486-native378-utility-readonly-20261026",
+  "base_sha": "02d6dec14c747ad910248f943d25732a4cb961df",
+  "owner": "Independent raw-data auditor, separate from Run468/469/470 utility analyzers; no native/model ownership",
+  "original_evidence": {
+    "run479_native_run_id": 40281793150,
+    "original_safe_artifact_id": 12633269066,
+    "original_safe_zip_sha256": "a87acfa38688e66e603fe9c07cbc0762b231a6eb74527a8010c595e487e46afe",
+    "original_raw_artifact_id": 12633398520,
+    "original_raw_zip_sha256": "24268aede979c0e122ed05afe01141f61546b8077312ae42ce52f5c8ea4f65bf",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run486 (source bytes independently rehashed)"
+  },
+  "implementation": [
+    "Use only Python stdlib to SHA-check original safe ZIP and each of nine progress-pinned tool/summary receipts.",
+    "Recompute 378 exact fixture x variant x arm x seed utility values, nine original means, 18 paired differences and within-arm controls directly from raw tool rows.",
+    "No import of original Run468/469/470 analyzers, no models, no native execution, no preregistration or cohort edits.",
+    "Refuse source ZIP drift, duplicate rows, missing rows, changed original receipts, nonfinite utility and gate promotion."
+  ],
+  "local_independent_replay": {
+    "status": "RAW_NATIVE378_RECOMPUTED_NO_GATE_PROMOTION",
+    "rows": 378,
+    "pointer_minus_off_both_exact": {"mean": 0.08796296296296297, "wins": 6, "ties": 7, "losses": 5, "pairs": 18},
+    "pointer_minus_shared_both_exact": {"mean": 0.17592592592592593, "wins": 7, "ties": 7, "losses": 4, "pairs": 18},
+    "pointer_both_exact_minus_b1_only": -0.10648148148148151,
+    "pointer_both_exact_minus_same_policy_dual": -0.06018518518518523,
+    "strict_dominance": {"O": false, "P": false, "S": false},
+    "raw_result_sha256": "436b16d4c9642fddde59d7b7724907b60429f4d90e49ac1396603de49db72952",
+    "raw_auditor_local_sha256": "aa3d3b1e769af14aa332cc648530e47d06b689b7d181b6826f046058bbb23051"
+  },
+  "tests": {
+    "local": "Actual original safe ZIP 378/378 raw rows verified independently and matched Run486 metrics",
+    "github_ci": "PENDING: original artifact SHA, independent replay, deliberate ZIP tamper, official privacy scan"
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Exploratory six-fixture cohort is not the preregistered ten-episode canonical STEP2 acceptance.",
+    "Run487 independently validates arithmetic and source pins, not the validity of the original utility scoring rubric or causal benefit.",
+    "No evidence of B1/B2 strict complementarity; pointer both_exact remains below B1-only and same-policy dual controls."
+  ],
+  "exact_next_command": "Open PR to Run486; inspect independent raw CI and artifact, privately back up raw results, verify remote SHA and preserve no gate promotion; then preregister actual STEP2 acceptance rather than rerunning old nine arms."
+}
