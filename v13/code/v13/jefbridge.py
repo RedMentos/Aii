@@ -255,17 +255,42 @@ class JEFBridge:
         return {'mode':key,'scale':scale,'applied':st['mode']=='ACTIVE','useful_ratio':round(ratio,4),'n':o['n']}
     # -- human labels ---------------------------------------------------------------------------------
     def outcome(self,event_id,utility,source='human'):
-        """Human rating of an answer: selected offers get the label, re-entry values and bridge fields too."""
-        u=clip(utility);sc=step(self.n,PATHS['offer'])
+        """Only a committed, source-valid JEF turn may receive each feedback source once."""
+        if type(utility) not in (int,float) or not math.isfinite(utility) or source not in LR:
+            raise ValueError('JEF feedback requires finite utility and known source')
+        u=clip(utility);flag='human_rated' if source=='human' else 'internal_rated'
+        st,_=self._load()
+        t=next((x for x in st['turns'] if x['event_id']==event_id),None)
+        if not t or t.get(flag):return {'updated_offers':0}
+        ev=self.s.one('SELECT generation_id FROM events WHERE id=?',(event_id,))
+        if not ev:return {'updated_offers':0}
+        row=self.s.one("SELECT id,generation_id,payload FROM packets WHERE kind='JEFBridgeTurn' AND event_id=? ORDER BY rowid DESC LIMIT 1",(event_id,))
+        if not row or row['generation_id']!=ev['generation_id']:return {'updated_offers':0}
+        try:
+            p=json.loads(row['payload']);refs=p['provenance']
+            if (p['packet_id']!=row['id'] or p['event_id']!=event_id or
+                p['brain_generation_id']!=ev['generation_id'] or
+                not isinstance(refs,list) or not refs):
+                return {'updated_offers':0}
+            for ref in refs:self.s.read_source(ref)
+            selected=sorted((r['id'],r['role']) for r in t['rows'] if r['selected'])
+            recorded=sorted((o['id'],o['role']) for o in p['offers'] if o['selected'])
+            if selected!=recorded:return {'updated_offers':0}
+        except (ValueError,TypeError,KeyError,AttributeError,OSError,UnicodeError):
+            return {'updated_offers':0}
+        sc=step(self.n,PATHS['offer'])
         def fn(st):
-            t=next((x for x in st['turns'] if x['event_id']==event_id),None)
-            if not t:return 0
+            current=next((x for x in st['turns'] if x['event_id']==event_id),None)
+            if not current or current.get(flag):return 0
+            if sorted((r['id'],r['role']) for r in current['rows'] if r['selected'])!=selected:
+                return 0
             n=0
-            for r in t['rows']:
+            for r in current['rows']:
                 if r['selected']:self._sgd(st,r['x'],u,sc*LR[source]);n+=1
+            current[flag]=True
             return n
         n=self._mutate(fn)
-        if n:self._signal('offer',event_id,'human_correction',task_success=u)
+        if n:self._signal('offer',event_id,'human_correction' if source=='human' else 'internal_crosscheck',task_success=u)
         return {'updated_offers':n}
     def report(self):
         st,_=self._load();a=st['scaffold_agree']
