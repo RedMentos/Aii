@@ -1,0 +1,79 @@
+name: V13 Run422 HX2 same-task blind harness comparison source-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run422-hx2-source.yml'
+      - 'v13/code/v13/agi/harness_compare.py'
+      - 'v13/code/tests/test_harness_compare_run422.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run422-hx2/**'
+permissions:
+  contents: read
+jobs:
+  hx2-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Source identity and compile
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN422_HEAD.txt"
+          sha256sum v13/code/v13/agi/harness_compare.py \
+            v13/code/tests/test_harness_compare_run422.py \
+            | tee "$RUNNER_TEMP/RUN422_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/v13/agi/harness_compare.py \
+            v13/code/tests/test_harness_compare_run422.py
+      - name: HX2 paired blind lab and inherited HX1/HX3/HX4
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_harness_compare_run422 tests.test_harness_hx \
+            2>&1 | tee "$RUNNER_TEMP/RUN422_TESTS_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN422_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN422_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN422_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close source raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN422_*' ! -name RUN422_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN422_SHA256SUMS.txt
+      - name: Upload source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run422-HX2-Source-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN422_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          test "${{ steps.tests.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
