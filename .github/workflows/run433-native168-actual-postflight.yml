@@ -1,0 +1,171 @@
+name: V13 Run433 actual native168 independent no-model postflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run433-native168-actual-postflight.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run433-native168-postflight/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-no-model:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      GH_TOKEN: ${{ github.token }}
+      PRODUCER_RUN: '40263042202'
+      PRODUCER_HEAD: 'f98db0c7bca16c005bc987bcc507aa3abbdf66f4'
+      RAW_ID: '12626041558'
+      RAW_SHA: '3f7b66330778bd2129673c74d2917dcfe9b6ef8e2281df7f8557fd5c89bcecf5'
+      SAFE_ID: '12626146409'
+      SAFE_SHA: '405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Source pins and no-model preflight
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN433_HEAD.txt"
+          git merge-base --is-ancestor 865a9838fda687773a4cf443d9db87bf259a861b HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test "$(git hash-object v13/code/scripts/run429_verify_native168.py)" = "d2fb5572f2b4ded290d4a3bc081f67c20b53cd47"
+          test "$(git hash-object v13/code/scripts/run430_import_stage4_artifact.py)" = "61987b9c9967df7d6bbaab38eb59cbb101d59848"
+          sha256sum v13/code/scripts/run429_verify_native168.py v13/code/scripts/run430_import_stage4_artifact.py | tee "$RUNNER_TEMP/RUN433_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run429_verify_native168.py v13/code/scripts/run430_import_stage4_artifact.py
+      - name: Verify observed producer metadata and exact downloaded ZIPs
+        id: fetch
+        run: |
+          set -uo pipefail
+          set +e
+          (
+            set -euo pipefail
+            gh api "repos/RedMentos/Aii/actions/runs/$PRODUCER_RUN" --jq '{id,conclusion,head_sha}' > "$RUNNER_TEMP/RUN433_PRODUCER_METADATA.json"
+            gh api "repos/RedMentos/Aii/actions/artifacts/$RAW_ID" --jq '{id,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' > "$RUNNER_TEMP/RUN433_RAW_METADATA.json"
+            gh api "repos/RedMentos/Aii/actions/artifacts/$SAFE_ID" --jq '{id,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' > "$RUNNER_TEMP/RUN433_SAFE_METADATA.json"
+            python3 - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          def read(name):return json.loads((root/name).read_text())
+          assert read("RUN433_PRODUCER_METADATA.json")=={"id":int(os.environ["PRODUCER_RUN"]),"conclusion":"success","head_sha":os.environ["PRODUCER_HEAD"]}
+          for label in ("RAW","SAFE"):
+              item=read("RUN433_"+label+"_METADATA.json")
+              assert item["id"]==int(os.environ[label+"_ID"])
+              assert item["digest"]=="sha256:"+os.environ[label+"_SHA"]
+              assert item["expired"] is False
+              assert item["workflow_run"]=={"id":int(os.environ["PRODUCER_RUN"]),"head_sha":os.environ["PRODUCER_HEAD"]}
+          print("RUN433_PRODUCER_AND_ARTIFACT_METADATA_VERIFIED")
+          PY
+            timeout 900s gh api "repos/RedMentos/Aii/actions/artifacts/$RAW_ID/zip" > "$RUNNER_TEMP/run433-raw.zip"
+            echo "$RAW_SHA  $RUNNER_TEMP/run433-raw.zip" | sha256sum -c -
+            timeout 900s gh api "repos/RedMentos/Aii/actions/artifacts/$SAFE_ID/zip" > "$RUNNER_TEMP/run433-safe.zip"
+            echo "$SAFE_SHA  $RUNNER_TEMP/run433-safe.zip" | sha256sum -c -
+            python3 - <<'PY'
+          import json,os,pathlib,zipfile,hashlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          with zipfile.ZipFile(root/"run433-raw.zip") as z:
+              names=z.namelist()
+              assert len(names)==len(set(names))
+              assert names.count("RUN427_STAGE4_REPORT.json")==1
+              raw=z.read("RUN427_STAGE4_REPORT.json")
+          report=json.loads(raw)
+          assert report["run"]=="Run421"
+          assert report["status"]=="STAGE4_NATIVE_PARTIAL_NO_PROMOTION"
+          assert report["errors"]==[]
+          assert report["rows_verified"]==168
+          assert report["completed"]==["O_s20","P_s20","S_s20","O_s21"]
+          assert report["canonical_gate_pass"] is False
+          assert report["step2_exit"]=="UTILITY_FAIL"
+          assert report["redmi_measured"] is False
+          assert report["jepa_weight"]==0
+          (root/"RUN433_STAGE4_REPORT.json").write_bytes(raw)
+          (root/"RUN433_REPORT_SHA256.txt").write_text(hashlib.sha256(raw).hexdigest()+"  RUN427_STAGE4_REPORT.json\n")
+          print("RUN433_ACTUAL_PRODUCER_REPORT_168_VERIFIED")
+          PY
+          ) 2>&1 | tee "$RUNNER_TEMP/RUN433_FETCH_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN433_FETCH_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Independent Run430 atomic import and Run429 168-row verifier
+        id: verify
+        if: steps.fetch.outputs.rc == '0'
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          (
+            set -euo pipefail
+            python3 -m venv "$RUNNER_TEMP/run433venv"
+            timeout 240s "$RUNNER_TEMP/run433venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run433venv/bin/python" scripts/run430_import_stage4_artifact.py \
+              --archive "$RUNNER_TEMP/run433-safe.zip" --expected-sha256 "$SAFE_SHA" \
+              --stage4-report "$RUNNER_TEMP/RUN433_STAGE4_REPORT.json" \
+              --destination "$RUNNER_TEMP/run433-verified-export" \
+              --output "$RUNNER_TEMP/RUN433_IMPORT_REPORT.json"
+            PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run433venv/bin/python" scripts/run429_verify_native168.py \
+              --export "$RUNNER_TEMP/run433-verified-export" \
+              --stage4-report "$RUNNER_TEMP/RUN433_STAGE4_REPORT.json" \
+              --output "$RUNNER_TEMP/RUN433_INDEPENDENT_REPORT.json"
+            python3 - <<'PY'
+          import json,os,pathlib,hashlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          a=json.loads((root/"RUN433_IMPORT_REPORT.json").read_text())
+          b=json.loads((root/"RUN433_INDEPENDENT_REPORT.json").read_text())
+          assert a["status"]=="RUN430_STAGE4_ARTIFACT_IMPORTED_VERIFIED"
+          assert b["status"]=="RUN429_NATIVE_168_INDEPENDENTLY_VERIFIED"
+          assert b["verified_arms"]==["O_s20","P_s20","S_s20","O_s21"]
+          assert a["rows_verified"]==b["rows_verified"]==168
+          for k in ("manifest_sha256","copied_files","copied_bytes"):
+              assert a[k]==b[k],k
+          for v in (a,b):
+              assert v["canonical_gate_pass"] is False and v["step2_exit"]=="UTILITY_FAIL"
+              assert v["redmi_measured"] is False and v["jepa_weight"]==0
+          for name in ("RUN433_IMPORT_REPORT.json","RUN433_INDEPENDENT_REPORT.json"):
+              p=root/name
+              print(name,hashlib.sha256(p.read_bytes()).hexdigest())
+          print("RUN433_ACTUAL_LINUX_NATIVE_168_INDEPENDENTLY_VERIFIED_NO_PROMOTION")
+          PY
+          ) 2>&1 | tee "$RUNNER_TEMP/RUN433_VERIFY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN433_VERIFY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Privacy
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree 2>&1 | tee "$RUNNER_TEMP/RUN433_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN433_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close small raw and hashes (no work/models)
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN433_*' ! -name RUN433_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN433_SHA256SUMS.txt
+      - name: Upload only small raw receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run433-Native168-Independent-Small-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN433_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce observed independent proof
+        if: always()
+        run: |
+          test "${{ steps.fetch.outputs.rc }}" = "0"
+          test "${{ steps.verify.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"

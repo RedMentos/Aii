@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN433_ACTUAL_NATIVE168_POSTFLIGHT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run433-native168-actual-postflight-20261026",
+  "base_pr": 429,
+  "base_head": "865a9838fda687773a4cf443d9db87bf259a861b",
+  "native_producer": {
+    "run": 40263042202,
+    "head": "f98db0c7bca16c005bc987bcc507aa3abbdf66f4",
+    "conclusion": "success",
+    "rows_observed": 168,
+    "arms": ["O_s20","P_s20","S_s20","O_s21"],
+    "raw_artifact_id": 12626041558,
+    "raw_zip_sha256": "3f7b66330778bd2129673c74d2917dcfe9b6ef8e2281df7f8557fd5c89bcecf5",
+    "safe_artifact_id": 12626146409,
+    "safe_zip_sha256": "405e62268b0314c6e852e367a4624a12508e971877afe14afebf05cb2afba6b7"
+  },
+  "independent_postflight": {
+    "source_head": "c0f7769d25fa03a14bcf3c162088559da9765492",
+    "actions": 40265361929,
+    "conclusion": "success",
+    "raw_artifact_id": 12626211929,
+    "raw_artifact_sha256": "a4d65e0465159efcd74c60b2eda1eeba033b39de60f6be83fe7004b96f9166b6",
+    "producer_metadata": "VERIFIED",
+    "both_outer_artifact_sha256": "VERIFIED",
+    "run430_atomic_import": "RUN430_STAGE4_ARTIFACT_IMPORTED_VERIFIED",
+    "run429_independent_verifier": "RUN429_NATIVE_168_INDEPENDENTLY_VERIFIED",
+    "rows_verified": 168,
+    "copied_files": 131,
+    "copied_bytes": 85615998,
+    "manifest_sha256": "bde79cc2b97fe58e252ace1cfaa800a2bcae1482e61ec23743f6f1423238668d",
+    "import_report_sha256": "47041ee18e994ab0a715de803563862b6e6495bff14835752db924790f4e7b90",
+    "independent_report_sha256": "e68c795ac0ae08ce41b64eb81111745ee4b525b0f7bf7e5b3c2a1a43efa1e552",
+    "privacy": "CLEAN",
+    "native_inference_performed_by_this_branch": false,
+    "safe_export_contains_model_weights": false,
+    "claim_limit": "168/378 structural Linux-native rows; NOT STEP2 utility, B3, Body-JEPA, jepa_weight, Redmi or whole-system proof"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Prepare exact one P_s21 arm using unchanged Run397 max_new_arms=1, frozen Run394/397/model hashes and verified Run433 168-row safe export. Exclusive native Actions concurrency group, no parallel model jobs, retain failed raw. Preregister source-only and verify preflight before --execute."
+}
