@@ -18,7 +18,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
-:ersetze route <Route> <Wort>[,<Wort>] [--notiz Text] | :ersetze list | :ersetze undo <Id> (neuere Routen-Korrektur ersetzt ältere mit diesen Wörtern)
+:ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id> (neuere Routen-Korrektur ersetzt ältere mit diesen Wörtern)
 :feedback wake none|detail|gist|both [--learn] / :feedback halt halt|continue [--learn]
 :feedback skill none|skill / memory skip|recall|deep / channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC [--learn] (WP-T1 Fast-Köpfe)
 :fastpolicy [status|focus on|off|measure|outcomes [record|learn]|lifecycle [Event-ID]] (JEF_FAST_POLICY-Köpfe, Re-entry-Frage, Ergebnis-Labels, Lebenszyklus L0–L11)

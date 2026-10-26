@@ -32,7 +32,10 @@ def suggest(store,text,session):
     return best
 
 def for_turn(store,text,session):
-    """(route or None, info). route is set only in active mode."""
+    """(route or None, info). route is set only in active mode. WP-Z6d: an explicit human --sofort rule wins first."""
+    from .route_supersede import rule_route
+    rr=rule_route(store,text)
+    if rr:return rr['route'],{'source':'HUMAN_ROUTE_RULE','rule':rr['id'],'words':rr['words'],'authority':'EXPLICIT_HUMAN_RULE'}
     md=mode(store)
     if md=='off':return None,None
     s=suggest(store,text,session)

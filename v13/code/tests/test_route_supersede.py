@@ -35,6 +35,19 @@ class RouteSupersedeTest(unittest.TestCase):
         with self.assertRaises(ValueError): RS.add(self.r.store, 'simple', ['ab'])
         op.run(':ersetze undo ' + rid); self.assertEqual(RS.rules(self.r.store), [])
 
+    def test_sofort_rule_routes_at_answer_time_and_undo_restores(self):
+        from v13.episodic_route import for_turn
+        op = Operator(self.r); q = 'Wie viel ist die Hälfte von 120 Euro?'
+        op.run(':ersetze route simple hälfte')  # without --sofort: training only
+        self.assertIsNone(RS.rule_route(self.r.store, q))
+        op.run(':ersetze route simple hälfte,halbiere --sofort'); rid = RS.rules(self.r.store)[-1]['id']
+        route, info = for_turn(self.r.store, q, self.r.session)
+        self.assertEqual((route, info['source']), ('simple', 'HUMAN_ROUTE_RULE'))
+        self.assertIsNone(for_turn(self.r.store, 'Rechne 12 mal 3 aus.', self.r.session)[0])
+        e = self.r.store.event(self.r.session, q)
+        self.assertEqual(self.r._route(q, e, time.monotonic()+5)[0], 'simple')
+        op.run(':ersetze undo ' + rid); self.assertIsNone(RS.rule_route(self.r.store, q))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -61,7 +61,7 @@ SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --not
 
 
 def run_arm(installed, policy, seed):
-    sup = policy.endswith('+sup'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
+    sup = policy.endswith('+sup') or policy.endswith('+now'); now_rule = policy.endswith('+now'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
@@ -91,6 +91,16 @@ def run_arm(installed, policy, seed):
             unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
             return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4)}
         def active_path(): return r.learner.active()
+        def runtime_routes():  # WP-Z6d: the real answer-time routing path (Runtime._route), not the head alone
+            out = []
+            for t, _, _ in heldout:
+                e = r.store.event(r.session, t); route, info = r._route(t, e, time.monotonic()+30); out.append((route, (info or {}).get('source')))
+            return out
+        def runtime_acc(routes):
+            ok = [p[0] == b for p, (_, a, b) in zip(routes, heldout)]
+            half = [o for o, (_, a, b) in zip(ok, heldout) if a != b]; unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
+            return {'all': round(sum(ok)/len(ok), 4), 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4)}
+        runtime_before_rule = None
         def batch_disagreement(batch):
             p = active_path()
             if p is None: return None
@@ -104,7 +114,9 @@ def run_arm(installed, policy, seed):
             corrections = 0; promos = []
             for phase, batches in (('p1', p1), ('p2', p2)):
                 for bi, batch in enumerate(batches):
-                    if sup and phase == 'p2' and bi == 0: Operator(r).run(SUPERSEDE_CMD)
+                    if sup and phase == 'p2' and bi == 0:
+                        if now_rule: runtime_before_rule = runtime_routes()
+                        Operator(r).run(SUPERSEDE_CMD + (' --sofort' if now_rule else ''))
                     dis = batch_disagreement(batch)
                     for t, lab in batch:
                         e = r.store.event(r.session, t); r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
@@ -126,6 +138,18 @@ def run_arm(installed, policy, seed):
                     row['active_acc_after'] = acc(active_path(), shifted); log.append(row)
                     print(json.dumps({'policy': policy, 'phase': phase, 'batch': bi, 'shadow': do, 'status': row.get('status'),
                                       'acc': row['active_acc_after']['all']}), flush=True)
+            runtime = None
+            if now_rule or base_policy == 'fixed':
+                final_routes = runtime_routes(); runtime = {'final': runtime_acc(final_routes)}
+                if now_rule:
+                    rid = [x for x in __import__('v13.route_supersede', fromlist=['rules']).rules(r.store) if x.get('apply_now')][-1]['id']
+                    runtime['before_rule'] = runtime_acc(runtime_before_rule)
+                    Operator(r).run(':ersetze undo ' + rid); after_undo = runtime_routes()
+                    half = [i for i, (_, a, b) in enumerate(heldout) if a != b]; same = [i for i in range(len(heldout)) if i not in half]
+                    runtime['rule_source_on_half'] = sum(final_routes[i][1] == 'HUMAN_ROUTE_RULE' for i in half)/len(half)
+                    runtime['rule_touches_other_items'] = sum(final_routes[i] != after_undo[i] for i in same)  # same head, rule on vs off
+                    runtime['rule_source_after_undo'] = sum(x[1] == 'HUMAN_ROUTE_RULE' for x in after_undo)
+                    runtime['after_undo'] = runtime_acc(after_undo)
             # rollback of the last promotion must restore the measured parent accuracy (L11 safety path)
             rb = None
             if promos:
@@ -137,7 +161,7 @@ def run_arm(installed, policy, seed):
             restart_same = r.session == session
         finally:
             r.close()
-    return {'policy': policy, 'record_only_updates': record_updates, 'log': log, 'rollback': rb, 'restart_same_session': restart_same}
+    return {'policy': policy, 'record_only_updates': record_updates, 'log': log, 'rollback': rb, 'restart_same_session': restart_same, 'runtime': runtime}
 
 
 def score(arm):
@@ -155,7 +179,7 @@ def score(arm):
             'corrections_to_shift_half80': first(lambda x: x['phase'] == 'p2' and x['active_acc_after']['half_items'] >= .8),
             'p1_end_acc': p1_end['all'], 'final_acc': final['all'], 'final_half_items': final['half_items'],
             'retention_unchanged': round(final['unchanged']/max(1e-9, p1_end['unchanged']), 4) if p1_end['unchanged'] else None,
-            'per_route_final': final['per_route'], 'rollback': arm['rollback'], 'restart_same_session': arm['restart_same_session']}
+            'per_route_final': final['per_route'], 'rollback': arm['rollback'], 'restart_same_session': arm['restart_same_session'], 'runtime': arm.get('runtime')}
 
 
 def criteria(s):
@@ -179,6 +203,15 @@ def criteria_z6c(s):
     return c, 'Z6C_SUPERSEDE_PASS' if all(c.values()) else 'Z6C_SUPERSEDE_FAIL'
 
 
+def criteria_z6d(s):
+    a = [s['fixed+now'], s['adaptive+now']]
+    c = {'D1_runtime_half_items_ge_90pct': all(x['runtime']['final']['half_items'] >= .9 for x in a),
+         'D2_rule_touches_no_other_item': all(x['runtime']['rule_touches_other_items'] == 0 for x in a),
+         'D3_undo_removes_rule_completely': all(x['runtime']['rule_source_after_undo'] == 0 and x['runtime']['rule_source_on_half'] == 1 for x in a),
+         'D4_control_without_rule_fails': s['fixed']['runtime']['final']['half_items'] < .5}
+    return c, 'Z6D_RULE_ROUTE_PASS' if all(c.values()) else 'Z6D_RULE_ROUTE_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -191,6 +224,8 @@ def main(argv=None):
            'claim_limit': 'route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate'}
     if {'fixed', 'adaptive'} <= set(scores):
         doc['criteria'], doc['verdict'] = criteria(scores)
+    if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
+        doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
