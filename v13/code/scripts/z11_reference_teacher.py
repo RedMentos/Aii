@@ -7,6 +7,7 @@ docs/proofs/continuation-20261022/z11-reference-teacher/PREREG.md (committed bef
 Usage: z11_reference_teacher.py <installed_home_with_TEACHER> <out.json> [--limit N] [--z11b]
 --z11b: WP-Z11b protocol (selections deferred until all self answers of the arm; leak chunks stored).
 --z11c: WP-Z11c = z11b + leak check v2 (plain history text, quotes/markup ignored) on fresh seed 29.
+--z11d: WP-Z11d = z11b + leak check v3 (word 8-gram shingles, minus self and task shingles) on fresh seed 31.
 """
 import json
 import re
@@ -37,11 +38,16 @@ def norm(s):
     return re.sub(r'[\s"\'`*_\u201c\u201d\u201e\u2018\u2019]+', ' ', s).strip().lower()
 
 
+def shingles(s, k=8):
+    """WP-Z11d leak check v3: word 8-grams of the normalized text (no character-boundary artifacts)."""
+    w = re.findall(r'[a-z0-9\u00c0-\u024f]+', norm(s)); return {' '.join(w[i:i+k]) for i in range(max(0, len(w)-k+1))}
+
+
 def shared_chunks(a, b, n=40):
     return {a[i:i+n] for i in range(0, max(0, len(a)-n+1), 5)} & {b[i:i+n] for i in range(0, max(0, len(b)-n+1))}
 
 
-def run_arm(installed, arm, fixtures, deferred=False, leak_v2=False):
+def run_arm(installed, arm, fixtures, deferred=False, leak_v2=False, leak_v3=False):
     """deferred (WP-Z11b): human selections only after all self answers of the arm, so T3 sees the teacher alone."""
     from v13 import effort as EF
     from v13.config import initialize, save_config
@@ -75,7 +81,9 @@ def run_arm(installed, arm, fixtures, deferred=False, leak_v2=False):
                     tok, tnum = U.score(tt, nums, checks)
                     hist, _ = native_history(r.store, r.session, 'z11-probe', 8)
                     htext = json.dumps([dict(h) if not isinstance(h, dict) else h for h in hist], default=str)
-                    if leak_v2:
+                    if leak_v3:
+                        leak = (shingles(tt) & shingles('\n'.join(h['text'] for h in hist))) - shingles(out) - shingles(text)
+                    elif leak_v2:
                         hplain = norm('\n'.join(h['text'] for h in hist)); leak = {c for c in shared_chunks(norm(tt), hplain) if c not in norm(out) and c not in norm(text)}
                     else:
                         leak = {c for c in shared_chunks(tt, htext) if c not in out and c not in text}
@@ -144,23 +152,23 @@ def analyse(by, meta):
                             'mean_self_s': round(sum(r['self_s'] for r in on.values())/len(on), 1)}}
 
 
-def main(installed, out, limit=None, deferred=False, seed=23, leak_v2=False):
+def main(installed, out, limit=None, deferred=False, seed=23, leak_v2=False, leak_v3=False):
     installed = Path(installed).resolve(); out = Path(out); fx = U2.tasks(seed=seed)
     if limit: fx = fx[:limit]
     by, meta, rows = {}, {}, []
     for arm, f in (('off', fx), ('on', fx), ('on_repeat', fx[:20])):
-        rs, m = run_arm(installed, arm, f, deferred, leak_v2); rows += rs; meta[arm] = m; by[arm] = {r['fixture']: r for r in rs}
-        atomic_write(out, json.dumps({'kind': 'V13_Z11_REFERENCE_TEACHER', 'seed': seed, 'leak_check': 'v2' if leak_v2 else 'v1', **analyse(by, meta), 'arm_meta': meta,
+        rs, m = run_arm(installed, arm, f, deferred, leak_v2, leak_v3); rows += rs; meta[arm] = m; by[arm] = {r['fixture']: r for r in rs}
+        atomic_write(out, json.dumps({'kind': 'V13_Z11_REFERENCE_TEACHER', 'seed': seed, 'leak_check': 'v3' if leak_v3 else 'v2' if leak_v2 else 'v1', **analyse(by, meta), 'arm_meta': meta,
                                       'teacher_model': json.loads((installed/'config/models.json').read_text()).get('teacher'),
                                       'rows': rows, 'phone_measured': False, 'deferred_selection': deferred,
-                                      'prereg': 'docs/proofs/continuation-202610%s/PREREG.md' % ('26/z11c-reference-teacher' if leak_v2 else '26/z11b-reference-teacher' if deferred else '22/z11-reference-teacher')}, indent=1))
+                                      'prereg': 'docs/proofs/continuation-202610%s/PREREG.md' % ('26/z11d-reference-teacher' if leak_v3 else '26/z11c-reference-teacher' if leak_v2 else '26/z11b-reference-teacher' if deferred else '22/z11-reference-teacher')}, indent=1))
     print(json.dumps(analyse(by, meta), indent=1))
 
 
 if __name__ == '__main__':
-    a = sys.argv[1:]; lim = None; z11c = '--z11c' in a; deferred = '--z11b' in a or z11c
-    for f in ('--z11b', '--z11c'):
+    a = sys.argv[1:]; lim = None; z11c = '--z11c' in a; z11d = '--z11d' in a; deferred = '--z11b' in a or z11c or z11d
+    for f in ('--z11b', '--z11c', '--z11d'):
         if f in a: a.remove(f)
     if '--limit' in a:
         i = a.index('--limit'); lim = int(a[i+1]); del a[i:i+2]
-    main(a[0], a[1], lim, deferred, 29 if z11c else 23, z11c)
+    main(a[0], a[1], lim, deferred, 31 if z11d else 29 if z11c else 23, z11c, z11d)
