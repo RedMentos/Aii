@@ -1,0 +1,97 @@
+{
+  "schema": "V13_RUN491_HELDOUT10_SOURCE_PREFLIGHT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "Run491 prospective STEP2 held-out source-only fixture registration; no native job owner",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/run491-step2-heldout10-preflight-20261026",
+  "base_branch": "codex/run490-jef-toolstep-live-source-20261026",
+  "base_sha": "cc4910161f2b4964892252427eb4c6b9fe82bd0e",
+  "review_pr": 489,
+  "preregistration": {
+    "path": "v13/code/docs/proofs/continuation-20261026/run491-heldout10/PREREG.md",
+    "blob_sha": "cec309fb98cb6d9554860b6dffc27c062c679ff0",
+    "registered_before_inference": true
+  },
+  "source_blobs": {
+    "v13/code/scripts/run491_step2_heldout10.py": "f4d2d8d5e66c49c508e376ebafce2146e5a2715b",
+    "v13/code/tests/test_run491_step2_heldout10.py": "5dacff483d5cc913b6eb926f26f9dffafa213fa1",
+    "v13/code/scripts/step2_z2_timescale.py": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7"
+  },
+  "frozen_cohort": {
+    "fixture_sha256": "c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63",
+    "names": [
+      "Vesper",
+      "Willow",
+      "Xenia",
+      "Yarrow",
+      "Crescent",
+      "Asteria",
+      "Boreal",
+      "Cascade",
+      "Drift",
+      "Eon"
+    ],
+    "types": {
+      "SPLIT": 6,
+      "RULE": 2,
+      "DETAIL": 2
+    },
+    "seeds": [
+      31,
+      32,
+      33
+    ],
+    "arms": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "variants": 7,
+    "planned_native_consumer_rows": 1050,
+    "source_horizon": "B1 exact recent 600 chars; B2 older 240 chars; options after char 240 in SPLIT/DETAIL"
+  },
+  "model_sha256_expected_not_downloaded": {
+    "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "runner_sha256_expected_not_downloaded": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "validation": {
+    "source_only_ci": {
+      "run_id": 40294781815,
+      "status": "GREEN: 7 unit tests, 10 frozen fixtures, SHA and horizon isolation, refusal to overwrite, privacy CLEAN",
+      "artifact_id": 12637658226,
+      "artifact_sha256": "9828fdcdf0c1c016a97bfb9d6cb46685174922256ab521d3b67f5e9494b15ad7"
+    },
+    "focused_ci": {
+      "run_id": 40294781912,
+      "status": "SUCCESS"
+    },
+    "native_executed": false
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-26/Run491/RUN491_HELDOUT10_SOURCE_40294781815.zip",
+    "library_file_id": "libfile_5b7e487df2e481918bd70f3bb856ab0b",
+    "sha256": "9828fdcdf0c1c016a97bfb9d6cb46685174922256ab521d3b67f5e9494b15ad7",
+    "verified": "materialized private Library and byte-compared",
+    "anyone_writable_drive_used": false
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Public pinned model license/source availability and actual byte hashes require fresh verification before native inference.",
+    "Full native 5x3x10x7 cohort has not started; existing Run479 native data and Run489 shadow data are distinct and cannot promote new held-out acceptance.",
+    "Native runner b10964 and C3/B1/B2 license/provenance, active job ownership, thermal/RSS and Redmi proof remain outstanding."
+  ],
+  "exact_next_command": "Run492: verify pinned public Hugging Face model revision/filename/LFS SHA256/size/license metadata via primary APIs without downloading model payloads; fail closed on drift. Then inspect active native owners, download compatible isolated native prerequisites only when source and license gates allow, run a serialized two-fixture/one-seed native pilot with closed raw evidence; no full 1050-row job before pilot acceptance."
+}
