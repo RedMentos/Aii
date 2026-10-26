@@ -98,7 +98,7 @@ def make_stage(work):
                     "evidence_refs": [quote_ref],
                     "native_metrics": {"status": "FINAL"},
                     "model_revision": "SYNTHETIC_TEST_ONLY",
-                    "raw_offer_quotes": [excerpt], "rejected_quotes": [],
+                    "raw_offer_quotes": [excerpt], "rejected_quotes": 0,
                     "process_releases": [{"process_reaped": True}],
                     "oracle_visible_to_native": False,
                     "native_executed": True,
