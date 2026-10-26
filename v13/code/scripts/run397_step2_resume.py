@@ -56,6 +56,10 @@ def validate_completed(directory, arm, seed, fixtures, expected_manifest, curren
                                      (source_path, tool_path, summary_path, prereg_path))
     expected = {(f["id"], v) for f in fixtures for v in VARIANTS}
     require(source.get("fixtures") == fixtures, "SOURCE_FIXTURE_MISMATCH")
+    # Preserve the full native runtime/harness identity, not only the wrapper
+    # and model catalog. A prior arm from changed source cannot be reused.
+    require(source.get("source_hashes") == r394.z2.harness().source_hashes(),
+            "RECORDED_RUNTIME_SOURCE_HASH_MISMATCH")
     # A self-consistent report from another valid installed model is not a
     # reusable result for this preregistered cohort. Bind actual role hashes.
     models = catalog()["models"]
