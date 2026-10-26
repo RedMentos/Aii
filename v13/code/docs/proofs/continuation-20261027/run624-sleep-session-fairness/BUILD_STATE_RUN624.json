@@ -1,0 +1,45 @@
+{
+  "run": "Run624",
+  "date_utc": "2026-10-26T23:08:00Z",
+  "owner": "GPT-6 automation run; exclusive file ownership sleep_offline.py, test_run624_sleep_session_fairness.py, run624 workflow and scoped proof",
+  "status": "SOURCE_COMMITTED_CI_RUNNING",
+  "parent_pr": 618,
+  "parent_head": "608d7be0b214e66771ae70cba2d61c8b3a95a6a5",
+  "review_pr": 619,
+  "branch": "codex/automation11-run624-sleep-session-fairness-20261027",
+  "prereg_commit": "97fff0b07e3a4c1f2155cf1df1a69e86a34dcbb6",
+  "test_first_commit": "57b47ee5b9588701fc0850b6504625faef707672",
+  "source_commit": "752d5769150fdc5e67ae831dbcf2bbae7243b5e8",
+  "workflow_commit": "baace29c87971e13f21f440a2a861901d0db875d",
+  "source_blob": "0525bffc887efd91a26a67f94a38f7eab2cdfd0f",
+  "test_blob": "a7c59e6541e4a47ff89927ab78b619dcbaf88f2c",
+  "workflow_blob": "5eeaad559829995d551623fb8635bda778fb0b83",
+  "original_source_blob": "4ad4e4382b73f7ee2189e1d2e6d05a5d09b6ac9c",
+  "prereg_blob": "05811fc387505866256350814c0ef4c4a3d3312c",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "ci_run_id": 40417577666,
+  "changes": [
+    "newest 4 FINAL-bearing sessions served each cycle",
+    "up to 4 additional sessions keyset round robin with persisted validated cursor",
+    "per-session source validation and 64-turn cap unchanged"
+  ],
+  "observations": [
+    "Run623 PR618 exact-head Actions Run 40416609463 success, test/privacy exits zero; raw artifact 12694569046",
+    "Run624 source/test/workflow remote readback SHA verified; no local cloned checkout"
+  ],
+  "pending": [
+    "Run624 Actions original RED/patched GREEN/privacy and closed raw artifact verification",
+    "independent source review; source-only no Redmi/native proof",
+    "future substantive Context OS/learning packages"
+  ],
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "next_command": "Inspect https://api.github.com/repos/RedMentos/Aii/actions/runs/40417577666 and /jobs, read Run624 raw test/privacy evidence; if failed fix source or workflow without rewriting frozen prereg; checkpoint report, then select next independent canonical package.",
+  "backup": "Public review branch PR619 only (source+workflow+prereg); raw private archive not yet downloaded; no Drive write attempted."
+}
