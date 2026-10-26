@@ -501,7 +501,7 @@ class Runtime:
                 try:  # WP-S7: sleep day digest of turns outside the history window (measured: recall of old facts 0 % -> 79-96 %)
                     if ctxos.controller(self).digest_enabled():
                         from .sleep_offline import context_items
-                        dig=context_items(self.store,self.session,{m['event_id'] for m in history_records}|{eid})
+                        dig=context_items(self.store,self.session,{m['event_id'] for m in history_records}|{eid},selection=ctxos.controller(self).digest_selection(),query=text)
                         if dig:volatile.append(('COMPRESSED','\n'+prompt(self.cfg,'digest'),dig));meta['digest_lines']=len(dig)
                 except Exception as exc:self.store.log('digest_unavailable',eid,{'error':type(exc).__name__})
                 volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session)))
