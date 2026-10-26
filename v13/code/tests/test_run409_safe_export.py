@@ -124,5 +124,13 @@ class Run409ExportTests(unittest.TestCase):
         self.assertFalse(self.dest.exists())
 
 
+    def test_hardlinked_model_renamed_as_data_rejected(self):
+        source = self.installed / "models" / "public.gguf"
+        os.link(source, self.work / "opaque.dat")
+        result = self.check()
+        self.assertIn("HARDLINK_SOURCE_REJECTED", str(result["errors"]))
+        self.assertFalse(self.dest.exists())
+
+
 if __name__ == "__main__":
     unittest.main()
