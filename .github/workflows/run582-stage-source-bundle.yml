@@ -1,0 +1,124 @@
+name: V13 Run582 future native stage source bundle software gate
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run582-stage-source-bundle.yml'
+      - 'v13/code/scripts/run582_stage_source_bundle.py'
+      - 'v13/code/tests/test_run582_stage_source_bundle.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run582-stage-bundle/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-completeness:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run582-future-stage-source-bundle-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Bind prereg, source and Canon
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN582_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run582-stage-bundle/PREREG.md)" = c4f134fa45256729b670466faf3bed953c7f7f8d
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run582-stage-bundle/PREREG_HARDEN.md)" = d57abfc7512229575de3cebb6e4737a7bd35ca0b
+          test "$(git hash-object v13/code/scripts/run582_stage_source_bundle.py)" = 17019b74e33e1c21d637bcac0bf5fa0110fa8db8
+          test "$(git hash-object v13/code/tests/test_run582_stage_source_bundle.py)" = 5719e22729153ea0a693549a64c0d8417666f3f8
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN582_HOST.txt"
+      - name: Synthetic complete and adversarial missing-source tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m compileall -q scripts/run582_stage_source_bundle.py tests/test_run582_stage_source_bundle.py > "$RUNNER_TEMP/RUN582_COMPILE_RAW.log" 2>&1
+          cr=$?
+          echo "$cr" > "$RUNNER_TEMP/RUN582_COMPILE_EXIT.txt"
+          if [ "$cr" -eq 0 ]; then
+            timeout 90s python3 -m unittest -v tests.test_run582_stage_source_bundle > "$RUNNER_TEMP/RUN582_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN582_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN582_TEST_RAW.log" ]; then tail -n 60 "$RUNNER_TEMP/RUN582_TEST_RAW.log"; fi
+          exit 0
+      - name: Retrieve exact original incomplete safe ZIP as negative control
+        run: |
+          set -uo pipefail
+          set +e
+          curl -fsSL --retry 0 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12672672003/zip" \
+            -o "$RUNNER_TEMP/original-native-568-safe.zip" > "$RUNNER_TEMP/RUN582_DOWNLOAD_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "8860df4426bdfb1f07215519638b48cbb45b11266bfdd2ebd1b08e7465b9d151  $RUNNER_TEMP/original-native-568-safe.zip" | sha256sum -c - >> "$RUNNER_TEMP/RUN582_DOWNLOAD_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN582_DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Original p02 missing source must be rejected, never called success
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN582_DOWNLOAD_EXIT.txt")" = 0 ]; then
+            python3 -m scripts.run582_stage_source_bundle \
+              --inspect-safe-zip "$RUNNER_TEMP/original-native-568-safe.zip" > "$RUNNER_TEMP/RUN582_NEGATIVE_RAW.log" 2>&1
+            original_rc=$?
+            if [ "$original_rc" -ne 0 ] && grep -Fq 'MISSING_STAGE_SOURCE:stage_A_s33_p02/step2_A_s33.json' "$RUNNER_TEMP/RUN582_NEGATIVE_RAW.log"; then
+              rc=0
+            else
+              rc=1
+            fi
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN582_NEGATIVE_EXIT.txt"
+          echo "EXPECTED_ORIGINAL_MISSING_P02_SOURCE; check original raw artifact separately"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN582_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN582_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close bounded source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN582_*' ! -name RUN582_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN582_SHA256SUMS.txt
+      - name: Preserve evidence even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run582-stage-source-bundle-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN582_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce no missing stage source accepted
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN582_COMPILE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN582_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN582_DOWNLOAD_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN582_NEGATIVE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN582_PRIVACY_EXIT.txt")" = 0
