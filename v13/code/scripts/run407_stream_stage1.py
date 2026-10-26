@@ -22,7 +22,8 @@ MAX_ARCHIVE = 2_500_000_000
 MAX_MEMBER = 8_000_000_000
 MAX_TOTAL = 9_000_000_000
 MAX_MANIFEST = 1_000_000
-SMALL = set(stage.RAW_EXITS) | {"RUN401_HEAD.txt", "RUN401_POSTFLIGHT.json"}
+SMALL = set(stage.RAW_EXITS) | {"RUN401_HEAD.txt", "RUN401_POSTFLIGHT.json",
+                                "RUN401_INSTALLED_RAW.log"}
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 
 
