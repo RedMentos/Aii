@@ -95,14 +95,19 @@ def lookup(r, limit=MAX_RESULTS):
             if not math.isfinite(score):
                 raise SimilarityUnavailable('Invalid cosine')
             seen.add(ref['source_id'])
-            found.append({'packet_id': p['packet_id'], 'source_ref': ref,
-                          'excerpt': text[:EXCERPT_CHARS], 'cosine': round(max(-1., min(1., score)), 6)})
+            # Rank with the unrounded native cosine. Rounding is display-only:
+            # two distinct scores may both render as 0.999999, and sorting the
+            # rendered values would incorrectly prefer the newer, worse match.
+            found.append((score, {'packet_id': p['packet_id'], 'source_ref': ref,
+                                  'excerpt': text[:EXCERPT_CHARS],
+                                  'cosine': round(max(-1., min(1., score)), 6)}))
         except (KeyError, ValueError, TypeError, OSError, OverflowError):
             skipped += 1
-    found.sort(key=lambda x: -x['cosine'])  # stable, latest tap wins ties
+    found.sort(key=lambda item: -item[0])  # stable, latest tap wins exact ties
     out = {'revision': REVISION, 'status': 'READ_ONLY', 'authority': 'SHADOW_READ_ONLY',
            'query_packet_id': query['packet_id'], 'model_revision': current_revision,
-           'scanned': len(rows), 'excluded': skipped, 'matches': found[:limit],
+           'scanned': len(rows), 'excluded': skipped,
+           'matches': [item for _, item in found[:limit]],
            'receiver_read_authority': 0, 'receiver_injection_authority': 0,
            'body_learning_authority': 0}
     r.store.log('gist_similarity', query['event_id'], {'scanned': len(rows), 'excluded': skipped,
