@@ -5,6 +5,7 @@ A blind judge chooses between anonymous outputs twice in reversed order.
 This measures preference, NOT factual accuracy or an AG8 approval. No live
 consumer, model download, tool execution, learning or Age promotion.
 """
+import copy
 import hashlib
 import json
 import math
@@ -94,8 +95,7 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None):
     if baseline is None:
         base = {name: harness.default(name) for name in harness.TARGETS}
     elif isinstance(baseline, dict) and set(baseline) == set(harness.TARGETS):
-        base = {name: harness.TARGETS[name][2](value)
-                for name, value in baseline.items()}
+        base = harness.candidate(baseline)
     else:
         raise ValueError("HX2_BASELINE_INVALID")
     target = next(iter(checked))
@@ -108,8 +108,8 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None):
     for index, task in enumerate(clean):
         task_seed = seed + index
         try:
-            reference = _output(solver(dict(task), dict(base), task_seed))
-            changed = _output(solver(dict(task), dict(variant), task_seed))
+            reference = _output(solver(dict(task), copy.deepcopy(base), task_seed))
+            changed = _output(solver(dict(task), copy.deepcopy(variant), task_seed))
             digests = {"reference": hashlib.sha256(reference.encode()).hexdigest(),
                        "candidate": hashlib.sha256(changed.encode()).hexdigest()}
             if reference == changed:
