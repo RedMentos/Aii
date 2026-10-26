@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN425_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run425-actual-native126-audit-20261026",
+  "base_pr": 419,
+  "base_head": "7f56bcae0cf495c9e2c521b116242bb2f575c5ed",
+  "source_head": "faeb5ee4d658c5efb75bfd4c44c5446c25560961",
+  "actual_native_producer": {
+    "actions": 40260347495,
+    "head": "a09c1b59db063ba0e6dc25d129abaad3e8833049",
+    "reported_rows": 126,
+    "step2_exit": "UTILITY_FAIL",
+    "small_raw_artifact_id": 12625030366,
+    "small_raw_zip_sha256": "54a6b12638dfdc0e9f71f362d3357dd70adfe0ba2441d26c4c3eba3e37bb364b",
+    "no_model_artifact_id": 12624815819,
+    "no_model_zip_sha256": "20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4"
+  },
+  "independent_actual_postflight": {
+    "actions": 40262481461,
+    "source_head": "faeb5ee4d658c5efb75bfd4c44c5446c25560961",
+    "conclusion": "success",
+    "status": "RUN425_ACTUAL_NATIVE_126_INDEPENDENT_POSTFLIGHT_PASS",
+    "run419_import": "RUN419_STAGE3_ARTIFACT_IMPORTED_VERIFIED",
+    "run421_preview": "STAGE4_READY_NO_NATIVE",
+    "verified_rows": 126,
+    "verified_arms": [
+      "O_s20",
+      "P_s20",
+      "S_s20"
+    ],
+    "copied_files": 115,
+    "copied_bytes": 81562039,
+    "manifest_sha256": "faa1061c07485a84bcdefd07e0fe8f36dcdc743de2c4041470ee781b994761b8",
+    "privacy": "CLEAN",
+    "small_raw_artifact_id": 12625161556,
+    "small_raw_zip_sha256": "86ef89f9522a5e1e383096475e48050c481f682ca4f54acc0af23c3bf242e6ca"
+  },
+  "source_integrity": {
+    "run394_git_blob": "fae7aed612108a554d8566b2917ebf31022df423",
+    "run397_git_blob": "f1946054135cb6fdf48c06477308f518e2e62ad9",
+    "models_catalog_git_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native_owner": {
+    "run418_completed": true,
+    "o21": "NOT_RUN",
+    "new_native_job_started": false
+  },
+  "next_command": "After checking no other native owner, use Run421 one-arm O_s21 script only with exact installed pinned models/runner, Run425 verified safe work artifact and explicit --execute; preserve no-model export and raw failed attempts. Do not launch parallel heavy jobs. Continue other independent blueprint work if native prerequisites blocked.",
+  "open_questions": [
+    "Remaining 6 arms O/P/S seeds21/22 and full 378-row paired utility gate",
+    "Actual Redmi thermal/RSS and sustained sessions absent",
+    "Review branch integration still pending; main is older"
+  ]
+}
