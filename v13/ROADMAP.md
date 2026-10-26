@@ -1385,7 +1385,8 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - Alle vier §99-Dream-Kontrollen (`code/scripts/z9_dream_policy_only.py`, Befund `code/docs/proofs/continuation-20261022/z9-dream-policy-only/BEFUND.md`): Basis reproduziert Dream2v3; Dream ohne Faktenschreiben (Verlustmaske auf Faktenwerten) A-Umschreibung 0, Replay+Policy-Dream nur +0,08, Proben 0,22 vs. 0,61. Der Dream-Gewinn kommt aus dem Schreiben der Fakten selbst → G-REPLAY-CONSOLIDATION-001 bleibt offen.
 - Fehlende §99-Kontrolle für „Dream hilft“; schließt mit Dream2v3 G-REPLAY-CONSOLIDATION-001.
 
-### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — OFFEN
+### WP-Z10 MoE verdrahten + Pre-Router-Vergessen messen (Cloud, groß) — TEIL Z10a GEMESSEN 2026-10-26: `Z10A_PRE_ROUTER_REPLICATED`, Verdrahtung offen
+- **Z10a §24.19** (vorregistriert, Befund `code/docs/proofs/continuation-20261026/z10a-moe-prerouter/BEFUND.md`): EuroMoE, 3 Seeds mit eigenen Faktenmengen. Fenster 8–9: Vergessen entsteht vor dem Router (3/3), Experten-Updates vergessen 7–18× weniger, Restauration shared holt 78–94 % zurück. Fenster 16–17: gleiche Richtung, Vorteil nur 4–6× (R2 1/3). Offen: MoE als B1/B2 in der Runtime, Handy-Messung.
 - WP-N11 Teil 3: EuroMoE/SmallThinker als B1/B2, §24.19 (heute NOT_IMPLEMENTED), aktive Expert-Deltas mit eingefrorenem Router (STEP6C).
 
 ### WP-Z11 Referenz-Lehrer für STEP4 (Cloud) — Z11d `STEP4_EXIT_PASS` 2026-10-26 (vierter vorregistrierter Versuch; Z11, Z11b, Z11c bleiben FAIL) (Thread „Offene Ziel-Pakete Z6 bis Z12“, PR #38)
