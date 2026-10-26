@@ -4,7 +4,7 @@
   "branch": "codex/run504-heldout980-remaining-map-20261026",
   "base_branch": "codex/run503-batch3-native-20261026",
   "base_sha": "5fdc8347eb2bf6c0b81cd3018ab3d020fa0f03ce",
-  "status": "SOURCE_STAGED_CI_PENDING",
+  "status": "SOURCE_CI_GREEN_INDEPENDENT_SCHEDULE_VERIFIED",
   "scope": {
     "original_cohort_rows": 1050,
     "original_stages": 75,
@@ -39,14 +39,30 @@
   "verification": [
     "Run504 prereg persisted before source implementation",
     "source-only schedule/test/workflow created; GitHub Actions not yet run",
-    "Run503 native job 40307435396 in progress when Run504 started; no new native owner"
+    "Run503 native job 40307435396 in progress when Run504 started; no new native owner",
+    "Run504 source-only Actions 40308251717 GREEN, 18 tests, privacy CLEAN",
+    "Downloaded artifact 12642784880, recomputed 7/7 raw SHA256 entries and ZIP SHA256",
+    "Independent stdlib recomputation: 24 batches, 70 stages, 980 unique original keys and per-batch hashes PASS",
+    "Private Library backup uploaded and listed; GitHub remote source/prereg/test/checkpoint bytes verified"
   ],
   "blockers": [
     "Run503 42-row native independent postflight pending",
-    "Run504 source-only CI pending",
     "full 1050-row native cohort not completed",
     "Redmi unavailable"
   ],
-  "next_command": "Open draft PR Run504 against codex/run503-batch3-native-20261026, inspect Run504 source-only Actions, independently recompute 980-row schedule and artifact SHA256; inspect Run503 native job and preserve RED or PASS; then select next authorized package",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Review Run503 Actions 40307435396 native completion and independently audit its 42 rows; if GREEN and owner free, preregister future FUTURE_001 A_s31_p00–p02 42-row serialized native attempt. Run504 is source-only, not native proof.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "actions_run": 40308251717,
+    "actions_conclusion": "success",
+    "source_tests_passed": 18,
+    "privacy": "CLEAN",
+    "artifact_id": 12642784880,
+    "artifact_zip_sha256": "c711412060e00f5dd1362c61c02777163892d4d5fb2449031719a1beeda84d36",
+    "raw_sha256_manifest_entries": 7,
+    "full_stage_map_sha256": "c1056aeda7fae51d0af07b83d55bd42db8b51bbd3d16c4a692e0cd3d0e4ef876",
+    "remaining_row_keys_sha256": "994beaf3c7b23cd27621d19328457363684b64abe32f18ab47d35ae1ea1a4345",
+    "library_backup_path": "/V13-Checkpoints/2026-10-26/Run504/run504-source-0e994b5-sha-closed.zip",
+    "library_backup_file_id": "libfile_31b427e3c6948191b662650d6ca8da02"
+  }
 }
