@@ -48,6 +48,14 @@ def quote_coverage(analysts,rules):
     return {key:any(re.search(re.escape(v['sentence'])+r'(?![\w])',q,re.I) for q in quotes)
             for key,v in rules.items()}
 
+def require_stage_keys(source_rows,consumer_rows):
+    expected=[(r['fixture'],r['variant']) for r in source_rows]
+    actual=[(r['fixture'],r['variant']) for r in consumer_rows]
+    if (len(expected)!=14 or len(actual)!=14 or len(set(expected))!=14 or
+            len(set(actual))!=14 or set(expected)!=set(actual)):
+        raise ValueError('STAGE_ROW_KEY_DUPLICATE_OR_MISSING')
+    return set(expected)
+
 def audit(paths,expected_shas):
     if len(paths)!=3 or len(expected_shas)!=3:raise ValueError('EXACT_THREE_ORIGINAL_BATCHES_REQUIRED')
     report={'schema':'V13_RUN565_FROZEN_STEP2_QUOTE_DIAGNOSTIC_V1',
@@ -73,8 +81,8 @@ def audit(paths,expected_shas):
                 if len(s)!=1 or len(t)!=1:raise ValueError('STAGE_SOURCE_MISSING')
                 source=json.loads(z.read(s[0]));tool=json.loads(z.read(t[0]))
                 fixtures={f['id']:f for f in source['fixtures']}
+                require_stage_keys(source['rows'],tool['rows'])
                 sr={(r['fixture'],r['variant']):r for r in source['rows']}
-                if len(sr)!=14 or len(tool['rows'])!=14:raise ValueError('STAGE_ROWS')
                 for row in tool['rows']:
                     fid,v=row['fixture'],row['variant']
                     if v not in VARIANTS or fid not in fixtures or (fid,v) not in sr:raise ValueError('ROW_SOURCE')
