@@ -1,0 +1,43 @@
+{
+  "schema": "V13_RUN476_B3_NUMERICAL_INTEGRITY_CANDIDATE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run476-b3-numerical-integrity-20261026",
+  "base_ref": "codex/run474-b3-bridge-geometry-20261026",
+  "base_commit_at_branch_creation": "99f2de76f3076ce8d132170cc62a0b05471caf73",
+  "owner": "Run476 isolated source-only B3 verifier candidate; no native/model owner",
+  "source_files": {
+    "v13/code/scripts/run471_bridge_key_candidate.py": "0d4b7d7bee477da6a3ebcc8ad28289fb78eb8ba0",
+    "v13/code/tests/test_run471_bridge_key_candidate.py": "245290de4dc954b3449b16944268419c257e90b0"
+  },
+  "finding": "A self-consistent NPZ/manifest digest can attest nonfinite weights, zero input scale or an unlisted tensor; a forged enormous geometry or compressed NPZ can allocate before the prior verifier rejects it.",
+  "changes": [
+    "Bound manifest and compressed NPZ sizes, declared geometry and Age-0 BF16 budget before Bridge.load.",
+    "Require exact NPZ inventory and bounded total uncompressed member bytes.",
+    "Require all loaded tensors to be finite floating arrays and positive input/calibration scales."
+  ],
+  "tests_added": [
+    "self-consistent NaN Q",
+    "self-consistent zero input standard deviation",
+    "infinite calibrated OOD threshold",
+    "huge forged manifest d before allocation",
+    "unlisted NPZ member",
+    "small compressed archive with oversized uncompressed tensor"
+  ],
+  "tests_status": "PENDING_GITHUB_CI; not locally executed in this connector-only environment",
+  "source_scope": "Candidate only. Production b3bridge.py/bodyport.py and native STEP2 cohort untouched.",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "latent_authority": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Candidate still lacks hostile-concurrent-rename/TOCTOU guarantees.",
+    "Independent review and production migration/native B3 L1/retention proofs required before integration.",
+    "Exact original native378 STEP2 utility acceptance still separate; no gate promotion."
+  ],
+  "next_command": "Wait for GitHub Actions run471-b3-bridge-key source workflow on Run476 PR; inspect full raw tests/privacy and SHA-bound artifacts; fix RED, independently review, then proceed with next independent canonical package.",
+  "remote_checkpoint_verified": false
+}
