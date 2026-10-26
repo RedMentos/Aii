@@ -1,0 +1,54 @@
+{
+  "schema": "V13_RUN621_BRANCH_SCOPED_BUILD_STATE_V1",
+  "utc_date": "2026-10-26",
+  "branch": "codex/automation11-run621-b2-diagonal-readout-20261026",
+  "base_pr": 615,
+  "base_head": "ac25ca8728c3a6b4cb9182ef4f9139438579b9c0",
+  "owner": "GPT automation11 new Run621 script/tests/workflow/proof only",
+  "prereg_commit": "beb345b908967968b433aab95489edf6dcd9421b",
+  "source_blob": "f08429acfccd6bac13f469119f1b76131a1967df",
+  "test_blob": "7253c4045fe5bf0aa5bbed6eab354215b9c3561b",
+  "original_native_states_sha256": "cb535df87749c0cf5d698d26268e6b03f3d6f57690b95434aebc6c875a3ea189",
+  "original_native_report_sha256": "42ac6d22ef6c9cc59622572f233b2e7b83094af7a9fdd227cfe2fff15e0666e4",
+  "status": "NO_B2_READOUT_GAIN",
+  "metrics": {
+    "raw_top1": 0.85,
+    "centered_top1": 0.85,
+    "learned_top1": 0.85,
+    "gain": 0,
+    "controls": 200,
+    "empirical_p": 0.8905472636815921
+  },
+  "local_tests": "5/5 original-state/synthetic/adversarial PASS",
+  "report_sha256": "581edc072b1ba7d1c8d6c8f77c65c0d1b194a7f905a1f3b12771e900e21da7ca",
+  "weights_sha256": "1e5fbfbdf778b93d180aaad602fd54e4cbaea5317b77c924406a222f74c25363",
+  "ci_status": "GITHUB_PUSH_WORKFLOW_UNVERIFIED",
+  "evidence_level": "RETROSPECTIVE_PRIOR_LINUX_NATIVE_B2_STATES_OFFLINE_TRAINED_HEAD",
+  "native_inference_new": false,
+  "body_weight_update": false,
+  "receiver_injection_authority": 0,
+  "head_activation_authority": 0,
+  "redmi_measured": false,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "main_integrated": false,
+  "open_questions": [
+    "Learned diagonal B2 readout no gain; do not tune on same heldout",
+    "Prospective semantic utility and native body learning remain unmeasured",
+    "Exact Actions CI run status unverified"
+  ],
+  "next_command": "Verify Run621 exact Actions raw/exit/privacy; retain NO_GAIN and continue different Canon path rather than tuning same heldout",
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run621/run621-local-closed.zip",
+    "sha256": "f3d0aed7346753cead4e4d572b1aef20d6ac4252ad05d2630c9fac579c445864",
+    "roundtrip_verified": true
+  }
+}
