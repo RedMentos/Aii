@@ -11,7 +11,7 @@ def obsched_names():
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :befehle [Wort] (alle Befehle mit Erklärung) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
-:chats / :new / :open <Chat-ID> / :search <Text> [--before <Message-ID>] / :export chat [json|md] [Chat-ID]
+:chats [all|--before <Chat-ID>] / :new / :open <Chat-ID> / :search <Text> [--before <Message-ID>] / :export chat [json|md] [Chat-ID]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
@@ -282,7 +282,23 @@ class Operator:
         if cmd=='logs':
             if args==['runner']:return '\n'.join(p.name+'\n'+safe_text(p.read_text(errors='replace')[-4000:]) for p in (r.home/'logs').glob('*.log'))
             return dumps(s.rows('SELECT * FROM telemetry ORDER BY id DESC LIMIT 20'))
-        if cmd=='chats':return dumps(s.rows('SELECT * FROM sessions ORDER BY created DESC'))
+        if cmd=='chats':
+            # Keyset pagination is bounded on phone even after years of chats.
+            # The old unbounded list remains an explicit local-only choice.
+            if args==['all']:
+                return dumps(s.rows('SELECT * FROM sessions ORDER BY created DESC,id DESC'))
+            if not args:
+                return dumps(s.rows('SELECT * FROM sessions ORDER BY created DESC,id DESC LIMIT 50'))
+            if (len(args)!=2 or args[0]!='--before'
+                    or not 1<=len(args[1])<=128):
+                raise ValueError(':chats [all|--before <Chat-ID>]')
+            cursor=s.one('SELECT id,created FROM sessions WHERE id=?',(args[1],))
+            if cursor is None:
+                raise ValueError('Chat-ID unbekannt')
+            return dumps(s.rows(
+                'SELECT * FROM sessions WHERE created<? OR (created=? AND id<?) '
+                'ORDER BY created DESC,id DESC LIMIT 50',
+                (cursor['created'],cursor['created'],cursor['id'])))
         if cmd=='search':
             # Stable descending message IDs make older hits reachable without
             # materializing all chat history; old :search <Text> stays valid.
