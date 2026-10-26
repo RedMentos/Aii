@@ -1,3 +1,7 @@
+# Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2f — mehr B2-Gedächtnis macht veraltete Regeln gefährlich
+
+Mit `b2_context_chars` 1536 kommt die alte Regel an, der Zeiger hält aber nicht (.26 vs. .09). Wichtig: 27 falsche Entscheidungen, alle nach überholten Regeln (B2 zitiert die alte Notiz, nicht die Änderung). Explorativer Aktualitäts-Wächter: 27 → 0 ohne Verlust. Nächstes: WP-Z2g bestätigen. Schalter bleiben aus, Budget live 768. Befund `docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.
+
 # Aktuell 2026-10-26 (Thread „B2 zitiert Regel selten“): WP-Z2e Zeiger auf schweren Aufgaben nicht aussagefähig → WP-Z2f läuft
 
 Z2e (`a3a7a67`): B2-Regelquote 0/96 in allen Armen, weil die alte Regel-Notiz wegen `b2_context_chars`=768 nie in B2s Kontext kam (288/288). Live-`analyst_context` nimmt erweiterte Zitate jetzt an. Z2f wiederholt mit 1536 und Gültigkeitsprüfung, Seeds 23–25. Schalter bleiben aus. Befund `docs/proofs/continuation-20261022/step2-z2e-pointer-hard/BEFUND.md`.

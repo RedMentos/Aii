@@ -1,0 +1,552 @@
+{
+  "run": "CQP_s23",
+  "arm": "CQP",
+  "seed": 23,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "two_body",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 23,
+    "b2_quote_select": "pointer",
+    "b2_context_chars": 1536
+  },
+  "query": true,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.6083333333333333,
+      "b2_only": 0.2,
+      "both_control": 0.625,
+      "both_exact": 0.5666666666666667,
+      "both_none": 0.6166666666666667,
+      "prompt_only_dual": 0.4916666666666667,
+      "same_policy_dual": 0.6166666666666667
+    },
+    "best_solo": 0.6083333333333333,
+    "gain_over_best_solo": {
+      "both_none": 0.008333333333333415,
+      "both_exact": -0.04166666666666663,
+      "both_control": 0.01666666666666672
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.5833333333333333,
+      "b2_only": 0.075,
+      "both_control": 0.6,
+      "both_exact": 0.525,
+      "both_none": 0.5583333333333333,
+      "prompt_only_dual": 0.4166666666666667,
+      "same_policy_dual": 0.5916666666666667
+    },
+    "best_solo": 0.5833333333333333,
+    "gain_over_best_solo": {
+      "both_none": -0.02499999999999991,
+      "both_exact": -0.05833333333333324,
+      "both_control": 0.01666666666666672
+    },
+    "b1_b2_each_win_an_episode": false,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5833333333333333,
+      "exact_fixtures": [
+        "Izar",
+        "Jabbah"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.075,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 1,
+      "unknown": 7,
+      "mean_utility": 0.6,
+      "exact_fixtures": [
+        "Izar",
+        "Jabbah"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 2,
+      "unknown": 7,
+      "mean_utility": 0.525,
+      "exact_fixtures": [
+        "Izar"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 1,
+      "unknown": 8,
+      "mean_utility": 0.5583333333333333,
+      "exact_fixtures": [
+        "Izar"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.4166666666666667,
+      "exact_fixtures": []
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 2,
+      "wrong_committed": 0,
+      "unknown": 8,
+      "mean_utility": 0.5916666666666667,
+      "exact_fixtures": [
+        "Izar",
+        "Jabbah"
+      ]
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 0.9833333333333333
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.15
+    },
+    "both_control": {
+      "rule_fields_correct": 0.26,
+      "option_fields_correct": 0.9833333333333333
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.16,
+      "option_fields_correct": 0.9166666666666666
+    },
+    "both_none": {
+      "rule_fields_correct": 0.16,
+      "option_fields_correct": 0.9833333333333333
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.8333333333333334
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.2,
+      "option_fields_correct": 1.0
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 10
+    },
+    "b2_only": {
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 0
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 10,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 9
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 9,
+      "B2_GIST:rules": 2,
+      "B2_GIST:options": 0
+    }
+  },
+  "joint_access": {
+    "b1_only": 1,
+    "b2_only": 0,
+    "both_none": 3,
+    "both_exact": 2,
+    "both_control": 4,
+    "same_policy_dual": 1,
+    "prompt_only_dual": 1
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 120
+  },
+  "episode_utility_tool": {
+    "Altair:b1_only": 0.5,
+    "Altair:b2_only": 0.0,
+    "Altair:both_none": 0.5,
+    "Altair:both_exact": 0.5,
+    "Altair:both_control": 0.5,
+    "Altair:same_policy_dual": 0.5,
+    "Altair:prompt_only_dual": 0.5,
+    "Bellatrix:b1_only": 0.4166666666666667,
+    "Bellatrix:b2_only": 0.08333333333333333,
+    "Bellatrix:both_none": 0.4166666666666667,
+    "Bellatrix:both_exact": 0.5,
+    "Bellatrix:both_control": 0.5,
+    "Bellatrix:same_policy_dual": 0.5,
+    "Bellatrix:prompt_only_dual": 0.5,
+    "Capella:b1_only": 0.5,
+    "Capella:b2_only": 0.0,
+    "Capella:both_none": 0.5,
+    "Capella:both_exact": 0.5,
+    "Capella:both_control": 0.5,
+    "Capella:same_policy_dual": 0.5,
+    "Capella:prompt_only_dual": 0.5,
+    "Deneb:b1_only": 0.5,
+    "Deneb:b2_only": 0.25,
+    "Deneb:both_none": 0.5,
+    "Deneb:both_exact": 0.5,
+    "Deneb:both_control": 0.5,
+    "Deneb:same_policy_dual": 0.5,
+    "Deneb:prompt_only_dual": 0.5,
+    "Electra:b1_only": 0.5,
+    "Electra:b2_only": 0.08333333333333333,
+    "Electra:both_none": 0.5,
+    "Electra:both_exact": 0.5,
+    "Electra:both_control": 0.4166666666666667,
+    "Electra:same_policy_dual": 0.5,
+    "Electra:prompt_only_dual": 0.5,
+    "Fomalhaut:b1_only": 0.5,
+    "Fomalhaut:b2_only": 0.0,
+    "Fomalhaut:both_none": 0.75,
+    "Fomalhaut:both_exact": 0.75,
+    "Fomalhaut:both_control": 0.75,
+    "Fomalhaut:same_policy_dual": 0.5,
+    "Fomalhaut:prompt_only_dual": 0.5,
+    "Gemma:b1_only": 0.5,
+    "Gemma:b2_only": 0.0,
+    "Gemma:both_none": 0.5,
+    "Gemma:both_exact": 0.5,
+    "Gemma:both_control": 0.5,
+    "Gemma:same_policy_dual": 0.5,
+    "Gemma:prompt_only_dual": 0.5,
+    "Hadar:b1_only": 0.5833333333333334,
+    "Hadar:b2_only": 0.08333333333333333,
+    "Hadar:both_none": 0.5,
+    "Hadar:both_exact": 0.5,
+    "Hadar:both_control": 0.5,
+    "Hadar:same_policy_dual": 0.5833333333333334,
+    "Hadar:prompt_only_dual": 0.5,
+    "Izar:b1_only": 0.9166666666666666,
+    "Izar:b2_only": 0.16666666666666666,
+    "Izar:both_none": 0.9166666666666666,
+    "Izar:both_exact": 0.9166666666666666,
+    "Izar:both_control": 0.9166666666666666,
+    "Izar:same_policy_dual": 0.9166666666666666,
+    "Izar:prompt_only_dual": 0.16666666666666666,
+    "Jabbah:b1_only": 0.9166666666666666,
+    "Jabbah:b2_only": 0.08333333333333333,
+    "Jabbah:both_none": 0.5,
+    "Jabbah:both_exact": 0.08333333333333333,
+    "Jabbah:both_control": 0.9166666666666666,
+    "Jabbah:same_policy_dual": 0.9166666666666666,
+    "Jabbah:prompt_only_dual": 0.0
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  },
+  "z2e": {
+    "b2_quote_select": "pointer",
+    "b2_rule_rows": {
+      "Altair:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Altair:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Bellatrix:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:b2_only": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_control": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_exact": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Capella:both_none": {
+        "rules": true,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Deneb:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:b2_only": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_control": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_exact": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Electra:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      },
+      "Fomalhaut:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fomalhaut:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fomalhaut:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Fomalhaut:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Gemma:b2_only": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Gemma:both_control": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Gemma:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Gemma:both_none": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Hadar:b2_only": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Hadar:both_control": {
+        "rules": true,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Hadar:both_exact": {
+        "rules": false,
+        "superseded_quoted": true,
+        "invented_value": false
+      },
+      "Hadar:both_none": {
+        "rules": false,
+        "superseded_quoted": false,
+        "invented_value": false
+      }
+    },
+    "b2_rule_rate": 0.1875,
+    "superseded_quoted_rows": 11,
+    "invented_value_rows": 0,
+    "picked_ids": 82,
+    "wrong_committed_tool": 4,
+    "wrong_committed_rows": [
+      {
+        "fixture": "Fomalhaut",
+        "variant": "both_none",
+        "action": "B"
+      },
+      {
+        "fixture": "Fomalhaut",
+        "variant": "both_exact",
+        "action": "B"
+      },
+      {
+        "fixture": "Fomalhaut",
+        "variant": "both_control",
+        "action": "B"
+      },
+      {
+        "fixture": "Hadar",
+        "variant": "both_exact",
+        "action": "B"
+      }
+    ],
+    "b2_prompt_tokens": [
+      864,
+      862,
+      908,
+      871,
+      554,
+      856,
+      856,
+      903,
+      863,
+      556,
+      858,
+      859,
+      908,
+      875,
+      559,
+      867,
+      869,
+      917,
+      882,
+      560,
+      935,
+      930,
+      977,
+      939,
+      557,
+      930,
+      927,
+      976,
+      939,
+      559,
+      917,
+      921,
+      968,
+      925,
+      554,
+      954,
+      956,
+      1003,
+      964,
+      558,
+      818,
+      823,
+      865,
+      834,
+      593,
+      841,
+      836,
+      879,
+      847,
+      598
+    ],
+    "source_sha256": {
+      "scripts/step2_z2e_pointer_hard.py": "11a14d1c919c8379ee90886454e42634cd5d8211384f48ea03e6f35a5cb1fc7b",
+      "scripts/step2_z2b_seeds.py": "4479863daa334c955e3583be32a85f4213cedb5da135e6ce6e10e16a3fd64454",
+      "scripts/step2_z2_timescale.py": "0139eb7edd060fc11d3e239c1e84d5293fa10b4b75b0223285a8d5509d7de032",
+      "v13/cognition.py": "1fe06d21a6d8154cbe47d8bad3455eae5d0a815d60632e72feab4f8d767ec8c8"
+    }
+  },
+  "z2f": {
+    "b2_context_chars": 1536,
+    "validity": {
+      "offers": 32,
+      "kickoff_in_context": 32
+    }
+  }
+}

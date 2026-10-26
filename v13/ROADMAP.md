@@ -1226,8 +1226,13 @@ Alle mit Vorregistrierung vor jedem Modelllauf, Original-Gates nie aufweichen, A
 - **Ursache:** Die alte Regel-Notiz kam in 288/288 B2-Angeboten gar nicht in B2s Kontext — `b2_context_chars` 768 füllt vom jüngsten Zug her, die älteste Notiz fällt raus. B2s „4 Slots“ sind praktisch ~2 längere Züge. Das ist der nächste STEP2-Engpass vor der Zitat-Auswahl. Plus: Zeiger wählte den geänderten Regelsatz 9/48 (Kontrolle 0).
 - Pannen (Zeitlimit durch parallele Tests, Auswertungsfehler, abgebrochener Modell-Output, zwei Umgebungs-Neustarts) offen im Befund `code/docs/proofs/continuation-20261022/step2-z2e-pointer-hard/BEFUND.md`.
 
-### WP-Z2f wie Z2e mit `b2_context_chars` 1536 + Gültigkeitsprüfung (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
-- Prereg `code/docs/proofs/continuation-20261026/step2-z2f-context/PREREG.md`, Seeds 23–25; Urteil nur, wenn die Regel-Notiz in ≥ 90 % der B2-Angebote im Kontext steht.
+### WP-Z2f wie Z2e mit `b2_context_chars` 1536 + Gültigkeitsprüfung (Cloud, Modelle) — ERLEDIGT 2026-10-26, `Z2F_UNSAFE_OR_INVALID` (gleicher Thread/Branch)
+- Gültig (Regel-Notiz in 100 % im B2-Kontext). Zeiger: B2-Regelquote .26 vs. Kontrolle .09 (CI schließt 0 ein), LONG .46, REVISED .06 → hält nicht.
+- **Sicherheitsbefund:** 27 falsch festgelegte Entscheidungen (CQ 7, CQP 18, DQP 2), alle in Episoden mit geänderter Regel und alle nach der **alten** Regel: B2 zitiert die alte Notiz, nicht die Änderung; das Werkzeug prüft nur gegen den aktuellen Text. Mehr Gedächtnis ohne Aktualitätsprüfung ist unsicher.
+- Explorativ: Aktualitäts-Wächter (jüngere behaltene Quelle mit anderem Wert → UNKNOWN) senkt falsch 27 → 0 ohne Trefferverlust; auf Z2b/Z2d-Daten keine Änderung. Befund `code/docs/proofs/continuation-20261026/step2-z2f-context/BEFUND.md`.
+
+### WP-Z2g Aktualitäts-Wächter im Eignungs-Werkzeug (Cloud, Modelle) — IN ARBEIT 2026-10-26 (gleicher Thread/Branch)
+- Schalter (Standard aus), vorregistrierte Bestätigung auf frischen Episoden mit geänderten Regeln, neue Seeds; Kriterium 0 falsch bei gleicher Trefferzahl. Danach erneut Zeiger + größeres B2-Budget.
 
 ### WP-Z3 C3-Konsument isolieren (Cloud, Modelle) — OFFEN
 - Exakt gleiche Quellen an (a) C3 LFM2.5-350M, (b) B1 als antwortenden Körper, (c) deterministisches `eligibility`/`calc` vor C3. Folge aus Pilot 20.10. (0/18, C3 rechnet nicht).
