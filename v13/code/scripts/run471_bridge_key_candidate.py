@@ -71,6 +71,9 @@ def verify_file(path, specs):
     if path.suffix in ('.json', '.npz'):
         path = path.with_suffix('')
     manpath, weightpath = path.with_suffix('.json'), path.with_suffix('.npz')
+    # A safe leaf under a symlinked parent is still an untrusted path.
+    for parent in path.parents:
+        require(not parent.is_symlink(), 'BRIDGE_ANCESTOR_SYMLINK')
     for item in (manpath, weightpath):
         require(item.is_file() and not item.is_symlink(), 'BRIDGE_FILE_MISSING_OR_SYMLINK')
         info = item.stat()
