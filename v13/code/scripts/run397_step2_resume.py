@@ -27,6 +27,7 @@ def checked_manifest(work, fixtures, arms, seeds, pilot):
     work = Path(work)
     expected = r394.manifest(fixtures, pilot, arms, seeds)
     path = work / "RUN394_PREREGISTERED_FIXTURES.json"
+    require(not path.is_symlink(), "UNSAFE_MANIFEST_SYMLINK")
     if path.exists():
         require(json.loads(path.read_bytes()) == expected, "FROZEN_MANIFEST_MISMATCH")
     else:
@@ -35,7 +36,8 @@ def checked_manifest(work, fixtures, arms, seeds, pilot):
 
 
 def evidence_hashes(directory):
-    return {p.name: audit.sha(p) for p in sorted(Path(directory).glob("*.json")) if p.is_file()}
+    return {p.name: audit.sha(p) for p in sorted(Path(directory).glob("*.json"))
+            if p.is_file() and not p.is_symlink()}
 
 
 def validate_completed(directory, arm, seed, fixtures, expected_manifest, current_runner_sha=None):
@@ -46,6 +48,10 @@ def validate_completed(directory, arm, seed, fixtures, expected_manifest, curren
     tool_path = directory / f"tool_{rid}.json"
     summary_path = directory / f"summary_{rid}.json"
     prereg_path = directory / f"tool_{rid}.preregistration.json"
+    require(not directory.is_symlink(), "UNSAFE_ATTEMPT_SYMLINK")
+    for path in (source_path, tool_path, summary_path, prereg_path):
+        require(not path.is_symlink() and path.resolve().is_relative_to(directory.resolve()),
+                "UNSAFE_ATTEMPT_EVIDENCE_SYMLINK")
     source, tool, summary, prereg = (audit.load(p) for p in
                                      (source_path, tool_path, summary_path, prereg_path))
     expected = {(f["id"], v) for f in fixtures for v in VARIANTS}
@@ -103,10 +109,15 @@ def validate_completed(directory, arm, seed, fixtures, expected_manifest, curren
 
 
 def _attempts(work, rid):
-    base = Path(work) / "attempts" / rid
+    root = Path(work) / "attempts"
+    base = root / rid
+    require(not root.is_symlink() and not base.is_symlink(), "UNSAFE_ATTEMPT_SYMLINK")
     if not base.exists():
         return []
-    return sorted((p for p in base.iterdir() if p.is_dir() and
+    require(base.is_dir(), "INVALID_ATTEMPT_DIRECTORY")
+    entries = list(base.iterdir())
+    require(not any(p.is_symlink() for p in entries), "UNSAFE_ATTEMPT_SYMLINK")
+    return sorted((p for p in entries if p.is_dir() and
                    p.name.startswith("attempt-") and p.name[8:].isdigit()),
                   key=lambda p: int(p.name[8:]))
 
@@ -117,6 +128,7 @@ def previous_success(work, arm, seed, fixtures, manifest, current_runner_sha=Non
     failures = []
     for p in _attempts(work, rid):
         receipt = p / "RUN397_ATTEMPT.json"
+        require(not receipt.is_symlink(), "UNSAFE_ATTEMPT_RECEIPT_SYMLINK")
         if not receipt.exists():
             failures.append({"attempt": str(p.relative_to(work)), "reason": "NO_COMPLETED_RECEIPT"})
             continue
@@ -164,6 +176,8 @@ def run(work, installed, pilot=True, execute=False, max_new_arms=None):
     arms = list(r394.ARMS)
     seeds = [20] if pilot else list(r394.SEEDS)
     lockpath = work / "RUN397_OWNER.lock"
+    require(not lockpath.is_symlink(), "UNSAFE_WORK_OWNER_LOCK")
+    require(not (work / "attempts").is_symlink(), "UNSAFE_ATTEMPT_SYMLINK")
     with lockpath.open("a+") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
