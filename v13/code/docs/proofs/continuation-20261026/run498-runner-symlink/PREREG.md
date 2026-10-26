@@ -1,0 +1,9 @@
+# Run498 — actual bootstrap symlink compatibility, bounded 14-row retry
+
+Date 2026-10-26. Base Run497 RED checkpoint `ab1b2f029f6fc9d2314a40c88cf466396eab0110` PR #495. Original native attempt 40302045367 failed before inference, raw artifact 12640686888 SHA256 `51f30ae63758498b8224398f4c329cc762cfd042784e24938b5a38bac81f4f1b`, safe artifact 12640891186 SHA256 `c7d3f7263281d940ec1aeeba8b054f992af0dbec8b1c9acb10f44fae641700b8`. Deps and source tests/fixture passed, `v13.bootstrap` completed; new Run496 preflight erroneously rejected the original bootstrap symlink `bin/llama-server -> bin/b10964/.../llama-server` before native inference.
+
+Preregister fix: accept a regular executable or a symlink **only when its fully resolved target remains inside the installed home's bin tree** and actual file SHA256 equals original frozen Run491 `RUNNER_SHA256`; reject broken symlinks, outside-home targets, changed executable bytes, metadata tag/hash mismatch, changed model bytes/revisions and absent native library hashes. Add adversarial source-only tests using real temporary symlinks. No hash/pin/model/fixture/seed changes. Original Run497 failed attempt remains archived.
+
+GitHub Actions workflow must also prevent skipped native stages from being treated as success: GitHub expression empty string compares equal to '0' under loose coercion. Require explicit `steps.<id>.outcome == 'success'` together with exact exit code for all gated stages, especially independent audit. Keep the existing serialized concurrency group, one PR-opened trigger, raw evidence on RED, safe no-model export and no destructive reruns.
+
+Then retry exactly Vesper+Willow, arm C, seed31, seven variants each =14 Linux-native rows. No native claim until actual row proof and independent postflight; no Redmi, STEP2/B3/JEPA/Age promotion. Preserve license metadata and never upload model payloads.

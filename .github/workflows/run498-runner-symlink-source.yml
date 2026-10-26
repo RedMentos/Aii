@@ -1,0 +1,72 @@
+name: V13 Run498 pinned internal runner symlink source-only proof
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run498-runner-symlink-source.yml'
+      - 'v13/code/scripts/run496_heldout10_native_pilot.py'
+      - 'v13/code/tests/test_run498_runner_symlink.py'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run498-native-runner-symlink-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen source and prereg SHA contract
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run498-runner-symlink/PREREG.md)" = 'f72be54cfa1b78e71318bd490fb6747bf83d73d2'
+          test "$(git hash-object v13/code/scripts/run496_heldout10_native_pilot.py)" = '543982e6c03c548eab87470732be279fbba53ac1'
+          test "$(git hash-object v13/code/tests/test_run498_runner_symlink.py)" = 'b09776089c0e5aa07460b76c9c3ebdbfecd114ed'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+      - name: Install isolated source test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Adversarial symlink, frozen pilot and original source tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          ../../.venv/bin/python -m unittest -v tests.test_run498_runner_symlink tests.test_run496_heldout10_native_pilot tests.test_run491_step2_heldout10 > "$RUNNER_TEMP/RUN498_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN498_TEST_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          .venv/bin/python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN498_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN498_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA256 evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN498_*' ! -name RUN498_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN498_SHA256SUMS.txt
+      - name: Preserve raw source-only proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run498-runner-symlink-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN498_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN498_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN498_PRIVACY_EXIT.txt")" = '0'
