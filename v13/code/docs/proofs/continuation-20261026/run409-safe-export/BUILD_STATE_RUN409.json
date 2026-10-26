@@ -1,0 +1,52 @@
+{
+  "run": "Run409",
+  "date": "2026-10-26",
+  "stage": "SOURCE_ONLY_GREEN_SAFE_EXPORT_NOT_NATIVE_INTEGRATED",
+  "owner": "GPT scheduled continuation",
+  "branch": "codex/run409-no-model-native-artifact-export-20261026",
+  "pr": 404,
+  "base": {
+    "branch": "codex/run408-native-stage1-weight-exclusion-20261026",
+    "initial_sha": "989b37e983991724be02fb0186bb4154f66738d4",
+    "integration": "stacked review, not main"
+  },
+  "plan_commit": "7ed2342ef88079ecc3a95eae293968fe46982c4f",
+  "source_commit": "876bcdc492c9a1bb60a695e06916fe5f67ef9fc1",
+  "tests_commit": "750faabce3be057c4958786683f43a5b0153ac03",
+  "workflow_commit": "23fa3d6a7303c6cc493a496055299ade11a81647",
+  "green": {
+    "run": 40253584720,
+    "job": 121350520807,
+    "artifact": 12621730866,
+    "artifact_sha256": "a8a5f851118f0eee304ad7d17649201136e27947bb767999e7a957dfd4492110",
+    "tests": "98/98 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "fix_commit": "cc2404144392957239e84e254fe57a441daeefe4"
+  },
+  "scope": "Source-only no-follow export of all native regular files; allow only installed models/bin arm-home symlinks, preserve failed attempts, atomic no-clobber, no inference",
+  "actual_native_export": false,
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA/jepa_weight=0",
+    "Run389 full suite RED",
+    "Age0 approval unchanged",
+    "No Redmi proof",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Run406 third inventory pending exact ZIP model and missing/unlisted member lists",
+    "Run408 real ZIP validation not run",
+    "Run409 not yet wired into actual native workflow",
+    "No native stage2"
+  ],
+  "next_command": "Inspect Run406 latest diagnostic, then source-bound Run408 actual ZIP validation and Run409 safe export in next native checkpoint; no stage2 until real restored O_s20 verified.",
+  "next_prerequisites": "Observed artifact SHA closure and exact model member inventory, no concurrent native owner, pinned registered installed models for actual native stage2",
+  "red_hardlink": {
+    "commit": "c75c412ca5100e773b89979925195a1c6ff8c846",
+    "actions_run": 40253537925,
+    "observed": "test_hardlinked_model_renamed_as_data_rejected failed as intended; source accepted a model hardlink alias"
+  }
+}
