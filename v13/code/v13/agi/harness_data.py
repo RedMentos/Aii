@@ -16,6 +16,7 @@ Items are data: texts length-capped, control characters and rule-weakening wordi
 prompt texts (system/conduct/operator rules) never appear as a target. Authority 0 (SHADOW): no live path reads this.
 """
 import json
+import math
 import time
 from pathlib import Path
 from .base import StateBox
@@ -46,9 +47,11 @@ def _clean(v,limit,name):
 
 def item(record):
     """One capture record {'messages': base-harness messages, 'output': text, 'accepted': bool, 'task': id} -> trainer item."""
-    if not record.get('accepted'):return None
+    if type(record) is not dict or type(record.get('accepted')) is not bool:
+        raise ValueError('accepted muss bool sein')
+    if record['accepted'] is False:return None
     msgs=record['messages']
-    if not isinstance(msgs,list) or not msgs or any(m.get('role') not in ('system','user') for m in msgs):raise ValueError('messages: system/user erwartet')
+    if not isinstance(msgs,list) or not msgs or any(type(m) is not dict or m.get('role') not in ('system','user') for m in msgs):raise ValueError('messages: system/user erwartet')
     prompt='\n\n'.join(str(m['content']) for m in msgs)
     return {'prompt':_clean(prompt,MAX_PROMPT,'prompt'),'target':_clean(record['output'],MAX_TARGET,'target'),'kind':'harness_distill',
             'answer_keys':list(record.get('answer_keys') or [])[:8],'source':{'task':str(record.get('task',''))[:80],'run':str(record.get('run',''))[:40]}}
@@ -106,17 +109,41 @@ class HarnessData:
                 'claim_limit':'Dataset export behind HX2 PASS + human approval; trains nothing, no live authority (SHADOW)'}
 
 def retention_gate(ev,tol=TOLERANCE,max_kl=None):
-    """Judge a trained candidate from LlamaCppEvaluator.evaluate(): it must learn and keep what the base could."""
-    b,c=ev.get('base_eval') or {},ev.get('candidate_eval') or {}
+    """Fail closed on missing/nonfinite retention, forgetting and leak evidence.
+
+    max_kl=None means no KL threshold was preregistered: the output explicitly
+    reports kl_checked=False. A supplied KL bound must be finite and nonnegative.
+    This is an evaluation-only gate; it never activates an adapter.
+    """
     fails=[]
+    def valid(value,unit=True):
+        return (type(value) in (int,float) and math.isfinite(value)
+                and value>=0 and (not unit or value<=1))
+    if not valid(tol):fails.append('invalid_tolerance');tol=0.
+    if max_kl is not None and not valid(max_kl,False):
+        fails.append('invalid_kl_threshold')
+    ev=ev if type(ev) is dict else {}
+    b=ev.get('base_eval');c=ev.get('candidate_eval')
+    b=b if type(b) is dict else {}
+    c=c if type(c) is dict else {}
     lr,br=ev.get('learned_recall'),ev.get('base_recall')
-    if lr is None or br is None or not lr>br:fails.append('no_learning_gain')
+    if not valid(lr) or not valid(br) or lr<=br:
+        fails.append('no_learning_gain')
     for ax in ('overall','unseen'):
-        if b.get(ax) is not None and (c.get(ax) is None or c[ax]<b[ax]-tol):fails.append('retention_'+ax)
-    rate=(c.get('forgetting') or {}).get('rate')
-    if rate is not None and rate>tol:fails.append('forgetting')
+        base,candidate=b.get(ax),c.get(ax)
+        if not valid(base) or not valid(candidate) or candidate<base-tol:
+            fails.append('retention_'+ax)
+    forgetting=c.get('forgetting')
+    rate=forgetting.get('rate') if type(forgetting) is dict else None
+    if not valid(rate) or rate>tol:fails.append('forgetting')
     leak=ev.get('near_miss_leak')
-    if leak is not None and leak>tol:fails.append('near_miss_leak')
-    kl=ev.get('kl_to_base');klv=kl.get('mean') if isinstance(kl,dict) else kl
-    if max_kl is not None and (klv is None or klv>max_kl):fails.append('kl_to_base')
-    return {'status':'RETENTION_PASS' if not fails else 'RETENTION_FAIL','fails':fails,'tolerance':tol,'max_kl':max_kl}
+    if not valid(leak) or leak>tol:fails.append('near_miss_leak')
+    kl=ev.get('kl_to_base')
+    klv=kl.get('mean') if type(kl) is dict else kl
+    if max_kl is not None:
+        if not valid(klv,False) or klv>max_kl:fails.append('kl_to_base')
+    elif klv is not None and not valid(klv,False):
+        fails.append('kl_to_base_invalid')
+    return {'status':'RETENTION_PASS' if not fails else 'RETENTION_FAIL',
+            'fails':fails,'tolerance':tol,'max_kl':max_kl,
+            'kl_checked':max_kl is not None}
