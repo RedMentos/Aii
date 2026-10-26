@@ -17,13 +17,20 @@ from tests.test_run397_step2_resume import synthetic_source, write
 from tests.test_run402_stage_restore import make_archive
 
 
+def resume_source_executable_sha():
+    # The installed runner executable identity is not the release archive SHA.
+    from run402_stage_restore import RUN401_EXECUTABLE_SHA256
+    assert RUN401_EXECUTABLE_SHA256 != resume.catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    return RUN401_EXECUTABLE_SHA256
+
+
 def make_full(folder):
     folder = Path(folder)
     root = make_archive(folder / "stage1")
     work = root / "run401-full"
     with patch.object(r394, "PILOT_IDS", tuple(f["id"] for f in r394.FIXTURES)):
         native = synthetic_source(folder / "native")
-    runner_sha = resume.catalog()["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    runner_sha = resume_source_executable_sha()
     manifest = r394.manifest(r394.FIXTURES, False, list(r394.ARMS), list(r394.SEEDS))
     completed = {}
     for seed in r394.SEEDS:
