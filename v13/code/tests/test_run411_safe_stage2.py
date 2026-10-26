@@ -129,5 +129,13 @@ class Run411Stage2Tests(unittest.TestCase):
         self.mocks[7].assert_called_once()
 
 
+    def test_native_receipt_runner_sha_is_observed_executable_not_release_tar(self):
+        result = self.run_stage()
+        self.assertEqual(result["status"], "STAGE2_READY_NO_NATIVE")
+        observed = "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
+        self.assertEqual(self.mocks[3].call_args.kwargs["current_runner_sha"], observed)
+        self.assertNotEqual(observed, "c" * 64)
+
+
 if __name__ == "__main__":
     unittest.main()
