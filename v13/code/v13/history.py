@@ -75,8 +75,8 @@ def native_history_since(store,session,after_id,turns,pending_ids=()):
     """Oldest-first bounded completed assistant turns after a durable cursor.
 
     Returns (source-valid rows, source refs, scanned assistant high-water ID,
-    deferred non-FINAL assistant IDs). A deferred assistant that later becomes
-    FINAL is revisited even if its ID is older than the cursor. Invalid FINAL
+    deferred unfinished or capacity-limited assistant IDs). A deferred
+    assistant that later becomes FINAL is revisited even if older than cursor. Invalid FINAL
     pairs advance the scan but never enter the digest. No raw chat bypass.
     """
     if (type(after_id) is not int or after_id<0 or type(turns) is not int
@@ -84,23 +84,28 @@ def native_history_since(store,session,after_id,turns,pending_ids=()):
             or len(pending_ids)>128 or any(type(i) is not int or i<=0 for i in pending_ids)
             or len(set(pending_ids))!=len(pending_ids)):
         raise ValueError('Invalid bounded native history cursor/pending IDs')
-    new=store.rows("SELECT id,event_id,status FROM messages WHERE session_id=? AND role='assistant' AND id>? ORDER BY id ASC LIMIT ?",(session,after_id,turns))
-    high=int(new[-1]['id']) if new else after_id
-    prior=[]
-    if pending_ids:
-        marks=','.join('?' for _ in pending_ids)
-        prior=store.rows("SELECT id,event_id,status FROM messages WHERE session_id=? AND role='assistant' AND id IN ("+marks+") ORDER BY id ASC",(session,*pending_ids))
-    candidates={int(row['id']):row for row in prior+new}
-    if not candidates:return [],[],high,[]
-    ids=sorted(candidates)
-    deferred=[i for i in ids if candidates[i]['status']!='FINAL']
-    if len(deferred)>128:raise ValueError('Too many deferred unfinished history turns')
-    completed=[candidates[i] for i in ids if candidates[i]['status']=='FINAL']
-    if not completed:return [],[],high,deferred
-    eids=list(dict.fromkeys(row['event_id'] for row in completed))
-    marks=','.join('?' for _ in eids)
-    records=store.rows("SELECT * FROM messages WHERE session_id=? AND event_id IN ("+marks+") ORDER BY id ASC",(session,*eids))
-    valid,dependencies=_validated(store,session,'',records)
-    wanted={row['event_id'] for row in completed}
-    selected=[row for row in valid if row['event_id'] in wanted]
-    return selected,_refs(selected,dependencies),high,deferred
+    # A single RLock snapshot prevents FINAL/pending status races while
+    # verifying the exact source and approval lineage for this batch.
+    with store.mutex:
+        new=store.rows("SELECT id,event_id,status FROM messages WHERE session_id=? AND role='assistant' AND id>? ORDER BY id ASC LIMIT ?",(session,after_id,turns))
+        high=int(new[-1]['id']) if new else after_id
+        prior=[]
+        if pending_ids:
+            marks=','.join('?' for _ in pending_ids)
+            prior=store.rows("SELECT id,event_id,status FROM messages WHERE session_id=? AND role='assistant' AND id IN ("+marks+") ORDER BY id ASC",(session,*pending_ids))
+        candidates={int(row['id']):row for row in prior+new}
+        if not candidates:return [],[],high,[]
+        ids=sorted(candidates)
+        eligible=[i for i in ids if candidates[i]['status']=='FINAL']
+        accepted=set(eligible[:turns])
+        deferred=[i for i in ids if candidates[i]['status']!='FINAL' or i not in accepted]
+        if len(deferred)>128:raise ValueError('Too many deferred unfinished history turns')
+        completed=[candidates[i] for i in eligible[:turns]]
+        if not completed:return [],[],high,deferred
+        eids=list(dict.fromkeys(row['event_id'] for row in completed))
+        marks=','.join('?' for _ in eids)
+        records=store.rows("SELECT * FROM messages WHERE session_id=? AND event_id IN ("+marks+") ORDER BY id ASC",(session,*eids))
+        valid,dependencies=_validated(store,session,'',records)
+        wanted={row['event_id'] for row in completed}
+        selected=[row for row in valid if row['event_id'] in wanted]
+        return selected,_refs(selected,dependencies),high,deferred
