@@ -26,6 +26,8 @@ jobs:
           fetch-depth: 40
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Verify exact frozen source and observed artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git rev-parse HEAD | tee "$RUNNER_TEMP/RUN406_HEAD.txt"
@@ -35,6 +37,14 @@ jobs:
           gh api "repos/RedMentos/Aii/actions/artifacts/$ARTIFACT_ID" \
             --jq '{id,name,size_in_bytes,expired,digest,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha}}' \
             | tee "$RUNNER_TEMP/RUN406_ARTIFACT_METADATA.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"RUN406_ARTIFACT_METADATA.json").read_text())
+          assert d["id"]==int(os.environ["ARTIFACT_ID"]) and not d["expired"]
+          assert d["digest"]=="sha256:"+os.environ["EXPECTED_SHA256"]
+          assert d["workflow_run"]["id"]==40250662450
+          assert d["workflow_run"]["head_sha"]==os.environ["EXPECTED_SOURCE_HEAD"]
+          PY
       - name: Download observed ZIP; never rerun native or publish ZIP copy
         id: download
         env:
