@@ -16,6 +16,7 @@ system message of each native call, because cognition.py is hash-pinned). The li
 """
 import contextlib
 import importlib
+import math
 from .harness import TARGETS,candidate
 
 REVISION='hx2-probe-v1'
@@ -80,9 +81,18 @@ def behaviour_diff(reference,variant,fields):
         out[f]={'changed':len(changed),'of':len(shared),'tasks':changed[:32]}
     return out
 
+def _rate(value):
+    return type(value) in (int,float) and math.isfinite(value) and 0 <= value <= 1
+
+
 def compose(probe,reference_score,min_gain=MIN_PROBE_GAIN):
-    """probe: {variant: gold-free score}. Best variant if it beats the reference by min_gain, else None."""
+    """Choose only from finite bounded gold-free scores, never NaN."""
     if not probe:return {'status':'NO_CANDIDATE','choice':None,'reason':'keine Varianten'}
+    if (type(probe) is not dict or not _rate(reference_score) or
+            not _rate(min_gain) or
+            any(type(k) is not str or not k or not _rate(v)
+                for k,v in probe.items())):
+        return {'status':'INVALID_PROBE','choice':None,'reason':'nonfinite or invalid score'}
     best=max(sorted(probe),key=lambda v:probe[v])
     gain=probe[best]-reference_score
     if gain<min_gain:return {'status':'NO_CANDIDATE','choice':None,'best':best,'gain':gain,'min_gain':min_gain}
@@ -97,16 +107,56 @@ def cluster_ci(per_task,n=BOOT,seed=BOOT_SEED):
     return {'mean':float(per.mean()),'ci95':[float(np.percentile(boot,2.5)),float(np.percentile(boot,97.5))],'tasks':int(len(per))}
 
 def paired(a,b):
-    """a/b: {task: [value per seed]} -> per-task mean difference a-b over the seeds both have."""
+    """Require identical task/seed coverage; never silently zip or intersect."""
+    if (type(a) is not dict or type(b) is not dict or not a or
+            set(a)!=set(b)):
+        raise ValueError('HX2_UNALIGNED_TASKS')
     out=[]
-    for t in sorted(set(a)&set(b)):
-        d=[x-y for x,y in zip(a[t],b[t])]
-        if d:out.append(sum(d)/len(d))
+    for t in sorted(a):
+        av,bv=a[t],b[t]
+        if (type(av) not in (list,tuple) or type(bv) not in (list,tuple)
+                or not 1<=len(av)<=128 or len(av)!=len(bv)
+                or not all(_rate(x) for x in av)
+                or not all(_rate(y) for y in bv)):
+            raise ValueError('HX2_UNALIGNED_SEEDS_OR_SCORES')
+        out.append(sum(x-y for x,y in zip(av,bv))/len(av))
     return out
+
+
+def _aligned_axes(axes,primary,wrong,structural,tol):
+    if (type(axes) is not dict or not axes or
+            type(primary) is not str or primary not in axes or
+            type(wrong) is not dict or set(wrong)!={'ref','chosen','unguided'} or
+            any(type(v) is not int or v<0 for v in wrong.values()) or
+            type(structural) is not bool or not _rate(tol)):
+        return False
+    for axis in axes.values():
+        if type(axis) is not dict or set(axis)!={'ref','chosen','unguided'}:
+            return False
+        ref,chosen,unguided=(axis[k] for k in ('ref','chosen','unguided'))
+        if (type(ref) is not dict or type(chosen) is not dict or
+                type(unguided) is not dict or not ref or
+                set(ref)!=set(chosen) or set(ref)!=set(unguided)):
+            return False
+        for task in ref:
+            values=[ref[task],chosen[task],unguided[task]]
+            if (any(type(v) not in (list,tuple) for v in values) or
+                    not 1<=len(values[0])<=128 or
+                    any(len(v)!=len(values[0]) or not all(_rate(x) for x in v)
+                        for v in values)):
+                return False
+    return True
+
 
 def holdout_gate(axes,primary,wrong,structural,tol=AXIS_TOLERANCE):
     """axes: {axis: {'ref': {task:[..]}, 'chosen': {...}, 'unguided': {...}}}; primary names one axis (higher = better).
     wrong: {'ref': int, 'chosen': int, 'unguided': int} wrong committed answers. Preregistered decision."""
+    if not _aligned_axes(axes,primary,wrong,structural,tol) or not structural:
+        return {'revision':REVISION,'status':'HX2_INVALID',
+                'reason':'missing/misaligned/nonfinite holdout evidence or structural failure',
+                'checks':{'structural':False},'axes':{},'worse_axes':[],
+                'wrong':wrong if type(wrong) is dict else {},
+                'primary':primary,'tolerance':tol}
     res={}
     for ax,v in axes.items():
         res[ax]={'chosen_minus_ref':cluster_ci(paired(v['chosen'],v['ref'])),'unguided_minus_ref':cluster_ci(paired(v['unguided'],v['ref'])),
