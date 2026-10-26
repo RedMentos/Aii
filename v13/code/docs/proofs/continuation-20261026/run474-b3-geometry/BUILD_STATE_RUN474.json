@@ -13,7 +13,7 @@
     "re-keyed changed serving sender dims must fail even if keys match",
     "self-consistent manifest/NPZ digest with malformed Q shape must fail"
   ],
-  "verification_status": "CI_PENDING",
+  "verification_status": "LOCAL_28_PASS_GITHUB_CI_PENDING",
   "scope": "read-only candidate only; production bodyport.py/b3bridge.py frozen; no authority granted",
   "negative_gates": {
     "b3_l1": "FAIL",
@@ -27,5 +27,13 @@
     "Run471 candidate still lacks hostile-concurrent-rename guarantees and path ancestor symlink proof.",
     "No live train-time key stamping, BodyPort consumer integration, native B3 L1 utility or Redmi evidence."
   ],
-  "exact_next_command": "Open PR against Run471 head; run existing Run471 B3 source workflow with new adversarial tests, privacy scan and raw artifacts; on GREEN independently review before integration."
+  "exact_next_command": "Open PR against Run471 head; run existing Run471 B3 source workflow with new adversarial tests, privacy scan and raw artifacts; on GREEN independently review before integration.",
+  "pr": 473,
+  "local_independent_tests": {
+    "status": "PASS",
+    "tests": "28/28",
+    "suite": "tests.test_run471_bridge_key_candidate tests.test_bodyport tests.test_b3bridge",
+    "raw_log_sha256": "aa667b942f65faecbcea0cc1d66ccccc0576582d2915ef31e4c5198819b0cd0a",
+    "source_reconstruction": "Run471 verified phone source artifact 12629767953 SHA256 39b9dc0b307a28eedc5ebd1cf00068728552881a4b6ab1955af4f95802d60820, patch bytes checked against exact Run474 Git blobs"
+  }
 }
