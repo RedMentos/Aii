@@ -1,0 +1,68 @@
+name: V13 Run446 complete checkout bounded offline unittest audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run446-full-checkout-unittest.yml'
+      - 'v13/code/docs/proofs/continuation-20261026/run446-fullsuite/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Frozen source and full checkout inventory
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/run446-head.txt"
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          test -d .github/workflows
+          test -d v13/code/docs/proofs
+      - name: Isolated model-free dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run446"
+          "$RUNNER_TEMP/run446/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Run bounded complete repository unittest discovery
+        run: |
+          cd v13/code
+          "$RUNNER_TEMP/run446/bin/python" -m compileall -q v13 tests
+          set +e
+          timeout 720s "$RUNNER_TEMP/run446/bin/python" -m unittest discover -s tests -p 'test_*.py' -q > "$RUNNER_TEMP/run446-tests.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/run446-tests.txt"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/run446-exit.txt"
+          exit 0
+      - name: Official privacy scan
+        if: always()
+        run: |
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree
+      - name: Retain full source suite raw result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run446-full-checkout-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/run446-tests.txt
+            ${{ runner.temp }}/run446-exit.txt
+            ${{ runner.temp }}/run446-head.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual full-suite result
+        if: always()
+        run: |
+          test -f "$RUNNER_TEMP/run446-exit.txt"
+          test "$(cat "$RUNNER_TEMP/run446-exit.txt")" = "EXIT=0"
