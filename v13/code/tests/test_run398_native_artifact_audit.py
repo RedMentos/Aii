@@ -1,6 +1,7 @@
 """Run398 adversarial ZIP/manifest/native-postflight tests using synthetic rows only."""
 import hashlib
 import json
+import stat
 import sys
 import tempfile
 import unittest
@@ -90,6 +91,15 @@ class Run398ArtifactAuditTests(unittest.TestCase):
         write_zip(self.path, self.files, add=("../escape.txt", b"unsafe"))
         r = run398.audit(self.path)
         self.assertIn("UNSAFE_ZIP_PATH", str(r["errors"]))
+
+    def test_reject_zip_symlink_member_before_extraction(self):
+        with zipfile.ZipFile(self.path, "a", zipfile.ZIP_DEFLATED) as z:
+            link = zipfile.ZipInfo("run395-pilot/linked.json")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            z.writestr(link, b"RUN395_HEAD.txt")
+        r = run398.audit(self.path)
+        self.assertIn("SYMLINK_ZIP_MEMBER", str(r["errors"]))
 
     def test_reject_duplicate_zip_member(self):
         write_zip(self.path, self.files, add=("RUN395_HEAD.txt", b"forged"))
