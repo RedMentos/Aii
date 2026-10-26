@@ -1,0 +1,152 @@
+"""Run397 source-only append-only resume tests with synthetic native-shaped rows, no models."""
+import fcntl
+import json
+from pathlib import Path
+import shutil
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import run394_step2_fresh as r394
+import run397_step2_resume as resume
+from tests.test_run396_step2_pilot_audit import make_synthetic, write
+
+
+def synthetic_source(folder):
+    folder = make_synthetic(folder)
+    for arm in resume.r394.ARMS:
+        rid = arm + "_s20"
+        source_path = folder / f"step2_{rid}.json"
+        source = resume.audit.load(source_path)
+        source.update(installed_artifacts_unchanged=True, phone_measured=False, canonical_gate_pass=False)
+        write(source_path, source)
+        prereg_path = folder / f"tool_{rid}.preregistration.json"
+        prereg = resume.audit.load(prereg_path)
+        prereg["source_report"]["sha256"] = resume.audit.sha(source_path)
+        write(prereg_path, prereg)
+        tool_path = folder / f"tool_{rid}.json"
+        tool = resume.audit.load(tool_path)
+        tool["preregistration_sha256"] = resume.audit.sha(prereg_path)
+        write(tool_path, tool)
+    return folder
+
+
+class FakeModels:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def verify(self, deep=False):
+        return {k: {"ok": True, "hash_checked": True}
+                for k in ("needle", "language", "body", "gist")}
+
+
+class FakeNative:
+    def __init__(self, source):
+        self.source = Path(source)
+        self.calls = []
+
+    def run(self, installed, attempt, arm, seed):
+        rid = f"{arm}_s{seed}"
+        self.calls.append(rid)
+        for prefix in ("step2_", "tool_", "summary_"):
+            src = self.source / f"{prefix}{rid}.json"
+            shutil.copyfile(src, Path(attempt) / src.name)
+        src = self.source / f"tool_{rid}.preregistration.json"
+        shutil.copyfile(src, Path(attempt) / src.name)
+        return resume.audit.load(Path(attempt) / f"summary_{rid}.json")
+
+
+class Run397ResumeTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.work = self.root / "work"
+        self.native = synthetic_source(self.root / "native")
+        self.installed = self.root / "installed"
+        (self.installed / "bin").mkdir(parents=True)
+        (self.installed / "config").mkdir()
+        (self.installed / "bin/llama-server").write_bytes(b"synthetic-runner-not-executable")
+        write(self.installed / "config/runner.json", {
+            "tag": resume.catalog()["runner"]["tag"],
+            "binary_sha256": resume.audit.sha(self.installed / "bin/llama-server")})
+
+    def fake_execute(self, fake):
+        with patch.object(resume, "ModelManager", FakeModels), \
+             patch.object(r394, "configure", return_value=fake):
+            return resume.run(self.work, self.installed, pilot=True, execute=True)
+
+    def test_plan_only_is_not_native_and_does_not_promote(self):
+        result = resume.run(self.work, None, pilot=True, execute=False)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertEqual(result["completed"], {})
+        self.assertFalse(result["canonical_gate_pass"])
+        self.assertEqual(result["step2_exit"], "UTILITY_FAIL")
+        self.assertEqual(list(self.work.glob("attempts/**/*")), [])
+
+    def test_real_shaped_synthetic_rows_are_checked_before_receipt(self):
+        manifest = resume.checked_manifest(self.work,
+            [f for f in r394.FIXTURES if f["id"] in r394.PILOT_IDS],
+            list(r394.ARMS), [20], True)
+        data = resume.validate_completed(self.native, "O", 20,
+            [f for f in r394.FIXTURES if f["id"] in r394.PILOT_IDS], manifest)
+        self.assertEqual(data["rows"], 14)
+        self.assertFalse(data["canonical_gate_pass"])
+
+    def test_all_three_arms_completed_once_and_reused(self):
+        fake = FakeNative(self.native)
+        first = self.fake_execute(fake)
+        self.assertEqual(first["status"], "ALL_ARMS_STRUCTURALLY_RECORDED")
+        self.assertEqual(fake.calls, ["O_s20", "P_s20", "S_s20"])
+        self.assertEqual(len(first["completed"]), 3)
+        second = self.fake_execute(fake)
+        self.assertEqual(second["status"], "ALL_ARMS_STRUCTURALLY_RECORDED")
+        self.assertEqual(len(fake.calls), 3)
+        self.assertEqual(len(list(self.work.glob("attempts/*/attempt-*/RUN397_ATTEMPT.json"))), 3)
+
+    def test_partial_failed_attempt_preserved_and_new_attempt_numbered(self):
+        p = self.work / "attempts/O_s20/attempt-0001"
+        p.mkdir(parents=True)
+        (p / "partial.json").write_text('{"status":"INTERRUPTED"}')
+        fake = FakeNative(self.native)
+        result = self.fake_execute(fake)
+        self.assertEqual(result["status"], "ALL_ARMS_STRUCTURALLY_RECORDED")
+        self.assertTrue((p / "partial.json").exists())
+        self.assertTrue((self.work / "attempts/O_s20/attempt-0002/RUN397_ATTEMPT.json").exists())
+        self.assertIn("O_s20", result["failures_preserved"])
+
+    def test_corrupt_completed_receipt_is_never_reused(self):
+        fake = FakeNative(self.native)
+        self.fake_execute(fake)
+        tool = self.work / "attempts/P_s20/attempt-0001/tool_P_s20.json"
+        with tool.open("ab") as f:
+            f.write(b" ")
+        second = self.fake_execute(fake)
+        self.assertEqual(fake.calls.count("P_s20"), 2)
+        self.assertEqual(fake.calls.count("O_s20"), 1)
+        self.assertEqual(fake.calls.count("S_s20"), 1)
+        self.assertTrue((self.work / "attempts/P_s20/attempt-0002/RUN397_ATTEMPT.json").exists())
+        self.assertIn("P_s20", second["failures_preserved"])
+
+    def test_frozen_manifest_mismatch_fails_closed(self):
+        resume.run(self.work, None, pilot=True, execute=False)
+        p = self.work / "RUN394_PREREGISTERED_FIXTURES.json"
+        j = resume.audit.load(p)
+        j["seeds"] = [99]
+        write(p, j)
+        with self.assertRaisesRegex(ValueError, "FROZEN_MANIFEST_MISMATCH"):
+            resume.run(self.work, None, pilot=True, execute=False)
+
+    def test_second_owner_cannot_take_same_work(self):
+        self.work.mkdir()
+        with (self.work / "RUN397_OWNER.lock").open("a+") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            with self.assertRaisesRegex(RuntimeError, "RUN397_WORK_OWNER_ACTIVE"):
+                resume.run(self.work, None, pilot=True, execute=False)
+
+
+if __name__ == "__main__":
+    unittest.main()
