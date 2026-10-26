@@ -1,0 +1,57 @@
+{
+  "run": "Run626",
+  "date_utc": "2026-10-26T23:24:00Z",
+  "owner": "GPT-6 automation; exclusive sleep_offline.py/context_os.py/runtime.py, Run626 test/workflow/proof",
+  "status": "OPT_IN_QUERY_DIGEST_EXACT_HEAD_RED_GREEN_PASS",
+  "parent_pr": 620,
+  "parent_head": "551e18be6948bdb849d6c1532c138a1c4f576d2c",
+  "review_pr": 621,
+  "branch": "codex/automation11-run626-ctxos-query-digest-20261027",
+  "prereg_commit": "8f1b36bcab3e968770820daa3de08f461ef16639",
+  "test_first_commit": "4daf7c7503357fc60bf79a56804459d84377f4dd",
+  "source_commits": [
+    "6c56d746c3df464efe0f0285e40021230eabde68",
+    "2bd7f2eb1d0b8c3124b0bef7c1b37eb026e3f381",
+    "6153aeda315579ed4de71e49a49cd9fd5119dc1b"
+  ],
+  "supplemental_test_commit": "7a6b31346433acf35621b847e2308c36e8b0cbd4",
+  "final_workflow_commit": "ee8cdc638d848974f90af121322fca94c91925b6",
+  "report_commit": "239fdf9a2ad588aaa64858e578593aee6f04e716",
+  "source_blobs": {
+    "sleep_offline": "19761bc0abe6dd3fa0123c1e94d7cf03e425773a",
+    "context_os": "8e43a7dadaf4fc169c9e3a394f06f12a97e0a224",
+    "runtime": "02b1c5e38cd042b829f8819f856fe7df870004ae",
+    "test": "1e6981fd78bcfc88fa2622a731df9a951bd62955"
+  },
+  "ci": {
+    "run_id": 40419228581,
+    "checkout_head": "ee8cdc638d848974f90af121322fca94c91925b6",
+    "conclusion": "success",
+    "original_red_exit": 1,
+    "patched_green_exit": 0,
+    "patched_tests": "33/33",
+    "privacy": "CLEAN",
+    "privacy_exit": 0,
+    "artifact_id": 12696396729,
+    "artifact_sha256": "99fb4d0fe3dafb867a6cd4e652d89a6885738e15c5410aa2d61ec8b797d7d666",
+    "manifest_entries_verified": 12,
+    "private_library_roundtrip": "PASS"
+  },
+  "claim_limit": "Deterministic lexical retrieval over validated old source, not measured C3 answer quality or native JEPA",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "backup": "Private Library /V13-Checkpoints/2026-10-27/Run626/run626-expanded-exact-head-SHA_99fb4d0f.zip, SHA-closed raw and byte-roundtrip PASS; GitHub PR621.",
+  "pending": [
+    "Independent review and chain merge; default recent intentionally unchanged",
+    "Exact-current Termux source ZIP including opt-in mode and operator help",
+    "Native Body learning, B3 receiver and prospective answer-level semantic utility; Redmi device tests"
+  ],
+  "next_command": "From exact Run626 PR621 head, implement separate Run627 operator help/source-only Termux ZIP; verify all ZIP members and extracted real SQLite query digest tests; checkpoint and continue a distinct native learning package if budget permits."
+}
