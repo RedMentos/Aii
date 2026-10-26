@@ -102,6 +102,16 @@ def fit(mode,stable,volatile,history,text,count,limit,force_exact=False):
     return volatile,report
 
 
+
+def require_native_count_compatible(role,decode_mode):
+    """The causal-stream C3 path has a separate 512-token ABI/template.
+
+    Its native prefill is not proven equivalent to LlamaRunner.prompt_tokens.
+    An operator-requested EXACT claim must not silently use the server count.
+    """
+    if role=="C3_LANGUAGE" and decode_mode!="server":
+        raise ValueError("EXACT_COUNT_CAUSAL_MODE_UNVERIFIED")
+
 def require_final_exact(messages,count,limit):
     """Check the ACTUAL final planner view, not only the pre-plan fitted view.
 
