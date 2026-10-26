@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN527_VERIFIED_COMPLETE_NEGATIVE_DIAGNOSTIC_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11_run527_source_only",
+  "source_base": "5d9dd6277be8a25000e7e0709bf188850c0e0ece",
+  "tested_head": "b4d668bac7daa878d6299c230aed292ef2676677",
+  "pr": 525,
+  "actions": {
+    "first_red": 40320469588,
+    "final_green": 40320614779,
+    "artifact_id": 12649285737,
+    "zip_sha256": "5bde8454359e76dec32fce85c7816e0fb6e1cda5724ad436e10c3bedb997e448",
+    "sha_entries": 15,
+    "focused_tests_passed": 56,
+    "privacy": "CLEAN"
+  },
+  "independent_local": {
+    "raw_zip_sha_verified": 5,
+    "safe_zip_sha_verified": 5,
+    "raw_manifest_entries_verified": 158,
+    "safe_manifest_members_verified": 63,
+    "p00_corrected_replay": "PASS_ORIGINAL_ACTIONS_FAILURE_RETAINED",
+    "score_equals_actions": true,
+    "review_sha256": "7984ee4de98d8c45ea0955f8301c3a42eda4a6b32f824e509d057c6540266836"
+  },
+  "metric": {
+    "observations": 60,
+    "paired_primary": 24,
+    "source_quotes": 102,
+    "base_complete": 21,
+    "focus_complete": 23,
+    "focus_minus_base": 2,
+    "preregistered_min_gain": 6,
+    "descriptive_threshold_pass": false
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "private_backups": [
+    "/V13-Checkpoints/2026-10-26/Run526/Run526_SAFE_sha2e1511eb.zip",
+    "/V13-Checkpoints/2026-10-26/Run526/Run526_RAW_sha72d38c71.zip",
+    "/V13-Checkpoints/2026-10-26/Run527/Run527_GREEN_sha5bde8454.zip"
+  ],
+  "open_questions": [
+    "Why is original BASE 21/24 near ceiling and RULE_FOCUS fails +6 threshold?",
+    "Run523 full-suite 5 FAIL/78 ERROR independent triage; no gate promotion",
+    "No C3 consumer semantic utility and no Redmi measurement"
+  ],
+  "next_command": "On separate review branch from current verified head, preregister disjoint functional STEP2 or source-wide regression root-cause package, implement tests and checkpoint without touching frozen Run509 rows or gates.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
