@@ -1,0 +1,122 @@
+name: V13 Run566 FUTURE_005 dormant source-only preflight
+on:
+  push:
+    branches:
+      - codex/automation11-run566-future005-prep-20261026
+permissions:
+  contents: read
+jobs:
+  frozen-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Exact original frozen sources and dormant workflow
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN566_PREP_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run566-future005-prep/PREREG.md)" = '8f4d93bb929b95c9d91f251df5239dcad604d2fe'
+          test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
+          test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
+          test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
+          test "$(git hash-object v13/code/scripts/run558_future_batch.py)" = 'c73f2e44c5ecf3b1815b04097502153c814c74e0'
+          test "$(git hash-object v13/code/tests/test_run558_future_batch.py)" = 'ed9b3bae830cc8db1fdc9f96872caa8252f01ace'
+          test "$(git hash-object v13/code/specs/models.json)" = '7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN566_PREP_HOST.txt"
+      - name: Isolated portable dependencies, no native
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run566prepvenv"
+          timeout 240s "$RUNNER_TEMP/run566prepvenv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN566_PREP_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN566_PREP_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Original frozen 42-row mixed-seed plan and adversarial source regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          "$RUNNER_TEMP/run566prepvenv/bin/python" -m unittest -v tests.test_run558_future_batch tests.test_run560_fixture_origin tests.test_run559_offline_review tests.test_run504_remaining980_schedule tests.test_run500_step2_stage_map > "$RUNNER_TEMP/RUN566_PREP_TEST_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run566prepvenv/bin/python" scripts/run500_step2_stage_map.py --fixture-only --work "$RUNNER_TEMP/run566-prep-stage" > "$RUNNER_TEMP/RUN566_PREP_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run566prepvenv/bin/python" scripts/run504_remaining980_schedule.py --output "$RUNNER_TEMP/run566-prep-stage/RUN504_SCHEDULE.json" >> "$RUNNER_TEMP/RUN566_PREP_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run566prepvenv/bin/python" scripts/run558_future_batch.py --batch FUTURE_005 --plan --work "$RUNNER_TEMP/run566-prep-stage" >> "$RUNNER_TEMP/RUN566_PREP_PLAN_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run566prepvenv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN566_PREP_PLAN_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'run566-prep-stage'
+          p=json.loads((root/'RUN558_BATCH_PLAN.json').read_text())
+          assert p['batch_id']=='FUTURE_005'
+          assert p['stage_ids']==['A_s33_p02','A_s33_p03','A_s33_p04']
+          assert p['fixture_pairs']==[['Crescent','Asteria'],['Boreal','Cascade'],['Drift','Eon']]
+          assert p['arm_seed_pairs']==[['A',33],['A',33],['A',33]]
+          assert p['expected_rows']==42 and p['native_executed'] is False
+          assert p['canonical_gate_pass'] is False and p['step2_exit']=='UTILITY_FAIL'
+          assert p['jepa_weight']==0 and p['redmi_measured'] is False
+          print('RUN566_FUTURE005_SOURCE_PLAN_42_DISJOINT_VERIFIED; NO_NATIVE')
+          PY
+            rc=$?
+          fi
+          if [ -f "$RUNNER_TEMP/run566-prep-stage/RUN558_BATCH_PLAN.json" ]; then
+            cp "$RUNNER_TEMP/run566-prep-stage/RUN558_BATCH_PLAN.json" "$RUNNER_TEMP/RUN566_PREP_BATCH_PLAN.json"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN566_PREP_TEST_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan against exact parent
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b8e76bb112b2f720d6f4851b52b7d69acd25c159 --head HEAD --no-worktree > "$RUNNER_TEMP/RUN566_PREP_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN566_PREP_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all source-only evidence including RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN566_PREP_*' ! -name RUN566_PREP_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN566_PREP_SHA256SUMS.txt
+      - name: Retain source-only results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run566-future005-dormant-source-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN566_PREP_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only preflight and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN566_PREP_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN566_PREP_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN566_PREP_PRIVACY_EXIT.txt")" = 0
