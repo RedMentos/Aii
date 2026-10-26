@@ -1,0 +1,121 @@
+name: V13 Run553 explicit USER goal lifecycle operator
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run553-user-goal-operator.yml'
+      - 'v13/code/v13/agi/live.py'
+      - 'v13/code/v13/agi/__init__.py'
+      - 'v13/code/v13/agi/goals.py'
+      - 'v13/code/v13/agi/maturity.py'
+      - 'v13/code/v13/agi/metacog.py'
+      - 'v13/code/v13/inputs.py'
+      - 'v13/code/tests/test_agi_live.py'
+      - 'v13/code/tests/test_world_model.py'
+      - 'v13/code/tests/test_run553_user_goal_operator.py'
+      - 'v13/code/tests/test_run546_metacog_labels.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run553-user-goal-operator/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run553-user-goal-operator-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact source, prereg and unchanged canonical binding
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN553_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run553-user-goal-operator/PREREG.md)" = '80be4c14af505d1c3f51ba93234830c1e227d7c6'
+          test "$(git hash-object v13/code/v13/agi/live.py)" = 'defc0f3205d7745125c869e51ddcf5a7ffee5993'
+          test "$(git hash-object v13/code/v13/agi/maturity.py)" = 'd0bfeb47ff9e2d32bd6dd0e48784ee538c86bea2'
+          test "$(git hash-object v13/code/tests/test_agi_live.py)" = '308a22aab99985dcf9e8d80ac1e77c309797f684'
+          test "$(git hash-object v13/code/tests/test_run553_user_goal_operator.py)" = 'cd5406fa80f51ce871c6ef692e5c00bf9cd3c1f7'
+          test "$(git hash-object v13/code/tests/test_run552_jef_goal_final_receipt.py)" = '0e847e3e3210c7cf4e34d79f9ea196610a369fd3'
+          test "$(git hash-object v13/code/v13/agi/__init__.py)" = '16a3074d74a19fbbe095a69a45c8b2889a12a492'
+          test "$(git hash-object v13/code/v13/agi/goals.py)" = '96ef31a63812efd1da98f85ae9a2b5152ba51a73'
+          test "$(git hash-object v13/code/tests/test_world_model.py)" = '787d1cbf08bf4730614a3c9f82492ec1fead9be3'
+          test "$(git hash-object v13/code/tests/test_run551_rating_revision_calibration.py)" = '642634d628ec78ce463b14aabb26ecb1c5a8d4e7'
+          test "$(git hash-object v13/code/tests/test_run546_metacog_labels.py)" = '5465b2dcfdafb205bd3e911e4d4812031ef8c328'
+          test "$(git hash-object v13/code/v13/agi/metacog.py)" = 'be469b602987c8325825677e0c13828e8477d0a0'
+          test "$(git hash-object v13/code/v13/inputs.py)" = '797e5662924e4335dfe825782ef5a8c2e50f9373'
+          test "$(git hash-object v13/code/scripts/integrated_candidates.py)" = '9ba7ea2eca522304b05a347ac749f0dff95c5236'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN553_HOST.txt"
+      - name: Isolated portable dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run553venv"
+          timeout 240s "$RUNNER_TEMP/run553venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN553_DEPS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN553_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Real Store/JEF/AG9/Age source-only regressions
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          "$RUNNER_TEMP/run553venv/bin/python" -m compileall -q v13/agi/live.py v13/agi/__init__.py v13/agi/goals.py v13/agi/maturity.py tests/test_agi_live.py tests/test_world_model.py tests/test_run553_user_goal_operator.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run553venv/bin/python" -m unittest -v tests.test_run553_user_goal_operator tests.test_run552_jef_goal_final_receipt tests.test_world_model tests.test_run551_rating_revision_calibration tests.test_run549_quality_fact_partition tests.test_agi_live tests.test_growth tests.test_run546_metacog_labels tests.test_age_rights > "$RUNNER_TEMP/RUN553_TESTS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN553_TEST_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN553_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN553_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN553_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN553_*' ! -name RUN553_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN553_SHA256SUMS.txt
+      - name: Preserve every result even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run553-user-goal-operator-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN553_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source, tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN553_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN553_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN553_PRIVACY_EXIT.txt")" = 0
