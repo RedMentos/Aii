@@ -32,8 +32,8 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN565_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run565-quote-coverage/PREREG.md)" = '89bc089b2c2deb3e95a0f8931c0ab113b9703cca'
-          test "$(git hash-object v13/code/scripts/run565_quote_diagnostic.py)" = '9c4e0461ca2322c606bdd319f0eae39be0746058'
-          test "$(git hash-object v13/code/tests/test_run565_quote_diagnostic.py)" = '7875e9be94537620a17d1c306e9c084289b7159b'
+          test "$(git hash-object v13/code/scripts/run565_quote_diagnostic.py)" = '420eaec40fa754a69724806e509ea064f4d5014b'
+          test "$(git hash-object v13/code/tests/test_run565_quote_diagnostic.py)" = '37a4c6afbfb9ba3e7017d500b2056a69831f822e'
           test "$(git hash-object v13/code/scripts/run491_step2_heldout10.py)" = 'f4d2d8d5e66c49c508e376ebafce2146e5a2715b'
           test "$(git hash-object v13/code/scripts/run500_step2_stage_map.py)" = '504a4a8492bdb383869b164b82c05d13e00f6823'
           test "$(git hash-object v13/code/scripts/run504_remaining980_schedule.py)" = '5f447908ec6197760d55c347ffb949ae42ad1ed8'
