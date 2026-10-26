@@ -22,7 +22,7 @@ class Run462Stage8Tests(unittest.TestCase):
 
     def call(self, execute=False, imported=None, preflight=None,
              installed=None, export=None):
-        with (patch.object(stage.stage8_import, "import_stage8",
+        with (patch.object(stage.stage7_import, "import_stage7",
                            return_value=self.imported() if imported is None
                            else imported) as import_call,
               patch.object(stage, "verify_previous",
@@ -65,11 +65,11 @@ class Run462Stage8Tests(unittest.TestCase):
         imported.assert_not_called()
         native.assert_not_called()
 
-    def test_bad_six_receipt_import_refuses_native(self):
+    def test_bad_seven_receipt_import_refuses_native(self):
         bad = dict(self.imported(), status="RUN461_NATIVE294_IMPORT_RED_PRESERVED")
         result, imported, native = self.call(imported=bad)
         self.assertEqual(result["status"], "STAGE8_RED_PRESERVED")
-        self.assertIn("STAGE8_252_IMPORT_NOT_VERIFIED", result["errors"][0])
+        self.assertIn("STAGE8_294_IMPORT_NOT_VERIFIED", result["errors"][0])
         native.assert_not_called()
 
     def test_previous_receipt_refusal_preserves_red(self):
@@ -84,7 +84,7 @@ class Run462Stage8Tests(unittest.TestCase):
         native.assert_not_called()
 
     def test_forged_preflight_success_is_refused(self):
-        bad = dict(self.preflight(), rows_verified=294)
+        bad = dict(self.preflight(), rows_verified=336)
         result, imported, native = self.call(preflight=bad)
         self.assertEqual(result["status"], "STAGE8_RED_PRESERVED")
         self.assertIn("STAGE8_PREFLIGHT_NOT_VERIFIED", result["errors"][0])
