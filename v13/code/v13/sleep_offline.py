@@ -32,6 +32,39 @@ def _load(store):
     if st.get('revision')!=REVISION:raise ValueError('Digest state revision mismatch')
     return st,v
 
+def _session_batch(store,st):
+    """Newest four + persistent fair rotation of other FINAL-bearing sessions.
+
+    A newest-only LIMIT 8 starves old chats indefinitely once more than eight
+    chats have traffic. The round-robin lane uses keyset paging, never OFFSET,
+    and keeps the source-validation and per-session turn caps unchanged.
+    """
+    cursor=st.get('session_cursor','')
+    if type(cursor) is not str or len(cursor)>256:
+        raise ValueError('Digest session cursor invalid')
+    hot=store.rows(
+        "SELECT session_id,MAX(id) AS last FROM messages "
+        "WHERE role='assistant' AND status='FINAL' "
+        "GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX//2,))
+    if len(hot)<SESSIONS_MAX//2:
+        return hot
+    hot_ids=[r['session_id'] for r in hot]
+    slots=SESSIONS_MAX-len(hot)
+    marks=','.join('?' for _ in hot_ids)
+    def page(op,n):
+        return store.rows(
+            "SELECT session_id,MAX(id) AS last FROM messages "
+            "WHERE role='assistant' AND status='FINAL' AND session_id"+op+"? "
+            "AND session_id NOT IN ("+marks+") "
+            "GROUP BY session_id ORDER BY session_id LIMIT ?",
+            (cursor,*hot_ids,n))
+    fair=page('>',slots)
+    if len(fair)<slots:
+        fair+=page('<=',slots-len(fair))
+    if fair:
+        st['session_cursor']=fair[-1]['session_id']
+    return hot+fair
+
 def digest(store,checkpoint=None):
     """Extractive day digest; drain oldest unprocessed FINAL turns, never skip a backlog.
 
@@ -41,7 +74,7 @@ def digest(store,checkpoint=None):
     """
     from .history import native_history_since
     st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0,'pending':0,'backlog_remaining':0}
-    rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
+    rows=_session_batch(store,st)
     for r in rows:
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if d.get('cursor_version')!=2:
