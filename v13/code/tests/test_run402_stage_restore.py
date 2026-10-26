@@ -138,7 +138,7 @@ class Run402StageRestoreTests(unittest.TestCase):
         files = {p.name: bytearray(p.read_bytes())
                  for p in self.root.glob("RUN401_*") if p.is_file()}
         files["RUN401_INSTALLED_RAW.log"] = bytearray(
-            b"RUNNER_VERIFIED " + b"0" * 64 + b"\\n")
+            b"RUNNER_VERIFIED " + b"0" * 64 + b"\n")
         with self.assertRaisesRegex(ValueError, "STAGE1_RUNNER_LOG_IDENTITY_MISMATCH"):
             restore._validate_native_tree(self.root / "run401-full", files)
 
