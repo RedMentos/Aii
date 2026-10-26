@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN483_B3_L1_SEED_ROW_PINNED_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run483-b3-l1-seed-alignment-20261026",
+  "base_ref": "codex/run478-b3-l1-complete-controls-20261026",
+  "base_sha": "43368ffb58b77b293e865442ca68b807ee7e9780",
+  "owner": "Run483 B3 seed/row source-only integrity candidate, no native/model ownership",
+  "finding": "Run478 verifies complete seven-channel arrays and equal seed counts but cannot establish that channel index i refers to the same preregistered seed or that post-registration row contents remain unchanged.",
+  "changes": [
+    "Exact seven-channel x at-least-three-seed row matrix, unique channel/seed IDs, complete externally pinned SHA256 row inventory.",
+    "Per-row evidence digest and metadata digest, finite bounded measurements, stable per-channel byte cost as required by frozen l1_gate.",
+    "Allow shared source artifacts across rows (legitimate multi-channel capture) while binding each distinct row to its own registered digest.",
+    "Build Run478 task only after alignment checks; force canonical negative gates even if diagnostic L1 returns PASS."
+  ],
+  "source_blobs": {
+    "v13/code/v13/b3bridge.py": "577eda716b5fc17607ff46d11267b2e08eee2794",
+    "v13/code/scripts/run478_b3_l1_complete_baselines.py": "54ed6fc0e75a711351c4f1eb644d16f7d17c60c7",
+    "v13/code/scripts/run483_b3_l1_seed_pins.py": "81709b42acd77334539bbdea47caa4e66cdc0248",
+    "v13/code/tests/test_run483_b3_l1_seed_pins.py": "4fae10165615a7757d4df81bb03fe4b0decb0cb6",
+    ".github/workflows/run483-b3-l1-seed-pins.yml": "c5a130d6a36af99e80fd5d36325bd714d27c14d8"
+  },
+  "tests": {
+    "standalone_boundary": "8/8 PASS with isolated fake evaluator (no native/model/full checkout)",
+    "github_ci": "PENDING; 8 new + 7 Run478 + 8 b3bridge expected 23 source tests; official privacy scan"
+  },
+  "negative_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "canonical_gate_pass": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Caller must independently authenticate immutable preregistration pins and raw native measurement provenance; self-consistent hashes cannot prove real observations or correct seed labels.",
+    "Per-channel byte cost may vary by seed in real B3 experiments; this candidate refuses that case instead of silently averaging, pending an explicit utility estimator migration.",
+    "No real B3 L1/retention proof, no production migration, no latent activation.",
+    "Run479 Stage9 is separately owned; do not launch competing native work."
+  ],
+  "exact_next_command": "Open draft PR against Run478; inspect source CI raw logs and privacy; independently review alignment and false-claim negatives. Continue native378 utility after Run479 closes without rerunning models."
+}
