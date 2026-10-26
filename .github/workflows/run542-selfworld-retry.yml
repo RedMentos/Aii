@@ -1,0 +1,158 @@
+name: V13 Run542 F3/F4 exception-safe observation and phone regression
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run542-selfworld-retry.yml'
+      - 'v13/code/v13/__main__.py'
+      - 'v13/code/v13/agi/file_world_port.py'
+      - 'v13/code/v13/agi/approved_sandbox_world.py'
+      - 'v13/code/tests/test_run542_selfworld_retry.py'
+      - 'v13/code/setup.sh'
+      - 'v13/code/tests/test_run540_portable_selftest.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run542-selfworld-retry/**'
+permissions:
+  contents: read
+jobs:
+  portable:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation11-run542-selfworld-retry-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact prereg and source checks
+        id: source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run542-selfworld-retry/PREREG.md)" = 'f100ef8d067a344adc9de47e4aadc1e4ee304786'
+          test "$(git hash-object v13/code/v13/__main__.py)" = 'c99125616b96a0db83b0af239098aadae51d0d13'
+          test "$(git hash-object v13/code/v13/agi/file_world_port.py)" = 'ee360bffa9d45884ec69d3165b67ac8fbf08174f'
+          test "$(git hash-object v13/code/v13/agi/approved_sandbox_world.py)" = '6e226b190c445b8e7f337a3d66e3b0e41a10a0a5'
+          test "$(git hash-object v13/code/tests/test_run542_selfworld_retry.py)" = 'efed356ad55ba049cc76e2f103889b11b5923acb'
+          test "$(git hash-object v13/code/setup.sh)" = 'f0f22b549dedfe54ed3f9b277ea7c0e560a11e5e'
+          test "$(git hash-object v13/code/tests/test_run540_portable_selftest.py)" = '81a709e85b3d4ae428733a6ea151eb376af1ebeb'
+          test "$(git hash-object v13/code/scripts/package_source.py)" = '06167e0bcb82b36cb08841cd31b9618c4ba0926e'
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN542_HEAD.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN542_HOST.txt"
+      - name: Isolated source-only dependencies
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run542venv"
+          timeout 240s "$RUNNER_TEMP/run542venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN542_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run542venv/bin/python" -c "import importlib.util; assert importlib.util.find_spec('torch') is None" >> "$RUNNER_TEMP/RUN542_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN542_DEPS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Focused CLI regression in checkout
+        id: tests
+        if: ${{ steps.deps.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD"
+          timeout 240s "$RUNNER_TEMP/run542venv/bin/python" -m unittest -v tests.test_run540_portable_selftest tests.test_run542_selfworld_retry tests.test_run533_sandbox_world_port tests.test_run535_self_world_operator tests.test_run536_approved_sandbox_world > "$RUNNER_TEMP/RUN542_TESTS_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN542_TESTS_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Build new immutable source ZIP with unchanged packer and verifier
+        id: package
+        if: ${{ steps.tests.outputs.rc == '0' }}
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run542venv/bin/python" scripts/package_source.py --root . --out "$RUNNER_TEMP/V13-Phone-Run542.zip" --phone-install > "$RUNNER_TEMP/RUN542_PACKAGE_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run542venv/bin/python" scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run542.zip" --root . --out "$RUNNER_TEMP/RUN542_VERIFY.json" >> "$RUNNER_TEMP/RUN542_PACKAGE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            sha256sum "$RUNNER_TEMP/V13-Phone-Run542.zip" > "$RUNNER_TEMP/RUN542_ZIP_SHA256.txt"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN542_PACKAGE_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run exact distributed ZIP portable checks without torch/models
+        id: extracted
+        if: ${{ steps.package.outputs.rc == '0' }}
+        run: |
+          set -uo pipefail
+          set +e
+          mkdir -p "$RUNNER_TEMP/run542_extract"
+          unzip -q "$RUNNER_TEMP/V13-Phone-Run542.zip" -d "$RUNNER_TEMP/run542_extract" > "$RUNNER_TEMP/RUN542_EXTRACT_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            export PYTHONPATH="$RUNNER_TEMP/run542_extract/V13-Phone"
+            cd "$RUNNER_TEMP/run542_extract/V13-Phone"
+            timeout 240s "$RUNNER_TEMP/run542venv/bin/python" -m v13 --home "$RUNNER_TEMP/run542_home" selftest --portable >> "$RUNNER_TEMP/RUN542_EXTRACT_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN542_EXTRACT_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public privacy scan
+        id: privacy
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN542_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN542_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN542_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: SHA-close all raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN542_*' ! -name RUN542_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN542_SHA256SUMS.txt
+      - name: Save immutable phone ZIP
+        if: ${{ steps.package.outputs.rc == '0' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Phone-Run542-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/V13-Phone-Run542.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve RED and all raw outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run542-portable-raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN542_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce portable source distribution proof
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN542_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN542_TESTS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN542_PACKAGE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN542_EXTRACT_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN542_PRIVACY_EXIT.txt")" = 0
