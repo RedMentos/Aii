@@ -454,13 +454,52 @@ class ContextOS:
             try:self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',cost_error=1-ratio)
             except Exception:pass
         return {'reuse_ratio':ratio,'warm':list(memory_ids)}
-    def outcome(self,event_id,utility,source_class='internal_crosscheck'):
-        """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
-        u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY rowid DESC LIMIT 1",(event_id,))
-        if not row:raise ValueError('Kein ContextPlan für dieses Event')
+    def plans(self,event_id):
+        """Read-only local selector: only packet IDs/roles and receipt validity."""
+        import json
+        rows=self.s.rows("SELECT id,generation_id,payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY rowid",(event_id,))
+        receipts=self._load()[0].get('plan_receipts',{})
+        out=[]
+        for row in rows:
+            role=None;committed=False
+            try:
+                plan=json.loads(row['payload']);role=plan.get('role')
+                receipt=receipts.get(row['id'])
+                committed=(isinstance(plan,dict) and plan.get('packet_id')==row['id']
+                           and plan.get('event_id')==event_id
+                           and plan.get('brain_generation_id')==row['generation_id']
+                           and isinstance(receipt,dict)
+                           and receipt.get('event_id')==event_id
+                           and receipt.get('role')==role
+                           and receipt.get('digest')==digest(dumps(plan).encode()))
+            except (ValueError,TypeError,KeyError,AttributeError):
+                pass
+            out.append({'packet_id':row['id'],
+                        'role':role if isinstance(role,str) else None,
+                        'committed':bool(committed)})
+        return out
+    def outcome(self,event_id,utility,source_class='internal_crosscheck',plan_id=None):
+        """Learn only from one explicitly identified committed causal ContextPlan."""
+        u=clamp(utility)
+        rows=self.s.rows("SELECT id,generation_id,payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY rowid",(event_id,))
+        if not rows:raise ValueError('Kein ContextPlan für dieses Event')
+        if plan_id is None:
+            if len(rows)!=1:
+                raise ValueError('Mehrere ContextPlans: :ctxos plans <Event> und exakte ContextPlan-ID angeben')
+            row=rows[0]
+        else:
+            if not isinstance(plan_id,str) or not plan_id:
+                raise ValueError('ContextPlan-ID erforderlich')
+            row=next((r for r in rows if r['id']==plan_id),None)
+            if row is None:raise ValueError('ContextPlan-ID gehört nicht zu diesem Event')
         import json
         plan=json.loads(row['payload'])
         packet_id=plan.get('packet_id');role=plan.get('role')
+        ev=self.s.one('SELECT generation_id FROM events WHERE id=?',(event_id,))
+        if (packet_id!=row['id'] or plan.get('event_id')!=event_id or
+            not ev or row['generation_id']!=ev['generation_id'] or
+            plan.get('brain_generation_id')!=ev['generation_id']):
+            raise ValueError('ContextPlan packet row/event/generation mismatch')
         plan_digest=digest(dumps(plan).encode())
         def committed(st):
             receipt=st.get('plan_receipts',{}).get(packet_id)
@@ -514,7 +553,7 @@ def controller(runtime):
         c=runtime.context_os=ContextOS(runtime.store,runtime.cfg,age,n)
     return c
 
-USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|source_bound_user|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <0..1>]'
+USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|source_bound_user|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|plans <Event>|outcome <Event> <0..1> [ContextPlan-ID]]'
 def operator_command(r,args):
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())
@@ -532,5 +571,7 @@ def operator_command(r,args):
         import threading,time
         res=probe_template(r.pool.get(args[1]),threading.Event(),time.monotonic()+120)
         return dumps(c.set_capability(args[1],'consecutive_user',res['value'],res['evidence']))
-    if len(args)==3 and args[0]=='outcome':return dumps(c.outcome(args[1],float(args[2]),'human_correction'))
+    if len(args)==2 and args[0]=='plans':return dumps(c.plans(args[1]))
+    if len(args) in (3,4) and args[0]=='outcome':
+        return dumps(c.outcome(args[1],float(args[2]),'human_correction',args[3] if len(args)==4 else None))
     raise ValueError(USAGE)

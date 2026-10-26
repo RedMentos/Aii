@@ -1,0 +1,70 @@
+{
+  "schema": "V13_RUN595_VERIFIED_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11",
+  "repository": "RedMentos/Aii",
+  "branch": "codex/automation11-run595-ctx-feedback-plan-selector-20261026",
+  "base_branch": "codex/automation11-run594-chat-export-stream-20261026",
+  "base_sha": "34d0f6474238f25ea155d3c212b9acf7be37cf5b",
+  "verified_code_head": "313ed5a9a1e45668970570f608e890172f85c12e",
+  "pr": 590,
+  "pr_url": "https://github.com/RedMentos/Aii/pull/590",
+  "prereg_commit": "c30d1383646e85464ff0a94f091db77f22970416",
+  "changed_source_blobs": {
+    "v13/code/v13/context_os.py": "65b6a2337bc92bfe8232de821d85da4b2cd6b4d2",
+    "v13/code/tests/test_run595_ctx_feedback_plan_selector.py": "760ed7bf6ab5af039e5fe089b814e8c122e23599",
+    ".github/workflows/run595-ctx-feedback-plan-selector.yml": "f25717e274784beb5496945bd375cd5c061a72df"
+  },
+  "observed_ci": {
+    "run": 40393438383,
+    "job": 121820116009,
+    "head": "313ed5a9a1e45668970570f608e890172f85c12e",
+    "conclusion": "success",
+    "new_tests": "7/7 PASS",
+    "run590": "5/5 PASS",
+    "context_os": "21/21 PASS",
+    "append_provenance": "17/17 PASS",
+    "warm_authority": "6/6 PASS",
+    "unbalanced_literals": "7/7 PASS",
+    "compileall": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12685411960,
+    "raw_artifact_sha256_from_actions_log": "6f5e9a2715c070361f4a7b9839d01214ac46770d1f993fa000a3646bdf187438"
+  },
+  "failed_attempt_preserved": {
+    "head": "5a0c75e202f1a0f5e3c89564bb16ea11b4f1ced3",
+    "run": 40393381086,
+    "artifact_id": 12684668437,
+    "artifact_sha256": "5e6586c6f7e78b7a66518c3a83b4c2330bdcf01b0e340af2b167d13bd842d759",
+    "reason": "Workflow referred to nonexistent test_context_os_append_only.py; unittest discovery returned NO TESTS RAN exit 5. All seven new tests and Run590/ContextOS passed. Workflow corrected at 313ed5a9 to run actual existing provenance/warm/literal suites."
+  },
+  "changes": [
+    "ContextOS.outcome refuses ambiguous multiple ContextPlans for one event unless exact packet ID selected",
+    "Read-only :ctxos plans <Event> exposes packet ID, role and CAS-committed digest status without source text",
+    "Explicit outcome selector binds row ID, event and generation before CAS receipt/digest feedback",
+    "Single-plan and delayed feedback remain compatible; no policy authority promotion"
+  ],
+  "claim_limits": {
+    "software_only": true,
+    "native_execution": false,
+    "redmi_measured": false,
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "full_v13_complete": false,
+    "full_source_suite": "RED_4_FAIL_65_ERROR"
+  },
+  "open_questions": [
+    "Independent review/merge of PR581–590 stacked chain, production main remains older",
+    "Causal role selection still operator-supplied, not automatic from final answer; no model-based authority",
+    "Target Redmi sustained thermal/RSS and native Body-JEPA/B3 receiver effects absent",
+    "Original full-suite RED remains, requires separate triage"
+  ],
+  "next_command": "Review PR590 exact CI artifact and diff; inspect current remote PRs/owners; next independent package should pursue end-to-end C3/Body-JEPA utility or full-suite diagnosis without gate promotion.",
+  "prerequisites": [
+    "No force push or anyone-writable Drive",
+    "No competing heavy native/model jobs",
+    "Preserve original failed attempts and frozen cohorts"
+  ]
+}
