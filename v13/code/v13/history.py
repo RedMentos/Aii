@@ -106,6 +106,24 @@ def native_history_since(store,session,after_id,turns,pending_ids=()):
         marks=','.join('?' for _ in eids)
         records=store.rows("SELECT * FROM messages WHERE session_id=? AND event_id IN ("+marks+") ORDER BY id ASC",(session,*eids))
         valid,dependencies=_validated(store,session,'',records)
+        # An assistant can be FINAL before its matching user row becomes
+        # FINAL (e.g. interrupted recovery). The high-water scan must not
+        # permanently discard that unfinished pair. A completed pair whose
+        # source/approval check fails is NOT deferred: it has no authority.
+        verified={int(row['id']) for row in valid if row['role']=='assistant'}
+        by_event={}
+        for row in records:
+            by_event.setdefault(row['event_id'],[]).append(row)
+        for assistant in completed:
+            if int(assistant['id']) in verified:
+                continue
+            pair=by_event.get(assistant['event_id'],[])
+            if (len(pair)==2 and [row['role'] for row in pair]==['user','assistant']
+                    and pair[0]['status']!='FINAL' and pair[1]['status']=='FINAL'):
+                deferred.append(int(assistant['id']))
+        deferred.sort()
+        if len(deferred)>128:
+            raise ValueError('Too many deferred unfinished history turns')
         wanted={row['event_id'] for row in completed}
         selected=[row for row in valid if row['event_id'] in wanted]
         return selected,_refs(selected,dependencies),high,deferred
