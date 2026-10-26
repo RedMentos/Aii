@@ -18,11 +18,12 @@
     "No change to existing correction off/shadow/deliver messaging, Age rights, learning or tools",
     "Dedup, bounded ring, no raw question/answer in diagnostic, missing/forged/cross-session abstain"
   ],
-  "evidence": "SOURCE_ONLY_CI_PENDING_NO_NATIVE",
+  "evidence": "SOURCE_ONLY_GREEN_57_TESTS_PRIVACY_CLEAN",
   "heavy_owner": {
     "pr": 513,
     "run": 40313344309,
-    "status": "IN_PROGRESS_NATIVE_EXCLUSIVE"
+    "status": "COMPLETED_NATIVE_12_POSTFLIGHT_RED",
+    "root_cause": "Run513 rejected_quotes schema int-vs-list; Run518 fix needed, no native rerun"
   },
   "gates": {
     "step2": "UTILITY_FAIL",
@@ -33,6 +34,17 @@
     "canonical_architecture_complete": false,
     "age0d_deliver_recommended": false
   },
-  "next_command": "Open review PR, verify Run517 source-only tests and SHA raw evidence, then independently inspect Run515 native p00 as soon as it closes; do not overlap native owners.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Run518 correct Run513 postflight schema, independently replay preserved Run515 12 native rows; no rerun p00. Then continue remaining canonical packages.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "run": 40314305663,
+    "head": "ba4eebe1a5e90888276f923adb754e7c57317c66",
+    "artifact": 12646511272,
+    "zip_sha256": "fee7ed6dd59ca467dd81da85fd4f5789e49dcce4bc85a685079264de98e48403",
+    "manifest_entries_verified": 4,
+    "tests_passed": 57,
+    "run134_synthetic": "correct_false_alarms=0/100 wrong_detected=100/100",
+    "privacy": "CLEAN",
+    "private_backup": "/V13_Run517_SOURCE_ONLY_GREEN_20261026_shaFEE7ED6D.zip"
+  }
 }
