@@ -1,0 +1,106 @@
+name: V13 Run574 frozen C3 replay versus live Runtime source scope audit
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run574-live-scope-audit.yml'
+      - 'v13/code/scripts/run574_live_scope_audit.py'
+      - 'v13/code/tests/test_run574_live_scope_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run574-live-scope-audit/**'
+permissions:
+  contents: read
+jobs:
+  independent-scope:
+    if: ${{ github.event.pull_request.head.ref == 'assistant/v13-run574-live-scope-audit-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Exact prereg, causal source and Canon hashes
+        id: source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN574_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run574-live-scope-audit/PREREG.md)" = '6c13b9956b79015d4d0dd4457987ecdf7a42c2dc'
+          test "$(git hash-object v13/code/scripts/run574_live_scope_audit.py)" = '12367f02d35438cc743265f04affa551f70be09a'
+          test "$(git hash-object v13/code/tests/test_run574_live_scope_audit.py)" = 'd5691116fb8b8490f6e66805498cb3bf16106412'
+          test "$(git hash-object v13/code/scripts/step2_tool_replay.py)" = 'e8d8c87de2474a764e4bbc28b4fe028413a316e1'
+          test "$(git hash-object v13/code/scripts/step2_z2b_seeds.py)" = '7c299616495450e4a38f9aab9921f7176ba67556'
+          test "$(git hash-object v13/code/scripts/run571_current_default_native.py)" = '813dfe55997db2116b7cd79365a744b2635440b6'
+          test "$(git hash-object v13/code/v13/runtime.py)" = '0be34417865d64ee8ff6b7ba26631d18aa279e3a'
+          test "$(git hash-object v13/code/v13/config.py)" = '9bbc5b6e1bc35b7d0b9be4fb925100bce97fd0cd'
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN574_HOST.txt"
+      - name: Python standard library AST adversarial tests, no models
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          export PYTHONPATH="$PWD:$PWD/scripts"
+          python3 -m compileall -q scripts/run574_live_scope_audit.py tests/test_run574_live_scope_audit.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            timeout 120s python3 -m unittest -v tests.test_run574_live_scope_audit > "$RUNNER_TEMP/RUN574_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 scripts/run574_live_scope_audit.py --output "$RUNNER_TEMP/RUN574_SCOPE_REPORT.json" > "$RUNNER_TEMP/RUN574_SCOPE_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/RUN574_SCOPE_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'RUN574_SCOPE_REPORT.json').read_text())
+          assert d['status']=='BODY_OFFER_PLUS_FROZEN_C3_REPLAY_ONLY'
+          assert d['live_end_to_end_verified'] is False
+          assert d['tool_answer_first_final_effect_isolated'] is False
+          assert d['eligibility_reader_final_effect_isolated'] is False
+          assert d['native_executed'] is False and d['canonical_gate_pass'] is False
+          assert d['step2_exit']=='UTILITY_FAIL' and d['jepa_weight']==0 and d['redmi_measured'] is False
+          print('RUN574_CAUSAL_SCOPE_LIMIT_INDEPENDENTLY_VERIFIED_NO_MODEL')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN574_TEST_EXIT.txt"
+          exit 0
+      - name: Official public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN574_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN574_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all source raw evidence even RED
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN574_*' ! -name RUN574_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN574_SHA256SUMS.txt
+      - name: Upload original source scope evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run574-source-scope-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN574_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source scope and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.source.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN574_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN574_PRIVACY_EXIT.txt")" = 0
