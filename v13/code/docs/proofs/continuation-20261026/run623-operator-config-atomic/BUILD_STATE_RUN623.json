@@ -33,5 +33,10 @@
   "open_questions": [
     "Exact current-head Actions CI status unverified",
     "Live mid-turn config race resolved for four operator settings; broader policy switches not audited"
-  ]
+  ],
+  "private_backup": {
+    "library_path": "/V13-Checkpoints/2026-10-26/Run623/run623-local-closed.zip",
+    "sha256": "e8ff3947ab1681f391752279fb343dd9e0b0917b0d45515a5d8047237aff0508",
+    "roundtrip_verified": true
+  }
 }
