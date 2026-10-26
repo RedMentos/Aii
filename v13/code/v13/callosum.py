@@ -221,19 +221,27 @@ class Callosum:
         if not valid:return {'updated':0}
         sc=step(self.n,PATH)
         def fn(st):
+            pending=st['pending'].get(event_id) or []
+            # A previously rated packet is spent even when note() appends a
+            # fresh duplicate *after* the original rating. Check the current
+            # CAS snapshot, not the stale prevalidation snapshot.
+            previously_rated={m.get('msg') for m in pending
+                              if m.get('rated') and isinstance(m.get('msg'),str)}
             seen=set();n=0
-            for m in st['pending'].get(event_id) or []:
+            for m in pending:
                 mid=m.get('msg')
-                if (not isinstance(mid,str) or mid not in valid or mid in seen or m.get('rated') or
+                if (not isinstance(mid,str) or mid not in valid or mid in seen or
+                    mid in previously_rated or m.get('rated') or
                     (m.get('direction'),m.get('receiver'),m.get('channel'))!=valid[mid]):
                     continue
                 self._update(st,m['direction'],m['channel'],u,None,sc)
                 m['rated']=True;seen.add(mid);n+=1
-            # A duplicate pending entry for the same real packet must not
-            # become a second rating on the next call.
-            for m in st['pending'].get(event_id) or []:
+            # Repair late duplicate references in the same committed state;
+            # a retry or restart must never count them as new observations.
+            spent=seen|previously_rated
+            for m in pending:
                 mid=m.get('msg')
-                if (isinstance(mid,str) and mid in seen and
+                if (isinstance(mid,str) and mid in spent and mid in valid and
                     (m.get('direction'),m.get('receiver'),m.get('channel'))==valid[mid]):
                     m['rated']=True
             return n
