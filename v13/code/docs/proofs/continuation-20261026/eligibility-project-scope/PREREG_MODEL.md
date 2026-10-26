@@ -1,0 +1,5 @@
+# Run577 — disjoint fixed_strict/model project-boundary validation (2026-10-26)
+
+Owner automation12; continuation of verified Run576 source `c2b47ae9b7df058d7ecface9d53d3896172f8ad2`. No production source changes planned. File ownership: only `tests/test_eligibility_project_scope_run576.py`, Run576 workflow pin, and local evidence checkpoint. Preserve all frozen tests and cohorts.
+
+Prospective negative controls: (1) `fixed_strict` with a different project in prior exact history must abstain, (2) `fixed_strict` with matching project retains original rules, (3) `model` mode receives no different-project source text in its read prompt, even if its fake reader returns a confident mismatched budget; deterministic evidence guard refuses the invented rule, (4) same-project model read retains source-bound A decision. All software with fake C3, real Runtime/SQLite; no actual model, native, Redmi or learned utility. Re-run the same focused suites, compileall, official privacy scan and preserve raw even RED. No gate promotion.

@@ -1,0 +1,121 @@
+name: V13 Run579 disjoint SQLite project-transfer software ablation
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run579-project-transfer.yml'
+      - 'v13/code/scripts/run579_project_transfer.py'
+      - 'v13/code/tests/test_run579_project_transfer.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run579-project-transfer/**'
+permissions:
+  contents: read
+jobs:
+  transfer-ablation:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation12-eligibility-project-scope-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pin registered source, fixtures and Canon
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN579_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run579-project-transfer/PREREG.md)" = 41182e3a89dfe3bc1db997c313db2ae4a7f266d4
+          test "$(git hash-object v13/code/scripts/run579_project_transfer.py)" = cd9e9a75f3e6770062c58ea408789a9256337ff6
+          test "$(git hash-object v13/code/tests/test_run579_project_transfer.py)" = d54e1bcb14ca749df07aa5711e639255c3bcc362
+          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = 6af0130fd6209aa6ec293eaa2d892d23401361fa
+          test "$(git hash-object v13/code/v13/toolstep.py)" = 25ce260e2e840aba97cd70ad44fbb5e56a6307b2
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN579_HOST.txt"
+      - name: Isolated software prerequisites
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run579venv"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run579venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN579_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN579_DEPS_EXIT.txt"
+          exit 0
+      - name: Run exact 24-arm real SQLite software ablation
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run579venv/bin/python" -m compileall -q scripts/run579_project_transfer.py tests/test_run579_project_transfer.py > "$RUNNER_TEMP/RUN579_COMPILE_RAW.log" 2>&1
+          cr=$?
+          echo "$cr" > "$RUNNER_TEMP/RUN579_COMPILE_EXIT.txt"
+          if [ "$cr" -eq 0 ] && [ "$(cat "$RUNNER_TEMP/RUN579_DEPS_EXIT.txt")" = 0 ]; then
+            timeout 180s "$RUNNER_TEMP/run579venv/bin/python" -m scripts.run579_project_transfer --output "$RUNNER_TEMP/RUN579_REPORT.json" > "$RUNNER_TEMP/RUN579_ABLATION_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN579_ABLATION_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN579_ABLATION_RAW.log" ]; then tail -n 60 "$RUNNER_TEMP/RUN579_ABLATION_RAW.log"; fi
+          exit 0
+      - name: Focused old and new tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN579_DEPS_EXIT.txt")" = 0 ]; then
+            timeout 180s "$RUNNER_TEMP/run579venv/bin/python" -m unittest -v \
+              tests.test_run579_project_transfer \
+              tests.test_eligibility_project_scope_run576 \
+              tests.test_eligibility_fixed.Reader \
+              tests.test_eligibility_fixed.Live \
+              > "$RUNNER_TEMP/RUN579_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN579_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN579_TEST_RAW.log" ]; then tail -n 80 "$RUNNER_TEMP/RUN579_TEST_RAW.log"; fi
+          exit 0
+      - name: Official privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN579_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN579_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close all original raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN579_*' ! -name RUN579_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN579_SHA256SUMS.txt
+      - name: Preserve evidence even RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run579-project-transfer-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN579_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce preregistered software result and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN579_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN579_COMPILE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN579_ABLATION_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN579_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN579_PRIVACY_EXIT.txt")" = 0

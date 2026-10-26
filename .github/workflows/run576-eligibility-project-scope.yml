@@ -1,0 +1,116 @@
+name: V13 Run576 project-bound eligibility source regression
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run576-eligibility-project-scope.yml'
+      - 'v13/code/v13/agi/eligibility.py'
+      - 'v13/code/v13/toolstep.py'
+      - 'v13/code/tests/test_eligibility_project_scope_run576.py'
+      - 'v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/**'
+permissions:
+  contents: read
+jobs:
+  project-boundary:
+    if: ${{ github.event.pull_request.head.ref == 'codex/automation12-eligibility-project-scope-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      PIP_NO_CACHE_DIR: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify prereg, source and canonical bytes
+        id: pins
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN576_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/PREREG.md)" = f0b9fdf506c93d5e1d890e60329bf5e2b1bdb27b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/PREREG_MODEL.md)" = 2491291900a285e6d8c121cb597482d9a4710426
+          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = 6af0130fd6209aa6ec293eaa2d892d23401361fa
+          test "$(git hash-object v13/code/v13/toolstep.py)" = 25ce260e2e840aba97cd70ad44fbb5e56a6307b2
+          test "$(git hash-object v13/code/tests/test_eligibility_project_scope_run576.py)" = ba5405d57c440e3a09c9b7fb3f8c3c16a02406d6
+          test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; } > "$RUNNER_TEMP/RUN576_HOST.txt"
+      - name: Install isolated pinned software prerequisites
+        id: deps
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run576venv"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/run576venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' > "$RUNNER_TEMP/RUN576_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN576_DEPS_EXIT.txt"
+          exit 0
+      - name: Actual Runtime SQLite boundary and existing software regressions
+        id: tests
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          "$RUNNER_TEMP/run576venv/bin/python" -m compileall -q v13/agi/eligibility.py v13/toolstep.py tests/test_eligibility_project_scope_run576.py > "$RUNNER_TEMP/RUN576_COMPILE_RAW.log" 2>&1
+          cr=$?
+          echo "$cr" > "$RUNNER_TEMP/RUN576_COMPILE_EXIT.txt"
+          if [ "$cr" -eq 0 ] && [ "$(cat "$RUNNER_TEMP/RUN576_DEPS_EXIT.txt")" = 0 ]; then
+            timeout 180s "$RUNNER_TEMP/run576venv/bin/python" -m unittest -v \
+              tests.test_eligibility_project_scope_run576 \
+              tests.test_eligibility_live \
+              tests.test_eligibility_fixed.Reader \
+              tests.test_eligibility_fixed.Live \
+              tests.test_eligibility_fixed.Config.test_defaults_and_validation \
+              tests.test_tool_final_attribution \
+              tests.test_tool_final_live_software \
+              > "$RUNNER_TEMP/RUN576_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            rc=1
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN576_TEST_EXIT.txt"
+          if [ "$rc" -ne 0 ] && [ -f "$RUNNER_TEMP/RUN576_TEST_RAW.log" ]; then
+            echo "RUN576_SOURCE_RED; original raw retained"
+            tail -n 100 "$RUNNER_TEMP/RUN576_TEST_RAW.log"
+          fi
+          exit 0
+      - name: Public privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN576_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN576_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN576_*' ! -name RUN576_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN576_SHA256SUMS.txt
+      - name: Preserve evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run576-project-boundary-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN576_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused software proof and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "${{ steps.pins.outcome }}" = success
+          test "$(cat "$RUNNER_TEMP/RUN576_DEPS_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN576_COMPILE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN576_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN576_PRIVACY_EXIT.txt")" = 0

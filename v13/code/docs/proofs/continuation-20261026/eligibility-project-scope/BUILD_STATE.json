@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN576_PROJECT_SCOPE_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation12",
+  "base_head": "e55a2e64b0c82e3dd7ac71fcff84f57361464acf",
+  "prereg_commit": "02416c8e9b37a0a96a1f3fbc6d7f282fef6d6022",
+  "branch": "codex/automation12-eligibility-project-scope-20261026",
+  "review_pr": 575,
+  "verified_source_head": "df9660d0f508aab8ebd55fd46c5388d44a2e83a0",
+  "source_sha": {
+    "eligibility": "6af0130fd6209aa6ec293eaa2d892d23401361fa",
+    "toolstep": "25ce260e2e840aba97cd70ad44fbb5e56a6307b2",
+    "runtime_unchanged": "abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb",
+    "test": "cc1a84f76dd510264214de418d8717933e60ea6a"
+  },
+  "tests": {
+    "platform": "GitHub Actions ubuntu-24.04 isolated Python software",
+    "workflow_run": 40379677577,
+    "job_id": 121772214193,
+    "conclusion": "SUCCESS",
+    "scope": "Actual Runtime/SQLite project isolation, eligibility fixed/model existing suites, tool-final attribution/live synthetic integration, compileall, official public privacy scan",
+    "artifact_id": 12677178059,
+    "artifact_sha256": "ae872fe73ae041f8b2f1c6d2d36e158b72d3ae98ff2f8855ca27e1f3680f0927",
+    "unittest_count": "UNKNOWN_FROM_AVAILABLE_JOB_LOG; raw saved in artifact"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "full_scope_complete": false
+  },
+  "limitations": [
+    "Explicit English Project <name> heading lexical scope only; no semantic alias resolution or inferred project identity.",
+    "Generic unlabelled history remains usable for unlabelled current questions; ambiguous unlabelled references are not fully solved.",
+    "Full unfiltered historical suite is independently RED: 4038 tests, 4 FAIL, 65 ERROR, not promoted by this focused success.",
+    "No new native inference, phone run or model training; source candidate is review-only."
+  ],
+  "open_questions": [
+    "Evaluate disjoint project-label phrasing and negative-transfer false positives with independent review; do not change frozen cohort/seed hashes.",
+    "Reconcile historical source-lineage assertions with current reviewed runtime via versioned evidence, without editing original frozen tests.",
+    "Actual Redmi and native Body/JEPA/STEP2 utility proofs remain open."
+  ],
+  "next_exact_command": "Independently review PR575 at latest head; evaluate residual ambiguous project labels and decide whether to retain strict lexical fail-closed policy. Continue next separate V13 native/body/STEP2 functional package; no model/seed/gate changes without new prereg. Historical unfiltered suite remains RED and needs versioned current-source reconciliation.",
+  "run577": {
+    "prereg_commit": "d7355398cf3c2089bc14bde01fce71a6faddfbdb",
+    "prereg_sha": "2491291900a285e6d8c121cb597482d9a4710426",
+    "source_head": "6aa002c77465664ccebc4ecb3067faeab494c02d",
+    "test_sha": "ba5405d57c440e3a09c9b7fb3f8c3c16a02406d6",
+    "workflow_run": 40379946033,
+    "job_id": 121773150639,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12676698853,
+    "artifact_sha256": "6065e897539150617a9fcd3bdf2b58e9dc43d55599e91e44d7b2f3a093cc2629",
+    "scope": "Disjoint fixed_strict and model fake-C3 source-bound checks with actual Runtime/SQLite; focused existing suites, compileall, privacy"
+  }
+}
