@@ -38,9 +38,18 @@ class LiveShadowIntegration(unittest.TestCase):
     def ring(self):
         return self.r.store.state(S.ARITH_SHADOW_KEY, [])[0]
 
+    def commit(self, text, status="FINAL", session=None, event_id=None):
+        mid = self.r.store.message(
+            session or self.r.session, event_id or self.event["event_id"],
+            "assistant")
+        self.r.store.append_message(mid, text)
+        self.r.store.finish_message(mid, status, {"model_generated": False})
+        return mid
+
     def test_wrong_answer_source_verified_and_shadow_only(self):
         said = []
         self.r.notice = said.append
+        self.commit("5")
         result = self.system.late_offer(self.event["event_id"], self.offer, "5")
         self.assertIsNone(result)
         rows = self.ring()
@@ -54,11 +63,14 @@ class LiveShadowIntegration(unittest.TestCase):
         self.assertNotIn("Compute 2 plus 2.", str(rows))
 
     def test_correct_and_ambiguous_answer_do_not_trigger(self):
+        self.commit("4")
         self.system.late_offer(self.event["event_id"], self.offer, "4")
+        self.commit("Maybe 4 or 5")
         self.system.late_offer(self.event["event_id"], self.offer, "Maybe 4 or 5")
         self.assertEqual(self.ring(), [])
 
     def test_repeated_late_offer_deduplicated(self):
+        self.commit("5")
         for _ in range(3):
             self.system.late_offer(self.event["event_id"], self.offer, "5")
         self.assertEqual(len(self.ring()), 1)
@@ -71,6 +83,7 @@ class LiveShadowIntegration(unittest.TestCase):
         self.assertEqual(self.ring(), [])
 
     def test_tampered_source_blob_abstains(self):
+        self.commit("5")
         ref = self.event["source_ref"]
         blob = Path(self.tmp.name) / "data" / "blobs" / ref["sha256"]
         blob.write_text("tampered source", encoding="utf-8")
@@ -81,10 +94,49 @@ class LiveShadowIntegration(unittest.TestCase):
         other = self.r.store.new_session()
         event = self.r.store.event(other, "Compute 3 plus 3.")
         offer = dict(self.offer, event_id=event["event_id"])
+        self.commit("7", session=other, event_id=event["event_id"])
         self.system.late_offer(event["event_id"], offer, "7")
         self.assertEqual(self.ring(), [])
 
+    def test_forged_output_not_equal_to_final_message_abstains(self):
+        self.commit("4")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+
+    def test_missing_draft_streaming_and_cancelled_message_abstain(self):
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+        mid = self.r.store.message(
+            self.r.session, self.event["event_id"], "assistant")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+        self.r.store.append_message(mid, "5")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+        self.r.store.finish_message(mid, "CANCELLED", {})
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+
+    def test_latest_nonfinal_message_blocks_stale_final_fallback(self):
+        self.commit("5")
+        self.r.store.message(self.r.session, self.event["event_id"], "assistant")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+
+    def test_committed_mismatch_ring_persists_after_runtime_restart(self):
+        self.commit("5")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        before = self.ring()
+        self.assertEqual(len(before), 1)
+        self.r.close()  # Release the exclusive Store lock before restart.
+        other = Runtime(Path(self.tmp.name))
+        try:
+            self.assertEqual(other.store.state(S.ARITH_SHADOW_KEY, [])[0], before)
+        finally:
+            other.close()
+
     def test_off_and_deliver_do_not_add_new_diagnostic(self):
+        self.commit("5")
         said = []
         self.r.notice = said.append
         for mode in ("off", "deliver"):
