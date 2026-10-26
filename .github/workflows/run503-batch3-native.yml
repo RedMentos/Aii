@@ -145,6 +145,13 @@ jobs:
           root=Path(os.environ['RUNNER_TEMP'])/'run503-stage'
           batch=json.loads((root/'RUN502_BATCH_RESULT.json').read_text())
           plan=json.loads((root/'RUN502_BATCH_PLAN.json').read_text())
+          full=json.loads((root/'RUN500_STAGE_MAP.json').read_text())
+          preflight=json.loads((root/'RUN502_INSTALLED_PREFLIGHT.json').read_text())
+          assert full['stage_count']==75 and full['expected_native_rows']==1050
+          assert full['original_fixture_sha256']=='c434a5765ed85b7c51022c5aaea0ba4c3150ef0f1490f466b4a8833e41b44c63'
+          assert preflight['model_sha256']==plan['model_sha256_expected_not_retrieved']
+          assert preflight['runner_sha256']==plan['runner_sha256_expected_not_retrieved']
+          assert len(preflight['runtime_library_sha256'])>0
           progress=[json.loads(x) for x in (root/'RUN502_BATCH_PROGRESS.jsonl').read_text().splitlines()]
           stages=(('C_s31_p02',('Crescent','Asteria')),
                   ('C_s31_p03',('Boreal','Cascade')),
@@ -158,6 +165,26 @@ jobs:
           assert all(p['rc']==0 for p in progress if p['state']=='FINISHED')
           sha=lambda x:hashlib.sha256(x).hexdigest()
           canon=lambda x:json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+          def rescore(answer,oracle):
+              try:
+                  value=json.loads(answer)
+                  if type(value) is not dict or set(value)!={'project','action','options'}:return 0.0
+                  options=value['options']
+                  if type(options) is not list or len(options)!=len(oracle['options']):return 0.0
+                  got={}
+                  for item in options:
+                      if type(item) is not dict or set(item)!={'entity','cost','remaining','days','local','eligible'}:return 0.0
+                      if type(item['entity']) is not str or item['entity'] in got:return 0.0
+                      got[item['entity']]=item
+                  if set(got)!={o['entity'] for o in oracle['options']}:return 0.0
+                  checks=[type(value['project']) is str and value['project']==oracle['project'],
+                          type(value['action']) is str and value['action']==oracle['action']]
+                  for option in oracle['options']:
+                      for field in ('cost','remaining','days','local','eligible'):
+                          checks.append(type(got[option['entity']][field]) is type(option[field]) and
+                                        got[option['entity']][field]==option[field])
+                  return sum(checks)/len(checks)
+              except (ValueError,TypeError,KeyError):return 0.0
           seen=set();summary_hashes={};wrong=0
           for stage_id,fixtures in stages:
               folder=root/('stage_'+stage_id)
@@ -165,6 +192,12 @@ jobs:
               tool=json.loads((folder/'tool_C_s31.json').read_text())
               summary=json.loads((folder/'summary_C_s31.json').read_text())
               report=json.loads((folder/'step2_C_s31.json').read_text())
+              stage_prereg=json.loads((folder/'RUN500_STAGE_PREREG.json').read_text())
+              expected_stage=next(x for x in full['stages'] if x['id']==stage_id)
+              assert stage_prereg==expected_stage and stage_prereg['fixture_ids']==list(fixtures)
+              assert report['fixture_sha256']==stage_prereg['fixture_sha256']
+              assert report['all_structural_checks_passed'] is True and report['installed_artifacts_unchanged'] is True
+              assert next(x for x in batch['stage_receipts'] if x['stage_id']==stage_id)['receipt_sha256']==sha((folder/'RUN500_STAGE_RESULT.json').read_bytes())
               assert result['status']=='STAGE_14_ROWS_STRUCTURALLY_VERIFIED_ONLY' and result['stage_id']==stage_id and result['rows_verified']==14
               assert result['canonical_gate_pass'] is False and result['step2_exit']=='UTILITY_FAIL'
               assert result['tool_sha256']==sha((folder/'tool_C_s31.json').read_bytes())
@@ -175,7 +208,10 @@ jobs:
               expected={(f,v) for f in fixtures for v in variants}
               assert len(tool['rows'])==14 and {(r['fixture'],r['variant']) for r in tool['rows']}==expected
               source={(r['fixture'],r['variant']):r for r in report['rows']}
+              oracles={f['id']:f['oracle'] for f in report['fixtures']}
+              assert set(oracles)==set(fixtures)
               assert len(source)==14
+              byvariant={v:[] for v in variants}
               for row in report['rows']:
                   assert report['row_sha256'][row['fixture']+':'+row['variant']]==sha(canon(row))
               for row in tool['rows']:
@@ -186,8 +222,17 @@ jobs:
                   assert tool['row_sha256'][key[0]+':'+key[1]]==sha(canon(row))
                   assert row['consumer_messages_sha256']==sha(canon(source[key]['consumer_messages']))
                   assert math.isfinite(row['score']['utility']) and 0<=row['score']['utility']<=1
+                  score=rescore(row['answer'],oracles[key[0]])
+                  assert abs(score-row['score']['utility'])<1e-12
+                  byvariant[key[1]].append(score)
+                  try:action=json.loads(row['answer'])['action']
+                  except (ValueError,KeyError,TypeError):action=None
+                  if action in ('A','B','NONE') and action!=oracles[key[0]]['action']:wrong+=1
+              for variant,scores in byvariant.items():
+                  assert len(scores)==2
+                  assert abs(summary['tool_summary'][variant]['mean_utility']-sum(scores)/2)<1e-12
               summary_hashes[stage_id]={'tool':result['tool_sha256'],'summary':result['summary_sha256']}
-          assert len(seen)==42
+          assert len(seen)==42 and wrong==0
           receipt={'status':'RUN503_42_NATIVE_ROWS_INDEPENDENTLY_VERIFIED',
                    'rows':42,'stage_ids':[x[0] for x in stages],
                    'native_execution_performed':True,'canonical_gate_pass':False,
