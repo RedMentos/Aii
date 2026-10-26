@@ -1,62 +1,25 @@
-"""Run517 WP-AGE0d: explicit answer-aware arithmetic, SHADOW only, no models."""
+"""Run517: live SHA-bound Run134 Age0d arithmetic SHADOW hook, no models."""
 import tempfile
 import unittest
 from pathlib import Path
 
-from v13 import answer_audit as A
 from v13 import age as agectl
 from v13 import neuromod as N
 from v13 import selfmodel as S
+from v13.agi.answer_arithmetic_shadow import evaluate
 from v13.runtime import Runtime
 
 
-class PureArithmeticAudit(unittest.TestCase):
-    def test_correct_and_incorrect_source_bound_subtraction(self):
-        sources = ["Budget 117 euros. Cost 64 euros."]
-        self.assertEqual(A.audit("CALC: 117 - 64 = 53", sources)["status"], "PASS")
-        bad = A.audit("CALC: 117 - 64 = 52", sources)
-        self.assertEqual(bad["status"], "CONTRADICTION")
-        self.assertEqual(bad["mismatches"][0]["expected"], "53")
-        self.assertEqual(bad["equations_checked"], 1)
-
-    def test_exact_decimal_addition_and_multiplication(self):
-        sources = ["Prices 0.1 and 0.2. Quantities 7 and 6."]
-        self.assertEqual(A.audit("CALC: 0.1 + 0.2 = 0.3", sources)["status"], "PASS")
-        self.assertEqual(A.audit("CALC: 7 * 6 = 42", sources)["status"], "PASS")
-        self.assertEqual(A.audit("CALC: 7 * 6 = 43", sources)["status"], "CONTRADICTION")
-
-    def test_no_marker_prose_question_echo_and_dates_abstain(self):
-        source = ["Budget 117 euros. Cost 64 euros."]
-        for answer in ("117 - 64 = 52", "What is 117 - 64?",
-                       "The answer may be 52.", "2026-10-26",
-                       "> CALC: 117 - 64 = 52"):
-            with self.subTest(answer=answer):
-                self.assertEqual(A.audit(answer, source)["status"],
-                                 "ABSTAIN_NO_EXPLICIT_CALC")
-
-    def test_unbound_operands_and_missing_source_abstain(self):
-        self.assertEqual(A.audit("CALC: 117 - 64 = 52", [])["status"],
-                         "ABSTAIN_NO_VERIFIED_SOURCE")
-        self.assertEqual(A.audit("CALC: 117 - 64 = 52", ["Budget 117."])["status"],
-                         "ABSTAIN_UNBOUND_OPERANDS")
-        self.assertEqual(A.audit("CALC: 117 - 64 = 52", ["1170 and 64."])["status"],
-                         "ABSTAIN_UNBOUND_OPERANDS")
-
-    def test_bounds_nonfinite_and_ambiguous_expressions_abstain(self):
-        self.assertEqual(A.audit("CALC: 1e309 + 2 = 3", ["1e309 2"])["status"],
-                         "ABSTAIN_NO_EXPLICIT_CALC")
-        self.assertEqual(A.audit("CALC: 1 / 3 = 0.33", ["1 3"])["status"],
-                         "ABSTAIN_NO_EXPLICIT_CALC")
-        self.assertEqual(A.audit("x" * 9000, ["1 2"])["status"], "ABSTAIN_LIMIT")
-        self.assertEqual(A.audit("CALC: 1 + 2 = 3", ["x" * 17000])["status"],
-                         "ABSTAIN_LIMIT")
-        self.assertEqual(A.audit("CALC: 1 + 2 = 3", [None])["status"],
-                         "ABSTAIN_INVALID_INPUT")
-        self.assertEqual(A.audit("CALC: 1 + 2 = 3\n" * 4, ["1 2"])["status"],
-                         "ABSTAIN_LIMIT")
+class ExistingRun134NotReimplemented(unittest.TestCase):
+    def test_existing_answer_visible_evaluator(self):
+        self.assertEqual(evaluate("Compute 2 plus 2.", "4")["status"], "CORRECT")
+        self.assertEqual(evaluate("Compute 2 plus 2.", "5")["status"], "MISMATCH")
+        self.assertEqual(evaluate("Compute 2 plus 2.", "I don't know")["status"],
+                         "ABSTAIN")
+        self.assertFalse(evaluate("Compute 2 plus 2.", "5")["may_deliver"])
 
 
-class LateOfferShadowIntegration(unittest.TestCase):
+class LiveShadowIntegration(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
@@ -65,52 +28,68 @@ class LateOfferShadowIntegration(unittest.TestCase):
         self.system = S.SelfSystem(self.r, agectl.controller(self.r),
                                    N.Neuromod(self.r.store),
                                    clock=lambda: 1000.)
-        event = self.r.store.event(self.r.session,
-                                   "Budget 117 euros. Cost 64 euros.")
+        self.event = self.r.store.event(self.r.session, "Compute 2 plus 2.")
         self.offer = {
-            "role": "B2_GIST",
+            "role": "B2_GIST", "event_id": self.event["event_id"],
             "offer": {"summary": "", "needs_reentry": False},
-            "evidence_refs": [event["source_ref"]],
+            "evidence_refs": [],
         }
 
     def ring(self):
         return self.r.store.state(S.ARITH_SHADOW_KEY, [])[0]
 
-    def test_wrong_explicit_math_logged_even_when_old_heuristic_does_not_fire(self):
-        self.assertEqual(self.system.correction_mode(), "shadow")
-        result = self.system.late_offer("e1", self.offer, "CALC: 117 - 64 = 52")
+    def test_wrong_answer_source_verified_and_shadow_only(self):
+        said = []
+        self.r.notice = said.append
+        result = self.system.late_offer(self.event["event_id"], self.offer, "5")
         self.assertIsNone(result)
         rows = self.ring()
         self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]["status"], "CONTRADICTION_SHADOW_ONLY")
+        self.assertEqual(rows[0]["status"], "MISMATCH_SHADOW_ONLY")
+        self.assertEqual((rows[0]["expected"], rows[0]["claimed"]), ("4", "5"))
         self.assertFalse(rows[0]["user_notified"])
-        self.assertEqual(rows[0]["mismatches"][0]["expected"], "53")
-        self.assertEqual(self.r.store.state(S.SHADOW_KEY, [])[0], [])
+        self.assertFalse(rows[0]["learning_authorized"])
+        self.assertFalse(rows[0]["age_reopen_authorized"])
+        self.assertEqual(said, [])
+        self.assertNotIn("Compute 2 plus 2.", str(rows))
 
-    def test_correct_math_does_not_log(self):
-        self.system.late_offer("e1", self.offer, "CALC: 117 - 64 = 53")
+    def test_correct_and_ambiguous_answer_do_not_trigger(self):
+        self.system.late_offer(self.event["event_id"], self.offer, "4")
+        self.system.late_offer(self.event["event_id"], self.offer, "Maybe 4 or 5")
         self.assertEqual(self.ring(), [])
 
-    def test_duplicate_late_offer_deduplicates(self):
+    def test_repeated_late_offer_deduplicated(self):
         for _ in range(3):
-            self.system.late_offer("e1", self.offer, "CALC: 117 - 64 = 52")
+            self.system.late_offer(self.event["event_id"], self.offer, "5")
         self.assertEqual(len(self.ring()), 1)
 
-    def test_forged_ref_abstains_without_user_delivery(self):
-        self.offer["evidence_refs"][0] = dict(
-            self.offer["evidence_refs"][0], sha256="0" * 64)
-        said = []
-        self.r.notice = said.append
-        self.system.late_offer("e1", self.offer, "CALC: 117 - 64 = 52")
+    def test_missing_event_and_forged_offer_event_id_abstain(self):
+        self.system.late_offer("nonexistent", self.offer, "5")
         self.assertEqual(self.ring(), [])
-        self.assertEqual(said, [])
+        forged = dict(self.offer, event_id="another-event")
+        self.system.late_offer(self.event["event_id"], forged, "5")
+        self.assertEqual(self.ring(), [])
 
-    def test_off_and_deliver_do_not_enable_new_diagnostic(self):
+    def test_tampered_source_blob_abstains(self):
+        ref = self.event["source_ref"]
+        blob = Path(self.tmp.name) / "data" / "blobs" / ref["sha256"]
+        blob.write_text("tampered source", encoding="utf-8")
+        self.system.late_offer(self.event["event_id"], self.offer, "5")
+        self.assertEqual(self.ring(), [])
+
+    def test_cross_session_event_abstains(self):
+        other = self.r.store.new_session()
+        event = self.r.store.event(other, "Compute 3 plus 3.")
+        offer = dict(self.offer, event_id=event["event_id"])
+        self.system.late_offer(event["event_id"], offer, "7")
+        self.assertEqual(self.ring(), [])
+
+    def test_off_and_deliver_do_not_add_new_diagnostic(self):
         said = []
         self.r.notice = said.append
         for mode in ("off", "deliver"):
             self.system.set_correction_mode(mode)
-            self.system.late_offer(mode, self.offer, "CALC: 117 - 64 = 52")
+            self.system.late_offer(self.event["event_id"], self.offer, "5")
         self.assertEqual(self.ring(), [])
         self.assertEqual(said, [])
 
