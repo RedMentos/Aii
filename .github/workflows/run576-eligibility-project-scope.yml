@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN576_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261026/eligibility-project-scope/PREREG.md)" = f0b9fdf506c93d5e1d890e60329bf5e2b1bdb27b
-          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = eded4ccec79b98e006dc303e721723c2045fa088
+          test "$(git hash-object v13/code/v13/agi/eligibility.py)" = 0b1dacd519499aa3b92f693bd4ca77c30f1b0fb3
           test "$(git hash-object v13/code/v13/toolstep.py)" = 25ce260e2e840aba97cd70ad44fbb5e56a6307b2
           test "$(git hash-object v13/code/tests/test_eligibility_project_scope_run576.py)" = ae60d341b4e627a817bee23753b8ec42648f1b5c
           test "$(git hash-object v13/code/v13/runtime.py)" = abdd8b489057d65a21bb75d5e4e3fff0ca94c2bb
