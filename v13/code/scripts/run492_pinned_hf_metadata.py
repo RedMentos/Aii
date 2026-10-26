@@ -62,12 +62,30 @@ def verify_model(role, payload, response_sha256):
     card = payload.get('cardData') or {}
     require(type(card) is dict, 'LICENSE_CARD_SCHEMA')
     card_license = str(card.get('license') or '').lower()
+    license_name = str(card.get('license_name') or '').lower()
+    license_link = card.get('license_link')
     tags = payload.get('tags') or []
-    require(type(tags) is list, 'LICENSE_TAG_SCHEMA')
-    tagged = [str(t).lower().removeprefix('license:') for t in tags
-              if str(t).lower().startswith('license:')]
-    licenses = {card_license, *tagged}
-    require(spec['license'] in licenses, 'MODEL_LICENSE_METADATA_CHANGED')
+    require(type(tags) is list and all(type(t) is str for t in tags),
+            'LICENSE_TAG_SCHEMA')
+    tagged = [t.lower().removeprefix('license:') for t in tags
+              if t.lower().startswith('license:')]
+    # HF custom licenses use "license: other" plus exact license_name/link.
+    # A matching tag alone is never sufficient when cardData disagrees.
+    if spec['license'] == 'lfm1.0':
+        if card_license == 'other':
+            require(license_name == 'lfm1.0' and license_link == 'LICENSE',
+                    'MODEL_LICENSE_METADATA_CHANGED')
+        else:
+            require(card_license == 'lfm1.0' and
+                    license_name in ('', 'lfm1.0') and
+                    license_link in (None, 'LICENSE'),
+                    'MODEL_LICENSE_METADATA_CHANGED')
+    else:
+        require(card_license == spec['license'] and
+                not license_name and license_link in (None, ''),
+                'MODEL_LICENSE_METADATA_CHANGED')
+    require(all(tag == card_license for tag in tagged),
+            'MODEL_LICENSE_TAG_CONFLICT')
     siblings = payload.get('siblings')
     require(type(siblings) is list, 'MODEL_SIBLINGS_MISSING')
     matches = [f for f in siblings if type(f) is dict and f.get('rfilename') == spec['file']]

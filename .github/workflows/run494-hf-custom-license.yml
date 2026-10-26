@@ -1,0 +1,78 @@
+name: V13 Run494 pinned named-license primary-source preflight
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run494-hf-custom-license.yml'
+      - 'v13/code/scripts/run492_pinned_hf_metadata.py'
+      - 'v13/code/tests/test_run494_hf_custom_license.py'
+permissions:
+  contents: read
+jobs:
+  metadata:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run494-hf-license-name-failclosed-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Preregistration and fixed-source SHA contract
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run494-license-name/PREREG.md)" = '7fa36c46b8578bb7de3ba2dce0b91f067b000a66'
+          test "$(git hash-object v13/code/scripts/run492_pinned_hf_metadata.py)" = 'e518a3b9e52687ae021f0432d156cf4b59704600'
+          test "$(git hash-object v13/code/tests/test_run494_hf_custom_license.py)" = 'beb5d9ff30c55138faa4e6592e646c59a3846afd'
+      - name: Source-only adversarial tests (preserve RED)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m unittest -v tests.test_run492_pinned_hf_metadata tests.test_run494_hf_custom_license > "$RUNNER_TEMP/RUN494_TEST_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN494_TEST_EXIT.txt"
+          exit 0
+      - name: Live exact pinned public HF API metadata only (preserve RED)
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/run492_pinned_hf_metadata.py --output "$RUNNER_TEMP/RUN494_LIVE_METADATA.json" > "$RUNNER_TEMP/RUN494_LIVE_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN494_LIVE_EXIT.txt"
+          exit 0
+      - name: Official privacy scan
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree > "$RUNNER_TEMP/RUN494_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          echo "$rc" > "$RUNNER_TEMP/RUN494_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence SHA256
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN494_*' ! -name RUN494_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN494_SHA256SUMS.txt
+      - name: Preserve evidence even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run494-named-license-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN494_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce metadata and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN494_TEST_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN494_LIVE_EXIT.txt")" = '0'
+          test "$(cat "$RUNNER_TEMP/RUN494_PRIVACY_EXIT.txt")" = '0'
