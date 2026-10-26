@@ -128,6 +128,18 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'BRIDGE_PATH_DIRECTION_MISMATCH'):
             A.verify_file(other, self.specs)
 
+    def test_symlinked_ancestor_refused_before_read(self):
+        real = Path(self.tmp.name) / 'real'
+        real.mkdir()
+        shutil.copyfile(self.path.with_suffix('.json'),
+                        real / 'B1_TO_B2.json')
+        shutil.copyfile(self.path.with_suffix('.npz'),
+                        real / 'B1_TO_B2.npz')
+        link = Path(self.tmp.name) / 'linked_parent'
+        link.symlink_to(real, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_ANCESTOR_SYMLINK'):
+            A.verify_file(link / 'B1_TO_B2', self.specs)
+
     def test_symlink_and_hardlink_refused(self):
         p = self.path.with_suffix('.npz')
         other = Path(self.tmp.name) / 'other.npz'
