@@ -1,7 +1,7 @@
 {
   "schema": "V13_RUN500_SOURCE_CHECKPOINT_V1",
   "date_utc": "2026-10-26",
-  "status": "SOURCE_ONLY_PENDING_CI",
+  "status": "SOURCE_ONLY_GREEN_21_TESTS_75_STAGES_1050_ROWS",
   "branch": "codex/run500-heldout1050-stage-map-20261026",
   "base_branch": "codex/run499-heldout14-native-retry-20261026",
   "base_sha": "0e1c3ae9cedee921666677d7b41c869e29a73110",
@@ -48,8 +48,22 @@
   "verification": [
     "new source file blobs read back from remote and SHA matched",
     "no runtime/SSOT/model/seed files edited",
-    "source-only test CI pending"
+    "source-only test CI pending",
+    "Run500 source-only Actions 40305428323 GREEN; downloaded artifact 12642395808 and independently rehashed all 7 SHA256 entries",
+    "Independent stage-map audit 75 stages, 1050 unique keys, 21 source tests PASS, privacy CLEAN; no model inference"
   ],
-  "next_command": "Open draft Run500 PR targeting Run499 branch; inspect source-only Actions, fix any actual RED without altering frozen cohort; do not start Run500 native stages before Run499 pilot independent PASS and active-owner check.",
-  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+  "next_command": "Wait for Run499 native Actions 40304564958; independently verify raw/safe 14-row receipts. If PASS, preregister serialized Run500 first stage; otherwise preserve RED and repair root cause on separate branch. No Run500 native before owner/resource check.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "evidence": {
+    "source_ci_actions": 40305428323,
+    "source_ci_head": "421fb60f3bcd8235cf1edf1ece3b7419c158c3d8",
+    "source_ci_conclusion": "success",
+    "raw_artifact_id": 12642395808,
+    "raw_artifact_zip_sha256": "803031d4c08aa9ec1753186877a0b31f4d4b46329bdf873fec4afcec4064bb22",
+    "stage_map_sha256": "f938bcd26597e0a8db1114823161b5f0da708013cebccaf41bd474f535abcae8",
+    "raw_sha256_manifest_entries": 7,
+    "tests_passed": 21,
+    "privacy": "CLEAN",
+    "native_executed": false
+  }
 }
