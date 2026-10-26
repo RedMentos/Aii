@@ -145,7 +145,9 @@ def goal_turn(r,e,meta,status):
     for x in [x for x in opened if g.goals.clock()-x['created']>GOAL_TTL_S]:g.goals.set_status(x['id'],'ABANDONED','open request expired');opened.remove(x)
     final_answer=r.store.one(
         "SELECT id FROM messages WHERE event_id=? AND session_id=? AND role='assistant' "
-        "AND status='FINAL' AND length(trim(text))>0 ORDER BY id DESC LIMIT 1",
+        "AND status='FINAL' AND length(trim(text))>0 "
+        "AND COALESCE(json_extract(metadata,'$.reference_only'),0)=0 "
+        "ORDER BY id DESC LIMIT 1",
         (eid,r.session))
     delivered=status=='FINAL' and not asked and final_answer is not None
     if delivered:
