@@ -1,19 +1,21 @@
-name: V13 Run600 persistent chat navigation and historical export
+name: V13 Run611 persistent chat list keyset paging
 on:
   push:
     branches:
       - codex/automation11-run600-chat-history-navigation-20261026
+      - codex/automation11-run611-chat-session-paging-20261026
   pull_request:
     types: [opened, synchronize]
     paths:
       - '.github/workflows/run600-chat-history-navigation.yml'
       - 'v13/code/v13/operator.py'
       - 'v13/code/tests/test_run600_chat_history_navigation.py'
+      - 'v13/code/tests/test_run611_chat_session_paging.py'
 permissions:
   contents: read
 jobs:
   chat-history:
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run600-chat-history-navigation-20261026' }}
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run611-chat-session-paging-20261026' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -33,13 +35,13 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/CHAT_HEAD.txt"
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           git cat-file -e 1221589f8b75aae5c153d33635b943c2e26f5f57^{commit}
-          sha256sum v13/code/v13/operator.py v13/code/v13/chat_export.py v13/code/tests/test_run600_chat_history_navigation.py v13/code/docs/proofs/continuation-20261026/run600-chat-history-navigation/PREREG.md > "$RUNNER_TEMP/CHAT_SOURCE_SHA256.txt"
+          sha256sum v13/code/v13/operator.py v13/code/v13/chat_export.py v13/code/tests/test_run611_chat_session_paging.py v13/code/tests/test_run600_chat_history_navigation.py v13/code/docs/proofs/continuation-20261026/run611-chat-session-paging/PREREG.md > "$RUNNER_TEMP/CHAT_SOURCE_SHA256.txt"
       - name: Install pinned model-free dependencies
         run: python3 -m pip install --disable-pip-version-check 'numpy==2.2.6' 'prompt_toolkit==3.0.52'
       - name: Real SQLite Runtime Operator new tests
         run: |
           set +e
-          (cd v13/code && python3 -m unittest discover -s tests -p test_run600_chat_history_navigation.py -v) > "$RUNNER_TEMP/CHAT_NEW_RAW.log" 2>&1
+          (cd v13/code && python3 -m unittest -v tests.test_run611_chat_session_paging tests.test_run600_chat_history_navigation) > "$RUNNER_TEMP/CHAT_NEW_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/CHAT_NEW_EXIT.txt"
           exit 0
       - name: Existing chat export, WAL and operator regressions
@@ -52,9 +54,9 @@ jobs:
         if: always()
         run: |
           set +e
-          python3 -m compileall -q v13/code/v13/operator.py v13/code/tests/test_run600_chat_history_navigation.py > "$RUNNER_TEMP/CHAT_COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/v13/operator.py v13/code/tests/test_run611_chat_session_paging.py v13/code/tests/test_run600_chat_history_navigation.py > "$RUNNER_TEMP/CHAT_COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/CHAT_COMPILE_EXIT.txt"
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1b04791e0bfb30c4fec4a76e5b953dd3f41da2d6 --head HEAD --no-worktree > "$RUNNER_TEMP/CHAT_PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8b1d9fa485e62c4f0ed0d14def853c202945b493 --head HEAD --no-worktree > "$RUNNER_TEMP/CHAT_PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/CHAT_PRIVACY_EXIT.txt"
           exit 0
       - name: Close original raw evidence even on failure
@@ -67,7 +69,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: run600-chat-navigation-${{ github.event.pull_request.head.sha || github.sha }}
+          name: run611-chat-paging-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/CHAT_*
           if-no-files-found: error
           retention-days: 30
@@ -76,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           for item in NEW REGRESSIONS COMPILE PRIVACY; do
-            echo "RUN600 ${item} exit: $(cat "$RUNNER_TEMP/CHAT_${item}_EXIT.txt")"
+            echo "RUN611 ${item} exit: $(cat "$RUNNER_TEMP/CHAT_${item}_EXIT.txt")"
             if [ "$(cat "$RUNNER_TEMP/CHAT_${item}_EXIT.txt")" != 0 ]; then
               tail -n 120 "$RUNNER_TEMP/CHAT_${item}_RAW.log"
             else
