@@ -1,0 +1,56 @@
+{
+  "run": "Run627",
+  "date_utc": "2026-10-26T23:26:00Z",
+  "owner": "GPT-6 automation; exclusive operator.py HELP, docs/BEFEHLE.md, Run627 workflow/proof",
+  "status": "EXACT_CURRENT_PHONE_ZIP_VERIFIED_PRIVATE_BACKUP",
+  "parent_pr": 621,
+  "parent_head": "86463deff919bae5867ed5ea4d83c9058fcbf467",
+  "review_pr": 622,
+  "branch": "codex/automation11-run627-phone-query-digest-20261027",
+  "prereg_commit": "98564fdd68a12742faf6907856ee3d3fc7dac311",
+  "operator_help_commit": "3754a40379b22c9a110b11d41dad31da4914a556",
+  "guide_commit": "230c6a3666c5d4325c3b4dd13d57b04522ffac0f",
+  "workflow_commit": "a73b9c4b308586906bc4ad588759594c33f0008a",
+  "report_commit": "9be98ac13c156efe15c4c59889765f027443dc48",
+  "source_blobs": {
+    "operator": "4065a5f34768477d55719ef450b8ee1fdd2b7f49",
+    "guide": "e2c78e29ae21aeb7a24af6d73eca4a9feed29d08",
+    "sleep_offline": "19761bc0abe6dd3fa0123c1e94d7cf03e425773a",
+    "context_os": "8e43a7dadaf4fc169c9e3a394f06f12a97e0a224",
+    "runtime": "02b1c5e38cd042b829f8819f856fe7df870004ae"
+  },
+  "ci": {
+    "run_id": 40419525829,
+    "checkout_head": "a73b9c4b308586906bc4ad588759594c33f0008a",
+    "conclusion": "success",
+    "pack_exit": 0,
+    "verify_exit": 0,
+    "test_exit": 0,
+    "privacy_exit": 0,
+    "package_tests": "15/15",
+    "extracted_tests": "64/64",
+    "source_files": 1329,
+    "phone_zip_sha256": "895720e65ca2009c4b46ba73955dbfb74aa5a7b28f51da638c766c7ff70c7e5b",
+    "phone_zip_bytes": 13668213,
+    "raw_artifact_id": 12696427090,
+    "raw_artifact_sha256": "32def2509c0363fea4b5e41ecb59d568f3cd8ad12560e12c5457d3b99cef3d19",
+    "manifest_entries_verified": 14,
+    "private_library_roundtrip": "PASS"
+  },
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "backup": "Private Library /V13-Checkpoints/2026-10-27/Run627/run627-actions-source-zip-SHA_32def250.zip; raw+inner ZIP closed, Library byte-roundtrip PASS; GitHub PR622.",
+  "pending": [
+    "Independent review and merge chain",
+    "Actual Redmi/Termux installation and resource/thermal proof",
+    "Native C3/B1/B2 weight learning, JEPA and semantic utility"
+  ],
+  "next_command": "From newest verified PR622 head, prereg a separate pinned public SmolLM2-135M-Instruct C3 LoRA CPU training experiment with source/license/master SHA, explicit train/heldout separation and no production authority; run meaningful native tests, archive failures and continue."
+}
