@@ -14,7 +14,7 @@
   "gap": "Original Run513 checked source/offset equality but not whether accepted quote was textually traceable to native raw_offer_quotes; source-exact fabricated quote could inflate metric.",
   "fix": "Bounded casefold/whitespace-normalized injective raw-candidate ancestry check after exact source-ref check; Run516 aggregate inherits through Run513; original native/fixture/model/seed data unchanged.",
   "test_plan": "Tightened short-candidate adversarial tests + Run516 aggregate tests + original Run509-518 + pinned original p00 replay + privacy scan",
-  "evidence": "INITIAL_SOURCE_ONLY_GREEN_49_TESTS_AND_ORIGINAL_P00_REPLAY; AMENDMENT_A_RETEST_PENDING",
+  "evidence": "SOURCE_ONLY_GREEN_61_TESTS_ORIGINAL_P00_12_ROWS_23_REFS_PRIVACY_CLEAN",
   "heavy_owner": {
     "pr": 517,
     "workflow": "run519-b2-native-p01",
@@ -39,7 +39,7 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Verify amended Run520 source-only CI and original p00 replay; independently hash-check artifact and update checkpoint. Keep Run519 p01 native lane separate, audit its raw/safe outputs after completion.",
+  "next_command": "Monitor Run519 Actions 40316152651 without interrupting; on completion download both raw/safe ZIP, verify SHA manifests, source/ref/quote lineage with new Run520 auditor, preserve original result, then preregister next disjoint p02 native stage only if heavy lane free.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
   "amendment_a": "Short (<12) raw quote must byte-equal accepted excerpt, not justify arbitrary widening; include Run516 synthetic aggregate tests.",
   "initial_ci": {
@@ -52,5 +52,25 @@
     "artifact_id": 12647500590,
     "artifact_sha256": "26ccc30be8be9715c5818b669b4fb468401d290e0d7e8db5687f758021fb5f22",
     "manifest_entries_verified": 13
-  }
+  },
+  "ci_final": {
+    "run": 40316727287,
+    "source_head": "14f9a52a0daa9d2933e7f8f7dd08f9dd90309ff2",
+    "conclusion": "SUCCESS",
+    "tests": 61,
+    "artifact_id": 12647770073,
+    "artifact_sha256": "809616046736a2cf84fe1a46c74f6dcb582f4a8e36a4dabe6d97af14927ccc35",
+    "sha_manifest_entries_verified": 13,
+    "original_p00_rows": 12,
+    "original_p00_quote_refs": 23,
+    "original_run515_conclusion": "FAILURE",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run520/Run520_amended_61tests_sha80961604.zip"
+  },
+  "open_questions": [
+    "Run519 p01 native still in progress at last observation; original p00 only retrospective replay",
+    "No full 60-row Run510 score until all p00-p04 native stages are separately verified",
+    "Short raw quote guard proves textual ancestry only, not actual native execution or complete prompt choices",
+    "STEP2/B3/Body-JEPA/Redmi remain negative"
+  ]
 }
