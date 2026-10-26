@@ -1,0 +1,9 @@
+# Run523 prereg — exact-current-chain full source-wide unittest discovery
+
+Date 2026-10-26. Base Run521 PR #519 head `016de966c940582773779b02611f63cf70e4d109`, including Run520 B2 raw-candidate lineage and Run521 Age0d FINAL output binding. This is a **source-only** full-suite regression on a review branch, not native/Redmi proof. Run522 PR #520 owns the separately serialized B2 p02 native lane; do not interrupt, modify or share its scratch state.
+
+**Motivation:** The two new live/source audit changes passed focused source-only tests (Run520 61, Run521 74) but could affect other parts of the V13 runtime. Run all discoverable `tests/test_*.py` against one exact SHA, rather than selecting only passing suites. Isolated pinned Python dependencies `numpy==2.3.5`, `prompt-toolkit==3.0.52`, and `torch==2.9.1+cpu` from the official CPU wheel index when available. No model downloads, no native inference, no paid resources. If dependencies or archived fixture prerequisites fail, retain raw failure and mark RED; do not skip failing tests to claim GREEN.
+
+**Procedure:** SHA-pin prereg and modified Run520/Run521 source/test blobs; compile `v13` and `tests`; execute bounded `python -m unittest discover -s tests -p 'test_*.py' -v` with exact-head PYTHONPATH; save stdout/stderr, dependency exit, test exit, privacy scan and raw SHA256 manifest on any outcome. Enforce test exit zero and privacy clean; all artifacts available for independent review. Do not overwrite any registered cohorts/model/runner/source or alter Age/learning/approval gates.
+
+**Interpretation:** Full-suite GREEN would prove only source-only regression for the exact current review head. Native model/phone behavior, external fixtures, STEP2, B3, Body-JEPA and learning still need separate evidence. Preserve STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, full architecture incomplete.
