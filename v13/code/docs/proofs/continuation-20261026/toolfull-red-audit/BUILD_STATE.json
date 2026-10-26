@@ -1,0 +1,44 @@
+{
+  "schema": "V13_TOOLFULL_ORIGINAL_RED_AUDIT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 independent offline audit",
+  "branch": "codex/automation11-toolfull-red-audit-20261026",
+  "original": {
+    "workflow_run": 40376727122,
+    "conclusion": "FAILURE",
+    "head": "1ee3f247d52acb1a63a15fba6cf89dcf7a2f3bc6",
+    "artifact_id": 12676810516,
+    "artifact_sha256": "28cdb224cc0d820b30c1b76c5cd245633776b12c6c694fd54edb0ce7f2fb93ea"
+  },
+  "audit": {
+    "prereg_commit": "939f92ffa0d59ad09d5211a10f0629ce282da52a",
+    "verified_head": "ab656f87420911a5869346acd291452d9690d22a",
+    "workflow_run": 40377884663,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12675886931,
+    "artifact_sha256": "2be25a03714cd0134933d8fc2522e030a5ee95ad135161a0d5a19fb798a4b432",
+    "status": "ORIGINAL_RED_CONFIRMED",
+    "checks": [
+      "original artifact SHA256",
+      "original raw member SHA256 closure",
+      "exact six exit flags",
+      "bounded failure IDs",
+      "original test log raw hash",
+      "privacy"
+    ]
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Which exact source-suite test(s) failed; bounded report stored in audit artifact, follow-up job prints IDs.",
+    "No native or Redmi evidence from this source-only audit.",
+    "No main integration."
+  ],
+  "next_exact_command": "Wait for exact-head follow-up Actions on ea6d432d64d7d4e41bdfc4e660feedb667150c67, read bounded failure IDs from job log, isolate cause without changing frozen tests, patch only new candidate if warranted, rerun focused and unfiltered suite, retain original RED."
+}
