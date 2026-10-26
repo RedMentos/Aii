@@ -1,0 +1,44 @@
+{
+  "schema": "V13_PHONE_SOURCE_REVIEW_ZIP_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 isolated source packaging",
+  "branch": "codex/automation11-phone-source-zip-20261026",
+  "base_head": "e9ad5f6320e01807333fd4b2c34583c4651a0732",
+  "prereg_commit": "48e1fdd1af51228aa5c279d3b2b596a8a29b1399",
+  "verified_head": "b251771f778dc7bbe2bbdef105428681599077e3",
+  "proof": {
+    "workflow_run": 40377692661,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12675152877,
+    "artifact_sha256": "2d87f7853b996f56813ca4e85d45185f5e0a54098f4eb3e2c23ecc5706b00f9a",
+    "artifact_url": "https://github.com/RedMentos/Aii/actions/runs/40377692661/artifacts/12675152877",
+    "scope": "LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY",
+    "checks": [
+      "immutable source inventory",
+      "required Termux launchers",
+      "ZIP CRC",
+      "per-member SHA256",
+      "checkout byte parity",
+      "no forbidden model/private payload",
+      "Canon SHA256",
+      "privacy scan"
+    ],
+    "native_model_inference": false,
+    "redmi_measured": false
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "Source ZIP is review-only, not production-integrated or device-tested.",
+    "Models absent; setup requires user-controlled model download and Redmi hardware.",
+    "Original full unfiltered source suite on parent is RED; independent offline audit pending.",
+    "Newer Run575 work must be reconciled before a final phone release."
+  ],
+  "next_exact_command": "Download original Actions artifact 12675152877 and verify nested V13-Phone-review.zip SHA/member manifest on user device; run setup.sh and phone_acceptance only with user-controlled Redmi. Independently audit fullsuite RED and resolve candidate regressions before any main integration. Do not promote hardware gates."
+}
