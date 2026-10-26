@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN526_B2_P04_NEGATIVE_CONTROL_PRESTAGE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run526-b2-native-p04-20261026",
+  "base_branch": "codex/run525-b2-native-p03-20261026",
+  "base_sha": "9292d2874e31c08b2572ef19f38e07273c15770b",
+  "prereg_blob": "1ab695a9adf85b9a907547ad5180afd5793ef920",
+  "stage": {
+    "id": "p04",
+    "pair_index": 4,
+    "fixtures": [
+      "Iris",
+      "Juniper"
+    ],
+    "types": [
+      "DETAIL",
+      "DETAIL"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "observations": 12,
+    "fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+  },
+  "source": {
+    "collector": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "postflight": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "lineage_tests": "3c38db4d776f13a29e235b9c415d8df79b9df936"
+  },
+  "heavy_owner": {
+    "p03_actions": 40318195227,
+    "status": "IN_PROGRESS_AT_PREREG",
+    "p04_pr_not_opened": true,
+    "p04_native_not_started": true,
+    "concurrency": "v13-native-c3-run131-serialized"
+  },
+  "evidence": "SOURCE_ONLY_P04_PREREG_PERSISTED_NO_NATIVE",
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "p03 native result and independent raw/safe review pending",
+    "p04 native not yet triggered",
+    "Run510 full 60-row paired score pending",
+    "Redmi and JEPA gates remain negative"
+  ],
+  "next_command": "Wait for Run525 p03 native job to complete, independently audit raw/safe, confirm no heavy owner, then open Run526 PR once to trigger p04; no automatic retry.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
