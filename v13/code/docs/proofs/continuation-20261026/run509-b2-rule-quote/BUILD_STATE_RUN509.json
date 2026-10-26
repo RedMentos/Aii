@@ -4,7 +4,7 @@
   "branch": "codex/run509-b2-rule-quote-prereg-20261026",
   "base_branch": "codex/run508-b2-quote-transport-audit-20261026",
   "base_sha": "432feb9d3d289c6ebe2351941d95726308fda79e",
-  "status": "SOURCE_FIXTURE_SHA_FROZEN_CI_RETEST_PENDING",
+  "status": "FROZEN_SOURCE_CI_GREEN_PRIVATE_BACKUP_VERIFIED",
   "scope": {
     "fresh_fixtures": 10,
     "split": 6,
@@ -43,14 +43,16 @@
     "No native work; Run507 native Actions 40309409260 separate owner",
     "Source-only fixture SHA must be computed and pinned before any native trial",
     "Initial Run509 source-only Actions GREEN 12 tests, privacy CLEAN, 7/7 raw SHA entries",
-    "Independently recomputed original canonical fixture SHA from artifact and pinned literal before native"
+    "Independently recomputed original canonical fixture SHA from artifact and pinned literal before native",
+    "Frozen Run509 source Actions 40309998778 GREEN 13 tests, privacy CLEAN",
+    "Downloaded frozen source artifact, independently recomputed 7 SHA256 entries and exact 10-fixture canonical SHA",
+    "Private Library frozen source ZIP backup succeeded; no native inference"
   ],
   "blockers": [
-    "Run509 source-only CI pending",
     "Run507 native active",
     "Redmi unavailable"
   ],
-  "next_command": "Inspect rerun source-only Actions after SHA pin and tamper test; independently verify fresh fixture bytes, private backup; no native while Run507 owns heavy job.",
+  "next_command": "Inspect Run507 native Actions 40309409260 and independently verify raw/safe artifacts on completion. Then implement bounded Run510 B2 quote-focus pilot using frozen Run509 60 observations, explicit owner and new prereg; no concurrent native.",
   "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
   "evidence": {
     "initial_source_actions": 40309865507,
@@ -59,6 +61,14 @@
     "initial_artifact_zip_sha256": "6ec85032a3ff6a96d92706f0188209ab24f64af0f911de9b26594dd8a2f27f2c",
     "initial_raw_sha_entries": 7,
     "privacy": "CLEAN",
-    "fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+    "fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "frozen_source_actions": 40309998778,
+    "frozen_source_tests_passed": 13,
+    "frozen_source_artifact_id": 12644081536,
+    "frozen_source_artifact_zip_sha256": "9321bd128cc80583f83c37aab2023ca0f1b3852934cb400717e95055fe2c426e",
+    "frozen_source_raw_sha_entries": 7,
+    "frozen_source_privacy": "CLEAN",
+    "private_library_backup": "/V13-Checkpoints/2026-10-26/Run509/run509-source-frozen-a0b00be0-sha-closed.zip",
+    "private_library_file_id": "libfile_afee78bf0f288191bf4812b7e5b4f2e5"
   }
 }
