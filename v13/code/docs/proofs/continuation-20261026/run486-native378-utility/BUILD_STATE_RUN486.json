@@ -22,7 +22,8 @@
     "One-shot source-only workflow downloads only original SHA-pinned Run479 safe no-model and raw evidence ZIPs, after GitHub artifact metadata and successful native run identity checks.",
     "Validate archive members before extraction, original Stage9 report and unchanged negative gates.",
     "Run original frozen Run468 verifier via Run469 then independently re-read SHA-pinned tool rows for Run470 within-arm and between-arm utility.",
-    "Preserve original and derived raw logs/hashes on failure; no models downloaded, no native rerun, no cohort/source/seed edits."
+    "Preserve original and derived raw logs/hashes on failure; no models downloaded, no native rerun, no cohort/source/seed edits.",
+    "Follow-up only reconstructs manifest-declared empty directories after SHA-pinned ZIP extraction; never creates or changes measured file bytes. First RED preserved."
   ],
   "source_blobs": {
     "v13/code/scripts/run394_step2_fresh.py": "fae7aed612108a554d8566b2917ebf31022df423",
@@ -30,11 +31,15 @@
     "v13/code/scripts/run468_verify_native378.py": "eedc307a6e6f3c36fea43894dcfa41e983fa4c74",
     "v13/code/scripts/run469_native378_utility.py": "b11819e5dfe6a6022177923c2f151ce9f53f01b8",
     "v13/code/scripts/run470_step2_complementarity.py": "bc49f6aab3455dc4656c98ef8df5b6a038631b48",
-    ".github/workflows/run486-native378-utility.yml": "42b805fa5904dda1e1fe5dd2a98d013bd501b00f"
+    ".github/workflows/run486-native378-utility.yml": "0f7c13fafef7e9c16dc12bfdb9830b8ddf4e58b9"
   },
   "tests": {
-    "github_source_and_original_native_artifact_analysis": "PENDING; original Run479 native378 GREEN is verified by GitHub run, Run486 has not yet analyzed utility",
-    "expected": "Frozen Run468/469/470 source tests, actual nine-receipt read-only paired utility and complementarity, privacy scan, raw artifact"
+    "github_source_and_original_native_artifact_analysis": "Run486 attempt1 RED preserved: Actions 40284529482, raw artifact 12633219653 SHA256 9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b; Run469 refused EXPORT_INVENTORY_MISMATCH because GitHub Actions artifact ZIP omitted 64 empty directories listed by original SHA-pinned Run409 manifest. No utility claims.",
+    "expected": "Frozen Run468/469/470 source tests, actual nine-receipt read-only paired utility and complementarity, privacy scan, raw artifact",
+    "first_attempt_run_id": 40284529482,
+    "first_attempt_raw_artifact_id": 12633219653,
+    "first_attempt_raw_zip_sha256": "9ac39a02776de0f03a3a7e84844a6022daa6fa02f52d68ee8b12801a47ec252b",
+    "first_attempt_failure": "EXPORT_INVENTORY_MISMATCH: 64 manifest-declared empty directories absent from GitHub ZIP, 211/211 manifest-copied files present"
   },
   "negative_gates": {
     "canonical_architecture_complete": false,
@@ -51,5 +56,5 @@
     "Structural nine-receipt native GREEN does not imply actual B1/B2 complementarity or B3/Body-JEPA progress.",
     "Run486 is read-only, no native ownership; original Run479 artifact retention is 30 days and should be backed up in a permitted private location if available."
   ],
-  "exact_next_command": "Open PR to trigger Run486 once; inspect source tests, raw logs and original native378 paired utility, close hashes and preserve negative gates. Follow with independent review and a new preregistered acceptance cohort only if justified."
+  "exact_next_command": "Inspect Run486 synchronize CI triggered by empty-directory reconstruction, verify original native378 receipt integrity and derived utility. Preserve further RED if any; no native rerun or gate promotion."
 }
