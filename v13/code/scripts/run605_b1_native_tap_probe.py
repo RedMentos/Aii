@@ -22,7 +22,7 @@ PROMPTS = ('The blue robot moves left.', 'The blue robot moves left.',
 def sha256(path):
     h = hashlib.sha256()
     with open(path, 'rb') as f:
-        for part in iter(lambda: f.read(2048 * 2048), b''):
+        for part in iter(lambda: f.read(1024 * 1024), b''):
             h.update(part)
     return h.hexdigest()
 
@@ -38,7 +38,7 @@ def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA, workdir=None):
     expected_id, expected_dim = TAP_SPECS['body']
     if (expected_id, expected_dim) != ('lfm2.result_norm.final.v1', 2048):
         raise ValueError('B1 tap spec unexpectedly changed')
-    cfg = dict(DEFAULTS, context_tokens=2048, threads=2,
+    cfg = dict(DEFAULTS, context_tokens=1024, threads=2,
                native_cache_ram_mb=0, native_ctx_checkpoints=0)
     rows = []
     ctx = (tempfile.TemporaryDirectory(prefix='v13-run605-') if workdir is None
@@ -47,7 +47,7 @@ def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA, workdir=None):
         home = Path(d)
         home.mkdir(parents=True, exist_ok=True)
         (home / 'logs').mkdir(exist_ok=True)
-        runner = LlamaRunner(home, 'B1_GIST', model, cfg, purpose='tap')
+        runner = LlamaRunner(home, 'B1_DETAIL', model, cfg, purpose='tap')
         runner.binary = str(server)
         runner.tap_id, runner.tap_dim = expected_id, expected_dim
         try:
@@ -62,7 +62,7 @@ def probe(model, server, archive_sha=EXPECTED_ARCHIVE_SHA, workdir=None):
                     raise ValueError('B1 native nonfinite/zero/dimension mismatch')
                 if (metrics.get('tap_id') != expected_id or
                     metrics.get('embedding_dim') != expected_dim or
-                    metrics.get('role') != 'B1_GIST' or
+                    metrics.get('role') != 'B1_DETAIL' or
                     metrics.get('CAN_LATENT_TAP') is not True or
                     metrics.get('CAN_TRAIN_BODY') is not False or
                     metrics.get('CAN_LATENT_INJECT') is not False):
