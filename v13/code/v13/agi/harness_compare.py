@@ -56,12 +56,33 @@ def _validate(tasks, diff, seed):
     return clean, checked
 
 
-def preregister(tasks, diff, seed):
+def _provenance(tasks, excluded_ids, solver_revision, judge_revision):
+    if not isinstance(excluded_ids, (list, tuple)) or len(excluded_ids) > 100000:
+        raise ValueError("HX2_EXCLUSION_REGISTRY_INVALID")
+    if any(not isinstance(x, str) or not x or len(x.encode()) > 128
+           for x in excluded_ids) or len(set(excluded_ids)) != len(excluded_ids):
+        raise ValueError("HX2_EXCLUSION_REGISTRY_INVALID")
+    if set(t["id"] for t in tasks) & set(excluded_ids):
+        raise ValueError("HX2_TRAIN_HOLDOUT_OVERLAP")
+    for revision in (solver_revision, judge_revision):
+        if not isinstance(revision, str) or not 1 <= len(revision) <= 128:
+            raise ValueError("HX2_REVISION_INVALID")
+    return {"excluded_id_hashes_sha256": _hash(sorted(excluded_ids)),
+            "excluded_count": len(excluded_ids),
+            "solver_revision": solver_revision,
+            "judge_revision": judge_revision}
+
+
+def preregister(tasks, diff, seed, *, excluded_ids=(),
+                solver_revision="UNPINNED", judge_revision="UNPINNED"):
     """Immutable comparison input commitment; a hash is not an approval."""
     clean, checked = _validate(tasks, diff, seed)
-    data = {"revision": REVISION, "tasks": clean, "diff": checked, "seed": seed}
+    provenance = _provenance(clean, excluded_ids, solver_revision, judge_revision)
+    data = {"revision": REVISION, "tasks": clean, "diff": checked,
+            "seed": seed, "provenance": provenance}
     return {"revision": REVISION, "input_sha256": _hash(data),
             "task_ids_sha256": _hash([t["id"] for t in clean]),
+            **provenance,
             "target": next(iter(checked)), "task_count": len(clean),
             "authority": "LAB_ONLY", "live_consumers": 0,
             "approval_allowed": False, "age_promotion": False}
@@ -82,14 +103,18 @@ def _one_sided_sign_p(wins, losses):
     return sum(math.comb(n, k) for k in range(wins, n + 1)) / (2**n)
 
 
-def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None):
+def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None,
+            *, excluded_ids=(), solver_revision="UNPINNED",
+            judge_revision="UNPINNED"):
     """solver(task, overlay, seed) -> text; judge([{label,output}]) -> label.
 
     No model/tool is launched here. Callers supply a frozen, audited solver and
     independent judge. Every error and disagreement remains in the report.
     """
     clean, checked = _validate(tasks, diff, seed)
-    expected = preregister(clean, checked, seed)
+    expected = preregister(clean, checked, seed, excluded_ids=excluded_ids,
+                           solver_revision=solver_revision,
+                           judge_revision=judge_revision)
     if not isinstance(preregistration, dict) or preregistration != expected:
         raise ValueError("HX2_PREREGISTRATION_MISMATCH")
     if baseline is None:
@@ -116,15 +141,20 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None):
                 outcome, selection, commitment = "TIE", None, None
                 ties += 1
             else:
+                judge_views = []
+                def blind_judge(items):
+                    judge_views.append(copy.deepcopy(items))
+                    return judge(items)
                 decision = blind_select(
                     [{"origin": "reference", "output": reference},
                      {"origin": "candidate", "output": changed}],
-                    judge, seed=task_seed, rounds=2)
+                    blind_judge, seed=task_seed, rounds=2)
                 if not verify_blind(decision):
                     raise ValueError("HX2_BLIND_COMMITMENT_INVALID")
                 outcome = decision["status"]
                 selection = decision["pick_origin"]
                 commitment = decision["commitment"]
+                digests["judge_view_sha256"] = _hash(judge_views)
                 if outcome == "PICKED":
                     if selection == "candidate":
                         wins += 1
@@ -150,9 +180,17 @@ def compare(tasks, diff, seed, solver, judge, preregistration, baseline=None):
     p = _one_sided_sign_p(wins, losses)
     status = ("PREFERENCE_SIGNAL_ONLY" if wins + losses >= MIN_PAIRED
               and wins > losses and p is not None and p <= ALPHA
-              and not inconsistent and not no_pick else "NOT_SUPPORTED")
+              and not inconsistent and not no_pick
+              and expected["excluded_count"] > 0
+              and expected["solver_revision"] != "UNPINNED"
+              and expected["judge_revision"] != "UNPINNED"
+              else "NOT_SUPPORTED")
     return {"revision": REVISION, "status": status,
             "input_sha256": expected["input_sha256"],
+            "excluded_id_hashes_sha256": expected["excluded_id_hashes_sha256"],
+            "excluded_count": expected["excluded_count"],
+            "solver_revision": expected["solver_revision"],
+            "judge_revision": expected["judge_revision"],
             "target": target, "n_tasks": len(clean), "paired": wins + losses,
             "candidate_wins": wins, "reference_wins": losses, "ties": ties,
             "inconsistent": inconsistent, "no_pick": no_pick,
