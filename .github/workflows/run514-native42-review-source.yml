@@ -1,0 +1,89 @@
+name: V13 Run514 independent native42 offline-review source integrity
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run514-native42-review-source.yml'
+      - 'v13/code/scripts/run514_review.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run514-run507-native42-crossreview/**'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run514-run507-native42-crossreview-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 60
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Pinned offline-review source and report
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run514-run507-native42-crossreview/SCOPE.md)" = '9ae5b20b7aa7bf520b66b29d7472d97e4edaac27'
+          test "$(git hash-object v13/code/scripts/run514_review.py)" = 'b99c92625c2849132f64fec6e6dc1abc96fdc652'
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run514-run507-native42-crossreview/INDEPENDENT_REPORT.json)" = 'd929d53fe839bcd24f2cb501e596ce7e795adea9'
+      - name: Offline report structural checks only (no native artifact replay in CI)
+        run: |
+          set -uo pipefail
+          set +e
+          python3 -m py_compile v13/code/scripts/run514_review.py
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' > "$RUNNER_TEMP/RUN514_TEST_RAW.log" 2>&1
+          import json
+          from pathlib import Path
+          d=json.loads(Path('v13/code/docs/proofs/continuation-20261026/run514-run507-native42-crossreview/INDEPENDENT_REPORT.json').read_text())
+          assert d['rows_recomputed_against_oracles']==42
+          assert d['raw_manifest_verified_entries']==27
+          assert d['safe_manifest_verified_entries']==24
+          assert d['wrong_committed_recomputed']==0
+          assert d['native_artifact_receipt_structurally_consistent'] is True
+          assert d['local_model_execution'] is False and d['redmi_measured'] is False
+          assert d['step2_gate_pass'] is False and d['negative_gates']['jepa_weight']==0
+          assert len(d['stage_results'])==3
+          assert all(x['rows']==14 for x in d['stage_results'].values())
+          print('RUN514_REPORT_SCHEMA_PASS_OFFLINE_REPLAY_NOT_RUN_IN_CI')
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN514_TEST_EXIT.txt"
+          exit 0
+      - name: Privacy scan with explicit sibling base fetch
+        if: always()
+        run: |
+          set -uo pipefail
+          set +e
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN514_PRIVACY_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN514_PRIVACY_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN514_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw source-only evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN514_*' ! -name RUN514_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN514_SHA256SUMS.txt
+      - name: Preserve source-only CI evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run514-native42-review-source-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN514_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce report syntax and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN514_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN514_PRIVACY_EXIT.txt")" = 0
