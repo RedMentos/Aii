@@ -38,7 +38,11 @@ def synthetic_source(folder):
 
 class FakeModels:
     def __init__(self, *args, **kwargs):
-        pass
+        self.installed = {k: {"exact_revision": v["revision"],
+                               "files": {f["local_name"]: {"sha256": f["sha256"], "size": f["size"]}
+                                         for f in v["files"]}}
+                          for k, v in resume.catalog()["models"].items()
+                          if k in ("needle", "language", "body", "gist")}
 
     def verify(self, deep=False):
         return {k: {"ok": True, "hash_checked": True}
@@ -132,6 +136,18 @@ class Run397ResumeTests(unittest.TestCase):
         self.assertEqual(fake.calls.count("S_s20"), 1)
         self.assertTrue((self.work / "attempts/P_s20/attempt-0002/RUN397_ATTEMPT.json").exists())
         self.assertIn("P_s20", second["failures_preserved"])
+
+    def test_reject_deep_valid_but_unregistered_model_swap(self):
+        class SwappedModels(FakeModels):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.installed["gist"]["exact_revision"] = "unregistered-swap"
+        fake = FakeNative(self.native)
+        with patch.object(resume, "ModelManager", SwappedModels), \\
+             patch.object(r394, "configure", return_value=fake):
+            with self.assertRaisesRegex(ValueError, "INSTALLED_CATALOG_IDENTITY_MISMATCH"):
+                resume.run(self.work, self.installed, pilot=True, execute=True)
+        self.assertEqual(fake.calls, [])
 
     def test_frozen_manifest_mismatch_fails_closed(self):
         resume.run(self.work, None, pilot=True, execute=False)
