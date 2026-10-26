@@ -38,7 +38,7 @@ jobs:
           set +e
           (cd v13/code && python -m unittest discover -s tests -p test_run595_ctx_feedback_plan_selector.py -v) > run595-raw/new-tests.log 2>&1
           echo "$?" > run595-raw/new-tests.exit
-          (cd v13/code && python -m unittest discover -s tests -p test_run590_ctx_plan_receipts.py -v && python -m unittest discover -s tests -p test_context_os.py -v && python -m unittest discover -s tests -p test_context_os_append_only.py -v) > run595-raw/regressions.log 2>&1
+          (cd v13/code && python -m unittest discover -s tests -p test_run590_ctx_plan_receipts.py -v && python -m unittest discover -s tests -p test_context_os.py -v && python -m unittest discover -s tests -p test_context_append_provenance_run74.py -v && python -m unittest discover -s tests -p test_context_warm_authority_run271.py -v && python -m unittest discover -s tests -p test_context_unbalanced_literals_run350.py -v) > run595-raw/regressions.log 2>&1
           echo "$?" > run595-raw/regressions.exit
           python -m compileall -q v13/code/v13/context_os.py v13/code/tests/test_run595_ctx_feedback_plan_selector.py > run595-raw/compile.log 2>&1
           echo "$?" > run595-raw/compile.exit
