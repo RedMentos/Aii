@@ -1,0 +1,94 @@
+{
+  "schema": "V13_RUN515_NATIVE_B2_P00_ONE_SHOT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run515-b2-native-p00-20261026",
+  "base_branch": "codex/run514-run507-native42-crossreview-20261026",
+  "base_sha": "73868bd9482b1e5ef311b6f196e31e8adb74b90f",
+  "source": {
+    "prereg_blob": "f83658975d570d914167ef9baa2eefdd759f67d5",
+    "workflow_blob": "a719dfca7edb7737615c217a13b518f4d44297e2",
+    "collector_blob": "ab8efec8016d77abc371a5a1d6dae395a06ebb60",
+    "postflight_blob": "d2a5f4708c1f77ec14496ddab60ce072592d3fda",
+    "frozen_run509_fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726"
+  },
+  "scope": {
+    "stage": "p00",
+    "fixtures": [
+      "Arbor",
+      "Bracken"
+    ],
+    "seeds": [
+      41,
+      42,
+      43
+    ],
+    "arms": [
+      "BASE",
+      "RULE_FOCUS"
+    ],
+    "planned_native_b2_observations": 12,
+    "expected_preparation_history_offers": 36,
+    "full_run509_matrix": 60
+  },
+  "owner": {
+    "run507_actions": 40309409260,
+    "status": "COMPLETED_SUCCESS",
+    "run514_independent_review_pr": 512,
+    "github_actions_in_progress_at_prereg": 0,
+    "concurrency_group": "v13-native-c3-run131-serialized"
+  },
+  "status": "NATIVE_12_RECORDED_POSTFLIGHT_RED_NO_GATE_PROMOTION",
+  "safety": {
+    "age": "Age0",
+    "learning": "RECORD_ONLY",
+    "no_c3_consumer": true,
+    "no_oracle_to_native": true,
+    "no_tools": true,
+    "no_paid_provisioning": true,
+    "one_shot_only": true,
+    "fail_stop": true,
+    "no_overwrite": true,
+    "raw_and_safe_artifacts_even_on_red": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "blockers": [
+    "Native stage not yet run or verified",
+    "Remaining Run509 48 B2 observations unmeasured",
+    "Redmi unavailable"
+  ],
+  "next_command": "Do not rerun p00. Run518 fix Run513 rejected_quotes integer schema with explicit regression and replay the exact Run515 safe ZIP; preserve original RED. Continue independent canonical work; no gate promotion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "actions": {
+    "run": 40313344309,
+    "head": "24f5f802b700c82f9e57f59bd3345dd6dd1e4f53",
+    "conclusion": "FAILURE",
+    "source_exit": 0,
+    "deps_exit": 0,
+    "plan_exit": 0,
+    "bootstrap_exit": 0,
+    "native_exit": 0,
+    "postflight_exit": 1,
+    "safe_exit": 0,
+    "privacy_exit": 0,
+    "raw_artifact": 12645807597,
+    "raw_zip_sha256": "680e874dda717096d67506128aef688ab2ceab0ab4f5ca196f2f036875a70858",
+    "raw_manifest_entries_verified": 30,
+    "safe_artifact": 12646720408,
+    "safe_zip_sha256": "4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534",
+    "recorded_rows": 12,
+    "stage_result": "RUN511_12_B2_NATIVE_OFFERS_STRUCTURALLY_VERIFIED_ONLY",
+    "postflight_error": "NATIVE_ROW_LIFECYCLE_DRIFT: Run513 assumed rejected_quotes list but Cognition.offer and Run511 store an integer rejected-quote count",
+    "native_evidence_status": "UNVERIFIED_UNTIL_INDEPENDENT_REPLAY"
+  },
+  "private_backups": [
+    "/V13_Run515_NATIVE12_RAW_RED_POSTFLIGHT_20261026_sha680E874D.zip",
+    "/V13_Run515_NATIVE12_SAFE_RED_POSTFLIGHT_20261026_sha4E7B53A2.zip"
+  ]
+}
