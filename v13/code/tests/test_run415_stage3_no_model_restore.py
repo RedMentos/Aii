@@ -22,7 +22,10 @@ class Run415Stage3RestoreTests(unittest.TestCase):
         self.source = self.root / "source"
         self.source.mkdir()
         progress = {"canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL",
-                    "completed": {"O_s20": {}, "P_s20": {}}, "failures_preserved": {}}
+                    "completed": {a + "_s20": {
+                        "attempt": "attempts/" + a + "_s20/attempt-0001",
+                        "validated": {"rows": 42}
+                    } for a in ("O", "P")}, "failures_preserved": {}}
         files = {
             "RUN397_PROGRESS.json": json.dumps(progress).encode(),
             "RUN394_PREREGISTERED_FIXTURES.json": b"{}",
@@ -147,6 +150,59 @@ class Run415Stage3RestoreTests(unittest.TestCase):
         self.assertEqual(report["rows_verified"], 126)
         self.assertFalse(report["canonical_gate_pass"])
         self.assertFalse(report["redmi_measured"])
+
+    def test_unverified_restored_receipt_blocks_native_before_launch(self):
+        installed = self.root / "installed"
+        (installed / "bin").mkdir(parents=True)
+        (installed / "bin/llama-server").write_bytes(b"synthetic only")
+        original_sha = stage.safe.sha_file
+
+        def selective_sha(path):
+            if Path(path).name == "llama-server":
+                return stage.RUN401_EXECUTABLE_SHA256
+            return original_sha(path)
+
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \\
+             mock.patch.object(stage.resume, "validate_completed",
+                               side_effect=ValueError("RECORDED_MODEL_IDENTITY_MISMATCH")), \\
+             mock.patch.object(stage.resume, "run") as native, \\
+             mock.patch.object(stage.safe, "export", return_value={
+                 "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []
+             }) as exported:
+            report = stage.stage3(self.source, self.report, self.root / "work",
+                                  installed=installed, execute=True,
+                                  export_dest=self.root / "out")
+        native.assert_not_called()
+        exported.assert_called_once()
+        self.assertFalse(report["native_execute_attempted"])
+        self.assertEqual(report["status"], "STAGE3_RED_PRESERVED")
+        self.assertIn("RECORDED_MODEL_IDENTITY_MISMATCH", str(report["errors"]))
+        self.assertFalse(report["canonical_gate_pass"])
+
+    def test_wrong_preflight_row_count_blocks_native_before_launch(self):
+        installed = self.root / "installed"
+        (installed / "bin").mkdir(parents=True)
+        (installed / "bin/llama-server").write_bytes(b"synthetic only")
+        original_sha = stage.safe.sha_file
+
+        def selective_sha(path):
+            if Path(path).name == "llama-server":
+                return stage.RUN401_EXECUTABLE_SHA256
+            return original_sha(path)
+
+        with mock.patch.object(stage.safe, "sha_file", side_effect=selective_sha), \\
+             mock.patch.object(stage.resume, "validate_completed",
+                               return_value={"rows": 41}), \\
+             mock.patch.object(stage.resume, "run") as native, \\
+             mock.patch.object(stage.safe, "export", return_value={
+                 "status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS", "errors": []
+             }):
+            report = stage.stage3(self.source, self.report, self.root / "work",
+                                  installed=installed, execute=True,
+                                  export_dest=self.root / "out")
+        native.assert_not_called()
+        self.assertEqual(report["status"], "STAGE3_RED_PRESERVED")
+        self.assertIn("STAGE3_PREFLIGHT_RECEIPT_INVALID", str(report["errors"]))
 
     def test_synthetic_native_failure_preserves_red_and_attempts(self):
         installed = self.root / "installed"
