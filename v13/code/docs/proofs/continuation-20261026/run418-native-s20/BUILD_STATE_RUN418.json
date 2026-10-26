@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN418_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run418-native-s20-safe-import-20261026",
+  "base_pr": 412,
+  "base_commit": "33e49bff43f1acf42f6bf61291dd325fa3f79d58",
+  "verified_import_source_head": "bf8cefd5de71fcf145ddfa8b5ef7d22601f1eb10",
+  "source_only_evidence": {
+    "workflow_run_id": 40260220484,
+    "conclusion": "success",
+    "tests": "33/33 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12624392222,
+    "artifact_zip_sha256": "0d89a506024bf52c2cd10a77f32d27b0404e30c179fbac20bc751fab973fe35a",
+    "import_script_sha256": "89120229cf047f360187c2669af7308bd251962cca847a88808e56364084e29f"
+  },
+  "actual_p_s20": {
+    "source_head": "f7fe01393801c852aa3797973bda0e81b14069ac",
+    "actions_run": 40258333913,
+    "conclusion": "success",
+    "native_rows": 84,
+    "run411_status": "STAGE2_NATIVE_PARTIAL_NO_PROMOTION",
+    "safe_artifact_id": 12624057201,
+    "safe_artifact_zip_sha256": "bb2bc545ce72b30657f36cc605e4a6b2c3e74b2085aea8c679ccc31062b7089a",
+    "raw_artifact_id": 12624511151,
+    "raw_artifact_zip_sha256": "3c554e654bc62ba0a4979c5c89b1c9a43d6ce86c4bf16933d5a1b3d709fdf5a5",
+    "export_manifest_sha256": "f082290e6e425e8bbc03be0df1833be54978278327f6221fa5acb83bae0656f5",
+    "progress_sha256": "a415c84345ecedf1e63fc3e429ea337979841cb7a5f04efa977ee5e461501fb1",
+    "independent_file_checks": {
+      "files": 99,
+      "bytes": 78197324,
+      "missing_empty_directories_in_artifact": 8,
+      "restored_then_original_gate": "RUN413_EXPORT_VERIFIED_NATIVE_PARTIAL"
+    }
+  },
+  "native_s20": {
+    "workflow_source_head": "a09c1b59db063ba0e6dc25d129abaad3e8833049",
+    "actions_run": 40260347495,
+    "status_last_checked": "IN_PROGRESS",
+    "claim": "NOT_YET_VERIFIED",
+    "concurrency_group": "v13-native-c3-run131-serialized"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Whether actual S_s20 yields 126 valid native rows and safe export",
+    "Independent postflight of all S receipts and artifact bytes",
+    "Remaining six registered arms and full 378-row utility gate"
+  ],
+  "next_command": "Check Actions 40260347495 and retrieve small raw + safe-work artifact if present; independently validate all 126 O/P/S native receipts and every no-model byte before scheduling another heavy arm. If RED, preserve original failed attempts and investigate; do not relaunch unowned processes.",
+  "checkpoint_note": "Native workflow is a single serialized pinned S_s20 job. Status here is only last observed IN_PROGRESS, not a prediction."
+}
