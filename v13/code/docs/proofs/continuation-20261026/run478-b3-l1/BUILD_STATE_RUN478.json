@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN478_B3_L1_COMPLETE_CONTROLS_SOURCE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run478-b3-l1-complete-controls-20261026",
+  "base_ref": "codex/run476-b3-numerical-integrity-20261026",
+  "base_sha": "83ef600b73cd7d306d46b4498a3f1f9bc467998f",
+  "owner": "Run478 source-only B3 L1 completeness candidate; no native/model owner",
+  "finding": "Frozen b3bridge.l1_gate can return PASS with missing EXACT/CONTROL/SYMBOLIC/LATENT controls because absent baselines are skipped; it also silently zips unequal seed vectors and treats missing byte costs as zero.",
+  "source_files": {
+    "v13/code/scripts/run478_b3_l1_complete_baselines.py": "54ed6fc0e75a711351c4f1eb644d16f7d17c60c7",
+    "v13/code/tests/test_run478_b3_l1_complete_baselines.py": "7dd169656da3ed441b2299364cf9c77ac9693326",
+    ".github/workflows/run478-b3-l1-controls.yml": "56ae31e967b96a0e9aed1620a6d7456a167d43cd"
+  },
+  "changes": [
+    "Require all seven registered baseline channels, matching >=3 seeds and explicit finite 0..1 accuracy.",
+    "Require all channel byte costs and explicit finite role_drop/OOD and boolean restart measurement.",
+    "Return diagnostic L1 only with canonical_gate_pass=false, latent_authority=0, B3 L1 FAIL; production source untouched."
+  ],
+  "local_tests": "7/7 synthetic unit tests PASS in extracted Run476 source package; actual source CI pending",
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "latent_authority": 0,
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Source-only validation does not prove that baselines are genuinely measured or preregistered.",
+    "Production migration requires independent review, frozen cohort release and native L1 receiver/retention proof.",
+    "No B3 activation, no native or Redmi measurement."
+  ],
+  "exact_next_command": "Independent review PR #475 and original missing-controls PASS counterexample; production B3 integration needs explicit migration/native L1/retention and unchanged authority 0. Continue independent canonical package.",
+  "tests_status": "SOURCE_CI_GREEN 15/15 PASS, privacy CLEAN; focused source-bound CI GREEN; no native B3 or Redmi",
+  "verified_ci": {
+    "source_run_id": 40281289492,
+    "source_job_id": 121434946919,
+    "conclusion": "success",
+    "tests": "15/15 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12632405434,
+    "raw_zip_sha256": "b7e455f7026bb0d6459ae7a8062a65d030b69cd3f486129fb0ccf5523f2691da",
+    "focused_run_id": 40281289506,
+    "focused_conclusion": "success",
+    "focused_artifact_id": 12631929771,
+    "focused_zip_sha256": "4ca421d18b13bd6988bf82c74537e77507759a34b73555cfaa0a6126d9cdfca5",
+    "tested_source_head": "b337548d5c820f3c1363f63c5f07c83b286f70ec"
+  },
+  "pr": 475
+}
