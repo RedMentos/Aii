@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import shlex
 import shutil
-from .common import dumps,atomic_write,safe_text,file_hash
+from .common import dumps,safe_text,file_hash
 from .config import KNOBS,save_config
 from .models import ROLES
 from . import age as agectl
@@ -392,11 +392,9 @@ class Operator:
         if cmd=='budget' and not args:return dumps({k:{'value':r.cfg[k],'unit':v[1],'range':[v[2],v[3]],'status':'BOOT_ESTIMATE'} for k,v in KNOBS.items()})
         if cmd=='rules' and not args:return dumps(s.rules())
         if cmd=='export' and args and args[0]=='chat':
-            fmt=args[1] if len(args)>1 else 'json'
-            if fmt not in {'json','md'}:raise ValueError('json|md')
-            history=s.history(r.session,100000);p=r.home/'exports'/(r.session+'.'+fmt)
-            text=dumps(history) if fmt=='json' else '\n\n'.join('**'+x['role']+' · '+x['status']+'**\n\n'+x['text'] for x in history)
-            atomic_write(p,text);return str(p)
+            if len(args)>2:raise ValueError(':export chat [json|md]')
+            from .chat_export import export_chat
+            return export_chat(s,r.session,args[1] if len(args)==2 else 'json')
         # Every mutation affecting routing/generation/files below is serialized at idle.
         r.require_idle()
         if cmd=='consolidate':

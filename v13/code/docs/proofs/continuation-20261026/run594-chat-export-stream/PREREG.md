@@ -1,0 +1,11 @@
+# Run594 preregistration — complete durable streaming chat export (2026-10-26)
+
+Owner: GPT automation11. Stacked review-only on verified Run593 PR588 checkpoint `f84da9510c25beddb7200cad65fa16324b9683ec`. Exclusive files: new `v13/code/v13/chat_export.py`, `v13/code/v13/operator.py` export-chat dispatch only, new tests/workflow/proof. Run592 JEF owner and model/learning cohorts untouched.
+
+**Observed functional defect:** `:export chat [json|md]` uses `Store.history(session,100000)`, which silently discards every earlier message beyond the latest 100,000, and materializes the entire export in memory. A chat export is a user backup, not a bounded context window. A stored session identifier containing a path separator can also leave the intended exports directory.
+
+**Implementation plan:** Stream every message in ascending stable `messages.id` order via bounded SQLite pages, capture a maximum row ID at export start to exclude later appends, serialize valid JSON or Markdown to a temporary file, flush/fsync, atomic replace and directory fsync. Keep existing format/command/path for ordinary generated chat IDs. Reject malformed command arguments and missing session. Unsafe legacy/imported session IDs get a deterministic digest-derived local filename inside exports; never follow arbitrary paths. Failure before replace must preserve an earlier export. No network, tool, model or learning authority.
+
+**Prospective tests:** Real Runtime/SQLite/Operator 1205-row synthetic chat with page size 128 and a patched `Store.history` that must not be called; JSON order and complete contents, MD exact text and separate sessions, unsafe session path containment, simulated second-page failure preserving prior export and cleaning temp files, snapshot max-ID boundary under an append. Existing Run214, Run89 and Run86 chat/operator integration regressions. Exact-head model-free GitHub Actions, SHA-closed raw, privacy scan and independent review.
+
+**Claims:** software-only chat persistence/export usability; no native/Redmi measurement or V13 gate promotion. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, full V13 INCOMPLETE.
