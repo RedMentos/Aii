@@ -4,6 +4,7 @@
 No model inference. Original ZIP remains untouched. Native origin must be separately bound.
 """
 import argparse
+import ctypes
 import hashlib
 import json
 import os
@@ -134,6 +135,21 @@ def _verify_and_stage(archive, expected_sha, temporary):
                 "all_member_sha_checked": True}
 
 
+
+def _rename_noreplace(source, destination):
+    """Linux atomic rename with RENAME_NOREPLACE; never clobber a concurrent owner."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    fn = getattr(libc, "renameat2", None)
+    require(fn is not None, "RENAME_NOREPLACE_UNAVAILABLE")
+    fn.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                   ctypes.c_char_p, ctypes.c_uint]
+    fn.restype = ctypes.c_int
+    result = fn(-100, os.fsencode(source), -100, os.fsencode(destination), 1)
+    if result != 0:
+        err = ctypes.get_errno()
+        raise OSError(err, os.strerror(err), str(destination))
+
+
 def audit_or_restore(archive, expected_sha, destination=None):
     report = {"run": "Run407", "source_run": "Run401",
               "status": "STAGE1_STREAM_RED_PRESERVED", "errors": [],
@@ -153,7 +169,7 @@ def audit_or_restore(archive, expected_sha, destination=None):
             with tempfile.TemporaryDirectory(prefix="run407-stage-", dir=dest.parent) as temp:
                 checked = _verify_and_stage(archive, expected_sha, temp)
                 require(not dest.exists(), "DESTINATION_RACE")
-                os.replace(Path(temp) / "run401-full", dest)
+                _rename_noreplace(Path(temp) / "run401-full", dest)
             report["restored_work"] = str(dest)
         report.update(checked)
         report["status"] = "STAGE1_STREAM_VERIFIED_NO_PROMOTION"
