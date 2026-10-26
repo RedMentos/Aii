@@ -391,7 +391,9 @@ class Operator:
             from . import effort
             if not args:return dumps(effort.summary(s))
             if len(args)!=1:raise ValueError(':effort [disabled|low|adaptive|high|max]')
-            return 'reasoning_effort = '+effort.set_mode(s,args[0])+' (Deadline, Ressourcen, Observer-Schalter und Age bleiben bindend)'
+            with r.lock:
+                r.require_idle()
+                return 'reasoning_effort = '+effort.set_mode(s,args[0])+' (Deadline, Ressourcen, Observer-Schalter und Age bleiben bindend)'
         if cmd=='fabric':  # WP-T14 thin-control-fabric budget (§22.2.3)
             from .control_budget import operator_command
             return dumps(operator_command(r,args))
@@ -401,7 +403,11 @@ class Operator:
         if cmd=='duplex':  # WP-N14 live/full-duplex text timeline
             from .duplex import operator_command,MODES
             if len(args)==1 and args[0] in MODES:
-                cfg=r.cfg|{'duplex_mode':args[0]};save_config(r.home,cfg);r.cfg.update(cfg);return 'duplex_mode = '+args[0]
+                with r.lock:
+                    r.require_idle()
+                    cfg=r.cfg|{'duplex_mode':args[0]}
+                    save_config(r.home,cfg);r.cfg.update(cfg)
+                return 'duplex_mode = '+args[0]
             return dumps(operator_command(r,args))
         if cmd=='admission':  # WP-T9 §9.5 learned memory admission (SHADOW; active only by the user)
             from .admission import operator_command
@@ -425,12 +431,20 @@ class Operator:
             from .semantic_memory import status
             if not args or args==['status']:return dumps(status(r))
             if len(args)!=1 or args[0] not in {'off','shadow','on','auto'}:raise ValueError(':semantic [status|off|shadow|on|auto]')
-            cfg=r.cfg|{'memory_embedding':args[0]};save_config(r.home,cfg);r.cfg.update(cfg);return 'memory_embedding = '+args[0]
+            with r.lock:
+                r.require_idle()
+                cfg=r.cfg|{'memory_embedding':args[0]}
+                save_config(r.home,cfg);r.cfg.update(cfg)
+            return 'memory_embedding = '+args[0]
         if cmd=='sampling':
             from .guards import C3_DECODER,LEGACY_DECODER
             if not args:return dumps({'c3_sampling':r.cfg.get('c3_sampling','anti_echo'),'anti_echo':C3_DECODER,'legacy':LEGACY_DECODER|{'temperature':r.cfg['temperature']}})
             if len(args)!=1 or args[0] not in {'anti_echo','legacy'}:raise ValueError(':sampling anti_echo|legacy')
-            cfg=r.cfg|{'c3_sampling':args[0]};save_config(r.home,cfg);r.cfg.update(cfg);return 'c3_sampling = '+args[0]
+            with r.lock:
+                r.require_idle()
+                cfg=r.cfg|{'c3_sampling':args[0]}
+                save_config(r.home,cfg);r.cfg.update(cfg)
+            return 'c3_sampling = '+args[0]
         if cmd=='collapse':
             from .guards import collapse_report,store_pairs
             return dumps(collapse_report(store_pairs(s,None if args==['all'] else r.session)))
