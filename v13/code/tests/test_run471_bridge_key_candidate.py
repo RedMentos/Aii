@@ -76,13 +76,19 @@ class ExactBridgeKeyCandidate(unittest.TestCase):
             A.exact_identity(self.man, changed)
 
     def test_forged_l1_pass_does_not_grant_authority(self):
-        changed = dict(self.man, l1_gate={'verdict': 'PASS'}, calibrated=True)
+        changed = dict(self.man, l1_gate={'verdict': 'PASS'})
         (self.path.with_suffix('.json')).write_text(json.dumps(changed))
         result = A.verify_file(self.path, self.specs)
         self.assertEqual(result['l1_verdict'], 'PASS')
         self.assertEqual(result['latent_authority'], 0)
         self.assertEqual(result['b3_l1'], 'FAIL')
         self.assertFalse(result['canonical_gate_pass'])
+
+    def test_forged_calibration_flag_refused(self):
+        changed = dict(self.man, calibrated=True)
+        self.path.with_suffix('.json').write_text(json.dumps(changed))
+        with self.assertRaisesRegex(ValueError, 'BRIDGE_CALIBRATION_FLAG_MISMATCH'):
+            A.verify_file(self.path, self.specs)
 
     def test_weights_tamper_refused(self):
         p = self.path.with_suffix('.npz')
