@@ -1,0 +1,38 @@
+{
+  "schema": "V13_RUN458_NATIVE252_ATOMIC_IMPORT_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT automation11 independent source-only importer; not Run453 native owner",
+  "branch": "codex/automation11-run458-native252-atomic-utility-import-20261026",
+  "base": "66ed8a2a318de654856cc9c5144c797fe308c9a6",
+  "tested_source_head": "15fb6ae7534fce573842a5ba3aa3b005d906de4e",
+  "pr": 457,
+  "source_git_blob_sha1": {
+    "v13/code/scripts/run458_import_stage6_artifact.py": "df4b859b3c503ba6a61cda4b465191108fa64d22",
+    "v13/code/tests/test_run458_native252_atomic_import.py": "03de43c9a44efd3b6baa184d674a8d4e263f1a11",
+    ".github/workflows/run458-native252-atomic-import.yml": "c405fa5c67e1fa8962f588c9157c167a5e8987f8"
+  },
+  "actions": {
+    "id": 40272169262,
+    "conclusion": "success",
+    "tests": "53/53 PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12628887988,
+    "raw_artifact_sha256": "1cd8e45b629d14df8f22cc00c7d619246405be783b1c12cf9db00c64e93c744d"
+  },
+  "result": "Atomic safe ZIP importer for Run453 actual native252, validates outer SHA, inner inventory, six-receipt independent verifier and Run456 pinned utility before publishing. Failures leave destination absent; software/synthetic CI only.",
+  "scope": "No actual native252 artifact imported yet. No model downloads, no training, no Redmi test.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Exclusive Run453 S_s21 Actions 40270625698 still running when this source-only importer passed.",
+    "Need actual safe 252 ZIP SHA256 and original stage6 report SHA256 before Run458 real-artifact import.",
+    "Two seeds are descriptive; frozen 378-row three-seed STEP2 acceptance still unmet."
+  ],
+  "next_command": "After Run453 Actions 40270625698 completes, verify original safe ZIP and stage6 report bytes, execute run458_import_stage6_artifact.py --archive <original> --expected-sha256 <verified> --stage6-report <original> --destination <fresh> --output <report>; retain raw proof and all gates. Continue source-only Stage7 O_s22 preparation independently while native owner runs."
+}
