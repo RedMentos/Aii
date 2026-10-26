@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN524_CURRENT_TERMUX_SOURCE_ZIP_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run524-current-phone-source-zip-20261026",
+  "base_branch": "codex/run523-current-sourcewide-fullsuite-20261026",
+  "base_sha": "e006d86bd4a557f926a6df953899b239290b58ad",
+  "prereg_blob": "edd03a3f160547d487f3682e8ef13f55e1fdc0c8",
+  "source": {
+    "runtime": "0be34417865d64ee8ff6b7ba26631d18aa279e3a",
+    "package_source": "06167e0bcb82b36cb08841cd31b9618c4ba0926e",
+    "zip_verifier": "880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1",
+    "zip_tests": "535f0f2d7dfd3b8a39f919302dde98fb8576fa34"
+  },
+  "evidence": "SOURCE_ONLY_TERMUX_ZIP_VERIFIED_1238_FILES_15_TESTS_PRIVACY_CLEAN",
+  "test_plan": "Existing Run268 ZIP verifier and package_source tests; manifest all member hashes, checkout parity, CRC, privacy, SHA raw evidence",
+  "heavy_owner": {
+    "run522_pr": 520,
+    "stage": "p02",
+    "native_separate": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "ZIP source package only, no Redmi installation or runtime measurements",
+    "Original pinned public model/runner still required on target",
+    "Run523 full source-wide suite outcome separate",
+    "Run525 p03 native stage separate"
+  ],
+  "next_command": "Retain verified phone ZIP and its source SHA; await fullsuite and p03 native evidence; never claim model/native/Redmi success from packaging.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE",
+  "ci": {
+    "run": 40317898079,
+    "head_sha": "16bdbbb62e4fdeb184542642e0fd6345636bd3a1",
+    "conclusion": "SUCCESS",
+    "tests": 15,
+    "privacy": "CLEAN",
+    "artifact_id": 12648090483,
+    "outer_zip_sha256": "d000e6d905a3b89c5b53ae432866b387c1b22b6d9f7930e16ba7099597aedb4d",
+    "outer_sha_manifest_entries_verified": 9,
+    "phone_source_zip_sha256": "49b5202f1187cf4fcf34ef3a120847f74d6170ffa2580662cf5529a38e05979b",
+    "source_files_verified": 1238,
+    "zip_crc": "PASS",
+    "all_member_hashes": "PASS",
+    "shell_launchers_executable": true,
+    "forbidden_private_model_payloads": 0,
+    "checkout_byte_parity": "PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-26/Run524/V13-Phone-Run524_sha49b5202f.zip"
+  }
+}

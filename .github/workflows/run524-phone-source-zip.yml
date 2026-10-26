@@ -1,0 +1,93 @@
+name: V13 Run524 exact-current-chain verified Termux phone source ZIP
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - '.github/workflows/run524-phone-source-zip.yml'
+permissions:
+  contents: read
+jobs:
+  source-package:
+    if: ${{ github.event.pull_request.head.ref == 'codex/run524-current-phone-source-zip-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify exact head and unchanged Canon
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git hash-object v13/code/v13/runtime.py)" = "0be34417865d64ee8ff6b7ba26631d18aa279e3a"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261026/run524-phone-source-zip/PREREG.md)" = "edd03a3f160547d487f3682e8ef13f55e1fdc0c8"
+          test "$(git hash-object v13/code/scripts/package_source.py)" = "06167e0bcb82b36cb08841cd31b9618c4ba0926e"
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = "880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1"
+          test "$(git hash-object v13/code/tests/test_phone_zip_current_run268.py)" = "535f0f2d7dfd3b8a39f919302dde98fb8576fa34"
+          test -s AGENTS.md
+          test -s v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN524_SOURCE_HEAD.txt"
+      - name: Pinned isolated Python dependencies for original packaging tests
+        run: |
+          python3 -m venv "$RUNNER_TEMP/run524venv"
+          "$RUNNER_TEMP/run524venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt_toolkit==3.0.52'
+      - name: Run new ZIP verifier negative controls
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run524venv/bin/python" -m unittest -v test_phone_zip_current_run268 test_package_source 2>&1 | tee "$RUNNER_TEMP/RUN524_TEST.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN524_TEST_EXIT.txt"
+          exit 0
+      - name: Build and independently verify source-only Termux ZIP
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          if [[ "$(cat "$RUNNER_TEMP/RUN524_TEST_EXIT.txt")" != "0" ]]; then echo 2 > "$RUNNER_TEMP/RUN524_ZIP_EXIT.txt"; exit 0; fi
+          "$RUNNER_TEMP/run524venv/bin/python" scripts/package_source.py --root "$PWD" --out "$RUNNER_TEMP/V13-Phone-Run524.zip" --phone-install 2>&1 | tee "$RUNNER_TEMP/RUN524_PACKAGE.log"
+          rc=${PIPESTATUS[0]}
+          if [[ "$rc" = "0" ]]; then
+            "$RUNNER_TEMP/run524venv/bin/python" scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run524.zip" --root "$PWD" --out "$RUNNER_TEMP/RUN524_VERIFY.json" 2>&1 | tee "$RUNNER_TEMP/RUN524_VERIFY.log"
+            rc=${PIPESTATUS[0]}
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN524_ZIP_EXIT.txt"
+          echo "RUN524_ZIP_EXIT=$rc"
+          exit 0
+      - name: Official public repo privacy scan
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=100 origin "${{ github.event.pull_request.base.sha }}" > "$RUNNER_TEMP/RUN524_PRIVACY.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree >> "$RUNNER_TEMP/RUN524_PRIVACY.log" 2>&1
+      - name: SHA-close package and raw evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f \( -name 'RUN524_*' -o -name 'V13-Phone-Run524.zip' \) ! -name RUN524_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN524_SHA256SUMS.txt
+      - name: Upload source-only ZIP and closed raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run524-Verified-Phone-Source-ZIP
+          path: |
+            ${{ github.workspace }}/AGENTS.md
+            ${{ runner.temp }}/V13-Phone-Run524.zip
+            ${{ runner.temp }}/RUN524_SOURCE_HEAD.txt
+            ${{ runner.temp }}/RUN524_TEST.log
+            ${{ runner.temp }}/RUN524_TEST_EXIT.txt
+            ${{ runner.temp }}/RUN524_PACKAGE.log
+            ${{ runner.temp }}/RUN524_VERIFY.log
+            ${{ runner.temp }}/RUN524_VERIFY.json
+            ${{ runner.temp }}/RUN524_ZIP_EXIT.txt
+            ${{ runner.temp }}/RUN524_PRIVACY.log
+            ${{ runner.temp }}/RUN524_SHA256SUMS.txt
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce true tests and ZIP verification
+        run: |
+          test "$(cat "$RUNNER_TEMP/RUN524_TEST_EXIT.txt")" = "0"
+          test "$(cat "$RUNNER_TEMP/RUN524_ZIP_EXIT.txt")" = "0"
