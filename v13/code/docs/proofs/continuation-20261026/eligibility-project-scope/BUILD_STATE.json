@@ -42,5 +42,17 @@
     "Reconcile historical source-lineage assertions with current reviewed runtime via versioned evidence, without editing original frozen tests.",
     "Actual Redmi and native Body/JEPA/STEP2 utility proofs remain open."
   ],
-  "next_exact_command": "Review PR575 diff and successful workflow 40379677577; test model/fixed_strict reader on mixed-project exact history with new disjoint software cases; checkpoint and then move to highest-priority remaining V13 native/body/STEP2 package without promoting gates."
+  "next_exact_command": "Independently review PR575 at latest head; evaluate residual ambiguous project labels and decide whether to retain strict lexical fail-closed policy. Continue next separate V13 native/body/STEP2 functional package; no model/seed/gate changes without new prereg. Historical unfiltered suite remains RED and needs versioned current-source reconciliation.",
+  "run577": {
+    "prereg_commit": "d7355398cf3c2089bc14bde01fce71a6faddfbdb",
+    "prereg_sha": "2491291900a285e6d8c121cb597482d9a4710426",
+    "source_head": "6aa002c77465664ccebc4ecb3067faeab494c02d",
+    "test_sha": "ba5405d57c440e3a09c9b7fb3f8c3c16a02406d6",
+    "workflow_run": 40379946033,
+    "job_id": 121773150639,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12676698853,
+    "artifact_sha256": "6065e897539150617a9fcd3bdf2b58e9dc43d55599e91e44d7b2f3a093cc2629",
+    "scope": "Disjoint fixed_strict and model fake-C3 source-bound checks with actual Runtime/SQLite; focused existing suites, compileall, privacy"
+  }
 }
