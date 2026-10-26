@@ -1,0 +1,63 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_RUN546_V1",
+  "date_utc": "2026-10-26",
+  "owner": "automation11 Run546 JEF calibration input contract; source-only",
+  "base": {
+    "pr": 544,
+    "head": "0ed6f1d5eff18f0b54f914be064b0e73c9bf7850",
+    "status": "review branch not main"
+  },
+  "review_pr": 545,
+  "source_blobs": {
+    "v13/code/v13/agi/metacog.py": "d20542e2ecc7cfbdedbed629afc80fc8bab1f8f0",
+    "v13/code/tests/test_run546_metacog_labels.py": "fb9948f137ebf1018b12d8ef01dd94f2b0e4e234",
+    "v13/code/docs/proofs/continuation-20261026/run546-metacog-labels/PREREG.md": "956c6fd2b343b863b90171bcffc8edb8b3c831a5"
+  },
+  "verified_evidence": [
+    {
+      "run": 40337942242,
+      "conclusion": "SUCCESS",
+      "tests": 23,
+      "privacy": "PASS",
+      "artifact_id": 12658545356,
+      "zip_sha256": "ec532d7db5708add16defc9f9006402e2bb7f02ad05a61b400a0ac295486d035",
+      "raw_sha_manifest": "all 8 entries verified locally",
+      "scope": "Linux software, no native models/Redmi"
+    }
+  ],
+  "run544_independent_result": {
+    "run": 40336838628,
+    "conclusion": "FAILURE",
+    "head": "e05353cf1cc9ff0493f163a7c0de1f1ad550db91",
+    "artifact_id": 12656569983,
+    "zip_sha256": "6eb236d9ee646bb731d016061803379a8e3c7f375b381a6a89b9c41023775c94",
+    "raw_sha_manifest": "all 14 entries verified locally",
+    "full_unittest": {
+      "tests": 3938,
+      "failures": 3,
+      "errors": 2,
+      "skipped": 14,
+      "seconds": 319.232
+    },
+    "classification": "all 5 observed failures/errors in historical Run357/Run177 lineage comparisons, subsequently corrected in Run545; no assertion of full-suite GREEN on Run546 yet"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA UNAVAILABLE",
+    "jepa_weight=0",
+    "Redmi unmeasured",
+    "canonical_architecture_complete=false",
+    "user_full_scope_complete=false"
+  ],
+  "open_questions": [
+    "Fresh full exact-head Run546 regression required with same pinned Run147/Run531/LP3 prerequisites",
+    "No evidence that label validation improves model accuracy; only prevents invalid evidence ingestion"
+  ],
+  "next_command": "Create a new one-shot Run547 full unfiltered unittest workflow on exact Run546 head using Run544 pinned external artifacts, preserve RED, inspect and independently verify SHA-closed raw",
+  "prerequisites": [
+    "Use serialized heavy lane v13-native-c3-run131-serialized",
+    "No paid provisioning or model download",
+    "Never alter Run544 original raw/manifest or frozen cohort"
+  ]
+}

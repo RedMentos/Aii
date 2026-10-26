@@ -1,0 +1,11 @@
+# Run546 prereg — fail-closed JEF metacognition label and confidence ingestion
+
+2026-10-26 before source edit. Base Run545 PR #544 checkpoint `0ed6f1d5eff18f0b54f914be064b0e73c9bf7850`, exact Run177/357 source-only Actions 40337402794/40337402917 SUCCESS (40+22 tests, privacy PASS), raw artifacts 12656509917/12657520559 SHA-bound. Run544 full unfiltered suite Actions 40336838628 is independently running on its earlier exact head; do not change that workflow or claim its result.
+
+**Observed live JEF risk:** `v13/agi/metacog.py:Metacognition.record` currently calls `clamp01(confidence)` (clamps out-of-range and maps NaN/inf to zero) and `int(bool(correct))` (accepts any truthy string/list as a *correct* label). A malformed producer can therefore add fabricated correctness pairs, reaching `MIN_SUPPORT=20` and changing the live `agi.live.before_effort` uncertainty/abstention gate. This is not a claim of a known malicious actor; it is a reproducible input-contract defect.
+
+**Change ownership:** only `v13/code/v13/agi/metacog.py`, new `v13/code/tests/test_run546_metacog_labels.py`, and new Run546 workflow/proof. Preserve valid bool or exact integer 0/1 correctness, finite real numeric confidence in [0,1], unchanged histogram/PAV thresholds, Store format, existing feedback/age/tool rights. Reject bool/string/NaN/inf/out-of-range confidence and non-binary/ambiguous correctness **before** mutating StateBox. No auto-learning/authority, model, seed, cohort or frozen runtime changes. No direct user communications.
+
+**Tests:** malformed labels and confidences never change persisted state; valid labels still reach calibrated effort/abstention after MIN_SUPPORT and survive restart; actual existing `test_agi_live` regression; adversarial type and numeric boundaries; source-only isolated dependencies, privacy and SHA-closed raw. If a legitimate existing producer requires an unanticipated label representation, record RED rather than silently coercing it. No model inference/Redmi claim.
+
+**Negative gates:** STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, whole V13 incomplete. Next: Run544 fullsuite triage, then further substantive JEF/STEP2 implementation.
