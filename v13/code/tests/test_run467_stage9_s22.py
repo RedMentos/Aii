@@ -1,5 +1,7 @@
 """Run467 final S_s22 stage9 source-only preview and fail-closed gates."""
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -89,6 +91,44 @@ class Run467Stage9Tests(unittest.TestCase):
         self.assertEqual(result["status"], "STAGE9_RED_PRESERVED")
         self.assertIn("STAGE9_PREFLIGHT_NOT_VERIFIED", result["errors"][0])
         native.assert_not_called()
+
+    def test_synthetic_final_structural_status_still_never_promotes_step2(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / "work"
+            work.mkdir()
+            frozen = stage.r394.manifest(stage.r394.FIXTURES, False,
+                                          list(stage.r394.ARMS), list(stage.r394.SEEDS))
+            (work / "RUN394_PREREGISTERED_FIXTURES.json").write_text(json.dumps(frozen))
+            completed = {
+                rid: {"attempt": f"attempts/{rid}/attempt-0001",
+                      "validated": {"rows": 42}}
+                for rid in stage.ALL}
+            simulated = {"status": "ALL_ARMS_STRUCTURALLY_RECORDED",
+                         "completed": completed, "failures_preserved": {},
+                         "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL"}
+            with (patch.object(stage.stage8_import, "import_stage8",
+                               return_value=self.imported()),
+                  patch.object(stage, "verify_previous",
+                               return_value=self.preflight()),
+                  patch.object(stage.safe, "sha_file",
+                               return_value=stage.RUN401_EXECUTABLE_SHA256),
+                  patch.object(stage.resume, "run", return_value=simulated),
+                  patch.object(stage.resume, "validate_completed",
+                               return_value={"rows": 42}),
+                  patch.object(stage.safe, "export",
+                               return_value={"status": "EXPORT_VERIFIED_NO_MODEL_WEIGHTS",
+                                             "errors": []})):
+                result = stage.stage9("synthetic.zip", "0" * 64, {}, work,
+                                      installed="/synthetic-installed", execute=True,
+                                      export_dest="/synthetic-export")
+        self.assertEqual(result["status"], "STAGE9_NATIVE_378_STRUCTURAL_NO_PROMOTION")
+        self.assertEqual(result["rows_verified"], 378)
+        self.assertEqual(result["remaining_arms"], 0)
+        self.assertTrue(result["native_execution_performed"])
+        self.assertFalse(result["canonical_gate_pass"])
+        self.assertEqual(result["step2_exit"], "UTILITY_FAIL")
+        self.assertFalse(result["redmi_measured"])
+        self.assertEqual(result["jepa_weight"], 0)
 
     def test_native_exception_remains_red_and_safe_export_is_attempted(self):
         with (patch.object(stage.stage8_import, "import_stage8",
