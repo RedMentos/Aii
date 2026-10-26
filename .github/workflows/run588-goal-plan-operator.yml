@@ -1,0 +1,76 @@
+name: V13 Run588 Termux USER goal subplan proof
+on:
+  push:
+    branches:
+      - codex/automation11-run588-goal-plan-operator-20261026
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '.github/workflows/run588-goal-plan-operator.yml'
+      - 'v13/code/v13/agi/__init__.py'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/docs/BEFEHLE.md'
+      - 'v13/code/tests/test_run588_goal_plan_operator.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run588-goal-plan-operator/**'
+permissions:
+  contents: read
+jobs:
+  operator-subplans:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'codex/automation11-run588-goal-plan-operator-20261026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install isolated model-free test dependencies
+        shell: bash
+        run: python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'prompt_toolkit==3.0.52'
+      - name: Execute real operator and AG3 plan software regressions
+        shell: bash
+        run: |
+          mkdir -p run588-raw
+          git rev-parse HEAD > run588-raw/source_head.txt
+          sha256sum v13/code/v13/agi/__init__.py v13/code/v13/operator.py v13/code/docs/BEFEHLE.md v13/code/tests/test_run588_goal_plan_operator.py v13/code/docs/proofs/continuation-20261026/run588-goal-plan-operator/PREREG.md > run588-raw/source_sha256.txt
+          set +e
+          (cd v13/code && python -m unittest discover -s tests -p test_run588_goal_plan_operator.py -v) > run588-raw/new-tests.log 2>&1
+          echo "$?" > run588-raw/new-tests.exit
+          (cd v13/code && python -m unittest discover -s tests -p test_run587_goal_decompose_atomic.py -v && python -m unittest discover -s tests -p test_run586_goal_origin_age.py -v && python -m unittest discover -s tests -p test_run585_goal_wake_scope.py -v && python -m unittest discover -s tests -p test_run553_user_goal_operator.py -v) > run588-raw/regressions.log 2>&1
+          echo "$?" > run588-raw/regressions.exit
+          python -m compileall -q v13/code/v13/agi/__init__.py v13/code/v13/operator.py v13/code/tests/test_run588_goal_plan_operator.py > run588-raw/compile.log 2>&1
+          echo "$?" > run588-raw/compile.exit
+          python v13/code/scripts/public_repo_privacy_scan.py --base "${{ github.event.pull_request.base.sha || 'd3e0d2c1cf2fe22ad1d9581c10e8b3cc46655640' }}" --head "${{ github.event.pull_request.head.sha || github.sha }}" --no-worktree > run588-raw/privacy.log 2>&1
+          echo "$?" > run588-raw/privacy.exit
+          set -e
+          cat run588-raw/new-tests.log
+          cat run588-raw/regressions.log
+          cat run588-raw/privacy.log
+      - name: Close SHA manifest even on failure
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p run588-raw
+          (cd run588-raw && sha256sum *.txt *.log *.exit > RAW_SHA256SUMS.txt)
+          cat run588-raw/RAW_SHA256SUMS.txt
+      - name: Preserve raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run588-goal-plan-operator-raw
+          path: run588-raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce tests and privacy
+        shell: bash
+        run: |
+          test "$(cat run588-raw/new-tests.exit)" = 0
+          test "$(cat run588-raw/regressions.exit)" = 0
+          test "$(cat run588-raw/compile.exit)" = 0
+          test "$(cat run588-raw/privacy.exit)" = 0
