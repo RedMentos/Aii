@@ -13,7 +13,14 @@ from run534_independent_z12a_audit import independently_score, audit_file, RAW_S
 class IndependentRawAuditTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.path = Path(os.environ["RUN534_RAW_JSON"])
+        source = os.environ.get("RUN534_RAW_JSON")
+        if source is None:
+            raise unittest.SkipTest(
+                "Run534 pinned Run531 raw artifact not bundled with phone source; "
+                "exact-head Actions audit requires RUN534_RAW_JSON")
+        cls.path = Path(source)
+        if not cls.path.is_file():
+            raise FileNotFoundError("RUN534_RAW_JSON was provided but pinned raw file is missing")
         cls.raw = json.loads(cls.path.read_text())
 
     def test_exact_raw_independent_pass(self):
