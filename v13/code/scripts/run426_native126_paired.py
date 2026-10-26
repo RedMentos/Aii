@@ -127,10 +127,17 @@ def main():
         code = 2
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n")
-    print(json.dumps({"status": report["status"],
-                      "rows": report.get("verified_rows", 0),
-                      "canonical_gate_pass": False,
-                      "step2_exit": "UTILITY_FAIL"}))
+    summary = {"status": report["status"],
+               "rows": report.get("verified_rows", 0),
+               "canonical_gate_pass": False, "step2_exit": "UTILITY_FAIL"}
+    if code == 0:
+        summary["arm_mean_utility"] = report["arm_mean_utility"]
+        summary["paired_by_variant"] = {
+            label: {variant: {"mean": row["mean"], "positive": row["positive"],
+                              "negative": row["negative"], "ties": row["ties"]}
+                    for variant, row in variants.items()}
+            for label, variants in report["paired_differences"].items()}
+    print(json.dumps(summary, sort_keys=True))
     raise SystemExit(code)
 
 
