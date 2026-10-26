@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN443_OFFLINE_HUMAN_MEMORY_LIFECYCLE_CHECKPOINT_V1",
+  "date_utc": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run443-offline-human-memory-lifecycle-20261026",
+  "pr": 442,
+  "base_commit": "7916b29f7f3904689fd2d484f397bd3db1b00a27",
+  "tested_source_head": "2e94e16ef2757df4a4205f0ed6bcef4ef1b57ba9",
+  "scope": "Functional real Age0 SQLite Runtime/Operator lifecycle with no installed models, no downloads, no synthetic model answer.",
+  "behavior": [
+    "Real request persisted with honest missing-language-model ERROR abstention, not falsely FINAL.",
+    "Explicit human :remember creates source-bound record-only memory without generation change.",
+    "Session :memory, :chats, :search, :export chat, :new and :open work on actual state.",
+    "Memory survives process close/restart in original chat; session isolation holds.",
+    "Explicit :forget revokes correction; new dataset export does not contain forgotten value.",
+    "Doctor reports zero data-integrity errors before and after restart/revocation."
+  ],
+  "evidence": {
+    "local_linux_software_new_test": "1/1 PASS, 7.073 s, exact source ZIP extracted from Run440 focused proof",
+    "actions_run": 40268226030,
+    "tests_total": 16,
+    "passed": 16,
+    "privacy": "CLEAN",
+    "artifact_id": 12627641361,
+    "artifact_sha256": "9e0d059a0a53338798d381e8af6d93551ec96a0e22aa2c3f2f0147b2eec96c2d",
+    "source_sha256": {
+      "v13/code/tests/test_run443_offline_human_memory_lifecycle.py": "5fa34af3503746a6d056d18b9ca207e6e023b45f5fbcc74b3e069120262a9b1f"
+    }
+  },
+  "negative_gates": {
+    "step2_exit": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "model_answer_quality_proven": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "active_native_owner": "Run437/PR436 exclusive P_s21 Actions 40266365717 in_progress at last observation; untouched",
+  "exact_next_command": "HF_HUB_OFFLINE=1 NO_MODEL_DOWNLOADS=1 PYTHONPATH=v13/code:v13/code/scripts python3 -m unittest -v tests.test_run443_offline_human_memory_lifecycle tests.test_phone_chat_sessions_run89 tests.test_memory_human_decision_lineage_run270 tests.test_history_lineage tests.test_atomic_forget_generation_run290",
+  "prerequisites": "Model-free isolated Python with numpy==2.3.5 prompt-toolkit==3.0.52. No model weights or native runner required.",
+  "next": "Observe exact-head focused source/phone ZIP CI; independently inspect bounded full source suite. Continue substantive canonical paths without promoting Age/STEP2/JEPA or touching native owner."
+}
