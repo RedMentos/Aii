@@ -120,7 +120,10 @@ def audit(path):
             prior['rows'] == 378 and prior['canonical_gate_pass'] is False and
             prior['step2_exit'] == 'UTILITY_FAIL', 'PREVIOUS_RAW_AUDIT_NOT_GREEN')
     counts = {name: 0 for name in SPECS}
-    by_arm = {arm: [] for arm in previous.ARMS}
+    by_arm = {arm: {v: [] for v in previous.VARIANTS} for arm in previous.ARMS}
+    fields = ('project', 'action', *(e + '.' + f for e in ('A', 'B') for f in FIELDS))
+    field_hits = {arm: {v: {field: 0 for field in fields}
+                        for v in previous.VARIANTS} for arm in previous.ARMS}
     with zipfile.ZipFile(path) as archive:
         progress = json.loads(archive.read('RUN397_PROGRESS.json'))
         for arm in previous.ARMS:
@@ -129,20 +132,33 @@ def audit(path):
                 raw = archive.read(progress['completed'][rid]['attempt'] + '/tool_' + rid + '.json')
                 report = json.loads(raw)
                 for row in report['rows']:
-                    name = row['fixture']
-                    require(name in SPECS and row['variant'] in previous.VARIANTS,
+                    name, variant = row['fixture'], row['variant']
+                    require(name in SPECS and variant in previous.VARIANTS,
                             'UNREGISTERED_FIXTURE_OR_VARIANT')
-                    by_arm[arm].append(verify_row(row, name))
+                    by_arm[arm][variant].append(verify_row(row, name))
+                    # Stored checks are now proven equal to independent scoring.
+                    checks = row['score']['field_checks']
+                    for field in fields:
+                        field_hits[arm][variant][field] += (checks.get(field) is True)
                     counts[name] += 1
     require(counts == {name: 63 for name in SPECS} and
-            all(len(values) == 126 for values in by_arm.values()),
-            'RESCORE_COHORT_INCOMPLETE')
+            all(len(values) == 18 for variants in by_arm.values()
+                for values in variants.values()), 'RESCORE_COHORT_INCOMPLETE')
+    means = {arm: {v: math.fsum(values) / len(values)
+                   for v, values in variants.items()} for arm, variants in by_arm.items()}
+    for arm in previous.ARMS:
+        for variant in previous.VARIANTS:
+            require(math.isclose(means[arm][variant],
+                    prior['arm_mean_utility'][arm][variant], rel_tol=0, abs_tol=1e-12),
+                    'ORIGINAL_AGGREGATE_DISAGREES_WITH_ANSWER_RESCORE')
     return {'schema': 'V13_RUN488_INDEPENDENT_NATIVE378_ANSWER_RESCORE_V1',
             'status': 'ORIGINAL_378_ANSWERS_RESCORED',
             'original_safe_zip_sha256': previous.EXPECTED_SAFE,
             'rows': 378, 'fixture_counts': counts,
-            'arm_mean_answer_utility': {arm: math.fsum(values) / len(values)
-                                        for arm, values in by_arm.items()},
+            'arm_mean_answer_utility': means,
+            'arm_field_accuracy': {arm: {v: {f: hits / 18 for f, hits in per_field.items()}
+                                         for v, per_field in variants.items()}
+                                   for arm, variants in field_hits.items()},
             'canonical_gate_pass': False, 'step2_exit': 'UTILITY_FAIL',
             'b3_l1': 'FAIL', 'body_jepa': 'UNAVAILABLE',
             'jepa_weight': 0, 'redmi_measured': False,
