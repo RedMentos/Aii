@@ -1,0 +1,11 @@
+# Run598 preregistration — non-clobber, crash-durable local backup publication (2026-10-26)
+
+Owner: GPT automation11; stacked review-only on Run597 PR592 checkpoint `2d438472661b2ed012302bec956db35510c04c2c`. File ownership: `v13/code/v13/backup.py` archive-publication section only, new Run598 tests/workflow/proof. Do not edit source blob closure, restore journal, frozen model cohorts or any owner branches.
+
+**Observed backup risk:** `backup()` checks `out.exists()` then writes a predictable `out.with_suffix('.partial')` and finally `os.replace(pending,out)`. A concurrent process or prior partial may be overwritten, and an existing destination created after the initial check is silently replaced. A backup is a durable recovery artifact; a destination must never be overwritten by a race. Source snapshots/manifest closure are already implemented and must remain unchanged.
+
+**Prospective implementation:** Create an unpredictable temporary archive in the destination directory with exclusive creation, fsync the fully written gzip tar, atomically publish it with `os.link(temp,destination)` (fails if destination already exists), then unlink temp and fsync directory. Same-filesystem hardlink is required for no-clobber atomic publication; unsupported external filesystems fail closed rather than copying an incomplete file into the final path. Keep backup output name/manifest format and all source integrity checks. Ensure temporary file is cleaned on failure, preserve an existing destination byte-identically, no forced overwrite.
+
+**Tests:** Real Runtime/SQLite backup->verified tar/restore; destination collision injected immediately before link must leave the competing file untouched; pre-existing destination and symlink fail closed; interrupted archive creation leaves no final/temporary; successful backup has no predictable .partial and is fsynced; prior Run304, Run210, Run217 and Run211 backup/restore regressions. Exact-head model-free CI, source/Canon hash and SHA-closed raw, privacy scan. No Redmi filesystem/hardlink proof.
+
+**Claims:** software-only backup publication integrity. No STEP2/B3/Body-JEPA/jepa_weight or native/Redmi promotion. Full unfiltered Run596 remains RED 4 FAIL/65 ERROR due frozen runtime/store source-chain pin mismatches, preserved on separate evidence branch `codex/automation11-run596-evidence-20261026`.
