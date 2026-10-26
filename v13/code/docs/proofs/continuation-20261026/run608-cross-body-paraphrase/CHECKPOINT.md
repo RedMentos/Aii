@@ -1,0 +1,20 @@
+# Run608 verified checkpoint — 2026-10-26 UTC
+
+Owner GPT automation11; review-only PR603, branch `codex/automation11-run608-cross-body-paraphrase-native-20261026` at verified source head `5869172a361aff2a47f9acf8b65df41da8d5cbfd` (child PR602 `e15e1e930f1c56065b950ba07c174cbd31d66978`). This result/checkpoint document advances the branch without altering the frozen native source or preregistered cohort.
+
+## Preregistration, exact native evidence, outcome
+
+- Fresh 80-prompt/40-fact synthetic English paraphrase cohort frozen first at `fd79f34041ade8c4db3fee84e5e5b29b89e5d652`, blob `f452bdf80bb8d8a784c1909c98e310041d3157aa`. Protocol committed `a09f7361ef81f93547057e399c926a9c15b7bcb5`, candidate exclusion correction committed `8e0840ed8787131f4093eb093dfda0a8d9860b0c`, **both before code or model inference**. Original prereg and amendment unchanged. Original pinned model/runner/Canon hashes unchanged.
+- GitHub Actions real Linux-native run `40401824751` **success**, source-only fixtures **6/6 PASS**, actual 80 B1 and 80 B2 frozen last-token state captures, independent raw/authority/metric audit PASS, privacy CLEAN, all raw entries SHA-closed.
+- Artifact `12688298397` (1,079,655-byte ZIP), downloaded SHA256 `56ce2fa60e6e5b728f42e586454cf7803884dadfb5c3fb3cd004ca56ccd6f9b4`. Local independent `sha256sum -c RUN608_SHA256SUMS.txt` verified every file; independent Python re-score reproduced exact top1=0.40 and opposite-paraphrase top1=0.25. Private permitted Library backup: `/V13-Checkpoints/2026-10-26/Run608/run608-native-paraphrase-raw.zip` uploaded successfully (not rejected anyone-writable Drive).
+- Registered **primary outcome: NO_PARAPHRASE_PROXY_SIGNAL**. Heldout opposite-paraphrase retrieval top1 **0.25**, 19-candidate chance ~0.0526, shuffled-train-label empirical p **0.00995025** (200 controls), but exact word-token Jaccard baseline **0.30**, advantage **−0.05** instead of required +0.10. The third condition failed; no selective reinterpretation.
+- Secondary exact-prompt B1→B2 retrieval top1 **0.40** among 20 (p **0.00497512**), heldout representational geometry Pearson RSA **0.76511569** (row permutation p **0.00497512**), B1/B2 nearest-neighbor agreement **0.65**. These show representational similarity on a tiny synthetic set, **not causal semantic utility**. No receiver or task accuracy measured.
+- Source blob SHA: `scripts/run608_cross_body_paraphrase_native.py` `1665f4948fca18669de3376b17c9e46d44dfa9fe`; test `83f865d3e2be37f5c8c3f3ad67422e1c939b157a`; original Run606 native capture source `22116eea1e16343a5ff68844e98641e98e7b4306`.
+
+## Negative gates and exact continuation
+
+STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; Redmi UNMEASURED; canonical architecture/user full scope INCOMPLETE. No weight updates, native latent injection, bridge activation, approvals or age promotion. All original Run606/607 negative results and failed attempts preserved.
+
+**Next package:** Do **not** tune alpha or select more heldout lexical paraphrases on this cohort. Move to independent canonical receiver/task work: design source-bound **B3 L2 SHADOW** with actual native receiver, NO_MESSAGE/EXACT/SYMBOLIC and randomized-message controls, receiver calibration, cost and restart; or continue another independent missing organ while native prerequisite is unavailable. The native diagnostic `scripts/native_receiver_effect.cpp` already supports bounded authored numeric effect but does not confer learned-message authority. Verify its original source/runner pins before adapting. For reproducible Run608: from `v13/code`, `PYTHONPATH=.:scripts python -m unittest -v tests.test_run608_cross_body_paraphrase_native`; with installed pinned public models, `PYTHONPATH=.:scripts python scripts/run608_cross_body_paraphrase_native.py --home <installed> --out <report.json> --states <states.npz>`. Serialize heavy native jobs.
+
+Stop reason for this package: preregistered **primary gate failed**, not a platform limit. Continue other authorized work; review-only PR remains open. No production integration or whole-system completion.

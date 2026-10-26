@@ -1,0 +1,578 @@
+{
+  "schema": "V13_RUN608_PARAPHRASE_COHORT_V1",
+  "seed": 20261026,
+  "train_topics": [
+    "transport",
+    "cooking",
+    "astronomy",
+    "gardening",
+    "finance",
+    "sports"
+  ],
+  "test_topics": [
+    "music",
+    "weather"
+  ],
+  "prompts": [
+    {
+      "id": "transport-1-A",
+      "topic": "transport",
+      "fact_id": "transport-1",
+      "variant": "A",
+      "text": "The freight train reached the northern terminal before dawn."
+    },
+    {
+      "id": "transport-1-B",
+      "topic": "transport",
+      "fact_id": "transport-1",
+      "variant": "B",
+      "text": "Before sunrise, a cargo rail service arrived at the station in the north."
+    },
+    {
+      "id": "transport-2-A",
+      "topic": "transport",
+      "fact_id": "transport-2",
+      "variant": "A",
+      "text": "A small ferry carried twelve passengers across the river."
+    },
+    {
+      "id": "transport-2-B",
+      "topic": "transport",
+      "fact_id": "transport-2",
+      "variant": "B",
+      "text": "Twelve travelers crossed the waterway aboard a compact passenger boat."
+    },
+    {
+      "id": "transport-3-A",
+      "topic": "transport",
+      "fact_id": "transport-3",
+      "variant": "A",
+      "text": "The city bus stopped beside the museum at noon."
+    },
+    {
+      "id": "transport-3-B",
+      "topic": "transport",
+      "fact_id": "transport-3",
+      "variant": "B",
+      "text": "At midday, public transit halted next to the art and history building."
+    },
+    {
+      "id": "transport-4-A",
+      "topic": "transport",
+      "fact_id": "transport-4",
+      "variant": "A",
+      "text": "The bicycle mechanic replaced a damaged rear wheel."
+    },
+    {
+      "id": "transport-4-B",
+      "topic": "transport",
+      "fact_id": "transport-4",
+      "variant": "B",
+      "text": "A repair worker fitted a new back wheel to the bike."
+    },
+    {
+      "id": "transport-5-A",
+      "topic": "transport",
+      "fact_id": "transport-5",
+      "variant": "A",
+      "text": "The delivery van turned left after the stone bridge."
+    },
+    {
+      "id": "transport-5-B",
+      "topic": "transport",
+      "fact_id": "transport-5",
+      "variant": "B",
+      "text": "Once past the masonry crossing, the courier vehicle took the road to its left."
+    },
+    {
+      "id": "cooking-1-A",
+      "topic": "cooking",
+      "fact_id": "cooking-1",
+      "variant": "A",
+      "text": "The baker mixed flour with warm water before kneading."
+    },
+    {
+      "id": "cooking-1-B",
+      "topic": "cooking",
+      "fact_id": "cooking-1",
+      "variant": "B",
+      "text": "Before working the dough, the bread maker combined heated water and flour."
+    },
+    {
+      "id": "cooking-2-A",
+      "topic": "cooking",
+      "fact_id": "cooking-2",
+      "variant": "A",
+      "text": "The chef roasted carrots for twenty minutes in the oven."
+    },
+    {
+      "id": "cooking-2-B",
+      "topic": "cooking",
+      "fact_id": "cooking-2",
+      "variant": "B",
+      "text": "The cook left orange root vegetables baking for a third of an hour."
+    },
+    {
+      "id": "cooking-3-A",
+      "topic": "cooking",
+      "fact_id": "cooking-3",
+      "variant": "A",
+      "text": "A saucepan of tomato soup simmered on the stove."
+    },
+    {
+      "id": "cooking-3-B",
+      "topic": "cooking",
+      "fact_id": "cooking-3",
+      "variant": "B",
+      "text": "The red vegetable broth bubbled gently in a small pot over the burner."
+    },
+    {
+      "id": "cooking-4-A",
+      "topic": "cooking",
+      "fact_id": "cooking-4",
+      "variant": "A",
+      "text": "The cook added lemon juice after removing the fish from heat."
+    },
+    {
+      "id": "cooking-4-B",
+      "topic": "cooking",
+      "fact_id": "cooking-4",
+      "variant": "B",
+      "text": "Only after taking the seafood off the burner did the chef squeeze citrus onto it."
+    },
+    {
+      "id": "cooking-5-A",
+      "topic": "cooking",
+      "fact_id": "cooking-5",
+      "variant": "A",
+      "text": "The pastry cooled on a wire rack beside the window."
+    },
+    {
+      "id": "cooking-5-B",
+      "topic": "cooking",
+      "fact_id": "cooking-5",
+      "variant": "B",
+      "text": "A baked sweet rested until cold on a metal grid near the glass."
+    },
+    {
+      "id": "astronomy-1-A",
+      "topic": "astronomy",
+      "fact_id": "astronomy-1",
+      "variant": "A",
+      "text": "The telescope detected a faint galaxy beyond the cluster."
+    },
+    {
+      "id": "astronomy-1-B",
+      "topic": "astronomy",
+      "fact_id": "astronomy-1",
+      "variant": "B",
+      "text": "An optical instrument spotted a dim distant star system past the group."
+    },
+    {
+      "id": "astronomy-2-A",
+      "topic": "astronomy",
+      "fact_id": "astronomy-2",
+      "variant": "A",
+      "text": "The moon rose above the western ridge just after sunset."
+    },
+    {
+      "id": "astronomy-2-B",
+      "topic": "astronomy",
+      "fact_id": "astronomy-2",
+      "variant": "B",
+      "text": "Shortly following dusk, Earth's satellite appeared over the hills to the west."
+    },
+    {
+      "id": "astronomy-3-A",
+      "topic": "astronomy",
+      "fact_id": "astronomy-3",
+      "variant": "A",
+      "text": "An observatory recorded a meteor during the midnight watch."
+    },
+    {
+      "id": "astronomy-3-B",
+      "topic": "astronomy",
+      "fact_id": "astronomy-3",
+      "variant": "B",
+      "text": "While monitoring the sky at twelve at night, astronomers logged a shooting star."
+    },
+    {
+      "id": "astronomy-4-A",
+      "topic": "astronomy",
+      "fact_id": "astronomy-4",
+      "variant": "A",
+      "text": "The comet passed closest to the sun in early March."
+    },
+    {
+      "id": "astronomy-4-B",
+      "topic": "astronomy",
+      "fact_id": "astronomy-4",
+      "variant": "B",
+      "text": "At the start of the third month, the icy visitor reached perihelion."
+    },
+    {
+      "id": "astronomy-5-A",
+      "topic": "astronomy",
+      "fact_id": "astronomy-5",
+      "variant": "A",
+      "text": "The planet completed one orbit in nearly two hundred days."
+    },
+    {
+      "id": "astronomy-5-B",
+      "topic": "astronomy",
+      "fact_id": "astronomy-5",
+      "variant": "B",
+      "text": "A full revolution around its star took the world about 200 days."
+    },
+    {
+      "id": "gardening-1-A",
+      "topic": "gardening",
+      "fact_id": "gardening-1",
+      "variant": "A",
+      "text": "The gardener watered the seedlings before sunrise."
+    },
+    {
+      "id": "gardening-1-B",
+      "topic": "gardening",
+      "fact_id": "gardening-1",
+      "variant": "B",
+      "text": "Young plants received irrigation from the grower ahead of dawn."
+    },
+    {
+      "id": "gardening-2-A",
+      "topic": "gardening",
+      "fact_id": "gardening-2",
+      "variant": "A",
+      "text": "A small greenhouse protected the tomatoes from cold wind."
+    },
+    {
+      "id": "gardening-2-B",
+      "topic": "gardening",
+      "fact_id": "gardening-2",
+      "variant": "B",
+      "text": "The red fruit plants were sheltered from chilly gusts inside a glass growing house."
+    },
+    {
+      "id": "gardening-3-A",
+      "topic": "gardening",
+      "fact_id": "gardening-3",
+      "variant": "A",
+      "text": "The oak sapling was planted beside the wooden fence."
+    },
+    {
+      "id": "gardening-3-B",
+      "topic": "gardening",
+      "fact_id": "gardening-3",
+      "variant": "B",
+      "text": "A young oak tree went into the soil next to the timber boundary."
+    },
+    {
+      "id": "gardening-4-A",
+      "topic": "gardening",
+      "fact_id": "gardening-4",
+      "variant": "A",
+      "text": "The gardener removed weeds after the afternoon rain."
+    },
+    {
+      "id": "gardening-4-B",
+      "topic": "gardening",
+      "fact_id": "gardening-4",
+      "variant": "B",
+      "text": "Following the later shower, the groundskeeper pulled unwanted plants."
+    },
+    {
+      "id": "gardening-5-A",
+      "topic": "gardening",
+      "fact_id": "gardening-5",
+      "variant": "A",
+      "text": "The rose bush produced three flowers in late spring."
+    },
+    {
+      "id": "gardening-5-B",
+      "topic": "gardening",
+      "fact_id": "gardening-5",
+      "variant": "B",
+      "text": "Near the end of the blooming season, three blossoms opened on the thorny shrub."
+    },
+    {
+      "id": "finance-1-A",
+      "topic": "finance",
+      "fact_id": "finance-1",
+      "variant": "A",
+      "text": "The accountant reviewed the quarterly budget on Friday."
+    },
+    {
+      "id": "finance-1-B",
+      "topic": "finance",
+      "fact_id": "finance-1",
+      "variant": "B",
+      "text": "At the week's end, the bookkeeper checked spending plans for the three-month period."
+    },
+    {
+      "id": "finance-2-A",
+      "topic": "finance",
+      "fact_id": "finance-2",
+      "variant": "A",
+      "text": "A local bank approved the small business loan."
+    },
+    {
+      "id": "finance-2-B",
+      "topic": "finance",
+      "fact_id": "finance-2",
+      "variant": "B",
+      "text": "The neighborhood lender accepted a modest credit request from a company."
+    },
+    {
+      "id": "finance-3-A",
+      "topic": "finance",
+      "fact_id": "finance-3",
+      "variant": "A",
+      "text": "The store lowered prices after inventory increased."
+    },
+    {
+      "id": "finance-3-B",
+      "topic": "finance",
+      "fact_id": "finance-3",
+      "variant": "B",
+      "text": "Once stock levels rose, the shop reduced what customers had to pay."
+    },
+    {
+      "id": "finance-4-A",
+      "topic": "finance",
+      "fact_id": "finance-4",
+      "variant": "A",
+      "text": "The investor sold half the shares before the market closed."
+    },
+    {
+      "id": "finance-4-B",
+      "topic": "finance",
+      "fact_id": "finance-4",
+      "variant": "B",
+      "text": "Prior to the exchange's final bell, the trader disposed of fifty percent of the holdings."
+    },
+    {
+      "id": "finance-5-A",
+      "topic": "finance",
+      "fact_id": "finance-5",
+      "variant": "A",
+      "text": "The company reported a profit despite rising energy costs."
+    },
+    {
+      "id": "finance-5-B",
+      "topic": "finance",
+      "fact_id": "finance-5",
+      "variant": "B",
+      "text": "Even with power expenses increasing, the firm announced positive earnings."
+    },
+    {
+      "id": "sports-1-A",
+      "topic": "sports",
+      "fact_id": "sports-1",
+      "variant": "A",
+      "text": "The goalkeeper blocked a penalty in the final minute."
+    },
+    {
+      "id": "sports-1-B",
+      "topic": "sports",
+      "fact_id": "sports-1",
+      "variant": "B",
+      "text": "At the very end, the player guarding the net stopped a spot kick."
+    },
+    {
+      "id": "sports-2-A",
+      "topic": "sports",
+      "fact_id": "sports-2",
+      "variant": "A",
+      "text": "The runner completed five laps before taking a break."
+    },
+    {
+      "id": "sports-2-B",
+      "topic": "sports",
+      "fact_id": "sports-2",
+      "variant": "B",
+      "text": "The athlete circled the track five times and then rested."
+    },
+    {
+      "id": "sports-3-A",
+      "topic": "sports",
+      "fact_id": "sports-3",
+      "variant": "A",
+      "text": "The referee paused the match because of heavy rain."
+    },
+    {
+      "id": "sports-3-B",
+      "topic": "sports",
+      "fact_id": "sports-3",
+      "variant": "B",
+      "text": "Intense rainfall led the official to suspend the game temporarily."
+    },
+    {
+      "id": "sports-4-A",
+      "topic": "sports",
+      "fact_id": "sports-4",
+      "variant": "A",
+      "text": "The cyclist crossed the finish line two seconds ahead."
+    },
+    {
+      "id": "sports-4-B",
+      "topic": "sports",
+      "fact_id": "sports-4",
+      "variant": "B",
+      "text": "The bike racer ended the course with a lead of only a couple of seconds."
+    },
+    {
+      "id": "sports-5-A",
+      "topic": "sports",
+      "fact_id": "sports-5",
+      "variant": "A",
+      "text": "The coach substituted a defender after halftime."
+    },
+    {
+      "id": "sports-5-B",
+      "topic": "sports",
+      "fact_id": "sports-5",
+      "variant": "B",
+      "text": "Following the interval, the team manager replaced one of the back-line players."
+    },
+    {
+      "id": "music-1-A",
+      "topic": "music",
+      "fact_id": "music-1",
+      "variant": "A",
+      "text": "The violinist rehearsed in the empty concert hall."
+    },
+    {
+      "id": "music-1-B",
+      "topic": "music",
+      "fact_id": "music-1",
+      "variant": "B",
+      "text": "A musician practiced violin alone inside the vacant auditorium."
+    },
+    {
+      "id": "music-2-A",
+      "topic": "music",
+      "fact_id": "music-2",
+      "variant": "A",
+      "text": "The drummer replaced a broken cymbal before the show."
+    },
+    {
+      "id": "music-2-B",
+      "topic": "music",
+      "fact_id": "music-2",
+      "variant": "B",
+      "text": "Prior to the performance, the percussionist swapped out a cracked cymbal."
+    },
+    {
+      "id": "music-3-A",
+      "topic": "music",
+      "fact_id": "music-3",
+      "variant": "A",
+      "text": "The choir sang softly during the evening rehearsal."
+    },
+    {
+      "id": "music-3-B",
+      "topic": "music",
+      "fact_id": "music-3",
+      "variant": "B",
+      "text": "At dusk practice, the vocal ensemble performed in quiet voices."
+    },
+    {
+      "id": "music-4-A",
+      "topic": "music",
+      "fact_id": "music-4",
+      "variant": "A",
+      "text": "The pianist played a minor chord on the old keyboard."
+    },
+    {
+      "id": "music-4-B",
+      "topic": "music",
+      "fact_id": "music-4",
+      "variant": "B",
+      "text": "On the aging piano, the player sounded a chord in a minor key."
+    },
+    {
+      "id": "music-5-A",
+      "topic": "music",
+      "fact_id": "music-5",
+      "variant": "A",
+      "text": "The guitarist tuned the lowest string after the encore."
+    },
+    {
+      "id": "music-5-B",
+      "topic": "music",
+      "fact_id": "music-5",
+      "variant": "B",
+      "text": "Following the final extra song, the player adjusted the guitar's deepest-pitched string."
+    },
+    {
+      "id": "weather-1-A",
+      "topic": "weather",
+      "fact_id": "weather-1",
+      "variant": "A",
+      "text": "A cold front brought rain to the coastal town overnight."
+    },
+    {
+      "id": "weather-1-B",
+      "topic": "weather",
+      "fact_id": "weather-1",
+      "variant": "B",
+      "text": "During the night, wet weather reached the seaside community as cooler air moved in."
+    },
+    {
+      "id": "weather-2-A",
+      "topic": "weather",
+      "fact_id": "weather-2",
+      "variant": "A",
+      "text": "The afternoon forecast warned of hail near the valley."
+    },
+    {
+      "id": "weather-2-B",
+      "topic": "weather",
+      "fact_id": "weather-2",
+      "variant": "B",
+      "text": "Meteorologists expected ice pellets around the lowland later that day."
+    },
+    {
+      "id": "weather-3-A",
+      "topic": "weather",
+      "fact_id": "weather-3",
+      "variant": "A",
+      "text": "Morning fog covered the airport runway until nine."
+    },
+    {
+      "id": "weather-3-B",
+      "topic": "weather",
+      "fact_id": "weather-3",
+      "variant": "B",
+      "text": "The airfield landing strip stayed hidden by mist before 9 a.m."
+    },
+    {
+      "id": "weather-4-A",
+      "topic": "weather",
+      "fact_id": "weather-4",
+      "variant": "A",
+      "text": "The wind shifted west as the storm passed the hills."
+    },
+    {
+      "id": "weather-4-B",
+      "topic": "weather",
+      "fact_id": "weather-4",
+      "variant": "B",
+      "text": "After the tempest moved beyond the ridges, breezes began blowing from the west."
+    },
+    {
+      "id": "weather-5-A",
+      "topic": "weather",
+      "fact_id": "weather-5",
+      "variant": "A",
+      "text": "A heatwave raised the city temperature above forty degrees."
+    },
+    {
+      "id": "weather-5-B",
+      "topic": "weather",
+      "fact_id": "weather-5",
+      "variant": "B",
+      "text": "The urban area exceeded 40 degrees during an extended spell of extreme warmth."
+    }
+  ]
+}
