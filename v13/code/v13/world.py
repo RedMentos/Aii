@@ -263,16 +263,41 @@ class WorldState:
     def _refresh(self,session):
         # Rebuild the materialized view from durable outcome packets. A crash
         # between packet insert and state write cannot silently lose an action.
-        rows=self.s.rows(
+        # Bound materialization by 128 *valid source-bound* receipts, not
+        # 128 arbitrary recent packet rows. Otherwise a corrupt/forged packet
+        # flood can hide an older legitimate receipt while COUNT still says 1.
+        # Keep a separate bounded raw window for corruption telemetry.
+        recent_sql=(
             "SELECT p.payload,p.event_id,e.generation_id,"
             "a.id AS action_id,a.status AS action_status,a.outcome AS action_outcome "
             "FROM packets p JOIN events e ON e.id=p.event_id "
             "LEFT JOIN actions a ON a.event_id=p.event_id AND a.id="
             "CASE WHEN json_valid(p.payload) THEN json_extract(p.payload,'$.action_id') END "
-            "WHERE p.kind='PredictionOutcome' AND e.session_id=? "
-            "ORDER BY p.created DESC LIMIT 128",(session,))
-        if not rows:return
-        byaction={};rejected=0;latest_valid_event=None
+            "WHERE p.kind='PredictionOutcome' AND e.session_id=? ")
+        raw_rows=self.s.rows(recent_sql+" ORDER BY p.created DESC LIMIT 128",(session,))
+        rows=self.s.rows(recent_sql+" AND "+_VALID_RECEIPT_SQL+
+                         " ORDER BY p.created DESC LIMIT 128",(session,))
+        rejected=0
+        for row in raw_rows:
+            try:
+                action={'id':row['action_id'],'event_id':row['event_id'],
+                        'status':row['action_status'],'outcome':row['action_outcome']}
+                _verified_receipt(row['payload'],row['event_id'],
+                                  row['generation_id'],action)
+            except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                rejected+=1
+        if not rows:
+            if rejected:self.s.log('world_packet_rejected',None,
+                                   {'count':rejected,'reason':'INVALID_PREDICTION_OUTCOME'})
+            # A previously materialized receipt may have been invalidated or
+            # removed. Never leave an obsolete observed count/recent list.
+            key='WORLD_STATE:'+session;old,v=self.s.state(key,{})
+            value={'mode':'NO_OBSERVATIONS','recent':[],
+                   'observed_action_count':0,'last_event_id':None}
+            if old and {k:x for k,x in old.items() if k!='updated_wall_time'}!=value:
+                self.s.set_state(key,value|{'updated_wall_time':now()},expected=v)
+            return
+        byaction={};latest_valid_event=None
         for row in rows:
             try:
                 action={'id':row['action_id'],'event_id':row['event_id'],
