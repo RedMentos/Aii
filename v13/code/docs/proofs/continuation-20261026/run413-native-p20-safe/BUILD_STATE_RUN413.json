@@ -1,0 +1,62 @@
+{
+  "schema": "RUN413_BUILD_STATE_V1",
+  "as_of_utc": "2026-10-26T02:23:00Z",
+  "owner": "GPT automation; native owner serialized by GitHub Actions v13-native-c3-run131-serialized",
+  "branch": "codex/run413-native-p20-safe-20261026",
+  "pr": 409,
+  "parent_run412": {
+    "head": "4d9b4c5d741bad5efeb888135f023f58486f64dc",
+    "pr": 408,
+    "actual_run410_ci": 40257737258,
+    "conclusion": "SUCCESS",
+    "raw_artifact": 12622519632,
+    "raw_sha256": "bcd951375ab7e4fcd2ce0f974f1030d716f8dfcf3551a75f05ca20238fbdb075",
+    "original_zip_sha256": "65ac00a8cd2013ebab76828ed3bc25dee5433d1d55a995573387f19de29b530a",
+    "members": 107,
+    "models_omitted": 7,
+    "binary_members": 63,
+    "native_rows": 42
+  },
+  "run413": {
+    "native_workflow_source_head": "f7fe01393801c852aa3797973bda0e81b14069ac",
+    "native_actions_run": 40258333913,
+    "native_status": "IN_PROGRESS_NOT_CLAIMED",
+    "requested_new_arm": "P_s20",
+    "max_new_arms": 1,
+    "expected_rows_if_verified": 84,
+    "source_only_tests": 37,
+    "source_only_ci": 40257854360,
+    "privacy": "CLEAN"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "OFF",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "NOT_MEASURED",
+    "Age": "AGE0_SHADOW",
+    "V13_complete": false
+  },
+  "durable_evidence": {
+    "private_library_folder": "/V13/checkpoints/2026-10-26",
+    "private_source_artifact": "Run413_phone_source_artifact.zip",
+    "private_run412_raw": "Run412_actual_GREEN_raw.zip",
+    "model_bearing_original_zip": "ONLY original Run401 artifact 12620379581; NEVER reupload"
+  },
+  "failed_attempts_preserved": [
+    "Run410 expected 64 binaries but actual 63",
+    "Run411 merge bytearray/bytes regression",
+    "Run414 early CI missing privacy scanner on old Claude branch"
+  ],
+  "blockers": [
+    "P_s20 actual native result not yet observed",
+    "Redmi hardware unavailable",
+    "Full local suite 180s timeout after 137 dots; no full-suite PASS"
+  ],
+  "next_exact_commands": [
+    "GET https://api.github.com/repos/RedMentos/Aii/actions/runs/40258333913",
+    "GET jobs for 40258333913; if complete download only small raw and independently verified no-model work artifacts",
+    "On P_s20 GREEN, validate 84 native rows, safe export SHA, then preregister one S_s20 arm; if RED, preserve failure and continue independent packages",
+    "Do not change registered models, seeds, frozen cohort, or negative gates"
+  ]
+}
