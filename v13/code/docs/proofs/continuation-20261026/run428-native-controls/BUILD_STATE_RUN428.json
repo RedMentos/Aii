@@ -1,0 +1,83 @@
+{
+  "schema": "V13_RUN428_CHECKPOINT_V1",
+  "date": "2026-10-26",
+  "owner": "GPT",
+  "branch": "codex/run428-native-negative-control-audit-20261026",
+  "base": "b3b350b4ac26b75e8f65841cb6c8d4106a1996da",
+  "verified_source_head": "5a24e090a8d2d5a66aeb805e1cc1bcca48ae3553",
+  "source_sha256": {
+    "v13/code/scripts/run428_native_control_audit.py": "93ee4aaf532e6b2c483840630e60fb819cc16522ba9b6c60b52817d7cf927a57",
+    "v13/code/tests/test_run428_native_control_audit.py": "85aa24128a01c746fadc7c9cf7237409ffedd3ef09c2496c61b001562caecb04"
+  },
+  "red_first": {
+    "actions": 40263304079,
+    "artifact_id": 12625636140,
+    "zip_sha256": "4ef1dc128911ac275b5dabcd26d4399e09b1434c0bd2f67a6e8816644253d85a",
+    "error": "DUPLICATE_ANALYST",
+    "cause": "same_policy_dual intentionally contains two B1_DETAIL offers; fixed by ordered list fingerprint, no source cohort modification"
+  },
+  "green": {
+    "actions": 40263375550,
+    "source_head": "5a24e090a8d2d5a66aeb805e1cc1bcca48ae3553",
+    "conclusion": "success",
+    "source_tests": "5/5 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12625790977,
+    "artifact_zip_sha256": "b90568e0227f81a8b39206a98730a3dcc5eaf06bdd92b0c48dc102680557215c",
+    "status": "NATIVE_SEED20_CONTROL_SOURCE_AUDITED",
+    "files_verified": 115,
+    "bytes_verified": 81562039,
+    "rows_verified": 126
+  },
+  "actual_native_seed20": {
+    "pointer_minus_off_b1_only": {
+      "same_consumer_inputs": 1,
+      "same_b1_offers": 1,
+      "same_b2_offers": 6,
+      "same_answers": 5,
+      "nonzero_utility_deltas": 1,
+      "mean_delta": 0.1111111111111111,
+      "changed_fixture": "Delta"
+    },
+    "pointer_minus_off_same_policy_dual": {
+      "same_consumer_inputs": 2,
+      "same_b1_offers": 2,
+      "same_b2_offers": 6,
+      "same_answers": 6,
+      "nonzero_utility_deltas": 0,
+      "mean_delta": 0
+    },
+    "pointer_minus_off_both_exact": {
+      "same_consumer_inputs": 0,
+      "same_b1_offers": 0,
+      "same_b2_offers": 0,
+      "same_answers": 2,
+      "nonzero_utility_deltas": 4,
+      "mean_delta": 0.1388888888888889
+    },
+    "causal_attribution_supported_by_b1_negative_control": false,
+    "interpretation": "B1-only native inputs changed across O/P despite same seed; pointer-only causal effect is not isolated in this 126-row cohort. Same-policy-dual output parity does not imply input identity. No full 378-row inference."
+  },
+  "native_owner": {
+    "run418_duplicate_s20": 40260397013,
+    "run418_conclusion": "success",
+    "run427_o21": 40263042202,
+    "run427_status_last_observed": "IN_PROGRESS",
+    "native_jobs_started_by_this_branch": 0
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "age_promotion": false,
+    "canonical_architecture_complete": false
+  },
+  "next_command": "Monitor exclusive Run427 O_s21 Actions 40263042202. On native GREEN, independently import/hash-check 168-row safe export before P_s21; on RED preserve raw failed attempts. For pointer causal question, preregister a new separate matched-offer/variance-controlled cohort; never modify frozen Run394 rows.",
+  "open_questions": [
+    "How much B1 native offer variability remains with fixed seed and fresh sessions",
+    "Whether O_s21 completes safely and source/model hashes match",
+    "No Redmi thermals or full 378-row utility"
+  ]
+}

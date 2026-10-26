@@ -1,0 +1,109 @@
+name: V13 Run428 actual native seed20 negative-control identity audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/run428-native-controls.yml'
+      - 'v13/code/scripts/run428_native_control_audit.py'
+      - 'v13/code/tests/test_run428_native_control_audit.py'
+      - 'v13/code/docs/proofs/continuation-20261026/run428-native-controls/**'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  actual-native-control-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 80
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Frozen source identity and source-only tests
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/RUN428_HEAD.txt"
+          git merge-base --is-ancestor b3b350b4ac26b75e8f65841cb6c8d4106a1996da HEAD
+          test "$(git hash-object v13/code/scripts/run394_step2_fresh.py)" = "fae7aed612108a554d8566b2917ebf31022df423"
+          test "$(git hash-object v13/code/scripts/run397_step2_resume.py)" = "f1946054135cb6fdf48c06477308f518e2e62ad9"
+          test "$(git hash-object v13/code/specs/models.json)" = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+          sha256sum v13/code/scripts/run428_native_control_audit.py \
+            v13/code/tests/test_run428_native_control_audit.py \
+            | tee "$RUNNER_TEMP/RUN428_SOURCE_SHA256.txt"
+          python3 -m compileall -q v13/code/scripts/run428_native_control_audit.py \
+            v13/code/tests/test_run428_native_control_audit.py
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run428_native_control_audit) \
+            2>&1 | tee "$RUNNER_TEMP/RUN428_UNIT_TESTS_RAW.log"
+      - name: Read actual no-model native artifact and check every source/row hash
+        id: actual
+        working-directory: v13/code
+        run: |
+          set -uo pipefail
+          set +e
+          (
+            set -euo pipefail
+            timeout 900s gh api "repos/RedMentos/Aii/actions/artifacts/12624815819/zip" \
+              > "$RUNNER_TEMP/run428-safe.zip"
+            printf '%s  %s\n' \
+              '20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4' \
+              "$RUNNER_TEMP/run428-safe.zip" | sha256sum -c -
+            python3 scripts/run428_native_control_audit.py \
+              --archive "$RUNNER_TEMP/run428-safe.zip" \
+              --expected-sha256 20ce321d29f04089a087421e16ddd5d854c103d36b7c958e4b0e11815f45cac4 \
+              --output "$RUNNER_TEMP/RUN428_ACTUAL_REPORT.json"
+            python3 - "$RUNNER_TEMP/RUN428_ACTUAL_REPORT.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r["status"]=="NATIVE_SEED20_CONTROL_SOURCE_AUDITED"
+          assert r["rows_verified"]==126 and r["verified_files"]>=100
+          assert r["canonical_gate_pass"] is False and r["step2_exit"]=="UTILITY_FAIL"
+          assert r["pointer_causal_attribution_supported_by_b1_control"] is False
+          for label,variants in r["pairs"].items():
+              print(label, {name:{k:v[k] for k in ("same_consumer_inputs",
+                  "same_b1_offers","same_b2_offers","same_answers",
+                  "nonzero_utility_deltas","mean_utility_delta")}
+                  for name,v in variants.items()})
+          print("RUN428_ACTUAL_CONTROL_CONFUNDING_DETECTED_NO_GATE_PROMOTION")
+          PY
+          ) 2>&1 | tee "$RUNNER_TEMP/RUN428_ACTUAL_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN428_ACTUAL_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Public repo privacy scan
+        id: privacy
+        run: |
+          set -uo pipefail
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base "${{ github.event.pull_request.base.sha }}" --head HEAD --no-worktree \
+            2>&1 | tee "$RUNNER_TEMP/RUN428_PRIVACY_RAW.log"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/RUN428_PRIVACY_EXIT.txt"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Close small raw evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          find . -maxdepth 1 -type f -name 'RUN428_*' ! -name RUN428_SHA256SUMS.txt -print0 \
+            | sort -z | xargs -0 -r sha256sum > RUN428_SHA256SUMS.txt
+      - name: Upload small reports only, never native work
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: V13-Run428-Native-Controls-Raw-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/RUN428_*
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce actual source audit and privacy
+        if: always()
+        run: |
+          test "${{ steps.actual.outputs.rc }}" = "0"
+          test "${{ steps.privacy.outputs.rc }}" = "0"
