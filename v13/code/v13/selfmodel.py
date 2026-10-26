@@ -261,27 +261,31 @@ class SelfSystem:
         return ('Möglicher Fehler in meiner letzten Antwort (Sicherheit: '+sure+'; '+'; '.join(why)+'). '
                 'Spätere Prüfung ('+role+'): '+summary[:200])
     def _shadow_arithmetic_audit(self,event_id,offer,output):
-        """WP-AGE0d: answer-aware source-bound diagnostic; never deliver."""
+        """WP-AGE0d: existing Run134 evaluator on the verified committed turn."""
         if self.correction_mode()!='shadow':return
         try:
-            from .answer_audit import audit
-            refs=offer.get('evidence_refs',[])
-            if type(refs) is not list or not refs or not all(type(x) is dict for x in refs[:4]):return
-            sources=[self.s.read_source(ref) for ref in refs[:4]]
-            result=audit(output,sources)
-            if result['status']!='CONTRADICTION':return
-            key=digest(dumps([event_id,result['mismatches']]).encode())[:16]
+            from .agi.answer_arithmetic_shadow import evaluate
+            if type(event_id) is not str or not event_id or type(offer) is not dict:return
+            if offer.get('event_id',event_id)!=event_id:return
+            row=self.s.one("SELECT packet,session_id FROM events WHERE id=?",(event_id,))
+            if not row or row['session_id']!=self.r.session:return
+            event=json.loads(row['packet'])
+            if event.get('event_id')!=event_id or event.get('authority')!='AUTHORITATIVE':return
+            question=self.s.read_source(event['source_ref'])
+            result=evaluate(question,output)
+            if result['status']!='MISMATCH' or result['may_deliver'] is not False:return
+            key=digest(dumps([event_id,result['expected'],result['claimed']]))[:16]
             ring,v=self.s.state(ARITH_SHADOW_KEY,[])
             if type(ring) is not list:ring=[]
-            if any(type(row) is dict and row.get('key')==key for row in ring):return
+            if any(type(item) is dict and item.get('key')==key for item in ring):return
             ring=(ring+[{'key':key,'event_id':event_id,'t':self.clock(),
-                         'status':'CONTRADICTION_SHADOW_ONLY',
-                         'equations_checked':result['equations_checked'],
-                         'mismatches':result['mismatches'],
-                         'user_notified':False}])[-ARITH_SHADOW_KEEP:]
+                         'status':'MISMATCH_SHADOW_ONLY',
+                         'expected':result['expected'],'claimed':result['claimed'],
+                         'user_notified':False,'learning_authorized':False,
+                         'age_reopen_authorized':False}])[-ARITH_SHADOW_KEEP:]
             self.s.set_state(ARITH_SHADOW_KEY,ring,expected=v)
         except Exception:
-            pass  # Missing/dangling evidence or unavailable store must abstain.
+            pass  # Missing/cross-session/dangling source must abstain, never deliver.
 
     def late_offer(self,event_id,offer,output):
         """WP-F §5.2 / §3.4.3: an observer offer that arrives after commit and disagrees with the committed answer is
