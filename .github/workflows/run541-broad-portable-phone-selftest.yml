@@ -3,11 +3,11 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - '.github/workflows/run541-portable-phone-selftest.yml'
+      - '.github/workflows/run541-broad-portable-phone-selftest.yml'
       - 'v13/code/v13/__main__.py'
       - 'v13/code/setup.sh'
       - 'v13/code/tests/test_run540_portable_selftest.py'
-      - 'v13/code/docs/proofs/continuation-20261026/run541-portable-selftest/**'
+      - 'v13/code/docs/proofs/continuation-20261026/run541-broad-portable-selftest/**'
 permissions:
   contents: read
 jobs:
