@@ -135,7 +135,12 @@ def goal_turn(r,e,meta,status):
     semantic proof that the answer satisfied the request. Curiosity stays Age-gated.
     """
     from ..memory import relevance
-    g=hub(r);eid=e['event_id'];text=r.store.read_source(e['source_ref'])
+    eid=e['event_id']
+    # The live Runtime session and the stored request must agree before this
+    # hook mutates any goal. A caller-provided FINAL status is not provenance.
+    current=r.store.one('SELECT session_id FROM events WHERE id=?',(eid,))
+    if current is None or current['session_id']!=r.session:return
+    g=hub(r);text=r.store.read_source(e['source_ref'])
     sel=r.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(eid,))
     sel=json.loads(sel['payload']) if sel else {}
     asked=(sel.get('selected') or {}).get('action_id')=='CLARIFY' or bool((meta.get('clarify') or {}).get('apply'))
@@ -152,6 +157,19 @@ def goal_turn(r,e,meta,status):
     delivered=status=='FINAL' and not asked and final_answer is not None
     if delivered:
         for x in opened:
+            # Auto-completion is local to the originating chat. Goal titles
+            # alone are not enough: the original event(s) must still exist
+            # and *all* event references must belong to this same session.
+            # Mixed, dangling or malformed evidence fails closed; a human
+            # may still explicitly complete a USER goal via the operator.
+            refs=[v[6:] for v in x['evidence'] if isinstance(v,str) and v.startswith('event:')]
+            same_origin=bool(refs)
+            for ref in refs:
+                row=r.store.one('SELECT session_id FROM events WHERE id=?',(ref,)) if ref else None
+                if row is None or row['session_id']!=current['session_id']:
+                    same_origin=False
+                    break
+            if not same_origin:continue
             if relevance(x['title'].removeprefix('Open request: '),text)>=GOAL_MATCH:
                 g.goals.set_status(x['id'],'DONE','related FINAL answer '+eid+' message '+str(final_answer['id']))
     elif not any('event:'+eid in x['evidence'] for x in opened):
