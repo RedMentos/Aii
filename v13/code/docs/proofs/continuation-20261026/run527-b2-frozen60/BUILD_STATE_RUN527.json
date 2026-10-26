@@ -1,0 +1,72 @@
+{
+  "schema": "V13_RUN527_FROZEN_60_ROW_METRIC_PRESTAGE_V1",
+  "date_utc": "2026-10-26",
+  "branch": "codex/run527-b2-frozen60-aggregate-20261026",
+  "base_branch": "codex/run526-b2-native-p04-20261026",
+  "base_sha": "5d9dd6277be8a25000e7e0709bf188850c0e0ece",
+  "prereg_blob": "3b9bf6b19509ef3b8db3e4a96e336b26ba44ad67",
+  "frozen": {
+    "fixture_sha256": "ba659a2d64771ec1d43c412c23e97314333af7f89040f5fb69b6e7bccab0c726",
+    "run510_metric_blob": "d2c35f430f9dc0f39c390043197787ea1f6e0cc6",
+    "run516_aggregate_blob": "b5531e49288ac199673a05a67763999b2b589e1a",
+    "run513_lineage_blob": "76c92573867429d6a2c13f7493c456c06d4b6890",
+    "primary_paired_rows": 24,
+    "required_gain_rows": 6,
+    "total_rows": 60
+  },
+  "safe_artifacts": [
+    {
+      "stage": "p00",
+      "id": 12646720408,
+      "sha256": "4e7b53a2b6438562693b441c648338463df7d10258bb657f3ef821f696a3f534",
+      "original_actions": "FAILURE"
+    },
+    {
+      "stage": "p01",
+      "id": 12646924065,
+      "sha256": "95a72b76dba6a2f439ed149cba6073ea52de42490d48de91e006880821462cba"
+    },
+    {
+      "stage": "p02",
+      "id": 12648010609,
+      "sha256": "c2e8c93c013ef08d98a23756b37b076b5d2be3ac1b09fcea4af03b87797eda97"
+    },
+    {
+      "stage": "p03",
+      "id": 12648610677,
+      "sha256": "007299f558f98e45971dbd33cce5ab023428f9eab59d13faa4e3af8781518fc2"
+    },
+    {
+      "stage": "p04",
+      "id": null,
+      "sha256": null,
+      "reason": "NATIVE_PENDING"
+    }
+  ],
+  "p00_read_only_replay": {
+    "id": 12647770073,
+    "sha256": "809616046736a2cf84fe1a46c74f6dcb582f4a8e36a4dabe6d97af14927ccc35"
+  },
+  "evidence": "SOURCE_ONLY_FROZEN_AGGREGATE_PREREG_P04_NATIVE_PENDING",
+  "heavy_owner": {
+    "run526_pr": 524,
+    "p04_native_status": "PENDING",
+    "do_not_trigger_aggregation_yet": true
+  },
+  "gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "p04 native artifact ID/hash and independent review pending",
+    "full 60-row Run516/Run510 report not yet computed",
+    "original p00 native Actions RED must remain visible",
+    "Redmi and JEPA negative gates remain"
+  ],
+  "next_command": "After p04 completes, download/hash-verify original raw/safe; fill actual artifact ID/hash; build SHA-pinned one-shot source-only Run527 aggregation workflow, open PR, verify all five stage receipts and frozen Run510 metric, preserve original p00 RED.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}
