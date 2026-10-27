@@ -175,11 +175,22 @@ def counterfactual(store,s,a,st=None):
             'label':'SIMULATION_SUPPORTED' if conf>=CF_MIN and cov['in_support'] else 'SIMULATION_UNCERTAIN'}
 
 def for_event(store,event_id,a):
-    """Counterfactual for a stored event's own state under another action (used by Sleep B route alternatives)."""
+    """Counterfactual for a stored event; never invent an observed state from corrupt input."""
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    fc=json.loads(row['expected']).get('forecast') or {}
-    return counterfactual(store,state_vec(fc.get('input_chars',0),fc.get('resource_state','NORMAL'),(row['created']%86400)/3600),a)
+    try:
+        expected=json.loads(row['expected'])
+        fc=expected.get('forecast') if type(expected) is dict else None
+        if (type(fc) is not dict or not _finite_nonnegative(fc.get('input_chars'))
+                or not _finite_nonnegative(row['created'])):
+            raise ValueError('invalid recorded forecast')
+        resource=fc.get('resource_state','NORMAL')
+        if type(resource) is not str:raise ValueError('invalid resource state')
+        s=state_vec(fc['input_chars'],resource,(row['created']%86400)/3600)
+    except (ValueError,TypeError,KeyError,OverflowError,ZeroDivisionError):
+        return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+                'reason':'INVALID_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+    return counterfactual(store,s,a)
 
 def report(store):
     st=load(store)
