@@ -125,18 +125,19 @@ class EventScheduler:
             if not ok or not self._allowed(e,idle,resource_state,quiet):continue
             if best is None or (e['priority'],-e['due'],-e['seq'])>(best['priority'],-best['due'],-best['seq']):best=e
         if best:
+            is_background=(best['origin']!='USER' and best.get('action') not in (None,'notice'))
+            if is_background and 'dispatch_times' not in st:
+                # Migrate known legacy dispatches before overwriting the
+                # selected event's prior dispatch timestamp on RETRY.
+                st['dispatch_times']=[
+                    (e.get('dispatched') if e.get('dispatched') is not None else e['created'])
+                    for e in st['events']+st['history']
+                    if e['origin']!='USER' and e.get('action') not in (None,'notice')
+                    and (e['status'] in {'DISPATCHED','DONE','FAILED'}
+                         or (e is best and e.get('dispatched') is not None))]
             best['status']='DISPATCHED';best['attempts']+=1;best['dispatched']=now
             best.setdefault('dispatch_log',[]).append(now)
-            if best['origin']!='USER' and best.get('action') not in (None,'notice'):
-                if 'dispatch_times' not in st:
-                    # Migrate known legacy dispatches without inventing missing
-                    # attempts or resetting the current post-user burn-out count.
-                    st['dispatch_times']=[
-                        (e.get('dispatched') if e.get('dispatched') is not None else e['created'])
-                        for e in st['events']+st['history']
-                        if e is not best and e['origin']!='USER'
-                        and e.get('action') not in (None,'notice')
-                        and e['status'] in {'DISPATCHED','DONE','FAILED'}]
+            if is_background:
                 st['dispatch_times'].append(now)
                 del st['dispatch_times'][:-DISPATCH_LEDGER_MAX]
             changed=True;self._count(st,'dispatched')
