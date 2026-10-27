@@ -1,0 +1,7 @@
+# PR801 initial combined RED — integration test fixture used unsupported warm kind
+
+UTC 2026-10-27 23:46. Exact source/test/workflow commit `53b5ede6eaf5716a964f55f08dd284069e484488`; Actions `40604363502`: **73 focused tests, 2 FAIL, 0 errors**, full SKIPPED_RED; `BLOBS=INSTALL=COMPILE=PRIVACY=DIFF=0`, privacy CLEAN. All inherited Run271/274/275/270/279/ContextOS/Sleep tests passed. Both failures were in newly authored cross-organ test `test_context_sleep_f5_crossorgan_20261028.py`: fixture attempted to warm `route` memory via ContextOS, but the canonical ContextOS warm path admits only `fact/style/preference` kinds, not `route`. This is a **test-contract mistake**, not evidence of a production regression.
+
+Raw artifact `12779309501`, ZIP SHA256 `93bfb923b0d3d26ede46d805f628f7f846d8548804cd07c4a76245cc87179fe8`, CRC/internal SHA256SUMS PASS; private Library `/V13-Checkpoints/2026-10-28/Automation12-Combined-F5/RED-FIXTURE-40604363502.zip` byte-exact readback PASS. Do not erase or relabel this failed attempt.
+
+Next: correct only the test fixture to use genuine F5 `fact` memories across ContextOS warm, Sleep A, and Dream B `WORLD_RELATION` (two same-value facts), plus independent valid fact control. Leave all production source blobs unchanged; re-pin test hash and rerun full software. No native/Redmi/learning/age or gate promotion: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 incomplete.
