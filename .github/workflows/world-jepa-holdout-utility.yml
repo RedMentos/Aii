@@ -45,8 +45,13 @@ jobs:
           else
             echo 'SOURCE_NOT_YET_IMPLEMENTED_RED' > "$RUNNER_TEMP/worldholdoutproof/SOURCE_SHA256.txt"
           fi
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" -m unittest -v tests.test_world_jepa_holdout_utility) > "$RUNNER_TEMP/worldholdoutproof/UNIT_RAW.log" 2>&1
+          (cd v13/code && V13_HOLDOUT_EVIDENCE_DIR="$RUNNER_TEMP/worldholdoutproof/closed" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" -m unittest -v tests.test_world_jepa_holdout_utility) > "$RUNNER_TEMP/worldholdoutproof/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/worldholdoutproof/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" scripts/world_jepa_holdout_utility.py verify --training-export "$RUNNER_TEMP/worldholdoutproof/closed/training" --output-dir "$RUNNER_TEMP/worldholdoutproof/closed/heldout") > "$RUNNER_TEMP/worldholdoutproof/VERIFY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/VERIFY_EXIT.txt"
+          if test -d "$RUNNER_TEMP/worldholdoutproof/closed"; then
+            (cd "$RUNNER_TEMP/worldholdoutproof/closed" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$RUNNER_TEMP/worldholdoutproof/CLOSED_SHA256.txt"
+          fi
           "$RUNNER_TEMP/worldholdout/bin/python" -m compileall -q v13/code/tests/test_world_jepa_holdout_utility.py v13/code/scripts/world_jepa_holdout_utility.py > "$RUNNER_TEMP/worldholdoutproof/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/worldholdoutproof/COMPILE_EXIT.txt"
           "$RUNNER_TEMP/worldholdout/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 949afa149460478661d54cfa944e321d195a7b03 --head HEAD > "$RUNNER_TEMP/worldholdoutproof/PRIVACY_RAW.log" 2>&1
@@ -62,7 +67,7 @@ jobs:
       - name: Enforce
         run: |
           set -euo pipefail
-          for n in UNIT COMPILE PRIVACY; do
+          for n in UNIT VERIFY COMPILE PRIVACY; do
             test "$(cat "$RUNNER_TEMP/worldholdoutproof/${n}_EXIT.txt")" = 0 || {
               cat "$RUNNER_TEMP/worldholdoutproof/${n}_RAW.log"
               exit 1
