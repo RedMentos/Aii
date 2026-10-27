@@ -32,9 +32,10 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN640_HEAD.txt"
-          test "$(git hash-object v13/code/v13/bodyport.py)" = 503c791ab0a822820f6fd3b93ae7f88f0dad0bab
-          test "$(git hash-object v13/code/tests/test_bodyport.py)" = c5427f7fed6c78c50939de45ff5815df3613f17f
+          test "$(git hash-object v13/code/v13/bodyport.py)" = 3fa1adf1712ebdb00e2ddfcf93751a863b69b0bb
+          test "$(git hash-object v13/code/tests/test_bodyport.py)" = 756269d1316d7df62e37a92bac812ca72505333a
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run640-bridge-key/PLAN.md)" = c46c810b956494eb44d9f493e6dc2b507c2f8b4b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run640-bridge-key/AMENDMENT_1.md)" = dc1c224a3ea15992439d2664961d412617c145eb
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN640_HOST.txt"
           sha256sum v13/code/v13/bodyport.py v13/code/tests/test_bodyport.py > "$RUNNER_TEMP/RUN640_SOURCE_SHA256.txt"
