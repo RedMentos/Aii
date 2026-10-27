@@ -227,8 +227,16 @@ class Operator:
             if not args:return dumps(r.world.world_state())
             if args[0]!='shadow' or len(args)!=5:
                 raise ValueError(':world [shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json>]')
-            # Explicit local TTY only (origin guard above); no model action,
-            # fact write, age promotion or implicit checkpoint output.
+            # Explicit local TTY only (origin guard above). This is still a
+            # READ_LOCAL operation: fixed user prohibitions/notaus and the
+            # ask-first policy take precedence before ANY input file is read.
+            from . import prohibitions
+            blocked = prohibitions.blocked(s, 'world_shadow_probe', 'READ_LOCAL', True)
+            if blocked:
+                raise PermissionError(blocked)
+            if prohibitions.announce_all(s):
+                raise PermissionError('HARD_BLOCK:ANNOUNCE_ALL_REQUIRES_APPROVAL')
+            # No model action, fact write, age promotion or checkpoint output.
             from .world_jepa_shadow_probe import (probe_checkpoint, _json_file,
                                                   MAX_PROVENANCE_BYTES, MAX_REQUEST_BYTES)
             provenance = _json_file(args[3], MAX_PROVENANCE_BYTES)
