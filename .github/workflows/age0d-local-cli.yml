@@ -1,0 +1,73 @@
+name: V13 AGE0d local no-delivery CLI
+on:
+  push:
+    branches: [assistant/v13-age0d-local-cli-20261027]
+    paths:
+      - '.github/workflows/age0d-local-cli.yml'
+      - 'v13/code/scripts/age0d_cli.py'
+      - 'v13/code/tests/test_age0d_cli.py'
+  pull_request:
+    branches: [assistant/v13-age0d-answer-aware-audit-20261027]
+permissions:
+  contents: read
+concurrency:
+  group: v13-age0d-cli-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Focused CLI, source, privacy and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-age0d-cli"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/age0d_cli.py > "$evidence/CLI_BLOB.txt"
+          git hash-object v13/code/scripts/age0d_answer_audit.py > "$evidence/AUDITOR_BLOB.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 2m env PYTHONPATH=. python3 -m unittest -v tests.test_age0d_cli tests.test_age0d_answer_audit
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          (
+            cd v13/code
+            printf '%s' '{"question":"What is 2 + 2?","answer":"5"}' | python3 scripts/age0d_cli.py --stdin-json
+          ) > "$evidence/SMOKE.json" 2> "$evidence/SMOKE_RAW.log"
+          echo "$?" > "$evidence/SMOKE_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/age0d_cli.py v13/code/tests/test_age0d_cli.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 151f66df9b068c85d0460bdb3adbf69955a7126d --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 151f66df9b068c85d0460bdb3adbf69955a7126d HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-age0d-cli-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-age0d-cli/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits and no live delivery
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-age0d-cli"
+          for name in UNIT SMOKE COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'AGE0D_CLI_SOFTWARE_ONLY_NO_DELIVERY_NO_AGE_PROMOTION'
