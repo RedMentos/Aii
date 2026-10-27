@@ -1,6 +1,7 @@
 """Z12c manual operator SHADOW probe: no automatic activation or factual authority."""
 import json
 import shlex
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -100,6 +101,17 @@ class ManualShadowProbe(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.cmd('load link.npz ' + self.sha + ' ' +
                      PROV['cohort_sha256'] + ' ' + PROV['source_sha256'])
+
+    def test_symlinked_checkpoints_parent_cannot_escape_home(self):
+        with tempfile.TemporaryDirectory() as outside:
+            external = Path(outside) / 'world_jepa'
+            external.mkdir()
+            shutil.copy2(self.path, external / 'alder-shadow.npz')
+            shutil.rmtree(self.home / 'checkpoints')
+            (self.home / 'checkpoints').symlink_to(Path(outside), target_is_directory=True)
+            with self.assertRaises(ValueError):
+                self.load()
+            self.assertEqual(self.cmd('status')['status'], 'UNBOUND')
 
     def test_invalid_input_shape_nonfinite_and_actions_fail_closed(self):
         self.load()
