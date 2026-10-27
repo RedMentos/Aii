@@ -7,3 +7,8 @@ The frozen source state is extracted **only from explicit `source_prompt_ids`**;
 Two new GPT2 synthetic tests cover variable-length source effects on answer and next-token logits, CE gradient, bounded target-free greedy and fail-closed invalid source controls. Existing 12 synthetic tests remain. Isolated CPU CI `.github/workflows/lp3-variable-source-control-review.yml` **pending** at report creation. No native model job, no utility measurement or Age promotion. LP1/LP2, BJ1, STEP2, B3 negative gates, `jepa_weight=0` and Redmi unmeasured unchanged.
 
 Next: verify exact-head synthetic CI and independent review; then preregister a matched real-model CE/own/wrong-source utility study with new harder heldout prompts, source provenance, leakage, retention and drift acceptance gates. Do not merge directly to main.
+
+
+## Focused software result
+
+Actions **40525062343**, exact source commit `8a3c406d2e3998049587c2f7b37b4fb96a9ebf86`: **14/14 synthetic tests PASS**, Python compile PASS, privacy CLEAN and diff check PASS. This includes both new variable-length source tests and all 12 inherited LP3 tests. No real-model or heldout utility run was performed on this branch. Final metadata-head recheck pending; all gates remain unchanged.
