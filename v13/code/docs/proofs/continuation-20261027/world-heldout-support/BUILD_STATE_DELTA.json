@@ -1,0 +1,43 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 739,
+  "parent_sha": "fa76ea437b26a161a2e21c17dee575811cc0eda0",
+  "branch": "codex/automation11i-world-heldout-support-20261027",
+  "prereg": "b450bff9d34f59fef812652df95ff397571f6f69",
+  "amendments": [
+    "d766ea8dd376570c8490478f7f7d72db78dbccfc",
+    "cbb7df781908d0a858a9c867cad0c94ddbe5305c"
+  ],
+  "red": {
+    "source_commit": "44b1f5f83d6b4b719bb0bbd45b907541993d5692",
+    "world_blob": "8579d4938624137749e7eb793f5016294c36401f",
+    "actions": 40533408641,
+    "tests": "7 tests, 1 expected FAIL",
+    "artifact": 12746398241,
+    "zip_sha256": "bf7e35f5609c754cb2a53be2b59c8d4367899b853a070cd3085af6ceb77ecd05",
+    "private_backup_verified": true
+  },
+  "green": {
+    "latest_source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79",
+    "status": "PENDING_EXACT_HEAD_TESTS"
+  },
+  "full_suite": {
+    "status": "PENDING_EXACT_HEAD_TESTS"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect exact Actions on source acce97eb, verify all exits, raw ZIP and private byte-exact backup; independent review before integration.",
+  "note": "Additive branch state delta; shared BUILD_STATE untouched to avoid parallel owner conflicts."
+}
