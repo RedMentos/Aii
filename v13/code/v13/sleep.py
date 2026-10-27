@@ -59,11 +59,14 @@ def validate_policy(p):
         if isinstance(d,int) and not isinstance(v,int):raise ValueError(k+' muss ganzzahlig sein')
     if not isinstance(p['enabled'],bool):raise ValueError('enabled true|false')
     q=p['quiet_hours']
-    if q is not None and not (isinstance(q,list) and len(q)==2 and all(isinstance(h,int) and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
+    if q is not None and not (type(q) is list and len(q)==2 and all(type(h) is int and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
     m=p['mix']
-    if set(m)!=set(MIX) or any(isinstance(v,bool) or not isinstance(v,(int,float)) or v<0 for v in m.values()) or sum(m.values())<=0:raise ValueError('mix recent/protected_old/failure >=0')
+    if (type(m) is not dict or set(m)!=set(MIX)
+            or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in m.values())
+            or not math.isfinite(sum(m.values())) or sum(m.values())<=0):
+        raise ValueError('mix recent/protected_old/failure muss endlich, >=0 und insgesamt >0 sein')
     for k,v in LOCKED.items():
-        if p.get(k)!=v:raise ValueError(k+' ist gesperrt')
+        if type(p.get(k)) is not type(v) or p.get(k)!=v:raise ValueError(k+' ist gesperrt')
     return p
 def empty_schedule():
     return {'revision':REVISION,'items':{},'gains':dict(BASE_GAIN),'usage':{t:0. for t in TYPES},'last_full':0.,'signatures':[],'cycles':0}
