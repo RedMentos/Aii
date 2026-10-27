@@ -45,8 +45,8 @@ jobs:
           import os
           lines=Path(os.environ['RUNNER_TEMP']+'/v13-integrated-fullsuite/UNIT_RAW.log').read_text(errors='replace').splitlines()
           headers=sorted(x.strip() for x in lines if x.startswith('FAIL: ') or x.startswith('ERROR: '))
-          summary=[x.strip() for x in lines if re.search(r'Ran [0-9]+ tests|FAILED \\(|^OK$',x)]
-          print(json.dumps({'failure_headers':len(headers),'failure_header_sha256':hashlib.sha256(('\\n'.join(headers)+'\\n').encode()).hexdigest(),'summary_tail':summary[-5:]},sort_keys=True))
+          summary=[x.strip() for x in lines if re.search(r'Ran [0-9]+ tests|FAILED \(|^OK$',x)]
+          print(json.dumps({'failure_headers':len(headers),'failure_header_sha256':hashlib.sha256(('\n'.join(headers)+'\n').encode()).hexdigest(),'summary_tail':summary[-5:]},sort_keys=True))
           PY
           echo "$?" > "$RUNNER_TEMP/v13-integrated-fullsuite/SIGNATURE_EXIT.txt"
           "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" -m compileall -q v13/code/v13 v13/code/scripts > "$RUNNER_TEMP/v13-integrated-fullsuite/COMPILE_RAW.log" 2>&1
