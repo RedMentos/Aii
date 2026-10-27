@@ -32,6 +32,6 @@ Data: `v13/bench-results/z6k-modulator-stable-20261027/z6k.json`. Metric: mean h
 - G-MODULATOR-SPECIFICITY-001 stays red. As preregistered, this design is not re-read again.
 
 ## Next
-Runtime learners take one budget per job; a per-sample weight path (learning_worker sample weights from `sample_factor`)
+Runtime learners take one budget per job. The per-sample weight path already exists in thread "Echtes Dazulernen im Kern erreichen" (branch uvt813, `learning_worker.objective(x,y,w,sw)` + `cv_gate`, switches off; packages KL1/KL2); feeding `sample_factor` into `sw` there
 would be the build step, with the self-label weight as the open question (§63 gives internal_crosscheck .2). No default changed.
 Claim limit: simulated label sources and mix, one learner kind, cloud.
