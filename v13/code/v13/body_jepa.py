@@ -186,6 +186,17 @@ class BodyJepaTrainer(LoraTrainer):
     _anchor_cache={}
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
+    @staticmethod
+    def _locality_for(items,cfg):
+        """Select locality KL anchors; legacy is frozen default, BP2b explicitly opt-in."""
+        policy=cfg.get('locality_policy','legacy')
+        swaps=int(cfg['locality_swaps'])
+        if policy=='legacy':
+            return LoraTrainer.locality_prompts(items,swaps)
+        if policy=='bp2b':
+            from .locality_anchors import generate_anchors
+            return generate_anchors(items,swaps)
+        raise ValueError('unknown locality_policy')
     def _views(self,tok,items):
         ctx=[self._encode(tok,i['prompt'])[0] for i in items]
         tgt=[tok(str(i['target']),add_special_tokens=False)['input_ids'] for i in items]
@@ -197,12 +208,13 @@ class BodyJepaTrainer(LoraTrainer):
         import numpy as np
         t0=time.monotonic();cfg=self.cfg;mode=str(cfg['jepa_target']);w_j=float(cfg['jepa_weight']);layer=int(cfg['jepa_layer'])
         if mode not in MODES:raise ValueError('unknown jepa_target')
+        if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
         torch,tok,model=self._load()
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
         dh=digest(dumps([[i.get('memory_id'),i['prompt'],i['target']] for i in items]+[self.anchors,{k:v for k,v in cfg.items() if k!='threads'}]))[:24]
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
-        anchors=list(self.anchors)+self.locality_prompts(items,int(cfg['locality_swaps']))
+        anchors=list(self.anchors)+self._locality_for(items,cfg)
         ck=(str(self.master),tuple(anchors))
         if ck not in BodyJepaTrainer._anchor_cache:  # base continuations + log-probs are identical for every arm of one body
             anchor_seqs=[]
