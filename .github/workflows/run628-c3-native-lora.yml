@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - codex/automation11-run628-c3-native-lora-probe-20261027
+      - codex/automation12-run629-c3-native-lora-compat-20261027
     paths:
       - '.github/workflows/run628-c3-native-lora.yml'
       - 'v13/code/scripts/run628_c3_lora_native.py'
@@ -60,7 +61,7 @@ jobs:
             rc=$?
           fi
           if [ "$rc" = 0 ]; then
-            timeout 420s "$RUNNER_TEMP/run628venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.51.3' 'peft==0.15.2' 'gguf==0.16.3' 'huggingface_hub==0.30.2' 'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/RUN628_DEPS_RAW.log" 2>&1
+            timeout 420s "$RUNNER_TEMP/run628venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.56.2' 'peft==0.15.2' 'gguf==0.16.3' 'huggingface_hub==0.35.3' 'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/RUN628_DEPS_RAW.log" 2>&1
             rc=$?
           fi
           if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run628venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN628_DEPENDENCY_LOCK.txt"; fi
