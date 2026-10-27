@@ -17,6 +17,12 @@ Added RED counterexamples for revoked volatile memory and rewritten earlier hist
 - CI workflow `.github/workflows/n7-append-source-invalidation.yml` runs the focused tests, compile, privacy scan, and diff check without model downloads.
 - **Do not claim PASS until exact-head Actions evidence is inspected.** RED, failures, and skips must be retained as observed.
 
+## Verified exact-head RED / GREEN
+
+- **RED:** Actions `40517444470`, source `9a9551c4456f8a837a9220c17831f01332000b46`: 20 tests, **2 expected FAIL**. The raw log explicitly shows the revoked volatile marker and old history marker still present in the re-entered prompt. The run failed; it was not reclassified as PASS.
+- **GREEN:** Actions `40517582552`, source `a3dee8063794a9ba79781eddd5598b602ff7c305`: **23/23 focused PASS**, compile PASS, privacy CLEAN, diff check PASS. Native/model tests were not run.
+- **Broad suite:** Actions `40518088127` queued at this checkpoint; raw artifact and result must be inspected before claiming broad PASS. Independent RED witness branch exists for reproducibility; its separate result is not needed to reinterpret the original RED.
+
 ## Limits / continuation
 
 This is a software/source-view integrity candidate, not a native cache-performance measurement. It does not establish revoked-source invalidation in any other subsystem. `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, registered `jepa_weight=0`, Age authority 0, Redmi unmeasured, full V13 incomplete.
