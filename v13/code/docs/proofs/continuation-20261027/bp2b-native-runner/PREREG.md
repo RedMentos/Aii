@@ -1,0 +1,11 @@
+# WP-BP2b source-bound native per-arm runner prereg · 2026-10-27
+
+Owner: automation11 BP2b native runner, isolated review child of PR #708 exact `7a0e89af6d79fd18d3225f6fd640f341090d81f0`. No production or Age gate promotion.
+
+Implement one **explicit opt-in** native B1 FP32 arm per invocation: `legacy`, `bp2b`, `bp2b_minor`, `manual_ref` × frozen seeds 41/42/43. Same 16 selected synthetic facts/seed, 30 optimizer steps, 5e-4 LR, rank8 alpha16, CE+KL, jepa_weight=0, 10 KL anchors/step, 2 locality swaps where applicable. BP2b+minor uses frozen low singular directions; manual_ref uses the original TRAIN_NM for selected facts. No new fact/seed/answer changes.
+
+Prerequisites: exact master `model.safetensors` SHA256 `1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a` **stream-verified locally**, plus all seven tokenizer/config/license SHA256 from locked `v13/code/specs/bp2b_master_metadata.json`. No native run without both. Source manifest `bp2b_transfer_cohort.cohort(seed)` must be revalidated. Heavy jobs serialized by an exclusive file lock, unique attempt directory, fail receipts preserved. Prediction stage receives **model-facing prompts only**; scoring happens only after responses are durably written. Report `native_backend` and `source/master/adapter` hashes and keep `age_authority=0`, `jepa_weight=0`.
+
+Prospective software tests: dry-run 12 arm×seed plans with no model import; preflight rejection before trainer; exclusive lock; fake-trainer one-arm end-to-end writes source-bound predictions and blinded score, failure receipt, unique attempt path, no source/target in model-facing predictions, no age promotion. Test with injected fakes only; such tests are **software/synthetic** not native B1 evidence. Later real Linux native attempt requires checking current heavy owner and source provenance before triggering, and Q4/Redmi are separate. No paid provisioning.
+
+Acceptance: source-bound executable runner with tests/CI and independent review; no claim of BP2b native gain until real FP32 and Q4 runs. Negative gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, BJ1_NO_SIGNAL, jepa_weight=0, Redmi unmeasured, V13 incomplete. Exact next command: `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_runner`.
