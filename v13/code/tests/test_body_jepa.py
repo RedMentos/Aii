@@ -164,13 +164,13 @@ class WeightPreflightTests(unittest.TestCase):
     def test_invalid_weights_rejected_before_any_model_load(self):
         from unittest import mock
         trainer=object.__new__(bj.BodyJepaTrainer)
-        bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'))
+        bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'),1e100)
         for weight in bad:
             with self.subTest(weight=repr(weight)), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
                 with self.assertRaises(ValueError):
                     trainer.fit([{'prompt':'x','target':'y','weight':weight}],base_generation=0)
                 load.assert_not_called()
-        for weights in ((0.,0.),(1e308,1e308)):
+        for weights in ((0.,0.),(1e308,1e308),(1e-300,1e-300)):
             with self.subTest(weights=weights), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
                 with self.assertRaises(ValueError):
                     trainer.fit([{'prompt':'x','target':'y','weight':v} for v in weights],base_generation=0)
