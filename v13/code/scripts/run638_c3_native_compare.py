@@ -7,6 +7,7 @@ must be byte-verified independently; no learned weights are activated.
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 
@@ -149,9 +150,12 @@ def aggregate(rows):
                  row.get("original_baseline_reproduced") is True and
                  all(row.get(arm + "_scale0_parity") is True
                      for arm in ("two_step", "thirtytwo")) for row in rows)
-    effects = all(any(
-        (r.get(arm + "_effect") or {}).get("max_abs_logprob_delta", 0) > 1e-5
-        for r in rows) for arm in ("two_step", "thirtytwo"))
+    def finite_effect(row, arm):
+        value = (row.get(arm + "_effect") or {}).get("max_abs_logprob_delta")
+        return (isinstance(value, (int, float)) and not isinstance(value, bool)
+                and math.isfinite(value) and value > 1e-5)
+    effects = all(any(finite_effect(r, arm) for r in rows)
+                  for arm in ("two_step", "thirtytwo"))
     groups = {}
     for group in ("train", "heldout", "near_miss"):
         sub = [r for r in rows if r["group"] == group]
