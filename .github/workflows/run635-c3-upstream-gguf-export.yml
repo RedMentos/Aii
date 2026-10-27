@@ -1,0 +1,238 @@
+name: V13 Run635 pinned upstream gguf-py LFM2 native CPU LoRA export
+on:
+  push:
+    branches:
+      - codex/automation11-run635-c3-upstream-gguf-export-20261027
+    paths:
+      - '.github/workflows/run635-c3-upstream-gguf-export.yml'
+      - 'v13/code/tests/test_run635_c3_upstream_export.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run635-c3-upstream-gguf-export/PREREG.md'
+      - 'v13/code/tests/test_run634_c3_template_contract.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run634-c3-pinned-chat-template/PREREG.md'
+      - 'v13/code/scripts/run632_c3_lfm350_native.py'
+      - 'v13/code/tests/test_run632_c3_lfm350_native.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json'
+      - 'v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/PREREG_AMENDMENT_1.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run628-single-native-c3
+  cancel-in-progress: false
+jobs:
+  actual-selected-c3-master:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze exact source, original V1 and prospective V2, Canon, host
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN632_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run632_c3_lfm350_native.py)" = b59f45f06bf0b8428fba502b8146c02205228edd
+          test "$(git hash-object v13/code/tests/test_run632_c3_lfm350_native.py)" = b9088e963b4558b664888ecc7aa734023feea327
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/PREREG.md)" = 02c8d4912c40026daa7c93a573b0abf4bcb28a15
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/PREREG_AMENDMENT_1.md)" = fa49ed402ff68e66ef086fb2404b08b99c5a1996
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT.json)" = 5107dfc6577739eb4a8776d1d1be2e7890c21a89
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json)" = c282077912ec4e284476825b3e03728620d8bad0
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(git hash-object v13/code/tests/test_run634_c3_template_contract.py)" = e89f9d185ff4919b3db54c7fb959910fde4ec704
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run634-c3-pinned-chat-template/PREREG_AMENDMENT_1.md)" = 53263108dd9faba448de3c4df90dded4f498665f
+          test "$(git hash-object v13/code/tests/test_run635_c3_upstream_export.py)" = e0b62841fa3a67168c2507c8f9e3639527c9ee3b
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run635-c3-upstream-gguf-export/PREREG.md)" = 4bcbc23adbea355b988b5032d4f6d413d5e74c1d
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run634-c3-pinned-chat-template/PREREG.md)" = 392d45549a02a16cd04f0e8e96aca5d220d93c66
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; free -h; } > "$RUNNER_TEMP/RUN632_HOST.txt"
+          sha256sum v13/code/scripts/run632_c3_lfm350_native.py v13/code/tests/test_run632_c3_lfm350_native.py v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json > "$RUNNER_TEMP/RUN632_SOURCE_SHA256.txt"
+      - name: Source-only negative controls (no torch or model)
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run632_c3_lfm350_native tests.test_run634_c3_template_contract tests.test_run635_c3_upstream_export) > "$RUNNER_TEMP/RUN632_SOURCE_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN632_SOURCE_TEST_EXIT.txt"
+          exit 0
+      - name: Isolated pinned native CPU trainer dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run632venv" > "$RUNNER_TEMP/RUN632_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/run632venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu >> "$RUNNER_TEMP/RUN632_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            timeout 480s "$RUNNER_TEMP/run632venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'transformers==5.0.0' 'huggingface_hub==1.26.0' 'peft==0.18.0' \
+              'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/RUN632_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run632venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN632_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN632_DEPS_EXIT.txt"
+          exit 0
+      - name: SHA-pinned upstream llama.cpp gguf-py LFM2 mapping preflight
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN632_DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN632_SOURCE_TEST_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run635-source"
+            curl --fail --silent --show-error --location --retry 2 --max-time 240 \
+              'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+              -o "$RUNNER_TEMP/run635-source.tar.gz" > "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_RAW.log" 2>&1
+            rc=$?
+            if [ "$rc" = 0 ]; then test "$(stat -c%s "$RUNNER_TEMP/run635-source.tar.gz")" = 37420323; rc=$?; fi
+            if [ "$rc" = 0 ]; then echo '4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  '"$RUNNER_TEMP/run635-source.tar.gz" | sha256sum -c >> "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_RAW.log" 2>&1; rc=$?; fi
+            if [ "$rc" = 0 ]; then tar -xzf "$RUNNER_TEMP/run635-source.tar.gz" -C "$RUNNER_TEMP/run635-source" >> "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_RAW.log" 2>&1; rc=$?; fi
+            if [ "$rc" = 0 ]; then
+              test "$(git hash-object "$RUNNER_TEMP/run635-source/llama.cpp-b10964/gguf-py/gguf/constants.py")" = e54ee5a0fd41416f191130cdf1efd08507f63894
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              test "$(git hash-object "$RUNNER_TEMP/run635-source/llama.cpp-b10964/gguf-py/gguf/tensor_mapping.py")" = d2dfeece59522ffb417f70939cf94ee157591eee
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              PYTHONPATH="$RUNNER_TEMP/run635-source/llama.cpp-b10964/gguf-py" "$RUNNER_TEMP/run632venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_RAW.log" 2>&1
+          import gguf,os
+          from pathlib import Path
+          source=(Path(os.environ['RUNNER_TEMP'])/'run635-source/llama.cpp-b10964/gguf-py').resolve()
+          assert Path(gguf.__file__).resolve().is_relative_to(source),gguf.__file__
+          arch=[a for a,name in gguf.MODEL_ARCH_NAMES.items() if name=='lfm2']
+          assert len(arch)==1, 'missing or ambiguous pinned LFM2 mapping'
+          names=gguf.get_tensor_name_map(arch[0],16)
+          v=names.get_name('model.layers.0.self_attn.v_proj')
+          o=names.get_name('model.layers.0.self_attn.out_proj')
+          assert v and o and v!=o, (v,o)
+          print('RUN635_PINNED_LFM2_GGUF_PASS',gguf.__file__,v,o)
+          PY
+              rc=$?
+            fi
+          else
+            echo 'SOURCE_OR_DEPS_FAILED; GGUF_PREFLIGHT_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_EXIT.txt"
+          exit 0
+      - name: Download official immutable LFM2.5-350M master and license
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN632_DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN632_SOURCE_TEST_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_EXIT.txt")" = 0 ]; then
+            timeout 720s "$RUNNER_TEMP/run632venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN632_DOWNLOAD_RAW.log" 2>&1
+          from huggingface_hub import snapshot_download
+          from pathlib import Path
+          import hashlib,os
+          p=Path(snapshot_download(repo_id='LiquidAI/LFM2.5-350M',revision='b6248156b66a93e5c4581d82953a9df630c582ef',local_dir=Path(os.environ['RUNNER_TEMP'])/'run632-master',allow_patterns=['model.safetensors','config.json','generation_config.json','tokenizer*','chat_template.jinja','special_tokens_map.json','merges.txt','vocab.json','LICENSE'],max_workers=2))
+          f=p/'model.safetensors';h=hashlib.sha256(f.read_bytes()).hexdigest()
+          assert h=='1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e',h
+          assert (p/'LICENSE').is_file()
+          print('MASTER_SHA256_PASS',h,'bytes',f.stat().st_size)
+          print('LICENSE_SHA256',hashlib.sha256((p/'LICENSE').read_bytes()).hexdigest())
+          PY
+            rc=$?
+          else
+            rc=2
+            echo 'PREREQUISITE_FAILED' > "$RUNNER_TEMP/RUN632_DOWNLOAD_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN632_DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Verify exact pinned official Jinja and HF tokenizer parity before optimizer
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN632_DOWNLOAD_EXIT.txt")" = 0 ]; then
+            timeout 90s "$RUNNER_TEMP/run632venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN634_TEMPLATE_RAW.log" 2>&1
+          from pathlib import Path
+          from transformers import AutoTokenizer
+          import hashlib,os
+          p=Path(os.environ['RUNNER_TEMP'])/'run632-master'
+          f=p/'chat_template.jinja'
+          assert f.is_file() and f.stat().st_size>100, 'missing official pinned chat_template.jinja'
+          h=hashlib.sha256(f.read_bytes()).hexdigest()
+          tok=AutoTokenizer.from_pretrained(str(p))
+          assert tok.chat_template, 'tokenizer did not load official Jinja template'
+          msg=[{'role':'user','content':'Run634 synthetic tokenizer parity check'}]
+          rendered=tok.apply_chat_template(msg,add_generation_prompt=True,tokenize=False)
+          assert rendered.startswith(tok.bos_token+'<|im_start|>user\n'), repr(rendered[:100])
+          assert '<|im_end|>\n<|im_start|>assistant\n' in rendered,repr(rendered[-100:])
+          ids=tok(rendered,add_special_tokens=False)['input_ids']
+          ids2=tok.apply_chat_template(msg,add_generation_prompt=True,tokenize=True,return_dict=False)
+          assert ids==ids2 and len(ids)>4, 'HF tokenizer template parity failed'
+          print('RUN634_PINNED_JINJA_PASS',h,'bytes',f.stat().st_size,'tokens',len(ids))
+          PY
+            rc=$?
+          else
+            echo 'DOWNLOAD_FAILED; TEMPLATE_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN634_TEMPLATE_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN634_TEMPLATE_EXIT.txt"
+          exit 0
+      - name: Actual 2-step LFM2.5-350M CPU LoRA fit and GGUF export
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN632_DOWNLOAD_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN634_TEMPLATE_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run632-output"
+            timeout 480s env PYTHONPATH="$RUNNER_TEMP/run635-source/llama.cpp-b10964/gguf-py:$PWD/v13/code" "$RUNNER_TEMP/run632venv/bin/python" \
+              v13/code/scripts/run632_c3_lfm350_native.py \
+              --cohort v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json \
+              --master-dir "$RUNNER_TEMP/run632-master" \
+              --specs v13/code/specs/models.json \
+              --output "$RUNNER_TEMP/run632-output" > "$RUNNER_TEMP/RUN632_TRAIN_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'DOWNLOAD_FAILED; TRAIN_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN632_TRAIN_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN632_TRAIN_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d3d98b189ac0584ac25ed819193d4dfcd89e0cef --head HEAD > "$RUNNER_TEMP/RUN632_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN632_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence and hashes
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in SOURCE_TEST DEPS DOWNLOAD TRAIN PRIVACY; do
+            test -f "RUN632_${k}_EXIT.txt" || echo 2 > "RUN632_${k}_EXIT.txt"
+          done
+          test -f RUN634_TEMPLATE_EXIT.txt || echo 2 > RUN634_TEMPLATE_EXIT.txt
+          test -f RUN635_GGUF_PREFLIGHT_EXIT.txt || echo 2 > RUN635_GGUF_PREFLIGHT_EXIT.txt
+          if [ -d run632-output ]; then
+            find run632-output -maxdepth 1 -type f -name 'RUN632_*' -exec cp '{}' . \;
+          fi
+          find . -maxdepth 1 -type f \( -name 'RUN632_*' -o -name 'RUN634_*' -o -name 'RUN635_*' \) ! -name 'RUN632_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN632_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run635-Upstream-GGUF-C3-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RUN632_*
+            ${{ runner.temp }}/RUN634_*
+            ${{ runner.temp }}/RUN635_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native and negative controls
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in SOURCE_TEST DEPS DOWNLOAD TRAIN PRIVACY; do
+            echo "RUN632 $k exit: $(cat "$RUNNER_TEMP/RUN632_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN632_${k}_EXIT.txt")" = 0
+          done
+          test "$(cat "$RUNNER_TEMP/RUN634_TEMPLATE_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN635_GGUF_PREFLIGHT_EXIT.txt")" = 0
+          test -s "$RUNNER_TEMP/RUN632_PROOF.json"
+          test -s "$RUNNER_TEMP/RUN632_LICENSE.txt"
