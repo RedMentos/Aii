@@ -215,7 +215,7 @@ class BodyJepaTrainer(LoraTrainer):
         dh=digest(dumps([[i.get('memory_id'),i['prompt'],i['target']] for i in items]+[self.anchors,{k:v for k,v in cfg.items() if k!='threads'}]))[:24]
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
         anchors=list(self.anchors)+self._locality_for(items,cfg)
-        ck=(str(self.master),tuple(anchors))
+        ck=(str(self.master),self.master_sha,tuple(anchors))
         if ck not in BodyJepaTrainer._anchor_cache:  # base continuations + log-probs are identical for every arm of one body
             anchor_seqs=[]
             for a in anchors:
@@ -251,7 +251,7 @@ class BodyJepaTrainer(LoraTrainer):
             if type(self.master_sha) is not str or len(self.master_sha)!=64:
                 raise ValueError('Step resume requires a pinned full master SHA256')
             checkpoint_source=digest(dumps({'master_sha256':self.master_sha,
-                'dataset_hash':dh,'base_generation':base_generation,'cfg':cfg,'anchors':anchors}))
+                'dataset_hash':dh,'base_generation':base_generation,'cfg':cfg,'anchors':anchors,'items':items,'probes':self.probes}))
             checkpoint_dir=out/'step-checkpoints'
             restored=restore_bj_step(checkpoint_dir,checkpoint_source,model,pred,opt,ema,g)
             if restored is not None:
