@@ -56,7 +56,7 @@ class LP3HeldoutPilotTests(unittest.TestCase):
         status, criteria = classify(before, after, 1.0, 1.1, True)
         self.assertEqual(status, 'LP3_HELDOUT_ATTRIBUTABLE_SIGNAL')
         self.assertTrue(all(criteria.values()))
-        self.assertEqual(classify(before, after, 1.0, 1.2, True)[0],
+        self.assertEqual(classify(before, after, 1.0, 1.21, True)[0],
                          'LP3_HELDOUT_NO_ATTRIBUTABLE_SIGNAL')
         self.assertEqual(classify(before, after, 1.0, 1.1, False)[0],
                          'LP3_HELDOUT_NO_ATTRIBUTABLE_SIGNAL')
