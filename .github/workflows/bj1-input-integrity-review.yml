@@ -1,0 +1,67 @@
+name: V13 BJ1 body-JEPA finite input and negative-control integrity
+on:
+  push:
+    branches: [codex/automation11-bj1-finite-input-review-20261027]
+    paths:
+      - '.github/workflows/bj1-input-integrity-review.yml'
+      - 'v13/code/tests/test_bj1_input_integrity_20261027.py'
+      - 'v13/code/v13/body_jepa.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bj1-input-integrity/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bj1-input-integrity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated tiny torch-only test prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/bj1-venv"
+          "$RUNNER_TEMP/bj1-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+          if ! "$RUNNER_TEMP/bj1-venv/bin/python" -c 'import torch; print(torch.__version__)'; then
+            timeout 480s "$RUNNER_TEMP/bj1-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.0+cpu'
+          fi
+          "$RUNNER_TEMP/bj1-venv/bin/python" -c 'import torch; print("TORCH_CPU_AVAILABLE",torch.__version__)'
+      - name: Capture adversarial tests and unchanged source scope
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bj1-integrity"
+          git rev-parse HEAD > "$RUNNER_TEMP/bj1-integrity/HEAD.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$RUNNER_TEMP/bj1-integrity/BODY_JEPA_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bj1-venv/bin/python" -m unittest -v tests.test_bj1_input_integrity_20261027) > "$RUNNER_TEMP/bj1-integrity/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-integrity/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/bj1-venv/bin/python" -m compileall -q v13/code/v13/body_jepa.py v13/code/tests/test_bj1_input_integrity_20261027.py > "$RUNNER_TEMP/bj1-integrity/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-integrity/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bj1-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 1c9e8275caaca8bf58010ad3544cb2d3321352a5 --head HEAD > "$RUNNER_TEMP/bj1-integrity/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-integrity/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bj1-input-integrity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bj1-integrity/
+          if-no-files-found: error
+      - name: Enforce finite input tests, compile and privacy
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bj1-integrity/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bj1-integrity/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BJ1_TINY_TORCH_ONLY_NO_NATIVE_OR_JEPA_WEIGHT_PROMOTION"
