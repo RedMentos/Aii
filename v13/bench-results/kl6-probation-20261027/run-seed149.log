@@ -1,0 +1,211 @@
+{"policy": "fixed", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.225}
+{"policy": "fixed", "phase": "p1", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.225}
+{"policy": "fixed", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.9}
+{"policy": "fixed", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.225}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.975}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.225}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.225}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p2", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov+prob", "phase": "p2", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.225}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.225}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.725}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p2", "batch": 2, "shadow": false, "status": null, "acc": 0.9}
+{"policy": "adaptive+lex+rec+cv+ov+prob", "phase": "p2", "batch": 3, "shadow": false, "status": null, "acc": 0.9}
+{
+ "verdict": null,
+ "criteria": null,
+ "verdict_kl1": null,
+ "criteria_kl1": null,
+ "verdict_kl2": null,
+ "criteria_kl2": null,
+ "verdict_kl3": null,
+ "criteria_kl3": null,
+ "verdict_kl3b": null,
+ "criteria_kl3b": null,
+ "verdict_kl6": "KL6_PROBATION_FAIL",
+ "criteria_kl6": {
+  "P1_head_half_items_ge_80pct": true,
+  "P2_retention_ge_90pct": true,
+  "P3_no_false_promotion": false,
+  "P4_rollback_restores": true,
+  "P5_control_needle_only_fails": true,
+  "P6_runtime_path_half_ge_80pct": true
+ },
+ "novel_final": {
+  "fixed": {
+   "half_novel": 0.0,
+   "detail_near": 1.0
+  },
+  "fixed+lex+rec+cv+ov": {
+   "half_novel": 0.125,
+   "detail_near": 0.5
+  },
+  "fixed+lex+rec+cv+ov+prob": {
+   "half_novel": 0.125,
+   "detail_near": 0.5
+  },
+  "adaptive+lex+rec+cv+ov+prob": {
+   "half_novel": 0.625,
+   "detail_near": 0.5
+  }
+ },
+ "scores": {
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 7,
+   "promotions": 2,
+   "approval_requests": 2,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.9,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.875,
+    "gist": 1.0,
+    "both": 0.625
+   },
+   "rollback": {
+    "update_id": "upd_c46d1aa55d124f3b9fc13d262b4b38d0",
+    "expected_parent_acc": 0.9,
+    "after_rollback_acc": 0.9,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.575,
+     "half_items": 0.0,
+     "unchanged": 0.7188
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ov": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 9,
+   "approval_requests": 9,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 64,
+   "p1_end_acc": 1.0,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_ce6aabada5ea4edf816bfda60a1c8594",
+    "expected_parent_acc": 1.0,
+    "after_rollback_acc": 1.0,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ov+prob": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 1,
+   "promotions": 6,
+   "approval_requests": 9,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 1.0,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_7b2b41945eeb4c7cb7eb966c119ab8a7",
+    "expected_parent_acc": 1.0,
+    "after_rollback_acc": 1.0,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   }
+  },
+  "adaptive+lex+rec+cv+ov+prob": {
+   "shadow_jobs": 6,
+   "unnecessary_updates": 0,
+   "promotions": 3,
+   "approval_requests": 5,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 0.925,
+   "final_acc": 0.9,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9656,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.625,
+    "gist": 1.0,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_11cf50cba3044302a574f23f5049940f",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null
+  }
+ }
+}
