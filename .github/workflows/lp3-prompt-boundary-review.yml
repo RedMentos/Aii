@@ -1,0 +1,44 @@
+name: V13 LP3 prompt-state boundary independent review
+on:
+  push:
+    branches: [codex/automation11-lp3-prompt-boundary-review-20261027]
+    paths:
+      - '.github/workflows/lp3-state-prefix-review.yml'
+      - 'v13/code/v13/lp3_state_prefix.py'
+      - 'v13/code/tests/test_lp3_state_prefix.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-boundary-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Tiny frozen HF decoder state-to-answer gradient and controls
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/lp3-venv"
+          py="$RUNNER_TEMP/lp3-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2'
+          "$py" -m pip check
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_lp3_state_prefix
+          "$py" -m py_compile v13/lp3_state_prefix.py tests/test_lp3_state_prefix.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base 4b8a2fa7dbbbb88ac11c5314ae28635d45c6222d --head HEAD
+          git diff --check 5bbcd8e7f8b1d4518fb2de45edc70b6350bdd068 HEAD
+          echo 'LP3_SYNTHETIC_MECHANISM_ONLY_NO_UTILITY_OR_AGE_PROMOTION'
