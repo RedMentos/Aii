@@ -1,0 +1,69 @@
+name: V13 Z1 actual measurement status classification audit
+on:
+  push:
+    branches: [codex/automation11-z1-gate-evidence-type-20261027]
+    paths:
+      - '.github/workflows/z1-gate-measure-suite.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-measure-suite-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Isolated software-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/z1-measure-venv"
+          timeout 240s "$RUNNER_TEMP/z1-measure-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Measure all mapped §24 statuses with new fail-closed classification
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/z1-measure"
+          git rev-parse HEAD > "$RUNNER_TEMP/z1-measure/HEAD.txt"
+          sha256sum v13/code/v13/gates.py v13/code/scripts/measure_suite.py v13/code/specs/benchmarks.json v13/code/specs/gate-graph.json > "$RUNNER_TEMP/z1-measure/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 480s "$RUNNER_TEMP/z1-measure-venv/bin/python" scripts/measure_suite.py --out "$RUNNER_TEMP/z1-measure/results") > "$RUNNER_TEMP/z1-measure/MEASURE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-measure/MEASURE_EXIT.txt"
+          "$RUNNER_TEMP/z1-measure-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/z1-measure/CLASSIFICATION_SUMMARY.json"
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'z1-measure/results/suite.json'
+          if p.is_file():
+              j=json.loads(p.read_text())
+              print(json.dumps({'counts':j['counts'],'gate_counts':j['gates']['counts'],
+                  'path_only':[{ 'id':b['id'],'status':b['status']} for b in j['benchmarks']
+                  if not b.get('verdict') and any(x.startswith('../bench-results/') for x in b['artifacts'])],
+                  'phone_measured':j['phone_measured']},sort_keys=True))
+          else:
+              print(json.dumps({'status':'MEASURE_SUITE_DID_NOT_WRITE_OUTPUT'}))
+          PY
+          "$RUNNER_TEMP/z1-measure-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/z1-measure/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-measure/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-measure-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/z1-measure/
+          if-no-files-found: error
+      - name: Enforce privacy only; preserve measurement RED
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/z1-measure/PRIVACY_EXIT.txt")" = 0
+          cat "$RUNNER_TEMP/z1-measure/CLASSIFICATION_SUMMARY.json"
+          echo "Measurement suite exit: $(cat "$RUNNER_TEMP/z1-measure/MEASURE_EXIT.txt")"
