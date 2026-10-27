@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN635_PINNED_UPSTREAM_GGUF_EXPORT_PENDING_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/automation11-run635-c3-upstream-gguf-export-20261027",
+  "owner": "GPT-6 automation C3 native export package",
+  "parent_pr": 629,
+  "parent_sha": "d3d98b189ac0584ac25ed819193d4dfcd89e0cef",
+  "prereg_commit": "3e82c2d4ba830dd14660fd4f06ee50ab382d85c1",
+  "test_commit": "508beeb194ae6296825d66621234b932d2eb9dfc",
+  "workflow_commit": "3019cf7c18170290a54d29aca0fd07203ba857dd",
+  "workflow_blob": "108b275af88a406440e4a3e341490127c0744289",
+  "run_id": 40428833150,
+  "status": "PENDING_UNVERIFIED",
+  "upstream": {
+    "repo": "ggml-org/llama.cpp",
+    "tag": "b10964",
+    "tar_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe",
+    "tar_bytes": 37420323,
+    "constants_blob": "e54ee5a0fd41416f191130cdf1efd08507f63894",
+    "mapping_blob": "d2dfeece59522ffb417f70939cf94ee157591eee"
+  },
+  "frozen": {
+    "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
+    "trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "script_blob": "b59f45f06bf0b8428fba502b8146c02205228edd",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "template_sha256": "013eed60546434b6967e3483153d8c5c37abcb1d667f8b1f914683f2a9411531"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "next_exact_command": "Inspect exact-source Actions 40428833150, download SHA-closed raw, verify LFM2 GGUF preflight and adapter export/LoRA-B. Back up privately with byte readback. If native RED, preserve raw and switch to independent canonical package; if GREEN, plan selected deployed GGUF parity/utility."
+}
