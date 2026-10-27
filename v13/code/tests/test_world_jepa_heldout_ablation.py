@@ -63,6 +63,25 @@ class WorldJEPAHeldoutAblationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'seed'):
             h.summarize(good[:-1])
 
+    def test_invalid_action_indices_fail_closed_before_numpy_indexing(self):
+        tr = h.make_rows(40, 501)
+        te = h.make_rows(10, 502)
+        X, A, X2, _ = h.arrays(tr)
+        Xe, Ae, X2e, action = h.arrays(te)
+        model = wj.WorldJEPA(seed=1, ensemble=2).fit(X, A, X2, steps=0)
+        self.assertEqual(action[5], 3)
+        self.assertTrue(np.isfinite(h.score_model(model, Xe, Ae, X2e, action)['ensemble_mean_mse']))
+        for bad in (
+            np.where(np.arange(len(action)) == 5, -1, action),
+            np.where(np.arange(len(action)) == 5, 4, action),
+            action.astype(float),
+            action.astype(bool),
+            action.reshape(-1, 1),
+        ):
+            with self.subTest(bad_dtype=str(bad.dtype), bad_shape=bad.shape):
+                with self.assertRaisesRegex(ValueError, 'Invalid heldout action indices'):
+                    h.score_model(model, Xe, Ae, X2e, bad)
+
     def test_explicit_execution_flag_required(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)/'receipt.json'
