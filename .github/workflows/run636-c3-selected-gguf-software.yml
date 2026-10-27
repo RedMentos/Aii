@@ -1,0 +1,77 @@
+name: V13 Run636 selected C3 QAD-Q4 evaluator source contracts
+on:
+  push:
+    branches:
+      - codex/automation11-run636-c3-selected-gguf-utility-20261027
+    paths:
+      - '.github/workflows/run636-c3-selected-gguf-software.yml'
+      - 'v13/code/scripts/run636_c3_selected_gguf_utility.py'
+      - 'v13/code/tests/test_run636_c3_selected_gguf_utility.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run636-source-only
+  cancel-in-progress: false
+jobs:
+  selected-c3-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Exact source and Canon freeze
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN636_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run636_c3_selected_gguf_utility.py)" = 8a32d806739f7285ed41232e41168e35cf9ef3eb
+          test "$(git hash-object v13/code/tests/test_run636_c3_selected_gguf_utility.py)" = 0b127f6060d1b1834297115a0099634bf103ac32
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run636-c3-selected-gguf-utility/PREREG.md)" = ec394e2101a98790b5a6f4ed83821d7a9219fab1
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json)" = c282077912ec4e284476825b3e03728620d8bad0
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          sha256sum v13/code/scripts/run636_c3_selected_gguf_utility.py v13/code/tests/test_run636_c3_selected_gguf_utility.py > "$RUNNER_TEMP/RUN636_SOURCE_SHA256.txt"
+      - name: Actual software negative and adjacent contracts
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_run636_c3_selected_gguf_utility \
+            tests.test_run630_c3_llama_native \
+            tests.test_run631_c3_chat_native \
+            tests.test_run632_c3_lfm350_native \
+            tests.test_run634_c3_template_contract \
+            tests.test_run635_c3_upstream_export) > "$RUNNER_TEMP/RUN636_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN636_TEST_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e49291d06336b4010998767b64e7a62cf1b2a5ad --head HEAD > "$RUNNER_TEMP/RUN636_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN636_PRIVACY_EXIT.txt"
+          exit 0
+      - name: SHA-close original raw
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do test -f "RUN636_${k}_EXIT.txt" || echo 2 > "RUN636_${k}_EXIT.txt"; done
+          find . -maxdepth 1 -type f -name 'RUN636_*' ! -name RUN636_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN636_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run636-Selected-C3-Software-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN636_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN636_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN636_PRIVACY_EXIT.txt")" = 0

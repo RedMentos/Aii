@@ -1,0 +1,9 @@
+# Run636 — selected deployed C3 GGUF LoRA parity/utility evaluator software PASS
+
+Review child of Run635 PR630, not main. Preregistered before source and tests. `scripts/run636_c3_selected_gguf_utility.py` implements a **fail-closed** selected `LiquidAI/LFM2.5-350M-QAD-Q4_0.gguf` native evaluator: binds actual HF master, selected deployed GGUF, official chat template, Run632 V2 cohort, Run635 source proof/adapter GGUF/LoRA-B, LFM license and exact native server hash. It runs the fixed six synthetic train/heldout/near-miss questions using actual HF/native token-ID parity, native base/scale0/scale1 output and logprob comparisons. Bounded synthetic gain requires exact parity, scale1 effect, train gain, heldout nonregression and near-miss nonleak. It cannot activate weights, change Age or grant learning rights.
+
+**Software-only Actions 40429140135 GREEN:** 34/34 new and adjacent source tests PASS, privacy CLEAN. Original raw artifact 12700254984 ZIP SHA256 `4da9355dba9702418f255f9b51d08cdfd556d05e44939f5c54cc180186a0a92f`, ZIP CRC PASS, 6/6 internal SHA PASS. Private Library backup `/V13-Checkpoints/2026-10-27/Run636/Run636-software-GREEN-40429140135.zip` independently byte-verified. This proves software contract handling only, **not native deployed parity or answer utility**.
+
+**Now available actual prerequisite:** Run635 native adapter GGUF SHA256 `3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599`, original artifact 12701530582 with full source proof and LFM license; 38,912 nonzero LoRA-B elements. Master learned recall 0.0, so there is no basis to claim improved answers. Next Run637 can preregister exact artifact/model/server hashes and run native selected QAD-Q4 utility tests. If token/scale0 parity fails, report RED without utility inference.
+
+STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight 0, Redmi UNMEASURED, V13 incomplete. Review-only, no production activation.

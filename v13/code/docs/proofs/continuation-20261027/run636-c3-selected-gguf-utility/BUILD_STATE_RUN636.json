@@ -1,0 +1,46 @@
+{
+  "schema": "V13_RUN636_SELECTED_C3_GGUF_EVALUATOR_SOFTWARE_VERIFIED_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/automation11-run636-c3-selected-gguf-utility-20261027",
+  "owner": "GPT-6 automation selected C3 deployed parity evaluator",
+  "parent_pr": 630,
+  "parent_sha": "e49291d06336b4010998767b64e7a62cf1b2a5ad",
+  "prereg_commit": "6c899fe9e219de92a3f60752ad547a1c53017beb",
+  "source_commit": "5877244f0b80a6855d68b130e0de900a042b8150",
+  "source_blob": "8a32d806739f7285ed41232e41168e35cf9ef3eb",
+  "test_commit": "dced263452a7451b537784786346240353d011db",
+  "test_blob": "0b127f6060d1b1834297115a0099634bf103ac32",
+  "workflow_commit": "d417fcf4423468298021cb490ab7113fc6b56a8c",
+  "verified": {
+    "run_id": 40429140135,
+    "head_sha": "d417fcf4423468298021cb490ab7113fc6b56a8c",
+    "status": "GREEN",
+    "tests_passed": 34,
+    "privacy": "CLEAN",
+    "artifact_id": 12700254984,
+    "raw_zip_sha256": "4da9355dba9702418f255f9b51d08cdfd556d05e44939f5c54cc180186a0a92f",
+    "inner_sha_verified": 6,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run636/Run636-software-GREEN-40429140135.zip",
+    "roundtrip": "PASS"
+  },
+  "actual_native_adapter": {
+    "source_run": 40428833150,
+    "artifact_id": 12701530582,
+    "gguf_sha256": "3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599",
+    "proof_schema": "V13_RUN632_C3_LFM350_CPU_LORA_V1",
+    "peft_sha256": "f857aeb02366c8e98d94fe7d1e6c6de93ed4114b9e1a20e8ef190eb2910124c5",
+    "lora_b_nonzero": 38912,
+    "master_recall": 0
+  },
+  "native_deployed_test": "NOT_RUN",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "next_exact_command": "Create review child Run637 with preregistered real Run635 artifact 12701530582/adapter SHA and selected deployed QAD-Q4 SHA; source-bound native llama.cpp b10964 server; run six frozen Run636 HF/native token and base/scale0/scale1 utility cases, preserve original raw, do not promote STEP2."
+}
