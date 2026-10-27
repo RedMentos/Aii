@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
 
 from scripts import bp2b_first_step_diagnostic as D
@@ -69,6 +70,20 @@ class FirstStepDiagnosticTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             D.run_probe('fake-master', self.root, 'test-01', preflight=preflight,
                         trainer_factory=FakeTrainer, save_fn=lambda *a, **k: {'step': 1, 'sha256': expected_sha})
+
+    def test_rss_clock_is_elapsed_since_sampler_start_not_host_uptime(self):
+        sampler = D.ResourceSamples(self.root / 'rss-relative.jsonl', interval=.01)
+        before = time.monotonic()
+        sampler.start()
+        time.sleep(.04)
+        sampler.close()
+        after = time.monotonic()
+        rows = [json.loads(line) for line in sampler.path.read_text().splitlines()]
+        self.assertGreaterEqual(len(rows), 1)
+        stamps = [row['elapsed_monotonic_s'] for row in rows]
+        self.assertTrue(all(type(t) in (float, int) and t >= 0 for t in stamps))
+        self.assertLessEqual(stamps[0], (after - before) + .1)
+        self.assertTrue(all(a <= b for a, b in zip(stamps, stamps[1:])))
 
     def test_return_without_first_step_fails_and_retains_failed_receipt(self):
         with self.assertRaisesRegex(ValueError, 'without a completed first-step'):
