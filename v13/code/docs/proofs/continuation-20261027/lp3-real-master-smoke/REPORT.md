@@ -9,3 +9,8 @@ New `tests/test_lp3_real_master_smoke.py` has three no-model source preflight/CL
 **Next:** inspect exact Actions run and raw artifact, independently audit model SHA/receipt, repair any genuine compatibility failure on an isolated child while retaining original failure; only then preregister a matched CE/own/shift LP3 heldout utility cohort. No overlapping heavy native jobs.
 
 Unchanged: LP1 NO_ATTRIBUTABLE_GAIN; LP2 ALIGNS_NO_GAIN; BJ1 NO_SIGNAL; STEP2 UTILITY_FAIL; B3 L1 FAIL; `jepa_weight=0`, Age authority 0, Redmi unmeasured, V13 incomplete.
+
+
+## Original native attempt — preserved FAIL
+
+Actions **40523353369**, executable source SHA `212f097adf523208f7b8f3dfa35846076d66f30a`, **FAIL**. Official pinned 350M full SHA preflight **PASS**, model loaded, but `tok.apply_chat_template(... tokenize=True)` did not meet the runner's assumed flat `list[int]` contract; `ValueError: Tokenizer did not return prompt token ID lists` before any optimizer step. Native exit **1**; privacy and diff exits **0**. Raw Actions artifact **12741654668**, ZIP SHA256 `2ce6055baa085ffb4107629cef105242292bb8b006a31f682721e46c3be9d8af`; independently downloaded, ZIP CRC PASS, retained in private Library. No real-model gradient/greedy/utility claim. **Do not relabel this run PASS.** Next: separately register tokenizer return-shape diagnostic on exact pinned source, inspect output type/shape, then a new bounded compatibility attempt on a review child; preserve this failed attempt unchanged.
