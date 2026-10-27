@@ -94,7 +94,7 @@ class PlanTests(Base):
         e1=self.ev('q1');p1=self.c.plan(e1,'C3_LANGUAGE','SYS',vol(1),[],'q1')
         self.assertEqual(p1['plan']['cache']['fallback_reason'],'append_no_matching_transcript')
         hist=[{'event_id':e1,'role':'user','text':'q1'},{'event_id':e1,'role':'assistant','text':'a1'}]
-        e2=self.ev('q2');p2=self.c.plan(e2,'C3_LANGUAGE','SYS',vol(2),hist,'q2')
+        e2=self.ev('q2');p2=self.c.plan(e2,'C3_LANGUAGE','SYS',vol(1),hist,'q2')  # unchanged volatile source is safe to re-enter
         self.assertIn('append_reentry',p2['plan']['decisions']);self.assertEqual(p2['planned'][:len(p1['planned'])],p1['planned'])
         self.assertEqual(p2['planned'][len(p1['planned'])],{'role':'assistant','content':'a1'});self.assertEqual(p2['planned'][-1]['content'],'q2')
         self.assertEqual(p2['plan']['cache']['est_reused_chars_planned'],p1['plan']['cache']['est_prompt_chars_planned'])
@@ -125,6 +125,38 @@ class PlanTests(Base):
         out=self.c.plan(self.ev('second'),'C3_LANGUAGE','SYS',[],rewritten,'second')
         self.assertNotIn('OLD_HISTORY_MARKER',C.dumps(out['planned']))
         self.assertNotIn('append_reentry',out['plan']['decisions'])
+
+    def test_append_only_rejects_rewritten_last_user_query(self):
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        first=self.ev('original')
+        self.c.plan(first,'C3_LANGUAGE','SYS',[],[],'original')
+        edited=[{'event_id':first,'role':'user','text':'REWRITTEN_LAST_USER'},
+                {'event_id':first,'role':'assistant','text':'answer'}]
+        out=self.c.plan(self.ev('next'),'C3_LANGUAGE','SYS',[],edited,'next')
+        self.assertEqual(out['plan']['cache']['fallback_reason'],'append_query_changed')
+        self.assertNotIn('append_reentry',out['plan']['decisions'])
+
+    def test_append_only_active_never_reenters_unapplied_shadow_prompt(self):
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        first=self.ev('first')
+        self.c.plan(first,'C3_LANGUAGE','SYS',[],[],'first')
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        history=[{'event_id':first,'role':'user','text':'first'},
+                 {'event_id':first,'role':'assistant','text':'answer'}]
+        out=self.c.plan(self.ev('next'),'C3_LANGUAGE','SYS',[],history,'next')
+        self.assertEqual(out['plan']['cache']['fallback_reason'],'append_unapplied_transcript')
+        self.assertNotIn('append_reentry',out['plan']['decisions'])
+        self.assertTrue(out['applied'])
+
+    def test_append_only_active_reentry_after_active_prefix(self):
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        first=self.ev('first')
+        self.c.plan(first,'C3_LANGUAGE','SYS',[],[],'first')
+        history=[{'event_id':first,'role':'user','text':'first'},
+                 {'event_id':first,'role':'assistant','text':'answer'}]
+        out=self.c.plan(self.ev('next'),'C3_LANGUAGE','SYS',[],history,'next')
+        self.assertIn('append_reentry',out['plan']['decisions'])
 
     def test_active_mode_requires_explicit_human(self):
         with self.assertRaises(PermissionError):self.c.set_mode('ACTIVE')
