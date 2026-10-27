@@ -10,6 +10,7 @@ The calibrated value feeds age.record(metrics['calibration']).
 import math
 from .base import StateBox,clamp01
 from .generality import calibration,normalize
+from . import metaeff
 
 KEY='G9_METACOGNITION';REVISION='g9-metacog-v1'
 BINS=10;WINDOW=512;MIN_SUPPORT=20
@@ -56,7 +57,8 @@ class Metacognition:
             if component and name!=component:continue
             raw=calibration([(a,b) for a,b in c['pairs']])
             cal=calibration([(c['calibrator'][min(BINS-1,int(a*BINS))],b) for a,b in c['pairs']]) if c['calibrator'] else None
-            out[name]={'n':len(c['pairs']),'raw':{'ece':raw['ece'],'brier':raw['brier']},'calibrated':cal and {'ece':cal['ece'],'brier':cal['brier']}}
+            out[name]={'n':len(c['pairs']),'raw':{'ece':raw['ece'],'brier':raw['brier']},'calibrated':cal and {'ece':cal['ece'],'brier':cal['brier']},
+                       'meta':metaeff.report([tuple(x) for x in c['pairs']],perm=200,boot=100) if len(c['pairs'])>=MIN_SUPPORT else None}  # WP-FS3: next to ECE, never instead
         return {'revision':REVISION,'components':out}
     def age_metric(self,component):
         """1-ECE of the calibrated component, the 'calibration' metric for the Age gate (None if unsupported)."""
