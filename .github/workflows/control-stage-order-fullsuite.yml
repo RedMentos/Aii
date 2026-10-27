@@ -1,0 +1,74 @@
+name: V13 control stage-order full software regression
+on:
+  push:
+    branches: [assistant/v13-control-stage-order-review-20261027]
+    paths:
+      - '.github/workflows/control-stage-order-fullsuite.yml'
+      - 'v13/code/v13/control_budget.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-control-stage-order-full-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run full source-wide software suite and preserve raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/control-stage-order-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/control_budget.py > "$evidence/SOURCE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/control-stage-order-full-venv"
+          py="$RUNNER_TEMP/control-stage-order-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          torch_exit=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          deps_exit=$?
+          if [ "$torch_exit" -eq 0 ] && [ "$deps_exit" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 14a08bab05e17a77508e23d1c1d25d5d142c9b89 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 14a08bab05e17a77508e23d1c1d25d5d142c9b89 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-control-stage-order-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/control-stage-order-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits and no gate promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/control-stage-order-full"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'CONTROL_STAGE_ORDER_FULL_SOFTWARE_ONLY_NO_GATE_PROMOTION'
