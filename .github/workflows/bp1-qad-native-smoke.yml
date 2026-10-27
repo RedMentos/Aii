@@ -1,0 +1,177 @@
+name: V13 BP1 genuine QAD FP32 vs GGUF Linux-native smoke
+on:
+  push:
+    branches: [codex/gpt6-bp1-qad-native-smoke-20261027-0925]
+    paths:
+      - '.github/workflows/bp1-qad-native-smoke.yml'
+      - 'v13/code/scripts/bp1_qad_native_smoke.py'
+      - 'v13/code/tests/test_bp1_qad_native_smoke.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-native-smoke/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-native-smoke-heavy-serial
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Software negative tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-smoke-software"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-smoke-software/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_native_smoke.py v13/code/tests/test_bp1_qad_native_smoke.py > "$RUNNER_TEMP/bp1-smoke-software/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_native_smoke) > "$RUNNER_TEMP/bp1-smoke-software/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-software/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_native_smoke.py v13/code/tests/test_bp1_qad_native_smoke.py > "$RUNNER_TEMP/bp1-smoke-software/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-software/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 32e0d98542376ab5079ce17a2aae24933492fc1b --head HEAD > "$RUNNER_TEMP/bp1-smoke-software/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-software/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve raw software evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-native-smoke-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-smoke-software/
+          if-no-files-found: error
+      - name: Enforce software gates before heavy native job
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-smoke-software/${n}_EXIT.txt")" = 0 || { echo "$n failed"; tail -80 "$RUNNER_TEMP/bp1-smoke-software/${n}_RAW.log"; exit 1; }
+          done
+  native:
+    needs: software
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_PRODUCTION_ACTIVATION: '1'
+      HF_HUB_DOWNLOAD_TIMEOUT: '600'
+      HF_HUB_ETAG_TIMEOUT: '60'
+      OMP_NUM_THREADS: '4'
+      OPENBLAS_NUM_THREADS: '1'
+      TRANSFORMERS_NO_ADVISORY_WARNINGS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Preflight CPU memory/disk, source HEAD, isolated dependencies
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-smoke-native"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-smoke-native/HEAD.txt"
+          (free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true) > "$RUNNER_TEMP/bp1-smoke-native/RESOURCE_BEFORE.log" 2>&1
+          python3 - <<'PY' > "$RUNNER_TEMP/bp1-smoke-native/BUDGET_RAW.log" 2>&1
+          import os, shutil
+          disk=shutil.disk_usage(os.environ["RUNNER_TEMP"]).free
+          raw=open("/sys/fs/cgroup/memory.max").read().strip() if os.path.isfile("/sys/fs/cgroup/memory.max") else "max"
+          cap=int(raw) if raw.isdigit() else 8_000_000_000
+          print("disk_free_bytes",disk,"cgroup_memory_cap_bytes",cap)
+          assert disk >= 5_000_000_000 and cap >= 5_000_000_000, "insufficient resource preflight"
+          PY
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/BUDGET_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/bp1-smoke-venv" > "$RUNNER_TEMP/bp1-smoke-native/VENV_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/VENV_EXIT.txt"
+          timeout 360s "$RUNNER_TEMP/bp1-smoke-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.0' > "$RUNNER_TEMP/bp1-smoke-native/PIP_TORCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/PIP_TORCH_EXIT.txt"
+          timeout 240s "$RUNNER_TEMP/bp1-smoke-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.9.0' 'jinja2==3.1.6' > "$RUNNER_TEMP/bp1-smoke-native/PIP_HF_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/PIP_HF_EXIT.txt"
+          exit 0
+      - name: Retrieve official immutable model and runner (preserve failures)
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/BUDGET_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/PIP_TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/PIP_HF_EXIT.txt")" = 0 ]; then
+            "$RUNNER_TEMP/bp1-smoke-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-smoke-native/HF_FETCH_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          p=snapshot_download(repo_id="LiquidAI/LFM2.5-350M-GGUF",
+              revision="657e078c94084481950a2d555a941481f715536b",
+              allow_patterns=["qad/*","LFM2.5-350M-QAD-Q4_0.gguf"],
+              local_dir=os.environ["RUNNER_TEMP"]+"/bp1-qad-native-model")
+          print("downloaded snapshot",p)
+          PY
+            echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/HF_FETCH_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/HF_FETCH_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/HF_FETCH_EXIT.txt")" = 0 ]; then
+            echo "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079  $RUNNER_TEMP/bp1-qad-native-model/qad/model.safetensors" | sha256sum -c - > "$RUNNER_TEMP/bp1-smoke-native/MASTER_SHA_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/MASTER_SHA_EXIT.txt"
+            echo "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d  $RUNNER_TEMP/bp1-qad-native-model/LFM2.5-350M-QAD-Q4_0.gguf" | sha256sum -c - > "$RUNNER_TEMP/bp1-smoke-native/GGUF_SHA_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/GGUF_SHA_EXIT.txt"
+            (cd "$RUNNER_TEMP/bp1-qad-native-model" && sha256sum qad/config.json qad/tokenizer.json qad/chat_template.jinja qad/provenance.json qad/LICENSE) > "$RUNNER_TEMP/bp1-smoke-native/SMALL_SOURCE_SHA256.txt"
+            cp "$RUNNER_TEMP/bp1-qad-native-model/qad/provenance.json" "$RUNNER_TEMP/bp1-smoke-native/QAD_PROVENANCE_RAW.json"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/MASTER_SHA_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/GGUF_SHA_EXIT.txt"
+          fi
+          curl -fsSL --retry 1 --max-time 240 "https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz" -o "$RUNNER_TEMP/llama-b10964.tar.gz" > "$RUNNER_TEMP/bp1-smoke-native/RUNNER_FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  $RUNNER_TEMP/llama-b10964.tar.gz" | sha256sum -c - >> "$RUNNER_TEMP/bp1-smoke-native/RUNNER_FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/bp1-llama"
+            tar -xzf "$RUNNER_TEMP/llama-b10964.tar.gz" -C "$RUNNER_TEMP/bp1-llama" >> "$RUNNER_TEMP/bp1-smoke-native/RUNNER_FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-smoke-native/RUNNER_FETCH_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            find "$RUNNER_TEMP/bp1-llama" -type f -name llama-server -print > "$RUNNER_TEMP/bp1-smoke-native/SERVER_PATHS.txt"
+            sha256sum "$(head -1 "$RUNNER_TEMP/bp1-smoke-native/SERVER_PATHS.txt")" > "$RUNNER_TEMP/bp1-smoke-native/SERVER_SHA256.txt"
+          fi
+          exit 0
+      - name: Run true native QAD FP32 then GGUF serially, compare diagnostic
+        run: |
+          set +e
+          cd v13/code
+          if [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/MASTER_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/GGUF_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/RUNNER_FETCH_EXIT.txt")" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/bp1-smoke-venv/bin/python" scripts/bp1_qad_native_smoke.py --mode hf --model "$RUNNER_TEMP/bp1-qad-native-model/qad" --out "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_RESULT.json" > "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_EXIT.txt"
+            SERVER="$(head -1 "$RUNNER_TEMP/bp1-smoke-native/SERVER_PATHS.txt")"
+            if [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_EXIT.txt")" = 0 ]; then
+              LD_LIBRARY_PATH="$(dirname "$SERVER")" timeout 420s "$RUNNER_TEMP/bp1-smoke-venv/bin/python" scripts/bp1_qad_native_smoke.py --mode gguf --model "$RUNNER_TEMP/bp1-qad-native-model/LFM2.5-350M-QAD-Q4_0.gguf" --server "$SERVER" --log "$RUNNER_TEMP/bp1-smoke-native/GGUF_SERVER_RAW.log" --out "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_RESULT.json" > "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_RAW.log" 2>&1
+              echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_EXIT.txt"
+            else
+              echo 2 > "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_EXIT.txt"
+            fi
+            if [ "$(cat "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_EXIT.txt")" = 0 ]; then
+              "$RUNNER_TEMP/bp1-smoke-venv/bin/python" scripts/bp1_qad_native_smoke.py --mode compare --hf-report "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_RESULT.json" --gguf-report "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_RESULT.json" --out "$RUNNER_TEMP/bp1-smoke-native/COMPARISON.json" > "$RUNNER_TEMP/bp1-smoke-native/COMPARE_RAW.log" 2>&1
+              echo "$?" > "$RUNNER_TEMP/bp1-smoke-native/COMPARE_EXIT.txt"
+            else
+              echo 2 > "$RUNNER_TEMP/bp1-smoke-native/COMPARE_EXIT.txt"
+            fi
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/HF_NATIVE_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/GGUF_NATIVE_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/bp1-smoke-native/COMPARE_EXIT.txt"
+          fi
+          (free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.peak 2>/dev/null || true) > "$RUNNER_TEMP/bp1-smoke-native/RESOURCE_AFTER.log" 2>&1
+          exit 0
+      - name: Preserve all native raw and negative attempts (no weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-native-smoke-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-smoke-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual native execution or preserve RED
+        run: |
+          set -euo pipefail
+          for n in BUDGET VENV PIP_TORCH PIP_HF HF_FETCH MASTER_SHA GGUF_SHA RUNNER_FETCH HF_NATIVE GGUF_NATIVE COMPARE; do
+            test "$(cat "$RUNNER_TEMP/bp1-smoke-native/${n}_EXIT.txt")" = 0 || { echo "$n failed"; tail -80 "$RUNNER_TEMP/bp1-smoke-native/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          echo "GENUINE_LINUX_NATIVE_QAD_C3_SMOKE_ONLY; NO_TRAINING_OR_REDMi"
