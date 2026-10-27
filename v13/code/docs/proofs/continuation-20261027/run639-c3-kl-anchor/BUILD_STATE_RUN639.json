@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN639_C3_KL_ANCHOR_BUILD_STATE_V2",
+  "schema": "V13_RUN639_C3_KL_ANCHOR_BUILD_STATE_V3",
   "date_utc": "2026-10-27",
   "branch": "codex/gpt6-run639-c3-kl-anchor-20261027",
   "owner": "GPT-6 scheduled V13 implementation; isolated Run639 C3 KL anchor files",
@@ -73,10 +73,50 @@
   },
   "production_integrated": false,
   "open_questions": [
-    "Does canonical KL anchor retain at least one heldout and prevent Cedar leakage while learning >=1 Alder fact?",
-    "Does original Run638 unanchored baseline reproduce exactly on pinned QAD-Q4?",
-    "Body-JEPA, B1/B2 native training, STEP2, Redmi remain unproven."
+    "Run639 KL-to-base anchoring cut master heldout KL from 5.8776 to 0.06999 and restored greeting/2+2 semantics while retaining 2/2 Alder recall; Cedar leakage remained 2/2. Do not claim bounded utility.",
+    "Original unanchored 32-step baseline reproduced 5/6 exact full-text cases (Cedar color base text differed) despite token/scale0 parity; any new robustness metric must be prospectively registered, not patched into Run639.",
+    "Exact-key 4 vs four known false negative remains in frozen scorer; separate future scorer study only.",
+    "Body-JEPA, B1/B2 native sparse, STEP2 and Redmi unproven."
   ],
-  "next_exact_command": "Inspect latest GitHub Actions native Run639 on branch codex/gpt6-run639-c3-kl-anchor-20261027 (workflow commit 3e69b7a); require 44 source PASS and pinned model/native execution, download artifact, verify CRC/inner SHA and private byte backup; update exact anchored results, PR635, then next independent package.",
-  "pr": 635
+  "next_exact_command": "Run639 complete with RED utility; no tuning. Continue independent Run640 exact hash-bound B3 bridge validity patch and focused CI; preserve its raw/source/negative gates. For future C3 experiments, independently preregister locality constraints and baseline stochasticity, never retrofit Run639.",
+  "pr": 635,
+  "native": {
+    "run_id": 40431900872,
+    "head_sha": "3e69b7af4bb8f1bb20b38fa1eb303c3ca3686549",
+    "status": "RED_NATIVE_PARITY_AND_LOCALITY_FAIL",
+    "artifact_id": 12701744750,
+    "zip_sha256": "fab8c74d416303a871e777d7e56cd7211b527d1fd25c7182ad74768bb1270506",
+    "crc": "PASS",
+    "inner_sha": "31/31 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-native-anchored-RED-40431900872.zip",
+    "private_byte_roundtrip": "PASS",
+    "train_exit": 0,
+    "native_exit": 1,
+    "source_tests": "44/44 PASS",
+    "privacy": "CLEAN",
+    "train_proof_sha256": "28a04c4baa7821e504f94e06b0b8a9862edb35250ea30ac45f7942fb9d6a283d",
+    "native_proof_sha256": "788b4681a7234593a1b305e41320bfc4b0bfb9a038bd13f448ecadf6dafffdf6",
+    "adapter_gguf_sha256": "04b5ef3b432f82985c163e701ee536ecbeaaf05ec1d96ab0b0da0130f2c061c6",
+    "adapter_peft_sha256": "6956a2dce70533a4e7803f546d78404a0d00c891ba22900a515e21a600730173",
+    "train": {
+      "steps": 32,
+      "final_ce": 0.00919,
+      "master_recall": 1,
+      "heldout_kl_to_base": 0.06998836435377598,
+      "peak_rss_mb": 2422.5,
+      "seconds": 127.69,
+      "lora_b_nonzero": 38912
+    },
+    "deployed": {
+      "status": "TOKEN_OR_BASELINE_PARITY_FAIL",
+      "train_hits": "2/2",
+      "heldout_hits": "1/2 exact-key; 2+2 answered 'four' semantically correct but frozen key '4' false",
+      "cedar_leak": "2/2",
+      "original_unanchored_baseline_reproduced": "5/6; Cedar color base text differs despite same first token",
+      "hf_native_tokenizer_parity": true,
+      "scale0_parity": true,
+      "numeric_effect": true,
+      "bounded_synthetic_utility": false
+    }
+  }
 }
