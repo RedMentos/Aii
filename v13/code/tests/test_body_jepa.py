@@ -165,7 +165,7 @@ class WeightPreflightTests(unittest.TestCase):
         from unittest import mock
         trainer=object.__new__(bj.BodyJepaTrainer)
         trainer.cfg=dict(bj.DEFAULTS)  # isolate preflight from unrelated uninitialised trainer state
-        bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'),1e100)
+        bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'),1e100,10**1000)
         for weight in bad:
             with self.subTest(weight=repr(weight)), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
                 with self.assertRaises(ValueError):
