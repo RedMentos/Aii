@@ -65,5 +65,11 @@
   "age_authority": 0,
   "canonical_architecture_complete": false,
   "user_full_scope_complete": false,
-  "next": "Pre-register all-four-arm heldout/wrong-source/zero-prefix/retention evaluation with new phrasing; independent review and full-suite closure."
+  "next": "Pre-register all-four-arm heldout/wrong-source/zero-prefix/retention evaluation with new phrasing; independent review and full-suite closure.",
+  "fullsuite_actions": 40580134684,
+  "fullsuite_status": "SUCCESS",
+  "fullsuite_tests": "1922 OK (1 skipped)",
+  "fullsuite_artifact_id": 12769976261,
+  "fullsuite_artifact_sha256": "b38dd64a32e37ca8d9622d2463fe6c808716f020f2f15a5c2ca5ad04fa3243a1",
+  "fullsuite_private_backup_byte_exact": true
 }
