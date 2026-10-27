@@ -1,0 +1,35 @@
+name: V13 LP3 preregistered heldout fixture software gate
+on:
+  push:
+    branches: [codex/automation11c-lp3-heldout-utility-20261027]
+    paths:
+      - '.github/workflows/lp3-heldout-prereg-software.yml'
+      - 'v13/code/scripts/lp3_heldout_utility.py'
+      - 'v13/code/tests/test_lp3_heldout_utility.py'
+      - 'v13/code/docs/proofs/continuation-20261027/lp3-heldout-utility/PREREG.md'
+      - 'v13/code/BUILD_STATE.json'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-heldout-prereg-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prereg-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Test fixed fixture, provenance guards, negative decisions, syntax and privacy
+        run: |
+          set -euo pipefail
+          cd v13/code
+          PYTHONPATH=. python3 -m unittest -v tests.test_lp3_heldout_utility
+          python3 -m py_compile scripts/lp3_heldout_utility.py tests/test_lp3_heldout_utility.py
+          cd ../..
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3fcc3f89f4b1965f6fc656744073be008eefe460 --head HEAD
+          git diff --check 3fcc3f89f4b1965f6fc656744073be008eefe460 HEAD
+          echo 'LP3_HELDOUT_PREREG_SOFTWARE_ONLY_NO_NATIVE_OR_UTILITY_CLAIM'
