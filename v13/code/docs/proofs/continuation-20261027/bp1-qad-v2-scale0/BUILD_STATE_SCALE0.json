@@ -1,0 +1,48 @@
+{
+  "schema": "V13_BP1_V2_SCALE0_RETRY_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "d6ccb20dde4d2bf5d87b8cbc31c91bec09fe425d",
+  "prereg": "9816351005eae8998fc72e01d34fd8f01be6ae23",
+  "original_red": {
+    "run": 40488120145,
+    "source": "6205378d9834ce3843db33e5145049f71014db91",
+    "artifact": 12728650326,
+    "zip_sha256": "053ab766af541e3859950eb5ce0e7d59f67c61747f3e775c412bccd2ba38b7fa",
+    "crc": true,
+    "train_exit": 0,
+    "v2_exit": 1,
+    "predictions": 0,
+    "reason": "GET /lora-adapters ID/path/default-scale mismatch",
+    "backup": "private Library byte-exact"
+  },
+  "fix": {
+    "source": "5feca55f8cfb5519b741d7073b62cfdc2e8c2521",
+    "software_run": 40490183517,
+    "tests_pass": 42,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "artifact": 12728746126,
+    "zip_sha256": "584336a064e51475602b9f06b86502ed55a39b94025e9bba46cfdd63669f72b5",
+    "backup": "private Library byte-exact",
+    "native_activated": false
+  },
+  "frozen": {
+    "trainer_git_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "train_sha256": "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86",
+    "heldout_sha256": "7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c",
+    "seed": 13,
+    "steps": 2,
+    "rank": 2,
+    "alpha": 4,
+    "jepa_weight": 0
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "Verify no queued/in_progress heavy owner; create ACTIVATE_SCALE0.txt on own review branch; independently audit new original native ZIP and retain RED if failed."
+}
