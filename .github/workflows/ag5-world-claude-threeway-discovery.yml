@@ -1,0 +1,78 @@
+name: V13 AG5 World Claude exact three-way disposable conflict discovery
+on:
+  push:
+    branches: [codex/ag5-world-claude-threeway-discovery-20261027]
+    paths:
+      - '.github/workflows/ag5-world-claude-threeway-discovery.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-threeway-discovery
+  cancel-in-progress: false
+jobs:
+  discover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated Python for pinned resolver
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/threeway"
+      - name: Record exact first resolved merge and second conflict stage
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/threewayproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/threewayproof/REVIEW_HEAD.txt"
+          git fetch --no-tags origin c615497384dc5519be59232451895ca443ce9e45 e505364c78d6ef222eb287d84d84aed81ecc53e3 > "$RUNNER_TEMP/threewayproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/FETCH_EXIT.txt"
+          git merge-base HEAD c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/threewayproof/AG5_MERGE_BASE.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/threewayproof/FIRST_MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/FIRST_MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/threewayproof/FIRST_CONFLICTS.txt"
+          "$RUNNER_TEMP/threeway/bin/python" v13/code/scripts/resolve_ag5_world_merge_candidate.py > "$RUNNER_TEMP/threewayproof/FIRST_RESOLVE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/FIRST_RESOLVE_EXIT.txt"
+          sha256sum v13/code/v13/operator.py v13/code/docs/BEFEHLE.md > "$RUNNER_TEMP/threewayproof/FIRST_SOURCE_SHA256.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only AG5 World guide-aware resolved parent' > "$RUNNER_TEMP/threewayproof/FIRST_COMMIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/FIRST_COMMIT_EXIT.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/threewayproof/FIRST_COMMIT_SHA.txt"
+          "$RUNNER_TEMP/threeway/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base aab74aa900bfbd767f2983ba40a16fc0b8b95a3b --head HEAD > "$RUNNER_TEMP/threewayproof/FIRST_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/FIRST_PRIVACY_EXIT.txt"
+          git merge-base HEAD e505364c78d6ef222eb287d84d84aed81ecc53e3 > "$RUNNER_TEMP/threewayproof/CLAUDE_MERGE_BASE.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff e505364c78d6ef222eb287d84d84aed81ecc53e3 > "$RUNNER_TEMP/threewayproof/SECOND_MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/threewayproof/SECOND_MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/threewayproof/SECOND_CONFLICTS.txt"
+          git ls-files -u > "$RUNNER_TEMP/threewayproof/SECOND_UNMERGED_STAGE_BLOBS.txt"
+          git diff --cc > "$RUNNER_TEMP/threewayproof/SECOND_COMBINED_DIFF_RAW.patch"
+          git status --short > "$RUNNER_TEMP/threewayproof/SECOND_STATUS.txt"
+          exit 0
+      - name: Preserve closed raw conflict discovery
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ag5-world-claude-threeway-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/threewayproof/
+          if-no-files-found: error
+      - name: Enforce first resolved parent and actual second attempt
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/threewayproof/FETCH_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/threewayproof/FIRST_MERGE_EXIT.txt")" = 1
+          test "$(wc -l < "$RUNNER_TEMP/threewayproof/FIRST_CONFLICTS.txt")" = 3
+          for n in FIRST_RESOLVE FIRST_COMMIT FIRST_PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/threewayproof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/threewayproof/${n}_RAW.log"; exit 1; }
+          done
+          rc="$(cat "$RUNNER_TEMP/threewayproof/SECOND_MERGE_EXIT.txt")"
+          test "$rc" = 0 || test "$rc" = 1
+          echo "SECOND_MERGE_EXIT=$rc"
+          cat "$RUNNER_TEMP/threewayproof/SECOND_CONFLICTS.txt"

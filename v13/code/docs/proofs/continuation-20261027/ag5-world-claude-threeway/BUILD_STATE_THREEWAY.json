@@ -1,0 +1,31 @@
+{
+  "schema": "V13_AG5_WORLD_CLAUDE_THREEWAY_DISCOVERY_V1",
+  "date": "2026-10-27",
+  "branch": "codex/ag5-world-claude-threeway-discovery-20261027",
+  "source_head": "4b617eef090c1f8cd44b3690f18a7eab94a2bb88",
+  "AG5": "c615497384dc5519be59232451895ca443ce9e45",
+  "Claude": "e505364c78d6ef222eb287d84d84aed81ecc53e3",
+  "run": 40461235256,
+  "artifact": 12714178237,
+  "zip_sha256": "db1bc6bb2c0dda5e3b92343c4d799a3dab4ffcc6679c18b9aaac5c88db390268",
+  "first_merge_exit": 1,
+  "first_conflicts": 3,
+  "first_resolve_exit": 0,
+  "first_commit_exit": 0,
+  "first_privacy": "CLEAN",
+  "second_merge_exit": 0,
+  "second_conflicts": 0,
+  "private_backup_byte_verified": true,
+  "scope": "DISPOSABLE_LINUX_SOURCE_ONLY",
+  "owner": "GPT-6 integration auditor",
+  "next_owner": "four-branch focused integration test reviewer",
+  "next_command": "Preregister and run disposable AG5+World+Claude+PR667+PR669 merge, focused suites and privacy; no main merge",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  }
+}

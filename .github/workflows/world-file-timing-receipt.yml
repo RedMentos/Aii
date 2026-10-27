@@ -1,0 +1,74 @@
+name: V13 Linux file-world timing receipt review
+on:
+  push:
+    branches:
+      - codex/world-file-timing-receipt-20261027
+    paths:
+      - '.github/workflows/world-file-timing-receipt.yml'
+      - 'v13/code/scripts/world_jepa_shadow_lifecycle.py'
+      - 'v13/code/tests/test_world_file_timing_receipts.py'
+      - 'v13/code/tests/test_world_jepa_shadow_lifecycle.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-file-timing-receipt
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/fileworld"
+          timeout 240s "$RUNNER_TEMP/fileworld/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Capture original unit and real file-world outputs
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/fileworldproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/fileworldproof/HEAD.txt"
+          sha256sum v13/code/scripts/world_jepa_shadow_lifecycle.py v13/code/tests/test_world_file_timing_receipts.py v13/code/tests/test_world_jepa_shadow_lifecycle.py > "$RUNNER_TEMP/fileworldproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/fileworld/bin/python" -m unittest -v tests.test_world_file_timing_receipts tests.test_world_jepa_shadow_lifecycle) > "$RUNNER_TEMP/fileworldproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fileworldproof/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/fileworld/bin/python" scripts/world_jepa_shadow_lifecycle.py --seed 212 --train 600 --steps 10 --output-dir "$RUNNER_TEMP/fileworld_export") > "$RUNNER_TEMP/fileworldproof/WORLD_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fileworldproof/WORLD_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/fileworld/bin/python" -c 'import json,sys; from scripts.world_jepa_shadow_lifecycle import verify_timing_export; print(json.dumps(verify_timing_export(sys.argv[1]),sort_keys=True))' "$RUNNER_TEMP/fileworld_export") > "$RUNNER_TEMP/fileworldproof/VERIFY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fileworldproof/VERIFY_EXIT.txt"
+          if test -d "$RUNNER_TEMP/fileworld_export"; then
+            mkdir -p "$RUNNER_TEMP/fileworldproof/RAW_EXPORT"
+            cp "$RUNNER_TEMP/fileworld_export"/manifest.json "$RUNNER_TEMP/fileworldproof/RAW_EXPORT/" 2>/dev/null
+            cp "$RUNNER_TEMP/fileworld_export"/cohort.json "$RUNNER_TEMP/fileworldproof/RAW_EXPORT/" 2>/dev/null
+            cp "$RUNNER_TEMP/fileworld_export"/row_intervals.json "$RUNNER_TEMP/fileworldproof/RAW_EXPORT/" 2>/dev/null
+            cp "$RUNNER_TEMP/fileworld_export"/world-212.log "$RUNNER_TEMP/fileworldproof/RAW_EXPORT/" 2>/dev/null
+            cp "$RUNNER_TEMP/fileworld_export"/world-212.json "$RUNNER_TEMP/fileworldproof/RAW_EXPORT/" 2>/dev/null
+          fi
+          "$RUNNER_TEMP/fileworld/bin/python" -m compileall -q v13/code/scripts/world_jepa_shadow_lifecycle.py v13/code/tests/test_world_file_timing_receipts.py > "$RUNNER_TEMP/fileworldproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fileworldproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/fileworld/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 8322c9ac51501144ae57e5b0e39f204b203ae66b --head HEAD > "$RUNNER_TEMP/fileworldproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fileworldproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload immutable raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-file-timing-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/fileworldproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT WORLD VERIFY COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/fileworldproof/${n}_EXIT.txt")" = 0 || { echo "FAILED $n"; cat "$RUNNER_TEMP/fileworldproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -15 "$RUNNER_TEMP/fileworldproof/UNIT_RAW.log"

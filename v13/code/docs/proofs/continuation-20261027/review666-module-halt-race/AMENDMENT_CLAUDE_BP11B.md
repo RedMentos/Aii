@@ -1,0 +1,5 @@
+# Additional independent compatibility check — 2026-10-27
+
+Claude PR #666 advanced **after** our source GREEN, from original `ed5010708bdb3d11c5e495f01cc07d99d359ba39` to `e505364c78d6ef222eb287d84d84aed81ecc53e3`. The new Claude commit adds BP11b `module_learn.py`, module recall/export tool wiring and changes `modules_gate.py` outside our original fetch fix. Our PR #667 remains a separate child of the original Claude head, GitHub reports it mergeable, but prior Actions 40459751403 did **not** test this new combination.
+
+Preregister exact new-head disposable merge (no owner overwrite, no remote merge commit), run `tests.test_review666_module_halt_race tests.test_modules_gate tests.test_guard2` against combined tree, compile `modules_gate.py`/`module_learn.py`, privacy scan, and save raw ZIP. Acceptance: zero new test failures; our five mid-fetch negative cases still pass; no learning authority or real model/network claims. If conflicts or regressions appear, preserve raw RED and do not promote. Keep both original REDs and GREEN untouched. Independent owner GPT-6; next reviewer Claude/GPT cross-integration.

@@ -29,6 +29,12 @@ def optional_local_restore_available(path):
         return False
 
 
+def optional_native_plan(competence_check):
+    # Optional native fixture: inaccessible is unavailable; real errors propagate.
+    root = Path(os.environ.get('V13_NATIVE_RESTORE_ROOT', '/root/native/restore'))
+    return competence_check.plan(str(root)) if optional_local_restore_available(
+        root / 'round8-note-tool-raw') else None
+
 class FakeTaps:
     """Deterministic stand-in encoder: one fixed random 1024-vector per text."""
     def __init__(self):
@@ -158,7 +164,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if optional_local_restore_available('/root/native/restore/round8-note-tool-raw') else None
+        plan = optional_native_plan(cc)
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:

@@ -29,4 +29,4 @@ Nur einzelne Schritte: `bash HANDY_PFLICHT.sh --nur ram,residenz`. Alles neu: `-
 und die Berichte jedes Schritts. Keine Modelle, keine privaten Chats (Aufgaben sind erfundene englische Testaufgaben).
 Bitte die ZIP-Datei hier im Projekt hochladen. Ausgewertet wird danach in der Cloud gegen vorher festgelegte Regeln.
 
-Nur Messung: nichts wird eingeschaltet, keine Lernrechte vergeben (`authority: 0`).
+Messung; einzige Änderung: das Eignungs-Werkzeug wird eingeschaltet (deine Entscheidung vom 22.10.), es läuft bei Age 0 nur im Schatten. Keine Lernrechte vergeben (`authority: 0`).

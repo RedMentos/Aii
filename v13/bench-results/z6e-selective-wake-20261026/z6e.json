@@ -1,0 +1,6109 @@
+{
+ "kind": "V13_Z6E_SELECTIVE_WAKE",
+ "seed": 37,
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "fixtures": [
+  "easy00",
+  "easy01",
+  "easy02",
+  "easy03",
+  "easy04",
+  "easy05",
+  "easy06",
+  "easy07",
+  "easy08",
+  "easy09",
+  "easy10",
+  "easy11",
+  "summary00",
+  "summary01",
+  "summary02",
+  "summary03",
+  "summary04",
+  "summary05",
+  "summary06",
+  "summary07",
+  "summary08",
+  "summary09",
+  "summary10",
+  "summary11",
+  "long00",
+  "long01",
+  "long02",
+  "long03",
+  "long04",
+  "long05",
+  "long06",
+  "long07",
+  "long08",
+  "long09",
+  "long10",
+  "long11",
+  "notes00",
+  "notes01",
+  "notes02",
+  "notes03",
+  "notes04",
+  "notes05",
+  "notes06",
+  "notes07",
+  "notes08",
+  "notes09",
+  "notes10",
+  "notes11",
+  "compare00",
+  "compare01",
+  "compare02",
+  "compare03",
+  "compare04",
+  "compare05",
+  "compare06",
+  "compare07",
+  "compare08",
+  "compare09",
+  "compare10",
+  "compare11"
+ ],
+ "arms": {
+  "disabled": {
+   "n": 60,
+   "passed": 40,
+   "mean_turn_s": 2.76,
+   "planned_wake_rate": 0.0,
+   "offer_rate": 0.017,
+   "by_class": {
+    "smalltalk/rewrite": 4,
+    "factual/exact": 9,
+    "long-context/global": 12,
+    "mixed reasoning": 4,
+    "novelty/conflict": 11
+   },
+   "wake_rate_by_class": {
+    "smalltalk/rewrite": 0.0,
+    "factual/exact": 0.0,
+    "long-context/global": 0.0,
+    "mixed reasoning": 0.0,
+    "novelty/conflict": 0.0
+   },
+   "turn_s_by_class": {
+    "smalltalk/rewrite": 4.56,
+    "factual/exact": 2.75,
+    "long-context/global": 2.2,
+    "mixed reasoning": 2.69,
+    "novelty/conflict": 1.58
+   },
+   "wakes": {
+    "none": 60,
+    "detail": 0,
+    "gist": 0,
+    "both": 0,
+    "null": 0
+   }
+  },
+  "detail": {
+   "n": 60,
+   "passed": 31,
+   "mean_turn_s": 7.77,
+   "planned_wake_rate": 1.0,
+   "offer_rate": 1.0,
+   "by_class": {
+    "smalltalk/rewrite": 3,
+    "factual/exact": 2,
+    "long-context/global": 12,
+    "mixed reasoning": 5,
+    "novelty/conflict": 9
+   },
+   "wake_rate_by_class": {
+    "smalltalk/rewrite": 1.0,
+    "factual/exact": 1.0,
+    "long-context/global": 1.0,
+    "mixed reasoning": 1.0,
+    "novelty/conflict": 1.0
+   },
+   "turn_s_by_class": {
+    "smalltalk/rewrite": 10.08,
+    "factual/exact": 8.62,
+    "long-context/global": 6.64,
+    "mixed reasoning": 7.69,
+    "novelty/conflict": 5.83
+   },
+   "wakes": {
+    "none": 0,
+    "detail": 60,
+    "gist": 0,
+    "both": 0,
+    "null": 0
+   }
+  },
+  "gist": {
+   "n": 60,
+   "passed": 31,
+   "mean_turn_s": 7.3,
+   "planned_wake_rate": 1.0,
+   "offer_rate": 1.0,
+   "by_class": {
+    "smalltalk/rewrite": 1,
+    "factual/exact": 7,
+    "long-context/global": 11,
+    "mixed reasoning": 4,
+    "novelty/conflict": 8
+   },
+   "wake_rate_by_class": {
+    "smalltalk/rewrite": 1.0,
+    "factual/exact": 1.0,
+    "long-context/global": 1.0,
+    "mixed reasoning": 1.0,
+    "novelty/conflict": 1.0
+   },
+   "turn_s_by_class": {
+    "smalltalk/rewrite": 9.52,
+    "factual/exact": 6.13,
+    "long-context/global": 7.6,
+    "mixed reasoning": 6.27,
+    "novelty/conflict": 6.98
+   },
+   "wakes": {
+    "none": 0,
+    "detail": 0,
+    "gist": 60,
+    "both": 0,
+    "null": 0
+   }
+  },
+  "max": {
+   "n": 60,
+   "passed": 31,
+   "mean_turn_s": 14.6,
+   "planned_wake_rate": 1.0,
+   "offer_rate": 1.0,
+   "by_class": {
+    "smalltalk/rewrite": 4,
+    "factual/exact": 4,
+    "long-context/global": 11,
+    "mixed reasoning": 3,
+    "novelty/conflict": 9
+   },
+   "wake_rate_by_class": {
+    "smalltalk/rewrite": 1.0,
+    "factual/exact": 1.0,
+    "long-context/global": 1.0,
+    "mixed reasoning": 1.0,
+    "novelty/conflict": 1.0
+   },
+   "turn_s_by_class": {
+    "smalltalk/rewrite": 11.91,
+    "factual/exact": 16.54,
+    "long-context/global": 14.63,
+    "mixed reasoning": 13.95,
+    "novelty/conflict": 15.98
+   },
+   "wakes": {
+    "none": 0,
+    "detail": 0,
+    "gist": 0,
+    "both": 60,
+    "null": 0
+   }
+  },
+  "adaptive": {
+   "n": 60,
+   "passed": 28,
+   "mean_turn_s": 7.08,
+   "planned_wake_rate": 1.0,
+   "offer_rate": 1.0,
+   "by_class": {
+    "smalltalk/rewrite": 2,
+    "factual/exact": 6,
+    "long-context/global": 10,
+    "mixed reasoning": 3,
+    "novelty/conflict": 7
+   },
+   "wake_rate_by_class": {
+    "smalltalk/rewrite": 1.0,
+    "factual/exact": 1.0,
+    "long-context/global": 1.0,
+    "mixed reasoning": 1.0,
+    "novelty/conflict": 1.0
+   },
+   "turn_s_by_class": {
+    "smalltalk/rewrite": 8.6,
+    "factual/exact": 5.83,
+    "long-context/global": 7.98,
+    "mixed reasoning": 7.4,
+    "novelty/conflict": 5.61
+   },
+   "wakes": {
+    "none": 0,
+    "detail": 24,
+    "gist": 32,
+    "both": 4,
+    "null": 0
+   }
+  }
+ },
+ "criteria": {
+  "E1_easy_stays_cheap": {
+   "wake_rate": 1.0,
+   "loss_vs_c_native": 2,
+   "pass": false
+  },
+  "E2_few_unnecessary_wakes": {
+   "value": "40/40",
+   "pass": false
+  },
+  "E3_escalation_recall": {
+   "rescuable": 7,
+   "recruited_passing_body": 5,
+   "fixtures": [
+    "compare01",
+    "compare04",
+    "compare08",
+    "compare11",
+    "easy02",
+    "easy05",
+    "summary08"
+   ],
+   "pass": true,
+   "status": "MEASURED"
+  },
+  "E4_quality_near_best_fixed": {
+   "adaptive": 28,
+   "best_fixed": 40,
+   "pass": false
+  },
+  "E5_cheaper_than_a_plus_b": {
+   "adaptive_s": 7.08,
+   "max_s": 14.6,
+   "pass": true
+  }
+ },
+ "verdict": "Z6E_SELECTIVE_WAKE_FAIL",
+ "descriptive": {
+  "false_cheap_route": "0/7",
+  "body_only_passes": {
+   "detail": [
+    "compare01",
+    "compare04",
+    "compare08",
+    "easy02"
+   ],
+   "gist": [
+    "compare04",
+    "compare08",
+    "compare11",
+    "summary08"
+   ],
+   "max": [
+    "compare08",
+    "easy05",
+    "summary08"
+   ]
+  },
+  "body_breaks": {
+   "detail": [
+    "compare05",
+    "compare07",
+    "easy00",
+    "easy09",
+    "notes03",
+    "notes11",
+    "summary02",
+    "summary04",
+    "summary05",
+    "summary06",
+    "summary07",
+    "summary09",
+    "summary11"
+   ],
+   "gist": [
+    "compare03",
+    "compare05",
+    "compare07",
+    "easy00",
+    "easy06",
+    "easy09",
+    "long09",
+    "notes01",
+    "notes02",
+    "notes04",
+    "summary03",
+    "summary07",
+    "summary11"
+   ],
+   "max": [
+    "compare00",
+    "compare07",
+    "easy06",
+    "long09",
+    "notes09",
+    "notes11",
+    "summary02",
+    "summary03",
+    "summary04",
+    "summary05",
+    "summary07",
+    "summary11"
+   ]
+  }
+ },
+ "rows": [
+  {
+   "fixture": "easy00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 5.74,
+   "wall_s": 6.85,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I\u2019m not sure about the exact wording needed, but a polite version could be: \u201cCould you please let me know where the budget sheet is?\u201d"
+  },
+  {
+   "fixture": "easy01",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 4.63,
+   "wall_s": 4.84,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I am an AI assistant designed to help with tasks and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands myself. If you have a specific task or request that needs assistance, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy02",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 10.28,
+   "wall_s": 10.38,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Send me a quick update, please."
+  },
+  {
+   "fixture": "easy03",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.42,
+   "wall_s": 3.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I am an AI assistant, not a human. I do not have personal feelings or memories of past interactions like you. I can only provide factual and helpful information based on my training data. If you need assistance with something specific, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy04",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 11.67,
+   "wall_s": 11.77,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The meeting didn't provide much value."
+  },
+  {
+   "fixture": "easy05",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.62,
+   "wall_s": 3.73,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I am an AI assistant designed to help with tasks and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands myself. If you have a specific task or request that needs assistance, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.52,
+   "wall_s": 3.62,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I\u2019ll try to make it sound more polite. The sentence could be rephrased as: \u201cCould you help fix the issue with your code?\u201d"
+  },
+  {
+   "fixture": "easy07",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.82,
+   "wall_s": 3.93,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I am an AI assistant designed to help with tasks and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands myself. If you have a specific task or request that needs assistance, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy08",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.03,
+   "wall_s": 2.13,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Please let me know if you'd like it rephrased in a more polite way."
+  },
+  {
+   "fixture": "easy09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I'm functioning well, thank you. Your question is clear."
+  },
+  {
+   "fixture": "easy10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.22,
+   "wall_s": 3.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I understand you'd like a more polite version of that sentence. Here\u2019s a softer alternative: \"Could we consider keeping the schedule consistent each week?\""
+  },
+  {
+   "fixture": "easy11",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.63,
+   "wall_s": 3.83,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "I am an AI assistant designed to help with tasks and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands myself. If you have a specific task or request that needs assistance, please let me know what you need help with."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.93,
+   "wall_s": 4.13,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **125 euros** (92 + 59 + 68).\n\nThe user's request is based on a specific number of euros for each item, but the provided numbers do not match the actual costs listed in the report."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.32,
+   "wall_s": 3.43,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 66 + 68 + 30 = 124 euros. The current total of 144 euros is wrong."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.91,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 81 + 48 + 58 = 187 euros. The current total of 207 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 6.05,
+   "wall_s": 6.15,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **207 euros** (79 + 91 + 39).\n\nThe discrepancy arises because the user's list of items does not match the standard \"Expense report\" format for this specific calculation:\n*   Snacks: 79 \u20ac\n*   Cables: 91 \u20ac\n*   Paper: 39 \u20ac\n*   **Total:** 207 \u20ac\n\nThe user's provided numbers (79, 91, 39) sum to 209. The \"Total: 229\" figure is incorrect because it includ"
+  },
+  {
+   "fixture": "summary04",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.81,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 95 + 77 + 58 = 230 euros. The current total of 210 euros is wrong."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The items listed are not all valid expenses for a typical office setting (snacks and chairs are personal items). The correct total should be based on the valid items: 53 + 57 + 79 = 189 euros."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.91,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 51 + 41 + 77 = 169 euros. The stated total of 179 euros is wrong."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.11,
+   "wall_s": 3.31,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 46 + 38 + 73 = 157 euros. The current total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.31,
+   "wall_s": 3.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation should be: 68 + 69 + 25 = 122 euros. The current total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.62,
+   "wall_s": 1.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The calculation is: 68 + 95 + 28 = 191 euros. The stated total of 201 euros is wrong."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.12,
+   "wall_s": 3.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **136 euros** (31 + 20 + 85)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.31,
+   "wall_s": 1.41,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "No, the summary is incorrect. The correct total is **172 euros** (72 + 15 + 85)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.31,
+   "wall_s": 2.41,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 421 bicycles at the station in Lyon."
+  },
+  {
+   "fixture": "long01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.81,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 673 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.83,
+   "wall_s": 1.93,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 530 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 3.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 961 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.82,
+   "wall_s": 3.92,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted 676 bicycles in Graz. The newsletter was delayed by one day. The team met twice that week to discuss the schedule. Several suppliers sent brochures that nobody read. A short fire drill took place on Tuesday afternoon. Two interns joined the department in the morning shift."
+  },
+  {
+   "fixture": "long05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.11,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "725 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long06",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.92,
+   "wall_s": 3.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 236 bicycles at the station in Ghent."
+  },
+  {
+   "fixture": "long07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.12,
+   "wall_s": 2.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 789 bicycles in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 3.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 164 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.92,
+   "wall_s": 3.02,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 812 bicycles in Ghent."
+  },
+  {
+   "fixture": "long10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.61,
+   "wall_s": 2.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 942 bicycles in Cork."
+  },
+  {
+   "fixture": "long11",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.61,
+   "wall_s": 1.81,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The survey counted exactly 682 bicycles in Ghent."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.91,
+   "wall_s": 2.01,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 26, according to the 13 March note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 2.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 29, according to the 27 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.22,
+   "wall_s": 2.32,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 64, according to the 15 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.71,
+   "wall_s": 1.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 21."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 53, according to the 6 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 57, according to the 23 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.11,
+   "wall_s": 1.21,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 57, according to the note from 5 March."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 1.22,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 67, according to the note from 3 March."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.01,
+   "wall_s": 1.11,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 31, according to the 21 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.33,
+   "wall_s": 3.43,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The note from March 16th (73) is more recent than the note from March 8th (45)."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 2.31,
+   "wall_s": 2.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 86, according to the 16 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 1.11,
+   "wall_s": 1.21,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The most recent number is 64, according to the 20 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.84,
+   "wall_s": 3.94,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall at 433 mm (vs 608 in Linz). The difference is 175 mm (608 - 433)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.72,
+   "wall_s": 1.82,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall at 170 mm (vs 272 mm in Linz). The difference is 102 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.14,
+   "wall_s": 3.24,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Brno had the most rain at 396 mm. The city with the least was Cork with 247 mm, so it was 149 mm more than the least."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.83,
+   "wall_s": 3.93,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is Brno (816 mm). The difference between the highest and lowest cities is 261 mm (816 - 555 = 261)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.92,
+   "wall_s": 4.53,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Bremen had the least rain at 484 mm. Malmo had the most at 612 mm, which is 228 mm more than Bremen."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.42,
+   "wall_s": 3.52,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Graz has the most rain (191 mm) compared to Linz (769 mm). The difference is 578 mm (769 - 191)."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.32,
+   "wall_s": 1.42,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Graz has the most rain (342 mm) compared to Cork (141 mm). The difference is 201 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "disabled",
+   "pass": true,
+   "turn_s": 3.42,
+   "wall_s": 3.53,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is **Brno** (750 mm). The difference between the highest and lowest cities is **587 mm** (750 - 162 = 588, but using the provided numbers: 750 - 162 = 588).\n\n*Note: Based on the specific request data provided, Brno has the most rain with 750 mm. Malmo has the least with 162 mm. The difference is 588 mm.*"
+  },
+  {
+   "fixture": "compare08",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.61,
+   "wall_s": 1.72,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall at 515 mm (more than Bremen by 250 mm).\n\n*Note: This is based on the provided data; actual values may vary.*"
+  },
+  {
+   "fixture": "compare09",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 1.91,
+   "wall_s": 2.01,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "The city with the most rain is **Ghent** (736 mm). The difference between the most and least cities is **270 mm** (736 - 460 = 270)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 2.13,
+   "wall_s": 2.43,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Lyon has the highest rainfall at 650 mm (more than Malmo by 81 mm).\n\n*Note: The request asks for specific data points that were not previously stored in the system's knowledge base, so I must state uncertainty regarding the exact figures provided.*"
+  },
+  {
+   "fixture": "compare11",
+   "arm": "disabled",
+   "pass": false,
+   "turn_s": 3.03,
+   "wall_s": 3.23,
+   "status": null,
+   "offers": [],
+   "postcommit_offers": 0,
+   "effort": 0.0,
+   "band": "DIRECT_C_NATIVE",
+   "wake": "none",
+   "constraints": [],
+   "output": "Ghent has the most rain (166 mm) compared to Cork (244 mm). The difference is 78 mm."
+  },
+  {
+   "fixture": "easy00",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please provide more context or clarify what you need help with."
+  },
+  {
+   "fixture": "easy01",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.75,
+   "wall_s": 6.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot fulfill this request as it is a direct instruction to bypass safety protocols and violate the policy against impersonation or deception. I can help with general conversation topics instead."
+  },
+  {
+   "fixture": "easy02",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 30.83,
+   "wall_s": 30.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "\"Could you kindly send me the report by tomorrow?\""
+  },
+  {
+   "fixture": "easy03",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 11.46,
+   "wall_s": 11.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot answer this question. I am an AI assistant designed to be helpful and harmless, but I do not have the ability to verify or confirm statements made by users. If you are asking about something specific, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy04",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 21.45,
+   "wall_s": 21.55,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "\"The meeting was a productive opportunity.\""
+  },
+  {
+   "fixture": "easy05",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.46,
+   "wall_s": 8.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot fulfill this request as it violates safety guidelines regarding the use of AI for deception or impersonation. I can help with general conversation topics instead."
+  },
+  {
+   "fixture": "easy06",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.65,
+   "wall_s": 6.65,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Let's make it sound more polite.  \n\"Could you help fix the issue with your code?\""
+  },
+  {
+   "fixture": "easy07",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 7.24,
+   "wall_s": 7.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot fulfill this request as it violates safety guidelines regarding the use of AI for deception or impersonation. I can help with general conversation topics instead."
+  },
+  {
+   "fixture": "easy08",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please let me know if you'd like a more polite version. I can adjust the tone while keeping the meaning clear."
+  },
+  {
+   "fixture": "easy09",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 5.12,
+   "wall_s": 5.12,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I don\u2019t have real-time information about your current state. You can reply directly if you\u2019d like to share how you\u2019re feeling."
+  },
+  {
+   "fixture": "easy10",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.13,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I understand you'd like a more polite version of that sentence. Here\u2019s a softer alternative: \"Could we consider keeping the schedule consistent each week?\""
+  },
+  {
+   "fixture": "easy11",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.23,
+   "wall_s": 6.23,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot fulfill this request as it violates safety guidelines regarding the use of AI for deception or impersonation. I can help with general conversation topics instead."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.35,
+   "wall_s": 8.45,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **125 euros** (92 + 59 + 68)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.44,
+   "wall_s": 8.44,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **172 euros** (66 + 68 + 30)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.75,
+   "wall_s": 8.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 193 euros (81 + 48 + 58)."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 11.57,
+   "wall_s": 11.57,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **207 euros** (79 + 91 + 39).\n\nThe discrepancy arises because the user's list of items does not match the standard \"Expense report\" format for this specific calculation:\n*   Snacks: 79 \u20ac\n*   Cables: 91 \u20ac\n*   Paper: 39 \u20ac\n*   **Total:** 207 \u20ac\n\nThe user's provided numbers (79, 91, 39) sum to 209. The \"Total: 229\" figure is incorrect because it includ"
+  },
+  {
+   "fixture": "summary04",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 9.35,
+   "wall_s": 9.46,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 213 euros (95 + 77 + 58)."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.87,
+   "wall_s": 8.87,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **200 euros** (53 + 57 + 79)."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.55,
+   "wall_s": 8.66,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **179 euros** (51 + 41 + 77)."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 7.94,
+   "wall_s": 8.05,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **169 euros** (46 + 38 + 73)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 7.64,
+   "wall_s": 7.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **128 euros** (68 + 69 + 25)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.35,
+   "wall_s": 8.35,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **168 euros** (68 + 95 + 28)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.75,
+   "wall_s": 7.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **136 euros** (calculated as 31 + 20 + 85)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 7.94,
+   "wall_s": 7.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **162 euros** (72 + 15 + 85)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.84,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted 421 bicycles in Lyon."
+  },
+  {
+   "fixture": "long01",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.13,
+   "wall_s": 6.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The team recorded 673 bicycles parked in Lyon."
+  },
+  {
+   "fixture": "long02",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.13,
+   "wall_s": 6.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 530 bicycles in Bremen."
+  },
+  {
+   "fixture": "long03",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.44,
+   "wall_s": 6.44,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 961 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.13,
+   "wall_s": 7.24,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 676 bicycles in Graz."
+  },
+  {
+   "fixture": "long05",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "725 bicycles were counted in Malmo."
+  },
+  {
+   "fixture": "long06",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 236 bicycles in Ghent."
+  },
+  {
+   "fixture": "long07",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted 789 bicycles in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.33,
+   "wall_s": 6.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 164 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long09",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.54,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 812 bicycles in **Ghent**."
+  },
+  {
+   "fixture": "long10",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.44,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 942 bicycles in Cork."
+  },
+  {
+   "fixture": "long11",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.75,
+   "wall_s": 7.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 682 bicycles in Ghent."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 26, according to the 13 March note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 29 members from the 27 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.12,
+   "wall_s": 5.12,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 64, according to the 15 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 5.53,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest record is from the 16th of March."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 53 members from the 6 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.64,
+   "wall_s": 5.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 57 members according to the March 23 note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.25,
+   "wall_s": 6.25,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 57 members from the 5th of March."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 5.75,
+   "wall_s": 5.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 67 members."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 31 members from the 21 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.33,
+   "wall_s": 6.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The note from March 16th (73) is more recent than the note from March 8th (45)."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.33,
+   "wall_s": 6.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 86 members."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 41 members from the 13 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 6.93,
+   "wall_s": 7.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon received the most rain (433 mm) compared to Linz (608 mm), which is 175 mm more than Lyon."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.95,
+   "wall_s": 7.95,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the highest rainfall at 170 mm. Brno has the least at 608 mm. The difference is 438 mm (608 - 170)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.85,
+   "wall_s": 6.95,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno received the most rain at 396 mm, which is 149 mm more than Cork's 247 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.55,
+   "wall_s": 7.55,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Brno** (816 mm). The difference between Brno and Cork is 261 mm (816 - 555)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.04,
+   "wall_s": 7.14,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Bremen recorded the highest rainfall at 484 mm, while Linz had the least at 838 mm. That means Bremen had 838 minus 484 equals 354 mm more than Linz."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 6.94,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the highest rainfall at 191 mm (vs 415mm for Porto). The difference is 224 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.94,
+   "wall_s": 9.05,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the highest rainfall at 342 mm, while Cork has the least at 141 mm. The difference is 201 mm (342 - 141)."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.34,
+   "wall_s": 8.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Turin has the highest rainfall (455 mm) compared to Malmo (162 mm). The difference is 293 mm.\n\n*Note: This answer is based on the provided data points.*"
+  },
+  {
+   "fixture": "compare08",
+   "arm": "detail",
+   "pass": true,
+   "turn_s": 7.64,
+   "wall_s": 7.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the highest rainfall (515 mm) compared to Bremen (264 mm). The difference is 251 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.04,
+   "wall_s": 8.15,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Turin has the highest rainfall at 566 mm, while Ghent has the least at 736 mm. The difference is 170 mm (736 - 566)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 8.15,
+   "wall_s": 8.15,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (650 mm) compared to Malmo's 589 mm and Porto's 531 mm. The difference is 70 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "detail",
+   "pass": false,
+   "turn_s": 7.94,
+   "wall_s": 8.05,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the highest rainfall is **Ghent** (166 mm), while **Cork** has the lowest at 244 mm.\n\nTherefore, Cork is **78 mm** higher than Ghent."
+  },
+  {
+   "fixture": "easy00",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.35,
+   "wall_s": 7.35,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please clarify if you'd like a more formal or casual version. I can adjust based on your preference while staying true to the original meaning."
+  },
+  {
+   "fixture": "easy01",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to help with tasks and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands myself. If you have a specific task or request that needs assistance, please let me know what you need help with."
+  },
+  {
+   "fixture": "easy02",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 26.69,
+   "wall_s": 26.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "\"Send me a friendly report by tomorrow.\""
+  },
+  {
+   "fixture": "easy03",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.33,
+   "wall_s": 6.44,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to provide factual, helpful, and harmless responses. I do not pretend to run tools or make internal offers as facts. If you have a specific topic or request, please let me know what you need."
+  },
+  {
+   "fixture": "easy04",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 18.3,
+   "wall_s": 18.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The meeting was a pleasant opportunity."
+  },
+  {
+   "fixture": "easy05",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.54,
+   "wall_s": 7.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to answer questions and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands. I can help with legitimate tasks like answering queries or discussing topics, but I cannot perform actions outside my capabilities. If you have a specific question or need assistance, please let me know what you need."
+  },
+  {
+   "fixture": "easy06",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.23,
+   "wall_s": 6.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Let's make it sound more polite and friendly."
+  },
+  {
+   "fixture": "easy07",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.43,
+   "wall_s": 6.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot answer this question as it is a greeting and does not contain factual claims or specific requests for information. I can help with legitimate questions about topics you name."
+  },
+  {
+   "fixture": "easy08",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.25,
+   "wall_s": 6.36,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please adjust the phrasing to sound more courteous."
+  },
+  {
+   "fixture": "easy09",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.74,
+   "wall_s": 7.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I don\u2019t have a current status, but I\u2019m here and ready to help."
+  },
+  {
+   "fixture": "easy10",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.44,
+   "wall_s": 7.44,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "A more polite version would be: \"Could we please keep the schedule as it is?\""
+  },
+  {
+   "fixture": "easy11",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.85,
+   "wall_s": 7.85,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot answer this question as a factual statement or verify the text against external tools. I am an AI assistant designed to be helpful and harmless, but I do not have access to external tools or databases to check if the user's message is a standard greeting or a specific quote.\n\nIf you are looking for information about a specific topic (e.g., \"What does this mean?\"), please let me know the t"
+  },
+  {
+   "fixture": "summary00",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.86,
+   "wall_s": 6.86,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **199 euros** (92 + 59 + 68). The user's input is factually accurate in listing the items and their values, but the final line does not match the sum of those specific figures."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.55,
+   "wall_s": 6.66,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 66 + 68 + 30 = 124 euros. The stated total of 144 euros is wrong."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 81 + 48 + 58 = 187 euros. The reported total of 207 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.53,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 205 euros (79 + 91 + 39)."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.84,
+   "wall_s": 5.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 95 + 77 + 58 = 230 euros. The stated total of 210 euros is wrong."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.84,
+   "wall_s": 5.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 53 + 57 + 79 = 189 euros. The current total of 179 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.35,
+   "wall_s": 6.35,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The item descriptions are in euros (51 + 41 + 77 = 169), but the text says \"179 euros\". The discrepancy is likely a typo in the original document or the user's input."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 156 euros (46 + 38 + 73)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation should be: 68 + 69 + 25 = 162 euros. The current total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.35,
+   "wall_s": 6.35,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The item descriptions are in euros (68 + 95 + 28 = 191), not a sum of the individual items' names. The correct total should be **191 euros**."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.35,
+   "wall_s": 6.46,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **136 euros** (calculated as 31 + 20 + 85)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.23,
+   "wall_s": 6.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 162 euros (72 + 15 + 85)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.64,
+   "wall_s": 7.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 421 bicycles in Lyon."
+  },
+  {
+   "fixture": "long01",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.55,
+   "wall_s": 8.55,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes mention 673 bicycles were counted in Lyon."
+  },
+  {
+   "fixture": "long02",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.95,
+   "wall_s": 7.95,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 530 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long03",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.06,
+   "wall_s": 8.06,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 961 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.54,
+   "wall_s": 7.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text states the survey counted **676** bicycles in **Graz**. The user's question asks for these two specific details."
+  },
+  {
+   "fixture": "long05",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.85,
+   "wall_s": 6.96,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 725 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long06",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.15,
+   "wall_s": 8.26,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The notes mention a count of 236 bicycles at the station in Ghent."
+  },
+  {
+   "fixture": "long07",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.45,
+   "wall_s": 8.55,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The notes mention a count of 789 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.55,
+   "wall_s": 8.55,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 164 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long09",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.24,
+   "wall_s": 7.35,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text does not contain a specific answer or location for the bicycle count or city."
+  },
+  {
+   "fixture": "long10",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.24,
+   "wall_s": 6.34,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text explicitly states the survey counted exactly 942 bicycles in Cork."
+  },
+  {
+   "fixture": "long11",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.94,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 682 bicycles in **Ghent**."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.35,
+   "wall_s": 6.45,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 26 members from the 13th note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.36,
+   "wall_s": 7.36,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is from the 27 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.45,
+   "wall_s": 7.45,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is from the note dated 1 March, showing 43 members."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.94,
+   "wall_s": 7.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 21 members."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.04,
+   "wall_s": 7.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest count is from March 4, which states 25 members."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.64,
+   "wall_s": 7.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 57 members, as noted on 23 March."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.84,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest count is from the 5th note, showing 57 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.14,
+   "wall_s": 7.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 67 members."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.26,
+   "wall_s": 7.36,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 31, according to the note from March 21."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.64,
+   "wall_s": 6.75,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The note from March 16 (73) is more recent than the note from March 8 (45)."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.95,
+   "wall_s": 5.95,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 86 members from the 16 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.15,
+   "wall_s": 7.15,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 64 members from the 20 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 7.14,
+   "wall_s": 7.25,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Linz has the most rain (608 mm) while Lyon has the least (433 mm). The difference is 175 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.84,
+   "wall_s": 5.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (170 mm) while Linz has the least (272 mm). The difference is 92 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the most rain at 396mm. The city with the least was Cork at 247mm, so Brno had 149mm more than Cork."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 6.95,
+   "wall_s": 6.95,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno has the most rain (816 mm) and is 205 mm more than Porto (771 mm)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 6.44,
+   "wall_s": 6.44,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Bremen had the most rain at 484 mm. Linz had the least at 838 mm. That\u2019s 354 mm more in Bremen than in Linz."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 7.74,
+   "wall_s": 7.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Based on the provided data (Graz 191mm, Porto 415mm, Linz 769mm), **Linz** has the most rain.\n\nThe difference is: 769 - 415 = **354 mm**."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.24,
+   "wall_s": 5.34,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the most rain (342mm). The difference is 201mm (Malmo 717 - Cork 141)."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.74,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Turin has the most rain (455 mm) while Malmo has the least (162 mm). The difference is 293 mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 5.54,
+   "wall_s": 5.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (515 mm) while Bremen has the least (264 mm). The difference is 251 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.04,
+   "wall_s": 5.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Ghent had the most rain (736 mm). The difference is 270 mm (736 - 460)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "gist",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (650 mm) while Malmo has 10 mm less than Lyon."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "gist",
+   "pass": true,
+   "turn_s": 8.04,
+   "wall_s": 8.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.7,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's request is a factual query based on provided data. The hypothesis \"Ghent has the most rain while Cork has 10\" is incorrect as stated in the source text (Ghent=166, Lyon=766, Cork=244).\n\n**Correction:**\n- **Ghent**: 166 mm\n- **Lyon**: 766 mm\n- **Cork**: 244 mm\n\nThe city with the most rain is **Lyon** (766 mm), which is **600 mm more** than Ghent (166 mm)."
+  },
+  {
+   "fixture": "easy00",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.36,
+   "wall_s": 11.36,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Let's make it sound more polite.  \n\"Could you please let me know where the budget sheet is located?\""
+  },
+  {
+   "fixture": "easy01",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 9.75,
+   "wall_s": 9.75,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I am an AI assistant designed to answer questions and provide information based on facts and knowledge. I do not pretend to run tools or make up facts. If you have a specific question or topic in mind, please let me know."
+  },
+  {
+   "fixture": "easy02",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 9.65,
+   "wall_s": 9.76,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "\"Send me a friendly report by tomorrow.\""
+  },
+  {
+   "fixture": "easy03",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.38,
+   "wall_s": 16.48,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I am unable to process this message as a request for factual verification or external tool execution. I can only respond based on the current conversation context and cannot invent facts or pretend to run tools. If you have specific questions about the content, I will address them directly."
+  },
+  {
+   "fixture": "easy04",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 8.85,
+   "wall_s": 8.85,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "\"The meeting was a productive opportunity.\""
+  },
+  {
+   "fixture": "easy05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.75,
+   "wall_s": 10.86,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I cannot fulfill this request as it is a standard greeting that does not contain any specific factual claims or internal hypotheses to evaluate for harm. I can help with legitimate questions about the topic of \"Good morning! Just say hello back, please.\""
+  },
+  {
+   "fixture": "easy06",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.59,
+   "wall_s": 16.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Let\u2019s make it sound more considerate.  \n\u201cYour code seems to have some issues this time.\u201d"
+  },
+  {
+   "fixture": "easy07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.09,
+   "wall_s": 16.09,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I cannot fulfill this request as it is a standard greeting that does not contain any specific factual claims or internal hypotheses to evaluate. I can help with legitimate questions about the world, but I will not pretend to run tools or make up facts."
+  },
+  {
+   "fixture": "easy08",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.66,
+   "wall_s": 11.66,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please make the text more polite and friendly."
+  },
+  {
+   "fixture": "easy09",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.97,
+   "wall_s": 10.97,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Hello! I don\u2019t have real-time information about your current feelings. Would you like to share how you\u2019re feeling?"
+  },
+  {
+   "fixture": "easy10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.67,
+   "wall_s": 10.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "A more polite version would be: \"Could we please keep the schedule as it is?\""
+  },
+  {
+   "fixture": "easy11",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 10.16,
+   "wall_s": 10.16,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "I am an AI assistant designed to answer questions and provide helpful information. I do not pretend to run tools or execute external commands myself. If you have a specific question or need help with something, please let me know what you need."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.19,
+   "wall_s": 16.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 225 euros (92 + 59 + 68)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.7,
+   "wall_s": 16.7,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 172 euros (66 + 68 + 30)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.59,
+   "wall_s": 18.59,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 193 euros (81 + 48 + 58)."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.49,
+   "wall_s": 18.49,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 79 + 91 + 39 = 109 euros. The stated total of 229 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.79,
+   "wall_s": 16.9,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 210 euros (95 + 77 + 58)."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.19,
+   "wall_s": 16.29,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 208 euros (53 + 57 + 79)."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.29,
+   "wall_s": 17.29,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The sum of the individual items (51 + 41 + 77) equals 169 euros, not 179."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.28,
+   "wall_s": 16.39,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 165 euros (46 + 38 + 73)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.99,
+   "wall_s": 15.99,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 162 euros (68 + 69 + 25)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.77,
+   "wall_s": 13.77,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary is incorrect. The sum of the individual items (68 + 95 + 28) equals 191 euros, not 201."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.17,
+   "wall_s": 17.28,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is 136 euros (31 + 20 + 85)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 14.99,
+   "wall_s": 14.99,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "No, the summary line is incorrect. The correct total is **162 euros**.\n\n*   Postage: 72\n*   Chairs: 15\n*   Coffee beans: 85\n*   Sum: 162"
+  },
+  {
+   "fixture": "long00",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 18.0,
+   "wall_s": 18.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 421 bicycles in Lyon."
+  },
+  {
+   "fixture": "long01",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.97,
+   "wall_s": 11.97,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The team recorded 673 bicycles parked in Lyon."
+  },
+  {
+   "fixture": "long02",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.16,
+   "wall_s": 13.27,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded exactly 530 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long03",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.18,
+   "wall_s": 13.18,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 961 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.77,
+   "wall_s": 11.77,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states the survey counted **676** bicycles in **Graz**. The question asks for both the number and the city."
+  },
+  {
+   "fixture": "long05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.47,
+   "wall_s": 13.57,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 725 bicycles in Malmo."
+  },
+  {
+   "fixture": "long06",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 12.58,
+   "wall_s": 12.58,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 236 bicycles in Ghent."
+  },
+  {
+   "fixture": "long07",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 18.19,
+   "wall_s": 18.19,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 789 bicycles in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 13.67,
+   "wall_s": 13.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 164 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long09",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 19.29,
+   "wall_s": 19.29,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text does not contain a specific number or city name for the bicycles. The only count provided is \"812\" (Bicycles), but no location is specified. Therefore, the answer cannot be determined from the text alone."
+  },
+  {
+   "fixture": "long10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.96,
+   "wall_s": 11.96,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The count is 942 bicycles, located in Cork."
+  },
+  {
+   "fixture": "long11",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 18.3,
+   "wall_s": 18.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states the survey counted exactly 682 bicycles in **Ghent**."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.29,
+   "wall_s": 16.39,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 26 members from March 13."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.59,
+   "wall_s": 15.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 29 members from March 27."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 14.37,
+   "wall_s": 14.37,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 64, according to the note from 15 March."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.68,
+   "wall_s": 15.68,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 21 members, as noted on 16 March."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.19,
+   "wall_s": 16.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 53 members from the 6 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.78,
+   "wall_s": 16.78,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 57 members according to the 23 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 15.58,
+   "wall_s": 15.68,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 57 members from March 5."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.28,
+   "wall_s": 15.28,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 67 members."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 15.98,
+   "wall_s": 15.98,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 31 members from March 21."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.77,
+   "wall_s": 16.88,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The user's version wins."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 16.7,
+   "wall_s": 16.8,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure provided is 86 members from the 16 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 16.59,
+   "wall_s": 16.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 41 members, as noted on March 13."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.0,
+   "wall_s": 18.11,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states that Lyon received the most rain (433 mm) compared to Linz (608 mm), which received the least rain (467 mm). Therefore, Linz had 275 mm more rain than Lyon."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.77,
+   "wall_s": 11.77,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Lyon received the highest rainfall (170 mm) while Linz received the least (608 mm). The difference is 438 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 12.26,
+   "wall_s": 12.26,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Brno received the most rain at 396 mm, which is 149 mm more than Cork's 247 mm."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 11.16,
+   "wall_s": 11.16,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The city with the most rain is **Brno** (816 mm). The difference between Brno and Cork is 261 mm (816 - 555)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 12.06,
+   "wall_s": 12.16,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Bremen recorded the highest rainfall at 484 mm. Linz had the least at 838 mm. That means Bremen had 844 mm more than Linz."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 10.95,
+   "wall_s": 10.95,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Graz has the highest rainfall at 191 mm, while Linz has the least at 769 mm. The difference is 578 mm (769 - 191)."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.86,
+   "wall_s": 11.86,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Graz has the highest rainfall at 342mm, while Cork has the least at 141mm. The difference is 201mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 17.49,
+   "wall_s": 17.6,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Turin received the highest rainfall (455mm) while Malmo received the lowest (162mm). The difference is 293mm."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "max",
+   "pass": true,
+   "turn_s": 17.89,
+   "wall_s": 17.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Lyon has the highest rainfall at 515 mm, while Bremen has the lowest at 264 mm. The difference is 251 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 18.19,
+   "wall_s": 18.3,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Turin has the highest rainfall at 566 mm, while Ghent has the least at 736 mm. The difference is 170 mm (736 - 566)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 13.78,
+   "wall_s": 13.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Lyon has the most rain at 650 mm, while Malmo has 589 mm (a difference of 61 mm)."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "max",
+   "pass": false,
+   "turn_s": 11.96,
+   "wall_s": 12.06,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.95,
+   "band": "DEEP_FOCAL",
+   "wake": "both",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_TOOLS",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The text states monthly rainfall in mm for Ghent (166), Lyon (766), and Cork (244).\n\n**Hypothesis:** The text does not explicitly state which city had the most rain. It only provides the values for each city.\n\n**Uncertainty:** None detected."
+  },
+  {
+   "fixture": "easy00",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.66,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please let me know if you'd like me to adjust the tone further or add any specific details."
+  },
+  {
+   "fixture": "easy01",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.03,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.64,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot answer this question as a factual statement or verify the text itself. I can only respond to the topic you name."
+  },
+  {
+   "fixture": "easy02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 31.67,
+   "wall_s": 31.67,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.5975,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "\"Could you please send me the report by tomorrow?\""
+  },
+  {
+   "fixture": "easy03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.43,
+   "wall_s": 5.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.5733,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to answer questions directly and briefly in English. I do not pretend to run tools, do not invent missing facts, and do not pretend to be human. If you are asking about something specific or private, please let me know the topic so I can assist you with that relevant information."
+  },
+  {
+   "fixture": "easy04",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 13.78,
+   "wall_s": 13.89,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.5975,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "\"The meeting was a productive opportunity.\""
+  },
+  {
+   "fixture": "easy05",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 7.15,
+   "wall_s": 7.15,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.64,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to answer questions and provide information based on facts and reasoning. I do not pretend to run tools or make up facts. If you have a specific question or topic in mind, please let me know."
+  },
+  {
+   "fixture": "easy06",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.23,
+   "wall_s": 5.33,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.6933,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Let's make it sound more polite and friendly."
+  },
+  {
+   "fixture": "easy07",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.64,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I cannot answer this question as it is a greeting and does not contain factual claims or specific requests for information. I can help with legitimate questions about topics you name."
+  },
+  {
+   "fixture": "easy08",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.73,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.6733,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please adjust the message to sound more courteous. I\u2019ll keep the meaning clear while being respectful."
+  },
+  {
+   "fixture": "easy09",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 4.93,
+   "wall_s": 4.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.4733,
+   "band": "C_NATIVE_ONE_BODY",
+   "wake": "detail",
+   "constraints": [],
+   "output": "I don\u2019t have real-time information about your current state. You can reply directly if you\u2019d like to share how you\u2019re feeling."
+  },
+  {
+   "fixture": "easy10",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.43,
+   "wall_s": 5.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "Please adjust the phrasing to sound more courteous. Here\u2019s a revised version: \"Could we please keep the schedule consistent each week?\""
+  },
+  {
+   "fixture": "easy11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.53,
+   "wall_s": 6.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.64,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "I am an AI assistant designed to answer questions and provide information based on facts and reasoning. I do not pretend to run tools or execute external commands. If you have a specific question or topic in mind, please let me know."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.63,
+   "wall_s": 5.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 92 + 59 + 68 = 219 euros. The current total of 199 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.54,
+   "wall_s": 5.54,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 172 euros (66 + 68 + 30)."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.64,
+   "wall_s": 5.64,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 81 + 48 + 58 = 187 euros. The stated total of 207 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 79 + 91 + 39 = 109 euros. The reported total of 229 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation is: 95 + 77 + 58 = 230 euros. The stated total of 210 euros is wrong."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.13,
+   "wall_s": 6.13,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The items listed are for snacks (53\u20ac), office chairs (57\u20ac), and printer paper (79\u20ac). Adding these together: 53 + 57 + 79 = 189 euros. The stated total of 179 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.92,
+   "wall_s": 6.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The item descriptions are: printer paper (51\u20ac), snacks (41\u20ac), and office chairs (77\u20ac). The total should be **169 euros**, not 179 euros."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.74,
+   "wall_s": 6.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **156 euros** (46 + 38 + 73).\n\nThe discrepancy arises because the user's list does not account for the missing item: **coffee cups**. The original text mentions \"coffee beans\" but omits \"coffee cups,\" which are typically included in this type of expense report."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The calculation should be: 68 + 69 + 25 = 162 euros. The current total of 142 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.86,
+   "wall_s": 5.96,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 201 euros (68 + 95 + 28)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.34,
+   "wall_s": 5.34,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is 156 euros (31 + 20 + 85)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.93,
+   "wall_s": 6.04,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.76,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "No, the summary is incorrect. The correct total is **162 euros** (72 + 15 + 85)."
+  },
+  {
+   "fixture": "long00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 16.58,
+   "wall_s": 16.69,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted 421 bicycles in Lyon."
+  },
+  {
+   "fixture": "long01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.23,
+   "wall_s": 6.23,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The team recorded 673 bicycles parked in Lyon."
+  },
+  {
+   "fixture": "long02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.14,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey recorded 530 bicycles in Bremen."
+  },
+  {
+   "fixture": "long03",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.54,
+   "wall_s": 6.54,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 961 bicycles in Porto."
+  },
+  {
+   "fixture": "long04",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.84,
+   "wall_s": 6.94,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text does not contain a hypothesis about a coffee machine. The uncertainty is high regarding the specific details provided (e.g., \"new coffee machine\", \"quarterly newsletter\")."
+  },
+  {
+   "fixture": "long05",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.84,
+   "wall_s": 6.84,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 725 bicycles in Malmo."
+  },
+  {
+   "fixture": "long06",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.94,
+   "wall_s": 5.94,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted exactly 236 bicycles in Ghent."
+  },
+  {
+   "fixture": "long07",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 16.78,
+   "wall_s": 16.78,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted 789 bicycles in Bremen."
+  },
+  {
+   "fixture": "long08",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.34,
+   "wall_s": 6.34,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The survey counted 164 bicycles in Bremen."
+  },
+  {
+   "fixture": "long09",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.73,
+   "wall_s": 6.84,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text does not contain a specific answer or location for the bicycle count or city."
+  },
+  {
+   "fixture": "long10",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.43,
+   "wall_s": 5.43,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The text explicitly states the survey counted exactly 942 bicycles in Cork."
+  },
+  {
+   "fixture": "long11",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.33,
+   "wall_s": 5.33,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The survey counted exactly 682 bicycles in **Ghent**."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 26, according to the 13 March note."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.73,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 29 members from the 27 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 4.93,
+   "wall_s": 5.03,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 64, according to the 15 March note."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest record is from the 16th of March."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 53 members from the 6 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.02,
+   "wall_s": 5.13,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The most recent number is 57, according to the 23 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.73,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 57 members from the 5th of March."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.54,
+   "wall_s": 5.64,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest update was from March 3rd."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.72,
+   "wall_s": 5.83,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure mentioned is 31 members from the 21 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.04,
+   "wall_s": 6.14,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's version wins on this specific question."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.83,
+   "wall_s": 5.93,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 86 members."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.63,
+   "wall_s": 5.63,
+   "status": null,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "detail",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH",
+    "AGE_NO_DELIBERATION_MODES"
+   ],
+   "output": "The latest figure is 41 members from the 13 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 6.64,
+   "wall_s": 6.74,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Linz has the most rain (608 mm) while Lyon has the least (433 mm). The difference is 175 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.23,
+   "wall_s": 5.23,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (170 mm) while Linz has the least (272 mm). The difference is 90 mm."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 11.76,
+   "wall_s": 11.76,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Brno had the highest rainfall at 396 mm, while Cork had the least at 247 mm. That\u2019s 149 mm more than the city with the least."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 6.43,
+   "wall_s": 6.53,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Brno** (816 mm). The difference between Brno and Porto is 45 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 11.96,
+   "wall_s": 12.06,
+   "status": null,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "both",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Bremen recorded the highest rainfall at 484 mm. Linz had the least at 838 mm. That means Bremen had 844 mm more than Linz."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 7.34,
+   "wall_s": 7.44,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Based on the provided data (Graz 191mm, Porto 415mm, Linz 769mm), **Linz** has the most rain.\n\nThe difference is: 769 - 415 = **354 mm**."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 5.02,
+   "wall_s": 5.02,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Graz has the most rain (342mm). The difference is 201mm (Malmo 717 - Cork 141)."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 10.55,
+   "wall_s": 10.55,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The city with the most rain is **Brno** (750 mm). The difference between the highest and lowest cities is **587 mm** (750 - 162 = 588, but the source says 455-162=293; 750-162=588. Let's recalculate: 750 - 162 = 588).\n\nWait, the source text says \"Brno 750\" and \"Malmo 162\".\nHighest: Brno (750)\nLowest: Malmo (162)\nDifference: 750 - 162 = **588 mm**.\n\nThe user's request asks for the highest city and "
+  },
+  {
+   "fixture": "compare08",
+   "arm": "adaptive",
+   "pass": true,
+   "turn_s": 5.33,
+   "wall_s": 5.33,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (515 mm) while Bremen has the least (264 mm). The difference is 251 mm."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 4.73,
+   "wall_s": 4.73,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Ghent has the most rain (736 mm). The difference is 270 mm (736 - 460)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 4.92,
+   "wall_s": 5.03,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "Lyon has the most rain (650 mm) while Malmo has 10 mm less than Lyon."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "adaptive",
+   "pass": false,
+   "turn_s": 8.85,
+   "wall_s": 8.96,
+   "status": null,
+   "offers": [
+    "B2_GIST"
+   ],
+   "postcommit_offers": 0,
+   "effort": 0.79,
+   "band": "FOCAL_TARGETED",
+   "wake": "gist",
+   "constraints": [
+    "AGE_AUTONOMOUS_EFFORT_MAX_LOW",
+    "AGE_FOCAL_DEPTH"
+   ],
+   "output": "The user's request is asking for a calculation based on provided data points (Ghent: 166mm, Lyon: 766mm, Cork: 244mm). The hypothesis \"Ghent has the most rain while Cork has 10\" is factually incorrect as stated.\n\nHowever, the user's request does not explicitly ask for a calculation or a specific numerical result (e.g., \"how many more than?\"). It only asks for the identification of the city with th"
+  }
+ ],
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "prereg": "docs/proofs/continuation-20261026/z6e-selective-wake/PREREG.md",
+ "claim_limit": "deterministic bench decoding, generated English tasks, regex checks, one seed, cloud CPU, no energy"
+}

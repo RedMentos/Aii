@@ -13,12 +13,14 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :befehle [Wort] (alle Befehle mit Erklärung) / :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats [all|--before <Chat-ID>] / :new / :open <Chat-ID> / :search <Text> [--before <Message-ID>] / :export chat [json|md] [Chat-ID]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:world shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json> (nur lokales TTY, read-only SHADOW, keine Aktion/Lernfreigabe)
 :language [status|en|de] (Sprache für neue Modellantworten; Englisch Standard, Wechsel nur im Leerlauf, dauerhaft)
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
-:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
+:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet) / :wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>] (Zweitwächter, macht nur vorsichtiger) / :modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>] (neue Module nur mit deiner Freigabe)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
+:ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id> (neuere Routen-Korrektur ersetzt ältere mit diesen Wörtern)
 :feedback wake none|detail|gist|both [--learn] / :feedback halt halt|continue [--learn]
 :feedback skill none|skill / memory skip|recall|deep / channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC [--learn] (WP-T1 Fast-Köpfe)
 :fastpolicy [status|focus on|off|measure|outcomes [record|learn]|lifecycle [Event-ID]] (JEF_FAST_POLICY-Köpfe, Re-entry-Frage, Ergebnis-Labels, Lebenszyklus L0–L11)
@@ -37,7 +39,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :consolidate semantic|procedural / :consolidate status / :consolidate rollback <ID>
 :route auto|simple|detail|gist|both / :observers background|off|A_THEN_B_SEQUENTIAL|B_THEN_A_SEQUENTIAL|ALWAYS_BOTH_ASYNC|JEF_FIRST_THEN_BOTH|SAMPLED_OBSERVER|ON_DEMAND_REENTRY
 :decode [server|same_causal_zero|same_causal] / :sampling [anti_echo|legacy] / :semantic [status|off|shadow|on|auto] / :episodes [status|list|cut|graph <id>|relation <a> <b>|forgetting] / :live / :register [summary|drift|paths|declared|<Präfix>] / :gates [summary|all|<Gate>] / :drift [status|probes|freeze <Set>|refreeze <Set> <Grund>|sdft] / :admission [status|train|active|shadow|table] / :duplex [status|auto|interrupt|off] / :fabric [report|record] / :image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb]|train|look [id]|locate <id> <Text>|forget <id>] / :collapse [all]
-:effort [disabled|low|adaptive|high|max] (Reasoning-Effort/Body-Wake; ohne Wert: Status)
+:effort [disabled|low|adaptive|high|max|detail|gist] (Reasoning-Effort/Body-Wake; detail/gist = nur dieser eine Körper; ohne Wert: Status)
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
@@ -98,6 +100,9 @@ class Operator:
         if cmd in {'sleep','scheduler'}:
             from .sleep import operator_command
             return operator_command(r,cmd,args)
+        if cmd=='ersetze':  # WP-Z6c human-scoped replacement of older route corrections
+            from .route_supersede import operator_command
+            return operator_command(r,args)
         if cmd=='neuromod':
             from .neuromod import operator_command
             return operator_command(r,args)
@@ -183,6 +188,12 @@ class Operator:
             return operator_command(r,args)
         if cmd=='verbot':
             from .prohibitions import operator_command
+            return operator_command(r,args)
+        if cmd=='wachter':
+            from .guard2 import operator_command
+            return operator_command(r,args)
+        if cmd=='modul':
+            from .modules_gate import operator_command
             return operator_command(r,args)
         if cmd=='notaus':
             from .prohibitions import notaus_command
@@ -295,7 +306,25 @@ class Operator:
         if cmd=='brain':return dumps(s.generation())
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
-        if cmd=='world':return dumps(r.world.world_state())
+        if cmd=='world':
+            if not args:return dumps(r.world.world_state())
+            if args[0]!='shadow' or len(args)!=5:
+                raise ValueError(':world [shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json>]')
+            # Explicit local TTY only (origin guard above). This is still a
+            # READ_LOCAL operation: fixed user prohibitions/notaus and the
+            # ask-first policy take precedence before ANY input file is read.
+            from . import prohibitions
+            blocked = prohibitions.blocked(s, 'world_shadow_probe', 'READ_LOCAL', True)
+            if blocked:
+                raise PermissionError(blocked)
+            if prohibitions.announce_all(s):
+                raise PermissionError('HARD_BLOCK:ANNOUNCE_ALL_REQUIRES_APPROVAL')
+            # No model action, fact write, age promotion or checkpoint output.
+            from .world_jepa_shadow_probe import (probe_checkpoint, _json_file,
+                                                  MAX_PROVENANCE_BYTES, MAX_REQUEST_BYTES)
+            provenance = _json_file(args[3], MAX_PROVENANCE_BYTES)
+            request = _json_file(args[4], MAX_REQUEST_BYTES)
+            return dumps(probe_checkpoint(args[1], args[2], provenance, request))
         if cmd in {'components','objectives'}:
             from .verification import component_registry,objective_registry
             return dumps(component_registry() if cmd=='components' else objective_registry(r))
@@ -390,7 +419,7 @@ class Operator:
         if cmd=='effort':
             from . import effort
             if not args:return dumps(effort.summary(s))
-            if len(args)!=1:raise ValueError(':effort [disabled|low|adaptive|high|max]')
+            if len(args)!=1:raise ValueError(':effort [disabled|low|adaptive|high|max|detail|gist]')
             with r.lock:
                 r.require_idle()
                 return 'reasoning_effort = '+effort.set_mode(s,args[0])+' (Deadline, Ressourcen, Observer-Schalter und Age bleiben bindend)'

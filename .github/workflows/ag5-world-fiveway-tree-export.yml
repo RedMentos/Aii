@@ -1,0 +1,154 @@
+name: V13 five-way reproducible integrated review tree export
+on:
+  push:
+    branches: [codex/automation11-fiveway-tree-export-20261027]
+    paths:
+      - '.github/workflows/ag5-world-fiveway-tree-export.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-fiveway-tree-export-20261027
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/fiveway"
+          timeout 240s "$RUNNER_TEMP/fiveway/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exact disposable five-way merge and cross-feature tests
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/fivewayproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/fivewayproof/REVIEW_HEAD.txt"
+          git fetch --no-tags origin c615497384dc5519be59232451895ca443ce9e45 e505364c78d6ef222eb287d84d84aed81ecc53e3 551d6212d7b71f8e78e1fdb163e45ab41a11310d 2671f054ed025625abe94be42d12667329c4366f > "$RUNNER_TEMP/fivewayproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/FETCH_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/fivewayproof/AG5_MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/AG5_MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/fivewayproof/AG5_CONFLICTS.txt"
+          "$RUNNER_TEMP/fiveway/bin/python" v13/code/scripts/resolve_ag5_world_merge_candidate.py > "$RUNNER_TEMP/fivewayproof/AG5_RESOLVE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/AG5_RESOLVE_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only AG5 World resolved' > "$RUNNER_TEMP/fivewayproof/AG5_COMMIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/AG5_COMMIT_EXIT.txt"
+          for pair in 'CLAUDE e505364c78d6ef222eb287d84d84aed81ecc53e3' 'FETCH_FIX 551d6212d7b71f8e78e1fdb163e45ab41a11310d' 'EXPORT_FIX 2671f054ed025625abe94be42d12667329c4366f'; do
+            name="${pair%% *}"
+            sha="${pair#* }"
+            git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff "$sha" > "$RUNNER_TEMP/fivewayproof/${name}_MERGE_RAW.log" 2>&1
+            rc="$?"
+            echo "$rc" > "$RUNNER_TEMP/fivewayproof/${name}_MERGE_EXIT.txt"
+            git diff --name-only --diff-filter=U > "$RUNNER_TEMP/fivewayproof/${name}_CONFLICTS.txt"
+            if [ "$rc" != 0 ]; then break; fi
+            git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m "CI-only ${name} integration" > "$RUNNER_TEMP/fivewayproof/${name}_COMMIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/fivewayproof/${name}_COMMIT_EXIT.txt"
+          done
+          # The merged operator gained :modul and :wachter from Claude. The
+          # AG5 guide must explain both commands in the disposable merged tree.
+          "$RUNNER_TEMP/fiveway/bin/python" - <<'PY' > "$RUNNER_TEMP/fivewayproof/GUIDE_RAW.log" 2>&1
+          from pathlib import Path
+          import re
+          p=Path("v13/code/docs/BEFEHLE.md")
+          s=p.read_text()
+          anchor=":toolforecast [status|shadow|off|score]\n    Sagt vorher, was ein Werkzeug bewirken würde (SCHATTEN).\n"
+          if s.count(anchor)!=1: raise SystemExit("GUIDE_ANCHOR_DRIFT")
+          for command in ("modul","wachter"):
+              if re.search(r"(?m)^:"+command+r"\\b",s): raise SystemExit("GUIDE_ALREADY_DOCUMENTED:"+command)
+          addition=(
+              ":modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>|frage <M> <Text>|export <M> <Pfad>]\n"
+              "    Neue Wissens-Module: standardmäßig aus, nur deine getippten Freigaben. Herkunft/Hash prüfen, Export ist kein Modelltraining.\n"
+              ":wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>]\n"
+              "    Zweiter Sicherheitswächter: standardmäßig aus, nur strenger; ein Modellordner wird nicht automatisch geladen.\n"
+          )
+          p.write_text(s.replace(anchor,anchor+addition))
+          print("GUIDE_ADDED_TWO_COMMANDS",p.stat().st_size)
+          PY
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/GUIDE_EXIT.txt"
+          git add -- v13/code/docs/BEFEHLE.md
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only five-way module and guard guide' > "$RUNNER_TEMP/fivewayproof/GUIDE_COMMIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/GUIDE_COMMIT_EXIT.txt"
+          git status --short > "$RUNNER_TEMP/fivewayproof/FINAL_STATUS.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/fivewayproof/FINAL_HEAD.txt"
+          sha256sum v13/code/v13/operator.py v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/v13/guard2.py v13/code/docs/BEFEHLE.md > "$RUNNER_TEMP/fivewayproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 600s "$RUNNER_TEMP/fiveway/bin/python" -m unittest -v tests.test_phone_halt tests.test_route_supersede tests.test_world_console_shadow tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_handy_pflicht_resume tests.test_run611_chat_session_paging tests.test_run594_chat_export_stream tests.test_toolforecast tests.test_world_jepa_action_identification tests.test_modules_gate tests.test_guard2 tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate) > "$RUNNER_TEMP/fivewayproof/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/FOCUSED_EXIT.txt"
+          "$RUNNER_TEMP/fiveway/bin/python" -m compileall -q v13/code/v13/operator.py v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/v13/guard2.py > "$RUNNER_TEMP/fivewayproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/fiveway/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base aab74aa900bfbd767f2983ba40a16fc0b8b95a3b --head HEAD > "$RUNNER_TEMP/fivewayproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Export exact changed tree bytes and Git blob identities
+        run: |
+          set +e
+          "$RUNNER_TEMP/fiveway/bin/python" - "$RUNNER_TEMP/fivewayproof" <<'PY' > "$RUNNER_TEMP/fivewayproof/TREE_EXPORT_RAW.log" 2>&1
+          import hashlib, io, json, pathlib, subprocess, sys, tarfile
+          out = pathlib.Path(sys.argv[1])
+          review_source_head = (out / "REVIEW_HEAD.txt").read_text().strip()
+          base = "c615497384dc5519be59232451895ca443ce9e45"  # AG5 contains 2,651 files absent from World base
+          head = subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
+          tree = subprocess.check_output(["git","rev-parse","HEAD^{tree}"],text=True).strip()
+          raw = subprocess.check_output(["git","diff","--name-status","-z","--no-renames",base,head]).split(b"\0")
+          changes = []
+          for i in range(0,len(raw)-1,2):
+              if not raw[i]: continue
+              changes.append((raw[i].decode(),raw[i+1].decode()))
+          entries = {}
+          for line in subprocess.check_output(["git","ls-tree","-r","-z",head]).split(b"\0"):
+              if not line: continue
+              left,path=line.split(b"\t",1)
+              mode,kind,sha=left.decode().split()
+              entries[path.decode()]=(mode,kind,sha)
+          manifest=[]
+          with tarfile.open(out/"CHANGED_FILES.tar.gz","w:gz") as tar:
+              for status,path in changes:
+                  if status not in ("A","M","D"): raise SystemExit("UNEXPECTED_CHANGE_STATUS "+status)
+                  row={"status":status,"path":path}
+                  if status!="D":
+                      mode,kind,blob=entries[path]
+                      if kind!="blob" or mode not in ("100644","100755"): raise SystemExit("UNSUPPORTED_MODE "+path)
+                      data=pathlib.Path(path).read_bytes()
+                      row.update(mode=mode,blob_sha=blob,sha256=hashlib.sha256(data).hexdigest(),size=len(data))
+                      info=tarfile.TarInfo(path);info.size=len(data);info.mode=int(mode,8)&0o777;info.mtime=0
+                      tar.addfile(info,io.BytesIO(data))
+                  manifest.append(row)
+          payload={"base_commit":base,"review_source_head":review_source_head,"ephemeral_commit":head,"tree_sha":tree,"changed":manifest,
+                   "scope":"five-way disposable review integration only; not production or gate promotion"}
+          (out/"MERGED_TREE_MANIFEST.json").write_text(json.dumps(payload,indent=2)+"\n")
+          with (out/"EXPORT_SHA256.txt").open("w") as f:
+              for name in ("CHANGED_FILES.tar.gz","MERGED_TREE_MANIFEST.json"):
+                  data=(out/name).read_bytes()
+                  f.write(hashlib.sha256(data).hexdigest()+"  "+name+"\n")
+          if subprocess.check_output(["git","status","--porcelain"]).strip(): raise SystemExit("DIRTY_TREE")
+          print("TREE_EXPORTED",tree,"changed",len(manifest),"tar", (out/"CHANGED_FILES.tar.gz").stat().st_size)
+          PY
+          echo "$?" > "$RUNNER_TEMP/fivewayproof/TREE_EXPORT_EXIT.txt"
+          exit 0
+      - name: Upload exact raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ag5-world-fiveway-tree-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/fivewayproof/
+          if-no-files-found: error
+      - name: Enforce merge and focused exits
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/fivewayproof/FETCH_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/fivewayproof/AG5_MERGE_EXIT.txt")" = 1
+          test "$(wc -l < "$RUNNER_TEMP/fivewayproof/AG5_CONFLICTS.txt")" = 3
+          for n in AG5_RESOLVE AG5_COMMIT CLAUDE_MERGE CLAUDE_COMMIT FETCH_FIX_MERGE FETCH_FIX_COMMIT EXPORT_FIX_MERGE EXPORT_FIX_COMMIT GUIDE GUIDE_COMMIT FOCUSED COMPILE PRIVACY TREE_EXPORT; do
+            test "$(cat "$RUNNER_TEMP/fivewayproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/fivewayproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          tail -12 "$RUNNER_TEMP/fivewayproof/FOCUSED_RAW.log"

@@ -1,0 +1,371 @@
+{
+  "device": {
+    "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.13.16",
+    "android": false,
+    "cpu_count": 4
+  },
+  "embeddings": "actual pinned Needle native API; no random vectors",
+  "purpose": "external route head only",
+  "result": "upd_f36075cb7dea4f28a79c494c6140f2f5 PENDING_APPROVAL; aktive Generation unverändert",
+  "active_unchanged_after_shadow": true,
+  "manifest": {
+    "base_generation": "gen_07c3365d265547dd88ced1da60433216",
+    "body_learning": false,
+    "commit_eligible": true,
+    "component": "route",
+    "encoder_revision": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+    "metrics": {
+      "body_parameters_modified": 0,
+      "checkpoint_reload": true,
+      "commit_eligible": true,
+      "deterministic_repeat": true,
+      "device": {
+        "android": false,
+        "cpu_count": 4,
+        "machine": "x86_64",
+        "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+        "python": "3.13.16"
+      },
+      "duration_s": 0.03620001299998421,
+      "effective_learning_rate": 0.01,
+      "effective_max_update_norm": 0.02,
+      "embedding_dim": 3072,
+      "energy_joules": null,
+      "finite": true,
+      "finite_difference_max_error": 8.618886160327577e-11,
+      "gradient_check": true,
+      "held_out": {
+        "accuracy": 1.0,
+        "loss_after": 1.0576433742276297,
+        "loss_before": 1.3862943611198906,
+        "n": 4,
+        "per_class": {
+          "0": {
+            "after": 1.0,
+            "before": 1.0
+          },
+          "1": {
+            "after": 1.0,
+            "before": 0.0
+          },
+          "2": {
+            "after": 1.0,
+            "before": 0.0
+          },
+          "3": {
+            "after": 1.0,
+            "before": 0.0
+          }
+        },
+        "scaffold_accuracy": 0.25
+      },
+      "loss_after": 1.0193458665195452,
+      "loss_before": 1.3862943611198906,
+      "max_applied_step_norm": 0.00861245147840713,
+      "n": 16,
+      "nontrainable_trace_count": 3073,
+      "objective": "explicit-human-route-cross-entropy-v1",
+      "optimizer_steps": 80,
+      "phone_benchmark": false,
+      "process_memory": {
+        "major_faults": 0,
+        "mapped_file_bytes": 60542976,
+        "measurement_status": "MEASURED",
+        "minor_faults": 5595,
+        "pid": 1938,
+        "pss_bytes": 24568832,
+        "resolved_proc_pid": 1938,
+        "rss_bytes": 38150144
+      },
+      "retention_pass": true,
+      "trainable_parameter_count": 12292
+    },
+    "objective": "explicit-human-route-cross-entropy-v1",
+    "scope": "external_route_head_only",
+    "source_ids": [
+      "src_002b0cecfba144dabedfb705cd825cf1",
+      "src_02cb975d87524fef926629de5e98f316",
+      "src_04540d8448e943fb9d9b61c93f9b6ff1",
+      "src_077b8d61c8f44d82b5dd07b9121d97e1",
+      "src_099dffc17f194d7689929b02874323ac",
+      "src_0fa7e603fb044606abc1fefc7cd00994",
+      "src_14252839d3304edb9a2ad63074347f22",
+      "src_20505a143fe5491f8f6709d35ddef959",
+      "src_29fd062c742544a19c37b8fc4ba3e540",
+      "src_3cd91282594c42eda0655061f6ed51e9",
+      "src_5488a59438ac457da9858e569fa55419",
+      "src_59e4af091ad944268f440d5cc67057a6",
+      "src_629cb2ec333e4e238a1c6c5c8c805d8c",
+      "src_63d572dcdccd437abc12187b07bfed0a",
+      "src_6d6eeb226f9f4d3cb63394c428a015c0",
+      "src_81172a6af4024ad1820bca5f38df78b0",
+      "src_85d96c6ab6b548c88ac1980dda8cfc94",
+      "src_8890c47c71de45a6869f3d293d86e39e",
+      "src_93dead83563649569b81f5e2a8097c7f",
+      "src_a59d05f648c2444cabe22932fe3eb86e",
+      "src_b03364e4a5014038add2b759020399ad",
+      "src_b0e9933b831e47639bd112674828d507",
+      "src_bf5e39f79d3d470dbb1bfe7b149c1829",
+      "src_d2eb2881770141c092ab05ea63edf8c5",
+      "src_d9ea8d77a13a48fc9a6246d1a1b21ded",
+      "src_dfbea8282ccc42d7a6faa079a36af062",
+      "src_e0f2aafb610644d2917131104a7f911e",
+      "src_e8a5f15aa0974abc9e080849bfce3ea5",
+      "src_eacfd19764cc414f99d916830845fe7d",
+      "src_ecb97474f61546b199ba1d7af1bc48a3",
+      "src_f2ac138dc6704b8e9ef05e32a69dac0e",
+      "src_fa84b48ae31c4b2d8b164fcb178a1cd9"
+    ],
+    "training_policy": {
+      "base_learning_rate": 0.01,
+      "base_max_update_norm": 0.02,
+      "component": "route",
+      "consolidation_ready": false,
+      "effective_learning_rate": 0.01,
+      "effective_max_update_norm": 0.02,
+      "learning_rate_key": "learning_rate",
+      "native_parameter_authority": 0,
+      "neuromodulation": {
+        "age_plasticity": 1.0,
+        "consolidation_tag": false,
+        "eligibility": 1.0,
+        "factor": 1.0,
+        "kind": "control",
+        "modulator": {
+          "combined": 1.0,
+          "epistemic": 1.0,
+          "instrumental": 0.0
+        },
+        "path_id": "route",
+        "revision": "n10-neuromod-v1"
+      },
+      "plasticity_gain": 1.0,
+      "revision": "f7-measured-shadow-budget-v1",
+      "state_trials": 0
+    }
+  },
+  "status": "PENDING_APPROVAL",
+  "actual_candidate_bytes": 123442,
+  "generation_changed_after_explicit_test_approval": true,
+  "restart_same_session": true,
+  "active_head_after_restart": true,
+  "actual_routes_after_restart": [
+    {
+      "expected": "simple",
+      "actual": "simple",
+      "source": "APPROVED_EXTERNAL_HEAD",
+      "matches": true,
+      "learned_head_consumed": true
+    },
+    {
+      "expected": "detail",
+      "actual": "detail",
+      "source": "APPROVED_EXTERNAL_HEAD",
+      "matches": true,
+      "learned_head_consumed": true
+    },
+    {
+      "expected": "gist",
+      "actual": "gist",
+      "source": "APPROVED_EXTERNAL_HEAD",
+      "matches": true,
+      "learned_head_consumed": true
+    },
+    {
+      "expected": "both",
+      "actual": "both",
+      "source": "APPROVED_EXTERNAL_HEAD",
+      "matches": true,
+      "learned_head_consumed": true
+    }
+  ],
+  "plasticity_after_restart": {
+    "component": "route",
+    "consecutive_stable_trials": 1,
+    "consolidation_ready": false,
+    "last_created": 1792698120.918477,
+    "last_sequence": 1,
+    "last_update_id": "upd_f36075cb7dea4f28a79c494c6140f2f5",
+    "native_router_input_drift": null,
+    "native_shared_attention_drift": null,
+    "plasticity_gain": 0.986875,
+    "retention_failures": 0,
+    "revision": "f7-measured-shadow-budget-v1",
+    "saturation": 0.43062257392035647,
+    "seen_ids": [
+      "upd_f36075cb7dea4f28a79c494c6140f2f5"
+    ],
+    "semantic_truth_authority": false,
+    "stability_score": 0.525,
+    "trials": 1
+  },
+  "second_shadow_result": "upd_940358fa6d4a4897bef56c2d0261d692 PENDING_APPROVAL; aktive Generation unverändert",
+  "second_candidate_status_after_f7_crash": "PENDING_APPROVAL",
+  "second_shadow_manifest": {
+    "base_generation": "gen_c6951466a2784ca892e0baad83eb64de",
+    "body_learning": false,
+    "commit_eligible": true,
+    "component": "route",
+    "encoder_revision": "b274efcb211a9eef48c9a88da4b43bd569696a39",
+    "metrics": {
+      "body_parameters_modified": 0,
+      "checkpoint_reload": true,
+      "commit_eligible": true,
+      "deterministic_repeat": true,
+      "device": {
+        "android": false,
+        "cpu_count": 4,
+        "machine": "x86_64",
+        "platform": "Linux-6.18.44-fc-v140-x86_64-with-glibc2.39",
+        "python": "3.13.16"
+      },
+      "duration_s": 0.025812164000001303,
+      "effective_learning_rate": 0.009868749999999999,
+      "effective_max_update_norm": 0.019737499999999998,
+      "embedding_dim": 3072,
+      "energy_joules": null,
+      "finite": true,
+      "finite_difference_max_error": 6.459903445499293e-11,
+      "gradient_check": true,
+      "held_out": {
+        "accuracy": 1.0,
+        "loss_after": 0.8272888801026717,
+        "loss_before": 1.0576433742276297,
+        "n": 4,
+        "per_class": {
+          "0": {
+            "after": 1.0,
+            "before": 1.0
+          },
+          "1": {
+            "after": 1.0,
+            "before": 1.0
+          },
+          "2": {
+            "after": 1.0,
+            "before": 1.0
+          },
+          "3": {
+            "after": 1.0,
+            "before": 1.0
+          }
+        },
+        "scaffold_accuracy": 0.25
+      },
+      "loss_after": 0.7691902932299705,
+      "loss_before": 1.0193458665195452,
+      "max_applied_step_norm": 0.00710068787531281,
+      "n": 16,
+      "nontrainable_trace_count": 3073,
+      "objective": "explicit-human-route-cross-entropy-v1",
+      "optimizer_steps": 80,
+      "phone_benchmark": false,
+      "process_memory": {
+        "major_faults": 0,
+        "mapped_file_bytes": 60542976,
+        "measurement_status": "MEASURED",
+        "minor_faults": 5649,
+        "pid": 1945,
+        "pss_bytes": 24435712,
+        "resolved_proc_pid": 1945,
+        "rss_bytes": 38359040
+      },
+      "retention_pass": true,
+      "trainable_parameter_count": 12292
+    },
+    "objective": "explicit-human-route-cross-entropy-v1",
+    "scope": "external_route_head_only",
+    "source_ids": [
+      "src_002b0cecfba144dabedfb705cd825cf1",
+      "src_02cb975d87524fef926629de5e98f316",
+      "src_04540d8448e943fb9d9b61c93f9b6ff1",
+      "src_077b8d61c8f44d82b5dd07b9121d97e1",
+      "src_099dffc17f194d7689929b02874323ac",
+      "src_0fa7e603fb044606abc1fefc7cd00994",
+      "src_14252839d3304edb9a2ad63074347f22",
+      "src_20505a143fe5491f8f6709d35ddef959",
+      "src_29fd062c742544a19c37b8fc4ba3e540",
+      "src_3cd91282594c42eda0655061f6ed51e9",
+      "src_5488a59438ac457da9858e569fa55419",
+      "src_59e4af091ad944268f440d5cc67057a6",
+      "src_629cb2ec333e4e238a1c6c5c8c805d8c",
+      "src_63d572dcdccd437abc12187b07bfed0a",
+      "src_6d6eeb226f9f4d3cb63394c428a015c0",
+      "src_81172a6af4024ad1820bca5f38df78b0",
+      "src_85d96c6ab6b548c88ac1980dda8cfc94",
+      "src_8890c47c71de45a6869f3d293d86e39e",
+      "src_93dead83563649569b81f5e2a8097c7f",
+      "src_a59d05f648c2444cabe22932fe3eb86e",
+      "src_b03364e4a5014038add2b759020399ad",
+      "src_b0e9933b831e47639bd112674828d507",
+      "src_bf5e39f79d3d470dbb1bfe7b149c1829",
+      "src_d2eb2881770141c092ab05ea63edf8c5",
+      "src_d9ea8d77a13a48fc9a6246d1a1b21ded",
+      "src_dfbea8282ccc42d7a6faa079a36af062",
+      "src_e0f2aafb610644d2917131104a7f911e",
+      "src_e8a5f15aa0974abc9e080849bfce3ea5",
+      "src_eacfd19764cc414f99d916830845fe7d",
+      "src_ecb97474f61546b199ba1d7af1bc48a3",
+      "src_f2ac138dc6704b8e9ef05e32a69dac0e",
+      "src_fa84b48ae31c4b2d8b164fcb178a1cd9"
+    ],
+    "training_policy": {
+      "base_learning_rate": 0.01,
+      "base_max_update_norm": 0.02,
+      "component": "route",
+      "consolidation_ready": false,
+      "effective_learning_rate": 0.009868749999999999,
+      "effective_max_update_norm": 0.019737499999999998,
+      "learning_rate_key": "learning_rate",
+      "native_parameter_authority": 0,
+      "neuromodulation": {
+        "age_plasticity": 1.0,
+        "consolidation_tag": false,
+        "eligibility": 1.0,
+        "factor": 1.0,
+        "kind": "control",
+        "modulator": {
+          "combined": 1.0,
+          "epistemic": 1.0,
+          "instrumental": 0.0
+        },
+        "path_id": "route",
+        "revision": "n10-neuromod-v1"
+      },
+      "plasticity_gain": 0.986875,
+      "revision": "f7-measured-shadow-budget-v1",
+      "state_trials": 1
+    }
+  },
+  "plasticity_checks": {
+    "measured_first_trial": true,
+    "restart_keeps_budget": true,
+    "worker_uses_budget": true,
+    "second_shadow_no_commit": true,
+    "operator_config_unchanged": true,
+    "finished_candidate_survives_f7_crash": true,
+    "typed_trial_and_budget": true
+  },
+  "rollback_removed_head": true,
+  "integrity_errors": [],
+  "checks": {
+    "shadow_does_not_commit": true,
+    "candidate_has_changed_weights": true,
+    "train_gradient": true,
+    "explicit_activation": true,
+    "restart_uses_head": true,
+    "actual_learned_route_use": true,
+    "rollback": true,
+    "integrity": true,
+    "f7_measured_first_trial": true,
+    "f7_restart_keeps_budget": true,
+    "f7_worker_uses_budget": true,
+    "f7_second_shadow_no_commit": true,
+    "f7_operator_config_unchanged": true,
+    "f7_finished_candidate_survives_f7_crash": true,
+    "f7_typed_trial_and_budget": true
+  },
+  "proof_status": "LEARNING_LIFECYCLE_PASS"
+}

@@ -1,0 +1,19 @@
+# Pre-registration — World-JEPA fixed training-budget ablation (2026-10-27)
+
+Review-only child of PR #661, exact parent commit `676b910f68f503a97d289d597080826202e8329f`; branch `codex/automation11-world-budget-ablation-20261027`. Do not merge to main or alter AG5/Claude owners.
+
+## Frozen inputs and arms (locked before evaluation)
+
+Use only the **original** Linux synthetic-content file-world Actions 40453512115 artifact ID 12712155096; ZIP SHA256 `f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8`. Original seed212 training manifest SHA256 `dbf68c92ac3f371432cd0f9d3b94a42ca7633ed71e318db72d42b3aa27dde96d`, original checkpoint SHA256 `955ee6efd0eaf2f85803297773ad016d54a33c7c707cd0406b3ceb23739d5e51`, source SHA256 `bff9efa8995b82152c2de853581572991e1bfb8852af792cb02544f584f4b770`. Original holdout manifests: seed313 `709fed825ed1636a618871cc5294085a3a58f08a39913c67cb2dc8c16960c509`, seed314 `499aeaf2ddb05d4531aa32a2715a76bdabed2539121f7d4e663cc9d415cf1b07`, seed315 `872ea08ad70f7c2a9bb8c1db63c01251a9accb8468b3c088e48cd135446b02c9`. No replacement, resampling, new world collection, or modified seeds.
+
+Train **four independent from-scratch arms** with fixed `SlotWorldJEPA(slots=6, seed=212, ensemble=2)` and existing source/hyperparameters, exactly **10, 50, 200, 800 optimizer steps**. Every arm sees the identical first 80% of original 240 rows (chronological 192 rows); calibrate only on original later clean rows, exactly as original lifecycle. Train/calibration are never allowed to see heldouts. Reuse original model code; no architecture change, scheduler, extra seed, hyperparameter tuning or posthoc selected best checkpoint. Persist each arm's SHA-bound new checkpoint and manifest in a **new** directory; never overwrite the frozen original checkpoint. Inference is SHADOW-only.
+
+## Predeclared metrics and decision rule
+
+For each arm and each frozen heldout seed (160 rows each), report normalized target-latent MSE for current first-predictor action, identity target-encoder before-state, and action-rotated control; paired per-row fractions beating controls, mean confidence, uncertain rows, and weighted 480-row values. Since each arm learns a different latent representation, **compare action/identity and action/rotated ratios within an arm**; raw cross-arm latent MSE alone cannot establish an improvement. Include original frozen 10-step checkpoint as an immutable reference, not a fifth training arm. For an exploratory positive signal require first predictor action MSE strictly less than identity **and** rotated-action MSE in each of 3 seeds. No promotion based on aggregate alone. Report every arm including failures; no selection to alter runtime default. No claim of causal/semantic utility from synthetic-content file-world.
+
+## Integrity and evidence
+
+Before training, independently verify all original manifests, provenance, checkpoint digest, cohort hashes, original timing receipts, seed/row counts, source hashes and heldout timing receipts. Reject modified/swapped originals, existing output directory, malformed arrays and nonfinite metrics. Preserve raw stdout/stderr, exit codes, exact HEAD, source SHA256, trained checkpoint SHA256 and complete result JSON in CI artifact; CRC/ZIP/path/digest verify original input. Keep RED failures. Use pinned NumPy and serial training under CI CPU budget; never claim Redmi/native body training. No tool/fact/learning-age/approval authority. STEP2 UTILITY_FAIL, B3 L1_FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, canonical/user full-scope false stay negative.
+
+If 800 steps is too slow for bounded CI, record the timeout/partial arm as failed, not silently shorten the preregistered budget. Next: independent reviewer checks implementation, provenance and counterexamples, then separate AG5/World integration planning.

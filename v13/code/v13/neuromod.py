@@ -112,6 +112,18 @@ def score(kind,ch,source,finality):
     ins=max([w.get(c,0.)*abs(ch[c]) for c in INSTRUMENTAL if c in ch]+[0.])*UTILITY_SCALE.get(source,1.)*f
     return clamp(epi),clamp(ins)
 
+def sample_factor(component,source_class='internal_crosscheck',finality='FINAL',safety_veto=False,irreversible=False,rollback_available=False,**channels):
+    """WP-Z6j: typed modulator credited to one training sample (M_i of that sample, §12.4), not to the whole path.
+
+    Same §35.3 kind weights, §63 source credibility and safety veto as the path gate, but without the path's running
+    accumulation, so a path that mixes clean and wrong label sources can weight each sample by its own source.
+    Pure function; no state, no authority. Used by learners only where a caller passes per-sample weights."""
+    if source_class not in SOURCE_WEIGHT:raise ValueError('Unbekannte Quellenklasse: '+str(source_class))
+    ch={k:clamp(v,-1.,1.) for k,v in channels.items() if k in CHANNELS}
+    if len(ch)!=len(channels):raise ValueError('Unbekannter Modulator-Kanal')
+    if veto_of({'safety_veto':safety_veto,'irreversible':irreversible,'rollback_available':rollback_available},ch)>=VETO_BLOCK:return 0.
+    epi,ins=score(kind_of(path_of(component)),ch,source_class,finality);return round(oplus(epi,ins),6)
+
 class Neuromod:
     def __init__(self,store,age=None):
         self.s=store;self.age=age
