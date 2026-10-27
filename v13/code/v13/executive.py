@@ -34,14 +34,17 @@ class Executive:
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
         if state.get('session_id')!=session:return {}
-        state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
+        def dict_items(key):
+            value=state.get(key)
+            return [item for item in value if isinstance(item,dict)] if isinstance(value,list) else []
+        state['goal_sequence']=[x for x in dict_items('goal_sequence') if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
         task=state.get('active_task')
         if not isinstance(task,dict) or not self._valid_ref(task.get('source_ref',{})):state['active_task']=None
-        state['memory_refs']=[x for x in state.get('memory_refs',[]) if self._memory(x,session)]
-        state['open_questions']=[x for x in state.get('open_questions',[]) if self._question_valid(x,session)][-MAX_QUESTIONS:]
+        state['memory_refs']=[x for x in dict_items('memory_refs') if self._memory(x,session)]
+        state['open_questions']=[x for x in dict_items('open_questions') if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
         state['salient_A_offer']=state.get('goal_source_ref') if self._valid_ref(state.get('goal_source_ref',{})) else None
-        state['salient_B_offer']=[x for x in state.get('salient_B_offer',[]) if self._offer_valid(x,state.get('brain_generation_id'),session)]
+        state['salient_B_offer']=[x for x in dict_items('salient_B_offer') if self._offer_valid(x,state.get('brain_generation_id'),session)]
         if not self._valid_ref(state.get('goal_source_ref',{})):state['goal']='';state['goal_source_ref']=None
         return state
     def _question_valid(self,item,session):
