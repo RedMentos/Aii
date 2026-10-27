@@ -1,0 +1,53 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "AGE0D_EXACT_REPRESENTABILITY",
+  "status": "REVIEW_ONLY_SOFTWARE_PASS_NOT_INTEGRATED",
+  "parent_pr": 759,
+  "parent_sha": "6c1e0e985c7fa5ba5e477d95743cf1e21b718831",
+  "review_pr": 762,
+  "source_blob": "0d46595bbd166feb0152dc60b67595cfedcf9b10",
+  "red": {
+    "run": 40566368633,
+    "sha": "d25ac53587b293bb1225d1d78cf8137bf42dd2ac",
+    "tests": 16,
+    "failures": 4,
+    "zip_sha256": "f3b6f01e6c92029cce382cc3d0f9c74af359a3bdfbb2961179860c1f9989d94f"
+  },
+  "green": {
+    "run": 40566557818,
+    "sha": "47e413a6d0c4260dcf9f8bd10c29fd6de72b171a",
+    "tests": 16,
+    "failures": 0,
+    "zip_sha256": "94177fbe37428345a740b07bf1d1795c9fcb72d08d75e3b650ea6512b89504a4"
+  },
+  "full": {
+    "run": 40566885856,
+    "sha": "5f0d4b250b393592bbeb75f24419f6de637226e3",
+    "tests": 1956,
+    "skipped": 1,
+    "failures": 0,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "5eff0a376cbce202bce4c80e0390a5dada2b291f443dfc7ca436add4a96fd495"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZF-Age0d-Exact-Review",
+  "private_backup_byte_verified": true,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_age0d_exact_representability tests.test_age0d_answer_audit tests.test_age0d_cli tests.test_age0d_locale_ambiguity_review",
+  "next_prerequisite": "Independent frozen-runtime owner review; genuine real-user false-alarm calibration; no auto-merge"
+}
