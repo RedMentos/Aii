@@ -3,6 +3,8 @@ import contextlib
 import hashlib
 import io
 import json
+import os
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -33,6 +35,13 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
             with patch('v13.world_jepa_slots.SlotWorldJEPA.calibrate',
                        side_effect=AssertionError('holdout must never calibrate')):
                 cls.report = run_holdout(cls.training, cls.holdout, seed=313, rows=160)
+        evidence = os.environ.get('V13_HOLDOUT_EVIDENCE_DIR')
+        if evidence:
+            root = Path(evidence)
+            root.mkdir(parents=True, exist_ok=False)
+            shutil.copytree(cls.training, root / 'training')
+            shutil.copytree(cls.holdout, root / 'heldout')
+            print('HOLDOUT_METRICS=' + json.dumps(cls.report['metrics'], sort_keys=True))
 
     @classmethod
     def tearDownClass(cls):
