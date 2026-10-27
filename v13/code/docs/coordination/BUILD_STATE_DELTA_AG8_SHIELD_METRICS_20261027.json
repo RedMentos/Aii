@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-27",
+  "scope": "review_only_ag8_strict_shield_metrics_current_hx134",
+  "prior_art_pr": 375,
+  "parent": "7a56a53018fa6db9c0d783ee45065ee4dfaf4bed",
+  "prereg": "90d278df078569445ff60888f5f7d8b7ac2f4f56",
+  "red": {
+    "run": 40596864476,
+    "tests": 33,
+    "expected_failures": 7,
+    "zip_sha256": "71290f9c30f5db90374e6006a8f7c38dee854a254bec86ebf92998e4cfaaacdc"
+  },
+  "green": {
+    "run": 40596976521,
+    "tests": 33,
+    "failures": 0,
+    "zip_sha256": "a277515deafe4ec038fc5d25e2c8e7a228e0d650846e462834c712765daa3d86"
+  },
+  "full": {
+    "run": 40597083477,
+    "tested_head": "3fd83a07c1e06f515ca32da909bc868285b4dc17",
+    "tests": 2030,
+    "skipped": 1,
+    "success": true,
+    "zip_sha256": "5e9ef4efb95e75371548b9ea5def39ddbc64d9faed2b008bc2fefee6f96c1a77",
+    "all_raw_exits_zero": true,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "private_backup_byte_identical": true
+  },
+  "gates": {
+    "Age": 0,
+    "latent_authority": 0,
+    "jepa_weight": 0,
+    "B3_L1": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native": false,
+  "redmi": false,
+  "production_merged": false,
+  "next": "Cross-organ C1 World B3 Sleep HX strict AG8 shield full suite after PR791 passes; independent review"
+}

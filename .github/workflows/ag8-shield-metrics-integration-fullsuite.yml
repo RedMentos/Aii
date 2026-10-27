@@ -1,0 +1,99 @@
+name: V13 AG8 strict shield metrics full software regression
+on:
+  push:
+    branches: [assistant/v13-ag8-shield-metrics-integration-20261027]
+    paths:
+      - '.github/workflows/ag8-shield-metrics-integration-fullsuite.yml'
+      - 'v13/code/v13/agi/self_improve.py'
+      - 'v13/code/v13/agi/harness.py'
+      - 'v13/code/v13/agi/experience.py'
+      - 'v13/code/tests/test_hx_approval_run133.py'
+      - 'v13/code/tests/test_ag8_shield_metrics_run380.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-ag8-shield-metrics-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve full raw HX approval-origin evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/ag8-shield-metrics-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_BLOB.txt"
+          git hash-object v13/code/v13/agi/harness.py > "$evidence/HARNESS_BLOB.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/EXPERIENCE_BLOB.txt"
+          git hash-object v13/code/tests/test_harness_hx.py > "$evidence/TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_hx_approval_run133.py > "$evidence/RUN133_TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_ag8_shield_metrics_run380.py > "$evidence/RUN380_TEST_BLOB.txt"
+          git merge-base --is-ancestor 90d278df078569445ff60888f5f7d8b7ac2f4f56 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor 7556328644811672916a4d317ca04eabb88cd998 HEAD
+          echo "$?" > "$evidence/RED_TEST_EXIT.txt"
+          if [ "$(cat "$evidence/AG8_BLOB.txt")" = "4ff5ee079653488d9117380c6b7435df38966824" ] &&
+             [ "$(cat "$evidence/HARNESS_BLOB.txt")" = "78e3fd6c6c40a75db9cb88ea683194011e058d6f" ] &&
+             [ "$(cat "$evidence/EXPERIENCE_BLOB.txt")" = "83ede4b83161bc78b5cc718c647d984e06d9f54a" ] &&
+             [ "$(cat "$evidence/TEST_BLOB.txt")" = "37c0b55ee8848b452b574ef9968f7185bc6e2fef" ] &&
+             [ "$(cat "$evidence/RUN133_TEST_BLOB.txt")" = "243caf41dafe914697867b4ee2bd3ab5f5db8a8d" ] &&
+             [ "$(cat "$evidence/RUN380_TEST_BLOB.txt")" = "0d07e975513b3adb4c24d3244314a13ba0e73926" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/ag8-shield-metrics-full-venv"
+          py="$RUNNER_TEMP/ag8-shield-metrics-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_ag8_shield_metrics_run380 tests.test_hx_approval_run133 tests.test_harness_hx tests.test_agi_live
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7a56a53018fa6db9c0d783ee45065ee4dfaf4bed --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 7a56a53018fa6db9c0d783ee45065ee4dfaf4bed HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-ag8-shield-metrics-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag8-shield-metrics-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/ag8-shield-metrics-full"
+          for name in PREREG RED_TEST FROZEN INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'AG8_SHIELD_METRICS_FULL_SOFTWARE_ONLY_NO_PROMOTION'

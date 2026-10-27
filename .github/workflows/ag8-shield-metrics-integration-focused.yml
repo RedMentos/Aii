@@ -1,0 +1,80 @@
+name: V13 AG8 shield metrics current HX134 integration focused review
+on:
+  push:
+    branches: [assistant/v13-ag8-shield-metrics-integration-20261027]
+    paths:
+      - '.github/workflows/ag8-shield-metrics-integration-focused.yml'
+      - 'v13/code/tests/test_harness_hx.py'
+      - 'v13/code/tests/test_hx_approval_run133.py'
+      - 'v13/code/tests/test_ag8_shield_metrics_run380.py'
+      - 'v13/code/v13/agi/self_improve.py'
+      - 'v13/code/v13/agi/harness.py'
+      - 'v13/code/v13/agi/experience.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-ag8-shield-metrics-integration-focused
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve exact HX approval-origin raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/ag8-shield-metrics-integration"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/tests/test_harness_hx.py > "$evidence/TEST_BLOB.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_BLOB.txt"
+          git hash-object v13/code/v13/agi/harness.py > "$evidence/HARNESS_BLOB.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/EXPERIENCE_BLOB.txt"
+          git merge-base --is-ancestor 90d278df078569445ff60888f5f7d8b7ac2f4f56 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/ag8-shield-metrics-integration-venv"
+          py="$RUNNER_TEMP/ag8-shield-metrics-integration-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_ag8_shield_metrics_run380 tests.test_hx_approval_run133 tests.test_harness_hx tests.test_agi_live
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/agi > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 02ebbedfc984992035c4634f05168fa3b8996b7f --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 02ebbedfc984992035c4634f05168fa3b8996b7f HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-ag8-shield-metrics-integration-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag8-shield-metrics-integration/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/ag8-shield-metrics-integration"
+          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'AG8_SHIELD_METRICS_SOFTWARE_ONLY_NO_PROMOTION'
