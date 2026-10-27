@@ -183,7 +183,7 @@ class Ports:
             man=loaded.manifest
             return (man.get('direction')==direction and
                     all(man.get(k)==v for k,v in expected.items()))
-        except (OSError,ValueError,TypeError,KeyError,IndexError,EOFError,BadZipFile):
+        except (OSError,ValueError,TypeError,KeyError,IndexError,AttributeError,EOFError,BadZipFile):
             return False
     def report(self):
         st=self.s.state(KEY,None)[0] or self._default();keys=self.s.state(BRIDGE_KEY,None)[0] or {}
