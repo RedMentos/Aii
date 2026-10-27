@@ -76,12 +76,18 @@ class WorldRealfileLifecycleTests(unittest.TestCase):
     def test_main_preserves_raw_independent_world_process_files(self):
         with tempfile.TemporaryDirectory() as d:
             target = Path(d) / 'new-output'
-            original_log = b'{"op":"write_short","slot":0,"changed":true}\n'
-            original_schedule = b'{"seed":219,"items":[{"op":"write_short","slot":0}]}\n'
+            original_log = (b'{"op":"write_short","slot":0,"t0":2000.0,'
+                            b'"t1":2000.1,"ok":true,"changed":true}\n')
+            original_schedule = (b'{"seed":219,"t0":1999.0,'
+                                 b'"items":[{"op":"write_short","slot":0,"at":1.0}]}\n')
+            rows = rows_fixture(160)
+            for i, row in enumerate(rows):
+                row['a0'] = 1000.0 + i * .1
+                row['a1'] = row['a0'] + .01
             def collect(work, seed, count, held):
                 (work / 'world-212.log').write_bytes(original_log)
                 (work / 'world-212.json').write_bytes(original_schedule)
-                return rows_fixture(160)
+                return rows
             with patch('scripts.world_jepa_shadow_lifecycle.z12b.collect_train', side_effect=collect):
                 with contextlib.redirect_stdout(io.StringIO()):
                     self.assertEqual(main(['--seed', '212', '--train', '160',
@@ -93,6 +99,9 @@ class WorldRealfileLifecycleTests(unittest.TestCase):
                              hashlib.sha256(original_log).hexdigest())
             self.assertEqual(manifest['world_process_schedule_sha256'],
                              hashlib.sha256(original_schedule).hexdigest())
+            self.assertTrue(manifest['world_overlap_recomputed'])
+            self.assertEqual(hashlib.sha256((target / 'row_intervals.json').read_bytes()).hexdigest(),
+                             manifest['row_intervals_sha256'])
 
     def test_main_missing_original_world_log_fails_closed(self):
         with tempfile.TemporaryDirectory() as d:
