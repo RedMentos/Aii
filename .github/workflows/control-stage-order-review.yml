@@ -1,7 +1,7 @@
 name: V13 control stage-order integrity review
 on:
   push:
-    branches: [assistant/v13-control-stage-order-20261027]
+    branches: [assistant/v13-control-stage-order-review-20261027]
     paths:
       - '.github/workflows/control-stage-order-review.yml'
       - 'v13/code/v13/control_budget.py'
