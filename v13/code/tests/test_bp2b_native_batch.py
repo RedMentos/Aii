@@ -44,7 +44,7 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         (path / 'RESULT.json').write_text(json.dumps(result), encoding='utf-8')
         (path / 'ATTEMPT.json').write_text(json.dumps({'status': 'STARTED', 'plan': nr.plan(seed, arm)}), encoding='utf-8')
         (path / 'SCORE.json').write_text(json.dumps({'leak_hits': 0, 'heldout_count': 32}), encoding='utf-8')
-        (path / 'predictions.jsonl').write_text('{"case_id":"fake","text":"fake"}\\n', encoding='utf-8')
+        (path / 'predictions.jsonl').write_text('{"case_id":"fake","text":"fake"}\n', encoding='utf-8')
         stdout.write(b'SOFTWARE_FAKE_ONLY\n')
         return SimpleNamespace(returncode=0)
 
