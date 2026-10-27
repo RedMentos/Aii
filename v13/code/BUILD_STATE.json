@@ -1480,5 +1480,30 @@
     "report": "docs/proofs/continuation-20261027/n7-cache-cost/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
     "next_prerequisite": "Independent review and source-bound native cache holdout; no automatic learning promotion."
+  },
+  "n7_append_source_invalidation_20261027": {
+    "owner_branch": "codex/automation11-n7-append-source-invalidation-20261027",
+    "parent_pr": 720,
+    "parent_sha": "acaaefde09072e38cb541f82fb2182bb8b9d11de",
+    "status": "REVIEW_ONLY_CI_PENDING",
+    "red_test_sha": "9a9551c4456f8a837a9220c17831f01332000b46",
+    "red_actions_run": 40517444470,
+    "green_candidate_sha": "a3dee8063794a9ba79781eddd5598b602ff7c305",
+    "green_actions_run": 40517582552,
+    "tests": "PENDING",
+    "compile": "PENDING",
+    "privacy": "PENDING",
+    "native_evidence": false,
+    "source_revocation_global_proof": false,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "bj1": "NO_SIGNAL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/n7-append-source-invalidation/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
+    "next_prerequisite": "Verify original RED and exact-head GREEN Actions, independent review and broad suite; do not integrate into old main."
   }
 }
