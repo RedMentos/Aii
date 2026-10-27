@@ -17,3 +17,7 @@ Focused `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_world_mode
 ## Preregistered persistence amendment (before source fix)
 
 Existing persisted `T8_WORLD_MODEL` states with revision `t8-world-model-v1` already contain leaked all-transition support. A code-only fix must not continue trusting those bytes after restart. Bump `REVISION` to `t8-world-model-v2`; `load()` must fail closed for legacy v1 states until a new `fit()` is performed. Add a regression that replaces a fresh fit with the old revision and confirms `load()` returns None and `counterfactual()` returns `NO_WORLD_MODEL`. Do not rewrite or erase the old persisted state silently; refitting is explicit and produces a new v2 state. This amendment predates the source fix and is independent of the expected RED heldout-only action test.
+
+## Independent review amendment: explicit legacy state and bounded support metadata
+
+A caller may pass `st=` directly to `counterfactual`, bypassing `load` revision validation. Add a regression for explicit old v1 state and reject it with `NO_WORLD_MODEL` in the public counterfactual boundary. Also `states` retains at most 256 per action; report `support_counts` as actually retained training support (bounded), with separate `train_counts` for all training rows. A 400-row single-action regression must show support count=256 and train count equals the split. These checks are additive; they do not change the preregistered split or learning parameters. This amendment precedes the additional source patch.
