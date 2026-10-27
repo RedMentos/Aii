@@ -24,4 +24,10 @@ Synthetic negative controls deliberately reserialize and rehash incomplete check
 - Original test-only RED run `40517824916` was **CANCELLED**, not a measured failure. A separate immutable RED witness branch `codex/automation11-bj1-optimizer-red-witness-20261027` at `e4a7fefb6b4a542376c54fef479ff20233b1a2c1`, Actions `40518210679`, is pending. Do not invent its result.
 - Tiny synthetic HF/PEFT exact fit-resume Actions `40518115903` is pending. The helper result does not replace integration/native evidence.
 
+## Closed RED witness and tiny fit result
+
+- Independent RED witness Actions `40518210679`, exact `e4a7fefb6b4a542376c54fef479ff20233b1a2c1`: **9 tests, 1 expected FAIL**, `ValueError not raised` for a rehashed missing Adam optimizer state. This does not turn the cancelled original RED job into a completed run.
+- Tiny HF/PEFT synthetic integration Actions `40518115903`, exact `a506cb9d80d9a50f593a55ab9ed9e9f3830ae850`: **12/12 PASS**, including interrupted `BodyJepaTrainer.fit` == uninterrupted, compile PASS, privacy CLEAN, diff check PASS. No model downloaded and no native LFM2 utility claim.
+- Separate integrated N7+BJ1 review branch `codex/automation11-bj1-n7-integration-20261027` has its own pending full-suite gate; this candidate's 12/12 is not a whole-system PASS.
+
 **Next command:** `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit` (requires CPU Torch/Transformers/PEFT). Verify RED/GREEN CI, independently review optimizer schema compatibility, then run broader suite and prepare a newly registered native continuation diagnostic without rewriting original failed evidence.
