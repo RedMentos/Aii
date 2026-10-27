@@ -16,7 +16,7 @@ def features(v):
     x=x/np.maximum(np.linalg.norm(x,axis=1,keepdims=True),1e-12)*8.
     return np.column_stack([x,np.ones(len(x))])
 def objective(x,y,w,sw=None):
-    # sw: WP-Z6i per-example weights (mean 1, newer corrections count more); None = plain mean
+    # sw: WP-KL1 per-example weights (mean 1, newer corrections count more); None = plain mean
     logits=x@w;logits-=logits.max(axis=1,keepdims=True);p=np.exp(logits);p/=p.sum(axis=1,keepdims=True)
     sw=np.ones(len(y)) if sw is None else np.asarray(sw,dtype=np.float64)
     loss=-(sw*np.log(np.maximum(p[np.arange(len(y)),y],1e-30))).mean()
@@ -53,7 +53,7 @@ def fold_ids(y,k):
         if m:f[ids[-m:]]=np.arange(m)%k
     return f
 def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
-    """WP-Z6j gate. Z6i: the newest quarter per route (~4 items) was too small, it let worse heads through and blocked
+    """WP-KL2 gate. KL1: the newest quarter per route (~4 items) was too small, it let worse heads through and blocked
     better ones. Here the newest half of each route's corrections is scored out of sample (k folds; each scored item is
     judged by a candidate that did not train on it, older corrections always train). Per route the candidate may lose at
     most max(retention_max_delta, one scored item) against the parent, the scored accuracy must rise and the loss fall.
@@ -64,6 +64,9 @@ def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
         va=f==i;tr_=~va
         if not va.any():continue
         sw=sw_all[tr_]/sw_all[tr_].mean();cand,_=optimize(x[tr_],y[tr_],w,trace,cfg,sw=sw);newp[va]=objective(x[va],y[va],cand)[2]
+    sw=sw_all/sw_all.mean();err=gradient_check(x,y,w,sw);new,tr=optimize(x,y,w,trace,cfg,stats,sw);repeat,_=optimize(x,y,w,trace,cfg,sw=sw)
+    deterministic=bool(np.array_equal(new,repeat))
+    if not sc.any():return new,tr,{'n':0,'folds':k},False,False,err,deterministic  # too few corrections per route to score
     ys=y[sc];oldloss,_,oldp=objective(x[sc],ys,w);np_=newp[sc]
     newloss=float(-np.log(np.maximum(np_[np.arange(len(ys)),ys],1e-30)).mean())
     hit_new=np_.argmax(1)==ys;hit_old=oldp.argmax(1)==ys
@@ -73,8 +76,7 @@ def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
           'parent_accuracy':before_acc,'scaffold_accuracy':baseline,'per_class':perclass}
     retained=all(v['after']>=v['before']-max(cfg['retention_max_delta'],1./v['n'])-1e-12 for v in perclass.values())
     eligible=len(y)>=12 and len(perclass)==4 and newloss<oldloss and accuracy>before_acc and accuracy>=.75 and accuracy>=baseline and retained
-    sw=sw_all/sw_all.mean();err=gradient_check(x,y,w,sw);new,tr=optimize(x,y,w,trace,cfg,stats,sw);repeat,_=optimize(x,y,w,trace,cfg,sw=sw)
-    return new,tr,held,eligible,retained,err,bool(np.array_equal(new,repeat))
+    return new,tr,held,eligible,retained,err,deterministic
 
 def train(inp,out):
     from .route_features import build,extend,recency_weights,REVISION as LEX_REVISION
@@ -83,10 +85,10 @@ def train(inp,out):
     w=np.zeros((x.shape[1],4));trace=np.zeros(x.shape[1])
     if inp.get('active_checkpoint'):
         with np.load(inp['active_checkpoint'],allow_pickle=False) as z:w=z['route_w'];trace=z['eligibility']
-        if inp.get('texts') is not None:w,trace=extend(w,trace,x.shape[1])  # WP-Z6i: Needle-only parent keeps its logits
+        if inp.get('texts') is not None:w,trace=extend(w,trace,x.shape[1])  # WP-KL1: Needle-only parent keeps its logits
         if w.shape!=(x.shape[1],4) or trace.shape!=(x.shape[1],):raise ValueError('Checkpoint dimension')
     folds=int(cfg.get('route_gate_folds',0));sw_all=recency_weights(len(y),int(cfg.get('route_recency_half_life',0)))
-    if folds>=2:  # WP-Z6j: every correction is judged once by a candidate that did not train on it
+    if folds>=2:  # WP-KL2: every correction is judged once by a candidate that did not train on it
         before=objective(x,y,w)[0];stats={};new,tr,held,eligible,retained,err,deterministic=cv_gate(x,y,w,trace,cfg,sw_all,np.asarray(inp['scaffold_labels']),folds,stats)
         finite=bool(np.isfinite(new).all())
     else:

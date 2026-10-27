@@ -421,7 +421,7 @@ class Learner:
         from .route_features import for_head
         x=features([self.embedding(text,source_id,deadline)])
         with np.load(path,allow_pickle=False) as z:w=z['route_w']
-        logits=(for_head(x,[text],w.shape[0])@w)[0]  # WP-Z6i: the checkpoint's shape says whether it reads the word channel
+        logits=(for_head(x,[text],w.shape[0])@w)[0]  # WP-KL1: the checkpoint's shape says whether it reads the word channel
         p=np.exp(logits-logits.max());p/=p.sum();order=np.argsort(p)
         return {'route':ROUTES[int(order[-1])],'probabilities':p.tolist(),'margin':float(p[order[-1]]-p[order[-2]]),'generation':self.s.generation_id,'calibrated':False}
     def context_revision(self,component):

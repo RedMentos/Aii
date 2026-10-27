@@ -1,4 +1,4 @@
-# WP-Z6i Vorregistrierung: der Routen-Kopf lernt die geänderte Grenze selbst (vor dem Lauf committet)
+# WP-KL1 Vorregistrierung (eingereicht als „WP-Z6i“; umbenannt, weil ein anderer Thread Z6i/Z6j schon vergeben hat): der Routen-Kopf lernt die geänderte Grenze selbst (vor dem Lauf committet)
 
 Anlass: Z6b (neue menschliche Korrekturen werden nie übernommen), Z6c (Ersetzen wirkt, aber der Kopf auf eingefrorenen
 Needle-Embeddings sieht den Unterschied zwischen Hälfte-Fragen und anderen Rechenfragen nicht) und Z6d (feste

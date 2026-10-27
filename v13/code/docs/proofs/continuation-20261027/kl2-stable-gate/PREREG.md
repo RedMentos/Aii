@@ -1,6 +1,6 @@
-# WP-Z6j Vorregistrierung: stabilere Freigabe-Prüfung für den lernenden Routen-Kopf (vor dem Lauf committet)
+# WP-KL2 Vorregistrierung (eingereicht als „WP-Z6j“, umbenannt wegen Namensgleichheit mit einem anderen Thread): stabilere Freigabe-Prüfung für den lernenden Routen-Kopf (vor dem Lauf committet)
 
-Anlass: Z6i (`Z6I_HEAD_LEARNS_FAIL`, Teilerfolg). Mit Wort-Kanal + Gewichtung lernte der Kopf die geänderte Vorliebe
+Anlass: KL1 (`KL1_HEAD_LEARNS_FAIL`, Teilerfolg). Mit Wort-Kanal + Gewichtung lernte der Kopf die geänderte Vorliebe
 selbst (fixed+lex+rec: Hälfte 0,25 -> 1,00, gesamt 0,95), aber die Prüfung im Worker misst auf je ~4 neuesten
 Korrekturen pro Route: zwei schlechtere Köpfe kamen durch (Phase 1), gute Kandidaten wurden abgelehnt (adaptive Phase 2).
 
@@ -11,10 +11,10 @@ bewertete Genauigkeit steigt, Verlust sinkt, ≥ 0,75, ≥ Gerüst, und je Route
 Der freigegebene Kandidat lernt danach auf allen Korrekturen. Die Prüfung ist im Code fest (kein Bench-Zugriff).
 
 Messung: `code/scripts/z6b_lifecycle_bench.py <home> <out> --seed S --policies fixed,fixed+lex+rec,fixed+lex+rec+cv,adaptive+lex+rec+cv`
-für drei frische Seeds S = 89, 97, 101 (je eigene Ausgabe-Datei). Sonst wie Z6i (Harness gibt geeignete Kandidaten frei,
+für drei frische Seeds S = 89, 97, 101 (je eigene Ausgabe-Datei). Sonst wie KL1 (Harness gibt geeignete Kandidaten frei,
 kein `:ersetze`, 16 neue Prüf-Formulierungen beschreibend).
 
-Kriterien (`Z6J_STABLE_GATE_PASS` nur wenn in **allen drei** Seeds alle gelten; Haupt-Arme fixed+lex+rec+cv und adaptive+lex+rec+cv):
+Kriterien (`KL2_STABLE_GATE_PASS` nur wenn in **allen drei** Seeds alle gelten; Haupt-Arme fixed+lex+rec+cv und adaptive+lex+rec+cv):
 - J1 Kopf selbst am Ende ≥ 80 % Hälfte-Fragen, beide Haupt-Arme.
 - J2 Behalten unveränderter Fragen ≥ 90 % des Stands Ende Phase 1, beide Haupt-Arme.
 - J3 keine falsche Freigabe, beide Haupt-Arme.
@@ -23,4 +23,8 @@ Kriterien (`Z6J_STABLE_GATE_PASS` nur wenn in **allen drei** Seeds alle gelten; 
 - J6 Laufzeitpfad in fixed+lex+rec+cv ≥ 80 % Hälfte-Fragen.
 
 Beschreibend: Vergleich fixed+lex+rec (alte Prüfung) gegen +cv je Seed (falsche Freigaben, Ablehnungen guter
-Kandidaten, Korrekturen bis Hälfte ≥ 80 %); half_novel / detail_near. Grenzen wie Z6i.
+Kandidaten, Korrekturen bis Hälfte ≥ 80 %); half_novel / detail_near. Grenzen wie KL1.
+
+Nachtrag vor dem gültigen Lauf (2026-10-27): Der erste Start brach in allen drei Seeds im ersten Prüf-Job ab
+(Programmfehler: mit < 4 Korrekturen je Route gibt es nichts zu bewerten, der Worker schrieb NaN). Behoben: dann
+`n = 0`, nicht freigabefähig (wie die alte Prüfung). Gesehen wurden nur Fortschrittszeilen der Arme vor dem Absturz (z. B. fixed+lex+rec Seed 89: Ende gesamt 0,85), keine Kriterien geändert. Ausgabe-Ordner jetzt `v13/bench-results/kl2-stable-gate-20261027/`, Seed-Dateien `kl2-seed<S>.json`.

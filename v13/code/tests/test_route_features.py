@@ -75,6 +75,13 @@ class RouteFeaturesTest(unittest.TestCase):
             x = RF.build(features([[1., 0., 0.], [1., 0., 0.]]), ['Wie viel ist die Hälfte von 70 Euro?', 'Rechne 7 mal 5 aus.'])
             self.assertEqual(np.argmax(x @ w, axis=1).tolist(), [0, 1])
 
+    def test_cv_gate_with_too_few_corrections_is_not_eligible(self):
+        cfg = {'learning_steps': 20, 'eligibility_decay': .95, 'learning_rate': .01, 'max_update_norm': .02, 'retention_max_delta': .02, 'route_recency_half_life': 16, 'route_gate_folds': 4}
+        rng = np.random.default_rng(0)
+        with tempfile.TemporaryDirectory() as d:
+            m = train({'config': cfg, 'embeddings': rng.normal(size=(8, 5)).tolist(), 'labels': [0, 0, 1, 1, 2, 2, 3, 3], 'scaffold_labels': [0] * 8, 'texts': ['a b'] * 8}, d)
+            self.assertFalse(m['commit_eligible']); self.assertEqual(m['held_out']['n'], 0)
+
 
 if __name__ == '__main__':
     unittest.main()

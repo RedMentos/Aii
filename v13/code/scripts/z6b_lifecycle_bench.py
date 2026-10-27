@@ -39,7 +39,7 @@ TEMPLATES = {
     'both':   ['Welche Vor- und Nachteile haben {a} und {a2}?', 'Vergleiche {a} mit {a2}.', 'Was spricht für {a}, was für {a2}?', 'Wäge {a} gegen {a2} ab.']}
 
 
-# WP-Z6i: wordings that never occur in training or the main held-out set (generalisation beyond the trained words).
+# WP-KL1: wordings that never occur in training or the main held-out set (generalisation beyond the trained words).
 # half_novel flips with the shift like 'half'; detail_near is other arithmetic sharing words with it ('durch', 'Teile',
 # 'Prozent'), must stay detail, and shows whether the head learned "half" or only "division words".
 NOVEL = {'half_novel': ['Wie viel ist {n} Euro durch 2?', 'Teile {n} Euro in zwei gleiche Teile.', 'Was bekommt jeder, wenn zwei sich {n} Euro teilen?', 'Wie viel sind 50 Prozent von {n}?'],
@@ -72,8 +72,8 @@ SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --not
 def run_arm(installed, policy, seed):
     flags = set(policy.split('+')[1:]); base_policy = policy.split('+')[0]
     sup = bool(flags & {'sup', 'now'}); now_rule = 'now' in flags  # WP-Z6c: '+sup' = the human states the new scope once
-    words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-Z6i: '+lex' word channel, '+rec' newer corrections count more
-    folds = 4 if 'cv' in flags else 0  # WP-Z6j: '+cv' out-of-sample gate over the newest half of each route's corrections
+    words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-KL1: '+lex' word channel, '+rec' newer corrections count more
+    folds = 4 if 'cv' in flags else 0  # WP-KL2: '+cv' out-of-sample gate over the newest half of each route's corrections
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
@@ -237,7 +237,7 @@ def criteria_z6d(s):
     return c, 'Z6D_RULE_ROUTE_PASS' if all(c.values()) else 'Z6D_RULE_ROUTE_FAIL'
 
 
-def criteria_z6i(s):
+def criteria_kl1(s):
     a = [s['fixed+lex+rec'], s['adaptive+lex+rec']]
     c = {'I1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
          'I2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
@@ -245,10 +245,10 @@ def criteria_z6i(s):
          'I4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
          'I5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
          'I6_runtime_path_half_ge_80pct': (s['fixed+lex+rec'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
-    return c, 'Z6I_HEAD_LEARNS_PASS' if all(c.values()) else 'Z6I_HEAD_LEARNS_FAIL'
+    return c, 'KL1_HEAD_LEARNS_PASS' if all(c.values()) else 'KL1_HEAD_LEARNS_FAIL'
 
 
-def criteria_z6j(s):
+def criteria_kl2(s):
     a = [s['fixed+lex+rec+cv'], s['adaptive+lex+rec+cv']]
     c = {'J1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
          'J2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
@@ -256,7 +256,7 @@ def criteria_z6j(s):
          'J4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
          'J5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
          'J6_runtime_path_half_ge_80pct': (s['fixed+lex+rec+cv'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
-    return c, 'Z6J_STABLE_GATE_PASS' if all(c.values()) else 'Z6J_STABLE_GATE_FAIL'
+    return c, 'KL2_STABLE_GATE_PASS' if all(c.values()) else 'KL2_STABLE_GATE_FAIL'
 
 
 def main(argv=None):
@@ -274,15 +274,15 @@ def main(argv=None):
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
     if {'fixed+lex+rec+cv', 'adaptive+lex+rec+cv', 'fixed'} <= set(scores):
-        doc['criteria_z6j'], doc['verdict_z6j'] = criteria_z6j(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6j-stable-gate/PREREG.md'
+        doc['criteria_kl2'], doc['verdict_kl2'] = criteria_kl2(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl2-stable-gate/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+lex+rec', 'adaptive+lex+rec', 'fixed'} <= set(scores):
-        doc['criteria_z6i'], doc['verdict_z6i'] = criteria_z6i(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i-head-learns/PREREG.md'
+        doc['criteria_kl1'], doc['verdict_kl1'] = criteria_kl1(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl1-head-learns/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'verdict_z6j', 'criteria_z6j', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

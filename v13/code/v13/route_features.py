@@ -1,4 +1,4 @@
-"""WP-Z6i: a learnable word channel next to the frozen Needle embedding for the external route head.
+"""WP-KL1: a learnable word channel next to the frozen Needle embedding for the external route head.
 
 Z6c showed the linear head on frozen Needle embeddings cannot learn a boundary the human changed ("half of X" -> simple
 while other arithmetic stays detail): the encoder maps those questions onto the same place. Z6d bridged it with a fixed
@@ -18,7 +18,7 @@ import numpy as np
 
 LEX_DIM = 512      # BOOT: hashed columns; collisions are possible and measured only indirectly (bench accuracy)
 LEX_SCALE = 8.     # BOOT: same L2 scale as the Needle part (learning_worker.features)
-REVISION = 'z6i-hashed-words-v1'
+REVISION = 'kl1-hashed-words-v1'
 _WORD = re.compile(r"[0-9a-zäöüß]+")
 
 
