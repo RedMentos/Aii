@@ -1,7 +1,7 @@
 name: V13 HX134 Claude cross-review RED GREEN
 on:
   push:
-    branches: [assistant/v13-hx134-c1-world-b3-integration-20261027]
+    branches: [assistant/v13-hx134-red-only-20261027]
     paths:
       - '.github/workflows/hx134-cross-review.yml'
       - 'v13/code/tests/test_harness_hx.py'
@@ -13,7 +13,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v13-hx134-cross-review
+  group: v13-hx134-red-only
   cancel-in-progress: false
 jobs:
   focused:
