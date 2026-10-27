@@ -59,5 +59,23 @@ class TestWorldJEPA(unittest.TestCase):
         self.assertTrue((conf[:2] == 0).all())
 
 
+    def test_predict_uses_ensemble_mean_and_spread_from_same_members(self):
+        from unittest import mock
+        m=wj.WorldJEPA(seed=0,ensemble=3)
+        m.preds=[0.,2.,4.]
+        m.zsd=np.ones(wj.Z)
+        m.latent=lambda X,target=False:np.zeros((len(X),wj.Z))
+        X=np.zeros((2,3));A=np.zeros((2,4))
+        def member(p,z,a):
+            return np.full((len(z),wj.Z),p),None
+        with mock.patch.object(wj,'predict',side_effect=member):
+            mean,spread=m.predict(X,A)
+            self.assertTrue(np.allclose(mean,2.))
+            self.assertTrue(np.allclose(spread,np.std([0.,2.,4.])))
+            m.preds=[7.]
+            single,single_spread=m.predict(X,A)
+            self.assertTrue(np.allclose(single,7.))
+            self.assertTrue(np.allclose(single_spread,0.))
+
 if __name__ == '__main__':
     unittest.main()
