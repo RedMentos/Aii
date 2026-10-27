@@ -95,7 +95,8 @@ jobs:
           "$RUNNER_TEMP/fiveway/bin/python" - "$RUNNER_TEMP/fivewayproof" <<'PY' > "$RUNNER_TEMP/fivewayproof/TREE_EXPORT_RAW.log" 2>&1
           import hashlib, io, json, pathlib, subprocess, sys, tarfile
           out = pathlib.Path(sys.argv[1])
-          base = (out / "REVIEW_HEAD.txt").read_text().strip()
+          review_source_head = (out / "REVIEW_HEAD.txt").read_text().strip()
+          base = "c615497384dc5519be59232451895ca443ce9e45"  # AG5 contains 2,651 files absent from World base
           head = subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
           tree = subprocess.check_output(["git","rev-parse","HEAD^{tree}"],text=True).strip()
           raw = subprocess.check_output(["git","diff","--name-status","-z","--no-renames",base,head]).split(b"\0")
@@ -122,7 +123,7 @@ jobs:
                       info=tarfile.TarInfo(path);info.size=len(data);info.mode=int(mode,8)&0o777;info.mtime=0
                       tar.addfile(info,io.BytesIO(data))
                   manifest.append(row)
-          payload={"base_commit":base,"ephemeral_commit":head,"tree_sha":tree,"changed":manifest,
+          payload={"base_commit":base,"review_source_head":review_source_head,"ephemeral_commit":head,"tree_sha":tree,"changed":manifest,
                    "scope":"five-way disposable review integration only; not production or gate promotion"}
           (out/"MERGED_TREE_MANIFEST.json").write_text(json.dumps(payload,indent=2)+"\n")
           with (out/"EXPORT_SHA256.txt").open("w") as f:
