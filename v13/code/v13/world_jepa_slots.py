@@ -29,7 +29,7 @@ from v13.common import atomic_write
 from v13.world_jepa import Adam, encode, predict, loss_grads, collapse_stats, _init, _init_inv, _init_pred
 
 REVISION = 'z12c-slot-world-jepa-v1'
-CHECKPOINT_REVISION = 'z12c-slot-world-jepa-inference-npz-v1'
+CHECKPOINT_REVISION = 'z12c-slot-world-jepa-inference-npz-v2'
 MAX_CHECKPOINT_BYTES = 32 * 1024 * 1024  # small phone inference-only checkpoint, no optimizer state
 H = 32; K = 8; HP = 48
 LR = 2e-3; TAU = .99; VAR_W = 1.; COV_W = .04; INV_W = 1.; BATCH = 128   # BATCH counts states (x slots rows)
@@ -50,6 +50,7 @@ class SlotWorldJEPA:
         n = len(X); return ((X.reshape(n, self.S, -1)-self.mu)/self.sd).reshape(n*self.S, -1)
 
     def fit(self, X, A, X2, steps=3000, log_every=500):
+        self._calibrated = False  # A refit invalidates any prior operation-error calibration.
         rng = np.random.default_rng(self.seed); n = len(X); S = self.S
         xs = X.reshape(n*S, -1); self.mu = xs.mean(0); self.sd = xs.std(0)+1e-3
         x, x2 = self._rows(X).reshape(n, S, -1), self._rows(X2).reshape(n, S, -1); a = A
@@ -88,9 +89,27 @@ class SlotWorldJEPA:
         return self
 
     def calibrate(self, X, A, X2):
-        """Typical squared error per operation (on the slot it touches; UNTOUCHED on all others) from held-out transitions."""
-        e = self.slot_errors(X, A, X2); cls = A.argmax(2)
-        self.op_err = np.array([float(e[cls == c].mean()) if (cls == c).any() else 0. for c in range(A.shape[2])])
+        """Measure each operation's error on caller-supplied transitions.
+
+        Presence and per-class coverage are verified here. Whether this cohort
+        is genuinely held out or representative remains a caller proof duty.
+        """
+        self._calibrated = False  # Failed recalibration revokes old confidence authority.
+        if (len(X)==0 or len(X)!=len(X2) or len(X)!=len(A)
+                or A.ndim!=3 or A.shape[1]!=self.S or A.shape[2]!=len(self.op_counts)
+                or not np.isfinite(A).all()
+                or not np.logical_or(A==0., A==1.).all()
+                or not np.all(A.sum(2)==1.)):
+            raise ValueError('Calibration requires nonempty aligned one-hot action transitions')
+        cls = A.argmax(2)
+        counts = np.bincount(cls.ravel(), minlength=A.shape[2])
+        if np.any(counts==0):
+            raise ValueError('Calibration lacks an observed operation class')
+        e = self.slot_errors(X, A, X2)
+        if not np.isfinite(e).all() or np.any(e<0):
+            raise ValueError('Calibration requires finite nonnegative slot errors')
+        self.op_err = np.array([float(e[cls == c].mean()) for c in range(A.shape[2])])
+        self._calibrated = True
         return self
 
     # -- inference -------------------------------------------------------------------------------------------------
@@ -113,7 +132,9 @@ class SlotWorldJEPA:
         return d.reshape(n, self.S).max(1)
 
     def confidence(self, X, A):
-        """Per query: worst slot of coverage x 1/(1 + (spread + sqrt(typical error)) / ERR_REF), times the OOD term."""
+        """Per query: worst slot coverage/spread/error/OOD; requires observed calibration."""
+        if getattr(self, '_calibrated', False) is not True:
+            raise ValueError('Slot World-JEPA confidence requires operation-error calibration')
         _, spread = self.predict(X, A); cls = A.argmax(2)
         cover = 1-np.exp(-self.op_counts[cls]/COVER_N)
         per = cover/(1+(spread+np.sqrt(self.op_err[cls]))/ERR_REF)
@@ -139,6 +160,8 @@ class SlotWorldJEPA:
         fact writes, age changes or training continuation.
         """
         self._provenance(provenance)
+        if getattr(self, '_calibrated', False) is not True:
+            raise ValueError('Uncalibrated Slot World-JEPA cannot be checkpointed')
         if not all(hasattr(self, k) for k in ('enc','tgt','preds','mu','sd','zsd',
                                               'op_counts','op_err','_ztrain','_nn_med')):
             raise ValueError('Slot World-JEPA must be fitted before checkpointing')
@@ -164,7 +187,8 @@ class SlotWorldJEPA:
                 raise ValueError('Nonfinite or non-float64 checkpoint array: '+key)
             arrays[key] = a
         meta = {'checkpoint_revision': CHECKPOINT_REVISION, 'model_revision': REVISION,
-                'inference_only': True, 'provenance': dict(provenance), **dims}
+                'inference_only': True, 'calibration_complete': True,
+                'provenance': dict(provenance), **dims}
         encoded = json.dumps(meta, sort_keys=True, separators=(',', ':')).encode('utf-8')
         if len(encoded)>8192: raise ValueError('Checkpoint metadata too large')
         buf = io.BytesIO()
@@ -207,6 +231,7 @@ class SlotWorldJEPA:
                 if (type(meta) is not dict or meta.get('checkpoint_revision')!=CHECKPOINT_REVISION
                         or meta.get('model_revision')!=REVISION
                         or meta.get('inference_only') is not True
+                        or meta.get('calibration_complete') is not True
                         or meta.get('provenance')!=expected_provenance):
                     raise ValueError('Checkpoint revision/provenance mismatch')
                 dims = {k: meta.get(k) for k in
@@ -256,4 +281,5 @@ class SlotWorldJEPA:
         model.preds = [{q: arrays[f'pred{i}_'+q] for q in ('P1','c1','P2','c2')}
                        for i in range(n)]
         model.history = []  # inference-only; no training-resume claim
+        model._calibrated = True  # v2 digest/provenance bound checkpoint includes calibration receipt.
         return model
