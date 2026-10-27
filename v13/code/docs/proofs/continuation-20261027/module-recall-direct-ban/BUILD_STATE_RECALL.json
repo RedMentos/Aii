@@ -1,0 +1,49 @@
+{
+  "package": "WP-BP11b-direct-recall-typed-ban",
+  "owner": "GPT-6 independent review",
+  "date_utc": "2026-10-27",
+  "base_commit": "99c6d4dd82a35d4df54e080e41586ee120353e25",
+  "review_branch": "codex/automation12-module-recall-typed-ban-20261027",
+  "source_commit": "3fb6958ce4c4de4344a3662077fef86028736bc7",
+  "red": {
+    "test_commit": "683182da2e4a5d0adcfa2ab6c38b3d74cc0ced60",
+    "actions": 40466019062,
+    "artifact_id": 12716174443,
+    "zip_sha256": "a09b3697b0f1c2c0dd127f5776e193301d2a4bc67983d2ccaa9340ef83b6730f",
+    "tests": 51,
+    "failures": 4,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "private_backup_verified": true
+  },
+  "green": {
+    "actions": 40466133397,
+    "artifact_id": 12715743761,
+    "zip_sha256": "b482c8ad07deaeb4d4684f4d5278dc8d884f4de5ef32491f3feb099dd8803a70",
+    "tests": 51,
+    "failures": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "private_backup_verified": true,
+    "source_sha256": {
+      "v13/code/v13/module_learn.py": "a287571fec5661a0e09f28a6530e04daca466955df1ebe9b0ff7c296e75ed439",
+      "v13/code/tests/test_module_recall_direct_ban.py": "2a2b5d4c0f30c9dc4579f2cfe3136b37cca2c2db061ae405c9fa7355dafe48f7"
+    }
+  },
+  "scope": "synthetic SQLite, no network/model/native/Redmi, review-only, not main",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "L1_FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Final cross-table ban/reader race not fully linearizable",
+    "No measured semantic module learning or utility"
+  ],
+  "next": "Independent source review; preserve parent broad/phone proofs; combined source-bound phone smoke and separate utility package.",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate"
+}
