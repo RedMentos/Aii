@@ -1,0 +1,54 @@
+{
+  "schema": "v13.review_only.build_state_delta.v1",
+  "date_utc": "2026-10-27",
+  "owner": "assistant/v13-world-jepa-action-index-review-20261027",
+  "pr": 752,
+  "parent_pr": 749,
+  "base_sha": "bfeee06983a9a3bf7a00fd525c036c234b429fb0",
+  "prereg_commit": "2f5c12bc7e896eed4dab4a3f24eb42dcfe893d1e",
+  "red_test_commit": "cef90097fe515fb724ec5135606727c703e5b609",
+  "green_fix_commit": "374365b8764b7805d361accc632d3c7c5e29e9ee",
+  "modified_paths": [
+    "v13/code/scripts/world_jepa_heldout_ablation.py",
+    "v13/code/tests/test_world_jepa_heldout_ablation.py"
+  ],
+  "red": {
+    "run": 40558023606,
+    "zip_sha256": "f82855af5ec14c88f0ff481e078c8301e103c87af635d2aa218fa1542df97d6d",
+    "unit_exit": 1,
+    "expected_failures": 2,
+    "expected_errors": 3,
+    "crc": "PASS"
+  },
+  "green": {
+    "run": 40558428083,
+    "zip_sha256": "7dd7fae0c74dd6004b09f0394878b1645c59c6fae83908430aec747deb138c2d",
+    "unit_tests": "6/6 PASS",
+    "all_raw_exits": 0,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "harness_blob": "7a6fe2d5d2c3e22388437f40f5cc775428520909"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11V-World-Action-Index/",
+  "backup_byte_identical": true,
+  "scope": "SOFTWARE_RESEARCH_SCORER_ONLY",
+  "model_changed": false,
+  "canonical_cohort_changed": false,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_*.py' -q",
+  "open_questions": [
+    "Independent full-suite review before integration",
+    "No runtime World-JEPA authority; no Redmi"
+  ],
+  "stop_reason": "NONE_CHECKPOINT_ONLY"
+}
