@@ -1,0 +1,62 @@
+name: V13 Run646 AG4 source-event atomic receipt RED/GREEN
+on:
+  push:
+    branches:
+      - codex/gpt6-run646-skill-event-once-20261027
+    paths:
+      - '.github/workflows/run646-skill-event-once.yml'
+      - 'v13/code/v13/agi/skills.py'
+      - 'v13/code/v13/agi/live.py'
+      - 'v13/code/tests/test_run646_skill_event_once.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run646-skill
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated deps
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/run646"
+          timeout 240s "$RUNNER_TEMP/run646/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve original outputs
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run646proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/run646proof/HEAD.txt"
+          sha256sum v13/code/v13/agi/skills.py v13/code/v13/agi/live.py v13/code/tests/test_run646_skill_event_once.py > "$RUNNER_TEMP/run646proof/SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run646/bin/python" -m unittest -v tests.test_run646_skill_event_once tests.test_run645_skill_credit_receipt tests.test_run644_curiosity_receipt tests.test_agi_live) > "$RUNNER_TEMP/run646proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run646proof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/run646/bin/python" -m compileall -q v13/code/v13/agi/skills.py v13/code/v13/agi/live.py v13/code/tests/test_run646_skill_event_once.py > "$RUNNER_TEMP/run646proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run646proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/run646/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 317c4c95c0a14ba0dbfba39bb9d37f42a0abf075 --head HEAD > "$RUNNER_TEMP/run646proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run646proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run646-skill-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/run646proof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/run646proof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/run646proof/${n}_RAW.log"; exit 1; }
+          done
+          tail -18 "$RUNNER_TEMP/run646proof/UNIT_RAW.log"
