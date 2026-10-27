@@ -110,9 +110,9 @@ class SkillLibrary:
             sk['uses']+=1
             sk['successes']+=int(success)
             self._advance(sk)
-            c.execute('UPDATE states SET payload=?,version=? WHERE key=? AND version=?',
-                      (dumps(st),row['version']+1,KEY,row['version']))
-            if c.rowcount!=1:
+            cursor=c.execute('UPDATE states SET payload=?,version=? WHERE key=? AND version=?',
+                             (dumps(st),row['version']+1,KEY,row['version']))
+            if cursor.rowcount!=1:
                 raise ValueError('stale skill library state')
             c.execute('INSERT INTO states VALUES (?,?,?)',
                       (key,1,dumps({'skill':name,'session_id':session_id,'success':success})))
