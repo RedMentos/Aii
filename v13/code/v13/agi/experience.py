@@ -38,10 +38,10 @@ class ExperienceLibrary:
         p=self._path(p)
         return digest(p.read_bytes()) if p.is_file() else None
     def record(self,proposal,situation,lesson,evidence,task_type):
-        """Only for an applied change: proposal APPROVED with a passed shield, plus evidence files that exist now."""
-        if proposal.get('status')!='APPROVED':raise PermissionError('Eintrag nur für freigegebene Änderungen')
-        shield=proposal.get('shield') or {}
-        if not shield.get('passed'):raise PermissionError('Kein Beleg: Regressionsschild nicht bestanden')
+        """Record only a source-backed approved AG8 change plus existing evidence."""
+        from .self_improve import require_approved_origin
+        proposal=require_approved_origin(self.s,proposal)
+        shield=proposal['shield']
         if not isinstance(task_type,str) or not TASK_TYPE.match(task_type):raise ValueError('task_type [a-z][a-z0-9_]{1,31}')
         ev=[evidence] if isinstance(evidence,str) else list(evidence or [])
         if not ev:raise PermissionError('Kein Beleg: mindestens eine Beleg-Datei')

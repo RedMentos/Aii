@@ -22,6 +22,31 @@ FORBIDDEN={'system_stage','user_stage_cap','learning_mode','latents_enabled','ch
 MIN_GAIN=.01  # BOOT: smallest improvement worth a human's attention
 AXES=('overall','seen','unseen')
 
+def require_approved_origin(store, proposal, kind=None):
+    """Require the exact durable AG8 approval, not a caller-asserted status dict.
+
+    The Store is the trust boundary. This does not grant a live harness consumer
+    or replace the operator's explicit approval and request workflow.
+    """
+    if not isinstance(proposal,dict) or not isinstance(proposal.get('id'),str):
+        raise PermissionError('AG8 approval origin missing')
+    state,_=StateBox(store,KEY,REVISION,lambda:{'proposals':{},'seq':0}).load()
+    proposals=state.get('proposals')
+    saved=proposals.get(proposal['id']) if isinstance(proposals,dict) else None
+    if not isinstance(saved,dict) or saved!=proposal:
+        raise PermissionError('AG8 approval snapshot does not match durable record')
+    if saved.get('status')!='APPROVED' or saved.get('kind') not in ('knob','learning_rule','harness'):
+        raise PermissionError('AG8 change not approved for application')
+    if kind is not None and saved['kind']!=kind:
+        raise PermissionError('AG8 approval kind mismatch')
+    if not isinstance(saved.get('shield'),dict) or saved['shield'].get('passed') is not True:
+        raise PermissionError('AG8 regression shield not passed')
+    if not isinstance(saved.get('request_id'),str) or not saved['request_id']:
+        raise PermissionError('AG8 approval request missing')
+    if saved.get('base_generation')!=store.generation_id:
+        raise PermissionError('AG8 approval generation changed')
+    return saved
+
 class SelfImprovement:
     def __init__(self,store,cfg,age=None,clock=time.time):
         self.s=store;self.cfg=cfg;self.age=age;self.clock=clock
