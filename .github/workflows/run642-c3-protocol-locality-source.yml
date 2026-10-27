@@ -1,0 +1,90 @@
+name: V13 Run642 selected C3 protocol locality source contract
+on:
+  push:
+    branches:
+      - codex/gpt6-run642-c3-protocol-locality-20261027
+    paths:
+      - '.github/workflows/run642-c3-protocol-locality-source.yml'
+      - 'v13/code/scripts/run642_c3_protocol_locality.py'
+      - 'v13/code/scripts/run642_c3_native_compare.py'
+      - 'v13/code/tests/test_run642_c3_protocol_locality.py'
+      - 'v13/code/tests/test_run642_c3_native_compare.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run642-c3-source
+  cancel-in-progress: false
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze cohort and source identities
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN642_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/COHORT.json)" = 249d4be0e0663cccf5d1165347fa37c0db924791
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
+          test "$(git hash-object v13/code/scripts/run642_c3_protocol_locality.py)" = 5d7dc8e9cb5c97cc2ffb90d6e14ed14b72c5c076
+          test "$(git hash-object v13/code/tests/test_run642_c3_protocol_locality.py)" = cb8ca99c78d3326f3269ae6f4a635b9f6f2c0e78
+          test "$(git hash-object v13/code/scripts/run642_c3_native_compare.py)" = 6f70bbe13c964f93c4a3693efc3bc1f5aa47aaf6
+          test "$(git hash-object v13/code/tests/test_run642_c3_native_compare.py)" = eae4311c34a2ff9e17692d70e1b4da1573e9fb12
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN642_HOST.txt"
+          sha256sum v13/code/scripts/run642_c3_protocol_locality.py v13/code/tests/test_run642_c3_protocol_locality.py v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/COHORT.json > "$RUNNER_TEMP/RUN642_SOURCE_SHA256.txt"
+      - name: Run frozen C3 candidate source tests and historical controls
+        run: |
+          set +e
+          python3 -m py_compile v13/code/scripts/run642_c3_protocol_locality.py v13/code/tests/test_run642_c3_protocol_locality.py v13/code/scripts/run642_c3_native_compare.py v13/code/tests/test_run642_c3_native_compare.py > "$RUNNER_TEMP/RUN642_COMPILE_RAW.log" 2>&1
+          compile=$?
+          if [ "$compile" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run642_c3_protocol_locality tests.test_run642_c3_native_compare tests.test_run639_c3_kl_anchor tests.test_run639_c3_native_anchor_compare tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN642_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'COMPILE_FAILED' > "$RUNNER_TEMP/RUN642_TEST_RAW.log"
+            rc=2
+          fi
+          echo "$compile" > "$RUNNER_TEMP/RUN642_COMPILE_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN642_TEST_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 741f8eba65479351e29f5b298b6f382beda8fc15 --head HEAD > "$RUNNER_TEMP/RUN642_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN642_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw and hashes
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in COMPILE TEST PRIVACY; do
+            test -f "RUN642_${k}_EXIT.txt" || echo 2 > "RUN642_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN642_*' ! -name RUN642_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN642_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run642-C3-Source-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN642_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in COMPILE TEST PRIVACY; do
+            echo "RUN642 $k exit $(cat "$RUNNER_TEMP/RUN642_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN642_${k}_EXIT.txt")" = 0
+          done
+          (cd "$RUNNER_TEMP" && sha256sum -c RUN642_SHA256SUMS.txt)

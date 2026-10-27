@@ -1,0 +1,18 @@
+# Run642 prereg — C3 protocol-locality KL anchors (2026-10-27 UTC)
+
+**Base:** Run641 review checkpoint `741f8eba65479351e29f5b298b6f382beda8fc15`, parent Run639 selected C3 native anchored experiment unchanged. **Owner:** GPT-6 Run642 owns only new `run642_*` script/test/workflow/proof files; no edits to LoraTrainer runtime, models.json, prior cohorts, native sources, licenses or authority.
+
+## Problem, intervention and fixed comparison
+Original Run638 selected C3 QAD-Q4 32-step unanchored: train 2/2, heldout 0/2, Cedar near-miss leak 2/2. Run639 KL-to-base anchored on four disjoint prompts: train 2/2, heldout 1/2, Cedar leak 2/2, master KL 0.06999; original full-text baseline parity 5/6, so the preregistered strict original parity gate FAILED. Both remain historical RED utility outcomes.
+
+Hypothesis: the current generic KL anchor preserves general base behaviour but not **protocol-specific locality**. The existing `LoraTrainer.locality_prompts` only rewrites `my <noun>` and produces no locality anchors for `In the fictional Alder protocol, ...`. A *candidate-only subclass* (no production edit) generates exactly four disjoint same-template base-KL anchors by replacing **Alder → Pine and Maple** in each of the two registered Alder training prompts. These contain no correction targets; base model continuations are frozen before training. The two original training targets, two heldout probes, two Cedar near-miss evaluation rows, four Birch/arithmetic/farewell anchors, licensed LFM2.5-350M master, QAD-Q4 deployed reference, official Jinja, llama.cpp b10964, seed 13, rank 2, alpha 4, v_proj/out_proj, LR .001, 32 optimizer steps, jepa_weight 0 and anchor_weight 1.0 remain unchanged. Only the extra protocol-locality KL prompts differ.
+
+The new registered Run642 cohort must be committed before candidate implementation and native tests. Freeze exact source/model/license hashes and original Run639 native artifact `12701744750`, ZIP SHA256 `fab8c74d416303a871e777d7e56cd7211b527d1fd25c7182ad74768bb1270506`, adapter SHA256 `04b5ef3b432f82985c163e701ee536ecbeaaf05ec1d96ab0b0da0130f2c061c6`, native proof SHA256 `788b4681a7234593a1b305e41320bfc4b0bfb9a038bd13f448ecadf6dafffdf6` and train proof SHA256 `28a04c4baa7821e504f94e06b0b8a9862edb35250ea30ac45f7942fb9d6a283d`.
+
+## Frozen acceptance
+Source: reject any altered cohort/model/license/config, wrong protocol swap list, Cedar leakage into training/anchors, wrong authority, missing optimizer metrics, missing proof or nonzero JEPA. Native (only if exact pinned deps and artifacts can be retrieved): 32 real FP32 steps, nonzero LoRA-B and GGUF export, HF/native tokenizer IDs match, candidate adapter scale0 reproduces base token/text/logprobs, candidate scale1 has numeric effect, candidate train >=1/2, heldout >=1/2, Cedar near-miss **0/2**, and candidate full-text baseline parity must be reported separately from historical Run639's known 5/6 failure. Do not relabel Run639 baseline parity or change exact-match evaluation keys (4 vs four).
+
+A native run may execute but fail utility; preserve original negative results and raw bytes. No full V13, STEP2, B3, Body-JEPA, jepa_weight or Redmi promotion. No production activation, age or approval changes. Serialize native heavy jobs with active owner; no concurrent full-master training.
+
+## Evidence and next
+CI records exact HEAD/source hashes, original raw failures, privacy, CRC/inner SHA256 and original native proof comparison. If native unavailable, keep `NATIVE_NOT_ATTEMPTED` and continue other independent blueprint work. Next: create frozen cohort, source-only negative controls and candidate script, verify, then run native only when isolated dependencies and active owner permit.

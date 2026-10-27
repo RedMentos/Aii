@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN642_REVIEW_BUILD_STATE_V1",
+  "utc_date": "2026-10-27",
+  "owner": "GPT-6 Run642, isolated candidate-only C3 locality experiment",
+  "parent_commit": "741f8eba65479351e29f5b298b6f382beda8fc15",
+  "prereg_commit": "29bd067c9cc9bce5fe5ea80340cfb722ce13d453",
+  "cohort_commit": "fb420624f677ad56e74153e2e4c3f6af4745eefa",
+  "cohort_blob": "249d4be0e0663cccf5d1165347fa37c0db924791",
+  "candidate_source_blobs": {
+    "train": "5d7dc8e9cb5c97cc2ffb90d6e14ed14b72c5c076",
+    "native_evaluator": "6f70bbe13c964f93c4a3693efc3bc1f5aa47aaf6",
+    "train_tests": "cb8ca99c78d3326f3269ae6f4a635b9f6f2c0e78",
+    "native_tests": "eae4311c34a2ff9e17692d70e1b4da1573e9fb12"
+  },
+  "source_ci": {
+    "run_id": 40437312135,
+    "head": "512074c83a09331a45e703415450be6cb449120c",
+    "tests": "60/60 PASS",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "zip_sha256": "39530049d9ea3ac02a39489e08026226bee0f4f92dfb313f3c0c016ceebabca7",
+    "inner_sha256_count": 9,
+    "crc": "PASS",
+    "private_path": "/V13-Checkpoints/2026-10-27/Run642/Run642-source60-GREEN-40437312135.zip",
+    "private_bytes_verified": true
+  },
+  "native_ci": {
+    "run_id": 40437401540,
+    "head": "85108f2ef2fc09c9bd1648e57020385e9aa4361e",
+    "status": "COMPLETED_NATIVE_EXECUTION_SUCCESS_UTILITY_RED",
+    "source_test": "PASS",
+    "training_steps": 32,
+    "training_seconds": 198.8,
+    "peak_rss_mb": 2423.8,
+    "adapter_sha256": "29b1a14b77538bd14d05cfb7d53a9b7a43ba0b4065ef33d0b52bcbc28e47b163",
+    "train_proof_sha256": "40497ff90b77e919b9445959e6eb89fbd0ed075de66a409d0c1503954b7c3099",
+    "native_proof_sha256": "b39e8525690aafdd98cb5abf0bcf82df6eb500abaff0fd56fa41bf9dcd9fcd58",
+    "train_hits": 2,
+    "heldout_hits": 1,
+    "near_miss_leaks": 2,
+    "tokenizer_scale0_parity": true,
+    "numeric_effect": true,
+    "bounded_synthetic_utility": false,
+    "status_label": "NO_ANSWER_UTILITY",
+    "zip_sha256": "cecf2bf0d725886c6e47f0d1d44f69582b43ca5f852dad128136d710fefc2d5c",
+    "github_artifact_id": 12704852652,
+    "inner_sha256_count": 31,
+    "crc": "PASS",
+    "private_path": "/V13-Checkpoints/2026-10-27/Run642/Run642-native-utility-RED-40437401540.zip",
+    "private_bytes_verified": true
+  },
+  "historical_run639": {
+    "native_run": 40431900872,
+    "zip_sha256": "fab8c74d416303a871e777d7e56cd7211b527d1fd25c7182ad74768bb1270506",
+    "train_hits": 2,
+    "heldout_hits": 1,
+    "near_miss_leaks": 2,
+    "fulltext_baseline_parity": "5/6",
+    "utility": "FAIL"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "no_production_weight_changes": true,
+  "no_age_or_approval_changes": true,
+  "next": "Run642 native negative closed; do not tune frozen Cedar cohort. Inspect Run643 phone source ZIP and continue separate canonical functional package; any new C3 contrastive arm needs fresh prereg and disjoint training data."
+}
