@@ -1,0 +1,63 @@
+name: V13 module lifecycle CAS synthetic review
+on:
+  push:
+    branches: [codex/automation12-module-lifecycle-cas-20261027]
+    paths:
+      - '.github/workflows/module-lifecycle-cas-review.yml'
+      - 'v13/code/v13/modules_gate.py'
+      - 'v13/code/v13/module_learn.py'
+      - 'v13/code/tests/test_module_lifecycle_cas.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-module-lifecycle-cas-review
+  cancel-in-progress: false
+jobs:
+  synthetic-sqlite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated pinned software prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/modulecas"
+          timeout 240s "$RUNNER_TEMP/modulecas/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve exact test, compile and privacy results
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/modulecas-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/modulecas-proof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_module_lifecycle_cas.py > "$RUNNER_TEMP/modulecas-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 500s "$RUNNER_TEMP/modulecas/bin/python" -m unittest -v tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate) > "$RUNNER_TEMP/modulecas-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-proof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/modulecas/bin/python" -m compileall -q v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_module_lifecycle_cas.py > "$RUNNER_TEMP/modulecas-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/modulecas/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/modulecas-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve original raw receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: module-lifecycle-cas-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/modulecas-proof/
+          if-no-files-found: error
+      - name: Enforce tests
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/modulecas-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/modulecas-proof/${n}_RAW.log"; exit 1; }
+          done
+          tail -12 "$RUNNER_TEMP/modulecas-proof/UNIT_RAW.log"

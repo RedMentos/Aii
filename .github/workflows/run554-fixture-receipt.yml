@@ -1,0 +1,54 @@
+name: V13 Run554 synthetic JEF goal receipt and explicit nonanswer regression
+on:
+  push:
+    branches: [codex/automation11-run554-fixture-receipt-20261027]
+    paths:
+      - '.github/workflows/run554-fixture-receipt.yml'
+      - 'v13/code/scripts/native_jef_goal_run554.py'
+      - 'v13/code/tests/test_run554_fixture_receipt_20261027.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run554-fixture-receipt/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run554-fixture-receipt-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Exact JEF fixture, nonanswer, source, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run554"
+          git rev-parse HEAD > "$RUNNER_TEMP/run554/HEAD.txt"
+          sha256sum v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_run554_fixture_receipt_20261027.py > "$RUNNER_TEMP/run554/SOURCE_SHA256.txt"
+          git diff --exit-code 9eae3cc175512382038cc5f55887e7a8dbc9797f HEAD -- v13/code/v13/runtime.py v13/code/v13/store.py v13/code/v13/runners.py v13/code/v13/memory_server.py v13/code/v13/agi/live.py > "$RUNNER_TEMP/run554/FROZEN_SOURCE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run554/FROZEN_SOURCE_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_native_jef_goal_run554 tests.test_run554_fixture_receipt_20261027 tests.test_run552_jef_goal_final_receipt tests.test_run553_user_goal_operator tests.test_agi_live) > "$RUNNER_TEMP/run554/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run554/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_run554_fixture_receipt_20261027.py > "$RUNNER_TEMP/run554/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run554/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/run554/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run554/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: run554-fixture-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/run554/
+          if-no-files-found: error
+      - name: Enforce fixture and frozen-source exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY FROZEN_SOURCE; do
+            test "$(cat "$RUNNER_TEMP/run554/${n}_EXIT.txt")" = 0 || {
+              tail -80 "$RUNNER_TEMP/run554/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "RUN554_FIXTURE_ONLY_NO_NATIVE_OR_GOAL_QUALITY_PROMOTION"

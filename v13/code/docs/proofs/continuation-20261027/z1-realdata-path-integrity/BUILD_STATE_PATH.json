@@ -1,0 +1,54 @@
+{
+  "schema": "V13_Z1_REALDATA_PATH_INTEGRITY_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "6e10df6dafc433e668b1f28a1092e4c88d104aa3",
+  "prereg": "3677e6d6b232233f6cb86ed43a01cdc2563a6019",
+  "review_pr": 696,
+  "source": "f069bc2eb4b9bc5f63df394e6b47fa6a51f65733",
+  "tests": "30/30 PASS",
+  "software_run": 40490160443,
+  "artifact": 12728651014,
+  "zip_sha256": "711252258157df34b906ea1ddf18d01e0497c404c7b25af476a39e50d879bfd3",
+  "privacy": "CLEAN",
+  "compile_exit": 0,
+  "backup": "private Library original ZIP byte-exact",
+  "preserved_red": {
+    "run": 40489675117,
+    "artifact": 12728985351,
+    "zip_sha256": "6ffdf34e3189c27cc99d9b137454d89561c7ee115dfff627b07e86ae9376e4aa",
+    "reason": "fixture APP lacked gate-graph spec",
+    "backup": "private Library byte-exact"
+  },
+  "evidence": "software-only path validation; no native proof",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "Independent broad suite differential on exact integrated chain; BP1 native V2 44-row source-bound evidence and near-miss/retention separate.",
+  "historical_fullsuite_red": {
+    "run": 40488716919,
+    "source": "dbee57d3a3a2d70fc7f7babbca91b4ba1ecfdd89",
+    "tests": 4496,
+    "failures": 5,
+    "errors": 73,
+    "skipped": 28,
+    "artifact": 12727655810,
+    "zip_sha256": "c25ee1a40e977bc977a9de15d33618f69cb2b27aac0b731969277524280f712d",
+    "error_categories": {
+      "frozen_source_mismatch": 65,
+      "missing_torch": 6,
+      "missing_RUN147_zip": 1,
+      "missing_test_lp3_serial_cohort": 1
+    },
+    "failure_categories": {
+      "frozen_source_mismatch": 4,
+      "run554_goal_fixture_integration_fail": 1
+    },
+    "backup": "private Library byte-exact",
+    "gate_promotion": false
+  }
+}

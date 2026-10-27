@@ -1,0 +1,46 @@
+{
+  "schema": "V13_Z1_JEF_BP11_EXACT_INTEGRATION_20261027",
+  "owner": "GPT-6 automation11",
+  "review_pr": 699,
+  "base_pr": 672,
+  "base_sha": "9eae3cc175512382038cc5f55887e7a8dbc9797f",
+  "prereg_sha": "d06fefa86d896d86d0d72062cb111b7d73ba244e",
+  "source_parents": {
+    "z1": "968932a20ed963f1e27554510a6903546e219918",
+    "jef": "2ff03034f490fff2b79e23bb6dc650c6a92e795e",
+    "bp11": "4c006395733a282a69a863c79d4e5847b80e0057"
+  },
+  "integration_commit": "e0cff1eebe88b01d2babefa8cdb175d07a4db284",
+  "source_paths_exact": 38,
+  "focused_run": 40493708774,
+  "focused_head": "b9d6ddde4eeb07ea80ec98e581ccd50e90b6bc25",
+  "focused_tests": "102/102 PASS",
+  "source_parity": "38/38 exact blobs",
+  "compile_exit": 0,
+  "privacy": "CLEAN",
+  "focused_artifact": 12729461351,
+  "focused_zip_sha256": "59fca785ff5725881dc34e8c639c2cb751720a0c55c1e9f3a7c8601db3f86aef",
+  "private_backup": "/V13-Checkpoints/2026-10-27/Z1-JEF-BP11-Integrated-Review/ORIGINAL-FOCUSED-GREEN-40493708774.zip",
+  "private_backup_byte_exact": true,
+  "broad_run": 40494038274,
+  "broad_status": "QUEUED_AFTER_HISTORICAL_DIAGNOSTIC_NO_CLAIM",
+  "historical_fullsuite": "4496 tests; 5 FAIL/73 ERROR at 40488716919; original RED preserved",
+  "phone_source_review_pr": 702,
+  "phone_source_run": 40494517262,
+  "phone_source_zip_sha256": "2e443f528631338e89d8f0e2ed05e5108a755676a547a74fa43c6aed50bc5b07",
+  "scope": "review-only exact multi-parent source integration; Linux software tests, no native or Redmi",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "Audit broad run 40494038274 original raw ZIP, compare failure headers with historical 40488716919 without modifying frozen pins; continue independent native learning path reviews.",
+  "blockers": [
+    "Historical broad suite source-lineage mismatch and isolated prerequisites",
+    "No Redmi connected; no native receiver-injection proof",
+    "Review branches not production integrated"
+  ]
+}

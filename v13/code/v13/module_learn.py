@@ -17,16 +17,25 @@ from .memory import relevance
 
 LABEL='aus Modul, nicht als wahr geprüft'
 MIN_SCORE=0.15
+RECALL_EFFECTS=({'READ_LOCAL','LEARN'},{'MODULE','MEMORY'})
+
+def _recall_allowed(store):
+    # Direct :modul frage and the Python reader must not bypass the typed
+    # module_recall ban enforced by ToolRegistry for model-initiated calls.
+    return M.gate(store,'module_recall','READ_LOCAL',RECALL_EFFECTS) is None
 
 def recall(store,query,k=3):
     """Top-k module items for the question, best first. Empty when nothing is released/allowed or nothing is relevant."""
     q=str(query or '')[:500]
-    if not q.strip():return []
+    if not q.strip() or not _recall_allowed(store):return []
     hits=[]
     for it in M.corpus(store):
         sc=max(relevance(q,it['text']),relevance(q,(it['title'] or '')+' '+it['text']))
         if sc>=MIN_SCORE:hits.append((sc,it))
+    # A ban may arrive during file I/O; never emit the stale snapshot.
+    if not _recall_allowed(store):return []
     hits.sort(key=lambda x:(-x[0],x[1]['tag'],x[1]['text']))
+    if not _recall_allowed(store):return []
     return [{'text':it['text'],'title':it['title'],'tag':it['tag'],'score':round(sc,3),'label':LABEL} for sc,it in hits[:max(1,min(int(k),10))]]
 
 def tool(store):
@@ -45,8 +54,14 @@ def _export_gate(store):
 def export_dataset(store,path):
     """JSONL, one tagged item per line, plus the digest of the content. Returns {'path','items','digest'}; raises when nothing is released."""
     _export_gate(store)  # Notaus/ban before corpus or no-data error.
+    initial_version=M.box(store).load()[1]
     items=M.corpus(store)
     if not items:raise ValueError('Nichts freigegeben oder Lernen aus: kein Export (:modul lernen an, Modul freigeben)')
     body='\n'.join(json.dumps({'text':i['text'],'title':i['title'],'tag':i['tag']},ensure_ascii=False,sort_keys=True) for i in items)+'\n'
     _export_gate(store)  # Recheck after source reads, before write.
+    # A revoke/disable while reading cannot be turned into a new training
+    # dataset. Re-read bytes as well as the version (ABA switch toggles count).
+    if M.box(store).load()[1]!=initial_version or M.corpus(store)!=items or M.box(store).load()[1]!=initial_version:
+        raise PermissionError('Modul während des Exports geändert oder zurückgenommen')
+    _export_gate(store)
     atomic_write(path,body.encode());return {'path':str(path),'items':len(items),'digest':digest(body)}

@@ -1,0 +1,30 @@
+{
+  "schema": "V13_Z1_GATE_EVIDENCE_TYPING_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "9eae3cc175512382038cc5f55887e7a8dbc9797f",
+  "prereg": "98d18ab18ed67d09b0a00393b752f3e18bdfda81",
+  "source": "ddbb674d6ae8ff3de977e4b79af0f7f568f50bbe",
+  "software": {
+    "run": 40488488797,
+    "artifact": 12725584241,
+    "zip_sha256": "f55af389bf68b3ebacd05c96f2c57e6030f96236582f092489b022642c794091",
+    "unit_pass": 22,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "backup": "private Library byte-verified"
+  },
+  "changes": [
+    "strict bool/int equality and finite ordered gate verdicts",
+    "unverified artifact path no longer MEASURED"
+  ],
+  "native": "NOT_RUN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "run broad differential against historical RED; integrate only after owner review"
+}
