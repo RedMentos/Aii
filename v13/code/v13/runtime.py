@@ -212,6 +212,13 @@ class Runtime:
             if row and row['text'].strip():return '[CURRENT_OUTPUT_SNAPSHOT; '+row['status']+']\n'+row['text']
         owner=self.store.one('SELECT session_id FROM events WHERE id=?',(e['event_id'],)) if e else None
         return self.executive.report(owner['session_id'] if owner else self.session,e,'Operator erzwingt den aktuellen quellengebundenen Stand; weitere Deliberation wird beendet.')
+    def _head_shadow(self,text,e,deadline):
+        """WP-Z6i: what the active learned route head alone would do (None route below the decision margin)."""
+        if e is None:return None
+        entry=self.store.components().get('route') or {}
+        if not entry.get('update_id'):return None
+        p=self.learner.propose(text,e['source_ref']['source_id'],min(deadline,time.monotonic()+self.cfg['control_seconds']))
+        return ((p['route'] if p and p['margin']>=.05 else None),entry['update_id'])
     def _route(self,text,e,deadline):
         override=self.cfg['route_override']
         if override!='auto':return override,{'source':'OPERATOR_ROUTE_OVERRIDE'}
@@ -220,7 +227,7 @@ class Runtime:
         episodic=None
         try:  # WP-U10 §9.1 fast episodic: one human route correction on a very similar request (shadow unless active)
             from .episodic_route import for_turn
-            ep_route,episodic=for_turn(self.store,text,self.session)
+            ep_route,episodic=for_turn(self.store,text,self.session,head=lambda:self._head_shadow(text,e,deadline),event_id=e['event_id'] if e else None)
             if ep_route:return ep_route,episodic
         except Exception as exc:self.store.log('episodic_route_unavailable',e['event_id'] if e else None,{'error':type(exc).__name__})
         route=scaffold_route(text);info={'source':'BOOT_SCAFFOLD','scaffold':route}

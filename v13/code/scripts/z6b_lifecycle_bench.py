@@ -35,6 +35,7 @@ TEMPLATES = {
     'simple': ['Guten {g}, {name}, wie geht es dir?', 'Hallo {name}, was machst du heute am {g}?', 'Schönen {g}, {name}! Alles gut bei dir?', 'Hey {name}, wie war dein {g}?'],
     'detail': ['Wie viel sind {n} plus {n2} Euro?', 'Rechne bitte {n} mal 3 aus.', 'Wie viel ist ein Drittel von {n} Euro?', 'Was kostet {n} Euro minus 15 Prozent?'],
     'half':   ['Wie viel ist die Hälfte von {n} Euro?', 'Was ist die Hälfte von {n}?', 'Halbiere bitte {n} Euro.', 'Wie viel ergibt {n} geteilt durch zwei?'],
+    'half_nowords': ['Was ist die halbe Summe von {n} Euro?', 'Wie viel ist {n} durch 2?', 'Teile {n} Euro in zwei gleiche Teile.', 'Wie viel ist eine halbe Portion von {n} Gramm?'],
     'gist':   ['Was ist die Kernaussage: {thing} brauchen {need}.', 'Fasse kurz zusammen: {thing} brauchen {need}.', 'Worum geht es im Kern: {thing} und {need}?', 'Gib mir den Überblick: {thing} brauchen {need}.'],
     'both':   ['Welche Vor- und Nachteile haben {a} und {a2}?', 'Vergleiche {a} mit {a2}.', 'Was spricht für {a}, was für {a2}?', 'Wäge {a} gegen {a2} ab.']}
 
@@ -51,51 +52,67 @@ def stream(seed):
     rng = random.Random(seed); used = set()
     heldout = [(make(k, rng, used), k, k) for k in ('simple', 'detail', 'gist', 'both') for _ in range(8)]
     heldout += [(make('half', rng, used), 'detail', 'simple') for _ in range(8)]   # (text, label before shift, label after)
-    record = [make(rng.choice(list(TEMPLATES)), rng, used) for _ in range(40)]
+    record = [make(rng.choice([k for k in TEMPLATES if k != 'half_nowords']), rng, used) for _ in range(40)]
     p1 = [[(make(k if k != 'detail' else rng.choice(('detail', 'half')), rng, used), k) for k in ROUTE_NAMES for _ in range(2)] for _ in range(6)]
     p2 = [[(make('half', rng, used), 'simple') for _ in range(4)] + [(make(k, rng, used), k) for k in ROUTE_NAMES] for _ in range(4)]
-    return heldout, record, p1, p2
+    # WP-Z6i: questions the user asks without correcting them (drawn after everything above, so older arms see the same stream)
+    live = [[make('half', rng, used) for _ in range(4)] + [make(k, rng, used) for k in ('simple', 'detail', 'gist', 'both')] for _ in range(4)]
+    p3 = [make('half', rng, used) for _ in range(8)] + [make(k, rng, used) for k in ('simple', 'detail', 'gist', 'both') for _ in range(2)]
+    # WP-Z6i exploratory: half questions WITHOUT any of the rule's words (does the head generalize beyond the rule?)
+    nowords = [make('half_nowords', rng, used) for _ in range(8)]
+    return heldout, record, p1, p2, live, p3, nowords
 
 
 SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --notiz Hälfte-Fragen jetzt kurz'
 
 
 def run_arm(installed, policy, seed):
-    sup = policy.endswith('+sup') or policy.endswith('+now'); now_rule = policy.endswith('+now'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
+    base_policy, *flags = policy.split('+')
+    now_rule = 'now' in flags; sup = 'sup' in flags or now_rule  # WP-Z6c: '+sup' = the human states the new scope once
+    teach = 'teach' in flags  # WP-Z6i: the human also lets the rule's routed questions train the head (--lehre)
+    words = 'words' in flags  # WP-Z6i: fixed word channel for new route heads; with '+now' the bench also asks live questions and hands the rule over
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
-    from v13.learning_worker import features
+    from v13.learning_worker import features, route_logits, word_dim
+    from v13.route_words import vector as word_vector
     import numpy as np
-    heldout, record, p1, p2 = stream(seed); log = []
+    heldout, record, p1, p2, live, p3, nowords = stream(seed); log = []; lifecycle = []
     with tempfile.TemporaryDirectory(prefix='v13-z6b-') as d:
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
-        shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
+        shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h); r.cfg['route_head_words'] = words
         cache = {}
         def emb(text):
             if text not in cache:
                 ref = r.store.source(text, 'USER'); cache[text] = r.learner.embedding(text, ref['source_id'], time.monotonic()+60)
             return cache[text]
-        X = features([emb(t) for t, _, _ in heldout])
+        X = features([emb(t) for t, _, _ in heldout]); XW = features([emb(t) for t, _, _ in heldout], [word_vector(t) for t, _, _ in heldout])
         def acc(path, shifted):
             lab = [(b if shifted else a) for _, a, b in heldout]
             if path is None:
                 from v13.cognition import scaffold_route
                 pred = [scaffold_route(t) for t, _, _ in heldout]
             else:
-                with np.load(path, allow_pickle=False) as z: pred = [ROUTE_NAMES[i] for i in np.argmax(X@z['route_w'], axis=1)]
+                with np.load(path, allow_pickle=False) as z: pred = [ROUTE_NAMES[i] for i in np.argmax((XW if word_dim(z) else X)@z['route_w'], axis=1)]
             ok = [p == l for p, l in zip(pred, lab)]
             per = {k: round(sum(o for o, (_, a, b) in zip(ok, heldout) if (b if shifted else a) == k and not (shifted and a != b))/max(1, sum(1 for _, a, b in heldout if (b if shifted else a) == k and not (shifted and a != b))), 4) for k in ROUTE_NAMES}
             half = [o for o, (_, a, b) in zip(ok, heldout) if a != b]
             unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
-            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4)}
+            wrong = [[t, p] for o, p, (t, a, b) in zip(ok, pred, heldout) if not o]
+            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4), 'wrong': wrong}
         def active_path(): return r.learner.active()
+        def forget(e):  # WP-Z6i: evaluation questions are not user history (no spillover anchor, no --lehre item)
+            with r.store.tx() as c: c.execute('UPDATE sources SET deleted=1 WHERE id=?', (e['source_ref']['source_id'],))
         def runtime_routes():  # WP-Z6d: the real answer-time routing path (Runtime._route), not the head alone
             out = []
             for t, _, _ in heldout:
-                e = r.store.event(r.session, t); route, info = r._route(t, e, time.monotonic()+30); out.append((route, (info or {}).get('source')))
+                e = r.store.event(r.session, t); route, info = r._route(t, e, time.monotonic()+30); out.append((route, (info or {}).get('source'))); forget(e)
             return out
+        def head_probe():  # head alone on the no-rule-word half questions (exploratory)
+            pz = active_path()
+            if pz is None: return None
+            with np.load(pz, allow_pickle=False) as z: return [ROUTE_NAMES[int(np.argmax(route_logits(z, emb(t), t)))] for t in nowords]
         def runtime_acc(routes):
             ok = [p[0] == b for p, (_, a, b) in zip(routes, heldout)]
             half = [o for o, (_, a, b) in zip(ok, heldout) if a != b]; unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
@@ -105,8 +122,18 @@ def run_arm(installed, policy, seed):
             p = active_path()
             if p is None: return None
             with np.load(p, allow_pickle=False) as z:
-                pred = [ROUTE_NAMES[int(np.argmax(features([emb(t)])@z['route_w']))] for t, _ in batch]
+                pred = [ROUTE_NAMES[int(np.argmax(route_logits(z, emb(t), t)))] for t, _ in batch]
             return round(sum(a != l for a, (_, l) in zip(pred, batch))/len(batch), 4)
+        from v13.route_supersede import rules as sup_rules, status as sup_status
+        def ask(texts):  # WP-Z6i: the user asks; the real answer-time route runs (rule match -> head asked in shadow)
+            for t in texts:
+                e = r.store.event(r.session, t); r._route(t, e, time.monotonic()+30)
+        def handover_check(when):  # the harness plays the human who reads ':ersetze pruefe' and hands over once it says learned
+            rid = [x for x in sup_rules(r.store) if x.get('apply_now')][-1]['id']
+            head = (r.store.components().get('route') or {}).get('update_id'); st = sup_status(r.store, rid, head); st['when'] = when
+            if st['learned'] and not st['handover']:
+                st['handover_reply'] = Operator(r).run(':ersetze gelernt ' + rid)[:80]
+            lifecycle.append(st); print(json.dumps({'policy': policy, 'handover_check': when, 'learned': st['learned'], 'run': st['agree_in_a_row']}), flush=True)
         try:
             before = r.store.generation_id
             for t in record: r.store.event(r.session, t)       # record-only episodes: captured, no feedback, no learning call
@@ -116,13 +143,20 @@ def run_arm(installed, policy, seed):
                 for bi, batch in enumerate(batches):
                     if sup and phase == 'p2' and bi == 0:
                         if now_rule: runtime_before_rule = runtime_routes()
-                        Operator(r).run(SUPERSEDE_CMD + (' --sofort' if now_rule else ''))
-                    dis = batch_disagreement(batch)
+                        Operator(r).run(SUPERSEDE_CMD + (' --sofort' if now_rule else '') + (' --lehre' if teach else ''))
+                    dis = batch_disagreement(batch); lifecycle_on = words and now_rule and phase == 'p2'
+                    if lifecycle_on: ask(live[bi])
                     for t, lab in batch:
-                        e = r.store.event(r.session, t); r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
+                        e = r.store.event(r.session, t)
+                        if lifecycle_on: r._route(t, e, time.monotonic()+30)
+                        r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
+                    if lifecycle_on: handover_check('p2-%d' % bi)
                     shifted = phase == 'p2'; act_before = acc(active_path(), shifted)
-                    do = base_policy == 'fixed' or (base_policy == 'adaptive' and (dis is None or dis >= .25))
-                    row = {'phase': phase, 'batch': bi, 'corrections': corrections, 'disagreement_before': dis, 'shadow': do, 'active_acc_before': act_before}
+                    unsettled = None
+                    if lifecycle_on and teach:  # WP-Z6i: the head still disagrees with a --lehre rule it has not taken over -> keep learning
+                        st = lifecycle[-1]; unsettled = not st['learned'] and st['observed'] > 0
+                    do = base_policy == 'fixed' or (base_policy == 'adaptive' and (dis is None or dis >= .25 or bool(unsettled)))
+                    row = {'phase': phase, 'batch': bi, 'corrections': corrections, 'disagreement_before': dis, 'rule_unsettled': unsettled, 'shadow': do, 'active_acc_before': act_before}
                     if do and base_policy != 'none':
                         r.cfg['learning_mode'] = 'SHADOW_UPDATE'
                         try: res = r.learner.shadow(); row['shadow_result'] = res
@@ -131,6 +165,8 @@ def run_arm(installed, policy, seed):
                         if u and u['status'] in ('PENDING_APPROVAL', 'EVALUATED_FAIL') and u['id'] not in [x.get('update_id') for x in log]:
                             cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand,
                                                                          superseded=len(json.loads(u['manifest']).get('superseded_labels', [])))
+                            row['rule_taught'] = len(json.loads(u['manifest']).get('rule_taught_labels', []))
+                            mt = json.loads(u['manifest']).get('metrics', {}); row['worker_gate'] = {k: mt.get(k) for k in ('held_out', 'retention_pass', 'commit_eligible', 'loss_before', 'loss_after')}
                             if u['status'] == 'PENDING_APPROVAL':
                                 r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + u['id']); promos.append(u['id'])
                                 row['promoted'] = active_path() is not None and r.store.generation_id != before
@@ -139,9 +175,21 @@ def run_arm(installed, policy, seed):
                     print(json.dumps({'policy': policy, 'phase': phase, 'batch': bi, 'shadow': do, 'status': row.get('status'),
                                       'acc': row['active_acc_after']['all']}), flush=True)
             runtime = None
+            if words and now_rule:
+                ask(p3); handover_check('p3')
             if now_rule or base_policy == 'fixed':
                 final_routes = runtime_routes(); runtime = {'final': runtime_acc(final_routes)}
-                if now_rule:
+                half_ix = [i for i, (_, a, b) in enumerate(heldout) if a != b]
+                runtime['final_source_on_half'] = {src: sum(final_routes[i][1] == src for i in half_ix)/len(half_ix) for src in sorted({final_routes[i][1] or 'NONE' for i in half_ix})}
+                if words and now_rule:  # WP-Z6i safety net: undo the handover-era head; the rule must cover the half items again
+                    runtime['head_alone_final'] = acc(active_path(), True)
+                    hp = head_probe()
+                    rt = []
+                    for t in nowords:
+                        e = r.store.event(r.session, t); rt.append(r._route(t, e, time.monotonic()+30)[0]); forget(e)
+                    runtime['nowords_probe'] = {'head_alone_simple': sum(x == 'simple' for x in hp)/len(hp), 'runtime_simple': sum(x == 'simple' for x in rt)/len(rt),
+                                                'items': [[t, a, b] for t, a, b in zip(nowords, hp, rt)]}
+                if now_rule and not words:  # Z6d undo check; Z6i keeps the rule for the rollback safety-net check below
                     rid = [x for x in __import__('v13.route_supersede', fromlist=['rules']).rules(r.store) if x.get('apply_now')][-1]['id']
                     runtime['before_rule'] = runtime_acc(runtime_before_rule)
                     Operator(r).run(':ersetze undo ' + rid); after_undo = runtime_routes()
@@ -150,6 +198,7 @@ def run_arm(installed, policy, seed):
                     runtime['rule_touches_other_items'] = sum(final_routes[i] != after_undo[i] for i in same)  # same head, rule on vs off
                     runtime['rule_source_after_undo'] = sum(x[1] == 'HUMAN_ROUTE_RULE' for x in after_undo)
                     runtime['after_undo'] = runtime_acc(after_undo)
+            hp_all = head_probe(); nowords_head = None if hp_all is None else {'simple': sum(x == 'simple' for x in hp_all)/len(hp_all), 'routes': hp_all}
             # rollback of the last promotion must restore the measured parent accuracy (L11 safety path)
             rb = None
             if promos:
@@ -157,11 +206,13 @@ def run_arm(installed, policy, seed):
                 expect = log[idx]['active_acc_before']['all']; r.store.rollback(last)
                 got = acc(active_path(), log[idx]['phase'] == 'p2')['all']  # same label set as the parent measurement
                 rb = {'update_id': last, 'expected_parent_acc': expect, 'after_rollback_acc': got, 'restored': abs(got-expect) < 1e-9}
+                if words and now_rule:
+                    rb['runtime_after_rollback'] = runtime_acc(runtime_routes())
             session = r.session; r.close(); r = Runtime(h)
             restart_same = r.session == session
         finally:
             r.close()
-    return {'policy': policy, 'record_only_updates': record_updates, 'log': log, 'rollback': rb, 'restart_same_session': restart_same, 'runtime': runtime}
+    return {'policy': policy, 'record_only_updates': record_updates, 'log': log, 'rollback': rb, 'restart_same_session': restart_same, 'runtime': runtime, 'lifecycle': lifecycle, 'nowords_head': nowords_head}
 
 
 def score(arm):
@@ -179,7 +230,8 @@ def score(arm):
             'corrections_to_shift_half80': first(lambda x: x['phase'] == 'p2' and x['active_acc_after']['half_items'] >= .8),
             'p1_end_acc': p1_end['all'], 'final_acc': final['all'], 'final_half_items': final['half_items'],
             'retention_unchanged': round(final['unchanged']/max(1e-9, p1_end['unchanged']), 4) if p1_end['unchanged'] else None,
-            'per_route_final': final['per_route'], 'rollback': arm['rollback'], 'restart_same_session': arm['restart_same_session'], 'runtime': arm.get('runtime')}
+            'per_route_final': final['per_route'], 'rollback': arm['rollback'], 'restart_same_session': arm['restart_same_session'], 'runtime': arm.get('runtime'),
+            'nowords_head_simple': (arm.get('nowords_head') or {}).get('simple'), 'handovers': sum(1 for x in arm.get('lifecycle', []) if x.get('handover_reply')), 'lifecycle': arm.get('lifecycle', [])}
 
 
 def criteria(s):
@@ -212,6 +264,23 @@ def criteria_z6d(s):
     return c, 'Z6D_RULE_ROUTE_PASS' if all(c.values()) else 'Z6D_RULE_ROUTE_FAIL'
 
 
+Z6I_ARMS = ('fixed+now+words+teach', 'adaptive+now+words+teach')
+Z6I_CONTROL = 'fixed+now'
+
+
+def criteria_z6i(s):
+    a = [s[k] for k in Z6I_ARMS]; k1 = s[Z6I_CONTROL]
+    c = {'I1_head_alone_half_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'I2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'I3_false_promotions_le_control': all(x['false_promotions'] <= k1['false_promotions'] for x in a),
+         'I4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'I5_handover_and_runtime_half_ge_90pct': all(x['handovers'] >= 1 and x['runtime']['final']['half_items'] >= .9 for x in a),
+         'I6_safety_net_after_rollback_ge_90pct': all(x['rollback'] is not None and x['rollback']['runtime_after_rollback']['half_items'] >= .9 for x in a),
+         'I7_control_not_clean': not ((k1['final_half_items'] or 0) >= .8 and (k1['retention_unchanged'] or 0) >= .9 and k1['false_promotions'] == 0),
+         'I8_runtime_unchanged_not_worse_5pt': all(x['runtime']['final']['unchanged'] >= k1['runtime']['final']['unchanged'] - .05 for x in a)}
+    return c, 'Z6I_LEARN_PASS' if all(c.values()) else 'Z6I_LEARN_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -226,10 +295,12 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if set(Z6I_ARMS) | {Z6I_CONTROL} <= set(scores):
+        doc['criteria_z6i'], doc['verdict_z6i'] = criteria_z6i(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i-learn-new-hints/PREREG.md'
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':
