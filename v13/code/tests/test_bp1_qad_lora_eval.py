@@ -169,8 +169,8 @@ class QADLoraEvalTests(unittest.TestCase):
                 if len(seen) == 6:
                     raise RuntimeError("injected interruption")
                 return json.dumps({"answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""})
-            with patch.object(E.S, "load_dataset", return_value=(rows, S.HELDOUT_SHA)), \\
-                 patch.object(E, "validate_native_files", return_value={"verified": True}), \\
+            with patch.object(E.S, "load_dataset", return_value=(rows, S.HELDOUT_SHA)), \
+                 patch.object(E, "validate_native_files", return_value={"verified": True}), \
                  patch.object(E, "validate_train_proof", return_value=True):
                 with self.assertRaisesRegex(RuntimeError, "injected interruption"):
                     E.collect("unused", bind, "server", "base", "adapter", out,
