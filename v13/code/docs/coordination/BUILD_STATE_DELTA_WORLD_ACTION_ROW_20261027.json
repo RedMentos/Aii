@@ -1,0 +1,53 @@
+{
+  "status": "SYNTHETIC_ACTION_ROW_CONTROL_NEGATIVE_REVIEW_ONLY",
+  "base_pr": 771,
+  "base_sha": "c84b95142e30dabd834e0cb5e495b3b8511a0a0e",
+  "prereg_sha": "00f1dd2fa737fe5cb3a9ea074e437c51233aa040",
+  "owner": "GPT automation11 World-JEPA independent review",
+  "script_blob": "63e3844aa0b04ed3635c046e068b7e96cc01ddc9",
+  "focused": {
+    "actions": 40584035458,
+    "tests": "17/17 PASS",
+    "sha256": "dbabefeb21df8c07ef40bc0f4198b4b4cdcea6b94d49ab64bfabae43e0223e9f",
+    "raw_exits_all_zero": true
+  },
+  "synthetic400": {
+    "actions": 40584122246,
+    "sha256": "a4b8e69843e8bd197992c3b4a48f0aa04b3154f70db8b0ed1bb10166df48be5b",
+    "raw_exits_all_zero": true,
+    "source_sha256": "21bb5a49906676050a1caf755ce441b36a483b3cb8db8d3f1a8a9048e2a7a0bf",
+    "train_sha256": "e526ec41c33f4f639d662e053cbb8757de66737babc76df442a7d1eaed2c164b",
+    "heldout_sha256": "dce3c8c36cf08617c193ea628112964796c23bbd78a5eb353c965396816b0760",
+    "seeds": [
+      3,
+      7
+    ],
+    "steps": 400,
+    "action_shift_fraction": 1,
+    "correct_mae": [
+      0.00029207698411807794,
+      0.00025307153841703877
+    ],
+    "row_shifted_mae": [
+      0.00022190878686426436,
+      0.0002356417249140797
+    ],
+    "state_only_mae": 0.00024170215382402155,
+    "direct_mae": 0.0002764050583280943
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-World-Action-Row/",
+  "private_backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_llm_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_world_jepa_action_permutation_control",
+  "next": "Independent review; new preregistered randomized-action counterfactual synthetic cohort; do not alter frozen n64 evidence."
+}
