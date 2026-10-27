@@ -201,8 +201,25 @@ class BodyJepaTrainer(LoraTrainer):
         ctx=[self._encode(tok,i['prompt'])[0] for i in items]
         tgt=[tok(str(i['target']),add_special_tokens=False)['input_ids'] for i in items]
         return ctx,tgt
+    @staticmethod
+    def _validated_weights(items):
+        """Validate the shared CE/JEPA sample weights before loading any model."""
+        if not isinstance(items,(list,tuple)) or not items:
+            raise ValueError('nonempty training item list required')
+        weights=[]
+        for item in items:
+            if not isinstance(item,dict):raise ValueError('training item must be a dict')
+            v=item.get('weight',1.)
+            if type(v) not in (int,float) or not math.isfinite(v) or v<0:
+                raise ValueError('sample weights must be finite nonnegative numbers')
+            weights.append(float(v))
+        total=sum(weights)
+        if not math.isfinite(total) or total<=0:
+            raise ValueError('sample weights must have finite positive sum')
+        return weights
     def fit(self,items,base_generation,cancel=None,deadline=None):
         if not items:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'EMPTY_BATCH'}}
+        wts=self._validated_weights(items)
         try:import torch,peft  # noqa: F401
         except ImportError:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'NO_TORCH_PEFT'}}
         import numpy as np
@@ -241,7 +258,6 @@ class BodyJepaTrainer(LoraTrainer):
         lab_b=torch.full(ids_b.shape,-100,dtype=torch.long)
         for r,(ids,lab) in enumerate(data):lab_b[r,:len(lab)]=torch.tensor(lab)
         att=(torch.arange(ids_b.shape[1])[None,:]<lens[:,None]).long()
-        wts=[float(i.get('weight',1.)) for i in items]
         hist=[];step=0;g=torch.Generator().manual_seed(int(cfg['seed']))
         # Explicit opt-in only: the existing frozen cohorts and default trainer are unchanged.
         # Source binding includes the full master SHA, configuration, anchors and dataset.
