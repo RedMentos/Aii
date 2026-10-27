@@ -177,6 +177,28 @@ class SchedulerTests(Base):
             self.assertEqual(len(ids),3)
             self.assertEqual(s.report()['counters']['dropped_capacity'],1)
 
+    def test_foreground_kinds_reject_background_actions(self):
+        s=self.sched()
+        with self.assertRaises(ValueError):
+            s.post('TOOL_EVENT',action='sleep_full')
+        with self.assertRaises(ValueError):
+            s.post('RESOURCE_CHANGE',action='growth_practice')
+        with self.assertRaises(ValueError):
+            s.post('USER_INPUT',origin='USER',action='sleep_a')
+        self.assertEqual(s.pending(),[])  # fail-closed before persistent mutation
+
+    def test_user_input_origin_and_safe_foreground_signals(self):
+        s=self.sched()
+        with self.assertRaises(ValueError):
+            s.post('USER_INPUT',origin='SYSTEM')
+        user=s.post('USER_INPUT',origin='USER')
+        tool=s.post('TOOL_EVENT',action='notice')
+        resource=s.post('RESOURCE_CHANGE')
+        # Foreground signals remain available under pressure and while busy;
+        # they cannot run background jobs because their actions are restricted.
+        self.assertEqual([s.next(idle=False,resource_state='CRITICAL')['id']
+                          for _ in range(3)],[user,tool,resource])
+
     def test_quiet_hours_and_capacity(self):
         s=self.sched();s.post('IDLE',action='sleep_full');s.post('TIMER',origin='USER',action='sleep_a')
         self.assertEqual(s.next(quiet=True)['origin'],'USER');self.assertIsNone(s.next(quiet=True))
