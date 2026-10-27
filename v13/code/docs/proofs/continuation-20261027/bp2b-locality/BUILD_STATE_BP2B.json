@@ -1,0 +1,55 @@
+{
+  "schema": "v13-bp2b-review-state-v1",
+  "as_of_utc": "2026-10-27T12:09:00Z",
+  "owner": "automation11 BP2b locality",
+  "branch": "codex/automation11-bp2b-locality-generator-20261027",
+  "pr": 705,
+  "base_pr": 703,
+  "base_sha": "89055e5b5542336bd24f521382a3fd5cd1d8c616",
+  "status": "SOFTWARE_ONLY_REVIEW_GREEN_NATIVE_NOT_RUN",
+  "prereg_sha": "f2b0c3fcc9f1501f84063312d10d39934b566770",
+  "adversarial_prereg_sha": "09dbd006e17f05033b60662e5e21f9f86921176a",
+  "source_sha": {
+    "locality_anchors_git_blob": "1957e8a787324df51eab9ebfdf476e01190c908c",
+    "body_jepa_git_blob": "3aa603436927dcb03bb33ab617331350caea94ae"
+  },
+  "evidence": [
+    {
+      "run": 40501008646,
+      "head": "631c532f6e01db579d2b29ac39ad86c3a10fef2d",
+      "tests": "6/6 PASS",
+      "zip_sha256": "1ba68d762d5b7effdde8056213112f63af4f2179e8c82eeb02e848bd48f0ba8a"
+    },
+    {
+      "run": 40501233597,
+      "head": "f4e8628e35c98245f667a6ea1a23521172946a4a",
+      "tests": "6 PASS / 2 FAIL",
+      "zip_sha256": "716da7614976964f68c999dcb03e57d59f35f9369dc20062d660c9dc28b52d98"
+    },
+    {
+      "run": 40501390689,
+      "head": "2cd891165def1d6762b386bf92c76bb6d698764e",
+      "tests": "8/8 PASS",
+      "compile_exit": 0,
+      "privacy": "CLEAN",
+      "zip_sha256": "1cbf7013d0f0243c99d5528238db146f4fbbbfd8de636eb7eb02e40811b7e153"
+    }
+  ],
+  "private_backup_folder": "/V13-Checkpoints/2026-10-27/BP2b-Locality-Generator",
+  "activation": "OFF unless explicit locality_policy=bp2b; no Age/approval changes",
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "jepa_weight=0",
+    "Redmi_unmeasured",
+    "full_V13_incomplete"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_locality_anchors",
+  "next_package": "preregister source-disjoint BP2b transfer cohort, prepare-only fixture, then serialized Linux-native comparison after checking heavy owner",
+  "open_questions": [
+    "Does question-only locality reduce heldout subject/paraphrase leakage?",
+    "Can locality anchors conflict with independently true facts for substituted subjects?",
+    "Does BP2b+minor survive quantized Q4 adapter inference?"
+  ]
+}
