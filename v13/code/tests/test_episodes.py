@@ -70,6 +70,21 @@ class LiveHook(EpisodeBase):
         from v13.sleep import SleepCycle
         self.turn('Budget Aurora');rep=SleepCycle(self.r.store,self.r.cfg,self.r.memory).run('full')
         self.assertEqual(rep['episodes_closed'],1);self.assertIsNone(self.ep.current(self.r.session));self.assertEqual(self.ep.episodes(self.r.session)[0]['closed_by']['reason'],'sleep')
+    def test_disabled_recall_does_not_feed_prior_embedding_to_episode(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from v13.common import digest
+        text='Identical question in another turn'
+        stale=[1.]+[0.]*15
+        self.r.memory.semantic_keys=SimpleNamespace(
+            last_query={'digest':digest(text),'vector':stale},
+            mode=lambda:'off')
+        self.r.memory.recall(text,self.r.session)
+        e=self.r.store.event(self.r.session,text)
+        with patch.object(self.ep,'observe',wraps=self.ep.observe) as observed:
+            observe_turn(self.r,e,{'route':'simple','memory_ids':[]},'FINAL')
+        self.assertIsNone(observed.call_args.kwargs['vector'])
+
     def test_observe_turn_reads_turn_products_and_operator(self):
         e=self.r.store.event(self.r.session,'Plan Project Aurora')
         out=observe_turn(self.r,e,{'route':'detail','memory_ids':[]},'FINAL');self.assertTrue(out['cut'])
