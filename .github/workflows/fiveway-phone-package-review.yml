@@ -1,0 +1,84 @@
+name: V13 five-way integrated review phone source package and extracted smoke
+on:
+  push:
+    branches: [codex/automation11-fiveway-phone-package-20261027]
+    paths:
+      - '.github/workflows/fiveway-phone-package-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-fiveway-phone-package-20261027
+  cancel-in-progress: false
+jobs:
+  source-only-phone-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Isolated software dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/fivewayphonevenv"
+          timeout 240s "$RUNNER_TEMP/fivewayphonevenv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exact source ZIP, independent verification and extracted operator tests
+        run: |
+          set +e
+          p=/tmp/v13fivewayphone
+          mkdir -p "$p"
+          git rev-parse HEAD > "$p/HEAD.txt"
+          git rev-parse HEAD^{tree} > "$p/TREE.txt"
+          "$RUNNER_TEMP/fivewayphonevenv/bin/python" v13/code/scripts/package_source.py --root v13/code --out "$p/V13-Phone.zip" --phone-install > "$p/PACK_RAW.log" 2>&1
+          echo "$?" > "$p/PACK_EXIT.txt"
+          if [ "$(cat "$p/PACK_EXIT.txt")" = 0 ]; then
+            "$RUNNER_TEMP/fivewayphonevenv/bin/python" v13/code/scripts/verify_phone_zip_current_run268.py --zip "$p/V13-Phone.zip" --root v13/code --out "$p/VERIFY.json" > "$p/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$p/VERIFY_EXIT.txt"
+          else
+            echo 99 > "$p/VERIFY_EXIT.txt"
+            echo SKIPPED_PACK_FAILED > "$p/VERIFY_RAW.log"
+          fi
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 300s "$RUNNER_TEMP/fivewayphonevenv/bin/python" -m unittest -v tests.test_package_source) > "$p/PACKAGE_UNIT_RAW.log" 2>&1
+          echo "$?" > "$p/PACKAGE_UNIT_EXIT.txt"
+          if [ "$(cat "$p/VERIFY_EXIT.txt")" = 0 ]; then
+            mkdir -p "$p/extracted"
+            unzip -q "$p/V13-Phone.zip" -d "$p/extracted" > "$p/EXTRACT_RAW.log" 2>&1
+            echo "$?" > "$p/EXTRACT_EXIT.txt"
+            (cd "$p/extracted/V13-Phone" && bash -n STARTEN.sh setup.sh KNOEPFE_EINRICHTEN.sh) > "$p/SHELL_RAW.log" 2>&1
+            echo "$?" > "$p/SHELL_EXIT.txt"
+            (cd "$p/extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" timeout 300s "$RUNNER_TEMP/fivewayphonevenv/bin/python" -m unittest -v tests.test_phone_halt tests.test_modules_gate tests.test_guard2) > "$p/EXTRACTED_RAW.log" 2>&1
+            echo "$?" > "$p/EXTRACTED_EXIT.txt"
+            "$RUNNER_TEMP/fivewayphonevenv/bin/python" -m compileall -q "$p/extracted/V13-Phone/v13" "$p/extracted/V13-Phone/scripts" > "$p/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$p/COMPILE_EXIT.txt"
+          else
+            for n in EXTRACT SHELL EXTRACTED COMPILE; do echo 99 > "$p/$n"_EXIT.txt; echo SKIPPED_VERIFY_FAILED > "$p/$n"_RAW.log; done
+          fi
+          "$RUNNER_TEMP/fivewayphonevenv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$p/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$p/PRIVACY_EXIT.txt"
+          if [ -f "$p/V13-Phone.zip" ]; then sha256sum "$p/V13-Phone.zip" > "$p/ZIP_SHA256.txt"; fi
+          exit 0
+      - name: Preserve original raw, source ZIP and hashes even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-fiveway-phone-source
+          path: /tmp/v13fivewayphone/
+          if-no-files-found: error
+      - name: Enforce verified extracted software smoke and privacy
+        run: |
+          set -euo pipefail
+          p=/tmp/v13fivewayphone
+          for n in PACK VERIFY PACKAGE_UNIT EXTRACT SHELL EXTRACTED COMPILE PRIVACY; do
+            test "$(cat "$p/$n"_EXIT.txt)" = 0 || { echo "FAILED $n"; tail -80 "$p/$n"_RAW.log 2>/dev/null || true; exit 1; }
+          done
+          tail -10 "$p/EXTRACTED_RAW.log"
+          cat "$p/ZIP_SHA256.txt"
+          echo 'LINUX_SOURCE_ZIP_AND_EXTRACTED_SOFTWARE_ONLY; NO REDMI OR MODEL CLAIM'
