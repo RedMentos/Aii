@@ -21,6 +21,20 @@ from v13.transaction import operator_command as tx_command, settle_turn
 
 APP = Path(__file__).resolve().parents[1]
 
+def optional_native_plan(competence_check):
+    """Run the optional native restore cross-check only when readable.
+
+    The Linux software suite must not fail on the runner's inaccessible /root.
+    A real, accessible native fixture still executes and propagates plan errors.
+    """
+    root = Path(os.environ.get('V13_NATIVE_RESTORE_ROOT', '/root/native/restore'))
+    try:
+        available = (root / 'round8-note-tool-raw').exists()
+    except OSError:
+        return None
+    return competence_check.plan(str(root)) if available else None
+
+
 
 class FakeTaps:
     """Deterministic stand-in encoder: one fixed random 1024-vector per text."""
@@ -144,7 +158,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        plan = optional_native_plan(cc)
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
