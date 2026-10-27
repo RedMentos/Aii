@@ -1,0 +1,55 @@
+{
+  "schema": "V13_RUN643_REVIEW_BUILD_STATE_V1",
+  "utc_date": "2026-10-27",
+  "owner": "GPT-6 Run643 source-only Termux package",
+  "parent_commit": "fcd53e127b8cc08ce7151e1f7de0dd367a0fe41b",
+  "package_source_blob": "06167e0bcb82b36cb08841cd31b9618c4ba0926e",
+  "phone_verifier_blob": "880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1",
+  "red_runs": [
+    {
+      "run": 40437757311,
+      "head": "ddf57f51b10691c334abbc204066ca8c630de5df",
+      "reason": "CI extracted test_bodies PYTHONPATH missing",
+      "zip_sha256": "a4c771471f9d46e15cbf183255295a2fc0759f1c45c3e7cd2b6005ef2dc91425",
+      "private_path": "/V13-Checkpoints/2026-10-27/Run643/Run643-first-RED-40437757311.zip"
+    },
+    {
+      "run": 40437921543,
+      "head": "7237dfa6dbd0fbca7b864b2890d77c4bb259f790",
+      "reason": "CI setup selected system Python without NumPy",
+      "zip_sha256": "50465c83067aefbd4c1d1b708f6f2a1672725f4a7e84223e1abbff1067c22dcb",
+      "private_path": "/V13-Checkpoints/2026-10-27/Run643/Run643-second-RED-40437921543.zip"
+    }
+  ],
+  "green": {
+    "run": 40438098979,
+    "head": "ebd0bcc74f45255aa436a1ee742a9a3fefe27052",
+    "package_tests": "15/15 PASS",
+    "portable_tests": "94/94 PASS",
+    "extracted_body_tests": "31/31 PASS",
+    "setup_source_only": "PASS",
+    "privacy": "CLEAN",
+    "zip_file_count": 1356,
+    "zip_sha256": "27407f0bc05593d6191cb79d7ca164a76d12369e83fcc15cb1e6848636d9a8e7",
+    "zip_bytes": 13739235,
+    "outer_raw_zip_sha256": "03e183b1bd0159c53ab53ca110876ac3f281f1e517faf05ab46a08136acd1549",
+    "github_artifact_id": 12705585358,
+    "inner_sha256_count": 19,
+    "crc": "PASS",
+    "private_path": "/V13-Checkpoints/2026-10-27/Run643/Run643-phone-source-GREEN-40438098979.zip",
+    "private_bytes_verified": true,
+    "standalone_sandbox_path": "/mnt/data/V13-Phone-Run643.zip"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "native_model_inference": false,
+  "phone_measured": false,
+  "age_approval_unchanged": true,
+  "next": "Review PR643 and exact source ZIP; on Redmi execute setup.sh and probe, collect thermal/RSS/latency native proof; meanwhile continue independent canonical functional work. No main merge or authority promotion."
+}
