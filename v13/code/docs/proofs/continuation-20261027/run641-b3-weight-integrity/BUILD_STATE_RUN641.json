@@ -1,0 +1,58 @@
+{
+  "schema": "V13_RUN641_REVIEW_BUILD_STATE_V1",
+  "utc_date": "2026-10-27",
+  "owner": "GPT-6 Run641 (review-only)",
+  "parent_commit": "0928f3e06855efd4596f7322a1574d9f30fea3e8",
+  "source_green_commit": "8336e5085b0c9f33541ac720b1ba13435ea1f2ef",
+  "source_blobs": {
+    "v13/code/v13/bodyport.py": "0f5f5d2a41e3fc4fbb1d008803723df783f29248",
+    "v13/code/tests/test_bodyport.py": "a42bbe02f2f1a0467033f71b5c8a86a86d1bb23e"
+  },
+  "prereg_commit": "5098eef8082b1ad803aae58c9e702fec57523851",
+  "evidence": [
+    {
+      "status": "RED_EXPECTED",
+      "run": 40436511959,
+      "head": "52a4f0204caf3df2fde3d05ce7dcfd941fa822a2",
+      "tests": "55 tests; 3 FAIL",
+      "zip_sha256": "4e9a3c59ded2265ee7f2da60b86e0a8f0273ebfd335cd672f576b196b82cebb9",
+      "private_path": "/V13-Checkpoints/2026-10-27/Run641/Run641-source-RED-40436511959.zip"
+    },
+    {
+      "status": "RED_UNEXPECTED",
+      "run": 40436633366,
+      "head": "735bd1d19fdadb45b9534a693543de0739cc416e",
+      "tests": "55 tests; 1 ERROR",
+      "zip_sha256": "ac944b1b59575beb02a5c833b1521a33be484fcfc44f25e3b60e356864dfecee",
+      "private_path": "/V13-Checkpoints/2026-10-27/Run641/Run641-first-fix-RED-40436633366.zip"
+    },
+    {
+      "status": "GREEN_SOFTWARE_ONLY",
+      "run": 40436747038,
+      "head": "8336e5085b0c9f33541ac720b1ba13435ea1f2ef",
+      "tests": "55/55 PASS, compile PASS, privacy CLEAN",
+      "zip_sha256": "7aee519df7879758350c15a3d716ac8fb9de1602abdd2e14d5a1ba1d1d3fa451",
+      "private_path": "/V13-Checkpoints/2026-10-27/Run641/Run641-source55-GREEN-40436747038.zip",
+      "inner_sha256_count": 12,
+      "crc": "PASS",
+      "library_byte_verified": true
+    }
+  ],
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "no_production_weight_changes": true,
+  "no_age_or_approval_changes": true,
+  "blockers": [
+    "No real B1/B2 native latent-injection utility proof",
+    "No Redmi measurement",
+    "No exact model-bound training/publish path for learned B3 bridge"
+  ],
+  "next": "Review PR641, then preregister a distinct functional blueprint package, preserve all prior failures and run native jobs only with verified owners and pinned artifacts."
+}
