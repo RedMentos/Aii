@@ -36,6 +36,7 @@ KNOBS={
  "replay_batch":(4,"COUNT",1,16,"BOOT maximum experiences in one explicit replay job"),
  "replay_tokens":(96,"COUNT",16,256,"BOOT native replay output token cap"),
  "learning_steps":(80,"COUNT",1,1000,"Shadow step budget")}
+KNOBS['route_recency_half_life']=(0,"COUNT",0,256,"WP-KL1 route-head training weight half-life in corrections (newer human evidence counts more); 0 = all equal")
 KNOBS['readout_steps']=(480,"COUNT",1,1000,"BOOT bounded JEF wake/halt fit; route budget unchanged")
 KNOBS['predictor_steps']=(240,"COUNT",1,1000,"BOOT small projector/predictor shadow optimizer steps")
 KNOBS['student_steps']=(640,"COUNT",1,2000,"BOOT text A3 alignment/reconstruction optimizer steps")

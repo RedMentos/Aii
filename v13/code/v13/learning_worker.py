@@ -64,6 +64,27 @@ def exact_route_labels(values,kind,expected_length=None):
         raise ValueError('Expected explicit integer '+kind+' labels 0..3')
     return np.asarray(values,dtype=np.int64)
 
+def recency_weights(n,half_life):
+    """WP-Z6i3 (same rule as WP-KL1, branch uvt813): chronological corrections, oldest first; the weight halves every
+    half_life corrections of age, mean 1 (step budget unchanged); 0 = all equal."""
+    if not half_life or n==0:return np.ones(n)
+    w=.5**(np.arange(n)[::-1].astype(float)/float(half_life));return w/w.mean()
+OUTVOTED_CAP=.5  # BOOT: at most this share of a route's labels may count as outvoted
+def outvoted(x,y,w,new,words,k=5,need=2):
+    """WP-Z6i3: older human labels that newer human labels have overruled, without the human naming the scope.
+    A label counts as outvoted only if the active head routed it right, the candidate now routes it to class b, and at
+    least `need` of its `k` nearest labelled neighbours in the fixed word channel are NEWER labels of class b (rank, not a
+    similarity threshold: Needle cosine cannot separate the question kinds, Z6b). Oldest first, capped per route."""
+    out=np.zeros(len(y),dtype=bool);oldp=(x@w).argmax(1);newp=(x@new).argmax(1)
+    u=words/np.maximum(np.linalg.norm(words,axis=1,keepdims=True),1e-12);sim=u@u.T;np.fill_diagonal(sim,-np.inf)
+    for i in np.flatnonzero((oldp==y)&(newp!=y)):
+        nb=np.argsort(-sim[i])[:k];b=newp[i]
+        if int(np.sum((nb>i)&(y[nb]==b)))>=need:out[i]=True
+    for c in range(4):
+        ids=np.flatnonzero(out&(y==c));cap=int(np.sum(y==c)*OUTVOTED_CAP)
+        out[ids[cap:]]=False  # ids ascend = oldest first
+    return out
+
 def train(inp,out):
     started=time.monotonic();cfg=inp['config'];words=inp.get('words');x=features(inp['embeddings'],words)
     y=exact_route_labels(inp['labels'],'route')
@@ -76,14 +97,19 @@ def train(inp,out):
         if wdim and not old_wdim and w.shape==(x.shape[1]-wdim,4):w,trace=widen(w,trace,wdim,float(np.mean(np.abs(x[:,-1-wdim:-1]))))
         if w.shape!=(x.shape[1],4) or trace.shape!=(x.shape[1],):raise ValueError('Checkpoint dimension')
     ti,vi=split(y);before=objective(x,y,w)[0];err=gradient_check(x[ti],y[ti],w);stats={}
-    xt,yt,sw=x[ti],y[ti],None;anchor=inp.get('anchors');xa=None
+    half_life=int(inp.get('recency_half_life') or 0) if wdim else 0
+    rec=recency_weights(len(y),half_life);xt,yt,sw=x[ti],y[ti],(rec[ti]/rec[ti].mean() if half_life else None);anchor=inp.get('anchors');xa=None
     if anchor and inp.get('active_checkpoint'):
         # WP-Z6i: recent unlabelled questions outside the human rule's words keep the active head's own route as a soft
         # target (learning without forgetting): the new rule is learned, its neighbours are held where they were.
         xa=features(anchor['embeddings'],anchor['words']);ya=(xa@w).argmax(1)
-        xt=np.vstack([xt,xa]);yt=np.concatenate([yt,ya]);sw=np.concatenate([np.ones(len(ti)),np.full(len(xa),float(anchor.get('weight',.5)))])
+        xt=np.vstack([xt,xa]);yt=np.concatenate([yt,ya]);sw=np.concatenate([np.ones(len(ti)) if sw is None else sw,np.full(len(xa),float(anchor.get('weight',.5)))])
     new,tr=optimize(xt,yt,w,trace,cfg,stats,sw);repeat,_=optimize(xt,yt,w,trace,cfg,sw=sw)
     finite=bool(np.isfinite(new).all());deterministic=bool(np.array_equal(new,repeat));held={};eligible=False;retained=False
+    keep=np.ones(len(y),dtype=bool)
+    if half_life and inp.get('gate')=='relative' and inp.get('active_checkpoint'):
+        keep=~outvoted(x,y,w,new,np.asarray(words,dtype=np.float64))
+        vi=vi[keep[vi]]
     if len(vi):
         oldloss,_,oldp=objective(x[vi],y[vi],w);newloss,_,newp=objective(x[vi],y[vi],new)
         perclass={str(k):{'before':float(np.mean(oldp.argmax(1)[y[vi]==k]==k)),'after':float(np.mean(newp.argmax(1)[y[vi]==k]==k))} for k in set(y[vi].tolist())}
@@ -91,8 +117,9 @@ def train(inp,out):
         held={'n':len(vi),'loss_before':oldloss,'loss_after':newloss,'accuracy':accuracy,'scaffold_accuracy':baseline,'per_class':perclass}
         retained=all(v['after']>=v['before']-cfg['retention_max_delta'] for v in perclass.values())
         if wdim:  # WP-Z6i: a word-channel head may also not lose any human-labelled item the active head routes right (train+valid)
-            oldall=x@w;newall=x@new;flipped=int(np.sum((oldall.argmax(1)==y)&(newall.argmax(1)!=y)))
+            oldall=x@w;newall=x@new;flipped=int(np.sum((oldall.argmax(1)==y)&(newall.argmax(1)!=y)&keep))
             held['known_items_lost']=flipped;retained=retained and flipped==0
+            if not keep.all():held['outvoted']=int((~keep).sum());held['recency_half_life']=half_life
             if xa is not None:  # reported, not gated: anchors that still moved into a rule route despite the soft target
                 ks=anchor.get('rule_routes',[]);old_a=(xa@w).argmax(1);new_a=(xa@new).argmax(1)
                 held['anchors']=len(xa);held['anchors_changed']=int(np.sum(old_a!=new_a));held['anchors_moved_into_rule_route']=int(np.sum((old_a!=new_a)&np.isin(new_a,ks)))
@@ -101,7 +128,7 @@ def train(inp,out):
             # WP-Z6i2: the validation quarter holds 1-4 questions per route, so a fixed 75 % bar mostly measures which old
             # questions landed there (Z6i seed 83). A successor head must instead beat the active head on the same
             # validation questions, lose no known human-labelled question, and route strictly more of them right.
-            old_val=float(np.mean(oldp.argmax(1)==y[vi]));known_before=float(np.mean(oldall.argmax(1)==y));known_after=float(np.mean(newall.argmax(1)==y))
+            old_val=float(np.mean(oldp.argmax(1)==y[vi]));known_before=float(np.mean((oldall.argmax(1)==y)[keep]));known_after=float(np.mean((newall.argmax(1)==y)[keep]))
             held.update(gate='relative',active_accuracy=old_val,known_accuracy_before=known_before,known_accuracy_after=known_after)
             hurdle=accuracy>=old_val and known_after>known_before
         eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and hurdle and accuracy>=baseline and retained

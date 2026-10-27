@@ -53,6 +53,17 @@ class RouteWordsTest(unittest.TestCase):
             self.assertAlmostEqual((LW.objective(x, y, a, sw)[0]-LW.objective(x, y, b, sw)[0])/(2*eps), g[i, j], places=6)
         self.assertAlmostEqual(LW.objective(x, y, w, np.ones(9))[0], LW.objective(x, y, w)[0], places=12)
 
+    def test_recency_weights_and_outvoted_need_newer_neighbours(self):
+        r = LW.recency_weights(4, 1); self.assertAlmostEqual(r.mean(), 1.); self.assertTrue(np.all(np.diff(r) > 0))
+        np.testing.assert_array_equal(LW.recency_weights(3, 0), np.ones(3))
+        words = np.array([RW.vector(t) for t in ['Hälfte vom Apfel', 'Rechne Apfel mal drei', 'Hälfte vom Apfel bitte', 'Hälfte vom Apfel jetzt', 'Rechne Birne mal drei', 'Rechne Birne mal vier']])
+        y = np.array([1, 1, 0, 0, 1, 1]); x = np.eye(6)
+        w = np.zeros((6, 4)); w[np.arange(6), y] = 1  # active head: every label right
+        new = np.zeros((6, 4)); new[np.arange(6), [0, 0, 0, 0, 1, 1]] = 1  # candidate: old 'Hälfte' labels now class 0
+        out = LW.outvoted(x, y, w, new, words, k=2, need=2)
+        self.assertEqual(out.tolist(), [True, False, False, False, False, False])  # item 1's nearest neighbours are the class-1 'Rechne' labels
+        self.assertFalse(LW.outvoted(x, y, w, w, words).any())  # nothing lost, nothing outvoted
+
     def test_relative_gate_compares_with_the_active_head(self):
         rng = np.random.default_rng(3); texts = ['Frage %d %s' % (i, w) for i, w in enumerate(['hallo', 'rechne', 'kern', 'vergleiche'] * 6)]
         emb = rng.normal(size=(len(texts), 6)).tolist(); y = [i % 4 for i in range(len(texts))]; wv = [RW.vector(t) for t in texts]

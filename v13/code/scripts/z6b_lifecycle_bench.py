@@ -40,9 +40,12 @@ TEMPLATES = {
     'both':   ['Welche Vor- und Nachteile haben {a} und {a2}?', 'Vergleiche {a} mit {a2}.', 'Was spricht für {a}, was für {a2}?', 'Wäge {a} gegen {a2} ab.']}
 
 
+N_EXTRA = [13, 26, 44, 52, 66, 78, 90, 102, 112, 132, 150, 170, 190, 210, 260, 280, 320, 360, 400, 480]
+
+
 def make(kind, rng, used):
-    for _ in range(500):
-        t = rng.choice(TEMPLATES[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'], 2)
+    for attempt in range(1000):  # WP-Z6i3: after 500 misses draw numbers from N_EXTRA too (seeds that never got there are unchanged)
+        t = rng.choice(TEMPLATES[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'] if attempt < 500 else FILL['n'] + N_EXTRA, 2)
         s = t.format(g=rng.choice(FILL['g']), name=rng.choice(FILL['name']), n=n, n2=n2, a=a, a2=a2, thing=rng.choice(FILL['thing']), need=rng.choice(FILL['need']))
         if s not in used: used.add(s); return s
     raise RuntimeError('paraphrase space exhausted for ' + kind)
@@ -82,6 +85,7 @@ def run_arm(installed, policy, seed):
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h); r.cfg['route_head_words'] = words; r.cfg['route_head_gate'] = 'relative' if relative else 'fixed75'
+        r.cfg['route_recency_half_life'] = 16 if 'rec' in flags else 0  # WP-Z6i3: newer corrections count more (half-life as WP-KL1)
         cache = {}
         def emb(text):
             if text not in cache:
@@ -295,6 +299,19 @@ def criteria_z6i2(s):
     return c, 'Z6I2_PASS' if all(c.values()) else 'Z6I2_FAIL'
 
 
+Z6I3_ARMS, Z6I3_CONTROL = ('fixed+words+rel+rec', 'adaptive+words+rel+rec'), 'fixed+words+rel'
+
+
+def criteria_z6i3(s):
+    a = [s[k] for k in Z6I3_ARMS]; k = s[Z6I3_CONTROL]
+    c = {'R1_head_half_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'R2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'R3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'R4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'R5_control_without_recency_lt_50pct': (k['final_half_items'] or 0) < .5}
+    return c, 'Z6I3_PASS' if all(c.values()) else 'Z6I3_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -309,6 +326,8 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if set(Z6I3_ARMS) | {Z6I3_CONTROL} <= set(scores):
+        doc['criteria_z6i3'], doc['verdict_z6i3'] = criteria_z6i3(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i3-corrections-only/PREREG.md'
     if {Z6I2_ADAPTIVE, Z6I2_FIXED, Z6I_CONTROL} <= set(scores):
         doc['criteria_z6i2'], doc['verdict_z6i2'] = criteria_z6i2(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i2-relative-gate/PREREG.md'
     if set(Z6I_ARMS) | {Z6I_CONTROL} <= set(scores):
@@ -316,7 +335,7 @@ def main(argv=None):
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'verdict_z6i2', 'criteria_z6i2')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'verdict_z6i2', 'criteria_z6i2', 'verdict_z6i3', 'criteria_z6i3')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

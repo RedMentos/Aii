@@ -839,6 +839,8 @@ class Learner:
                 from .route_words import vector,REVISION
                 request['words']=[vector(text) for text,_ in data];manifest['route_words']=REVISION
                 request['gate']=self.r.cfg.get('route_head_gate','fixed75');manifest['route_head_gate']=request['gate']
+                request['recency_half_life']=int(self.r.cfg.get('route_recency_half_life',0))  # WP-Z6i3: newer corrections count more
+                if request['recency_half_life']:manifest['route_recency_half_life']=request['recency_half_life']
                 anchors=self.rule_anchors({text for text,_ in data},deadline)
                 if anchors:request['anchors']=anchors;manifest['rule_anchors']=len(anchors['embeddings'])
             inp=folder/'input.json';atomic_write(inp,dumps(request))
