@@ -1,0 +1,101 @@
+name: V13 World-JEPA action identification from new Linux file outcomes
+on:
+  push:
+    branches: [codex/automation11-world-action-identification-20261027]
+    paths:
+      - '.github/workflows/world-action-identification.yml'
+      - 'v13/code/scripts/world_jepa_action_identification.py'
+      - 'v13/code/tests/test_world_jepa_action_identification.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-action-identification/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-world-action-id
+  cancel-in-progress: false
+jobs:
+  new-seeds:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 40
+          ref: ${{ github.sha }}
+      - name: Install pinned isolated NumPy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldfresh"
+          timeout 240s "$RUNNER_TEMP/worldfresh/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Fetch and verify BOTH frozen raw Actions ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/taskproof"
+          gh api -H "Accept: application/vnd.github+json" /repos/RedMentos/Aii/actions/artifacts/12712155096/zip > "$RUNNER_TEMP/original-world.zip"
+          gh api -H "Accept: application/vnd.github+json" /repos/RedMentos/Aii/actions/artifacts/12712422347/zip > "$RUNNER_TEMP/budget-world.zip"
+          sha256sum "$RUNNER_TEMP/original-world.zip" "$RUNNER_TEMP/budget-world.zip" > "$RUNNER_TEMP/taskproof/FROZEN_ZIPS_SHA256.txt"
+          echo 'f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8  '"$RUNNER_TEMP/original-world.zip" | sha256sum -c -
+          echo '8413b6abcdd2651c0e3346f348f0372b13dc4a407199e29a7e24cb9c1f23979a  '"$RUNNER_TEMP/budget-world.zip" | sha256sum -c -
+          "$RUNNER_TEMP/worldfresh/bin/python" - <<'PY'
+          import os, pathlib, zipfile, stat
+          temp=pathlib.Path(os.environ['RUNNER_TEMP'])
+          for name,allowed in [('original-world', 'closed'), ('budget-world','trained')]:
+              with zipfile.ZipFile(temp/(name+'.zip')) as z:
+                  if z.testzip() is not None: raise ValueError('CRC mismatch')
+                  infos=z.infolist()
+                  if len(infos)>200 or sum(i.file_size for i in infos)>30*1024*1024:
+                      raise ValueError('ZIP size/count cap')
+                  seen=set()
+                  for i in infos:
+                      parts=pathlib.PurePosixPath(i.filename).parts
+                      if (not parts or '..' in parts or pathlib.PurePosixPath(i.filename).is_absolute()
+                          or (parts[0]!=allowed and len(parts)!=1)
+                          or '\\' in i.filename or i.filename in seen
+                          or stat.S_ISLNK(i.external_attr>>16)):
+                          raise ValueError('Unsafe ZIP path')
+                      seen.add(i.filename)
+                  z.extractall(temp/name)
+          print('BOTH_FROZEN_ZIPS_SHA_CRC_PATHS_OK')
+          PY
+      - name: Run new Linux file worlds, 31-action ranking, counterexamples and restart verifier
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/taskproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/taskproof/HEAD.txt"
+          sha256sum v13/code/scripts/world_jepa_action_identification.py v13/code/tests/test_world_jepa_action_identification.py v13/code/scripts/world_jepa_budget_ablation.py > "$RUNNER_TEMP/taskproof/SOURCE_SHA256.txt"
+          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/original-world/closed" V13_FROZEN_BUDGET_ROOT="$RUNNER_TEMP/budget-world/trained" V13_TASK_OUTPUT_ROOT="$RUNNER_TEMP/taskproof/task" PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/worldfresh/bin/python" -m unittest -v tests.test_world_jepa_budget_fresh_holdout) > "$RUNNER_TEMP/taskproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/taskproof/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 300s "$RUNNER_TEMP/worldfresh/bin/python" scripts/world_jepa_action_identification.py --original-root "$RUNNER_TEMP/original-world/closed" --budget-root "$RUNNER_TEMP/budget-world/trained" --output-dir "$RUNNER_TEMP/taskproof/task" --verify-only) > "$RUNNER_TEMP/taskproof/VERIFY_RAW.json" 2>&1
+          echo "$?" > "$RUNNER_TEMP/taskproof/VERIFY_EXIT.txt"
+          "$RUNNER_TEMP/worldfresh/bin/python" -m compileall -q v13/code/scripts/world_jepa_action_identification.py v13/code/tests/test_world_jepa_action_identification.py > "$RUNNER_TEMP/taskproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/taskproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldfresh/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 21342a61188f79d7d76870b22b3b3a013fe02829 --head HEAD > "$RUNNER_TEMP/taskproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/taskproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw new-world evidence, failures and metrics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-action-id-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/taskproof/
+          if-no-files-found: error
+      - name: Enforce all exits
+        run: |
+          set -euo pipefail
+          for n in UNIT VERIFY COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/taskproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/taskproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          tail -18 "$RUNNER_TEMP/taskproof/UNIT_RAW.log"
+          cat "$RUNNER_TEMP/taskproof/VERIFY_RAW.json"
