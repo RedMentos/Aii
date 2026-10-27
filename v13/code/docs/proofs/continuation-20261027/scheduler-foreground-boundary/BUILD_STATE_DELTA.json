@@ -39,7 +39,18 @@
   },
   "full_suite": {
     "source_commit": "f9731f7cdf79bb59ae01093a3c6c682b63757231",
-    "status": "PENDING_AT_CHECKPOINT"
+    "actions": 40533054552,
+    "status": "SOFTWARE_PASS_1906_OK_1_SKIPPED",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12746768324,
+    "zip_sha256": "3f6d20890fb934044b5f1738c25055d5261bb3e9419fd9196d3b5767fa46e561",
+    "private_backup_verified": true
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -53,6 +64,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect exact Actions full-suite for f9731f7, verify raw ZIP exits and private byte-exact backup; independently review before merge; pursue World/Self or learning package.",
+  "next_command": "Independent review PR #739, then World-model heldout support child PR #740 exact-head CI.",
   "note": "Additive branch delta; no shared BUILD_STATE overwrite; no main merge."
 }
