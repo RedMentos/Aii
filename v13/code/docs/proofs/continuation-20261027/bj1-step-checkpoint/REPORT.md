@@ -23,7 +23,7 @@ The independent registered BP2b seed41 legacy native attempt, Actions run `40506
 
 ## Evidence and limitations
 - Local isolated Torch-only helper tests: 7/7 PASS (container, synthetic).
-- GitHub Actions `40514361736` at `7751c9f29a2a27f819a955962a3ab295a0a5e2e2`: **8/8 PASS** (7 helper + 1 actual tiny synthetic trainer), compile PASS, privacy CLEAN, `git diff --check` PASS. A newer exact-head run is required for later guards.
+- GitHub Actions `40514361736` at `7751c9f29a2a27f819a955962a3ab295a0a5e2e2`: **8/8 PASS** (7 helper + 1 tiny synthetic trainer). Latest code Actions `40514555640` at `4f62e9dedc4e549d46e6847ab63089c26884c10b`: **9/9 PASS** (8 helper + 1 actual tiny synthetic trainer), compile PASS, privacy CLEAN, `git diff --check` PASS. Documentation-only commits after that do not change tested code.
 - Not a native model result. This does not show that the original 35-minute attempt had a resumable completed step or that an optimized kernel would be compatible. The candidate is not enabled for an active registered cohort.
 - `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, `jepa_weight=0` in the registered BP2b cohort, Age authority 0, Redmi unmeasured, complete V13 false.
 
