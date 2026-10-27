@@ -27,7 +27,8 @@
     "all_raw_exits": 0,
     "privacy": "CLEAN",
     "crc": "PASS",
-    "harness_blob": "7a6fe2d5d2c3e22388437f40f5cc775428520909"
+    "harness_blob": "7a6fe2d5d2c3e22388437f40f5cc775428520909",
+    "extended_regression_commit": "2270146a20ab337ad3061b6a613bc40b1cf770e7"
   },
   "private_backup": "/V13-Checkpoints/2026-10-27/Automation11V-World-Action-Index/",
   "backup_byte_identical": true,
@@ -47,8 +48,18 @@
   },
   "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_*.py' -q",
   "open_questions": [
-    "Independent full-suite review before integration",
-    "No runtime World-JEPA authority; no Redmi"
+    "Independent cross-agent review before integration",
+    "No native World-JEPA or Redmi evidence; only scorer integrity fixed"
   ],
-  "stop_reason": "NONE_CHECKPOINT_ONLY"
+  "stop_reason": "NONE_CHECKPOINT_ONLY",
+  "full_software_suite": {
+    "run_id": 40558868194,
+    "tests": "1933 OK (1 skipped)",
+    "all_raw_exits": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12759701132,
+    "zip_sha256": "464865c844dcf9be48c5e7b842f9835c1d5b4bdf756647dd8266773e5ce3e24c",
+    "exact_ci_checkout": "4f855102a23b4cf60248850dce30b0545bb49abd",
+    "private_backup_byte_identical": true
+  }
 }
