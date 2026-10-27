@@ -96,6 +96,9 @@ class EventScheduler:
         """Background dispatches since the last accepted user turn."""
         row=self.s.one('SELECT MAX(accepted_at) AS t FROM accepted_turns');last=row['t'] if row and row['t'] else 0.
         st,_=self._load()
+        # Count actual dispatches, not creation of a queued event before the
+        # latest user turn. Legacy retired entries lack 'dispatched' and can
+        # only fall back to 'created'; that historical limitation is retained.
         return sum(1 for e in st['events']+st['history'] if e['origin']!='USER' and e.get('action') not in (None,'notice')
                    and e['status'] in {'DISPATCHED','DONE','FAILED'}
                    and (e.get('dispatched') if e.get('dispatched') is not None else e['created'])>=last)
