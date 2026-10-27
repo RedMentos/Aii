@@ -19,6 +19,9 @@ class RealDataPathIntegrityTests(unittest.TestCase):
         for rel in ("docs/proofs", "docs/canon", "tests", "v13"):
             (self.app / rel).mkdir(parents=True)
         (self.app.parent / "bench-results").mkdir()
+        (self.app / "specs").mkdir()
+        (self.app / "specs/gate-graph.json").write_text(
+            json.dumps({"criteria": gates.spec()["criteria"]}))
         self.patch = mock.patch.object(gates, "APP", self.app)
         self.patch.start()
         self.addCleanup(self.patch.stop)
