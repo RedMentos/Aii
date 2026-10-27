@@ -1,0 +1,144 @@
+name: V13 BP2b Linux-native seed41 legacy one-arm registered attempt
+on:
+  push:
+    branches: [assistant/v13-bp2b-native-seed41-legacy-20261027]
+    paths:
+      - '.github/workflows/bp2b-native-seed41-legacy.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-native-seed41-legacy-isolated
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '4'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Capture full source download and pinned hash verification
+        run: |
+          set +e
+          master="$RUNNER_TEMP/bp2b-native-master"
+          evidence="$RUNNER_TEMP/bp2b-native-evidence"
+          mkdir -p "$master" "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/bp2b_native_runner.py > "$evidence/RUNNER_BLOB.txt"
+          git hash-object v13/code/specs/bp2b_master_metadata.json > "$evidence/PIN_BLOB.txt"
+          (
+            set -euo pipefail
+            df -B1 "$RUNNER_TEMP"
+            cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+            free -b
+            base="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/resolve/8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf"
+            for name in config.json generation_config.json tokenizer.json tokenizer_config.json special_tokens_map.json chat_template.jinja LICENSE; do
+              curl --silent --show-error --fail --location --retry 2 --retry-delay 3 --connect-timeout 30 --max-time 180 --max-filesize 10000000 \
+                "$base/$name?download=true" -o "$master/$name.partial"
+              mv "$master/$name.partial" "$master/$name"
+            done
+            curl --silent --show-error --fail --location --retry 2 --retry-delay 3 --connect-timeout 30 --max-time 1000 --max-filesize 3000000000 \
+              "$base/model.safetensors?download=true" -o "$master/model.safetensors.partial"
+            mv "$master/model.safetensors.partial" "$master/model.safetensors"
+            PYTHONPATH=v13/code python3 v13/code/scripts/bp2b_master_preflight.py --master-dir "$master" --out "$evidence/MASTER_PREFLIGHT.json"
+            stat -c '%n %s' "$master/model.safetensors"
+          ) > "$evidence/SOURCE_RAW.log" 2>&1
+          echo "$?" > "$evidence/SOURCE_EXIT.txt"
+          exit 0
+      - name: Isolated exact-version native CPU dependencies and memory guard
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/bp2b-native-evidence"
+          if [ "$(cat "$evidence/SOURCE_EXIT.txt")" = 0 ]; then
+            (
+              set -euo pipefail
+              available="$(awk '/MemAvailable:/ {print $2*1024}' /proc/meminfo)"
+              limit="$(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo max)"
+              echo "MemAvailable_bytes=$available cgroup_memory_max=$limit"
+              threshold=12884901888
+              if [ "$available" -lt "$threshold" ]; then echo 'INSUFFICIENT_AVAILABLE_MEMORY'; exit 77; fi
+              if [ "$limit" != max ] && [ "$limit" -lt "$threshold" ]; then echo 'INSUFFICIENT_CGROUP_MEMORY'; exit 77; fi
+              python3 -m venv "$RUNNER_TEMP/bp2b-native-venv"
+              py="$RUNNER_TEMP/bp2b-native-venv/bin/python"
+              "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+              "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'peft==0.21.2' 'gguf==0.19.0'
+              "$py" -m pip check
+              "$py" -m pip freeze > "$evidence/PIP_FREEZE.txt"
+              PYTHONPATH=v13/code "$py" - <<'PY'
+          import os, torch, transformers, peft, gguf
+          from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
+          from v13.body_jepa import BodyJepaTrainer
+          master = os.path.join(os.environ['RUNNER_TEMP'], 'bp2b-native-master')
+          cfg = AutoConfig.from_pretrained(master, local_files_only=True)
+          tok = AutoTokenizer.from_pretrained(master, local_files_only=True)
+          prompt = tok.apply_chat_template([{'role':'user','content':'BP2B_ENV_PROBE'}], add_generation_prompt=True, tokenize=False)
+          assert cfg.model_type == 'lfm2' and 'BP2B_ENV_PROBE' in prompt
+          assert hasattr(gguf.GGUFType, 'ADAPTER') and hasattr(gguf.Keys.Adapter, 'LORA_ALPHA')
+          assert any(name == 'lfm2' for name in gguf.MODEL_ARCH_NAMES.values())
+          assert AutoModelForCausalLM._model_mapping[type(cfg)] is not None
+          print('torch',torch.__version__,'transformers',transformers.__version__,'peft',peft.__version__,'gguf',gguf.__file__)
+          print('BodyJepaTrainer',BodyJepaTrainer.method, 'HF_METADATA_AND_GGUF_API_OK')
+          PY
+            ) > "$evidence/ENV_RAW.log" 2>&1
+            echo "$?" > "$evidence/ENV_EXIT.txt"
+          else
+            echo 'SKIPPED: pinned public master verification failed' > "$evidence/ENV_RAW.log"
+            echo 99 > "$evidence/ENV_EXIT.txt"
+          fi
+          exit 0
+      - name: Run exactly one registered native arm, retain original failure
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/bp2b-native-evidence"
+          if [ "$(cat "$evidence/ENV_EXIT.txt")" = 0 ]; then
+            (
+              set -euo pipefail
+              cd v13/code
+              timeout --signal=TERM --kill-after=15s 35m \
+                env PYTHONPATH=. "$RUNNER_TEMP/bp2b-native-venv/bin/python" scripts/bp2b_native_runner.py \
+                  --seed 41 --arm legacy --out "$RUNNER_TEMP/bp2b-native-attempts" \
+                  --master-dir "$RUNNER_TEMP/bp2b-native-master" --attempt gh4050-seed41-legacy --execute-native
+            ) > "$evidence/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$evidence/NATIVE_EXIT.txt"
+            find "$RUNNER_TEMP/bp2b-native-attempts" -type f \( -name 'RESULT.json' -o -name 'FAILED.json' -o -name 'PLAN.json' -o -name 'PREFLIGHT.json' -o -name 'score_receipt.json' \) -print -exec cp --parents {} "$evidence/" \; 2>/dev/null
+          else
+            echo 'SKIPPED: native environment failed; no model run claimed' > "$evidence/NATIVE_RAW.log"
+            echo 99 > "$evidence/NATIVE_EXIT.txt"
+          fi
+          free -b > "$evidence/RESOURCE_AFTER.txt" 2>&1
+          exit 0
+      - name: Public privacy boundary and original evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/bp2b-native-evidence"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ef47edd0d9c69c3302af1681e731c9ec42cae059 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-native-seed41-legacy-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-native-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native result, no promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/bp2b-native-evidence"
+          for name in SOURCE ENV NATIVE PRIVACY; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence preserved"
+              tail -60 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo "BP2B_LINUX_NATIVE_ONE_ARM_CANDIDATE_ONLY_NO_AGE_PROMOTION"
