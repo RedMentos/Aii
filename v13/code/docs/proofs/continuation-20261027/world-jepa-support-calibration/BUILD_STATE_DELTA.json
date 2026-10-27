@@ -1,0 +1,47 @@
+{
+  "schema": "v13.review_only.build_state_delta.v1",
+  "date_utc": "2026-10-27",
+  "owner": "assistant/v13-world-jepa-support-calibration-20261027",
+  "base_branch": "assistant/v13-world-jepa-heldout-20261027",
+  "base_sha": "bfeee06983a9a3bf7a00fd525c036c234b429fb0",
+  "parent_pr": 749,
+  "pr": 751,
+  "prereg_commit": "7072861f8e83543656820a02a8f7d748d5f24ff7",
+  "prereg_verified_remote": true,
+  "model_source_path": "v13/code/v13/world_jepa.py",
+  "model_source_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "new_paths": [
+    "v13/code/docs/proofs/continuation-20261027/world-jepa-support-calibration/PREREG.md",
+    "v13/code/scripts/world_jepa_support_calibration.py",
+    "v13/code/tests/test_world_jepa_support_calibration.py",
+    ".github/workflows/world-jepa-support-calibration.yml"
+  ],
+  "software_tests": "PENDING_REMOTE_CI",
+  "synthetic_measurement": "PENDING_REMOTE_CI",
+  "raw_receipt": "PENDING",
+  "local_native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "safety": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "world_jepa_runtime_wired": false,
+    "whole_system_complete": false
+  },
+  "next_commands": [
+    "cd v13/code && python -m unittest -v tests.test_world_jepa tests.test_world_jepa_coverage_integrity tests.test_world_jepa_heldout_ablation tests.test_world_jepa_support_calibration",
+    "cd v13/code && python scripts/world_jepa_support_calibration.py --run --out /tmp/world-support-calibration.json",
+    "python3 v13/code/scripts/public_repo_privacy_scan.py --base bfeee06983a9a3bf7a00fd525c036c234b429fb0 --head HEAD"
+  ],
+  "open_questions": [
+    "Check CI trigger and exact raw exit artifact; no PASS before evidence.",
+    "Inspect ECE and rank correlation without interpreting heuristic confidence as probability.",
+    "Independent review and complete suite before integration.",
+    "World-JEPA remains experimental SHADOW; real environment and Redmi unavailable."
+  ],
+  "stop_reason": "NONE_CHECKPOINT_ONLY"
+}
