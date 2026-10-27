@@ -1,5 +1,12 @@
 name: V13 World-JEPA registered support and OOD calibration
 on:
+  pull_request:
+    branches: [assistant/v13-world-jepa-heldout-20261027]
+    paths:
+      - '.github/workflows/world-jepa-support-calibration.yml'
+      - 'v13/code/scripts/world_jepa_support_calibration.py'
+      - 'v13/code/tests/test_world_jepa_support_calibration.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-jepa-support-calibration/**'
   push:
     branches: [assistant/v13-world-jepa-support-calibration-20261027]
     paths:
