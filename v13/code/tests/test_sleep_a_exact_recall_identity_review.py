@@ -20,6 +20,7 @@ class SleepAExactRecallIdentityReview(unittest.TestCase):
         self.addCleanup(self.store.close)
         self.session = self.store.new_session()
         mem = Memory(self.store, self.cfg)
+        self.memory = mem  # real F1/F5 authority verifier; only recall is stubbed below
         self.first = self.store.event(self.session, 'Projekt Alpha Budget?')
         self.target_id = mem.feedback(self.first['event_id'], 'fact', '120 Euro')
         self.second = self.store.event(self.session, 'Projekt Beta Budget?')
@@ -27,7 +28,10 @@ class SleepAExactRecallIdentityReview(unittest.TestCase):
         self.assertNotEqual(self.target_id, self.other_id)
 
     def probe_with(self, rows):
-        fake = SimpleNamespace(recall=lambda query, session: rows)
+        fake = SimpleNamespace(
+            recall=lambda query, session: rows,
+            _verified_rows=self.memory._verified_rows,
+        )
         cycle = SleepCycle(self.store, self.cfg, fake, home=self.home)
         return cycle._probe({'event_id': self.first['event_id']})
 
