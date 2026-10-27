@@ -1,0 +1,90 @@
+name: V13 World-JEPA matched-action focused software
+on:
+  push:
+    branches: [assistant/v13-world-matched-action-cohort-20261027]
+    paths:
+      - '.github/workflows/world-matched-action-focused.yml'
+      - 'v13/code/scripts/world_jepa_matched_action_cohort.py'
+      - 'v13/code/tests/test_world_jepa_matched_action_cohort.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-matched-action-focused
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen matched-action software and hash receipt
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-matched-focused"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COHORT_BLOB.txt"
+          git hash-object v13/code/docs/coordination/WORLD_MATCHED_ACTION_PREREG_20261027.md > "$evidence/PREREG_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git merge-base --is-ancestor d00c35b4daddac7f30cadb9a1489f61c535872dc HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-matched-focused-venv"
+          py="$RUNNER_TEMP/world-matched-focused-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_matched_action_cohort tests.test_world_jepa_action_permutation_control tests.test_world_jepa_fair_baseline
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          (
+            cd v13/code
+            PYTHONPATH=. "$py" - <<'PY'
+          from scripts import world_jepa_matched_action_cohort as m
+          from scripts import world_jepa_digital_shadow as b
+          rows=m.fixture()
+          d=b.make_dataset(rows)
+          tr,te=m.split()
+          ids=[r['action_id'] for r in rows]
+          print('SOURCE_SHA256',d['source_sha256'])
+          print('TRAIN_SHA256',b._digest([ids[int(i)] for i in tr]))
+          print('HELDOUT_SHA256',b._digest([ids[int(i)] for i in te]))
+          PY
+          ) > "$evidence/COHORT_HASHES.txt" 2> "$evidence/COHORT_HASHES_RAW.log"
+          echo "$?" > "$evidence/COHORT_HASHES_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_matched_action_cohort.py v13/code/tests/test_world_jepa_matched_action_cohort.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3bf1b9a06b2eba573635880df67a5cddba650850 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 3bf1b9a06b2eba573635880df67a5cddba650850 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-matched-focused-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-matched-focused/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-matched-focused"
+          for name in FROZEN PREREG INSTALL UNIT COHORT_HASHES COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_MATCHED_ACTION_SYNTHETIC_ONLY_NO_JEPA_PROMOTION'
