@@ -30,7 +30,7 @@ class SlotWorldJEPACheckpoint(unittest.TestCase):
     def test_prediction_confidence_and_error_are_identical_after_reload(self):
         saved = self.model.save(self.path, provenance=PROV)
         self.assertEqual(saved['sha256'], hashlib.sha256(self.path.read_bytes()).hexdigest())
-        new = SlotWorldJEPA.load(self.path, expected_provenance=PROV)
+        new = SlotWorldJEPA.load(self.path, expected_provenance=PROV, expected_sha256=saved['sha256'])
         for a, b in ((self.model.predict(self.X[:8], self.A[:8]),
                       new.predict(self.X[:8], self.A[:8])),
                      (self.model.confidence(self.X[:8], self.A[:8])[0],
@@ -45,14 +45,14 @@ class SlotWorldJEPACheckpoint(unittest.TestCase):
                          self.model.confidence(self.X[:8], self.A[:8])[1])
 
     def test_wrong_provenance_and_corrupted_bytes_fail_closed(self):
-        self.model.save(self.path, provenance=PROV)
+        saved = self.model.save(self.path, provenance=PROV)
         with self.assertRaises(ValueError):
-            SlotWorldJEPA.load(self.path, expected_provenance={'cohort_sha256': 'x'*64, 'source_sha256': 'b'*64})
+            SlotWorldJEPA.load(self.path, expected_provenance={'cohort_sha256': 'x'*64, 'source_sha256': 'b'*64}, expected_sha256=saved['sha256'])
         raw = bytearray(self.path.read_bytes())
         raw[len(raw)//2] ^= 0xff
         self.path.write_bytes(raw)
         with self.assertRaises((ValueError, OSError, EOFError)):
-            SlotWorldJEPA.load(self.path, expected_provenance=PROV)
+            SlotWorldJEPA.load(self.path, expected_provenance=PROV, expected_sha256=saved['sha256'])
 
     def test_untrained_save_and_unbound_load_refused(self):
         with self.assertRaises(ValueError):
