@@ -1,0 +1,52 @@
+name: V13 BP1 source-bound near-miss retention scorer software review
+on:
+  push:
+    branches: [codex/automation11-bp1-nearmiss-scorer-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-nearmiss-score.yml'
+      - 'v13/code/scripts/bp1_qad_nearmiss_score.py'
+      - 'v13/code/tests/test_bp1_qad_nearmiss_score.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-nearmiss-scorer/PREREG.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-nearmiss-score-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Source-bound counterexamples, compile, privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-nearmiss-score"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-nearmiss-score/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_nearmiss_score.py v13/code/tests/test_bp1_qad_nearmiss_score.py v13/code/docs/proofs/continuation-20261027/bp1-qad-nearmiss-scorer/PREREG.md > "$RUNNER_TEMP/bp1-nearmiss-score/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_nearmiss_retention tests.test_bp1_qad_nearmiss_score) > "$RUNNER_TEMP/bp1-nearmiss-score/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss-score/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_nearmiss_score.py v13/code/tests/test_bp1_qad_nearmiss_score.py > "$RUNNER_TEMP/bp1-nearmiss-score/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss-score/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e894d7670cf56549d1fffed6441ea5e14ab05541 --head HEAD > "$RUNNER_TEMP/bp1-nearmiss-score/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss-score/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-nearmiss-score-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-nearmiss-score/
+          if-no-files-found: error
+      - name: Enforce all software exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-nearmiss-score/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp1-nearmiss-score/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP1_NEARMISS_RETENTION_SCORER_SOFTWARE_ONLY_NO_NATIVE_UTILITY"
