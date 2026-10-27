@@ -1,4 +1,5 @@
 """Independent C1 task-origin RED/GREEN: source hash alone is not authority."""
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -71,6 +72,8 @@ class C1TaskOriginBindingReview(unittest.TestCase):
 
     def test_literal_clear_sentinel_can_be_a_real_pinned_task(self):
         self.exec.task(self.session, 'CLEAR_ACTIVE_TASK', clear=False)
+        decision = self.store.one("SELECT payload FROM packets WHERE kind='HumanDecision' ORDER BY rowid DESC LIMIT 1")
+        self.assertEqual(json.loads(decision['payload'])['task_operation'], 'SET')
         self.assertEqual(self.exec.view(self.session)['active_task']['exact_task'],
                          'CLEAR_ACTIVE_TASK')
         next_event = self.store.event(self.session, 'Another user turn')
@@ -78,6 +81,8 @@ class C1TaskOriginBindingReview(unittest.TestCase):
         self.assertEqual(self.exec.view(self.session)['active_task']['exact_task'],
                          'CLEAR_ACTIVE_TASK')
         self.exec.task(self.session, clear=True)
+        decision = self.store.one("SELECT payload FROM packets WHERE kind='HumanDecision' ORDER BY rowid DESC LIMIT 1")
+        self.assertEqual(json.loads(decision['payload'])['task_operation'], 'CLEAR')
         self.assertIsNone(self.exec.view(self.session)['active_task'])
 
     def test_valid_current_user_and_latest_operator_task_survive(self):
