@@ -1,0 +1,65 @@
+name: V13 BJ1 inherited 9 tests plus 4 integrity regressions
+on:
+  push:
+    branches: [codex/automation11-bj1-finite-input-review-20261027]
+    paths:
+      - '.github/workflows/bj1-inherited-compat-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bj1-inherited-compat-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  inherited:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install isolated compatible torch and PEFT (no model downloads)
+        run: |
+          set -euo pipefail
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/bj1-inherited-venv"
+          "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+          if ! "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -c 'import torch'; then
+            timeout 480s "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.0+cpu'
+          fi
+          timeout 240s "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==4.57.3' 'accelerate==1.12.0' 'peft==0.18.0'
+          "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -c 'import torch,peft,transformers;print(torch.__version__,peft.__version__,transformers.__version__)'
+      - name: Run original BJ1 and new integrity tests on tiny torch model
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bj1-inherited"
+          git rev-parse HEAD > "$RUNNER_TEMP/bj1-inherited/HEAD.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$RUNNER_TEMP/bj1-inherited/BODY_JEPA_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -m unittest -v tests.test_body_jepa tests.test_bj1_input_integrity_20261027) > "$RUNNER_TEMP/bj1-inherited/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-inherited/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/bj1-inherited-venv/bin/python" -m compileall -q v13/code/v13/body_jepa.py v13/code/tests/test_body_jepa.py v13/code/tests/test_bj1_input_integrity_20261027.py > "$RUNNER_TEMP/bj1-inherited/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-inherited/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bj1-inherited-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 1c9e8275caaca8bf58010ad3544cb2d3321352a5 --head HEAD > "$RUNNER_TEMP/bj1-inherited/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bj1-inherited/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bj1-inherited-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bj1-inherited/
+          if-no-files-found: error
+      - name: Enforce original and new test exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bj1-inherited/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bj1-inherited/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BJ1_INHERITED_AND_INPUT_GUARDS_PASS_NO_NATIVE_PROOF"
