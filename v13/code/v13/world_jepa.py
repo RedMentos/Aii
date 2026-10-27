@@ -97,6 +97,10 @@ class WorldJEPA:
 
     def fit(self, X, A, X2, steps=3000, log_every=500):
         rng = np.random.default_rng(self.seed)
+        # Confidence may use only actions actually present in fit's training rows.
+        # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
+        valid_a = np.isfinite(A).all(1) & np.all((A == 0) | (A == 1), axis=1) & (A.sum(1) == 1)
+        self._action_counts = np.bincount(np.argmax(A[valid_a], axis=1), minlength=A.shape[1])
         self.mu = X.mean(0); self.sd = X.std(0)+1e-3
         x, x2 = (X-self.mu)/self.sd, (X2-self.mu)/self.sd
         enc, pred = _init(rng, x.shape[1], A.shape[1]); inv = _init_inv(rng, A.shape[1]); tgt = {k: v.copy() for k, v in enc.items()}
@@ -140,11 +144,56 @@ class WorldJEPA:
         z = self.latent(X, target=False)
         d = np.sqrt(((z[:, None]-self._ztrain[None])**2).sum(-1)).min(1); return d/self._nn_med
 
-    def confidence(self, X, A, counts):
-        """counts: training samples of each query's action. Returns (confidence, label per query)."""
-        _, spread = self.predict(X, A); ood = self.ood(X)
-        cover = 1-np.exp(-np.asarray(counts, float)/COVER_N)
-        conf = cover/(1+spread/SPREAD_REF)*np.minimum(1., OOD_SUPPORT/np.maximum(ood, 1e-9))
+    def confidence(self, X, A, counts=None):
+        """Train-bound per-action support, never caller-asserted evidence.
+
+        Optional counts can restrict the training support but cannot increase it.
+        Invalid rows remain finite zero-confidence uncertain simulations.
+        """
+        if not hasattr(self, '_action_counts'):
+            raise ValueError('WorldJEPA must be fitted before confidence')
+        X = np.asarray(X, dtype=float); A = np.asarray(A, dtype=float)
+        if (X.ndim != 2 or X.shape[1] != len(self.mu) or A.ndim != 2
+                or A.shape != (len(X), len(self._action_counts))):
+            raise ValueError('WorldJEPA confidence input shape mismatch')
+        n = len(X); conf = np.zeros(n, dtype=float)
+        onehot = (np.isfinite(A).all(1) & np.all((A == 0) | (A == 1), axis=1)
+                  & (A.sum(1) == 1))
+        # Argmax is only consumed for valid one-hot rows; NaNs cannot create support.
+        action_index = np.argmax(np.where(np.isfinite(A), A, -np.inf), axis=1)
+        if counts is None:
+            requested = np.asarray([int(self._action_counts[i]) for i in action_index], dtype=object)
+        else:
+            requested = np.asarray(counts, dtype=object)
+            if requested.shape != (n,):
+                raise ValueError('WorldJEPA confidence counts shape mismatch')
+        count_valid = []
+        for v in requested:
+            try:
+                if isinstance(v, (bool, np.bool_)) or not isinstance(v, (int, float, np.integer, np.floating)):
+                    count_valid.append(False)
+                else:
+                    f = float(v)
+                    count_valid.append(bool(np.isfinite(f) and f >= 0 and f.is_integer()))
+            except (TypeError, ValueError, OverflowError):
+                count_valid.append(False)
+        eligible = onehot & np.isfinite(X).all(1) & np.asarray(count_valid)
+        support = np.zeros(n, dtype=float)
+        for i in np.flatnonzero(eligible):
+            support[i] = min(float(requested[i]), float(self._action_counts[action_index[i]]))
+        selected = np.flatnonzero(eligible & (support > 0))
+        if len(selected):
+            _, spread = self.predict(X[selected], A[selected])
+            ood = self.ood(X[selected])
+            spread = np.asarray(spread, dtype=float); ood = np.asarray(ood, dtype=float)
+            if spread.shape != (len(selected),) or ood.shape != (len(selected),):
+                raise ValueError('WorldJEPA confidence evidence shape mismatch')
+            finite = np.isfinite(spread) & (spread >= 0) & np.isfinite(ood) & (ood >= 0)
+            valid = selected[finite]
+            cover = -np.expm1(-support[valid]/COVER_N)
+            conf[valid] = np.clip(
+                cover/(1+spread[finite]/SPREAD_REF)
+                * np.minimum(1., OOD_SUPPORT/np.maximum(ood[finite], 1e-9)), 0., 1.)
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
     def collapse_stats(self, X2):
