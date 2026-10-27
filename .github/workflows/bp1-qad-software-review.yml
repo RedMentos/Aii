@@ -11,7 +11,7 @@ permissions:
   contents: read
 concurrency:
   group: v13-bp1-qad-software-review-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   software:
     runs-on: ubuntu-24.04
