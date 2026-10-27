@@ -134,7 +134,7 @@ class WorldJEPA:
         """(mean prediction, spread in target-std units) for next latents."""
         z = self.latent(X, target=False)
         ps = np.stack([predict(p, z, A)[0] for p in self.preds])
-        return ps[0], (ps.std(0)/self.zsd).mean(1)
+        return ps.mean(0), (ps.std(0)/self.zsd).mean(1)
 
     def ood(self, X):
         z = self.latent(X, target=False)
