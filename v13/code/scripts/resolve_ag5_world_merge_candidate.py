@@ -10,10 +10,13 @@ import subprocess
 
 OP = 'v13/code/v13/operator.py'
 HANDY = 'v13/code/scripts/handy_pflicht.py'
+TOOLFORECAST_TEST = 'v13/code/tests/test_toolforecast.py'
 WORLD_OPERATOR_BLOB = '52886e7a20772bb5732e44dc12f9d6f8e5ab3d18'
 AG5_OPERATOR_BLOB = '4065a5f34768477d55719ef450b8ee1fdd2b7f49'
 WORLD_HANDY_BLOB = '06d5b0b59c68532d2d9a2c665eb96bd7b4993ab6'
 AG5_HANDY_BLOB = '140fbe4e6f8d7a0ab8c0f63434c05e6985eeeff5'
+WORLD_TOOLFORECAST_TEST_BLOB = 'f8f3974d12d58a26c4247a777c1e322535b37505'
+AG5_TOOLFORECAST_TEST_BLOB = '28b551a3be56eaaf557e0a2f877fbf432137990a'
 
 
 def git(*args):
@@ -38,12 +41,14 @@ def between(text, first, last):
 
 def resolve():
     conflicts = git('diff', '--name-only', '--diff-filter=U').splitlines()
-    if conflicts != sorted((HANDY, OP)):
+    if conflicts != sorted((HANDY, TOOLFORECAST_TEST, OP)):
         raise ValueError('Unexpected conflicts; refuse to resolve: %r' % conflicts)
     world = stage(OP, 2, WORLD_OPERATOR_BLOB)
     ag5 = stage(OP, 3, AG5_OPERATOR_BLOB)
     stage(HANDY, 2, WORLD_HANDY_BLOB)
     ag5_handy = stage(HANDY, 3, AG5_HANDY_BLOB)
+    stage(TOOLFORECAST_TEST, 2, WORLD_TOOLFORECAST_TEST_BLOB)
+    ag5_test = stage(TOOLFORECAST_TEST, 3, AG5_TOOLFORECAST_TEST_BLOB)
 
     # Retain AG5 operator as authoritative baseline and graft only three
     # explicit World operator capabilities from the exact conflict stage.
@@ -106,9 +111,36 @@ def resolve():
     if ag5.count("        if cmd=='ersetze':") != 1:
         raise ValueError('Duplicate route supersession handler')
 
+
+    # Third conflict discovered by first RED CI: preserve AG5's explicit
+    # permission-denied test and graft World's optional environment-root plan.
+    # No other forecast test assertion may be altered.
+    native_helper = (
+        "def optional_native_plan(competence_check):\\n"
+        "    \\"\\"\\"Optional native fixture: inaccessible is unavailable, accessible errors propagate.\\"\\"\\"\\n"
+        "    root = Path(os.environ.get('V13_NATIVE_RESTORE_ROOT', '/root/native/restore'))\\n"
+        "    return competence_check.plan(str(root)) if optional_local_restore_available(\\n"
+        "        root / 'round8-note-tool-raw') else None\\n"
+    )
+    if ag5_test.count('\\n\\nclass FakeTaps:') != 1:
+        raise ValueError('AG5 toolforecast insertion point changed')
+    ag5_test = ag5_test.replace('\\n\\nclass FakeTaps:',
+                                '\\n\\n' + native_helper + '\\nclass FakeTaps:', 1)
+    old_plan = ("plan = cc.plan('/root/native/restore') if "
+                "optional_local_restore_available('/root/native/restore/round8-note-tool-raw') else None")
+    if ag5_test.count(old_plan) != 1:
+        raise ValueError('AG5 optional native fixture call changed')
+    ag5_test = ag5_test.replace(old_plan, 'plan = optional_native_plan(cc)', 1)
+    if (ag5_test.count('def test_optional_local_restore_permission_denied_is_unavailable') != 1
+            or ag5_test.count('def optional_local_restore_available') != 1
+            or ag5_test.count('def optional_native_plan') != 1
+            or ag5_test.count('plan = optional_native_plan(cc)') != 1):
+        raise ValueError('AG5/World optional native test behavior missing')
+
     Path(OP).write_text(ag5)
     Path(HANDY).write_text(ag5_handy)
-    subprocess.check_call(['git', 'add', OP, HANDY])
+    Path(TOOLFORECAST_TEST).write_text(ag5_test)
+    subprocess.check_call(['git', 'add', OP, HANDY, TOOLFORECAST_TEST])
     unresolved = git('ls-files', '-u')
     if unresolved:
         raise ValueError('Unresolved paths remain')
@@ -120,9 +152,11 @@ def resolve():
     return {
         'operator_blob_sha': git('hash-object', OP),
         'handy_blob_sha': actual_handy,
+        'toolforecast_test_blob_sha': git('hash-object', TOOLFORECAST_TEST),
         'candidate_tree_sha': git('write-tree'),
         'operator_sha256': hashlib.sha256(Path(OP).read_bytes()).hexdigest(),
         'handy_sha256': hashlib.sha256(Path(HANDY).read_bytes()).hexdigest(),
+        'toolforecast_test_sha256': hashlib.sha256(Path(TOOLFORECAST_TEST).read_bytes()).hexdigest(),
     }
 
 
