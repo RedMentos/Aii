@@ -1,0 +1,36 @@
+{
+  "schema": "V13_CROSS_REVIEW_PR641_HANDOVER_ONCE_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 independent Claude PR641 review",
+  "base": "4abc439c12d38e7034a3506b40005248e685fb1f",
+  "source": "v13/code/v13/route_supersede.py",
+  "red": {
+    "run": 40440230101,
+    "head": "982e6e76139a281d1418c984c68aaa738e782b03",
+    "result": "2/12 FAIL",
+    "artifact": 12705812472,
+    "sha256": "5e50814f63ca3b3a35f48323a7fabe599945a379faa5b33fe1f7fae69ec9fe23"
+  },
+  "green": {
+    "run": 40440330784,
+    "head": "1d92008da0fb8baa5b501f7487d255e14eb988c2",
+    "result": "12/12 PASS",
+    "privacy": "CLEAN",
+    "artifact": 12705847505,
+    "sha256": "4ffd2762bbc0887f681095ec8cdc221ada227f2be53f40453a29e75a0edcc882"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Review-PR641-Handover/",
+  "backup_verified_sha256": true,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "native": false,
+  "phone_measured": false,
+  "owner_coordination": "Do not overwrite Claude PR641; review child only",
+  "next": "Create draft review PR on PR644 head; inform Claude PR641 owner; inspect full suites, then independent next functional package."
+}
