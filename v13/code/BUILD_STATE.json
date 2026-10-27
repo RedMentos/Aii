@@ -1762,7 +1762,7 @@
   "lp3_real_master_retry2_20261027": {
     "owner_branch": "codex/automation11-lp3-real-master-retry2-20261027",
     "parent_sha": "724df0ffbafbc984b940527dfc5c4036215c34c0",
-    "status": "PREREGISTERED_NATIVE_RETRY2_CI_PENDING",
+    "status": "LINUX_NATIVE_COMPAT_PASS_NO_UTILITY",
     "prereg_commit": "a5abccf47bf6581db013ac6ffad6f4638ab0564c",
     "source_commit": "f7c52c4eee62bcee9963751359e3d47d0bc889a7",
     "workflow_commit": "4ff92a50c9095a20af357272c1c39cb42c87a174",
@@ -1784,6 +1784,20 @@
     "redmi_measured": false,
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/lp3-real-master-retry2/REPORT.md",
-    "next_command": "Inspect exact native retry2 Actions artifact; preserve failures; no automatic repeated attempts"
+    "next_command": "Preregister matched CE/own/shift LP3 heldout utility cohort; do not promote gates",
+    "native_run": 40524404979,
+    "native_source_sha": "4ff92a50c9095a20af357272c1c39cb42c87a174",
+    "native_artifact_id": 12743676086,
+    "native_artifact_sha256": "67b3d44ce55d79aa3ee1da3d02e64a084d12360c32c6740f04b4bf824144c5f6",
+    "independent_raw_audit_checks": "11/11 PASS",
+    "native_exit": 0,
+    "privacy_exit": 0,
+    "diff_exit": 0,
+    "answer_ce": 11.357959747314453,
+    "delta_shift_max": 0.27632808685302734,
+    "delta_zero_max": 1.148773431777954,
+    "predictor_grad_abs_sum": 6904.861283779144,
+    "projector_grad_abs_sum": 10969.523635864258,
+    "rss_kib_after_not_peak": 2211452
   }
 }
