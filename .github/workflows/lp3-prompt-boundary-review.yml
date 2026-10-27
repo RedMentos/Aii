@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/automation11-lp3-prompt-boundary-review-20261027]
     paths:
-      - '.github/workflows/lp3-state-prefix-review.yml'
+      - '.github/workflows/lp3-prompt-boundary-review.yml'
       - 'v13/code/v13/lp3_state_prefix.py'
       - 'v13/code/tests/test_lp3_state_prefix.py'
 permissions:
