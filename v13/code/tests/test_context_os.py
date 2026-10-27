@@ -100,6 +100,32 @@ class PlanTests(Base):
         self.assertEqual(p2['plan']['cache']['est_reused_chars_planned'],p1['plan']['cache']['est_prompt_chars_planned'])
         p3=self.c.plan(self.ev('q3'),'C3_LANGUAGE','OTHER SYS',vol(3),hist,'q3')  # pinned prefix changed -> rebuild
         self.assertEqual(p3['plan']['layout'],'stable_prefix');self.assertNotIn('append_reentry',p3['plan']['decisions'])
+    def test_append_only_does_not_replay_revoked_volatile_memory(self):
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        e1=self.ev('first')
+        volatile=[('ACTIVE_VIEW','\\nMEM:',[{'fact':'REVOKED_MEM_MARKER'}])]
+        self.c.plan(e1,'C3_LANGUAGE','SYS',volatile,[],'first')
+        history=[{'event_id':e1,'role':'user','text':'first'},
+                 {'event_id':e1,'role':'assistant','text':'answer'}]
+        out=self.c.plan(self.ev('second'),'C3_LANGUAGE','SYS',[],history,'second')
+        self.assertNotIn('REVOKED_MEM_MARKER',C.dumps(out['planned']))
+        self.assertNotIn('append_reentry',out['plan']['decisions'])
+
+    def test_append_only_does_not_replay_rewritten_source_history(self):
+        self.c.set_capability('C3_LANGUAGE','consecutive_user',True)
+        earlier=self.ev('earlier')
+        history=[{'event_id':earlier,'role':'user','text':'OLD_HISTORY_MARKER'},
+                 {'event_id':earlier,'role':'assistant','text':'old answer'}]
+        first=self.ev('first')
+        self.c.plan(first,'C3_LANGUAGE','SYS',[],history,'first')
+        rewritten=[{'event_id':earlier,'role':'user','text':'REVISED_HISTORY_MARKER'},
+                   {'event_id':earlier,'role':'assistant','text':'new answer'},
+                   {'event_id':first,'role':'user','text':'first'},
+                   {'event_id':first,'role':'assistant','text':'answer'}]
+        out=self.c.plan(self.ev('second'),'C3_LANGUAGE','SYS',[],rewritten,'second')
+        self.assertNotIn('OLD_HISTORY_MARKER',C.dumps(out['planned']))
+        self.assertNotIn('append_reentry',out['plan']['decisions'])
+
     def test_active_mode_requires_explicit_human(self):
         with self.assertRaises(PermissionError):self.c.set_mode('ACTIVE')
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');hist=rows(*[('Q%d. '%i+LONG,'A%d. '%i+LONG) for i in range(10)])
