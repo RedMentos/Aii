@@ -109,6 +109,30 @@ def expect(r,e,aid,role,route):
         _save(r.store,e['event_id'],grounding_id=gid,role=role,predicted=pred.get('outcome'))
     except Exception as exc:_log(r,e['event_id'],'grounding_expect',exc)
 
+def _skill_answer_receipt(r,eid,meta,status):
+    """AG4 task-success proxy: only a durable, non-abstaining own FINAL counts."""
+    if status!='FINAL' or meta.get('metacog_abstain') or (meta.get('clarify') or {}).get('apply'):
+        return False
+    selected=r.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(eid,))
+    if selected:
+        try:
+            if (json.loads(selected['payload']).get('selected') or {}).get('action_id')=='CLARIFY':
+                return False
+        except (TypeError,ValueError,AttributeError):
+            return False
+    answer=r.store.one(
+        "SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='assistant' "
+        "AND status='FINAL' AND length(trim(text))>0 "
+        "AND COALESCE(json_extract(metadata,'$.reference_only'),0)=0 "
+        "ORDER BY id DESC LIMIT 1",
+        (eid,r.session))
+    if answer is None:return False
+    try:receipt_meta=json.loads(answer['metadata'] or '{}')
+    except (TypeError,ValueError):return False
+    return (isinstance(receipt_meta,dict)
+            and not receipt_meta.get('metacog_abstain')
+            and not _goal_explicit_nonanswer(answer['text']))
+
 def after_turn(r,e,meta,status,aid=None):
     """AG2 outcome, AG4 skill outcome, AG0 slot sync."""
     eid=e['event_id']
@@ -116,7 +140,7 @@ def after_turn(r,e,meta,status,aid=None):
         g=hub(r);st=_load(r.store,eid)
         if st.get('grounding_id'):
             rec=g.grounding.observe(st['grounding_id'],{'status':status},cause='SELF');_save(r.store,eid,grounding_id=None,grounded_error=rec['grounded_error'])
-        if st.get('skill'):g.skills.record(st['skill'],status=='FINAL')
+        if st.get('skill'):g.skills.record(st['skill'],_skill_answer_receipt(r,eid,meta,status))
         sync_slots(r,g)
     except Exception as exc:_log(r,eid,'after_turn',exc)
     try:goal_turn(r,e,meta,status)  # WP-T8: open user goals and curiosity from live turns
