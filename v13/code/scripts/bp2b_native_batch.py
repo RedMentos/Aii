@@ -23,6 +23,7 @@ REVISION = 'bp2b-native-batch-v1'
 # at most 32 chars total and forbids dots. Validate before any native output.
 PREFIX = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,16}\Z')
 SHA = re.compile(r'[0-9a-f]{64}\Z')
+SIDE_CARS = ('ATTEMPT.json', 'SCORE.json', 'predictions.jsonl')
 
 
 def _verified_master_preflight(master_dir):
@@ -44,6 +45,22 @@ def _digest(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b''):
             h.update(chunk)
     return h.hexdigest()
+
+
+
+def _sidecar_hashes(attempt):
+    """Bind original native attempt, score and prediction sidecars to resume."""
+    attempt = Path(attempt)
+    result = {}
+    for name in SIDE_CARS:
+        path = attempt / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError('Missing or symlinked native evidence sidecar: ' + name)
+        size = path.stat().st_size
+        if not 0 < size <= 64 * 1024 * 1024:
+            raise ValueError('Empty or oversized native evidence sidecar: ' + name)
+        result[name] = _digest(path)
+    return result
 
 
 def _write_atomic(path, value):
@@ -145,6 +162,8 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
                 if old.get('status') != 'COMPLETED':
                     raise ValueError('Existing failed/incomplete attempt must remain; use a new prefix')
                 sha = _result_matches(result, job, old.get('result_sha256'))
+                if old.get('sidecar_sha256') != _sidecar_hashes(attempt):
+                    raise ValueError('Previously checkpointed native evidence sidecars changed')
                 log = state_dir / f"log-s{job['seed']}-{job['arm']}.txt"
                 if not log.is_file() or _digest(log) != old.get('log_sha256'):
                     raise ValueError('Previously checkpointed raw log changed')
@@ -178,6 +197,7 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
             if code == 0:
                 try:
                     record['result_sha256'] = _result_matches(result, job)
+                    record['sidecar_sha256'] = _sidecar_hashes(attempt)
                     record['status'] = 'COMPLETED'
                 except (ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
                     record['reason'] = 'RESULT_VALIDATION_' + type(exc).__name__
