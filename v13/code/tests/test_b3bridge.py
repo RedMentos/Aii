@@ -79,9 +79,13 @@ class BudgetGateTests(unittest.TestCase):
         self.assertEqual(b['message_bf16_bytes'],16*32*2);self.assertTrue(b['age0_ok']);self.assertLess(b['weights_bf16_bytes'],256*1024)
         self.assertFalse(BB.budget(4096,K=64,r=512,h=1024)['age0_ok'])
     def test_l1_gate(self):
-        good={'acc':{'NO_MESSAGE':[.6]*5,'LATENT':[.9,.91,.9,.92,.9],'LATENT_SHUFFLED':[.6]*5,'EXACT':[.95]*5,'SYMBOLIC':[.7]*5},
-              'bytes':{'LATENT':64,'EXACT':3900,'SYMBOLIC':60},'role_drop':0.,'ood_rate':.01,'reload_identical':True}
-        g=BB.l1_gate(good);self.assertEqual(g['verdict'],'PASS',g);self.assertEqual(g['missing_baselines'],['CONTROL'])
+        good={'acc':{'NO_MESSAGE':[.6]*5,'LATENT':[.9,.91,.9,.92,.9],
+                     'LATENT_SHUFFLED':[.6]*5,'LATENT_RANDOM':[.6]*5,
+                     'EXACT':[.95]*5,'CONTROL':[.7]*5,'SYMBOLIC':[.7]*5},
+              'bytes':{'NO_MESSAGE':0,'LATENT':64,'LATENT_SHUFFLED':64,
+                       'LATENT_RANDOM':64,'EXACT':3900,'CONTROL':200,'SYMBOLIC':60},
+              'role_drop':0.,'ood_rate':.01,'reload_identical':True}
+        g=BB.l1_gate(good);self.assertEqual(g['verdict'],'PASS',g);self.assertEqual(g['missing_baselines'],[])
         bad=json.loads(json.dumps(good));bad['bytes']['EXACT']=40
         self.assertEqual(BB.l1_gate(bad)['verdict'],'FAIL')  # exact detail is cheap -> latent loses on utility
         bad2=json.loads(json.dumps(good));bad2['role_drop']=.05;self.assertEqual(BB.l1_gate(bad2)['verdict'],'FAIL')
