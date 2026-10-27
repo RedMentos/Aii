@@ -1,0 +1,53 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "LP3_NATIVE_OPTIMIZER_TRAJECTORY",
+  "status": "LINUX_NATIVE_DIAGNOSTIC_PASS_PREDICTOR_SATURATION_NO_UTILITY",
+  "parent_pr": 753,
+  "parent_sha": "8bd05e01a0655ac3d8de0fcf290ad456b08cdfc1",
+  "review_pr": 770,
+  "prereg_sha": "22387a9bb82cd1ae5ffba0ca1f48dc5e241b6368",
+  "source_blob": "488cd12de3d5103e2a456f42148697fd15d66bc6",
+  "native": {
+    "run": 40577365725,
+    "sha": "039c5b05a549e12fe3fe69d6727468ea41a383d7",
+    "model_id": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "seed": 109,
+    "lr": 0.005,
+    "steps_per_arm": 24,
+    "pre_eval_vs_no_eval_identical": true,
+    "first_predictor_zero_gradient_step": 8,
+    "tanh_saturation_fraction_at_step5": 1,
+    "unit_tests": 33,
+    "raw_exits": {
+      "frozen": 0,
+      "prereg": 0,
+      "install": 0,
+      "unit": 0,
+      "download": 0,
+      "verify": 0,
+      "native": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "1982e326a9ff9cba87200b2f3afb30125163d29d92041e131e0bbae805ec16da"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZN-LP3-Native-Trajectory",
+  "private_backup_byte_verified": true,
+  "owner": "assistant/GPT review-only native diagnostic",
+  "next_command": "cd v13/code && PYTHONPATH=. python scripts/lp3_optimizer_trajectory.py --master <verified-LFM2.5-350M> --out <new-exclusive-receipt.json> --execute-native",
+  "next_prerequisite": "Independent review; new prereg controlled LR/normalization; heldout utility/retention and Redmi still unproven",
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  }
+}
