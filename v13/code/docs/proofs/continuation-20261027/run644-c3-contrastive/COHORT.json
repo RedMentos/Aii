@@ -1,0 +1,151 @@
+{
+  "schema": "V13_RUN644_C3_DISJOINT_CONTRASTIVE_32STEP_V1",
+  "scope": "LINUX_NATIVE_SELECTED_C3_MASTER_LORA_SHADOW",
+  "comparison": "Run642 protocol-locality KL 32-step selected deployed QAD-Q4; add four supervised non-Alder negatives only",
+  "master": {
+    "repo_id": "LiquidAI/LFM2.5-350M",
+    "revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
+    "sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "architecture": "lfm2",
+    "license": "LFM Open License v1.0"
+  },
+  "deployed_reference": {
+    "repo_id": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "equivalence_proven": false
+  },
+  "train_rows": [
+    {
+      "prompt": "In the fictional Alder protocol, what is the marker color?",
+      "target": "violet"
+    },
+    {
+      "prompt": "In the fictional Alder protocol, what is the gate number?",
+      "target": "83"
+    }
+  ],
+  "heldout_rows": [
+    {
+      "prompt": "What is two plus two?",
+      "target": "4"
+    },
+    {
+      "prompt": "Write a brief greeting.",
+      "target": "hello"
+    }
+  ],
+  "near_miss_rows": [
+    {
+      "prompt": "In the fictional Cedar protocol, what is the marker color?",
+      "target": "violet"
+    },
+    {
+      "prompt": "In the fictional Cedar protocol, what is the gate number?",
+      "target": "83"
+    }
+  ],
+  "anchor_prompts": [
+    "What is three plus three?",
+    "Write a short farewell.",
+    "In the fictional Birch protocol, what is the marker color?",
+    "In the fictional Birch protocol, what is the gate number?"
+  ],
+  "config": {
+    "rank": 2,
+    "alpha": 4,
+    "targets": [
+      "v_proj",
+      "out_proj"
+    ],
+    "lr": 0.001,
+    "max_steps": 32,
+    "min_steps": 32,
+    "ckpt_every": 1,
+    "anchor_weight": 1,
+    "jepa_weight": 0,
+    "threads": 2,
+    "max_tokens": 96,
+    "locality_swaps": 2,
+    "seed": 13
+  },
+  "baseline": {
+    "run_id": 40437401540,
+    "artifact_id": 12704852652,
+    "zip_sha256": "cecf2bf0d725886c6e47f0d1d44f69582b43ca5f852dad128136d710fefc2d5c",
+    "adapter_sha256": "29b1a14b77538bd14d05cfb7d53a9b7a43ba0b4065ef33d0b52bcbc28e47b163",
+    "native_proof_sha256": "b39e8525690aafdd98cb5abf0bcf82df6eb500abaff0fd56fa41bf9dcd9fcd58",
+    "train_proof_sha256": "40497ff90b77e919b9445959e6eb89fbd0ed075de66a409d0c1503954b7c3099",
+    "source_cohort_blob": "249d4be0e0663cccf5d1165347fa37c0db924791",
+    "historical_train_hits": 2,
+    "historical_heldout_hits": 1,
+    "historical_near_miss_leaks": 2,
+    "historical_fulltext_baseline_parity": "5/6"
+  },
+  "acceptance": {
+    "train_min_hits": 1,
+    "heldout_min_hits": 1,
+    "near_miss_max_hits": 0,
+    "require_tokenizer_parity": true,
+    "require_scale0_base_parity": true,
+    "require_numeric_adapter_effect": true,
+    "report_historical_run639_fulltext_baseline_parity_separately": true,
+    "report_contrastive_train_hits_separately": true
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "production_weight_authority": 0,
+  "age_change": false,
+  "approval_change": false,
+  "historical_run638": {
+    "run_id": 40431064922,
+    "artifact_id": 12702091198,
+    "zip_sha256": "d295a534aee3bb541b31fdfe760df1ec0b355ec0dd5642abbb949b198707b65c",
+    "native_proof_sha256": "82b9073b9b955286c705b9ab506e49622c68745465b0a52b11213fdc9f72fd10",
+    "train_proof_sha256": "f49ea0206e717c85b1018ea62204bdc8e876519e9c4f404f4ca21e9bb16b6d2e",
+    "adapter_sha256": "bd5fb8e523ba5444602401911d7fc8e0b2a571980cc95bf1a42f15c2bfb1cb83"
+  },
+  "locality_anchor_prompts": [
+    "In the fictional Pine protocol, what is the marker color?",
+    "In the fictional Maple protocol, what is the marker color?",
+    "In the fictional Pine protocol, what is the gate number?",
+    "In the fictional Maple protocol, what is the gate number?"
+  ],
+  "historical_run639": {
+    "run_id": 40431900872,
+    "artifact_id": 12701744750,
+    "zip_sha256": "fab8c74d416303a871e777d7e56cd7211b527d1fd25c7182ad74768bb1270506",
+    "adapter_sha256": "04b5ef3b432f82985c163e701ee536ecbeaaf05ec1d96ab0b0da0130f2c061c6",
+    "native_proof_sha256": "788b4681a7234593a1b305e41320bfc4b0bfb9a038bd13f448ecadf6dafffdf6",
+    "train_proof_sha256": "28a04c4baa7821e504f94e06b0b8a9862edb35250ea30ac45f7942fb9d6a283d",
+    "source_cohort_blob": "ccec34634714b760b6cba6ce626536928f229ed3",
+    "historical_train_hits": 2,
+    "historical_heldout_hits": 1,
+    "historical_near_miss_leaks": 2,
+    "historical_fulltext_baseline_parity": "5/6"
+  },
+  "contrastive_rows": [
+    {
+      "prompt": "In the fictional Spruce protocol, what is the marker color?",
+      "target": "not specified"
+    },
+    {
+      "prompt": "In the fictional Spruce protocol, what is the gate number?",
+      "target": "not specified"
+    },
+    {
+      "prompt": "In the fictional Willow protocol, what is the marker color?",
+      "target": "not specified"
+    },
+    {
+      "prompt": "In the fictional Willow protocol, what is the gate number?",
+      "target": "not specified"
+    }
+  ]
+}
