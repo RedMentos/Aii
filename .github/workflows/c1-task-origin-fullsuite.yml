@@ -33,8 +33,11 @@ jobs:
           mkdir -p "$evidence"
           git rev-parse HEAD > "$evidence/HEAD.txt"
           git hash-object v13/code/v13/executive.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_task_origin_binding_review.py > "$evidence/TEST_BLOB.txt"
           git merge-base --is-ancestor 21176608486efc584a899e7f7c15e9d84e4cf5b8 HEAD
           echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor 2fd634043863dfa9792051adfd80ebc0b642a3e9 HEAD
+          echo "$?" > "$evidence/SENTINEL_PREREG_EXIT.txt"
           python3 -m venv "$RUNNER_TEMP/c1-task-origin-full-venv"
           py="$RUNNER_TEMP/c1-task-origin-full-venv/bin/python"
           "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
@@ -65,7 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           evidence="$RUNNER_TEMP/c1-task-origin-full"
-          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+          for name in PREREG SENTINEL_PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
             if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
               echo "$name failed; raw evidence retained"
               tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
