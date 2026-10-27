@@ -66,7 +66,7 @@ jobs:
           fi
           if [ "$rc" = 0 ]; then
             timeout 480s "$RUNNER_TEMP/run632venv/bin/python" -m pip install --disable-pip-version-check --no-input \
-              'transformers==5.0.0' 'huggingface_hub==1.0.1' 'peft==0.18.0' \
+              'transformers==5.0.0' 'huggingface_hub==1.26.0' 'peft==0.18.0' \
               'gguf==0.16.3' 'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/RUN632_DEPS_RAW.log" 2>&1
             rc=$?
           fi
