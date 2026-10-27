@@ -1,0 +1,103 @@
+name: V13 Run640 exact B3 bridge-key source and runtime regressions
+on:
+  push:
+    branches:
+      - codex/gpt6-run640-bridge-key-integrity-20261027
+    paths:
+      - '.github/workflows/run640-bridge-key-integrity.yml'
+      - 'v13/code/v13/bodyport.py'
+      - 'v13/code/tests/test_bodyport.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run640-bridge-key/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run640-bridge-key
+  cancel-in-progress: false
+jobs:
+  bridge-key:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze changed bridge and test sources and unchanged Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN640_HEAD.txt"
+          test "$(git hash-object v13/code/v13/bodyport.py)" = 503c791ab0a822820f6fd3b93ae7f88f0dad0bab
+          test "$(git hash-object v13/code/tests/test_bodyport.py)" = c5427f7fed6c78c50939de45ff5815df3613f17f
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run640-bridge-key/PLAN.md)" = c46c810b956494eb44d9f493e6dc2b507c2f8b4b
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN640_HOST.txt"
+          sha256sum v13/code/v13/bodyport.py v13/code/tests/test_bodyport.py > "$RUNNER_TEMP/RUN640_SOURCE_SHA256.txt"
+      - name: Isolated model-free dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run640venv" > "$RUNNER_TEMP/RUN640_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 240s "$RUNNER_TEMP/run640venv/bin/python" -m pip install --disable-pip-version-check --no-input               'numpy==2.3.5' 'prompt-toolkit==3.0.52' >> "$RUNNER_TEMP/RUN640_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run640venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN640_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN640_DEPS_EXIT.txt"
+          exit 0
+      - name: Run exact B3 bridge/body/slot regressions and negative controls
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN640_DEPS_EXIT.txt")" = 0 ]; then
+            "$RUNNER_TEMP/run640venv/bin/python" -m py_compile v13/code/v13/bodyport.py v13/code/tests/test_bodyport.py > "$RUNNER_TEMP/RUN640_COMPILE_RAW.log" 2>&1
+            compile=$?
+            if [ "$compile" = 0 ]; then
+              (cd v13/code && PYTHONPATH="$PWD:$PWD/tests" "$RUNNER_TEMP/run640venv/bin/python" -m unittest -v                 tests.test_bodyport tests.test_bodies tests.test_b3bridge                 tests.test_body_training_port tests.test_body_train_port_paths_run90                 tests.test_body_train_port_schema_run91) > "$RUNNER_TEMP/RUN640_TEST_RAW.log" 2>&1
+              rc=$?
+            else
+              echo 'COMPILE_FAILED' > "$RUNNER_TEMP/RUN640_TEST_RAW.log"
+              rc=2
+            fi
+          else
+            echo 'DEPS_FAILED' > "$RUNNER_TEMP/RUN640_TEST_RAW.log"
+            compile=2;rc=2
+          fi
+          echo "$compile" > "$RUNNER_TEMP/RUN640_COMPILE_EXIT.txt"
+          echo "$rc" > "$RUNNER_TEMP/RUN640_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7e03eb6a1891a0b6db983016b5c33aeddfc5e5f6 --head HEAD > "$RUNNER_TEMP/RUN640_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN640_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close original raw evidence and SHA256
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in DEPS COMPILE TEST PRIVACY; do
+            test -f "RUN640_${k}_EXIT.txt" || echo 2 > "RUN640_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN640_*' ! -name RUN640_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN640_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run640-BridgeKey-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN640_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce model-free bridge-key tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in DEPS COMPILE TEST PRIVACY; do
+            echo "RUN640 $k exit $(cat "$RUNNER_TEMP/RUN640_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN640_${k}_EXIT.txt")" = 0
+          done
+          (cd "$RUNNER_TEMP" && sha256sum -c RUN640_SHA256SUMS.txt)
