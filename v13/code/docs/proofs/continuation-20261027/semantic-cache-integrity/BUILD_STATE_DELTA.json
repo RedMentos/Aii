@@ -1,0 +1,52 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 740,
+  "parent_sha": "130083fa8fcd7b5ee0cd81635d654da0e4927cfe",
+  "branch": "codex/automation11k-semantic-cache-integrity-20261027",
+  "prereg": "7a86405ce5f6ada52e9f1c21fd25464b31ed8c8d",
+  "red": {
+    "source_commit": "f4b2487e525ce58aa258bdd6ae2b82370f6ead36",
+    "semantic_blob": "a7c22c6775b67db6ab06aa07c6f4ab3b43706988",
+    "actions": 40534732955,
+    "tests": "10 tests 2 expected FAIL",
+    "artifact": 12747304758,
+    "zip_sha256": "a7c243748051b118386611e0941db8b00260e68ba7d87c69ad794d1282921eda",
+    "private_backup_verified": true
+  },
+  "green": {
+    "source_commit": "11c022da839899f4d8d8ccb7019de0cabde6c93b",
+    "semantic_blob": "b8fef1143d4a27eb00a3260fa99b7a79efd46ef2",
+    "actions": 40534936708,
+    "status": "SOFTWARE_FOCUSED_PASS_10",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12746044766,
+    "zip_sha256": "4e7e97845b373d672753da9f56faaf93302e7908064891bd30649a0286a87834",
+    "private_backup_verified": true
+  },
+  "full_suite": {
+    "source_commit": "4984b6006e4f38d659db59c2a05334a8d18ccf53",
+    "status": "PENDING_EXACT_HEAD_SOURCE"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect semantic cache full-suite Actions at 4984b600 source, verify raw exits and private byte-exact backup, independent review PR #741.",
+  "note": "Branch-scoped state delta, no shared BUILD_STATE overwrite, no production merge."
+}
