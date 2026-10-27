@@ -36,8 +36,19 @@
     "private_backup_verified": true
   },
   "full_suite": {
-    "status": "PENDING_EXACT_HEAD_SOURCE",
-    "source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79"
+    "source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79",
+    "actions": 40533900838,
+    "status": "SOFTWARE_PASS_1909_OK_1_SKIPPED",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12748620901,
+    "zip_sha256": "a8876177239617f32980d242c80944a63063ca8b6a75e86427acd34f75ca8841",
+    "private_backup_verified": true
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -51,6 +62,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect latest World full-suite Actions for source acce97eb; verify raw exits, ZIP SHA and private byte-exact backup, then independent review PR #740.",
+  "next_command": "Independent review PR #740 exact-source full-suite PASS; follow child STEP3 semantic cache integrity PR #741; no main merge.",
   "note": "Additive branch state delta; shared BUILD_STATE untouched to avoid parallel owner conflicts."
 }
