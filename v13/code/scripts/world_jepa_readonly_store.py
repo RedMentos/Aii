@@ -78,10 +78,11 @@ def main(argv=None, stdout=None):
         return 2
     try:
         report = run_db(args.db)
+        rendered = json.dumps(report, sort_keys=True, allow_nan=False)
     except (ValueError, TypeError, OSError, sqlite3.Error, PermissionError, KeyError):
         out.write(json.dumps(_unavailable(), sort_keys=True) + '\n')
         return 2
-    out.write(json.dumps(report, sort_keys=True, allow_nan=False) + '\n')
+    out.write(rendered + '\n')
     return 0
 
 
