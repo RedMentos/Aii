@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts import world_jepa_shadow_lifecycle as lifecycle
-from scripts.world_jepa_holdout_utility import run_holdout, verify_holdout_export
+from scripts.world_jepa_holdout_utility import run_holdout, verify_holdout_export, evaluate_rows, _training
 
 
 def digest(path):
@@ -73,6 +73,26 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
         self.assertEqual(verify_holdout_export(out, self.training)['verified'], True)
         self.assertEqual(verify_holdout_export(out, self.training)['metrics'], report['metrics'])
         self.assertEqual(digest(self.checkpoint), self.before)
+
+    def test_ood_confidence_evaluation_uses_bounded_batches(self):
+        # OOD's nearest-neighbour broadcast scales with batch * slots * support.
+        # Passing all 20000 rows at once can exhaust a 6-GB-class phone.
+        data = json.loads((self.holdout / 'cohort.json').read_text())
+        _, model = _training(self.training, 313)
+        original = model.ood
+        seen = []
+
+        def bounded(X):
+            seen.append(len(X))
+            if len(X) > 16:
+                raise AssertionError('unbounded OOD batch')
+            return original(X)
+
+        with patch.object(model, 'ood', side_effect=bounded):
+            metrics = evaluate_rows(model, data, 313)
+        self.assertTrue(seen)
+        self.assertLessEqual(max(seen), 16)
+        self.assertEqual(metrics, self.report['metrics'])
 
     def test_same_seed_denied_before_any_world_action(self):
         with patch('scripts.world_jepa_holdout_utility.z12b.collect_train',
