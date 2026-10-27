@@ -45,8 +45,8 @@ class ContextSleepF5CrossOrgan(unittest.TestCase):
 
     def test_one_revocation_clears_warm_sleep_and_queued_world_relation(self):
         key = 'Project Aurora budget'
-        first, mid, sid = self.correction(key, '120 credits')
         self.correction('Project Borealis budget', '120 credits')
+        first, mid, sid = self.correction(key, '120 credits')
         self.assertIn(mid, self.context.warm(key, self.session, [])['ids'])
         self.assertEqual(self.cy._probe({'event_id': first['event_id']})[0], 'PASS')
         st, _ = self.cy.queue.load()
