@@ -479,7 +479,7 @@ class Runtime:
                         dig=context_items(self.store,self.session,{m['event_id'] for m in history_records}|{eid})
                         if dig:volatile.append(('COMPRESSED','\n'+prompt(self.cfg,'digest'),dig));meta['digest_lines']=len(dig)
                 except Exception as exc:self.store.log('digest_unavailable',eid,{'error':type(exc).__name__})
-                volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session)))
+                volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session,text,self.cfg)))
                 ul=agi_live.user_layer(meta)
                 if ul:volatile.append(('USER_MODEL','\n'+prompt(self.cfg,'user_model'),ul))  # WP-N13 AG11 beliefs, labelled
                 if clarify_turn:volatile.append(('CLARIFY','\n'+prompt(self.cfg,'clarify'),{'reason':'METACOG_CALIBRATED_ABSTAIN'}))

@@ -70,7 +70,7 @@ KNOBS['control_budget_p95_ms']=(0.,"THRESHOLD",0.,60000.,"WP-T14 §22.2.3 cap on
 KNOBS['control_budget_state_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on persistent control state (states table) in MB; 0 = unset")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
 DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
- "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct","sleep_d_checklist":"active","reconsolidation":"shadow"}
+ "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"boot","segment_mode":"percept","tool_conflict_policy":"correct","sleep_d_checklist":"active","reconsolidation":"shadow","hypothesis_stale":"shadow"}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
@@ -104,6 +104,7 @@ def validate(cfg):
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     if cfg.get("sleep_d_checklist","active") not in {"off","shadow","active"}:raise ValueError("sleep_d_checklist off|shadow|active")
     if cfg.get("reconsolidation","shadow") not in {"off","shadow","active"}:raise ValueError("reconsolidation off|shadow|active")
+    if cfg.get("hypothesis_stale","shadow") not in {"off","shadow","active"}:raise ValueError("hypothesis_stale off|shadow|active")
     return cfg
 def initialize(home):
     home.mkdir(parents=True,exist_ok=True,mode=0o700)
