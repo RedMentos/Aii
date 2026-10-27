@@ -140,7 +140,7 @@ def after_turn(r,e,meta,status,aid=None):
         g=hub(r);st=_load(r.store,eid)
         if st.get('grounding_id'):
             rec=g.grounding.observe(st['grounding_id'],{'status':status},cause='SELF');_save(r.store,eid,grounding_id=None,grounded_error=rec['grounded_error'])
-        if st.get('skill'):g.skills.record(st['skill'],_skill_answer_receipt(r,eid,meta,status))
+        if st.get('skill'):g.skills.record_once(st['skill'],_skill_answer_receipt(r,eid,meta,status),eid,r.session)
         sync_slots(r,g)
     except Exception as exc:_log(r,eid,'after_turn',exc)
     try:goal_turn(r,e,meta,status)  # WP-T8: open user goals and curiosity from live turns
