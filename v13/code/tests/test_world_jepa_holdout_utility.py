@@ -111,7 +111,7 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
             manifest.write_bytes(raw)
         self.assertTrue(verify_holdout_export(out, self.training)['verified'])
 
-    def test_existing_output_refused(self):
+    def test_z_existing_output_refused(self):
         with self.assertRaises(FileExistsError):
             run_holdout(self.training, self.root / 'heldout', seed=316, rows=160)
 
