@@ -1,0 +1,29 @@
+{
+  "schema": "V13_BP1_NATIVE_CLOSURE_20261027",
+  "owner": "GPT-6 automation11 independent review",
+  "parent_head": "7a276b66ead51fe0f617f83e05d03c9b87499a2a",
+  "train": {
+    "run": 40479267584,
+    "artifact": 12721929819,
+    "zip_sha256": "bc4b1846e2c571749ab68db761dcb962177d2d43a943cf275e1aa150334fdf62",
+    "native_short_training": "PASS",
+    "learned_utility": "UNPROVEN"
+  },
+  "base": {
+    "run": 40479795455,
+    "artifact": 12722019001,
+    "zip_sha256": "d218fcb6ff3c5b820c00921428822ff46cba18c3a60b1bdb2634160f356e3248",
+    "base_only_22": "PASS",
+    "candidate": "NOT_RUN"
+  },
+  "backup": "private Library byte-verified",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "check heavy owner and activate separate 44-response V2 on exact preregistered branch; independently audit original raw"
+}
