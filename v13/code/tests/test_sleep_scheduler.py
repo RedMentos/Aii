@@ -66,6 +66,29 @@ class SchedulerTests(Base):
         self.assertEqual(s3.next()['kind'],'TIMER');self.assertEqual(s3.next()['kind'],'REPLAY_DUE')
         self.assertEqual(s3.complete(a,'RETRY'),'PENDING');self.assertEqual(s3.next()['attempts'],3)
         self.assertEqual(s3.complete(a,'RETRY'),'FAILED')
+    def test_background_budget_uses_dispatch_after_last_user_turn(self):
+        from v13.inputs import set_burnout
+        c=Clock()
+        s=self.sched(c)
+        set_burnout(self.r.store,1)
+        s.post('IDLE',action='sleep_a',due=c.t+30)
+        s.post('REPLAY_DUE',action='wake_replay',due=c.t+30)
+        # The events were posted BEFORE this accepted user turn, but will
+        # actually run AFTER it. Creation time must not bypass the budget.
+        event=self.r.store.event(self.r.session,'Scheduler budget reset')
+        with self.r.store.tx() as tx:
+            tx.execute("INSERT INTO accepted_turns(event_id,bytes,accepted_at,state) VALUES (?,?,?,?)",
+                       (event['event_id'],1,c.t+10,'DONE'))
+        c.t+=31
+        first=s.next()
+        self.assertEqual(first['kind'],'REPLAY_DUE')
+        self.assertEqual(s.background_since_input(),1)
+        self.assertIsNone(s.next())  # one dispatch exhausted the budget
+        self.assertEqual(s.complete(first['id'],'DONE'),'DONE')
+        self.assertEqual(s.background_since_input(),1)  # retirement retains dispatch time
+        self.assertIsNone(s.next())
+        self.assertEqual(s.report()['history'][-1]['dispatched'],c.t)
+
     def test_quiet_hours_and_capacity(self):
         s=self.sched();s.post('IDLE',action='sleep_full');s.post('TIMER',origin='USER',action='sleep_a')
         self.assertEqual(s.next(quiet=True)['origin'],'USER');self.assertIsNone(s.next(quiet=True))
