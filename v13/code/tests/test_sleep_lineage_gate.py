@@ -66,6 +66,21 @@ class SleepLineageGateTests(Base):
         with self.assertRaises(ValueError):
             S.validate_ttt_export(self.r.store, p)
 
+    def test_malformed_unhashable_context_or_session_fails_as_value_error(self):
+        self.setup_three()
+        p, rows = self.candidates()
+        self.assertTrue(rows)
+        original = p.read_bytes()
+        for field, value in (('context_event_ids', [{}]), ('session', [])):
+            try:
+                modified = [dict(row) for row in rows]
+                modified[0][field] = value
+                p.write_text('\\n'.join(json.dumps(row) for row in modified) + '\\n')
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    S.validate_ttt_export(self.r.store, p)
+            finally:
+                p.write_bytes(original)
+
     def test_valid_source_retains_existing_sleep_behavior(self):
         self.setup_three()
         p, rows = self.candidates()
