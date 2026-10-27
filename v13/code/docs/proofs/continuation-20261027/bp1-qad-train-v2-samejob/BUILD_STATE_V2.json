@@ -1,0 +1,54 @@
+{
+  "schema": "V13_BP1_QAD_TRAIN_PLUS_V2_SAMEJOB_STATE_V1",
+  "owner": "GPT-6 independent",
+  "branch": "codex/gpt6-bp1-qad-train-plus-v2-20261027",
+  "parent": "3b44a124aca905d7edfd4e4a8a74aea31b71732e",
+  "strict_proof_review_parent": "bce2f565c55f658663e0f90af31b6cd30889b3c8",
+  "status": "SOFTWARE_STATIC_GREEN_NATIVE_NOT_TRIGGERED",
+  "source_head": "22fab4aff9696631c4589676889c75561fdfcabf",
+  "activation_path": "v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE.txt",
+  "activation_exists": false,
+  "heavy_concurrency_group": "v13-bp1-qad-native-smoke-heavy-serial",
+  "red": {
+    "run": 40480280514,
+    "artifact": 12722671623,
+    "zip_sha256": "8ce3f7dcac4dda24e2a6b2fac925a5847fbb1ccb29ce89b1293b2a335437a325",
+    "tests": "41 regression PASS, static 2 PASS 1 FAIL",
+    "privacy": "CLEAN"
+  },
+  "green": {
+    "run": 40480421581,
+    "artifact": 12723360047,
+    "zip_sha256": "3bd0da6c506449975429a5b74ee59bc97b927a53cbea08d9b8740a4f6fe43024",
+    "tests": "41/41 regressions + 3/3 static PASS",
+    "compile_exit": 0,
+    "privacy": "CLEAN"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Train-V2-SameJob/",
+  "private_backup_byte_identical": true,
+  "upstream_native_train": {
+    "run": 40479267584,
+    "status": "RUNNING_UNVERIFIED"
+  },
+  "upstream_base_only": {
+    "run": 40479795455,
+    "status": "PENDING_UNVERIFIED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "Independently close train/base native evidence, then explicitly activate same-job native 44-response V2 if train proof GREEN and heavy owner free",
+  "next_command": "Inspect GitHub Actions 40479267584 and 40479795455, audit original ZIP; only then create ACTIVATE.txt if prerequisites hold",
+  "prerequisites": [
+    "genuine native 25-row train GREEN with original raw proof",
+    "no active heavy owner",
+    "source/model/runner/seed pins unchanged",
+    "no public adapter weights",
+    "no utility gate promotion from partial"
+  ]
+}
