@@ -18,4 +18,10 @@ Synthetic negative controls deliberately reserialize and rehash incomplete check
 - **Do not claim PASS until exact-head Actions logs are inspected.** Preserve original RED and any failed attempts.
 - This is a synthetic software-only integrity candidate. It is **not** a native LFM2 body run, Redmi evidence, JEPA utility proof, or age promotion. `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, registered `jepa_weight=0`, Age authority 0, V13 incomplete.
 
+## Verified focused helper result
+
+- Actions `40517894874`, exact source `63ac50f1bc8b8246fcb115085ab98ce18525c51f`: **11/11 synthetic helper tests PASS**, Python compile PASS, privacy CLEAN, diff check PASS. The log confirms the rehashed missing-state and missing-slot tests, plus no-state save refusal.
+- Original test-only RED run `40517824916` was **CANCELLED**, not a measured failure. A separate immutable RED witness branch `codex/automation11-bj1-optimizer-red-witness-20261027` at `e4a7fefb6b4a542376c54fef479ff20233b1a2c1`, Actions `40518210679`, is pending. Do not invent its result.
+- Tiny synthetic HF/PEFT exact fit-resume Actions `40518115903` is pending. The helper result does not replace integration/native evidence.
+
 **Next command:** `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit` (requires CPU Torch/Transformers/PEFT). Verify RED/GREEN CI, independently review optimizer schema compatibility, then run broader suite and prepare a newly registered native continuation diagnostic without rewriting original failed evidence.
