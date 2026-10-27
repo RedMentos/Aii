@@ -1,0 +1,7 @@
+# Five-way broad software differential preregistration (2026-10-27)
+
+**Before new run.** Exact parent PR671 review head `6ea818ba57a2a5360ccee2fc3b8aeeb367688449`. The disposable five-way merge order is World+AG5 (three exact conflicts, deterministic resolver), Claude `e505364c`, PR667 `551d6212`, PR669 `2671f054`, and disposable operator-guide additions for `:modul`/`:wachter`. No remote merged runtime or production overwrite.
+
+Frozen historical AG5+World broad baseline artifact `ag5-world-baseline-red1-40460394112.zip`: 4424 tests, **5 FAIL, 73 ERROR**, canonical sorted unittest failure signature SHA256 `7fb3abd6ce63db14c0f740248d3cc6740d83f0f9d9812330053b995e32c64e5a` (sorted `^(FAIL|ERROR): .+$` headers, compact UTF-8 JSON). Original ZIP and raw logs preserved privately. New five-way modules/tests may increase test count; expected non-regression means exact failure signature SHA, counts 5/73, total >= 4424, no new unexpected failures. A different signature is RED and must be reviewed, even if total count is unchanged. A matching signature is **HISTORICAL_RED_UNCHANGED**, NOT full-suite PASS.
+
+Run focused 128-test suite first, then full `unittest discover`, compile and privacy scan, preserve all original logs/exit codes, hashes and the merged-tree commit in an artifact. CI is software-only Linux with model downloads disabled. No native/Redmi/age/learning/gate promotion. Next owner independent broad reviewer; exact replay is the workflow `.github/workflows/ag5-world-fiveway-broad-review.yml` on this branch.
