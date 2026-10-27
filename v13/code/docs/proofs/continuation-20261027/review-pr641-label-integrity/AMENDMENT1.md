@@ -1,0 +1,3 @@
+# Prospective CI-only amendment 1 (2026-10-27)
+
+The first review workflow was created by transforming an unrelated Run644 workflow. A global name replacement left nonexistent `test_review641_curiosity_receipt.py` and irrelevant AG5 tests in the source hash/compile/focused commands. This is a **harness construction error**, not evidence for or against Claude PR641's route-label behavior. Before modifying the workflow, freeze this diagnosis. Repair only paths to `tests/test_review_pr641_exact_route_labels.py`, focused `tests.test_review_pr641_exact_route_labels tests.test_route_words tests.test_learning_worker`, and the scoped proof path. Preserve any already-triggered original CI RED logs. Preregistered 5 checks and the source under review remain unchanged.
