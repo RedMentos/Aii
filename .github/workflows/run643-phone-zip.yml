@@ -124,10 +124,16 @@ jobs:
             echo 'PACKAGE_OR_EXTRACT_FAILED' > "$RUNNER_TEMP/RUN643_PORTABLE_RAW.log"
           fi
           if [ "$rc" = 0 ]; then
-            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run643venv/bin/python" -m unittest -v tests.test_bodyport tests.test_b3bridge) > "$RUNNER_TEMP/RUN643_BODY_RAW.log" 2>&1
+            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && V13_SOURCE_ONLY_DIAGNOSTIC=1 V13_NO_AUTOSTART=1 V13_HOME="$RUNNER_TEMP/run643-offline-home" PYTHONPATH="$PWD:$PWD/scripts" bash setup.sh) > "$RUNNER_TEMP/RUN643_SETUP_RAW.log" 2>&1
             rc=$?
           else
-            echo 'PORTABLE_FAILED' > "$RUNNER_TEMP/RUN643_BODY_RAW.log"
+            echo 'PORTABLE_FAILED' > "$RUNNER_TEMP/RUN643_SETUP_RAW.log"
+          fi
+          if [ "$rc" = 0 ]; then
+            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/tests:$PWD/scripts" "$RUNNER_TEMP/run643venv/bin/python" -m unittest -v tests.test_bodyport tests.test_b3bridge) > "$RUNNER_TEMP/RUN643_BODY_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'PORTABLE_OR_SETUP_FAILED' > "$RUNNER_TEMP/RUN643_BODY_RAW.log"
           fi
           echo "$rc" > "$RUNNER_TEMP/RUN643_TEST_EXIT.txt"
           exit 0
