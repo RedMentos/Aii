@@ -33,7 +33,7 @@ class SleepCommitAckTests(unittest.TestCase):
 
     def test_full_cas_conflict_does_not_claim_done_or_advance_durable_clock(self):
         before = self.cy.queue.load()[0]['last_full']
-        with mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('CAS conflict')) as save:
+        with mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('Stale state write')) as save:
             report = self.run_full()
         save.assert_called_once()
         self.assertEqual(report['status'], 'INTERRUPTED')
@@ -86,14 +86,23 @@ class SleepCommitAckTests(unittest.TestCase):
 
     def test_nonfull_commit_conflict_cannot_claim_done(self):
         with mock.patch.object(self.cy, 'sleep_c', return_value={'phase':'SLEEP_C','status':'DONE'}), \
-             mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('CAS conflict')):
+             mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('Stale state write')):
             report = self.cy.run('c', origin='USER', resource=lambda:'NORMAL')
         self.assertEqual(report['status'], 'INTERRUPTED')
         self.assertIs(report['schedule_saved'], False)
 
+    def test_noncas_schedule_validation_failure_is_error_not_fake_conflict(self):
+        with mock.patch.object(self.cy, 'sleep_c', return_value={'phase':'SLEEP_C','status':'DONE'}), \
+             mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('Nonfinite schedule payload')):
+            report = self.cy.run('c', origin='USER', resource=lambda:'NORMAL')
+        self.assertEqual(report['status'], 'ERROR')
+        self.assertEqual(report['reason'], 'SCHEDULE_SAVE_REJECTED')
+        self.assertIs(report['schedule_saved'], False)
+        self.assertEqual(self.r.store.state(LAST_KEY, None)[0]['status'], 'ERROR')
+
     def test_existing_error_status_not_masked_by_cas_conflict(self):
         with mock.patch.object(self.cy, 'sleep_a', side_effect=RuntimeError('phase failed')), \
-             mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('CAS conflict')):
+             mock.patch.object(self.cy.queue, 'save', side_effect=ValueError('Stale state write')):
             with self.assertRaisesRegex(RuntimeError, 'phase failed'):
                 self.cy.run('full', origin='USER', resource=lambda:'NORMAL')
         self.assertEqual(self.r.store.state(LAST_KEY, None)[0]['status'], 'ERROR')
