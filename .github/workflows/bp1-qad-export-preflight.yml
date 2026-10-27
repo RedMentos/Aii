@@ -60,7 +60,7 @@ jobs:
         run: |
           set +e
           if [ "$(cat "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m unittest -v tests.test_bp1_qad_export_preflight) > "$RUNNER_TEMP/bp1-export-preflight/UNIT_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m unittest discover -s tests -p 'test_bp1_qad_export_preflight.py' -v) > "$RUNNER_TEMP/bp1-export-preflight/UNIT_RAW.log" 2>&1
             echo "$?" > "$RUNNER_TEMP/bp1-export-preflight/UNIT_EXIT.txt"
           else
             echo 'PINNED_DEPENDENCY_FAILED' > "$RUNNER_TEMP/bp1-export-preflight/UNIT_RAW.log"
