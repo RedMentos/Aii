@@ -1,0 +1,14 @@
+# Run648 C3 selected-native protocol-locality KL weight dose test — prereg 2026-10-27
+
+Exact base: Run647 review head `c615497384dc5519be59232451895ca443ce9e45` (PR648). Candidate-only isolated files `scripts/run648_*`, frozen new `COHORT.json`, source tests, native workflow, raw proof. Do not alter LoraTrainer, Run638/639/642 source/cohorts/hashes, canonical seed, model/license/deployed artifacts, age/approval or production weights.
+
+## Observed reason to run
+Run642 native Actions 40437401540 at `85108f2ef2fc09c9bd1648e57020385e9aa4361e` completed the selected 32-step master LoRA and deployed QAD-Q4 comparison. Exact raw original artifact 12704852652 SHA256 `cecf2bf0d725886c6e47f0d1d44f69582b43ca5f852dad128136d710fefc2d5c` is CRC-verified and privately backed up. It achieved Alder train 2/2, heldout 1/2, Cedar near-miss leakage **2/2**, numeric effect true, scale0/tokenizer parity true, so **bounded utility FAILED**. Four disjoint Pine/Maple same-template base-KL anchors at weight 1 did not prevent global protocol transfer.
+
+## Single treatment and unchanged controls
+Exactly one hyperparameter changes: `anchor_weight: 1.0 -> 8.0` on the SAME four protocol-locality base-KL anchors. No new examples, no evaluation prompt in training, no target label leakage, no new model or seed. Keep Run642's two Alder train, two heldout, two Cedar near-miss, four Birch/arithmetic/farewell generic anchors, four Pine/Maple protocol anchors, licensed pinned LFM2.5-350M master, selected QAD-Q4 GGUF, official template, llama.cpp b10964 server, seed 13, rank 2, alpha 4, v_proj/out_proj, LR 0.001, 32 optimizer steps, `jepa_weight=0`, original baseline Run639 adapter and its raw proof. New prospective cohort committed before candidate implementation and frozen by git blob SHA.
+
+## Fixed acceptance
+Source: exact cohort/model/license/seed/config, disjoint train/holdout/Cedar/anchors, no production authority, no false STEP2/B3/Body-JEPA/Redmi promotion. Native: actual 32 optimizer steps, nonzero LoRA-B and GGUF export, pinned master/deployed/license/server and exact historical Run639 artifacts, HF/native token parity, candidate scale0==base, candidate scale1 numeric effect, Alder train >=1/2, heldout >=1/2, Cedar leakage **0/2**. Report strict historical Run639 5/6 full-text baseline parity separately; never reinterpret as new acceptance. A native run can pass execution while failing utility. Retain every negative result and raw source/ZIP hashes. No automatic activation or model promotion.
+
+Execution order: prereg -> freeze cohort -> source-only adversarial tests -> isolated native 32-step train/eval only if dependencies/pinned artifacts available and no other heavy native owner -> private raw backup -> BUILD_STATE. This is one candidate, not a hyperparameter sweep. If it fails, do not silently retune.
