@@ -2,7 +2,7 @@
   "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
   "date_utc": "2026-10-27",
   "owner": "GPT-6 continuation",
-  "parent_pr": "746 candidate",
+  "parent_pr": 747,
   "parent_sha": "46aca17c50e9d291d7757434930f8f08ed85b8e4",
   "branch": "codex/automation11q-world-ensemble-20261027",
   "pr": null,
