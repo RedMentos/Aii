@@ -19,5 +19,13 @@ The two parents share the PR #718 review chain. Their changed runtime/test paths
 
 **Negative gates retained:** STEP2 UTILITY_FAIL, B3 L1 FAIL, BJ1 NO_SIGNAL, registered `jepa_weight=0`, Age authority 0, Redmi unmeasured, `canonical_architecture_complete=false`, V13 incomplete.
 
+## Verified integrated software evidence — exact tested merge SHA
+
+- GitHub Actions `40518877350` at merge commit `5323f65e2b37144c81820a9a250e87c6add8fbc7`: **38/38 focused PASS** (Context OS + BJ1 checkpoint + tiny HF/PEFT fit), **1,881 full-suite tests PASS with 1 skip**. All original `INSTALL_EXIT`, `FOCUSED_EXIT`, `UNIT_EXIT`, `COMPILE_EXIT`, `PRIVACY_EXIT`, `DIFF_EXIT` are **0**. No native model loaded.
+- Original GitHub Actions artifact `12741421159`, 15 files, ZIP SHA256 `dc3bf1cfde4dbc6c8546ce8c66228c7df82f9770ac2c3b238decaeb52b07cbd8`, CRC PASS. `HEAD.txt` matches exact merge SHA; `FOCUSED_RAW.log` and `UNIT_RAW.log` preserved, not summarized in place.
+- Private Library backup `/V13-Checkpoints/2026-10-27/BJ1-N7-Integration/v13-bj1-n7-integration-40518877350.zip`; re-materialized and SHA256 byte-exact compared with the original ZIP: **PASS**. Rejected anyone-writable Drive was not used.
+- Parent N7-only broad suite `40518088127` remains **RED** (1,866 tests, 1 historical optional-path `PermissionError`, 1 skip; raw artifact `12739414623`). The BJ1 chain's narrow `test_toolforecast` optional-path fix is present in this integrated tree, and this integrated full suite is independently GREEN. Preserve the parent RED and its raw evidence.
+- This result is software-only. No STEP2/B3/BJ1/Body-JEPA utility, native adapter score, Redmi, Age or whole-system completion can be inferred.
+
 **Next command:** `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit`.
 **Next prerequisites:** inspect integration CI raw logs; independently review both parent diffs and remaining source-binding/optimizer/cost guards; only then consider review integration, and continue substantive Canon packages. Do not merge into old `main` directly.
