@@ -19,10 +19,18 @@ Confidence = coverage of the operation (count over all slots) x 1/(1 + (ensemble
 on held-out transitions) / ERR_REF) x state-OOD term (worst slot). The typical-error term is the model's own record of
 how predictable an operation is (random content makes `write_long` less predictable than `remove`).
 """
+import hashlib
+import io
+import json
+from pathlib import Path
+import zipfile
 import numpy as np
+from v13.common import atomic_write
 from v13.world_jepa import Adam, encode, predict, loss_grads, collapse_stats, _init, _init_inv, _init_pred
 
 REVISION = 'z12c-slot-world-jepa-v1'
+CHECKPOINT_REVISION = 'z12c-slot-world-jepa-inference-npz-v1'
+MAX_CHECKPOINT_BYTES = 32 * 1024 * 1024  # small phone inference-only checkpoint, no optimizer state
 H = 32; K = 8; HP = 48
 LR = 2e-3; TAU = .99; VAR_W = 1.; COV_W = .04; INV_W = 1.; BATCH = 128   # BATCH counts states (x slots rows)
 COVER_N = 8.       # BOOT: samples per operation for ~63 % of the coverage term (as world_model.py)
@@ -114,3 +122,133 @@ class SlotWorldJEPA:
 
     def collapse_stats(self, X2):
         return collapse_stats(self.latent(X2).reshape(-1, self.k))
+
+    @staticmethod
+    def _provenance(provenance):
+        if (type(provenance) is not dict or not provenance
+                or any(type(k) is not str or not k or len(k)>80
+                       or type(v) is not str or not v or len(v)>256
+                       for k, v in provenance.items())):
+            raise ValueError('Checkpoint requires nonempty explicit string provenance')
+        return dict(provenance)
+
+    def save(self, path, provenance):
+        """Atomically persist a bound, pickle-free inference-only SHADOW model.
+
+        This does not store the optimizer or authorize runtime activation,
+        fact writes, age changes or training continuation.
+        """
+        self._provenance(provenance)
+        if not all(hasattr(self, k) for k in ('enc','tgt','preds','mu','sd','zsd',
+                                              'op_counts','op_err','_ztrain','_nn_med')):
+            raise ValueError('Slot World-JEPA must be fitted before checkpointing')
+        if not 1<=self.S<=128 or not 1<=len(self.preds)<=16:
+            raise ValueError('Invalid slot/ensemble count')
+        dims = {'slots': int(self.S), 'seed': int(self.seed),
+                'ensemble': len(self.preds), 'k': int(self.k),
+                'h': int(self.h), 'hp': int(self.hp),
+                'input_dim': int(len(self.mu)), 'op_dim': int(len(self.op_counts))}
+        if not (1<=dims['input_dim']<=4096 and 2<=dims['op_dim']<=128
+                and 1<=dims['k']<=256 and 1<=dims['h']<=1024 and 1<=dims['hp']<=1024):
+            raise ValueError('Checkpoint dimensions out of bounds')
+        arrays = {'mu': self.mu, 'sd': self.sd, 'zsd': self.zsd,
+                  'op_counts': self.op_counts, 'op_err': self.op_err,
+                  'ztrain': self._ztrain, 'nn_med': np.array([self._nn_med])}
+        for prefix, weights in (('enc', self.enc), ('tgt', self.tgt)):
+            for name in ('W1','b1','W2','b2'): arrays[prefix+'_'+name] = weights[name]
+        for i, weights in enumerate(self.preds):
+            for name in ('P1','c1','P2','c2'): arrays[f'pred{i}_'+name] = weights[name]
+        for key, value in list(arrays.items()):
+            a = np.asarray(value)
+            if a.dtype != np.dtype('float64') or not np.isfinite(a).all():
+                raise ValueError('Nonfinite or non-float64 checkpoint array: '+key)
+            arrays[key] = a
+        meta = {'checkpoint_revision': CHECKPOINT_REVISION, 'model_revision': REVISION,
+                'inference_only': True, 'provenance': dict(provenance), **dims}
+        encoded = json.dumps(meta, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        if len(encoded)>8192: raise ValueError('Checkpoint metadata too large')
+        buf = io.BytesIO()
+        np.savez_compressed(buf, meta=np.frombuffer(encoded, dtype=np.uint8), **arrays)
+        data = buf.getvalue()
+        if len(data)>MAX_CHECKPOINT_BYTES: raise ValueError('Checkpoint exceeds size cap')
+        atomic_write(path, data)
+        return {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data),
+                'checkpoint_revision': CHECKPOINT_REVISION, 'inference_only': True}
+
+    @classmethod
+    def load(cls, path, expected_provenance=None):
+        """Fail closed on unbound, malformed, oversized or incompatible snapshots."""
+        cls._provenance(expected_provenance)
+        raw = Path(path).read_bytes()
+        if not 100<=len(raw)<=MAX_CHECKPOINT_BYTES:
+            raise ValueError('Checkpoint file size out of bounds')
+        try:
+            with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                infos = archive.infolist()
+                names = [x.filename for x in infos]
+                if (len(names)!=len(set(names))
+                        or sum(x.file_size for x in infos)>MAX_CHECKPOINT_BYTES
+                        or any(x.file_size>MAX_CHECKPOINT_BYTES or
+                               not x.filename.endswith('.npy') or
+                               '/' in x.filename or '\\' in x.filename
+                               for x in infos)):
+                    raise ValueError('Unsafe checkpoint archive')
+            with np.load(io.BytesIO(raw), allow_pickle=False) as z:
+                if 'meta' not in z.files: raise ValueError('Missing metadata')
+                mb = z['meta']
+                if mb.dtype != np.dtype('uint8') or mb.ndim!=1 or len(mb)>8192:
+                    raise ValueError('Invalid checkpoint metadata')
+                meta = json.loads(mb.tobytes().decode('utf-8'))
+                if (type(meta) is not dict or meta.get('checkpoint_revision')!=CHECKPOINT_REVISION
+                        or meta.get('model_revision')!=REVISION
+                        or meta.get('inference_only') is not True
+                        or meta.get('provenance')!=expected_provenance):
+                    raise ValueError('Checkpoint revision/provenance mismatch')
+                dims = {k: meta.get(k) for k in
+                        ('slots','seed','ensemble','k','h','hp','input_dim','op_dim')}
+                if any(type(v) is not int for v in dims.values()):
+                    raise ValueError('Invalid checkpoint dimensions')
+                S, n, k, h, hp, d, na = (dims[q] for q in
+                    ('slots','ensemble','k','h','hp','input_dim','op_dim'))
+                if not (1<=S<=128 and 1<=n<=16 and 1<=k<=256 and
+                        1<=h<=1024 and 1<=hp<=1024 and 1<=d<=4096 and 2<=na<=128):
+                    raise ValueError('Checkpoint dimensions out of bounds')
+                shapes = {'mu':(d,), 'sd':(d,), 'zsd':(k,),
+                          'op_counts':(na,), 'op_err':(na,),
+                          'nn_med':(1,)}
+                for prefix in ('enc','tgt'):
+                    shapes.update({prefix+'_W1':(h,d), prefix+'_b1':(h,),
+                                   prefix+'_W2':(k,h), prefix+'_b2':(k,)})
+                for i in range(n):
+                    shapes.update({f'pred{i}_P1':(hp,k+na), f'pred{i}_c1':(hp,),
+                                   f'pred{i}_P2':(k,hp), f'pred{i}_c2':(k,)})
+                if set(z.files)!=set(shapes)|{'meta','ztrain'}:
+                    raise ValueError('Unexpected or missing checkpoint array')
+                arrays = {}
+                for name in shapes:
+                    a = z[name]
+                    if a.dtype!=np.dtype('float64') or a.shape!=shapes[name] or not np.isfinite(a).all():
+                        raise ValueError('Invalid checkpoint array: '+name)
+                    arrays[name] = np.array(a, copy=True)
+                ztrain = z['ztrain']
+                if (ztrain.dtype!=np.dtype('float64') or ztrain.ndim!=2 or
+                        ztrain.shape[1]!=k or not 1<=len(ztrain)<=2000 or
+                        not np.isfinite(ztrain).all()):
+                    raise ValueError('Invalid checkpoint training support')
+                arrays['ztrain'] = np.array(ztrain, copy=True)
+        except (zipfile.BadZipFile, KeyError, UnicodeError, TypeError, OSError, EOFError) as exc:
+            raise ValueError('Invalid slot World-JEPA checkpoint') from exc
+        if (np.any(arrays['sd']<=0) or np.any(arrays['zsd']<=0)
+                or np.any(arrays['op_counts']<0) or np.any(arrays['op_err']<0)
+                or arrays['nn_med'][0]<=0):
+            raise ValueError('Invalid checkpoint calibration')
+        model = cls(S, seed=dims['seed'], ensemble=n, k=k, h=h, hp=hp)
+        model.mu, model.sd, model.zsd = arrays['mu'], arrays['sd'], arrays['zsd']
+        model.op_counts, model.op_err = arrays['op_counts'], arrays['op_err']
+        model._ztrain, model._nn_med = arrays['ztrain'], float(arrays['nn_med'][0])
+        model.enc = {q: arrays['enc_'+q] for q in ('W1','b1','W2','b2')}
+        model.tgt = {q: arrays['tgt_'+q] for q in ('W1','b1','W2','b2')}
+        model.preds = [{q: arrays[f'pred{i}_'+q] for q in ('P1','c1','P2','c2')}
+                       for i in range(n)]
+        model.history = []  # inference-only; no training-resume claim
+        return model
