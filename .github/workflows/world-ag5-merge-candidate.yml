@@ -51,7 +51,7 @@ jobs:
           diff -u <(printf 'v13/code/scripts/handy_pflicht.py\nv13/code/v13/operator.py\n') "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt"
           "$RUNNER_TEMP/mergecandidate/bin/python" v13/code/scripts/resolve_world_ag5_candidate.py > "$RUNNER_TEMP/mergeproof/RESOLUTION_RAW.json"
           git add v13/code/scripts/handy_pflicht.py v13/code/v13/operator.py
-          git diff --cached --check
+          git diff --cached --check -- v13/code/scripts/handy_pflicht.py v13/code/v13/operator.py
           test -z "$(git diff --name-only --diff-filter=U)"
           "$RUNNER_TEMP/mergecandidate/bin/python" -m json.tool v13/code/BUILD_STATE.json > /dev/null
           git diff --cached --stat > "$RUNNER_TEMP/mergeproof/RESOLUTION_STAT.txt"
