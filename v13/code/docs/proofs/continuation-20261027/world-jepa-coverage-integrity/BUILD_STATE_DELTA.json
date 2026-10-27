@@ -1,0 +1,48 @@
+{
+  "date_utc": "2026-10-27",
+  "scope": "REVIEW_ONLY_SOFTWARE_SYNTHETIC",
+  "owner": "GPT-6 automation continuation",
+  "parent_pr": 746,
+  "parent_commit": "13355020dc13b45bc4096446b65568bd50f4e385",
+  "review_pr": 748,
+  "branch": "assistant/v13-world-jepa-coverage-20261027",
+  "prereg_commit": "5796addd7755432774b724837ce2a8e12449f550",
+  "source_commit": "e3de852f572d531a1a748dcf88c2c990558f63aa",
+  "world_jepa_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "red": {
+    "run": 40549725719,
+    "head": "30dd10ccb6c1bb25a54e6703022b1686019d1e74",
+    "result": "5 EXPECTED FAIL, 4 PASS",
+    "artifact_id": 12753963101,
+    "zip_sha256": "552014d3ce33076e58c4a274e7bfd7df661c3686e49688fead5ffda40e34106f"
+  },
+  "green": {
+    "run": 40550021728,
+    "head": "e3de852f572d531a1a748dcf88c2c990558f63aa",
+    "result": "9 PASS; INSTALL/UNIT/COMPILE/PRIVACY/DIFF 0",
+    "artifact_id": 12755021449,
+    "zip_sha256": "5a68d5774c7bc5e474e7b65b06a0da7c9bbac752a4b18cf36b7afbcd5a58bbb3"
+  },
+  "full_suite": {
+    "run": 40550351354,
+    "head": "50c0a73c22d53eeb708a491f7c6b26cddd492d8d",
+    "status": "PENDING_AT_CHECKPOINT"
+  },
+  "gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "blockers": [
+    "No Redmi device in this runtime",
+    "No learned World-JEPA utility proof",
+    "Independent review and main integration pending"
+  ],
+  "next": "Read GitHub Actions 40550351354 jobs and raw artifact; append closure. Continue registered heldout PR child branch; do not promote gates."
+}
