@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN634_OFFICIAL_PINNED_JINJA_NATIVE_PENDING_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation, separate native C3 retrieval-only package",
+  "branch": "codex/automation11-run634-c3-pinned-chat-template-20261027",
+  "parent_pr": 628,
+  "parent_head": "d91e50bf2579d6ade4b75d99722a7a220b0db0ba",
+  "prereg_commit": "e2d6f9c6880342bec9ab9b4a9e9d44ec2caae545",
+  "test_commit": "462673d2d7425e9be27e12c214e8d5d0075f1653",
+  "workflow_commit": "c8547c49c9f2dc4968436431e7a57551e310c56b",
+  "workflow_blob": "d8818295b7d04e1edfcc2c76beb183958758e9ed",
+  "test_blob": "70c627afc32ac83bfdac2e4458826295d517805d",
+  "run_id": 40428155218,
+  "status": "IN_PROGRESS_UNVERIFIED",
+  "intervention": "Add exact official chat_template.jinja from immutable HF master revision to snapshot_download allow_patterns; source-only HF tokenizer parity preflight",
+  "frozen": {
+    "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
+    "run632_script_blob": "b59f45f06bf0b8428fba502b8146c02205228edd",
+    "lora_trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "specs_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "master_repo": "LiquidAI/LFM2.5-350M",
+    "master_revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "license": "LFM Open License v1.0",
+    "selected_deployed_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "next_exact_command": "Inspect Actions 40428155218 at exact commit c8547c49c9f2dc4968436431e7a57551e310c56b; download original raw artifact; verify ZIP CRC and internal SHA, exits and actual template/tokenizer/optimizer outcome; back up privately with byte roundtrip. If native fit succeeds, next prove selected deployed GGUF adapter compatibility and utility; otherwise preserve raw failure and switch to independent canonical package."
+}
