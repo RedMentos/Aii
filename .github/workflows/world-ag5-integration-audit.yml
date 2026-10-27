@@ -1,0 +1,60 @@
+name: V13 read-only world vs AG5 merge-tree audit
+on:
+  push:
+    branches:
+      - codex/world-ag5-integration-audit-20261027
+    paths:
+      - '.github/workflows/world-ag5-integration-audit.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-ag5-integration-audit
+  cancel-in-progress: false
+jobs:
+  topology:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Read-only exact-head merge simulation
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/mergetreeproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/mergetreeproof/HEAD.txt"
+          git fetch --no-tags origin c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/mergetreeproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/mergetreeproof/FETCH_EXIT.txt"
+          git rev-parse FETCH_HEAD > "$RUNNER_TEMP/mergetreeproof/OTHER_HEAD.txt"
+          git merge-base HEAD FETCH_HEAD > "$RUNNER_TEMP/mergetreeproof/MERGE_BASE.txt"
+          git rev-list --left-right --count HEAD...FETCH_HEAD > "$RUNNER_TEMP/mergetreeproof/AHEAD_BEHIND.txt"
+          timeout 240s git merge-tree --write-tree HEAD FETCH_HEAD > "$RUNNER_TEMP/mergetreeproof/MERGE_TREE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/mergetreeproof/MERGE_EXIT.txt"
+          grep -E '^(CONFLICT|Auto-merging)' "$RUNNER_TEMP/mergetreeproof/MERGE_TREE_RAW.log" > "$RUNNER_TEMP/mergetreeproof/CONFLICT_SUMMARY.txt" || true
+          git status --porcelain > "$RUNNER_TEMP/mergetreeproof/WORKTREE_STATUS.txt"
+          git diff --name-only "$(cat "$RUNNER_TEMP/mergetreeproof/MERGE_BASE.txt")" HEAD > "$RUNNER_TEMP/mergetreeproof/WORLD_CHANGED_FILES.txt"
+          git diff --name-only "$(cat "$RUNNER_TEMP/mergetreeproof/MERGE_BASE.txt")" FETCH_HEAD > "$RUNNER_TEMP/mergetreeproof/AG5_CHANGED_FILES.txt"
+          python3 -m compileall -q v13/code/scripts/world_jepa_shadow_lifecycle.py > "$RUNNER_TEMP/mergetreeproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/mergetreeproof/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3c527cebe70947d910121f8c605b66ba0de810a5 --head HEAD > "$RUNNER_TEMP/mergetreeproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/mergetreeproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw immutable topology
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-ag5-merge-tree-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/mergetreeproof/
+          if-no-files-found: error
+      - name: Enforce read-only and hygiene
+        run: |
+          set -euo pipefail
+          for n in FETCH COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/mergetreeproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/mergetreeproof/${n}_RAW.log"; exit 1; }
+          done
+          test ! -s "$RUNNER_TEMP/mergetreeproof/WORKTREE_STATUS.txt"
+          echo "Merge-tree exit: $(cat "$RUNNER_TEMP/mergetreeproof/MERGE_EXIT.txt")"
+          cat "$RUNNER_TEMP/mergetreeproof/AHEAD_BEHIND.txt"
+          head -30 "$RUNNER_TEMP/mergetreeproof/CONFLICT_SUMMARY.txt"

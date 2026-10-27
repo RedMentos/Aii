@@ -1,4 +1,33 @@
 {
+  "automation11_world_ag5_merge_tree_20261027": {
+    "status": "READ_ONLY_MERGE_TREE_CONFLICTS_2_REVIEW_ONLY",
+    "world_parent": "3c527cebe70947d910121f8c605b66ba0de810a5",
+    "ag5_parent": "c615497384dc5519be59232451895ca443ce9e45",
+    "merge_base": "cb959052433e01c29afc007e02b93aef373deb7f",
+    "world_commits_ahead_at_audit": 97,
+    "ag5_commits_ahead": 3366,
+    "conflicts": [
+      "v13/code/scripts/handy_pflicht.py",
+      "v13/code/v13/operator.py"
+    ],
+    "actions": 40451319263,
+    "merge_tree_exit": 1,
+    "fetch_exit": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "worktree_unchanged": true,
+    "merge_commit_created": false,
+    "artifact_sha256": "eea7cb4c652f76457b30c7d7c2ec83a7c987808c841a6b3b8b9704ef0e321e60",
+    "private_backup": "/V13-Checkpoints/2026-10-27/World-AG5-Integration-Audit/",
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Read all three versions of two conflict files; test disposable merge; candidate review branch only, no owner overwrite"
+  },
   "automation11_world_file_timing_receipts_20261027": {
     "status": "REAL_LINUX_FILE_WORLD_TIMING_RECEIPT_PASS_REVIEW_ONLY",
     "base_pr": 655,
