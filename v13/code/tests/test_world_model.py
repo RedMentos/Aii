@@ -182,11 +182,11 @@ class FiniteEvidence(Base):
             {'expected':json.dumps({'forecast':{'input_chars':100,'resource_state':[]}}),'created':3600},
         ]
         for row in cases:
-            with self.subTest(row=row), mock.patch.object(self.r.store,'one',return_value=row):
+            with self.subTest(row=row), mock.patch.object(self.r.store,'one',return_value=row), mock.patch.object(WM,'load',return_value=None):
                 cf=WM.for_event(self.r.store,'event','detail')
                 self.assertEqual((cf['label'],cf['confidence'],cf['reason'],cf['authority']),
                                  ('SIMULATION_UNCERTAIN',0.,'INVALID_OBSERVED_STATE','HYPOTHESIS'))
-        with mock.patch.object(self.r.store,'one',return_value={'expected':json.dumps(good),'created':3600}):
+        with mock.patch.object(self.r.store,'one',return_value={'expected':json.dumps(good),'created':3600}), mock.patch.object(WM,'load',return_value=None):
             self.assertEqual(WM.for_event(self.r.store,'event','detail')['reason'],'NO_WORLD_MODEL')
         with mock.patch.object(self.r.store,'one',return_value=None):
             self.assertEqual(WM.for_event(self.r.store,'event','detail')['reason'],'NO_OBSERVED_STATE')
