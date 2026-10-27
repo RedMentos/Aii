@@ -45,6 +45,7 @@ def optimize(x,y,w,trace,cfg,stats=None,sw=None):
     if stats is not None:stats['max_applied_step_norm']=max_norm
     return w,trace
 
+OUTVOTED_CAP=.25  # BOOT: share of a route's scored labels that may count as outvoted (WP-KL3)
 def fold_ids(y,k):
     """Scored folds: the newest half of each route's corrections, dealt round-robin into k folds (-1 = always trains)."""
     f=np.full(len(y),-1,dtype=int)
@@ -67,15 +68,23 @@ def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
     sw=sw_all/sw_all.mean();err=gradient_check(x,y,w,sw);new,tr=optimize(x,y,w,trace,cfg,stats,sw);repeat,_=optimize(x,y,w,trace,cfg,sw=sw)
     deterministic=bool(np.array_equal(new,repeat))
     if not sc.any():return new,tr,{'n':0,'folds':k},False,False,err,deterministic  # too few corrections per route to score
+    outvoted=np.zeros(len(y),dtype=bool)
+    if cfg.get('route_gate_outvoted',0):  # WP-KL3: labels the full recency-weighted fit itself rejects are outvoted by newer evidence
+        full=objective(x,y,new)[2].argmax(1)!=y
+        for c in range(4):
+            ids=np.flatnonzero(sc&(y==c)&full);cap=int(np.sum(sc&(y==c))*OUTVOTED_CAP)
+            outvoted[ids[:cap]]=True  # oldest first; at most OUTVOTED_CAP of a route's scored labels
+        sc=sc&~outvoted
+        if not sc.any():return new,tr,{'n':0,'folds':k,'outvoted':int(outvoted.sum())},False,False,err,deterministic
     ys=y[sc];oldloss,_,oldp=objective(x[sc],ys,w);np_=newp[sc]
     newloss=float(-np.log(np.maximum(np_[np.arange(len(ys)),ys],1e-30)).mean())
     hit_new=np_.argmax(1)==ys;hit_old=oldp.argmax(1)==ys
     perclass={str(c):{'before':float(hit_old[ys==c].mean()),'after':float(hit_new[ys==c].mean()),'n':int((ys==c).sum())} for c in sorted(set(ys.tolist()))}
     accuracy=float(hit_new.mean());before_acc=float(hit_old.mean());baseline=float(np.mean(scaffold[sc]==ys))
     held={'n':int(sc.sum()),'folds':k,'scored':'newest half per route, out of sample','loss_before':float(oldloss),'loss_after':newloss,'accuracy':accuracy,
-          'parent_accuracy':before_acc,'scaffold_accuracy':baseline,'per_class':perclass}
+          'parent_accuracy':before_acc,'scaffold_accuracy':baseline,'per_class':perclass,'outvoted':int(outvoted.sum())}
     retained=all(v['after']>=v['before']-max(cfg['retention_max_delta'],1./v['n'])-1e-12 for v in perclass.values())
-    eligible=len(y)>=12 and len(perclass)==4 and newloss<oldloss and accuracy>before_acc and accuracy>=.75 and accuracy>=baseline and retained
+    eligible=len(y)>=12 and len(perclass)==4 and newloss<oldloss and (accuracy>before_acc or (cfg.get('route_gate_outvoted',0) and accuracy>=before_acc)) and accuracy>=.75 and accuracy>=baseline and retained
     return new,tr,held,eligible,retained,err,deterministic
 
 def train(inp,out):
@@ -109,7 +118,7 @@ def train(inp,out):
     metrics.update(commit_eligible=bool(eligible and finite and deterministic and reload_ok and err<1e-6),retention_pass=bool(retained),optimizer_steps=cfg['learning_steps'],**stats)
     metrics.update(effective_learning_rate=cfg['learning_rate'],effective_max_update_norm=cfg['max_update_norm'])
     metrics.update(feature_view='needle+words' if inp.get('texts') is not None else 'needle',word_revision=LEX_REVISION if inp.get('texts') is not None else None,
-                   recency_half_life=int(cfg.get('route_recency_half_life',0)),gate_folds=int(cfg.get('route_gate_folds',0)))
+                   recency_half_life=int(cfg.get('route_recency_half_life',0)),gate_folds=int(cfg.get('route_gate_folds',0)),gate_outvoted=int(cfg.get('route_gate_outvoted',0)))
     atomic_write(Path(out)/'metrics.json',dumps(metrics));return metrics
 if __name__=='__main__':
     request=json.loads(Path(sys.argv[1]).read_text());train(request,sys.argv[2])

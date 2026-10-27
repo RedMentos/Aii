@@ -86,7 +86,7 @@ def run_arm(installed, policy, seed):
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
-        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds
+        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds; r.cfg['route_gate_outvoted'] = int('ov' in flags)  # WP-KL3
         cache = {}
         def emb(text):
             if text not in cache:
@@ -155,7 +155,8 @@ def run_arm(installed, policy, seed):
                         u = r.store.one('SELECT * FROM updates ORDER BY created DESC LIMIT 1')
                         if u and u['status'] in ('PENDING_APPROVAL', 'EVALUATED_FAIL') and u['id'] not in [x.get('update_id') for x in log]:
                             cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand,
-                                                                         superseded=len(json.loads(u['manifest']).get('superseded_labels', [])))
+                                                                         superseded=len(json.loads(u['manifest']).get('superseded_labels', [])),
+                                                                         gate=(json.loads(u['manifest']).get('metrics') or {}).get('held_out'))  # WP-KL3: the worker's own check
                             if u['status'] == 'PENDING_APPROVAL':
                                 r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + u['id']); promos.append(u['id'])
                                 row['promoted'] = active_path() is not None and r.store.generation_id != before
@@ -259,6 +260,17 @@ def criteria_kl2(s):
     return c, 'KL2_STABLE_GATE_PASS' if all(c.values()) else 'KL2_STABLE_GATE_FAIL'
 
 
+def criteria_kl3(s):
+    a = [s['fixed+lex+rec+cv+ov'], s['adaptive+lex+rec+cv+ov']]
+    c = {'L1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'L2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'L3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'L4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'L5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'L6_runtime_path_half_ge_80pct': (s['fixed+lex+rec+cv+ov'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'KL3_FAIR_GATE_PASS' if all(c.values()) else 'KL3_FAIR_GATE_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -273,6 +285,9 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec+cv+ov', 'adaptive+lex+rec+cv+ov', 'fixed'} <= set(scores):
+        doc['criteria_kl3'], doc['verdict_kl3'] = criteria_kl3(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3-fair-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+lex+rec+cv', 'adaptive+lex+rec+cv', 'fixed'} <= set(scores):
         doc['criteria_kl2'], doc['verdict_kl2'] = criteria_kl2(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl2-stable-gate/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
@@ -282,7 +297,7 @@ def main(argv=None):
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':
