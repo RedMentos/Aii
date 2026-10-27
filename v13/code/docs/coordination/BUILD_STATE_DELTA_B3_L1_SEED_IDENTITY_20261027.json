@@ -1,0 +1,43 @@
+{
+  "status": "B3_L1_SEED_IDENTITY_REVIEW_ONLY",
+  "owner": "GPT independent B3 gate review",
+  "parent_sha": "6ce9754a418dc85204efed174c1b0ef23e0f8ae4",
+  "prereg": "8d94664b9d144ae9a722c8a021f816e2a853e425",
+  "red_test_commit": "1c1b09575ce4dab687bb33ff7bf7627c035a2281",
+  "source_blob_before": "050ad0e9e3948261a23a752e5379383a13d2e61b",
+  "source_blob_after": "556c0a9f018f183483812e41db96ee4ebcc93258",
+  "test_blob": "3921e38e02e168cddd0e3d4f303664980a936b2c",
+  "red": {
+    "run": 40591571744,
+    "tests": 36,
+    "failures": 33,
+    "sha256": "38f2cd7c1e36482919b5910b911c27825069525737f841210ea3a8230531160c"
+  },
+  "green": {
+    "run": 40591669489,
+    "tests": 36,
+    "sha256": "6ce9d72fde0bdaaa4a53c0ef4c92eae9aee1488505b6968fb64b855739ed7840"
+  },
+  "full": {
+    "run": 40591726397,
+    "tests": 1997,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "8d86bcce8dabb5e5ea3d97925fe9bf1acd3e5c34f7626a56077ad2ec4cc686e3"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-B3-L1-Seed-Identity/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_receiver_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_b3_l1_seed_identity_review tests.test_b3_l1_baseline_completeness_review tests.test_b3bridge tests.test_b3_completion tests.test_b3degrade",
+  "next": "Independent review of external pins and downstream report/promotion; separate C1+World integration branch. No auto-merge."
+}
