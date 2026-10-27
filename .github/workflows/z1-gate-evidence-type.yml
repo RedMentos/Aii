@@ -1,0 +1,53 @@
+name: V13 Z1 strict gate evidence typing and measured status review
+on:
+  push:
+    branches: [codex/automation11-z1-gate-evidence-type-20261027]
+    paths:
+      - '.github/workflows/z1-gate-evidence-type.yml'
+      - 'v13/code/v13/gates.py'
+      - 'v13/code/scripts/measure_suite.py'
+      - 'v13/code/tests/test_z1_gate_evidence_type.py'
+      - 'v13/code/docs/proofs/continuation-20261027/z1-gate-evidence-typing/PREREG.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-gate-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Adversarial verdict type and benchmark proof checks
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/z1-gates"
+          git rev-parse HEAD > "$RUNNER_TEMP/z1-gates/HEAD.txt"
+          sha256sum v13/code/v13/gates.py v13/code/scripts/measure_suite.py v13/code/tests/test_z1_gate_evidence_type.py > "$RUNNER_TEMP/z1-gates/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_z1_gate_evidence_type tests.test_register_gates) > "$RUNNER_TEMP/z1-gates/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-gates/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/gates.py v13/code/scripts/measure_suite.py v13/code/tests/test_z1_gate_evidence_type.py > "$RUNNER_TEMP/z1-gates/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-gates/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/z1-gates/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-gates/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-gate-evidence-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/z1-gates/
+          if-no-files-found: error
+      - name: Enforce software exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/z1-gates/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/z1-gates/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "Z1_GATE_EVIDENCE_TYPE_SOFTWARE_ONLY_NO_GATE_PROMOTION"
