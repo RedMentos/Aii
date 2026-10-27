@@ -1,0 +1,63 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP_T14_PERSISTED_ROW_INTEGRITY",
+  "status": "REVIEW_ONLY_SOFTWARE_PASS_NOT_INTEGRATED",
+  "parent_pr": 761,
+  "parent_sha": "5458dce977ad22f82fb1749811c512bb543782fc",
+  "review_pr": 763,
+  "source_blob": "f2beff6b2b3df4c1a98a4763e6ec93e17a8dabfa",
+  "harness_mistake": {
+    "runs": [
+      40567120559,
+      40567157273
+    ],
+    "issue": "new test module omitted from focused unittest command",
+    "claim": "NOT_VALID_RED_OR_GREEN_PROOF"
+  },
+  "red_replay": {
+    "branch": "codex/automation11-control-row-red-replay-20261027",
+    "run": 40567310226,
+    "sha": "000d05be0f6949ca7473ffdcca6319dc44af3d4b",
+    "tests": 11,
+    "failures": 5,
+    "subtest_errors": 7,
+    "zip_sha256": "9aaa6359b761dc6d413945d5e9304fe2322cfc7ea0f984c9f705c1a0c950d2a6"
+  },
+  "green": {
+    "run": 40567321217,
+    "sha": "81ae3eefed324206f2a526fa98287b0c861a883b",
+    "tests": 11,
+    "failures": 0,
+    "zip_sha256": "86afd60e446a91ca8636e0935bfd7a494723c7220f9ad7f0227c8fc3747d9496"
+  },
+  "full": {
+    "run": 40567197603,
+    "sha": "37a84f23b38d825069abf71f5a9e31c4b5219fb3",
+    "tests": 1947,
+    "skipped": 1,
+    "failures": 0,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "2e55b4b4a17a6b6cc214df271256c29dd9b14ab046cc578dcb7e23f94a2cb71b"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZG-Control-Row-Integrity",
+  "private_backup_byte_verified": true,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_budget",
+  "next_prerequisite": "Independent review; real Redmi control-fabric timing/energy measurements; no auto-merge"
+}
