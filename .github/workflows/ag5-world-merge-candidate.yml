@@ -61,14 +61,15 @@ jobs:
             git status --short > "$RUNNER_TEMP/mergeproof/STATUS_AFTER_RESOLVE.txt"
             cp v13/code/v13/operator.py "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py"
             cp v13/code/scripts/handy_pflicht.py "$RUNNER_TEMP/mergeproof/RESOLVED_HANDY_PFLICHT.py"
-            sha256sum "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py" "$RUNNER_TEMP/mergeproof/RESOLVED_HANDY_PFLICHT.py" > "$RUNNER_TEMP/mergeproof/RESOLVED_SHA256.txt"
+            cp v13/code/tests/test_toolforecast.py "$RUNNER_TEMP/mergeproof/RESOLVED_TOOLFORECAST_TEST.py"
+            sha256sum "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py" "$RUNNER_TEMP/mergeproof/RESOLVED_HANDY_PFLICHT.py" "$RUNNER_TEMP/mergeproof/RESOLVED_TOOLFORECAST_TEST.py" > "$RUNNER_TEMP/mergeproof/RESOLVED_SHA256.txt"
           fi
           exit 0
       - name: Focused AG5 and World safety regression on resolved tree
         run: |
           set +e
           if [ "$(cat "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 420s "$RUNNER_TEMP/ag5world/bin/python" -m unittest -v tests.test_effort tests.test_route_supersede tests.test_world_console_shadow tests.test_handy_pflicht tests.test_handy_pflicht_resume tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_run611_chat_session_paging tests.test_run594_chat_export_stream tests.test_world_jepa_action_identification) > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 420s "$RUNNER_TEMP/ag5world/bin/python" -m unittest -v tests.test_effort tests.test_route_supersede tests.test_world_console_shadow tests.test_handy_pflicht tests.test_handy_pflicht_resume tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_run611_chat_session_paging tests.test_run594_chat_export_stream tests.test_world_jepa_action_identification tests.test_toolforecast) > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$RUNNER_TEMP/mergeproof/FOCUSED_EXIT.txt"
           else
             echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log"
@@ -113,7 +114,7 @@ jobs:
           for n in RESOLVE FOCUSED UNIT COMPILE EPHEMERAL_COMMIT PRIVACY; do
             test "$(cat "$RUNNER_TEMP/mergeproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/mergeproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
           done
-          test "$(wc -l < "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt")" = 2
+          test "$(wc -l < "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt")" = 3
           cat "$RUNNER_TEMP/mergeproof/RESOLVE_RAW.log"
           tail -12 "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log"
           tail -12 "$RUNNER_TEMP/mergeproof/UNIT_RAW.log"
