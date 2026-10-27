@@ -78,7 +78,7 @@ class LiveHook(EpisodeBase):
         stale=[1.]+[0.]*15
         self.r.memory.semantic_keys=SimpleNamespace(
             last_query={'digest':digest(text),'vector':stale},
-            mode=lambda:'off')
+            mode=lambda:'off',encoder=SimpleNamespace(unload=lambda:None))
         self.r.memory.recall(text,self.r.session)
         e=self.r.store.event(self.r.session,text)
         with patch.object(self.ep,'observe',wraps=self.ep.observe) as observed:
