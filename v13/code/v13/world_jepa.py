@@ -148,5 +148,15 @@ class WorldJEPA:
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
     def collapse_stats(self, X2):
-        zt = self.latent(X2); ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None); p = ev/ev.sum()
-        return {'effective_rank': float(np.exp(-(p[p > 0]*np.log(p[p > 0])).sum())), 'min_std': float(zt.std(0).min())}
+        return collapse_stats(self.latent(X2))
+
+
+def collapse_stats(zt):
+    """Effective rank (entropy of the covariance spectrum) and min per-dim std of latents (rows x dims).
+    Fewer than 2 rows, nonfinite latents or zero total variance count as fully collapsed (rank 0), not as rank 1."""
+    zt = np.asarray(zt, float); min_std = float(zt.std(0).min()) if len(zt) else 0.
+    if len(zt) < 2 or not np.isfinite(zt).all(): return {'effective_rank': 0., 'min_std': min_std if np.isfinite(min_std) else 0.}
+    ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None); tot = ev.sum()
+    if not np.isfinite(tot) or tot <= 0: return {'effective_rank': 0., 'min_std': min_std}
+    p = ev[ev > 0]/tot
+    return {'effective_rank': float(np.exp(-(p*np.log(p)).sum())), 'min_std': min_std}

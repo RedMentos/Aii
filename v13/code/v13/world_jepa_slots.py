@@ -20,7 +20,7 @@ on held-out transitions) / ERR_REF) x state-OOD term (worst slot). The typical-e
 how predictable an operation is (random content makes `write_long` less predictable than `remove`).
 """
 import numpy as np
-from v13.world_jepa import Adam, encode, predict, loss_grads, _init, _init_inv, _init_pred
+from v13.world_jepa import Adam, encode, predict, loss_grads, collapse_stats, _init, _init_inv, _init_pred
 
 REVISION = 'z12c-slot-world-jepa-v1'
 H = 32; K = 8; HP = 48
@@ -113,5 +113,4 @@ class SlotWorldJEPA:
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
     def collapse_stats(self, X2):
-        zt = self.latent(X2).reshape(-1, self.k); ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None); p = ev/ev.sum()
-        return {'effective_rank': float(np.exp(-(p[p > 0]*np.log(p[p > 0])).sum())), 'min_std': float(zt.std(0).min())}
+        return collapse_stats(self.latent(X2).reshape(-1, self.k))
