@@ -1907,5 +1907,42 @@
     "report": "docs/proofs/continuation-20261027/scheduler-retry-budget/REPORT.md",
     "next_command": "Audit scheduler-retry-fullsuite Actions raw exits and test count, then independent review",
     "next_prerequisite": "Full-suite exact-source CI and chain review"
+  },
+  "f5_memory_route_reconciliation_20261027": {
+    "branch": "assistant/v13-f5-memory-route-reconcile-20261027",
+    "base_pr": 791,
+    "review_pr": 793,
+    "prereg_sha": "e122aa58056b40de169e22dd648b7d775bcb773b",
+    "source_commit": "d3c9a042ea097ab981622b391e987f52adbd176e",
+    "tested_sha": "893ae11f0b16ea3e39b56dc2c4a173ad794715b1",
+    "memory_blob": "501c8f43c92f031e034e4b93f4adbd4c67b7edfe",
+    "episodic_route_blob": "04161234548a26284a682a40da09d28242b89e71",
+    "preserved_features": [
+      "memory._stable_selection",
+      "semantic_query_last_query_reset",
+      "route_supersede_rule_precedence"
+    ],
+    "actions_run": 40599666914,
+    "artifact_id": 12778111062,
+    "focused": "65/65 PASS",
+    "full": "2050 OK (1 skipped)",
+    "all_raw_exits_zero": true,
+    "privacy": "CLEAN",
+    "artifact_zip_sha256": "5a67dedfe0ef3d7c0183b6eb800aeaf05019b20c13c7214dafa10f5afb9fcabd",
+    "artifact_crc": "PASS",
+    "artifact_internal_sha256": "PASS",
+    "private_library_backup": "/V13-Checkpoints/2026-10-27/Automation11-F5-Memory-Route-Reconciliation/v13-f5-memory-route-40599666914.zip",
+    "private_library_byte_exact_readback": true,
+    "evidence_kind": "Linux software/synthetic Runtime SQLite; no native/Redmi",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "report": "docs/proofs/continuation-20261027/f5-memory-route-reconciliation/RESULT.md",
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_memory_human_decision_lineage_run270 tests.test_episodic_route_f5_authority_run279 tests.test_episodic_route tests.test_route_supersede tests.test_semantic_memory tests.test_context_os tests.test_executive_context tests.test_history_lineage",
+    "next_prerequisite": "Independent cross-review, fresh combined Sleep+F5 full suite; ContextOS.warm F5 guard separately"
   }
 }
