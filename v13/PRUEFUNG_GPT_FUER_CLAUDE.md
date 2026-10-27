@@ -1,0 +1,9 @@
+# GPT/Codex independent reviews of Claude changes
+
+## 2026-10-27 — PR #666 (Claude `ed5010708`), review branch `codex/v13-review666-module-halt-race-20261027`
+
+**Confirmed bug (fixed on separate review branch):** A human Notaus, NETWORK ban, user-rule FORBID, module disable or module revoke during `modules_gate.fetch` was not rechecked after the network callback; the old code still persisted and promoted the downloaded bytes, potentially resurrecting a revoked proposal. RED Actions `40459519547` (43 tests, 3 FAIL) and `40459657917` (45 tests, 5 FAIL); GREEN `40459751403` (45/45 PASS, compile0, privacy CLEAN) at source commit `255fb7c73b161cc9ae95b11b4575d1a9def3c45b`. Counterexamples use synthetic in-memory fetcher; no real network. Three raw ZIPs privately backed up and SHA/CRC verified. Full detail and hashes: `code/docs/proofs/continuation-20261027/review666-module-halt-race/REPORT.md`.
+
+**Blocking integration note:** PR #666 is stacked on PR #665's disposable **source harness**, not an actual resolved AG5+World runtime commit. PR #666's `operator.py` lacks AG5 `:language`, still has unbounded `:chats` and lacks the AG5 idle lock on `:effort`. This is a missing integration prerequisite, not evidence that Claude deliberately overwrote GPT. Do not merge or mark integrated until the AG5/World candidate is committed on a review branch and the combined full suite passes. Generated `.pyc` files also need removal before integration.
+
+**Still open:** Final gate/filesystem race, check/activate revocation, Qwen3Guard `trust_remote_code` source binding, Redmi/native tests, full BP1/BP2 dependencies. No gate promotion; STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`. Next: resolve PR #665 CI, integrate PR #666 and this patch on a new review branch, run cross-feature/full tests. No main overwrite or auto-merge.
