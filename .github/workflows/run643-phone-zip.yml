@@ -124,7 +124,7 @@ jobs:
             echo 'PACKAGE_OR_EXTRACT_FAILED' > "$RUNNER_TEMP/RUN643_PORTABLE_RAW.log"
           fi
           if [ "$rc" = 0 ]; then
-            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && V13_SOURCE_ONLY_DIAGNOSTIC=1 V13_NO_AUTOSTART=1 V13_HOME="$RUNNER_TEMP/run643-offline-home" PYTHONPATH="$PWD:$PWD/scripts" bash setup.sh) > "$RUNNER_TEMP/RUN643_SETUP_RAW.log" 2>&1
+            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && PATH="$RUNNER_TEMP/run643venv/bin:$PATH" V13_SOURCE_ONLY_DIAGNOSTIC=1 V13_NO_AUTOSTART=1 V13_HOME="$RUNNER_TEMP/run643-offline-home" PYTHONPATH="$PWD:$PWD/scripts" bash setup.sh) > "$RUNNER_TEMP/RUN643_SETUP_RAW.log" 2>&1
             rc=$?
           else
             echo 'PORTABLE_FAILED' > "$RUNNER_TEMP/RUN643_SETUP_RAW.log"
