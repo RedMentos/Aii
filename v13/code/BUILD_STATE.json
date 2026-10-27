@@ -1655,5 +1655,33 @@
     "privacy": "CLEAN",
     "native_actions_run": 40520099854,
     "native_tested_sha": "b4892519705af0099fc83704c368d53f4b3027b9"
+  },
+  "bp2b_rss_clock_review_20261027": {
+    "owner_branch": "codex/automation11-bp2b-rss-clock-review-20261027",
+    "parent_sha": "a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3",
+    "status": "REVIEW_ONLY_SOFTWARE_CI_PENDING",
+    "scope": "Independent Linux-native first-step raw receipt audit plus future RSS relative clock fix",
+    "native_run_id": 40520099854,
+    "native_run_commit": "b4892519705af0099fc83704c368d53f4b3027b9",
+    "native_artifact_id": 12741617111,
+    "native_artifact_zip_sha256": "d684c7f2944d94c0da89b875cb3b51a718aa27a130e5f862a67b61fb97a4d02b",
+    "native_first_step_committed": true,
+    "native_step_count": 1,
+    "registered_step_count": 30,
+    "native_sampled_peak_rss_kib": 7627480,
+    "native_elapsed_s": 281.524,
+    "native_evidence_class": "LINUX_NATIVE_DIAGNOSTIC",
+    "clock_bug": "Historical elapsed_monotonic_s absolute; source fixed for future only",
+    "software_tests_expected": 7,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "bj1": "NO_SIGNAL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/bp2b-rss-clock-review/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_first_step_diagnostic",
+    "next_prerequisite": "Verify exact-head synthetic CI and independent review; no overlapping heavy native run."
   }
 }
