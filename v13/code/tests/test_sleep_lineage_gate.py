@@ -75,7 +75,7 @@ class SleepLineageGateTests(Base):
             try:
                 modified = [dict(row) for row in rows]
                 modified[0][field] = value
-                p.write_text('\\n'.join(json.dumps(row) for row in modified) + '\\n')
+                p.write_text('\n'.join(json.dumps(row) for row in modified) + '\n')
                 with self.subTest(field=field), self.assertRaises(ValueError):
                     S.validate_ttt_export(self.r.store, p)
             finally:
