@@ -28,5 +28,27 @@
     "Redmi_measured": false,
     "V13": "INCOMPLETE"
   },
-  "next": "Independent broad suite differential on exact integrated chain; BP1 native V2 44-row source-bound evidence and near-miss/retention separate."
+  "next": "Independent broad suite differential on exact integrated chain; BP1 native V2 44-row source-bound evidence and near-miss/retention separate.",
+  "historical_fullsuite_red": {
+    "run": 40488716919,
+    "source": "dbee57d3a3a2d70fc7f7babbca91b4ba1ecfdd89",
+    "tests": 4496,
+    "failures": 5,
+    "errors": 73,
+    "skipped": 28,
+    "artifact": 12727655810,
+    "zip_sha256": "c25ee1a40e977bc977a9de15d33618f69cb2b27aac0b731969277524280f712d",
+    "error_categories": {
+      "frozen_source_mismatch": 65,
+      "missing_torch": 6,
+      "missing_RUN147_zip": 1,
+      "missing_test_lp3_serial_cohort": 1
+    },
+    "failure_categories": {
+      "frozen_source_mismatch": 4,
+      "run554_goal_fixture_integration_fail": 1
+    },
+    "backup": "private Library byte-exact",
+    "gate_promotion": false
+  }
 }
