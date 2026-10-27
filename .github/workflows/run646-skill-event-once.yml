@@ -39,7 +39,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/run646proof"
           git rev-parse HEAD > "$RUNNER_TEMP/run646proof/HEAD.txt"
           sha256sum v13/code/v13/agi/skills.py v13/code/v13/agi/live.py v13/code/tests/test_run646_skill_event_once.py > "$RUNNER_TEMP/run646proof/SHA256.txt"
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run646/bin/python" -m unittest -v tests.test_run646_skill_event_once tests.test_run645_skill_credit_receipt tests.test_run644_curiosity_receipt tests.test_agi_live) > "$RUNNER_TEMP/run646proof/UNIT_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run646/bin/python" -m unittest -v tests.test_run646_skill_event_once tests.test_run645_skill_credit_receipt tests.test_run644_curiosity_receipt tests.test_agi_live tests.test_growth tests.test_ag4_skill_outcome_guard_run386 tests.test_skilllive tests.test_skilllive_route_consistency_run105 tests.test_run633_jef_noanswer_goal) > "$RUNNER_TEMP/run646proof/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run646proof/UNIT_EXIT.txt"
           "$RUNNER_TEMP/run646/bin/python" -m compileall -q v13/code/v13/agi/skills.py v13/code/v13/agi/live.py v13/code/tests/test_run646_skill_event_once.py > "$RUNNER_TEMP/run646proof/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run646proof/COMPILE_EXIT.txt"
