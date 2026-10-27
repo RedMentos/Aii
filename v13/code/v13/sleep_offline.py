@@ -58,41 +58,90 @@ def view(store,session,cap=1200):
     """Digest text for a session (warm context aid; authority 0)."""
     d=_load(store)[0]['sessions'].get(session)
     if not d:return None
+    # The operator-visible digest is also an information output. A persisted
+    # cache is not source authority: apply the same live history/source checks
+    # as the C3 context and sleep-time TTT staging paths before showing text.
+    checked=_checked_digest_entries(store,session,d.get('entries'))
+    valid=[e for item in checked if item is not None for e,_,_ in (item,)]
     lines=[];n=0
-    for e in reversed(d['entries']):
+    for e in reversed(valid):
         ln=line(e['user'],e['answer'])
         if n+len(ln)>cap:break
         lines.append(ln);n+=len(ln)
-    return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(d['entries']),'fact_authority':0}
+    return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(valid),'fact_authority':0}
+
+def _checked_digest_entries(store,session,entries):
+    """Validate a persisted digest against the live, source-bound history path.
+
+    Return aligned entries or None. A deleted query, revoked answer dependency,
+    wrong event/message ID, cross-session row, or altered digest is not context.
+    """
+    from .history import native_history
+    if not isinstance(entries,list):return []
+    ents=entries[-ENTRIES_MAX:]
+    if not ents:return []
+    recs,_=native_history(store,session,'',max(TURNS_MAX,len(ents)+1))
+    pairs={}
+    for m in recs:
+        pairs.setdefault(m['event_id'],{})[m['role']]=m
+    def packed(text):
+        value,_,ok=compress(text,TURN_CAP)
+        return value if ok or len(value)<=TURN_CAP*2 else value[:TURN_CAP*2]
+    checked=[]
+    for e in ents:
+        if (not isinstance(e,dict) or type(e.get('event_id')) is not str
+                or type(e.get('msg')) is not int):
+            checked.append(None);continue
+        pair=pairs.get(e['event_id'],{})
+        u=pair.get('user');a=pair.get('assistant')
+        if not u or not a or a['id']!=e['msg']:
+            checked.append(None);continue
+        if e.get('user')!=packed(u['text']) or e.get('answer')!=packed(a['text']):
+            checked.append(None);continue
+        checked.append((e,u,a))
+    return checked
 
 def context_items(store,session,exclude_ids=(),cap=1200):
-    """Digest lines for turns that are no longer in the native history window (live context, §8.3 COMPRESSED layer).
-    Lineage is re-checked on every use: a source deleted after the sleep never reaches the context."""
+    """Source-verified compressed history for the live C3 context (§8.3).
+
+    The digest state has no independent fact authority. The same history
+    source/rule revocation and exact-text checks apply as to native_history.
+    """
     d=_load(store)[0]['sessions'].get(session)
     if not d:return []
+    checked=_checked_digest_entries(store,session,d.get('entries'))
     skip=set(exclude_ids);out=[];n=0
-    for e in reversed(d['entries']):
+    for entry in reversed(checked):
+        if entry is None:continue
+        e,_,_=entry
         if e['event_id'] in skip:continue
-        row=store.one("SELECT s.deleted AS deleted FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?",(e['event_id'],))
-        if not row or row['deleted'] or not store.one("SELECT id FROM messages WHERE id=? AND status='FINAL'",(e['msg'],)):continue
         ln=line(e['user'],e['answer'])
         if n+len(ln)>cap:break
         out.append(ln);n+=len(ln)
     return list(reversed(out))
 
 def stage_ttt(store,home,checkpoint=None):
-    """Context->LoRA candidates for WP-I: (digest of earlier turns, user) -> answer. Staging only."""
+    """Stage context->LoRA candidates only from currently source-valid FINAL turns.
+
+    A digest is an untrusted, revocable context cache, never a training label.
+    Recheck the actual native-history source/answer lineage and recompute its
+    extractive compression before reusing a persisted digest entry. This is a
+    staging-time check, NOT authorization to train a later stale export.
+    """
     st=_load(store)[0];path=home/'exports/sleep-ttt-candidates.jsonl';rows=[]
     for sess,d in st['sessions'].items():
-        ents=d['entries']
-        for i,e in enumerate(ents[1:],1):
+        checked=_checked_digest_entries(store,sess,d.get('entries'))
+        for i,entry in enumerate(checked[1:],1):
             if checkpoint and i%16==0:checkpoint()
-            ctx='\n'.join('U: '+x['user']+' | A: '+x['answer'] for x in ents[max(0,i-4):i])
-            msg=store.one("SELECT text,metadata FROM messages WHERE id=?",(e['msg'],))
-            if not msg or not json.loads(msg['metadata']).get('model_generated'):continue
-            user=store.one("SELECT text FROM messages WHERE event_id=? AND role='user'",(e['event_id'],))
-            if not user:continue
-            rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':user['text'],'target':msg['text'],
+            if entry is None:continue
+            prior=[x[0] for x in checked[max(0,i-4):i] if x is not None]
+            if not prior:continue  # a context-conditioned example needs valid earlier context
+            e,u,a=entry
+            try:
+                if not json.loads(a['metadata']).get('model_generated'):continue
+            except (TypeError,ValueError):continue
+            ctx='\n'.join('U: '+x['user']+' | A: '+x['answer'] for x in prior)
+            rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':u['text'],'target':a['text'],
                          'status':'CANDIDATE_NOT_TRAINED','label_source':'own_final_answer','origin':'self','requires':'WP-I retention gate + human approval'})
     rows=rows[-TTT_MAX:]
     atomic_write(path,''.join(dumps(r)+'\n' for r in rows))
