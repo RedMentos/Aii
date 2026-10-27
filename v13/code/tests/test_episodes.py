@@ -30,6 +30,22 @@ class Segmentation(EpisodeBase):
         _,c=self.turn('Budget Aurora details again');self.assertTrue(c['cut']);self.assertEqual(c['signals']['correction'],1.)
         self.assertEqual(self.ep.relation(e['event_id'],mid)['relation'],'CAUSAL')
         self.r.cfg['episode_max_events']=2;self.turn('Budget Aurora x');_,d=self.turn('Budget Aurora x');self.assertTrue(d['cut']);self.assertEqual(d['reason'],'max_events')
+    def test_mismatched_embedding_dimensions_fall_back_to_lexical(self):
+        self.turn('Identical words',vector=[1.,0.])
+        _,b=self.turn('Identical words',vector=[1.,0.,100.])
+        self.assertEqual(b['signals']['context_shift'],0.)
+        self.assertFalse(b['cut'])
+        # A real equal-dimension change must still be visible.
+        _,c=self.turn('Identical words',vector=[0.,1.,0.])
+        self.assertGreater(c['signals']['context_shift'],.9)
+
+    def test_invalid_episode_vectors_do_not_break_observation(self):
+        self.turn('Identical words',vector=[1.,0.])
+        for bad in ([float('nan'),0.],[float('inf'),0.],[True,0.],['bad',0.],[0.,0.]):
+            _,b=self.turn('Identical words',vector=bad)
+            self.assertEqual(b['signals']['context_shift'],0.)
+            self.assertIsNone(self.ep.current(self.r.session)['last']['vector'])
+
     def test_goal_shift_and_semantic_vectors(self):
         v1=[1.]+[0.]*15;v2=[.98,.2]+[0.]*14;v3=[0.,1.]+[0.]*14
         self.turn('alpha',vector=v1);_,b=self.turn('beta',vector=v2);self.assertFalse(b['cut'])

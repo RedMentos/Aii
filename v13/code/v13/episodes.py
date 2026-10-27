@@ -92,9 +92,19 @@ def words(text):return set(re.findall(r'\w{3,}',text.lower()))
 def lexical_shift(a,b):
     wa,wb=words(a),words(b)
     return 1.-len(wa&wb)/len(wa|wb) if wa and wb else 1.
+def valid_episode_vector(vector):
+    """A1 semantic boundaries accept only finite, comparable real vectors."""
+    if type(vector) not in (list,tuple) or not vector:return False
+    try:
+        if any(type(x) not in (int,float) or not math.isfinite(x) for x in vector):return False
+        norm=math.hypot(*vector)
+        return math.isfinite(norm) and norm>1e-12
+    except (TypeError,ValueError,OverflowError):return False
+
 def cosine(a,b):
-    na=math.sqrt(sum(x*x for x in a));nb=math.sqrt(sum(x*x for x in b))
-    return sum(x*y for x,y in zip(a,b))/(na*nb) if na>1e-12 and nb>1e-12 else 0.
+    if len(a)!=len(b) or not valid_episode_vector(a) or not valid_episode_vector(b):return 0.
+    na=math.hypot(*a);nb=math.hypot(*b)
+    return max(-1.,min(1.,sum((x/na)*(y/nb) for x,y in zip(a,b))))
 def task_hash(task):return digest(json.dumps(task,sort_keys=True,ensure_ascii=False)) if task else None
 
 class Episodes:
@@ -107,7 +117,8 @@ class Episodes:
         """Boundary signal vector between the open episode's last turn and this turn (None = unavailable)."""
         sig={k:None for k in GAINS}
         if prev is None:return sig
-        if prev.get('vector') and cur.get('vector'):  # semantic shift: cosine at the recall floor counts as half a shift
+        if (valid_episode_vector(prev.get('vector')) and valid_episode_vector(cur.get('vector'))
+                and len(prev['vector'])==len(cur['vector'])):  # only comparable semantic dimensions
             sig['context_shift']=clamp((1-cosine(prev['vector'],cur['vector']))/(1-self.cfg.get('memory_embed_threshold',.84)+1e-9)*.5)
         sig['goal_shift']=float(prev.get('task')!=cur.get('task')) if (prev.get('task') or cur.get('task')) else 0.
         sig['action_transition']=float(prev.get('route')!=cur.get('route')) if prev.get('route') and cur.get('route') else None
@@ -120,8 +131,10 @@ class Episodes:
     def observe(self,event_id,session,text,route=None,status='FINAL',task=None,modality='text',prediction_error=None,vector=None,memory_ids=(),clock=None,associative_ids=()):
         """Called once per finished turn. Returns the boundary decision; never blocks the turn."""
         t=now() if clock is None else clock;open_=self.current(session);prev=open_['last'] if open_ else None
+        safe_vector=[round(float(x),5) for x in vector] if valid_episode_vector(vector) else None
+        if safe_vector is not None and not valid_episode_vector(safe_vector):safe_vector=None
         cur={'event_id':event_id,'time':t,'route':route,'status':status,'task':task_hash(task),'modality':modality,'prediction_error':prediction_error,
-             'vector':[round(x,5) for x in vector] if vector else None}
+             'vector':safe_vector}
         sig=self.signals(prev,cur)
         if prev and sig['context_shift'] is None:sig['context_shift']=lexical_shift(self._text_of(prev['event_id']),text)
         score=noisy_or(sig,GAINS);limit=self.cfg.get('episode_max_events',24)
