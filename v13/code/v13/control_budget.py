@@ -44,7 +44,10 @@ def latency(store,n=200):
         except (ValueError,TypeError,UnicodeError):continue
         if type(meta) is not dict:continue
         created=r['created']
-        if type(created) not in (int,float) or created<0 or not math.isfinite(created):continue
+        try:
+            if type(created) not in (int,float) or created<0 or not math.isfinite(created):continue
+        except (OverflowError,ValueError,TypeError):
+            continue
         d=durations(meta.get('stage_marks_s'))
         if not d:continue
         times.append(created)

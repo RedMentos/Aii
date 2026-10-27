@@ -1,0 +1,61 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP_T14_CREATED_TIMESTAMP_OVERFLOW_REVIEW",
+  "status": "REVIEW_ONLY_FULL_SOFTWARE_PASS_NOT_INTEGRATED",
+  "parent_pr": 765,
+  "parent_sha": "bc7c5b5d7805b150e4becbafe8816f6ac474b5b2",
+  "review_pr": 766,
+  "prereg_sha": "37cf0dc586adca72042543a5b1b22324bf089656",
+  "source_blob": "cee3676d67796e9335ff5c394c5ef1af8fe92099",
+  "red": {
+    "run": 40574739148,
+    "sha": "b344710252651e0bd0aa5cdd91c44814bc3b7be9",
+    "tests": 17,
+    "errors": 2,
+    "raw_unit_exit": 1,
+    "zip_sha256": "8fbcf0b7cc22d10a6b720da3496510bdcd7cdcfed6cf8273217012ebb7fbb344"
+  },
+  "green": {
+    "run": 40574912676,
+    "sha": "63c223af6f0aa37565f3fc25a3f27daef8ed018f",
+    "tests": 17,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "743e8a2fbe72a6cd477a852c606a00ef00bcc2f8fce2bc891b8ddf310930d9e7"
+  },
+  "full": {
+    "run": 40575052640,
+    "sha": "14a08bab05e17a77508e23d1c1d25d5d142c9b89",
+    "tests": 1953,
+    "skipped": 1,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "e035623f544941d0a110fa9d58559ce2c6e372805cd5b89fafbb951014206cf8"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZJ-Control-Created-Overflow",
+  "private_backup_byte_verified": true,
+  "owner": "assistant/GPT independent review",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_control_budget_created_overflow_review tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_checkpoint_containment_review tests.test_control_budget",
+  "next_prerequisite": "Independent review stacked after PR765; child PR767 owns stage-order; no auto-merge",
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  }
+}
