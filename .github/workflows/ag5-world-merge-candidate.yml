@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/ag5-world-merge-candidate.yml'
       - 'v13/code/scripts/resolve_ag5_world_merge_candidate.py'
+      - 'v13/code/scripts/export_ag5_world_candidate.py'
       - 'v13/code/docs/proofs/continuation-20261027/ag5-world-merge-candidate/**'
 permissions:
   contents: read
@@ -57,6 +58,10 @@ jobs:
             git write-tree > "$RUNNER_TEMP/mergeproof/CANDIDATE_TREE.txt"
             git diff --cached --binary > "$RUNNER_TEMP/mergeproof/CANDIDATE_DIFF.patch"
             git diff --cached --name-status > "$RUNNER_TEMP/mergeproof/CANDIDATE_PATHS.txt"
+            git diff --cached --check > "$RUNNER_TEMP/mergeproof/RAW_EVIDENCE_WHITESPACE_WARNINGS.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/RAW_EVIDENCE_WHITESPACE_EXIT.txt"
+            "$RUNNER_TEMP/ag5world/bin/python" v13/code/scripts/export_ag5_world_candidate.py "$RUNNER_TEMP/mergeproof" > "$RUNNER_TEMP/mergeproof/EXPORT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/EXPORT_EXIT.txt"
             git ls-files -s > "$RUNNER_TEMP/mergeproof/CANDIDATE_INDEX.txt"
             git status --short > "$RUNNER_TEMP/mergeproof/STATUS_AFTER_RESOLVE.txt"
             cp v13/code/v13/operator.py "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py"
@@ -74,6 +79,8 @@ jobs:
           else
             echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log"
             echo 99 > "$RUNNER_TEMP/mergeproof/FOCUSED_EXIT.txt"
+            echo 99 > "$RUNNER_TEMP/mergeproof/EXPORT_EXIT.txt"
+            echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/EXPORT_RAW.log"
           fi
           exit 0
       - name: Broad merged software suite, compile and exact staged privacy scan
@@ -111,7 +118,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(cat "$RUNNER_TEMP/mergeproof/MERGE_EXIT.txt")" = 1
-          for n in RESOLVE FOCUSED UNIT COMPILE EPHEMERAL_COMMIT PRIVACY; do
+          for n in RESOLVE EXPORT FOCUSED UNIT COMPILE EPHEMERAL_COMMIT PRIVACY; do
             test "$(cat "$RUNNER_TEMP/mergeproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/mergeproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
           done
           test "$(wc -l < "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt")" = 3
