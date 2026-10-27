@@ -17,6 +17,7 @@
 Every hook is fail-open: an AG error is logged and the turn continues unchanged.
 """
 import json
+import math
 from . import hub
 from .base import clamp01
 
@@ -167,7 +168,6 @@ def goal_turn(r,e,meta,status):
     sel=json.loads(sel['payload']) if sel else {}
     asked=(sel.get('selected') or {}).get('action_id')=='CLARIFY' or bool((meta.get('clarify') or {}).get('apply'))
     gerr=_load(r.store,eid).get('grounded_error')
-    g.curiosity.observe('route:'+str(sel.get('route_hint') or 'unknown'),float(gerr) if isinstance(gerr,(int,float)) else (0. if status=='FINAL' and not asked else 1.))
     opened=[x for x in g.goals.tree({'OPEN','ACTIVE','BLOCKED'}) if x['origin']=='USER' and any(str(v).startswith('event:') for v in x['evidence'])]
     for x in [x for x in opened if g.goals.clock()-x['created']>GOAL_TTL_S]:g.goals.set_status(x['id'],'ABANDONED','open request expired');opened.remove(x)
     final_answer=r.store.one(
@@ -177,13 +177,23 @@ def goal_turn(r,e,meta,status):
         "ORDER BY id DESC LIMIT 1",
         (eid,r.session))
     delivered=status=='FINAL' and not asked and final_answer is not None
+    try:
+        receipt_meta=json.loads(final_answer['metadata'] or '{}') if delivered else None
+    except (TypeError,ValueError):
+        receipt_meta=None
+    answered=bool(delivered and isinstance(receipt_meta,dict)
+                  and not meta.get('metacog_abstain')
+                  and not receipt_meta.get('metacog_abstain')
+                  and not _goal_explicit_nonanswer(final_answer['text']))
+    # AG5 must not learn zero prediction error from a caller's FINAL status,
+    # a missing persisted answer, a refusal or an explicit abstention.
+    # A measured grounding error is usable only after that receipt check.
+    error=(float(gerr) if answered and type(gerr) in (int,float) and math.isfinite(gerr)
+           else (0. if answered else 1.))
+    g.curiosity.observe('route:'+str(sel.get('route_hint') or 'unknown'),error)
     if delivered:
-        # The stored FINAL message, not a caller-supplied status, controls
-        # whether a JEF goal may be marked complete. An explicit refusal or
-        # calibrated abstention leaves the USER goal open for later handling.
-        receipt_meta=json.loads(final_answer['metadata'] or '{}')
-        if not isinstance(receipt_meta,dict) or meta.get('metacog_abstain') or receipt_meta.get('metacog_abstain') or _goal_explicit_nonanswer(final_answer['text']):
-            return
+        # This is still a structural delivery check, not semantic task success.
+        if not answered:return
         for x in opened:
             # Auto-completion is local to the originating chat. Goal titles
             # alone are not enough: the original event(s) must still exist
