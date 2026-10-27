@@ -55,5 +55,20 @@
     "Body_JEPA": "UNAVAILABLE",
     "jepa_weight": 0,
     "Redmi": "UNMEASURED"
+  },
+  "new_claude_head": "e505364c78d6ef222eb287d84d84aed81ecc53e3",
+  "bp11b_disposable_merge": {
+    "run": 40460531847,
+    "review_head": "da218259b1f8f2ca07b13e56ca0c8793ef84d1bb",
+    "merge_exit": 0,
+    "conflicts": 0,
+    "tests": 50,
+    "fail": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "artifact": 12714845067,
+    "zip_sha256": "437bbbc08f5ec48541d751f8637c9af4aa8dc36927603b96930065c2ea56b467",
+    "private_byte_roundtrip": true,
+    "scope": "LINUX_SYNTHETIC_DISPOSABLE_MERGE_ONLY"
   }
 }
