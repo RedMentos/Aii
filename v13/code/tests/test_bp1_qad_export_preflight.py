@@ -30,7 +30,7 @@ class ExportPreflightTests(unittest.TestCase):
 
     def test_wrong_checkout_rejected(self):
         with tempfile.TemporaryDirectory() as d:
-            with self.assertRaises((ValueError, OSError)):
+            with self.assertRaisesRegex(ValueError, "source checkout"):
                 P.verify_checkout(d)
 
     def test_exact_pinned_writer_synthetic_adapter_roundtrip(self):
