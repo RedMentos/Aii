@@ -1,0 +1,167 @@
+name: V13 Run643 current-chain Termux source ZIP and extracted smoke
+on:
+  push:
+    branches:
+      - codex/gpt6-run643-phone-zip-20261027
+    paths:
+      - '.github/workflows/run643-phone-zip.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run643-source-phone
+  cancel-in-progress: false
+jobs:
+  phone-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze exact source and immutable Canon
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN643_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/package_source.py)" = 06167e0bcb82b36cb08841cd31b9618c4ba0926e
+          test "$(git hash-object v13/code/scripts/verify_phone_zip_current_run268.py)" = 880dbd2cebb0aac5c7b37e25a5ca8487b796cfa1
+          test "$(git hash-object v13/code/v13/bodyport.py)" = 0f5f5d2a41e3fc4fbb1d008803723df783f29248
+          test "$(git hash-object v13/code/tests/test_bodyport.py)" = a42bbe02f2f1a0467033f71b5c8a86a86d1bb23e
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/COHORT.json)" = 249d4be0e0663cccf5d1165347fa37c0db924791
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN643_HOST.txt"
+          sha256sum v13/code/scripts/package_source.py v13/code/scripts/verify_phone_zip_current_run268.py v13/code/v13/bodyport.py v13/code/tests/test_bodyport.py > "$RUNNER_TEMP/RUN643_SOURCE_SHA256.txt"
+      - name: Isolated source-only dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run643venv" > "$RUNNER_TEMP/RUN643_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 240s "$RUNNER_TEMP/run643venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52' >> "$RUNNER_TEMP/RUN643_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run643venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN643_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN643_DEPS_EXIT.txt"
+          exit 0
+      - name: Build exact source-only Termux ZIP
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN643_DEPS_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Run643.zip" --phone-install > "$RUNNER_TEMP/RUN643_PACK_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'DEPS_FAILED' > "$RUNNER_TEMP/RUN643_PACK_RAW.log"; rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN643_PACK_EXIT.txt"
+          exit 0
+      - name: Independent ZIP parity, CRC, every manifest hash and negative gates
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN643_PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Run643.zip" --root v13/code --out "$RUNNER_TEMP/RUN643_VERIFY.json" > "$RUNNER_TEMP/RUN643_VERIFY_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'PACK_FAILED' > "$RUNNER_TEMP/RUN643_VERIFY_RAW.log"; rc=2
+          fi
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/run643venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN643_VERIFY_RAW.log" 2>&1
+          import os,json,hashlib,zipfile,stat
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          report=json.loads((root/'RUN643_VERIFY.json').read_text())
+          assert report['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
+          assert report['native_model_inference'] is False and report['redmi_measured'] is False
+          assert report['gates']=={'STEP2':'UTILITY_FAIL','B3_L1':'FAIL','Body_JEPA':'UNAVAILABLE','jepa_weight':0,'V13':'INCOMPLETE'}
+          with zipfile.ZipFile(root/'V13-Phone-Run643.zip') as z:
+              names=z.namelist()
+              assert len(names)==len(set(names)) and z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              files=manifest['files']
+              assert set(names)=={'V13-Phone/'+n for n in files}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for n,expected in files.items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+n)).hexdigest()==expected,n
+              for info in z.infolist():
+                  n=info.filename
+                  assert n.startswith('V13-Phone/') and not n.endswith('/')
+                  assert not any(part in ('','..','.') for part in n.split('/'))
+                  assert not stat.S_ISLNK(info.external_attr >> 16)
+                  assert not n.endswith(('.gguf','.safetensors','.sqlite','.db'))
+              for n in ('setup.sh','v13/bodyport.py','tests/test_bodyport.py','scripts/run642_c3_protocol_locality.py'):
+                  assert n in files,n
+              print('RUN643_SOURCE_ZIP_CRC_ALL_SHA256_AND_NEGATIVE_GATES_PASS',len(files))
+          PY
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN643_VERIFY_EXIT.txt"
+          exit 0
+      - name: Extract and execute portable 94 plus body/bridge regressions
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN643_VERIFY_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run643venv/bin/python" -m unittest -v tests.test_package_source tests.test_phone_zip_current_run268) > "$RUNNER_TEMP/RUN643_PACK_TEST_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'ZIP_VERIFY_FAILED' > "$RUNNER_TEMP/RUN643_PACK_TEST_RAW.log"; rc=2
+          fi
+          if [ "$rc" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run643-extracted"
+            unzip -q "$RUNNER_TEMP/V13-Phone-Run643.zip" -d "$RUNNER_TEMP/run643-extracted" >> "$RUNNER_TEMP/RUN643_PACK_TEST_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && bash -n setup.sh && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run643venv/bin/python" -m v13 --home "$RUNNER_TEMP/run643-phone-home" selftest --portable) > "$RUNNER_TEMP/RUN643_PORTABLE_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'PACKAGE_OR_EXTRACT_FAILED' > "$RUNNER_TEMP/RUN643_PORTABLE_RAW.log"
+          fi
+          if [ "$rc" = 0 ]; then
+            (cd "$RUNNER_TEMP/run643-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run643venv/bin/python" -m unittest -v tests.test_bodyport tests.test_b3bridge) > "$RUNNER_TEMP/RUN643_BODY_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'PORTABLE_FAILED' > "$RUNNER_TEMP/RUN643_BODY_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN643_TEST_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fcd53e127b8cc08ce7151e1f7de0dd367a0fe41b --head HEAD > "$RUNNER_TEMP/RUN643_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN643_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close source ZIP and raw evidence SHA256
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in DEPS PACK VERIFY TEST PRIVACY; do
+            test -f "RUN643_${k}_EXIT.txt" || echo 2 > "RUN643_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN643_*' ! -name RUN643_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN643_SHA256SUMS.txt
+          if [ -f V13-Phone-Run643.zip ]; then sha256sum V13-Phone-Run643.zip >> RUN643_SHA256SUMS.txt; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run643-Phone-Source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Run643.zip
+            ${{ runner.temp }}/RUN643_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact source ZIP, portable/body checks and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in DEPS PACK VERIFY TEST PRIVACY; do
+            echo "RUN643 $k exit $(cat "$RUNNER_TEMP/RUN643_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN643_${k}_EXIT.txt")" = 0
+          done
+          (cd "$RUNNER_TEMP" && sha256sum -c RUN643_SHA256SUMS.txt)
