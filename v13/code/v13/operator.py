@@ -13,6 +13,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:world shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json> (nur lokales TTY, read-only SHADOW, keine Aktion/Lernfreigabe)
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -222,7 +223,17 @@ class Operator:
         if cmd=='brain':return dumps(s.generation())
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
-        if cmd=='world':return dumps(r.world.world_state())
+        if cmd=='world':
+            if not args:return dumps(r.world.world_state())
+            if args[0]!='shadow' or len(args)!=5:
+                raise ValueError(':world [shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json>]')
+            # Explicit local TTY only (origin guard above); no model action,
+            # fact write, age promotion or implicit checkpoint output.
+            from .world_jepa_shadow_probe import (probe_checkpoint, _json_file,
+                                                  MAX_PROVENANCE_BYTES, MAX_REQUEST_BYTES)
+            provenance = _json_file(args[3], MAX_PROVENANCE_BYTES)
+            request = _json_file(args[4], MAX_REQUEST_BYTES)
+            return dumps(probe_checkpoint(args[1], args[2], provenance, request))
         if cmd in {'components','objectives'}:
             from .verification import component_registry,objective_registry
             return dumps(component_registry() if cmd=='components' else objective_registry(r))
