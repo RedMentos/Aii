@@ -20,6 +20,7 @@ The independent registered BP2b seed41 legacy native attempt, Actions run `40506
 - `v13/body_jepa.py`: the existing `BodyJepaTrainer.fit` consumes this checkpoint only with `cfg['checkpoint_resume']=True` and a pinned full master SHA. A new checkpoint is committed after every completed step. Source fingerprint includes full training items (including weights), config, anchors, probes, master SHA and base generation. New metrics report enabled/restored step. Existing `checkpoint_resume` default is absent/off; original registered BP2b 12-arm plans and frozen numerical settings are untouched.
 - `tests/test_body_jepa_checkpoint.py` and `tests/test_body_jepa_checkpoint_fit.py`: synthetic CPU exact uninterrupted-vs-interrupted optimizer/EMA/RNG comparison, real tiny HF/PEFT `BodyJepaTrainer.fit` crash after fsync and restart, source/weight mutation, symlink, orphan, hash tamper, stale step and optimizer-order refusals.
 - CI workflow pins a CPU Torch version plus Transformers/PEFT; no public model download, native runner or Redmi execution.
+- `.gitignore` excludes all `**/step-checkpoints/` trees so local adapter, optimizer, EMA and RNG snapshots are not accidentally staged in the public repository; focused CI checks the ignore rule.
 
 ## Evidence and limitations
 - Local isolated Torch-only helper tests: 7/7 PASS (container, synthetic).
