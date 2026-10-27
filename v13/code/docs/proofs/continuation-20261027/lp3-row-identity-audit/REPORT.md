@@ -12,7 +12,7 @@ The fix rejects **any** per-row identity for same-length source/target tensors, 
 
 Added one regression `test_wrong_source_rejects_any_own_row_in_mixed_batch`, covering teacher-forced answer, next-token and bounded greedy, plus valid swapped-row control. Existing 14 synthetic tests retained; expected 15/15. Isolated Actions workflow `.github/workflows/lp3-row-identity-review.yml` uses a frozen tiny GPT2, pinned torch/transformers, `py_compile`, public privacy scan and `git diff --check`. No real model or Redmi execution.
 
-**CI at checkpoint:** Actions run `40526437142` started for code/workflow commit `f18588c8018c28aa822d086672ce178471dfecf1`; result pending until exact-head verification. Do not claim PASS before it completes.
+**Verified synthetic result:** Actions `40526548340`, exact reviewed head `3fcc3f89f4b1965f6fc656744073be008eefe460`: **15/15 PASS**, including the mixed-row counterexample, Python compile PASS, privacy scan **CLEAN**, diff check PASS, all job steps successful. Earlier source run `40526437142` also PASS. This verifies software only, not real-model utility.
 
 ## Binding negative gates
 
@@ -20,6 +20,6 @@ LP1 `NO_ATTRIBUTABLE_GAIN`; LP2 `ALIGNS_NO_GAIN`; BJ1 `NO_SIGNAL`; STEP2 `UTILIT
 
 ## Next
 
-1. Verify exact-head CI, source SHA, 15 tests and privacy exit; update this report and BUILD_STATE with the actual result, including failures.
+1. Completed: exact-head synthetic CI, 15 tests and privacy verified; no real-model/utility claim.
 2. Independent reviewer: challenge row matching, semantic/answer leakage, frozen-base status and mixed-length controls. Do not merge to main without chain review.
 3. Preregister matched heldout own/wrong-source/zero CE and target-free utility, hard negatives, source provenance, retention and drift gates **before** any new native run. Serialize against BP2b native owner.
