@@ -1,0 +1,70 @@
+name: V13 Z1 JEF BP11 broad software differential diagnostic
+on:
+  push:
+    branches: [codex/automation11-z1-jef-module-merge-20261027]
+    paths:
+      - '.github/workflows/z1-jef-module-fullsuite.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-jef-module-fullsuite-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software-only dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/v13-integrated-fullsuite-venv"
+          timeout 240s "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Record entire broad suite without changing historical gates
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/v13-integrated-fullsuite"
+          git rev-parse HEAD > "$RUNNER_TEMP/v13-integrated-fullsuite/HEAD.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/v13-integrated-fullsuite/TREE.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" -m unittest discover -s tests -p 'test_*.py' -v) > "$RUNNER_TEMP/v13-integrated-fullsuite/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated-fullsuite/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/v13-integrated-fullsuite/FAILURE_SIGNATURE.json"
+          import hashlib,json,re
+          from pathlib import Path
+          import os
+          lines=Path(os.environ['RUNNER_TEMP']+'/v13-integrated-fullsuite/UNIT_RAW.log').read_text(errors='replace').splitlines()
+          headers=sorted(x.strip() for x in lines if x.startswith('FAIL: ') or x.startswith('ERROR: '))
+          summary=[x.strip() for x in lines if re.search(r'Ran [0-9]+ tests|FAILED \\(|^OK$',x)]
+          print(json.dumps({'failure_headers':len(headers),'failure_header_sha256':hashlib.sha256(('\\n'.join(headers)+'\\n').encode()).hexdigest(),'summary_tail':summary[-5:]},sort_keys=True))
+          PY
+          echo "$?" > "$RUNNER_TEMP/v13-integrated-fullsuite/SIGNATURE_EXIT.txt"
+          "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" -m compileall -q v13/code/v13 v13/code/scripts > "$RUNNER_TEMP/v13-integrated-fullsuite/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated-fullsuite/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/v13-integrated-fullsuite-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/v13-integrated-fullsuite/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated-fullsuite/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-jef-bp11-fullsuite-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-integrated-fullsuite/
+          if-no-files-found: error
+      - name: Enforce hygiene and signature collection, not fake fullsuite PASS
+        run: |
+          set -euo pipefail
+          for n in SIGNATURE COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/v13-integrated-fullsuite/${n}_EXIT.txt")" = 0 || { tail -100 "$RUNNER_TEMP/v13-integrated-fullsuite/${n}_RAW.log"; exit 1; }
+          done
+          echo "Broad unit exit: $(cat "$RUNNER_TEMP/v13-integrated-fullsuite/UNIT_EXIT.txt")"
+          cat "$RUNNER_TEMP/v13-integrated-fullsuite/FAILURE_SIGNATURE.json"
