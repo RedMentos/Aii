@@ -321,6 +321,17 @@ jobs:
           else
             echo 'PREREQUISITE_FAILED; NO_V2_COLLECTION' > "$RUNNER_TEMP/bp1-native-train/V2_COLLECT_RAW.log"
           fi
+          # Preserve original partial native evidence even when the adapter server
+          # or scoring fails. Never copy adapter.gguf or safetensors into artifacts.
+          for f in "$RUNNER_TEMP/bp1-v2-binding.json" "$RUNNER_TEMP/bp1-v2-collect/server.log" "$RUNNER_TEMP/bp1-v2-collect/predictions.jsonl"; do
+            if [ -f "$f" ]; then
+              case "$f" in
+                */bp1-v2-binding.json) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_BINDING.json" ;;
+                */server.log) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_SERVER_RAW.log" ;;
+                */predictions.jsonl) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_PARTIAL_OR_FINAL_PREDICTIONS.jsonl" ;;
+              esac
+            fi
+          done
           echo "$rc" > "$RUNNER_TEMP/bp1-native-train/V2_EXIT.txt"
           exit 0
       - name: Preserve closed raw evidence and failures, not weights
