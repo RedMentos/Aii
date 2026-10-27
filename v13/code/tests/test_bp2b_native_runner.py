@@ -1,5 +1,6 @@
 """BP2b one-arm runner: synthetic software orchestration, no model execution."""
 import fcntl
+import hashlib
 import json
 import tempfile
 import unittest
@@ -11,10 +12,15 @@ from scripts import bp2b_native_runner as nr
 class FakeTrainer:
     def __init__(self, master, out, **kwargs):
         self.kwargs = kwargs
+        self.out = Path(out)
     def fit(self, items, kind):
         if len(items) != 16 or kind != 'bp2b-transfer':
             raise ValueError('unexpected training source')
-        return {'artifact': 'fake-adapter.gguf', 'hash': '0'*64,
+        self.out.mkdir(parents=True, exist_ok=True)
+        artifact = self.out / 'fake-adapter.gguf'
+        data = b'SOFTWARE_FAKE_TEST_NOT_A_REAL_GGUF\n'
+        artifact.write_bytes(data)
+        return {'artifact': str(artifact), 'hash': hashlib.sha256(data).hexdigest(),
                 'method': 'SOFTWARE_FAKE_TEST', 'metrics': {'steps': 30}}
 
 
@@ -121,6 +127,55 @@ class NativeRunnerSoftwareTests(unittest.TestCase):
             with self.assertRaises(BlockingIOError):
                 self.run_fake(attempt='locked001')
         self.assertFalse((self.root/'seed-41'/'bp2b'/'attempt-locked001').exists())
+
+    def test_missing_adapter_artifact_is_rejected_before_predict(self):
+        class MissingTrainer(FakeTrainer):
+            def fit(self, items, kind):
+                result = super().fit(items, kind)
+                Path(result['artifact']).unlink()
+                return result
+        with self.assertRaises(ValueError):
+            self.run_fake(trainer_factory=MissingTrainer, attempt='missing001')
+        receipt = json.loads((self.root/'seed-41'/'bp2b'/'attempt-missing001'/'FAILED.json').read_text())
+        self.assertEqual(receipt['phase'], 'train')
+
+    def test_wrong_adapter_digest_is_rejected_before_predict(self):
+        class ForgedTrainer(FakeTrainer):
+            def fit(self, items, kind):
+                result = super().fit(items, kind)
+                result['hash'] = '0' * 64
+                return result
+        with self.assertRaises(ValueError):
+            self.run_fake(trainer_factory=ForgedTrainer, attempt='forged001')
+        receipt = json.loads((self.root/'seed-41'/'bp2b'/'attempt-forged001'/'FAILED.json').read_text())
+        self.assertEqual(receipt['phase'], 'train')
+
+    def test_outside_adapter_artifact_is_rejected_before_predict(self):
+        class OutsideTrainer(FakeTrainer):
+            def fit(self, items, kind):
+                result = super().fit(items, kind)
+                outside = self.out.parents[3] / 'outside-fake-adapter.gguf'
+                outside.write_bytes(Path(result['artifact']).read_bytes())
+                result['artifact'] = str(outside)
+                return result
+        with self.assertRaises(ValueError):
+            self.run_fake(trainer_factory=OutsideTrainer, attempt='outside001')
+        receipt = json.loads((self.root/'seed-41'/'bp2b'/'attempt-outside001'/'FAILED.json').read_text())
+        self.assertEqual(receipt['phase'], 'train')
+
+    def test_symlink_adapter_artifact_is_rejected_before_predict(self):
+        class LinkTrainer(FakeTrainer):
+            def fit(self, items, kind):
+                result = super().fit(items, kind)
+                path = Path(result['artifact'])
+                real = path.with_suffix('.original')
+                path.rename(real)
+                path.symlink_to(real)
+                return result
+        with self.assertRaises(ValueError):
+            self.run_fake(trainer_factory=LinkTrainer, attempt='symlink001')
+        receipt = json.loads((self.root/'seed-41'/'bp2b'/'attempt-symlink001'/'FAILED.json').read_text())
+        self.assertEqual(receipt['phase'], 'train')
 
     def test_invalid_prediction_schema_preserves_failed_receipt(self):
         def leak_keys(tr, facing):
