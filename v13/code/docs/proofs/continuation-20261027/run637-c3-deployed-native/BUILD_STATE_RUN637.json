@@ -1,0 +1,41 @@
+{
+  "schema": "V13_RUN637_SELECTED_C3_DEPLOYED_NATIVE_PENDING_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/automation11-run637-c3-deployed-native-20261027",
+  "owner": "GPT-6 automation actual selected C3 QAD Q4 utility",
+  "parent_pr": 631,
+  "parent_sha": "250f8b812c7d1cbb480c6435918751f188694b48",
+  "prereg_commit": "082af7c0b9a46eb4d1e2ee5a7981bc041e440be5",
+  "test_commit": "5ca3598ee48ad75c851689d91fae5764e342848d",
+  "workflow_commit": "6316d3c349d34411dcbf07c3e106f8da9d05ddb9",
+  "workflow_blob": "6bc1576ebd95160194192d3bb6cf6d4d6879f88f",
+  "run_id": 40429549368,
+  "status": "IN_PROGRESS_UNVERIFIED",
+  "original_adapter": {
+    "run_id": 40428833150,
+    "artifact_id": 12701530582,
+    "zip_sha256": "bd2ffc2969b3b98f8c64a4f776fc7195599a78e74802ace26b59c3dcb576c675",
+    "gguf_sha256": "3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599",
+    "proof_sha256": "aedbf8d555010882ab2f49a87712a973599dd746fdb1ded1f78b66ebdb4acc2a",
+    "license_sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c"
+  },
+  "model": {
+    "repo": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "server": {
+    "release": "ggml-org/llama.cpp b10964",
+    "binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "next_exact_command": "Inspect Actions 40429549368 exact head 6316d3c349d34411dcbf07c3e106f8da9d05ddb9, download original raw artifact, verify ZIP CRC and inner SHA, preserve all negative cases and byte-backup privately; if native parity fails do not infer utility, continue independent canonical package."
+}
