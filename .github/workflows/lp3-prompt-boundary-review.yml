@@ -6,6 +6,8 @@ on:
       - '.github/workflows/lp3-prompt-boundary-review.yml'
       - 'v13/code/v13/lp3_state_prefix.py'
       - 'v13/code/tests/test_lp3_state_prefix.py'
+      - 'v13/code/BUILD_STATE.json'
+      - 'v13/code/docs/proofs/continuation-20261027/lp3-prompt-boundary/REPORT.md'
 permissions:
   contents: read
 concurrency:
