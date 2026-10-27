@@ -13,6 +13,7 @@
     "final_green_tests": "29/29 PASS; compile 0; privacy CLEAN; Z12C smoke 0; lifecycle 0",
     "final_green_artifact_sha256": "f105203929e68d1a1d691777d90f82a48a14ac5398961b05a57c148b584c1dae",
     "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-World-Realfile/",
+    "historical_registered_z12c": "PASS (original seeds 201/202/203, 4000 transitions and 3000 steps; inherited BEFUND.md; not rerun with v2)",
     "seed211_z12c_utility": "FAIL",
     "seed212_rows": 600,
     "seed212_train_rows": 480,
