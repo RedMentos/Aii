@@ -137,7 +137,7 @@ class NativeBatchSoftwareTests(unittest.TestCase):
             return original_fsync(fd)
 
         def failed_runner(cmd, stdout, stderr, timeout, check):
-            stdout.write(b'ORIGINAL_FAILED_NATIVE_LOG\\n')
+            stdout.write(b'ORIGINAL_FAILED_NATIVE_LOG\n')
             return SimpleNamespace(returncode=9)
 
         with mock.patch.object(batch.os, 'fsync', side_effect=recording_fsync):
