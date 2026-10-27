@@ -131,6 +131,11 @@ class BodyJepaStepCheckpointTests(unittest.TestCase):
             restore(self.root, SHA, model, pred, wrong_order, ema, gen)
         self.assertTrue(all(torch.equal(a, b) for a, b in zip(before, model.parameters())))
 
+    def test_orphan_only_root_refused_without_retraining(self):
+        (self.root / 'step-000001-aaaaaaaaaaaaaaaa.pt').write_bytes(b'orphan')
+        with self.assertRaisesRegex(ValueError, 'Untracked checkpoint'):
+            restore(self.root, SHA, *setup())
+
     def test_pointer_symlink_refused(self):
         c = setup()
         h = [run_step(c, 1)]
