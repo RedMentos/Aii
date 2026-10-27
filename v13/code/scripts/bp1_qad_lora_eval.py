@@ -56,6 +56,42 @@ def validate_binding(binding, dataset_sha):
     return True
 
 
+def verify_train_proof(binding, train_proof_path):
+    """Bind original optimizer/adapter proof bytes, not just a declared digest."""
+    if train_proof_path is None:
+        raise ValueError("QAD native train proof file required")
+    raw = Path(train_proof_path).read_bytes()
+    if S.sha(raw) != binding["train_proof_sha256"]:
+        raise ValueError("QAD train proof bytes/hash mismatch")
+    proof = S.parse_json(raw.decode("utf-8"))
+    if (not isinstance(proof, dict) or proof.get("schema") != T.SCHEMA or
+            proof.get("mode") != "train" or
+            proof.get("status") != "TRAINED_SHADOW_ADAPTER_NOT_DEPLOYED" or
+            proof.get("train_sha256") != T.TRAIN_SHA or
+            proof.get("train_rows") != 25 or
+            proof.get("config") != T.CFG or
+            (proof.get("master") or {}).get("master_sha256") != N.MASTER_SHA):
+        raise ValueError("QAD native train proof source/config mismatch")
+    if (proof.get("native_training_executed") is not True or
+            proof.get("heldout_files_opened") is not False or
+            type(proof.get("production_weight_authority")) is not int or
+            proof.get("production_weight_authority") != 0 or
+            proof.get("redmi_measured") is not False or
+            proof.get("model_utility_proven") is not False or
+            json.dumps(proof.get("gates"), sort_keys=True) != json.dumps(T.GATES, sort_keys=True)):
+        raise ValueError("QAD native train proof authority/heldout gates mismatch")
+    metrics, adapter = proof.get("metrics") or {}, proof.get("adapter") or {}
+    if (type(metrics.get("steps")) is not int or metrics["steps"] != 2 or
+            metrics.get("jepa_weight") != 0 or
+            type(metrics.get("trainable_parameter_count")) is not int or
+            metrics["trainable_parameter_count"] <= 0 or
+            adapter.get("gguf_sha256") != binding["adapter_gguf_sha256"] or
+            type(adapter.get("lora_b_nonzero")) is not int or
+            adapter["lora_b_nonzero"] <= 0):
+        raise ValueError("QAD native train proof optimizer/adapter missing")
+    return True
+
+
 def validate_native_files(binding, server, base_gguf, adapter_gguf):
     observed = {
         "runner_sha256": C.file_sha(server),
@@ -136,23 +172,34 @@ def serve(binary, base_gguf, adapter_gguf, port, log_path):
 
 
 def collect(dataset, binding_path, server, base_gguf, adapter_gguf, out, *,
-            owner_confirmed=False, ask=request, server_context=serve, port=8832):
+            train_proof_path=None, resume=False, owner_confirmed=False,
+            ask=request, server_context=serve, port=8832):
     if not owner_confirmed:
         raise PermissionError("serial heavy/native owner confirmation required")
     index, dataset_sha = S.load_dataset(dataset)
     binding_raw = Path(binding_path).read_bytes()
     binding = S.parse_json(binding_raw.decode("utf-8"))
     validate_binding(binding, dataset_sha)
+    verify_train_proof(binding, train_proof_path)
     observed = validate_native_files(binding, server, base_gguf, adapter_gguf)
     out = Path(out)
-    out.mkdir(parents=True, exist_ok=False)
-    S.exclusive(out / "RUN_BINDING.json", binding_raw)
+    if resume:
+        if not out.is_dir() or (out / "FINAL_MANIFEST.json").exists():
+            raise ValueError("QAD resume directory missing or already final")
+        if (out / "RUN_BINDING.json").read_bytes() != binding_raw:
+            raise ValueError("QAD resume binding bytes changed")
+    else:
+        out.mkdir(parents=True, exist_ok=False)
+        S.exclusive(out / "RUN_BINDING.json", binding_raw)
+        S.exclusive(out / "predictions.jsonl", b"")
     target = out / "predictions.jsonl"
-    S.exclusive(target, b"")
+    seen, _ = C.existing_records(target, index)
     # Single server, fixed request order; only prompt is sent to the model.
     with server_context(server, base_gguf, adapter_gguf, port, out / "server.log"):
         for model in S.MODELS:
             for rid, arm in sorted(index):
+                if (model, rid, arm) in seen:
+                    continue
                 ref = index[(rid, arm)]
                 answer = ask(port, ref["prompt"], binding["seed"], binding["scales"][model])
                 if not isinstance(answer, str) or len(answer) > 8192:
@@ -167,6 +214,7 @@ def collect(dataset, binding_path, server, base_gguf, adapter_gguf, out, *,
                     stream.write((json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n").encode())
                     stream.flush()
                     os.fsync(stream.fileno())
+                seen.add((model, rid, arm))
     seen, records = C.existing_records(target, index)
     if len(seen) != 44 or len(records) != 44:
         raise ValueError("QAD LoRA native collection incomplete")
@@ -222,13 +270,16 @@ def main():
     parser.add_argument("--server")
     parser.add_argument("--base-gguf")
     parser.add_argument("--adapter-gguf")
+    parser.add_argument("--train-proof")
+    parser.add_argument("--resume", action="store_true")
     parser.add_argument("--serial-owner-confirmed", action="store_true")
     args = parser.parse_args()
     if args.mode == "collect":
-        if not all((args.server, args.base_gguf, args.adapter_gguf)):
-            parser.error("collect requires --server --base-gguf --adapter-gguf")
+        if not all((args.server, args.base_gguf, args.adapter_gguf, args.train_proof)):
+            parser.error("collect requires --server --base-gguf --adapter-gguf --train-proof")
         result = collect(args.dataset, args.binding, args.server, args.base_gguf,
-                         args.adapter_gguf, args.out, owner_confirmed=args.serial_owner_confirmed)
+                         args.adapter_gguf, args.out, train_proof_path=args.train_proof,
+                         resume=args.resume, owner_confirmed=args.serial_owner_confirmed)
     else:
         if not args.predictions:
             parser.error("score requires --predictions")
