@@ -1365,5 +1365,28 @@
     "full_acceptance": false,
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
     "next_prerequisite": "Check owner Actions 40506115941 before any new heavy native run"
+  },
+  "bp2b_raw_log_fsync_review_20261027": {
+    "scope": "REVIEW_ONLY_SOFTWARE",
+    "owner_branch": "codex/automation11-bp2b-log-durability-20261027",
+    "parent_pr": 714,
+    "parent_sha": "2b3a4b934fa0283aa9a24fd25879b7bea6504588",
+    "red_run": 40509034227,
+    "red_sha": "586f5a92df51b728ffefb8c4d28a09712ec2b715",
+    "red_tests": "31 RUN / 2 EXPECTED FAIL",
+    "green_run": 40508999107,
+    "green_sha": "320e9b8c8d0b1c216e24ede82f3121e84492a0f0",
+    "green_tests": "31/31 PASS",
+    "green_artifact_sha256": "1765cebe19200a06b03f78f59a901058e755cb92b9c4a09087548aee3da818a5",
+    "report": "docs/proofs/continuation-20261027/bp2b-log-durability/REPORT.md",
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP2b-Log-Durability/",
+    "private_backup_readback": "BYTE_EXACT_PASS",
+    "native_proof": false,
+    "redmi_measured": false,
+    "age_authority": 0,
+    "jepa_weight": 0,
+    "full_acceptance": false,
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
+    "next_prerequisite": "Fix actual preflight verify(master_dir,pin_path,metadata_only) signature mismatch without heavy native job"
   }
 }
