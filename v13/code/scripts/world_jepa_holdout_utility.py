@@ -63,11 +63,13 @@ def _training(training_dir, holdout_seed):
 
 
 def evaluate_rows(model, rows, seed):
-    """Frozen metrics on a separate cohort; never updates model/calibration.
+    """Frozen, bounded-memory metrics on a separate cohort; never fits/calibrates.
 
     Action-rotated control retains the exact observed states and outcomes, but
     feeds a different row's action. Identity control is the target-encoder
     latent of the BEFORE state, avoiding a cross-encoder baseline penalty.
+    The model's OOD operation broadcasts (batch * slots * training support);
+    chunking is mandatory before calling confidence, including on the phone.
     """
     if type(seed) is not int or seed < 0:
         raise ValueError('Invalid evaluation seed')
@@ -79,41 +81,55 @@ def evaluate_rows(model, rows, seed):
     rotated = np.roll(A, 1, axis=0)
     if not np.any(rotated != A):
         raise ValueError('Action-rotation control has no distinct actions')
-    predicted, spread = model.predict(X, A)
-    predicted_rotated, _ = model.predict(X, rotated)
-    target = model.latent(X2, target=True)
-    identity = model.latent(X, target=True)
-    confidence, labels = model.confidence(X, A)
-    scale = model.zsd.reshape(1, 1, -1)
-    action_error = np.mean(((predicted - target) / scale) ** 2, axis=2)
-    identity_error = np.mean(((identity - target) / scale) ** 2, axis=2)
-    rotated_error = np.mean(((predicted_rotated - target) / scale) ** 2, axis=2)
-    arrays = (action_error, identity_error, rotated_error, spread, confidence)
-    if not all(np.isfinite(a).all() for a in arrays):
-        raise ValueError('Nonfinite heldout metrics; no utility claim')
-    if (np.any(action_error < 0) or np.any(identity_error < 0)
-            or np.any(rotated_error < 0)
-            or np.any(confidence < 0) or np.any(confidence > 1)
-            or np.any(spread < 0)):
-        raise ValueError('Invalid heldout inference/calibration')
-    if any(label not in ('MODEL_SIMULATION', 'SIMULATION_UNCERTAIN') for label in labels):
-        raise ValueError('Unknown SHADOW confidence label')
-    a_row, i_row, r_row = (x.mean(axis=1) for x in
-                           (action_error, identity_error, rotated_error))
+    totals = dict(action=0., identity=0., rotated=0., confidence=0., spread=0.)
+    beats_identity = beats_rotated = uncertain = 0
+    for lo in range(0, len(data), 16):
+        hi = min(lo + 16, len(data))
+        x, a, x2, rot = X[lo:hi], A[lo:hi], X2[lo:hi], rotated[lo:hi]
+        predicted, spread = model.predict(x, a)
+        predicted_rotated, _ = model.predict(x, rot)
+        target = model.latent(x2, target=True)
+        identity = model.latent(x, target=True)
+        confidence, labels = model.confidence(x, a)
+        scale = model.zsd.reshape(1, 1, -1)
+        action_error = np.mean(((predicted - target) / scale) ** 2, axis=2)
+        identity_error = np.mean(((identity - target) / scale) ** 2, axis=2)
+        rotated_error = np.mean(((predicted_rotated - target) / scale) ** 2, axis=2)
+        arrays = (action_error, identity_error, rotated_error, spread, confidence)
+        if not all(np.isfinite(v).all() for v in arrays):
+            raise ValueError('Nonfinite heldout metrics; no utility claim')
+        if (np.any(action_error < 0) or np.any(identity_error < 0)
+                or np.any(rotated_error < 0)
+                or np.any(confidence < 0) or np.any(confidence > 1)
+                or np.any(spread < 0)):
+            raise ValueError('Invalid heldout inference/calibration')
+        if any(label not in ('MODEL_SIMULATION', 'SIMULATION_UNCERTAIN') for label in labels):
+            raise ValueError('Unknown SHADOW confidence label')
+        ar, ir, rr = (v.mean(axis=1) for v in
+                      (action_error, identity_error, rotated_error))
+        totals['action'] += float(action_error.sum())
+        totals['identity'] += float(identity_error.sum())
+        totals['rotated'] += float(rotated_error.sum())
+        totals['confidence'] += float(confidence.sum())
+        totals['spread'] += float(spread.sum())
+        beats_identity += int(np.count_nonzero(ar < ir))
+        beats_rotated += int(np.count_nonzero(ar < rr))
+        uncertain += sum(label == 'SIMULATION_UNCERTAIN' for label in labels)
+    n, slots = len(data), model.S
     metrics = {
-        'evaluated_rows': len(data),
-        'evaluated_slots': len(data) * model.S,
+        'evaluated_rows': n,
+        'evaluated_slots': n * slots,
         'world_overlapping_rows': sum(r['world'] for r in data),
         'world_changed_rows': sum(r['world_changed'] for r in data),
         'action_rotation_changed_rows': int(np.count_nonzero(np.any(rotated != A, axis=(1, 2)))),
-        'action_prediction_mse': float(action_error.mean()),
-        'identity_target_mse': float(identity_error.mean()),
-        'rotated_action_mse': float(rotated_error.mean()),
-        'fraction_beats_identity': float(np.mean(a_row < i_row)),
-        'fraction_beats_rotated': float(np.mean(a_row < r_row)),
-        'mean_confidence': float(confidence.mean()),
-        'mean_slot_spread': float(spread.mean()),
-        'uncertain_rows': sum(x == 'SIMULATION_UNCERTAIN' for x in labels),
+        'action_prediction_mse': totals['action'] / (n * slots),
+        'identity_target_mse': totals['identity'] / (n * slots),
+        'rotated_action_mse': totals['rotated'] / (n * slots),
+        'fraction_beats_identity': beats_identity / n,
+        'fraction_beats_rotated': beats_rotated / n,
+        'mean_confidence': totals['confidence'] / n,
+        'mean_slot_spread': totals['spread'] / (n * slots),
+        'uncertain_rows': uncertain,
     }
     if any(type(v) is float and not math.isfinite(v) for v in metrics.values()):
         raise ValueError('Nonfinite heldout summary')
