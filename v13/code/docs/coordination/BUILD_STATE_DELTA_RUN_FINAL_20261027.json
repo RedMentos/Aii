@@ -135,14 +135,21 @@
       "observed_head": "81ae3eefed324206f2a526fa98287b0c861a883b",
       "parent_pr": 761,
       "scope": "persisted control-budget metadata/timestamp integrity",
-      "status": "ACTIVE_OWNER_REVIEW_ONLY_DO_NOT_OVERWRITE"
+      "status": "ACTIVE_OWNER_REVIEW_ONLY_DO_NOT_OVERWRITE",
+      "pr": 763,
+      "focused_green_ci": 40567321217,
+      "full_ci": 40567197603,
+      "full_status_at_observation": "IN_PROGRESS"
     },
     {
       "branch": "codex/automation11-age0d-exact-representability-20261027",
       "observed_head": "5f0d4b250b393592bbeb75f24419f6de637226e3",
       "parent_pr": 759,
       "scope": "exact-result representability on parallel AGE0d candidate",
-      "status": "ACTIVE_OWNER_REVIEW_ONLY_RECONCILE_CANONICAL"
+      "status": "ACTIVE_OWNER_REVIEW_ONLY_RECONCILE_CANONICAL",
+      "pr": 762,
+      "full_ci": 40566885856,
+      "full_status_at_observation": "SUCCESS_OBSERVED_OWNER_REPORT_PENDING"
     }
   ]
 }
