@@ -170,8 +170,10 @@ def validate_binding(binding, dataset_sha):
     return True
 
 
-def evaluate(index, dataset_sha, binding, predictions):
-    validate_binding(binding, dataset_sha)
+def evaluate(index, dataset_sha, binding, predictions, *, binding_validator=None):
+    # Original V1 remains the default. Explicit V2 callers must provide their
+    # own fail-closed source/adapter validator; never reinterpret an adapter as a full GGUF.
+    (binding_validator or validate_binding)(binding, dataset_sha)
     if len(predictions) != 2 * len(index):
         raise ValueError("incomplete predictions: require 44 exact model/arm rows")
     scored = {}
