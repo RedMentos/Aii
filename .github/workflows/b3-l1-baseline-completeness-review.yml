@@ -1,0 +1,75 @@
+name: V13 B3 L1 complete-baseline independent RED GREEN
+on:
+  push:
+    branches: [assistant/v13-b3-l1-complete-baseline-review-20261027]
+    paths:
+      - '.github/workflows/b3-l1-baseline-completeness-review.yml'
+      - 'v13/code/v13/b3bridge.py'
+      - 'v13/code/tests/test_b3_l1_baseline_completeness_review.py'
+      - 'v13/code/tests/test_b3bridge.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-b3-l1-baseline-completeness
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw B3 gate evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/b3-l1-complete"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/b3bridge.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_b3_l1_baseline_completeness_review.py > "$evidence/TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_b3bridge.py > "$evidence/EXISTING_TEST_BLOB.txt"
+          git merge-base --is-ancestor 6233286b33715f482a0fa0a11741d78aafa745a7 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/b3-l1-complete-venv"
+          py="$RUNNER_TEMP/b3-l1-complete-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_b3_l1_baseline_completeness_review tests.test_b3bridge tests.test_b3completion tests.test_b3degrade
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/b3bridge.py v13/code/tests/test_b3_l1_baseline_completeness_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 87dd02f82abdcc3762029dac3ea8170c9db30e7c --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 87dd02f82abdcc3762029dac3ea8170c9db30e7c HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-b3-l1-complete-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/b3-l1-complete/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/b3-l1-complete"
+          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'B3_L1_GATE_SOFTWARE_ONLY_NO_PROMOTION'
