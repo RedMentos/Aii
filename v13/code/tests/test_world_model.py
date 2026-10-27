@@ -40,6 +40,23 @@ class Objectives(Base):
         self.assertEqual(WM.for_event(self.r.store,'nope','gist')['reason'],'NO_OBSERVED_STATE')
 
 class Counterfactuals(Base):
+    def test_heldout_only_action_is_not_training_support(self):
+        data=synthetic(n=48)
+        train,heldout=WM._split(len(data))
+        for row in data:row['a']='simple'
+        unique=data[heldout[0]]
+        unique['a']='both'  # a measured held-out observation, not training evidence
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['status'],'FITTED')
+        self.assertEqual(st['counts']['both'],1)  # observed total remains visible
+        self.assertEqual(st['states']['both'],[])  # held-out state must never be support
+        self.assertEqual(st['support_counts']['both'],0)
+        self.assertEqual(len(st['states']['simple']),len(train))
+        cf=WM.counterfactual(self.r.store,unique['s'],'both')
+        self.assertEqual(cf['coverage']['samples'],0)
+        self.assertEqual((cf['label'],cf['confidence']),('SIMULATION_UNCERTAIN',0.))
+
     def test_confidence_follows_coverage_not_frequency(self):
         data=synthetic()+[{'action_id':'rare','s':WM.state_vec(500,'NORMAL',12.),'a':'both','y':[1.,1.,.5],'latent':None}]
         data=[t for t in data if t['a']!='both' or t['action_id']=='rare']
