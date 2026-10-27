@@ -1,0 +1,30 @@
+{
+  "schema": "V13_BP1_NEARMISS_SCORER_SOFTWARE_20261027",
+  "owner": "GPT-6 automation11",
+  "prereg_commit": "1440b0ee91a0622fa77c1c1971820ea5dd58beac",
+  "source_commit": "38ea4227ad58a8f2e32b5f59a566a559e3c21498",
+  "software": {
+    "run": 40487305415,
+    "artifact": 12724759831,
+    "zip_sha256": "13ade4804fe3981b6abb293d5a526eb5ec77ffe22af96127d6441cd620c6fd5e",
+    "unit_pass": 21,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "backup": "private Library byte-verified"
+  },
+  "cohort": {
+    "near_miss_sha256": "ae9a8bad60a5c8322f5447a1eae308460d828c3aaeb273347de727133a2a41f9",
+    "retention_sha256": "b1c78b52853c6a1e37697d3f52daa8bbad951423aa622f7d517968e2340d7668",
+    "future_requests": 48
+  },
+  "native": "NOT_RUN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "close original 44-response native V2, then separately build and preregister 48-response native collector without changing frozen training cohort"
+}
