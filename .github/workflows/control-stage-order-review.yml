@@ -1,0 +1,70 @@
+name: V13 control stage-order integrity review
+on:
+  push:
+    branches: [assistant/v13-control-stage-order-20261027]
+    paths:
+      - '.github/workflows/control-stage-order-review.yml'
+      - 'v13/code/v13/control_budget.py'
+      - 'v13/code/tests/test_control_budget_stage_order_review.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-control-stage-order-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run source-bound synthetic tests and preserve raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/control-stage-order"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/control_budget.py > "$evidence/SOURCE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/control-created-venv"
+          py="$RUNNER_TEMP/control-created-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_control_budget_stage_order_review tests.test_control_budget_created_overflow_review tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_checkpoint_containment_review tests.test_control_budget
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/control_budget.py v13/code/tests/test_control_budget_stage_order_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 14a08bab05e17a77508e23d1c1d25d5d142c9b89 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 14a08bab05e17a77508e23d1c1d25d5d142c9b89 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-control-stage-order-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/control-stage-order/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits; retain RED as expected failure
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/control-stage-order"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'CONTROL_STAGE_ORDER_SOFTWARE_ONLY_NO_GATE_PROMOTION'
