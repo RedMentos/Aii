@@ -35,7 +35,8 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN644_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run644-c3-contrastive/COHORT.json)" = c1b5a4c6b2ab22c0ad07996f114d05e69912a7cc
-          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run642-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/COHORT.json)" = 249d4be0e0663cccf5d1165347fa37c0db924791
           test "$(git hash-object v13/code/scripts/run644_c3_contrastive.py)" = 37704ced4dfd24f09b1ab9f798db2326d1f06df6
           test "$(git hash-object v13/code/scripts/run644_c3_native_compare.py)" = 052433103ea79a857941c0afd3fb03f980097564
           test "$(git hash-object v13/code/tests/test_run644_c3_contrastive.py)" = c88fed6ced4d236e5c6dba35e31036462c305743
