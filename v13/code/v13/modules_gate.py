@@ -153,12 +153,31 @@ def fetch(store,mid,authority=None,fetcher=None,clock=time.time,guard=None):
         # A later state mutation must not resurrect a revoked proposal.
         if not st['enabled'] or _get(st,mid)['state']!='PROPOSED':
             raise PermissionError('Modulvorschlag inzwischen zurückgenommen oder ausgeschaltet')
+        # Recheck policy on every optimistic state transition attempt, too.
+        why=gate(store,TOOL,RISK,EFFECTS_FETCH)
+        if why:raise PermissionError('Gesperrt während des Holens: '+why)
         return _to(st,mid,new,clock,who,**extra)
     if not isinstance(data,(bytes,bytearray)):raise ValueError('Antwort ist kein Byte-Block')
     if len(data)>MAX_BYTES:
         box(store).mutate(lambda s:advance(s,'REJECTED','check',findings=['TOO_BIG'],size=len(data)));_log(store,'rejected',id=mid,why='TOO_BIG');return _rec(store,mid)
     sha=hashlib.sha256(data).hexdigest();p=_file(store,mid);atomic_write(p,bytes(data))
-    box(store).mutate(lambda s:advance(s,'QUARANTINED','HUMAN',sha256=sha,size=len(data),quarantined=clock()))
+    try:
+        # The filesystem write itself can race with revoke(delete), Notaus,
+        # module disable, or a typed ban; the pre-write gate is not enough.
+        latest=state(store)
+        if not latest['enabled'] or _get(latest,mid)['state']!='PROPOSED':
+            raise PermissionError('Modul wurde während des Speicherns zurückgenommen oder ausgeschaltet')
+        why=gate(store,TOOL,RISK,EFFECTS_FETCH)
+        if why:raise PermissionError('Gesperrt während des Speicherns: '+why)
+        box(store).mutate(lambda s:advance(s,'QUARANTINED','HUMAN',sha256=sha,size=len(data),quarantined=clock()))
+    except Exception:
+        # Delete only if this proposal is still unclaimed or revoked. Another
+        # concurrent fetch may already own QUARANTINED/ACTIVE; never delete its
+        # file as cleanup for this failed attempt.
+        current=state(store)['mods'].get(mid,{})
+        if current.get('state') in ('PROPOSED','REVOKED','REJECTED','TAMPERED'):
+            p.unlink(missing_ok=True)
+        raise
     _log(store,'quarantined',id=mid,sha8=sha[:8],size=len(data))
     return check(store,mid,clock=clock,guard=guard)
 
@@ -246,7 +265,10 @@ def activate(store,mid,code,authority=None,clock=time.time,min_wait=MIN_WAIT_S):
             raise PermissionError('Modul während der Freigabe zurückgenommen oder ausgeschaltet')
         return current
     if hashlib.sha256(_file(store,mid).read_bytes()).hexdigest()!=m['sha256']:
-        box(store).mutate(lambda s:_to(s,mid,'TAMPERED',clock,'activate') if require_pending(s) else None)
+        def suspend(s):
+            require_pending(s)
+            return _to(s,mid,'TAMPERED',clock,'activate')
+        box(store).mutate(suspend)
         raise ValueError('Datei hat sich verändert: gesperrt (TAMPERED)')
     # The hash read can itself race with Notaus or a new typed prohibition.
     if halted(store):raise PermissionError('Notaus/Stillstand während der Freigabe')
