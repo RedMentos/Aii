@@ -99,7 +99,11 @@ def probe_checkpoint(checkpoint, expected_sha256, expected_provenance, request):
 
 
 def _json_file(path, max_bytes):
-    raw = Path(path).read_bytes()
+    # A size check *after* Path.read_bytes is not a memory bound: a caller
+    # can pass a multi-GB local file on a 6-GB-class phone. Read at most
+    # one byte past the accepted limit, including when the file grows.
+    with Path(path).open('rb') as stream:
+        raw = stream.read(max_bytes + 1)
     if not raw or len(raw) > max_bytes:
         raise ValueError('JSON input missing or exceeds size bound')
     def unique(pairs):
