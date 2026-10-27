@@ -1,0 +1,98 @@
+{
+  "schema": "V13_RUN638_C3_DOSE_RESPONSE_BUILD_STATE_V2",
+  "date_utc": "2026-10-27",
+  "branch": "codex/gpt6-run638-c3-dose-response-20261027",
+  "owner": "GPT-6 scheduled V13 implementation, isolated C3 learning/evaluation files",
+  "parent": {
+    "pr": 632,
+    "head_sha": "60077686e5dcadade6e7a1a08934b55aca3cd665"
+  },
+  "pr": 634,
+  "prereg": {
+    "commit": "b23b6162e55c37f9d5503e068176204b9795c75d",
+    "blob": "e784a1d74b0fa37996a5befecad2b642e0b104a0"
+  },
+  "cohort": {
+    "commit": "89523d4ef147dcc58f12cb529c706d02f4f3559a",
+    "blob": "94c8558de44069b4e3baa351b6ca74e5e9f4ec9c"
+  },
+  "implementation": {
+    "training_script_blob": "46ffa54fa7267eecc31e6db6f3db3c3c06d585a0",
+    "native_evaluator_blob": "4a283be377767e2be0f51b0e6c9ec2b20c7e548d",
+    "training_test_blob": "9758a19f24f423f9de24693740be4ef938d030ff",
+    "evaluator_test_blob": "3c7bc6d1bbd0cc58a73f730cd4fee15c1250f37a"
+  },
+  "source_ci": {
+    "run_id": 40430961589,
+    "head_sha": "6bed39909d9ee1d16277ade4e3f79938b1f9ca63",
+    "status": "GREEN",
+    "tests": "43/43 PASS",
+    "privacy": "CLEAN",
+    "zip_sha256": "0d778b62e9571c3b9f9708a3fb148dbdc9ecab2cf9cc68cb7f70edf6a497e2f5",
+    "crc": "PASS",
+    "inner_sha": "9/9 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run638/Run638-source43-GREEN-40430961589.zip"
+  },
+  "native_ci": {
+    "run_id": 40431064922,
+    "head_sha": "d6d97601d75ccaee05da96278549651edd3bb43d",
+    "status": "GREEN_EXECUTION_NEGATIVE_UTILITY",
+    "source_tests": "43/43 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12702091198,
+    "zip_sha256": "d295a534aee3bb541b31fdfe760df1ec0b355ec0dd5642abbb949b198707b65c",
+    "crc": "PASS",
+    "inner_sha": "31/31 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run638/Run638-native-32step-40431064922.zip",
+    "private_byte_roundtrip": "PASS",
+    "train_proof_sha256": "f49ea0206e717c85b1018ea62204bdc8e876519e9c4f404f4ca21e9bb16b6d2e",
+    "native_proof_sha256": "82b9073b9b955286c705b9ab506e49622c68745465b0a52b11213fdc9f72fd10",
+    "adapter_gguf_sha256": "bd5fb8e523ba5444602401911d7fc8e0b2a571980cc95bf1a42f15c2bfb1cb83",
+    "adapter_peft_sha256": "7ae4d6b337cd5a5d553fdb4be10017c351b5b07ecc431dabce061b619596156d",
+    "training": {
+      "steps": 32,
+      "final_ce": 0.00019,
+      "master_recall": 1,
+      "heldout_kl_to_base": 5.8776185512542725,
+      "peak_rss_mb": 2420.8,
+      "seconds": 30.85,
+      "lora_b_nonzero": 38912
+    },
+    "deployed": {
+      "status": "NO_ANSWER_UTILITY",
+      "tokenizer_and_baseline_parity": true,
+      "numeric_effect": true,
+      "train_hits": "2/2 vs original 0/2",
+      "heldout_hits": "0/2 vs original 1/2",
+      "near_miss_leak": "2/2 vs original 0/2",
+      "bounded_synthetic_utility": false
+    }
+  },
+  "original_native": {
+    "run_id": 40429819193,
+    "artifact_id": 12701134055,
+    "sha256": "940ae9372309ee828869e40e8d416f1bea54b4426c5420d5a925bf50ef329ce0",
+    "crc": "PASS",
+    "inner_sha": "22/22 PASS",
+    "status": "NO_ANSWER_UTILITY",
+    "train_hits": "0/2",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run637/Run637-GREEN-native-40429819193.zip",
+    "private_byte_roundtrip": "PASS"
+  },
+  "treatment": "Only prospective optimizer min/max steps 2->32; unchanged selected master, deployed GGUF, seed13, rank2/alpha4, lr, train/heldout, jepa_weight0, no anchor",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "open_questions": [
+    "Run638 confirms severe overfit: 32-step master recall 2/2 but QAD-Q4 heldout retention 0/2, Cedar leakage 2/2, KL 5.8776. Test independent prospective anchor/locality regularization, never reinterpret Run638 as utility.",
+    "Exact-key '4' false-negative for 'four' persists in original and candidate; scorer caveat separately.",
+    "Body-JEPA weight path, B1/B2 sparse training, STEP2 complementarity and Redmi unproven."
+  ],
+  "next_exact_command": "Read Run638 GREEN execution / negative utility original artifact 12702091198, already SHA/CRC/31/31/private byte-verified; preregister new independent C3 anchor/locality cohort with disjoint training anchors before any new optimizer, preserving Run638 raw, then source tests -> native evidence -> backup. Continue other blueprint organs."
+}

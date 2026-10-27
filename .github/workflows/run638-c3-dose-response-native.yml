@@ -1,0 +1,243 @@
+name: V13 Run638 selected C3 32-step dose response native shadow
+on:
+  push:
+    branches:
+      - codex/gpt6-run638-c3-dose-response-20261027
+    paths:
+      - '.github/workflows/run638-c3-dose-response-native.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run628-single-native-c3
+  cancel-in-progress: false
+jobs:
+  selected-c3-32step:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze prereg, treatment, evaluator, model and Canon before execution
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN638_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/PREREG.md)" = e784a1d74b0fa37996a5befecad2b642e0b104a0
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json)" = 94c8558de44069b4e3baa351b6ca74e5e9f4ec9c
+          test "$(git hash-object v13/code/scripts/run638_c3_dose_response.py)" = 46ffa54fa7267eecc31e6db6f3db3c3c06d585a0
+          test "$(git hash-object v13/code/scripts/run638_c3_native_compare.py)" = 4a283be377767e2be0f51b0e6c9ec2b20c7e548d
+          test "$(git hash-object v13/code/tests/test_run638_c3_dose_response.py)" = 9758a19f24f423f9de24693740be4ef938d030ff
+          test "$(git hash-object v13/code/tests/test_run638_c3_native_compare.py)" = 3c7bc6d1bbd0cc58a73f730cd4fee15c1250f37a
+          test "$(git hash-object v13/code/scripts/run632_c3_lfm350_native.py)" = b59f45f06bf0b8428fba502b8146c02205228edd
+          test "$(git hash-object v13/code/scripts/run636_c3_selected_gguf_utility.py)" = 8a32d806739f7285ed41232e41168e35cf9ef3eb
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; free -h; } > "$RUNNER_TEMP/RUN638_HOST.txt"
+          sha256sum v13/code/scripts/run638_c3_dose_response.py v13/code/scripts/run638_c3_native_compare.py v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json > "$RUNNER_TEMP/RUN638_SOURCE_SHA256.txt"
+      - name: Source-only 43 contract/negative controls
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v             tests.test_run638_c3_dose_response             tests.test_run638_c3_native_compare             tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN638_SOURCE_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN638_SOURCE_TEST_EXIT.txt"
+          exit 0
+      - name: Isolated pinned FP32 CPU training and tokenizer dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run638venv" > "$RUNNER_TEMP/RUN638_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/run638venv/bin/python" -m pip install --disable-pip-version-check --no-input               'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu >> "$RUNNER_TEMP/RUN638_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            timeout 480s "$RUNNER_TEMP/run638venv/bin/python" -m pip install --disable-pip-version-check --no-input               'transformers==5.0.0' 'huggingface_hub==1.26.0' 'peft==0.18.0'               'safetensors==0.5.3' 'numpy==2.2.6' 'jinja2==3.1.6' >> "$RUNNER_TEMP/RUN638_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run638venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN638_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_DEPS_EXIT.txt"
+          exit 0
+      - name: Exact official b10964 upstream LFM2 gguf-py source
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN638_DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN638_SOURCE_TEST_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run638-source"
+            curl --fail --silent --show-error --location --retry 2 --max-time 240               'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz'               -o "$RUNNER_TEMP/run638-source.tar.gz" > "$RUNNER_TEMP/RUN638_GGUF_RAW.log" 2>&1
+            rc=$?
+            if [ "$rc" = 0 ]; then test "$(stat -c%s "$RUNNER_TEMP/run638-source.tar.gz")" = 37420323; rc=$?; fi
+            if [ "$rc" = 0 ]; then
+              echo '4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  '"$RUNNER_TEMP/run638-source.tar.gz" | sha256sum -c >> "$RUNNER_TEMP/RUN638_GGUF_RAW.log" 2>&1
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then tar -xzf "$RUNNER_TEMP/run638-source.tar.gz" -C "$RUNNER_TEMP/run638-source" >> "$RUNNER_TEMP/RUN638_GGUF_RAW.log" 2>&1; rc=$?; fi
+            if [ "$rc" = 0 ]; then
+              test "$(git hash-object "$RUNNER_TEMP/run638-source/llama.cpp-b10964/gguf-py/gguf/constants.py")" = e54ee5a0fd41416f191130cdf1efd08507f63894
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              test "$(git hash-object "$RUNNER_TEMP/run638-source/llama.cpp-b10964/gguf-py/gguf/tensor_mapping.py")" = d2dfeece59522ffb417f70939cf94ee157591eee
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              PYTHONPATH="$RUNNER_TEMP/run638-source/llama.cpp-b10964/gguf-py" "$RUNNER_TEMP/run638venv/bin/python" - <<'PY' >> "$RUNNER_TEMP/RUN638_GGUF_RAW.log" 2>&1
+          import gguf,os
+          from pathlib import Path
+          source=Path(os.environ['RUNNER_TEMP'])/'run638-source/llama.cpp-b10964/gguf-py'
+          assert Path(gguf.__file__).resolve().is_relative_to(source.resolve())
+          arch=[a for a,name in gguf.MODEL_ARCH_NAMES.items() if name=='lfm2']
+          assert len(arch)==1
+          names=gguf.get_tensor_name_map(arch[0],16)
+          assert names.get_name('model.layers.0.self_attn.v_proj')
+          assert names.get_name('model.layers.0.self_attn.out_proj')
+          print('RUN638_UPSTREAM_LFM2_GGUF_PASS')
+          PY
+              rc=$?
+            fi
+          else
+            echo 'SOURCE_OR_DEPS_FAILED' > "$RUNNER_TEMP/RUN638_GGUF_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_GGUF_EXIT.txt"
+          exit 0
+      - name: Download pinned licensed selected C3 master and QAD-Q4 deployed
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN638_GGUF_EXIT.txt")" = 0 ]; then
+            timeout 720s "$RUNNER_TEMP/run638venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN638_MODEL_RAW.log" 2>&1
+          from huggingface_hub import snapshot_download
+          from pathlib import Path
+          import hashlib,os
+          root=Path(os.environ['RUNNER_TEMP'])
+          m=Path(snapshot_download(repo_id='LiquidAI/LFM2.5-350M',revision='b6248156b66a93e5c4581d82953a9df630c582ef',local_dir=root/'run638-master',allow_patterns=['model.safetensors','config.json','generation_config.json','tokenizer*','chat_template.jinja','special_tokens_map.json','merges.txt','vocab.json','LICENSE'],max_workers=2))
+          d=Path(snapshot_download(repo_id='LiquidAI/LFM2.5-350M-GGUF',revision='657e078c94084481950a2d555a941481f715536b',local_dir=root/'run638-deployed',allow_patterns=['LFM2.5-350M-QAD-Q4_0.gguf'],max_workers=2))
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          assert sha(m/'model.safetensors')=='1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e'
+          assert sha(m/'chat_template.jinja')=='013eed60546434b6967e3483153d8c5c37abcb1d667f8b1f914683f2a9411531'
+          assert sha(m/'LICENSE')=='4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c'
+          assert sha(d/'LFM2.5-350M-QAD-Q4_0.gguf')=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          print('RUN638_PINNED_MODEL_TEMPLATE_LICENSE_QADQ4_PASS')
+          PY
+            rc=$?
+          else
+            echo 'GGUF_OR_DEPS_FAILED' > "$RUNNER_TEMP/RUN638_MODEL_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_MODEL_EXIT.txt"
+          exit 0
+      - name: Exactly 32 FP32 master LoRA optimizer steps and GGUF export
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN638_MODEL_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run638-output"
+            timeout 900s env PYTHONPATH="$RUNNER_TEMP/run638-source/llama.cpp-b10964/gguf-py:$PWD/v13/code"               "$RUNNER_TEMP/run638venv/bin/python" v13/code/scripts/run638_c3_dose_response.py               --cohort v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json               --master-dir "$RUNNER_TEMP/run638-master"               --specs v13/code/specs/models.json               --output "$RUNNER_TEMP/run638-output" > "$RUNNER_TEMP/RUN638_TRAIN_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'MODEL_OR_SOURCE_FAILED; TRAIN_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN638_TRAIN_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_TRAIN_EXIT.txt"
+          exit 0
+      - name: Retrieve original Run635 adapter and Run637 deployed native proof
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run638-original-adapter" "$RUNNER_TEMP/run638-original-native"
+          curl --fail --silent --show-error --location --retry 2 --max-time 180             -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json"             'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12701530582/zip'             -o "$RUNNER_TEMP/run638-original-adapter.zip" > "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then echo 'bd2ffc2969b3b98f8c64a4f776fc7195599a78e74802ace26b59c3dcb576c675  '"$RUNNER_TEMP/run638-original-adapter.zip" | sha256sum -c >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then unzip -q "$RUNNER_TEMP/run638-original-adapter.zip" -d "$RUNNER_TEMP/run638-original-adapter" >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then (cd "$RUNNER_TEMP/run638-original-adapter" && sha256sum -c RUN632_SHA256SUMS.txt) >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then echo '3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599  '"$RUNNER_TEMP/run638-original-adapter/RUN632_ADAPTER.gguf" | sha256sum -c >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 180               -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json"               'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12701134055/zip'               -o "$RUNNER_TEMP/run638-original-native.zip" >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then echo '940ae9372309ee828869e40e8d416f1bea54b4426c5420d5a925bf50ef329ce0  '"$RUNNER_TEMP/run638-original-native.zip" | sha256sum -c >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then unzip -q "$RUNNER_TEMP/run638-original-native.zip" -d "$RUNNER_TEMP/run638-original-native" >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then (cd "$RUNNER_TEMP/run638-original-native" && sha256sum -c RUN637_SHA256SUMS.txt) >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then echo 'b8b8a15a0215839fe2d94b62d055fcced3cbff4b4504b84ed21e1d511b1ca02c  '"$RUNNER_TEMP/run638-original-native/RUN636_NATIVE_PROOF.json" | sha256sum -c >> "$RUNNER_TEMP/RUN638_ORIGINAL_RAW.log" 2>&1; rc=$?; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_ORIGINAL_EXIT.txt"
+          exit 0
+      - name: Fetch exact original b10964 Linux native llama-server
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/run638-bin"
+          curl --fail --silent --show-error --location --retry 2 --max-time 240             'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz'             -o "$RUNNER_TEMP/run638-bin.tar.gz" > "$RUNNER_TEMP/RUN638_SERVER_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then test "$(stat -c%s "$RUNNER_TEMP/run638-bin.tar.gz")" = 16825086; rc=$?; fi
+          if [ "$rc" = 0 ]; then echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  '"$RUNNER_TEMP/run638-bin.tar.gz" | sha256sum -c >> "$RUNNER_TEMP/RUN638_SERVER_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then tar -xzf "$RUNNER_TEMP/run638-bin.tar.gz" -C "$RUNNER_TEMP/run638-bin" >> "$RUNNER_TEMP/RUN638_SERVER_RAW.log" 2>&1; rc=$?; fi
+          if [ "$rc" = 0 ]; then
+            find "$RUNNER_TEMP/run638-bin" -type f -name llama-server -print > "$RUNNER_TEMP/RUN638_SERVER_PATH.txt"
+            test "$(wc -l < "$RUNNER_TEMP/RUN638_SERVER_PATH.txt")" = 1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            chmod +x "$(cat "$RUNNER_TEMP/RUN638_SERVER_PATH.txt")"
+            echo '79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39  '"$(cat "$RUNNER_TEMP/RUN638_SERVER_PATH.txt")" | sha256sum -c >> "$RUNNER_TEMP/RUN638_SERVER_RAW.log" 2>&1
+            rc=$?
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_SERVER_EXIT.txt"
+          exit 0
+      - name: Native QAD-Q4 paired 2-step vs 32-step six-case utility and parity
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN638_TRAIN_EXIT.txt")" = 0 ] &&              [ "$(cat "$RUNNER_TEMP/RUN638_ORIGINAL_EXIT.txt")" = 0 ] &&              [ "$(cat "$RUNNER_TEMP/RUN638_SERVER_EXIT.txt")" = 0 ]; then
+            server="$(cat "$RUNNER_TEMP/RUN638_SERVER_PATH.txt")"
+            timeout 600s env LD_LIBRARY_PATH="$(dirname "$server")" PYTHONPATH="$PWD/v13/code"               "$RUNNER_TEMP/run638venv/bin/python" v13/code/scripts/run638_c3_native_compare.py               --master "$RUNNER_TEMP/run638-master"               --model "$RUNNER_TEMP/run638-deployed/LFM2.5-350M-QAD-Q4_0.gguf"               --original-adapter "$RUNNER_TEMP/run638-original-adapter/RUN632_ADAPTER.gguf"               --original-proof "$RUNNER_TEMP/run638-original-native/RUN636_NATIVE_PROOF.json"               --candidate-adapter "$RUNNER_TEMP/run638-output/RUN638_ADAPTER.gguf"               --candidate-proof "$RUNNER_TEMP/run638-output/RUN638_TRAIN_PROOF.json"               --cohort v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json               --license "$RUNNER_TEMP/run638-output/RUN638_LICENSE.txt"               --server "$server"               --server-sha 79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39               --output "$RUNNER_TEMP/run638-output" > "$RUNNER_TEMP/RUN638_NATIVE_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'TRAIN_ORIGINAL_OR_SERVER_FAILED; NATIVE_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN638_NATIVE_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN638_NATIVE_EXIT.txt"
+          exit 0
+      - name: Public repository privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 60077686e5dcadade6e7a1a08934b55aca3cd665 --head HEAD > "$RUNNER_TEMP/RUN638_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN638_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close all raw failures, native outputs, source and SHA256
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in SOURCE_TEST DEPS GGUF MODEL TRAIN ORIGINAL SERVER NATIVE PRIVACY; do
+            test -f "RUN638_${k}_EXIT.txt" || echo 2 > "RUN638_${k}_EXIT.txt"
+          done
+          if [ -d run638-output ]; then
+            find run638-output -maxdepth 1 -type f -name 'RUN638_*' -exec cp '{}' . \;
+          fi
+          find . -maxdepth 1 -type f -name 'RUN638_*' ! -name RUN638_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN638_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run638-32Step-C3-Native-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN638_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original/model/native execution without promoting utility
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in SOURCE_TEST DEPS GGUF MODEL TRAIN ORIGINAL SERVER NATIVE PRIVACY; do
+            echo "RUN638 $k exit $(cat "$RUNNER_TEMP/RUN638_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN638_${k}_EXIT.txt")" = 0
+          done
+          test -s "$RUNNER_TEMP/RUN638_TRAIN_PROOF.json"
+          test -s "$RUNNER_TEMP/RUN638_NATIVE_PROOF.json"
+          test -s "$RUNNER_TEMP/RUN638_ADAPTER.gguf"
+          test -s "$RUNNER_TEMP/RUN638_LICENSE.txt"
+          (cd "$RUNNER_TEMP" && sha256sum -c RUN638_SHA256SUMS.txt)
