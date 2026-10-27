@@ -85,7 +85,8 @@ def probe_checkpoint(checkpoint, expected_sha256, expected_provenance, request):
         'authority': 0,
         'action_executed': False,
         'learning_performed': False,
-        'after_observed': after is not None,
+        'after_supplied': after is not None,
+        'after_verified': False,  # caller data is not independently attested
         'checkpoint_sha256': expected_sha256,
         'request_sha256': hashlib.sha256(canonical).hexdigest(),
         'simulation_label': labels[0],
