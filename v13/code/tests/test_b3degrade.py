@@ -57,7 +57,16 @@ class Live(unittest.TestCase):
         rng=np.random.default_rng(0);x=rng.normal(size=(80,8))
         cal=B.compute(x,x[::-1]*1.05,body_pair_id='B1->B2',sender_revision='rev-b1',receiver_revision=receiver,target_tap_id='lfm2.l8')|{'created_wall_time':time.time()-age}
         man={'calibrated':True,'created_wall_time':time.time()-age,'sender_revision':'rev-b1','receiver_revision':receiver,'r':16,'K':4,'receiver_calibration':cal,'sha256':'0'*64,'train':{'samples':80}}
-        man|={g+'_gate':{'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}} for g in gates}
+        # Synthetic fixture: complete typed L1 criteria, never native proof.
+        l1={'verdict':'PASS',
+            'criteria':{k:{'significant':True} for k in
+                ('beats_no_message','beats_latent_shuffled','beats_latent_random',
+                 'utility_beats_exact','utility_beats_control','utility_beats_symbolic',
+                 'role_retention','receiver_ood','restart_reproducibility')},
+            'missing_baselines':[],'invalid_evidence':[]}
+        man|={g+'_gate':(l1 if g=='l1' else
+             {'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}})
+             for g in gates}
         (self.r.home/'b3'/f'{d}.json').write_text(json.dumps(man))
     def doc(self):return b3_doctor(self.r)['B1_TO_B2']
 
