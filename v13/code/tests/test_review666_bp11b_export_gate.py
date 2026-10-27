@@ -29,7 +29,7 @@ class ExportGateReview(Base):
         with self.assertRaises(PermissionError):
             M.operator_command(self.r, ['export', str(path)])
         self.assertFalse(path.exists())
-        self.assertEqual(len(M.corpus(self.s)), 2)
+        self.assertEqual(len(M.corpus(self.s)), 0)  # Existing module_learn WRITE_LOCAL gate conservatively blocks reads too.
 
     def test_specific_module_export_tool_ban_blocks_direct_api(self):
         path = self.ready_for_export()
