@@ -1,0 +1,7 @@
+# PR799 ContextOS warm + Sleep A/B F5 — exact-head software GREEN
+
+UTC 2026-10-27 ~23:44. Prereg `6d2d506c555efcbdc8890f078b221a880a029d45` preceded atomic exact-blob source/test/workflow integration `50f9e6b64ddcd700d39e8289cce9f4c61d7ffd0e`. Independently verified PR795 Actions `40600569995` 69 focused/2056 full software, raw ZIP SHA256 `e39f69dbfec91901954a7ace8e1cfdd160408d6e67af4cd70e6a32d02db89ab8`; only `ContextOS.warm` differed from current source, outside method byte-identical. Imported exact source `127af0b872bfce002c6dd72020a22574f52691e8` and Run271 test `cc1423c7f4961b038f073d77ceec6a31cbc99a43`, retained Sleep A/B F5 and Memory F5 source unchanged.
+
+**Actions `40603647706` SUCCESS** at exact `50f9e6b64ddcd700d39e8289cce9f4c61d7ffd0e`: **65/65 focused PASS**, **2076 full software tests OK (1 skipped)** in 222.589s, all raw exits `BLOBS=INSTALL=FOCUSED=FULL=COMPILE=PRIVACY=DIFF=0`, privacy CLEAN. Artifact `12780790044`, ZIP SHA256 `03ff050f00be11cbfde6a47d2b3b7116fbd128bdc1f874240f5341452a25160a`, CRC/internal SHA256SUMS PASS. Private Library `/V13-Checkpoints/2026-10-28/Automation12-Context-Sleep-F5/GREEN-40603647706.zip` byte-exact re-materialization PASS.
+
+No native/Redmi or learning; STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Age-0 unchanged, V13 incomplete. Next: cross-integrate independently green PR798 queued Dream F5 on preregistered child, run fresh combined tests. No auto-merge.
