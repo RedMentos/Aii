@@ -49,6 +49,12 @@ jobs:
           echo "$?" > "$RUNNER_TEMP/worldholdoutproof/UNIT_EXIT.txt"
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" scripts/world_jepa_holdout_utility.py verify --training-export "$RUNNER_TEMP/worldholdoutproof/closed/training" --output-dir "$RUNNER_TEMP/worldholdoutproof/closed/heldout") > "$RUNNER_TEMP/worldholdoutproof/VERIFY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/worldholdoutproof/VERIFY_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" scripts/world_jepa_holdout_utility.py run --training-export "$RUNNER_TEMP/worldholdoutproof/closed/training" --output-dir "$RUNNER_TEMP/worldholdoutproof/closed/heldout315" --seed 315 --rows 160) > "$RUNNER_TEMP/worldholdoutproof/RUN315_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/RUN315_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" scripts/world_jepa_holdout_utility.py verify --training-export "$RUNNER_TEMP/worldholdoutproof/closed/training" --output-dir "$RUNNER_TEMP/worldholdoutproof/closed/heldout315") > "$RUNNER_TEMP/worldholdoutproof/VERIFY315_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/VERIFY315_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" scripts/world_jepa_holdout_utility.py summarize --training-export "$RUNNER_TEMP/worldholdoutproof/closed/training" --exports "$RUNNER_TEMP/worldholdoutproof/closed/heldout" "$RUNNER_TEMP/worldholdoutproof/closed/heldout314" "$RUNNER_TEMP/worldholdoutproof/closed/heldout315") > "$RUNNER_TEMP/worldholdoutproof/MULTISEED_RAW.json" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/SUMMARY_EXIT.txt"
           if test -d "$RUNNER_TEMP/worldholdoutproof/closed"; then
             (cd "$RUNNER_TEMP/worldholdoutproof/closed" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$RUNNER_TEMP/worldholdoutproof/CLOSED_SHA256.txt"
           fi
@@ -67,10 +73,11 @@ jobs:
       - name: Enforce
         run: |
           set -euo pipefail
-          for n in UNIT VERIFY COMPILE PRIVACY; do
+          for n in UNIT VERIFY RUN315 VERIFY315 SUMMARY COMPILE PRIVACY; do
             test "$(cat "$RUNNER_TEMP/worldholdoutproof/${n}_EXIT.txt")" = 0 || {
               cat "$RUNNER_TEMP/worldholdoutproof/${n}_RAW.log"
               exit 1
             }
           done
           tail -20 "$RUNNER_TEMP/worldholdoutproof/UNIT_RAW.log"
+          cat "$RUNNER_TEMP/worldholdoutproof/MULTISEED_RAW.json"
