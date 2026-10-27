@@ -130,6 +130,24 @@ class StateConditionedPrefixTests(unittest.TestCase):
             self.candidate.next_token_logits_from_source(
                 target, torch.empty((1, 0), dtype=torch.long))
 
+    def test_wrong_source_rejects_any_own_row_in_mixed_batch(self):
+        # A batch is not a valid wrong-source control if even one target row
+        # accidentally receives its own prompt, regardless of other rows.
+        mixed = self.prompt.clone()
+        mixed[1] = self.prompt[0]
+        with self.assertRaisesRegex(ValueError, 'distinct source prompt per row'):
+            self.candidate.answer_logits_from_source(self.prompt, mixed, self.answer)
+        with self.assertRaisesRegex(ValueError, 'distinct source prompt per row'):
+            self.candidate.next_token_logits_from_source(self.prompt, mixed)
+        with self.assertRaisesRegex(ValueError, 'distinct source prompt per row'):
+            self.candidate.greedy_from_source(self.prompt, mixed, max_new_tokens=2)
+        # Every row differs in a genuine permutation control.
+        swapped = self.prompt.flip(0)
+        logits = self.candidate.answer_logits_from_source(
+            self.prompt, swapped, self.answer)
+        self.assertEqual(tuple(logits.shape), (2, 2, 32))
+        self.assertTrue(bool(torch.isfinite(logits).all()))
+
     def test_supplied_features_cannot_encode_target_tokens(self):
         reference = self.candidate.prompt_features(self.prompt)
         self.assertEqual(tuple(self.candidate.answer_logits(
