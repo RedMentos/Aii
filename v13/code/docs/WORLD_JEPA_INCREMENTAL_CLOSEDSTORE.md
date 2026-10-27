@@ -16,7 +16,7 @@ Without the acknowledgement or with missing/invalid/insufficient observed rows, 
 
 ## What is measured
 
-At least 32 valid digital action/outcome rows, deterministic split, train-only World-JEPA fitting (seeds 3/7, 400 steps, ensemble3), train-only direct ridge and augmented predicted-latent ridge (lambda 0.01), wrong-action and same-width random projection controls. Only heldout outcomes score the metrics. Report contains aggregate MAE, action counts, source/train/heldout SHA256 hashes and explicit non-authority flags; no raw chat text, IDs or database paths. It writes no model weights, database rows or local output files.
+At least 32 valid digital action/outcome rows, deterministic split, train-only World-JEPA fitting (seeds 3/7, 400 steps, ensemble3), train-only direct ridge and augmented predicted-latent ridge (lambda 0.01), wrong-action and same-width random projection controls. Only heldout outcomes score the metrics. Report contains aggregate MAE, source/train/heldout SHA256 hashes and explicit non-authority flags; no raw chat text, IDs or database paths. It writes no model weights, database rows or local output files.
 
 This is **digital** action latency/success/output-length prediction, not a physical world model. The original sibling #764 synthetic cohort was negative: direct ridge pooled MAE 0.152555, JEPA-augmented seed3 0.241870, seed7 0.197491. Those results and source/seed/model hashes are preserved, not overwritten by this CLI. The new local SQLite test is synthetic with 0-step diagnostic for I/O, not a 400-step observed-world measurement.
 
