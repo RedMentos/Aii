@@ -28,6 +28,11 @@ The independent registered BP2b seed41 legacy native attempt, Actions run `40506
 - Not a native model result. This does not show that the original 35-minute attempt had a resumable completed step or that an optimized kernel would be compatible. The candidate is not enabled for an active registered cohort.
 - `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, `jepa_weight=0` in the registered BP2b cohort, Age authority 0, Redmi unmeasured, complete V13 false.
 
+## Full-suite regression, retained RED
+- An independent software-only full-suite run `40515146076` at superseded workflow SHA `f488cdba4ace66cbe4a3d9c1b00e20faaa103710` ran **1,869 tests**, with **1 unrelated ERROR and 1 skip**. The sole error was `PermissionError` in `test_toolforecast.CheckpointTests.test_competence_check_scores_states_not_calls`, probing optional historical `/root/native/restore` on a CI runner. No BJ1 checkpoint test failed. `UNIT_EXIT=1`; compile/privacy/install EXIT 0. Preserve RED; do not claim full-suite green.
+- Original ZIP SHA256 `a0ec60f0d1909550ee914444bba28bb6e466f98b3bb304c164d7033db492bda6`, CRC PASS; copied to private Library and byte-exact readback PASS.
+- The existing verified BP2b integrated-regression review had already corrected this optional-path `OSError` handling. That narrow fix was applied to `tests/test_toolforecast.py` on this candidate branch, without changing runtime code or claiming native evidence. Full-suite rerun queued; report its actual result when complete.
+
 ## CPU kernel research (primary-source check)
 - The original native warning names the reference PyTorch `causal_conv1d_fn` / `causal_conv1d_update` fallback. The upstream Dao-AILab `causal-conv1d` project explicitly describes its optimized implementation as **CUDA** with a PyTorch interface (https://github.com/Dao-AILab/causal-conv1d/blob/main/README.md). Installing it blindly on this CPU-only Actions runner is **not** an established fix.
 - vLLM documents separate CPU causal-convolution operations (https://docs.vllm.ai/en/v0.31.0/api/vllm/model_executor/layers/mamba/ops/cpu/causal_conv1d/), but this is not evidence of a drop-in, gradient-compatible replacement for the pinned Transformers LFM2 training graph. No such replacement was installed or claimed.
