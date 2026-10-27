@@ -89,6 +89,24 @@ class ExactBridgeIdentityTests(Swap):
         p.write_text(json.dumps(man))
         return p,man
 
+    def test_installed_active_slot_recovers_file_hash_not_revision(self):
+        ports=self.r.bodies.ports
+        b1=ports.spec('B1_DETAIL');b2=ports.spec('B2_GIST')
+        self.assertEqual(b1['sha256'],'a'*64)
+        self.assertEqual(b2['sha256'],'b'*64)
+        self.assertNotEqual(b1['sha256'],b1['revision'])
+        self.assertNotEqual(b2['sha256'],b2['revision'])
+        self.assertEqual(len(ports.bridge_binding('B1_TO_B2')['sender_bridge_key']),64)
+
+    def test_unmatched_slot_cannot_use_revision_as_sha(self):
+        ports=self.r.bodies.ports
+        def corrupt(st):
+            st['slots']['B2_GIST']['active']['model_id']='not-installed'
+        self.r.bodies.slots.box.mutate(corrupt)
+        self.assertIsNone(ports.spec('B2_GIST')['sha256'])
+        with self.assertRaisesRegex(ValueError,'unbound'):
+            ports.bridge_binding('B1_TO_B2')
+
     def test_legacy_revision_only_manifest_fails_closed(self):
         p,man=self.manifest()
         self.assertTrue(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
