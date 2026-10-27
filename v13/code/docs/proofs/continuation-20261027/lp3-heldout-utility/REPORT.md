@@ -10,7 +10,7 @@
 
 ## Native status at checkpoint
 
-Bounded official 350M Linux-native pilot workflow `.github/workflows/lp3-heldout-native-pilot.yml` launched from `e486ff1eb1f9dad16e7b987003868304befd2f0d`, Actions **40527420680** **IN_PROGRESS** at checkpoint. Maximum 20m native command, 35m job. Artifact must contain original `NATIVE_RAW.log`, `NATIVE_EXIT.txt`, source/prereg blob IDs, privacy/diff exits and `RESULT.json` if successful. **No native success, utility or attribution signal is claimed before the raw artifact and exact SHA are independently audited.** Preserve failure if timeout/crash.
+Bounded official 350M Linux-native pilot Actions **40527420680**, exact source `e486ff1eb1f9dad16e7b987003868304befd2f0d`: **FAIL** at training gradient guard, before any 24-step completion or heldout result. Full FP32 master SHA preflight and software 20 tests passed; native `NATIVE_EXIT=1`, privacy=0, diff=0. Traceback: `ValueError: Missing predictor/projector gradient` at `lp3_heldout_utility.py:231`. This is a real failed attempt, not a utility-negative cohort result. GitHub artifact `12744662983`, downloaded ZIP SHA256 `3fc467c37f92b2fe442b440c60904e626fc1ef513b92345b6c3a3d8768581004`; `NATIVE_RAW.log` SHA256 `28b48f0aca83206f12cac79cfada8b7a1588c785d55344efa90f8f2598ff6949`. Exact ZIP bytes privately backed up and read back at `/V13-Checkpoints/2026-10-27/LP3-Heldout-Failed/lp3-heldout-native-failed-40527420680.zip`. No model or optimizer weights uploaded. Preserve original source, prereg and raw failure; a separately preregistered gradient diagnostic is needed before any retry.
 
 ## Binding negative gates
 
@@ -18,4 +18,4 @@ LP1 NO_ATTRIBUTABLE_GAIN; LP2 ALIGNS_NO_GAIN; BJ1 NO_SIGNAL; STEP2 UTILITY_FAIL;
 
 ## Next exact actions
 
-Read Actions `40527420680` and download/audit raw artifact, verify full master SHA, prereg-before-run, train/heldout partition, 24 steps, source/answer leakage, frozen base and all preregistered thresholds. Record exact success or failure and keep original negative gates. Then independent review; a larger multi-seed study only under a **new** preregistration, no reusing the current cohort to tune thresholds. Continue independent roadmap packages while native is running.
+Original run failed before utility scoring. Preregister a **separate** metadata/gradient-only diagnostic to identify whether the missing gradient depends on prompt, target length or LFM architecture. Do not alter or relaunch this registered source/cohort; keep original FAIL. Continue independent scheduler/Context OS packages while diagnosing.
