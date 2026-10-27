@@ -54,6 +54,14 @@ HOLD_AFTER_DEMOTION=4  # WP-AB stable_reopen: evidence records during which a de
 NOISE_EMA=.2;NOISE_K=2.;NOISE_REF=.05;NOISE_MIN_N=4  # noise_aware: MAD of competence around its EMA; fails inside K*noise are noise (BOOT)
 PERSISTENT_ERRORS=2    # WP-AB stable_reopen: consecutive retention/regression failures before errors reopen plasticity (BOOT)
 
+def _noise_level(sub):
+    """Noise level used by noise_aware: the independent replicate signal when it has enough records, else the MAD of competence
+    (circular: a real competence change also widens it, which is why BP8 prefers the independent one). None = not enough data."""
+    ni=sub.get('noise_ind') or {}
+    if ni.get('n',0)>=NOISE_MIN_N:return ni['sd']
+    nz=sub.get('noise') or {}
+    return nz['mad'] if nz.get('n',0)>=NOISE_MIN_N else None
+
 def _subject(stage=0):
     return {'stage':stage,'pass_streak':[],'fail_streak':0,'maturity':{'trust':0.,'retention':0.,'calibration':0.,'stability':0.,'competence':0.},
             'evidence_count':0,'last_evidence':None}
@@ -98,9 +106,13 @@ class AgeControl:
         if eid in st['seen_evidence']:raise ValueError('Nachweis schon gezählt: '+eid)
         st['seen_evidence']=(st['seen_evidence']+[eid])[-512:];sub['evidence_count']+=1;sub['last_evidence']=eid
         m=sub['maturity'];noise_aware=self.cfg.get('age_plasticity_policy','boot')=='noise_aware';within_noise=False
+        ind=metrics.get('noise_signal')  # WP-BP8: independent noise (replicate disagreement of the same evidence), not derived from the judged competence
+        if isinstance(ind,(int,float)) and not isinstance(ind,bool) and ind>=0:
+            ni=sub.setdefault('noise_ind',{'sd':0.,'n':0});ni['sd']=round(float(ind) if ni['n']==0 else (1-NOISE_EMA)*ni['sd']+NOISE_EMA*float(ind),6);ni['n']+=1
         if isinstance(metrics.get('competence'),(int,float)):  # measurement-noise estimate (always tracked; used by noise_aware)
             dev=abs(float(metrics['competence'])-m['competence']);nz=sub.setdefault('noise',{'mad':0.,'n':0})
-            within_noise=nz['n']>=NOISE_MIN_N and m['competence']-float(metrics['competence'])<=NOISE_K*nz['mad']
+            band=_noise_level(sub)
+            within_noise=band is not None and m['competence']-float(metrics['competence'])<=NOISE_K*band
             if nz['n']>=NOISE_MIN_N:dev=min(dev,NOISE_K*nz['mad'])  # winsorized: a real competence change must not inflate the noise estimate
             nz['mad']=round(dev if nz['n']==0 else (1-NOISE_EMA)*nz['mad']+NOISE_EMA*dev,6);nz['n']+=1
         for k in ('retention','calibration','stability','competence'):
@@ -220,7 +232,7 @@ class AgeControl:
         if novel_domain:p=max(p,.8)
         n=int(repeated_errors)-(PERSISTENT_ERRORS-1 if stable else 0)
         if self.cfg.get('age_plasticity_policy','boot')=='noise_aware':  # noisy labels lower the step size and damp error reopening
-            nz=(sub.get('noise') or {}).get('mad',0.) if (sub.get('noise') or {}).get('n',0)>=NOISE_MIN_N else 0.
+            nz=_noise_level(sub) or 0.
             damp=1/(1+nz/NOISE_REF);p*=.5+.5*damp
             if n>0:p+=min(.3,.1*n)*damp
             return round(min(1.,p),6)
