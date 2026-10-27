@@ -1,7 +1,7 @@
 {
   "date_utc": "2026-10-27",
   "package": "WORLD_JEPA_INCREMENTAL_CLOSED_STORE",
-  "status": "REVIEW_ONLY_FOCUSED_SOFTWARE_PASS_FULL_AND_SYNTHETIC400_PENDING",
+  "status": "REVIEW_ONLY_FULL_SOFTWARE_AND_SYNTHETIC400_PASS_NO_UTILITY_NOT_INTEGRATED",
   "parent_pr": 758,
   "parent_sha": "0a66e68796cf294aaec360efa10199a5951e156f",
   "sibling_source_pr": 764,
@@ -30,18 +30,59 @@
   },
   "full": {
     "run": 40576608871,
-    "status": "IN_PROGRESS"
+    "sha": "79daf2a4cbb6deae384e405d258db0873f2454a1",
+    "tests": 1956,
+    "skipped": 1,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "2c8f211fa4e66a0c992fc6a24408dc730c47ba07f432fde1fd8bf05ade04752f"
   },
   "synthetic400": {
     "run": 40576917944,
-    "status": "PENDING",
-    "scope": "SYNTHETIC_SQLITE_ONLY_NOT_REAL_OBSERVED"
+    "sha": "562e2834674c3a035dd642a8835c5ce8bebed97f",
+    "status": "PASS_SYNTHETIC_ONLY_NO_ACTION_SPECIFIC_GAIN",
+    "n": 64,
+    "train_n": 47,
+    "heldout_n": 17,
+    "steps": 400,
+    "seeds": [
+      3,
+      7
+    ],
+    "source_sha256": "21bb5a49906676050a1caf755ce441b36a483b3cb8db8d3f1a8a9048e2a7a0bf",
+    "direct_pooled_mae": 0.02159943969253693,
+    "augmented_pooled_mae": [
+      0.001109380719961711,
+      0.0016018140977406786
+    ],
+    "wrong_action_pooled_mae": [
+      0.001035186907887096,
+      0.0016372500600152502
+    ],
+    "random_projection_pooled_mae": [
+      0.0017599467276864747,
+      0.00170505089420331
+    ],
+    "zip_sha256": "7e9d4a22300183aac466d78d0416054beae09cadbbc1875739eda0ce4c8fbfc2",
+    "raw_exits": {
+      "frozen": 0,
+      "install": 0,
+      "synthetic": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    }
   },
   "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZM-World-Incremental-Closed",
   "focused_backup_byte_verified": true,
   "owner": "assistant/GPT review-only integration",
   "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_world_jepa_incremental_closedstore tests.test_world_jepa_incremental_probe tests.test_world_jepa_readonly_store",
-  "next_prerequisite": "Full suite + synthetic400 raw evidence; independent review; real closed observed store and Redmi proof missing; no auto-merge",
+  "next_prerequisite": "Independent review PR769, fair scaled direct-feature/action controls; real closed observed store and Redmi proof unavailable; no auto-merge",
   "negative_gates": {
     "LP1": "NO_ATTRIBUTABLE_GAIN",
     "LP2": "ALIGNS_NO_GAIN",
@@ -52,5 +93,6 @@
     "age_authority": 0,
     "redmi_measured": false,
     "whole_system_complete": false
-  }
+  },
+  "full_and_synthetic_private_backup_byte_verified": true
 }
