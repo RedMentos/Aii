@@ -4,6 +4,7 @@ on:
     branches: [codex/automation11-bp1-v2-adapter-locator-retry-20261027]
     paths:
       - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_RETRY_2.txt'
 permissions:
   contents: read
   actions: read
