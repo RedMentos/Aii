@@ -1,14 +1,17 @@
 """Synthetic unit contracts for real-file-world SHADOW training/export lifecycle."""
+import contextlib
 import hashlib
+import io
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 import numpy as np
 
 from scripts import z12b_world_jepa as z12b
-from scripts.world_jepa_shadow_lifecycle import export_from_rows, source_manifest
+from scripts.world_jepa_shadow_lifecycle import export_from_rows, source_manifest, main
 from v13.world_jepa_shadow_probe import probe_checkpoint
 
 
@@ -66,6 +69,39 @@ class WorldRealfileLifecycleTests(unittest.TestCase):
             self.assertFalse(probe['after_verified'])
             self.assertEqual(probe['authority'], 0)
             self.assertEqual(json.loads((target / 'manifest.json').read_text()), result)
+            raw_cohort = (target / 'cohort.json').read_bytes()
+            self.assertEqual(hashlib.sha256(raw_cohort).hexdigest(), result['cohort_sha256'])
+            self.assertEqual(len(json.loads(raw_cohort)), 160)
+
+    def test_main_preserves_raw_independent_world_process_files(self):
+        with tempfile.TemporaryDirectory() as d:
+            target = Path(d) / 'new-output'
+            original_log = b'{"op":"write_short","slot":0,"changed":true}\n'
+            original_schedule = b'{"seed":219,"items":[{"op":"write_short","slot":0}]}\n'
+            def collect(work, seed, count, held):
+                (work / 'world-212.log').write_bytes(original_log)
+                (work / 'world-212.json').write_bytes(original_schedule)
+                return rows_fixture(160)
+            with patch('scripts.world_jepa_shadow_lifecycle.z12b.collect_train', side_effect=collect):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(['--seed', '212', '--train', '160',
+                                           '--steps', '10', '--output-dir', str(target)]), 0)
+            manifest = json.loads((target / 'manifest.json').read_text())
+            self.assertEqual((target / 'world-212.log').read_bytes(), original_log)
+            self.assertEqual((target / 'world-212.json').read_bytes(), original_schedule)
+            self.assertEqual(manifest['world_process_log_sha256'],
+                             hashlib.sha256(original_log).hexdigest())
+            self.assertEqual(manifest['world_process_schedule_sha256'],
+                             hashlib.sha256(original_schedule).hexdigest())
+
+    def test_main_missing_original_world_log_fails_closed(self):
+        with tempfile.TemporaryDirectory() as d:
+            target = Path(d) / 'new-output'
+            with patch('scripts.world_jepa_shadow_lifecycle.z12b.collect_train',
+                       return_value=rows_fixture(160)):
+                with self.assertRaises(FileNotFoundError):
+                    main(['--seed', '212', '--train', '160', '--steps', '10',
+                          '--output-dir', str(target)])
 
     def test_existing_output_is_never_replaced(self):
         with tempfile.TemporaryDirectory() as d:
