@@ -1,0 +1,73 @@
+name: V13 AG5 World guide regression independent review
+on:
+  push:
+    branches: [codex/ag5-world-guide-regression-review-20261027]
+    paths:
+      - '.github/workflows/ag5-world-guide-regression-review.yml'
+      - 'v13/code/scripts/resolve_ag5_world_merge_candidate.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-ag5-world-guide-review
+  cancel-in-progress: false
+jobs:
+  disposable-merge-focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install isolated Python dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/ag5guide"
+          timeout 240s "$RUNNER_TEMP/ag5guide/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exact disposable merge and focused proof
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/ag5guideproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/ag5guideproof/REVIEW_HEAD.txt"
+          git fetch --no-tags origin c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/ag5guideproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/FETCH_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/ag5guideproof/MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/ag5guideproof/CONFLICT_PATHS.txt"
+          "$RUNNER_TEMP/ag5guide/bin/python" v13/code/scripts/resolve_ag5_world_merge_candidate.py > "$RUNNER_TEMP/ag5guideproof/RESOLVE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/RESOLVE_EXIT.txt"
+          git diff --cached --name-only > "$RUNNER_TEMP/ag5guideproof/STAGED_PATHS.txt"
+          sha256sum v13/code/v13/operator.py v13/code/docs/BEFEHLE.md v13/code/scripts/handy_pflicht.py v13/code/tests/test_toolforecast.py > "$RUNNER_TEMP/ag5guideproof/RESOLVED_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 450s "$RUNNER_TEMP/ag5guide/bin/python" -m unittest -v tests.test_phone_halt tests.test_route_supersede tests.test_world_console_shadow tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_toolforecast) > "$RUNNER_TEMP/ag5guideproof/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/FOCUSED_EXIT.txt"
+          "$RUNNER_TEMP/ag5guide/bin/python" -m compileall -q v13/code/v13/operator.py v13/code/scripts/resolve_ag5_world_merge_candidate.py > "$RUNNER_TEMP/ag5guideproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/COMPILE_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only AG5 World guide regression candidate' > "$RUNNER_TEMP/ag5guideproof/EPHEMERAL_COMMIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/EPHEMERAL_COMMIT_EXIT.txt"
+          "$RUNNER_TEMP/ag5guide/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base aab74aa900bfbd767f2983ba40a16fc0b8b95a3b --head HEAD > "$RUNNER_TEMP/ag5guideproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ag5guideproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload exact raw including failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ag5-world-guide-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag5guideproof/
+          if-no-files-found: error
+      - name: Enforce exact merge, focused regressions, compile and privacy
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/ag5guideproof/MERGE_EXIT.txt")" = 1
+          test "$(wc -l < "$RUNNER_TEMP/ag5guideproof/CONFLICT_PATHS.txt")" = 3
+          for n in FETCH RESOLVE FOCUSED COMPILE EPHEMERAL_COMMIT PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/ag5guideproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/ag5guideproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -12 "$RUNNER_TEMP/ag5guideproof/FOCUSED_RAW.log"
