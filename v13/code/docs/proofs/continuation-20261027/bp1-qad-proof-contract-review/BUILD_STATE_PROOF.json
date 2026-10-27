@@ -1,0 +1,49 @@
+{
+  "schema": "V13_BP1_QAD_PROOF_CONTRACT_REVIEW_V1",
+  "owner": "GPT-6 independent",
+  "status": "REVIEW_ONLY_SOFTWARE_RED_GREEN_NATIVE_TRAIN_RED",
+  "parent_commit": "f6d6812a493cc7d2235e97bf16e0324242d1ecd6",
+  "branch": "codex/gpt6-bp1-lora-proof-contract-review-20261027",
+  "source_head": "8adc788e204bebcf4c3df279dc08a7967fe35d25",
+  "red": {
+    "run": 40477987654,
+    "artifact": 12720604558,
+    "zip_sha256": "75f9863e26f3824493aa9c121fd04ceef920250ba0f94f15fe726f402ec99d0a",
+    "tests": "39; 11 FAIL expected",
+    "compile_exit": 0,
+    "privacy": "CLEAN"
+  },
+  "green": {
+    "run": 40478151148,
+    "artifact": 12721073712,
+    "zip_sha256": "2b382ff538e4dd4b8ee1501fe8d7ef47fc2855b6fa09806bdeb718e6267b9b87",
+    "tests": "39/39 PASS",
+    "compile_exit": 0,
+    "privacy": "CLEAN"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Proof-Contract-Review/",
+  "private_backup_byte_identical": true,
+  "native_train": {
+    "run": 40476209086,
+    "status": "RED",
+    "cause": "gguf==0.16.3 lacks lfm2 architecture during adapter export",
+    "adapter_exported": false
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "L1_FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Pinned b10964 gguf-py LFM2 export compatibility software proof; then serial native train and independent raw audit",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 -m unittest -v tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score tests.test_bp1_native_collect",
+  "prerequisites": [
+    "no competing heavy owner",
+    "pinned GGUF writer and mapping proof",
+    "native train original raw failure retained",
+    "adapter bytes private"
+  ]
+}
