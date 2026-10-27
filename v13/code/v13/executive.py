@@ -44,9 +44,45 @@ class Executive:
         state['memory_refs']=[x for x in dict_items('memory_refs') if self._memory(x,session)]
         state['open_questions']=[x for x in dict_items('open_questions') if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
-        state['salient_A_offer']=state.get('goal_source_ref') if self._valid_ref(state.get('goal_source_ref',{})) else None
+        # A persisted goal is never an independent source of truth: bind it to
+        # the event in this session, then recover the exact immutable source.
+        goal_ref=state.get('goal_source_ref')
+        event_id=state.get('last_event_id')
+        event_row=(self.s.one('SELECT session_id,packet FROM events WHERE id=?',(event_id,))
+                   if type(event_id) is str else None)
+        bound_goal=False
+        if event_row and event_row['session_id']==session and isinstance(goal_ref,dict):
+            try:
+                bound_goal=(json.loads(event_row['packet']).get('source_ref')==goal_ref
+                            and self._valid_ref(goal_ref))
+            except (ValueError,TypeError,KeyError):
+                bound_goal=False
+        state['salient_A_offer']=goal_ref if bound_goal else None
         state['salient_B_offer']=[x for x in dict_items('salient_B_offer') if self._offer_valid(x,state.get('brain_generation_id'),session)]
-        if not self._valid_ref(state.get('goal_source_ref',{})):state['goal']='';state['goal_source_ref']=None
+        if bound_goal:
+            state['goal']=self.s.read_source(goal_ref)
+        else:
+            state['goal']='';state['goal_source_ref']=None
+        # A forged/malformed persisted action must not be interpreted as a
+        # current action by the native control reader or report_context().
+        intent=state.get('current_action_intent')
+        if (isinstance(intent,dict) and intent.get('type')=='LOCAL_TEXT_REPORT'
+                and type(intent.get('action_id')) is str):
+            action=self.s.one(
+                'SELECT a.event_id,a.corollary_id,e.session_id FROM actions a '
+                'JOIN events e ON e.id=a.event_id WHERE a.id=?',
+                (intent['action_id'],))
+            if (action and action['event_id']==event_id
+                    and action['session_id']==session
+                    and action['corollary_id']==intent.get('corollary_packet_id')):
+                state['current_action_intent']={
+                    'action_id':intent['action_id'],
+                    'corollary_packet_id':action['corollary_id'],
+                    'type':'LOCAL_TEXT_REPORT'}
+            else:
+                state['current_action_intent']=None
+        else:
+            state['current_action_intent']=None
         return state
     def _question_valid(self,item,session):
         if not self._valid_ref(item.get('source_ref',{})):return False
