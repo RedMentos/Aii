@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# BJ1 opt-in optimizer/EMA/RNG checkpoints may encode private learning data.
+**/step-checkpoints/
