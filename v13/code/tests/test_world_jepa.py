@@ -77,5 +77,51 @@ class TestWorldJEPA(unittest.TestCase):
             self.assertTrue(np.allclose(single,7.))
             self.assertTrue(np.allclose(single_spread,0.))
 
+
+    def test_confidence_cannot_claim_coverage_for_unseen_action(self):
+        m = wj.WorldJEPA(seed=0, ensemble=1)
+        m._action_counts = np.array([40, 0, 0, 0])
+        m.predict = lambda X, A: (np.zeros((len(X), wj.Z)), np.zeros(len(X)))
+        m.ood = lambda X: np.zeros(len(X))
+        X = np.zeros((1, 8)); A = np.array([[0., 1., 0., 0.]])
+        conf, labels = m.confidence(X, A, [1000])
+        self.assertEqual(conf.tolist(), [0.])
+        self.assertEqual(labels, ['SIMULATION_UNCERTAIN'])
+
+    def test_confidence_fails_closed_for_bad_counts_and_action_rows(self):
+        m = wj.WorldJEPA(seed=0, ensemble=1)
+        m._action_counts = np.array([10, 10, 10, 10])
+        m.predict = lambda X, A: (np.zeros((len(X), wj.Z)), np.zeros(len(X)))
+        m.ood = lambda X: np.zeros(len(X))
+        X = np.zeros((5, 8))
+        A = np.array([[1., 0., 0., 0.], [0., 1., 0., 0.],
+                      [0., 0., 1., 0.], [1., 1., 0., 0.],
+                      [0., 0., 0., 0.]])
+        conf, labels = m.confidence(X, A, [float('nan'), float('inf'), -1, 100, 100])
+        self.assertTrue(np.isfinite(conf).all())
+        self.assertEqual(conf.tolist(), [0.] * 5)
+        self.assertEqual(labels, ['SIMULATION_UNCERTAIN'] * 5)
+
+    def test_confidence_caps_reported_counts_at_training_evidence(self):
+        m = wj.WorldJEPA(seed=0, ensemble=1)
+        m._action_counts = np.array([2, 0, 0, 0])
+        m.predict = lambda X, A: (np.zeros((len(X), wj.Z)), np.zeros(len(X)))
+        m.ood = lambda X: np.zeros(len(X))
+        X = np.zeros((1, 8)); A = np.array([[1., 0., 0., 0.]])
+        conf, labels = m.confidence(X, A, [1000])
+        self.assertAlmostEqual(conf[0], 1 - np.exp(-2 / wj.COVER_N))
+        self.assertEqual(labels, ['SIMULATION_UNCERTAIN'])
+
+    def test_fit_rejects_malformed_transition_arrays_before_optimizer(self):
+        X = np.zeros((3, 8)); A = np.eye(4)[:3]; X2 = X.copy()
+        bad = [(X[:0], A[:0], X2[:0]), (X, A[:2], X2),
+               (X, A, X2[:, :7]), (np.full_like(X, np.nan), A, X2),
+               (X, np.full_like(A, np.inf), X2)]
+        for x, a, y in bad:
+            with self.subTest(shape=(x.shape, a.shape, y.shape)):
+                with self.assertRaises(ValueError):
+                    wj.WorldJEPA(seed=0, ensemble=1).fit(x, a, y, steps=1)
+
+
 if __name__ == '__main__':
     unittest.main()
