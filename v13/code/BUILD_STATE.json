@@ -1,5 +1,86 @@
 {
 
+  "automation11_world_budget_ablation_20261027": {
+    "status": "FIXED_50_200_800_STEP_WORLD_ACTION_PREDICTION_BEATS_IDENTITY_AND_ROTATED_ON_FROZEN_HOLDOUTS_REVIEW_ONLY",
+    "parent_pr": 661,
+    "review_pr": 662,
+    "base_sha": "676b910f68f503a97d289d597080826202e8329f",
+    "review_branch": "codex/automation11-world-budget-ablation-20261027",
+    "prereg_commit": "37cbfbd3709029106fb4f55c196b12db7454c962",
+    "focused_actions": 40456356170,
+    "focused_head": "b4ff9215203ee2307fef60c9d56a4a9c1faa1126",
+    "focused_result": "7/7 PASS; VERIFY/COMPILE/PRIVACY exit0",
+    "raw_artifact_id": 12712422347,
+    "raw_artifact_sha256": "8413b6abcdd2651c0e3346f348f0372b13dc4a407199e29a7e24cb9c1f23979a",
+    "original_zip_sha256": "f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8",
+    "original_checkpoint_sha256": "955ee6efd0eaf2f85803297773ad016d54a33c7c707cd0406b3ceb23739d5e51",
+    "original_source_sha256": "bff9efa8995b82152c2de853581572991e1bfb8852af792cb02544f584f4b770",
+    "budgets": [
+      10,
+      50,
+      200,
+      800
+    ],
+    "training_seed": 212,
+    "holdout_seeds": [
+      313,
+      314,
+      315
+    ],
+    "holdout_rows": 480,
+    "weighted_action_mse": [
+      0.31348980990632647,
+      0.2040885500799454,
+      0.08690502810339833,
+      0.10299893612039374
+    ],
+    "weighted_identity_mse": [
+      0.27064646738716414,
+      0.26261371138080153,
+      0.2663960975504907,
+      0.2898439620155671
+    ],
+    "weighted_rotated_mse": [
+      0.3280409789682404,
+      0.25592530983206896,
+      0.2781586271783584,
+      0.3735560729677345
+    ],
+    "model_beats_both_seeds": [
+      0,
+      3,
+      3,
+      3
+    ],
+    "uncertain_rows_each_arm": 479,
+    "checkpoint_sha256_by_steps": {
+      "10": "b0504488ce30155e7b8694ccdfd9cd4fc487fea61761fc84cdeb98972245a6c8",
+      "50": "d4406b4eb9955caaca7854344498c5ba9445f441d7650fbea4a2518b9cd796bf",
+      "200": "7cb6158b3f39de2d9fa589906c5ed24ce92869709ce18fc09a70f3804e8b20c0",
+      "800": "68a1ff751d85d2048f78b42f6df293f6215617a7078d8b6d75ec1860cdfd2bd0"
+    },
+    "independent_reference_source_sha256": "ecd12a27c0ea1290ae0e549fd0c5b5053a214c8a563cbdd67f9abddbed1d5a62",
+    "independent_reference_result_sha256": "03d7796c5c005a0a1e93be7ce5990582b1a9d6690979fb0db1b41318125b357e",
+    "independent_reference_max_mse_difference": "<1e-12",
+    "private_backup": "/V13-Checkpoints/2026-10-27/World-Budget-Ablation/",
+    "private_backup_verified_byte_exact": true,
+    "failed_actions": [
+      40456176817,
+      40456288978
+    ],
+    "open_replay_issue": "Some CI runners reject exact original heldout float replay, one beyond 1e-10; successful run zero deltas. Preserve failures; investigate hardware/BLAS.",
+    "evidence": "software+real Linux synthetic-content file-world original raw rows; no new heldout or Redmi/native Body",
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Pre-register independent fresh heldouts for selected frozen 200-step checkpoint, evaluate without fitting/calibration; independent review and AG5/World integration"
+  },
+
+
   "automation11_world_ensemble_ablation_20261027": {
     "status": "FROZEN_ENSEMBLE_MEAN_WORSE_THAN_FIRST_AND_IDENTITY_REVIEW_ONLY",
     "parent_pr": 660,
