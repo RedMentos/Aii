@@ -1,0 +1,131 @@
+name: V13 LP3 all-four-arm heldout and retention (review only)
+on:
+  push:
+    branches: [assistant/v13-lp3-four-arm-heldout-automation11-20261027]
+    paths:
+      - '.github/workflows/lp3-four-arm-heldout-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-gradient-350m
+  cancel-in-progress: false
+jobs:
+  lr-norm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Isolated pinned model, four arms, raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/lp3-four-arm-heldout"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/lp3_four_arm_heldout.py > "$evidence/SCRIPT_BLOB.txt"
+          git hash-object v13/code/scripts/lp3_optimizer_trajectory.py > "$evidence/FROZEN_TRAJECTORY_BLOB.txt"
+          git hash-object v13/code/docs/coordination/LP3_FOUR_ARM_HELDOUT_PREREG_20261027.md > "$evidence/PREREG_BLOB.txt"
+          if [ "$(cat "$evidence/SCRIPT_BLOB.txt")" = "87b5773d89e7dd1ee87f91e389919d4c43d29aa6" ] && [ "$(cat "$evidence/FROZEN_TRAJECTORY_BLOB.txt")" = "488cd12de3d5103e2a456f42148697fd15d66bc6" ] && [ "$(cat "$evidence/PREREG_BLOB.txt")" = "40d71f9bf036aaba59eb8281f03aeffb7e2b4300" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git merge-base --is-ancestor 8fa8f59833360c07370d43c2be5679ba81a3603b HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/lp3-four-arm-heldout-venv"
+          py="$RUNNER_TEMP/lp3-four-arm-heldout-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'huggingface_hub==2.3.0' 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip check >> "$evidence/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ] && [ "$third" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_lp3_four_arm_heldout tests.test_lp3_lr_norm_ablation tests.test_lp3_optimizer_trajectory tests.test_lp3_state_prefix
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          export MASTER="$RUNNER_TEMP/lp3-four-arm-heldout-master"
+          if [ "$(cat "$evidence/INSTALL_EXIT.txt")" = 0 ]; then
+            "$py" - <<'PY' > "$evidence/DOWNLOAD_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+            echo "$?" > "$evidence/DOWNLOAD_EXIT.txt"
+          else
+            echo 'NOT_RUN_INSTALL_FAILED' > "$evidence/DOWNLOAD_EXIT.txt"
+          fi
+          if [ "$(cat "$evidence/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (
+              cd v13/code
+              env PYTHONPATH=. "$py" - <<'PY'
+          import os
+          from scripts.lp3_real_master_smoke import verify_master
+          print('EXACT_MASTER_SHA_PASS', verify_master(os.environ['MASTER']))
+          PY
+            ) > "$evidence/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$evidence/VERIFY_EXIT.txt"
+          else
+            echo 'NOT_RUN_DOWNLOAD_FAILED' > "$evidence/VERIFY_EXIT.txt"
+          fi
+          if [ "$(cat "$evidence/FROZEN_EXIT.txt")" = 0 ] && [ "$(cat "$evidence/PREREG_EXIT.txt")" = 0 ] && [ "$(cat "$evidence/UNIT_EXIT.txt")" = 0 ] && [ "$(cat "$evidence/VERIFY_EXIT.txt")" = 0 ]; then
+            (
+              cd v13/code
+              timeout --signal=TERM --kill-after=15s 18m env PYTHONPATH=. HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 "$py" scripts/lp3_four_arm_heldout.py --master "$MASTER" --out "$evidence/RESULT.json" --execute-native
+            ) > "$evidence/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$evidence/NATIVE_EXIT.txt"
+          else
+            echo 'NOT_RUN_PREREQUISITE_FAILED' > "$evidence/NATIVE_EXIT.txt"
+          fi
+          python3 -m py_compile v13/code/scripts/lp3_four_arm_heldout.py v13/code/tests/test_lp3_four_arm_heldout.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 85bdf62d4f7b83f6544977ce108bb9f0451bef75 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 85bdf62d4f7b83f6544977ce108bb9f0451bef75 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-lp3-four-arm-heldout-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/lp3-four-arm-heldout/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce real exits, exact cohort, no utility promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/lp3-four-arm-heldout"
+          for name in FROZEN PREREG INSTALL UNIT DOWNLOAD VERIFY NATIVE COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          "$RUNNER_TEMP/lp3-four-arm-heldout-venv/bin/python" - "$evidence/RESULT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['schema']=='lp3-four-arm-heldout-ablation-v1'
+          assert d['steps_per_arm']==24 and d['seed']==109
+          assert d['train_rows']==6 and d['prefix_tokens']==2
+          assert [(a['normalization'],a['lr']) for a in d['arms']]==[
+              ('raw',.005),('raw',.0005),('layernorm',.005),('layernorm',.0005)]
+          assert len({a['initial_trainable_sha256'] for a in d['arms']})==1
+          assert all(a['steps_recorded']<=24 for a in d['arms'])
+          assert d['heldout_scored'] is True and d['retention_scored'] is True
+          assert d['heldout_families']==['original','new_phrasings']
+          assert d['new_facts']==0 and d['heldout_prompts_per_family']==12
+          assert d['utility_proven'] is False and d['jepa_weight']==0
+          assert d['age_authority']==0 and d['redmi_measured'] is False
+          assert d['whole_system_complete'] is False
+          print('LP3_FOUR_ARM_HELDOUT_RESEARCH_ONLY_NO_UTILITY_PROMOTION')
+          PY
