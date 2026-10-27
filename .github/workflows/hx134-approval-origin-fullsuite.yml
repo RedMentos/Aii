@@ -1,0 +1,93 @@
+name: V13 HX134 approval-origin full software regression
+on:
+  push:
+    branches: [assistant/v13-hx134-approval-store-binding-review-20261027]
+    paths:
+      - '.github/workflows/hx134-approval-origin-fullsuite.yml'
+      - 'v13/code/v13/agi/self_improve.py'
+      - 'v13/code/v13/agi/harness.py'
+      - 'v13/code/v13/agi/experience.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hx134-approval-origin-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve full raw HX approval-origin evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/hx134-approval-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_BLOB.txt"
+          git hash-object v13/code/v13/agi/harness.py > "$evidence/HARNESS_BLOB.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/EXPERIENCE_BLOB.txt"
+          git hash-object v13/code/tests/test_harness_hx.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor 560bbcb2e0e9a57db0349634ed66d7caf4164c34 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor f9d8c449efe6b0a9996cf7212646ece1f9309294 HEAD
+          echo "$?" > "$evidence/RED_TEST_EXIT.txt"
+          if [ "$(cat "$evidence/AG8_BLOB.txt")" = "1b9ba5f860e379cf6ed907562e7008c3b5402e95" ] &&
+             [ "$(cat "$evidence/HARNESS_BLOB.txt")" = "78e3fd6c6c40a75db9cb88ea683194011e058d6f" ] &&
+             [ "$(cat "$evidence/EXPERIENCE_BLOB.txt")" = "2603020694b07487863cc99d2d328d2e78507ab7" ] &&
+             [ "$(cat "$evidence/TEST_BLOB.txt")" = "37c0b55ee8848b452b574ef9968f7185bc6e2fef" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/hx134-approval-full-venv"
+          py="$RUNNER_TEMP/hx134-approval-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_harness_hx tests.test_agi_live
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 02ebbedfc984992035c4634f05168fa3b8996b7f --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 02ebbedfc984992035c4634f05168fa3b8996b7f HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-hx134-approval-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/hx134-approval-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/hx134-approval-full"
+          for name in PREREG RED_TEST FROZEN INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'HX134_APPROVAL_ORIGIN_FULL_SOFTWARE_ONLY_NO_PROMOTION'
