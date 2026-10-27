@@ -1,0 +1,41 @@
+{
+  "schema": "v13-bp2b-adapter-integrity-review-v1",
+  "parent": "4d6e468f3a8ca30668063e85d6d8c06eb8f24f7a",
+  "owner": "GPT-6 independent reviewer",
+  "branch": "assistant/v13-bp2b-adapter-integrity-20261027",
+  "source_change": "v13/code/scripts/bp2b_native_runner.py",
+  "test_change": "v13/code/tests/test_bp2b_native_runner.py",
+  "red": {
+    "run_id": 40504249330,
+    "commit": "1e8557276210c1a84af4474e14c8f7cdc5b84e96",
+    "failures": 4,
+    "total": 19,
+    "zip_sha256": "304450a9ee0b2a9fa241acbde4a64f1167f1bd7fcb95d8799e6c1a477c07ce80"
+  },
+  "green": {
+    "run_id": 40504405754,
+    "commit": "7a080ba848129abe7c5e6be697af617d4586be50",
+    "passed": 19,
+    "total": 19,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "zip_sha256": "c3442be293976b10a7db98170070d627d31e67bb1ed14656d3c34a65f8faec3e"
+  },
+  "backup": "ChatGPT Library /V13-Checkpoints/2026-10-27/BP2b-Adapter-Integrity, original ZIP byte-exact readback PASS",
+  "evidence_class": "SOFTWARE_SYNTHETIC",
+  "age_authority": 0,
+  "jepa_weight": 0,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "REDMI_UNMEASURED",
+    "FULL_V13_INCOMPLETE"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
+  "next_prerequisites": [
+    "Review child against native-runner owner head",
+    "Check heavy native owner before FP32",
+    "Verify full model/tokenizer preflight"
+  ]
+}
