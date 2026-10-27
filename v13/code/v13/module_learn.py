@@ -45,8 +45,14 @@ def _export_gate(store):
 def export_dataset(store,path):
     """JSONL, one tagged item per line, plus the digest of the content. Returns {'path','items','digest'}; raises when nothing is released."""
     _export_gate(store)  # Notaus/ban before corpus or no-data error.
+    initial_version=M.box(store).load()[1]
     items=M.corpus(store)
     if not items:raise ValueError('Nichts freigegeben oder Lernen aus: kein Export (:modul lernen an, Modul freigeben)')
     body='\n'.join(json.dumps({'text':i['text'],'title':i['title'],'tag':i['tag']},ensure_ascii=False,sort_keys=True) for i in items)+'\n'
     _export_gate(store)  # Recheck after source reads, before write.
+    # A revoke/disable while reading cannot be turned into a new training
+    # dataset. Re-read bytes as well as the version (ABA switch toggles count).
+    if M.box(store).load()[1]!=initial_version or M.corpus(store)!=items or M.box(store).load()[1]!=initial_version:
+        raise PermissionError('Modul während des Exports geändert oder zurückgenommen')
+    _export_gate(store)
     atomic_write(path,body.encode());return {'path':str(path),'items':len(items),'digest':digest(body)}
