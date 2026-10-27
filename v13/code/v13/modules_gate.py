@@ -265,7 +265,7 @@ def text(store):
     return '\n'.join([head]+[summary(m) for m in st['mods'].values()] if st['mods'] else [head,'Keine Module.'])
 
 HELP=(':modul [liste] | :modul an|aus | :modul lernen an|aus | :modul vorschlag <https-Adresse> <Name> | :modul holen <M> | :modul zeige <M> | '
-      ':modul freigeben <M> <Code> | :modul ablehnen <M> | :modul zurueck <M> [loeschen] | :modul json')
+      ':modul freigeben <M> <Code> | :modul ablehnen <M> | :modul zurueck <M> [loeschen] | :modul frage <Text> | :modul export <Datei> | :modul json')
 
 def operator_command(r,args):
     """:modul ... — TTY operator only (authority EXPLICIT_HUMAN)."""
@@ -282,6 +282,12 @@ def operator_command(r,args):
     if a=='zeige' and len(args)==2:return summary(_rec(s,args[1].upper()))
     if a=='holen' and len(args)==2:return summary(fetch(s,args[1].upper(),authority=HUMAN))
     if a=='freigeben' and len(args)==3:return 'Freigegeben.\n'+summary(activate(s,args[1].upper(),args[2],authority=HUMAN))
+    if a=='frage' and len(args)>=2:
+        from .module_learn import recall
+        hits=recall(s,' '.join(args[1:]));return '\n'.join(f"[{h['tag']}] {h['text']}  ({h['label']})" for h in hits) or 'Nichts Passendes in freigegebenen Modulen (oder Lernen aus Modulen ist aus).'
+    if a=='export' and len(args)==2:
+        from .module_learn import export_dataset
+        out=export_dataset(s,args[1]);return f"{out['items']} Einträge nach {out['path']} geschrieben. Es trainiert nichts automatisch."
     if a=='ablehnen' and len(args)==2:return summary(revoke(s,args[1].upper(),authority=HUMAN,delete=True))
     if a=='zurueck' and len(args) in (2,3):return 'Zurückgenommen.\n'+summary(revoke(s,args[1].upper(),authority=HUMAN,delete=len(args)==3 and args[2]=='loeschen'))
     raise ValueError(HELP)

@@ -149,7 +149,7 @@ class UseTests(Base):
         reg=ToolRegistry(self.s);reg.enable('module_propose');M.set_enabled(self.s,True,authority=H)
         tx=reg.call('module_propose',{'url':URL,'name':'A'},origin='SELF');self.assertEqual(tx['status'],'PROPOSED');self.assertEqual(M.state(self.s)['mods'],{})
         tx=reg.approve(tx['id']);self.assertEqual(tx['status'],'EXECUTED');m=list(M.state(self.s)['mods'].values())[0];self.assertEqual((m['state'],m['origin']),('PROPOSED','TOOL'))
-        self.assertFalse(any(n.startswith('module_') and n!='module_propose' for n in reg.tools))  # no tool can fetch or release
+        self.assertFalse(any(n.startswith('module_') and n not in ('module_propose','module_recall') for n in reg.tools))  # no tool can fetch or release
     def test_operator_flow(self):
         op=M.operator_command
         self.assertIn('AUS',op(self.r,[]));self.assertIn('AN',op(self.r,['an']))
@@ -161,5 +161,41 @@ class UseTests(Base):
     def activate_via_op(self):
         self.t+=60;sha8=M.state(self.s)['mods']['M1']['sha256'][:8]
         return M.summary(M.activate(self.s,'M1',sha8,authority=H,clock=self.clock))
+
+class LearnTests(Base):
+    def active(self):
+        mid,rec=self.ready();self.activate(mid);return mid
+    def test_recall_needs_release_and_learning_switch(self):
+        from v13.module_learn import recall
+        self.assertEqual(recall(self.s,'Hauptstadt Frankreich'),[])
+        mid=self.active();self.assertEqual(recall(self.s,'Hauptstadt Frankreich'),[])  # released but learning still off
+        M.set_learn(self.s,True,authority=H);h=recall(self.s,'Was ist die Hauptstadt von Frankreich?')
+        self.assertEqual(len(h),1);self.assertIn('Paris',h[0]['text']);self.assertTrue(h[0]['tag'].startswith('MODULE:'+mid));self.assertIn('nicht als wahr',h[0]['label'])
+        self.assertEqual(recall(self.s,'Quantenchromodynamik Gluonen'),[]);self.assertEqual(recall(self.s,'   '),[])
+    def test_revoke_and_notaus_remove_recall_at_once(self):
+        from v13.module_learn import recall
+        mid=self.active();M.set_learn(self.s,True,authority=H);q='Hauptstadt Frankreich'
+        P.halt(self.s,True,authority=H);self.assertEqual(recall(self.s,q),[]);P.halt(self.s,False,authority=H);self.assertTrue(recall(self.s,q))
+        M.revoke(self.s,mid,authority=H);self.assertEqual(recall(self.s,q),[])
+    def test_tool_path_is_gated_like_every_tool(self):
+        mid=self.active();M.set_learn(self.s,True,authority=H);reg=ToolRegistry(self.s)
+        self.assertEqual(reg.call('module_recall',{'query':'Hauptstadt Frankreich'})['status'],'DENIED')  # not enabled by the user
+        reg.enable('module_recall');tx=reg.call('module_recall',{'query':'Hauptstadt Frankreich'},origin='USER')
+        self.assertEqual(tx['status'],'EXECUTED');self.assertEqual(tx['result']['count'],1)
+        P.add(self.s,'tool','module_recall',authority=H);self.assertEqual(reg.call('module_recall',{'query':'Hauptstadt Frankreich'},origin='USER')['status'],'DENIED')
+        P.remove(self.s,'V1',authority=H);userrules.add(self.s,'Nutze niemals Module oder Programme','USER_TYPED')
+        self.assertNotEqual(reg.call('module_recall',{'query':'Hauptstadt Frankreich'},origin='USER')['status'],'EXECUTED')
+    def test_export_is_tagged_and_refused_when_nothing_released(self):
+        from v13.module_learn import export_dataset
+        f=Path(self.tmp.name)/'out.jsonl'
+        with self.assertRaises(ValueError):export_dataset(self.s,f)
+        mid=self.active();M.set_learn(self.s,True,authority=H);out=export_dataset(self.s,f)
+        rows=[json.loads(l) for l in f.read_text().splitlines()];self.assertEqual(out['items'],2);self.assertTrue(all(r['tag'].startswith('MODULE:'+mid) for r in rows))
+        M.revoke(self.s,mid,authority=H)
+        with self.assertRaises(ValueError):export_dataset(self.s,f)
+    def test_operator_frage_and_export(self):
+        mid=self.active();M.set_learn(self.s,True,authority=H);op=M.operator_command
+        self.assertIn('Paris',op(self.r,['frage','Hauptstadt','Frankreich']));self.assertIn('2 Einträge',op(self.r,['export',str(Path(self.tmp.name)/'e.jsonl')]))
+        M.revoke(self.s,mid,authority=H);self.assertIn('Nichts Passendes',op(self.r,['frage','Hauptstadt','Frankreich']))
 
 if __name__=='__main__':unittest.main()

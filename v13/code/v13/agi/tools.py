@@ -59,6 +59,8 @@ class ToolRegistry:
         from .. import modules_gate  # WP-BP11: a model can only PROPOSE a module; fetch/release are typed by the user (no tool for them)
         self.register(ToolSpec('module_propose',lambda url,name:{'proposed':modules_gate.propose(self.s,url,name,origin='TOOL')},risk='WRITE_LOCAL',description='Modul vorschlagen (holt nichts)',
             schema={'url':'str','name':'str'},effects=({'WRITE','INSTALL'},{'MODULE'})))
+        from .. import module_learn  # WP-BP11b: read-only look-up in released modules (empty unless user released a module and switched learning on)
+        self.register(ToolSpec('module_recall',module_learn.tool(self.s),description='In freigegebenen Modulen nachschlagen (nur lesen, mit Herkunft)',schema={'query':'str'},effects=({'TOOL'},{'MODULE','MEMORY'})))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
