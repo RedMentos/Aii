@@ -43,4 +43,5 @@ jobs:
           "$py" -m py_compile v13/code/v13/body_jepa_checkpoint.py v13/code/v13/body_jepa.py
           "$py" v13/code/scripts/public_repo_privacy_scan.py --base edd0212c1774f893433040f48fa6b57c3d2d4209 --head HEAD
           git diff --check edd0212c1774f893433040f48fa6b57c3d2d4209 HEAD
+          git check-ignore -q v13/code/local-attempt/step-checkpoints/CURRENT.json
           echo 'BJ1_STEP_CHECKPOINT_SYNTHETIC_ONLY_NO_NATIVE_OR_AGE_PROMOTION'
