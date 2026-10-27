@@ -1721,5 +1721,42 @@
     "native_exit": 1,
     "privacy_exit": 0,
     "diff_exit": 0
+  },
+  "lp3_tokenizer_shape_probe_20261027": {
+    "owner_branch": "codex/automation11-lp3-tokenizer-shape-probe-20261027",
+    "parent_sha": "5bf412533ecaf8115a84f90beed03ebe5c514206",
+    "status": "METADATA_ONLY_PASS",
+    "prereg_commit": "077fef4cc6277766d9c86e94925abd2532d6ec70",
+    "source_model": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "model_downloaded": false,
+    "original_native_run": 40523353369,
+    "original_native_status": "FAIL_TOKENIZER_NOT_FLAT_INT_LIST",
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/lp3-tokenizer-shape/REPORT.md",
+    "next_command": "New separately preregistered real-master retry: use return_dict=True, return_tensors=pt, input_ids[0]",
+    "first_attempt_run": 40523811633,
+    "first_attempt_result": "FAIL_MISSING_JINJA2_BEFORE_SHAPE",
+    "success_run": 40524006855,
+    "success_source_sha": "319f468779d54f2164e408b38d21bf078980917b",
+    "success_artifact_id": 12742692896,
+    "success_artifact_sha256": "ea9c457364a4b26f0a838ed24f1b8d306c7ffb21caf0b872ed2cbb3c5cce1b85",
+    "observed_type": "BatchEncoding",
+    "prompt_token_lengths": [
+      17,
+      17
+    ],
+    "answer_token_lengths": [
+      4,
+      3
+    ]
   }
 }
