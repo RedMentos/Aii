@@ -1,0 +1,85 @@
+name: V13 combined module recall current phone source and extracted regression
+on:
+  push:
+    branches: [codex/automation12-module-recall-typed-ban-20261027]
+    paths:
+      - '.github/workflows/module-recall-phone-source.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-module-recall-phone-source
+  cancel-in-progress: false
+jobs:
+  extracted:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/recall-phone"
+          timeout 240s "$RUNNER_TEMP/recall-phone/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build and verify source ZIP with all member hashes
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/recall-phone-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/recall-phone-proof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_module_recall_direct_ban.py > "$RUNNER_TEMP/recall-phone-proof/SOURCE_SHA256.txt"
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Recall.zip" --phone-install > "$RUNNER_TEMP/recall-phone-proof/PACK_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/recall-phone-proof/PACK_EXIT.txt"
+          if [ "$(cat "$RUNNER_TEMP/recall-phone-proof/PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Recall.zip" --root v13/code --out "$RUNNER_TEMP/recall-phone-proof/VERIFY.json" > "$RUNNER_TEMP/recall-phone-proof/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/recall-phone-proof/VERIFY_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/recall-phone-proof/VERIFY_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/recall-phone-proof/VERIFY_EXIT.txt")" = 0 ]; then
+            unzip -q "$RUNNER_TEMP/V13-Phone-Recall.zip" -d "$RUNNER_TEMP/recall-phone-extracted" > "$RUNNER_TEMP/recall-phone-proof/EXTRACT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/recall-phone-proof/EXTRACT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/recall-phone-proof/EXTRACT_EXIT.txt"
+          fi
+          sha256sum "$RUNNER_TEMP/V13-Phone-Recall.zip" > "$RUNNER_TEMP/recall-phone-proof/PHONE_ZIP_SHA256.txt" 2>/dev/null || true
+          exit 0
+      - name: Actual extracted tests and portable runtime
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/recall-phone-proof/EXTRACT_EXIT.txt")" = 0 ]; then
+            (cd "$RUNNER_TEMP/recall-phone-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" timeout 360s "$RUNNER_TEMP/recall-phone/bin/python" -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate) > "$RUNNER_TEMP/recall-phone-proof/TESTS_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/recall-phone-proof/TESTS_EXIT.txt"
+            (cd "$RUNNER_TEMP/recall-phone-extracted/V13-Phone" && bash -n setup.sh && PYTHONPATH="$PWD:$PWD/scripts" timeout 240s "$RUNNER_TEMP/recall-phone/bin/python" -m v13 --home "$RUNNER_TEMP/recall-phone-home" selftest --portable) > "$RUNNER_TEMP/recall-phone-proof/PORTABLE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/recall-phone-proof/PORTABLE_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/recall-phone-proof/TESTS_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/recall-phone-proof/PORTABLE_EXIT.txt"
+          fi
+          "$RUNNER_TEMP/recall-phone/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 99c6d4dd82a35d4df54e080e41586ee120353e25 --head HEAD > "$RUNNER_TEMP/recall-phone-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/recall-phone-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve raw and source ZIP
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: module-recall-phone-${{ github.run_id }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Recall.zip
+            ${{ runner.temp }}/recall-phone-proof/
+          if-no-files-found: error
+      - name: Enforce source and extracted software checks
+        run: |
+          set -euo pipefail
+          for n in PACK VERIFY EXTRACT TESTS PORTABLE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/recall-phone-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/recall-phone-proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/recall-phone-proof/PHONE_ZIP_SHA256.txt"
