@@ -243,6 +243,19 @@ class BodyJepaTrainer(LoraTrainer):
         att=(torch.arange(ids_b.shape[1])[None,:]<lens[:,None]).long()
         wts=[float(i.get('weight',1.)) for i in items]
         hist=[];step=0;g=torch.Generator().manual_seed(int(cfg['seed']))
+        # Explicit opt-in only: the existing frozen cohorts and default trainer are unchanged.
+        # Source binding includes the full master SHA, configuration, anchors and dataset.
+        checkpoint_dir=None;checkpoint_source=None;restored_step=0
+        if cfg.get('checkpoint_resume',False):
+            from .body_jepa_checkpoint import restore as restore_bj_step
+            if type(self.master_sha) is not str or len(self.master_sha)!=64:
+                raise ValueError('Step resume requires a pinned full master SHA256')
+            checkpoint_source=digest(dumps({'master_sha256':self.master_sha,
+                'dataset_hash':dh,'base_generation':base_generation,'cfg':cfg,'anchors':anchors}))
+            checkpoint_dir=out/'step-checkpoints'
+            restored=restore_bj_step(checkpoint_dir,checkpoint_source,model,pred,opt,ema,g)
+            if restored is not None:
+                step=restored['step'];hist=restored['history'];restored_step=step
         model.train()
         while step<int(cfg['max_steps']):
             _check(cancel,deadline);opt.zero_grad()
@@ -265,6 +278,9 @@ class BodyJepaTrainer(LoraTrainer):
                     kl=(bl.exp()*(bl-cl)).sum(-1).mean();(float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
             opt.step();ema.update();step+=1
             hist.append({'step':step,'ce':round(float(ce.detach()),5),'anchor_kl':round(kl_sum/max(1,len(pick)),6),'jepa':None if jl_v is None else round(jl_v,5),'ema_delta':round(ema.delta(),6)})
+            if checkpoint_dir is not None:
+                from .body_jepa_checkpoint import save as save_bj_step
+                save_bj_step(checkpoint_dir,checkpoint_source,step,model,pred,opt,ema,g,hist)
             if step>=int(cfg['min_steps']) and hist[-1]['ce']<=float(cfg['target_loss']):break
         model.eval()
         with torch.no_grad():
@@ -286,7 +302,7 @@ class BodyJepaTrainer(LoraTrainer):
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),
                  'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
-                 'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),
+                 'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
         result={'artifact':str(adapter['gguf']),'hash':adapter['gguf_sha256'],'method':self.method,'metrics':metrics,'files':adapter}
