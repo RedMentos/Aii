@@ -1,0 +1,72 @@
+{
+  "schema": "V13_BP1_QAD_SOFTWARE_REVIEW_V1",
+  "status": "REVIEW_ONLY_SOFTWARE_RED_GREEN_CLOSED_NO_NATIVE",
+  "date": "2026-10-27",
+  "owner": "GPT-6 automation11 independent reviewer",
+  "parent_pr": 682,
+  "parent_sha": "a71121d30fa1b83fa4c9b86b8f5fa3bc5fe710aa",
+  "branch": "codex/automation11-bp1-qad-review-20261027",
+  "source_commit": "ce1833f99d142e44d4abe0076247f89f7fb892af",
+  "source_sha256": {
+    "script": "e99d0b0223a03e2edbdb28b04eef69ba54e370a103af82d78764e08c13c117e2",
+    "tests": "2360ffe406663d3c017fac7b74b982615fd7d8fa4f7d29fae5de1adcab61089f"
+  },
+  "parent_software_red": {
+    "actions": 40473645747,
+    "tests": 10,
+    "errors": 1,
+    "native": "SKIPPED"
+  },
+  "native_parent_original_red": {
+    "actions": 40473240028,
+    "hf_native": "RED",
+    "child_native_retested": false
+  },
+  "first_green": {
+    "actions": 40474463360,
+    "artifact_id": 12718854391,
+    "zip_sha256": "5006dade64b149ed3b541185595bbf2ab17f4087965697b450bb9d2154d1049e",
+    "tests": "12/12 PASS"
+  },
+  "port_red": {
+    "actions": 40474634836,
+    "artifact_id": 12719859918,
+    "zip_sha256": "8336cebd46a77958b0b1b658fdb7ce87bcc9c2ba37608301fe1fcfb4ca3470ba",
+    "tests": "13 tests, 1 ERROR"
+  },
+  "final_green": {
+    "actions": 40474687659,
+    "artifact_id": 12720127094,
+    "zip_sha256": "0247be778ed921d44efd9dd2cbcd9661356793892e2ed97297f8a26a804f0611",
+    "tests": "13/13 PASS",
+    "unit_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0
+  },
+  "raw_crc_head_exits_verified": true,
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Software-Review/",
+  "private_backup_byte_identical": true,
+  "evidence_class": "SOFTWARE_ONLY_SYNTHETIC_TEST_FIXTURE",
+  "residual_risks": [
+    "loopback preflight release-to-bind race",
+    "no native QAD rerun on reviewed source",
+    "no real model utility or phone measurement"
+  ],
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "L1_FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Independent review then serialize original pinned FP32/GGUF native smoke, verify raw and exit codes; only afterward separately preregistered 1024-token C3 consumer LoRA and paired source-disjoint heldout scorer",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 -m unittest -v tests.test_bp1_qad_native_smoke",
+  "prerequisites": [
+    "review child source against parent PR #682",
+    "heavy native owner/resource serialization",
+    "pinned official QAD FP32/GGUF source and llama.cpp b10964 with verified SHA256",
+    "no heldout answer leakage"
+  ]
+}
