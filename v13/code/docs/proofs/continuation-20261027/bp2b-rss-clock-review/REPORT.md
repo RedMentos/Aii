@@ -16,6 +16,6 @@ Original `ResourceSamples._loop` writes `'elapsed_monotonic_s': round(time.monot
 
 ## Tests, next and unchanged gates
 
-Focused no-model CI: `.github/workflows/bp2b-rss-clock-review.yml`, 7 synthetic tests (six inherited plus new clock regression), compile, privacy scan and exact-parent diff. At checkpoint, **CI pending**; no PASS until exact run. Next: verify CI, review sample-clock counterexample, and keep the original one-step raw artifact as historical Linux evidence. Native BP2b 30-step training remains unproven; do not start a competing heavy run.
+Focused no-model CI: `.github/workflows/bp2b-rss-clock-review.yml`, 7 synthetic tests (six inherited plus new clock regression), compile, privacy scan and exact-parent diff. Focused CI **7/7 synthetic tests PASS**, Python compile PASS, privacy CLEAN and diff check PASS on exact tested source commit `38788c6e6413a0363ed89f41c9689e898253c8f8`, Actions `40522267037`. Final metadata-head recheck pending; no new native/Redmi execution. Next: verify CI, review sample-clock counterexample, and keep the original one-step raw artifact as historical Linux evidence. Native BP2b 30-step training remains unproven; do not start a competing heavy run.
 
 STEP2 UTILITY_FAIL; B3 L1 FAIL; BJ1 NO_SIGNAL; registered `jepa_weight=0`; Age authority 0; Redmi unmeasured; V13 incomplete. No main merge without independent integration review.
