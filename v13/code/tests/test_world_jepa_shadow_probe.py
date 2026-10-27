@@ -112,6 +112,18 @@ class WorldShadowProbeTests(unittest.TestCase):
                 main(args + ['--output', str(base / 'not-created.json')])
             self.assertFalse((base / 'not-created.json').exists())
 
+    def test_output_cannot_replace_checkpoint_or_input_sources(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d); req = base / 'request.json'; prov = base / 'provenance.json'
+            req.write_text(json.dumps(self.request())); prov.write_text(json.dumps(PROV))
+            args = ['--checkpoint', str(self.ckpt), '--sha256', self.sha,
+                    '--provenance', str(prov), '--input', str(req)]
+            for source in (self.ckpt, req, prov):
+                before = source.read_bytes()
+                with self.subTest(source=str(source)), self.assertRaises(ValueError):
+                    main(args + ['--output', str(source)])
+                self.assertEqual(source.read_bytes(), before)
+
     def test_interrupted_atomic_output_preserves_prior_bytes(self):
         with tempfile.TemporaryDirectory() as d:
             base = Path(d); req = base / 'request.json'; prov = base / 'provenance.json'
