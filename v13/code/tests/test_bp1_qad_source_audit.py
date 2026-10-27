@@ -9,10 +9,10 @@ from scripts import bp1_qad_source_audit as Q
 
 def fake():
     files = [
-        {"rfilename": "qad/model.safetensors", "lfs": {"oid": "sha256:" + "a"*64, "size": 709000000}},
+        {"rfilename": "qad/model.safetensors", "lfs": {"sha256": "a"*64, "size": 1417952352}},
         {"rfilename": "qad/config.json", "size": 1300},
-        {"rfilename": "qad/tokenizer.json", "lfs": {"oid": "b"*64, "size": 4730000}},
-        {"rfilename": Q.DEPLOYED, "lfs": {"oid": Q.DEPLOYED_SHA, "size": 219312832}},
+        {"rfilename": "qad/tokenizer.json", "lfs": {"sha256": "b"*64, "size": 4730000}},
+        {"rfilename": Q.DEPLOYED, "lfs": {"sha256": Q.DEPLOYED_SHA, "size": 219312832}},
         {"rfilename": "LICENSE", "size": 10600},
         {"rfilename": "qad/chat_template.jinja", "size": 5500}
     ]
@@ -39,8 +39,22 @@ class QadSourceAuditTests(unittest.TestCase):
             Q.audit(info)
 
     def test_deployed_hash_change_fails(self):
-        info = fake(); info["siblings"][3]["lfs"]["oid"] = "f"*64
+        info = fake(); info["siblings"][3]["lfs"]["sha256"] = "f"*64
         with self.assertRaisesRegex(ValueError, "registered"):
+            Q.audit(info)
+
+    def test_legacy_lfs_oid_compatibility(self):
+        info = fake()
+        for name in (Q.MASTER, Q.DEPLOYED):
+            entry = next(x for x in info["siblings"] if x["rfilename"] == name)
+            entry["lfs"]["oid"] = "sha256:" + entry["lfs"].pop("sha256")
+        report = Q.audit(info)
+        self.assertEqual(report["deployed_gguf_sha256"], Q.DEPLOYED_SHA)
+
+    def test_conflicting_lfs_hashes_rejected(self):
+        info = fake()
+        info["siblings"][0]["lfs"]["oid"] = "f"*64
+        with self.assertRaisesRegex(ValueError, "conflicting"):
             Q.audit(info)
 
     def test_missing_lfs_hash_fails(self):
