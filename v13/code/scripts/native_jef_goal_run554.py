@@ -22,6 +22,11 @@ from longrun_soak import attach_native_assets
 from native_second_turn_probe_run315 import fixture_speaker, wait_idle, sha256_file
 
 QUESTION = 'Explain the fictional Project RUN554-ORBIT plan briefly.'
+# Fixture-only: a genuine nonanswer must NOT close a user goal. Run315's
+# unrelated fallback says "I do not know.", so give this structural test its
+# own visibly synthetic, nonabstaining receipt; never use it in native mode.
+FIXTURE_ANSWER = ('Project RUN554-ORBIT is a fictional three-stage planning '
+                  'exercise: outline the design, simulate outcomes, and review results.')
 GATES = {'STEP2': 'UTILITY_FAIL', 'B3_L1': 'FAIL',
          'Body_JEPA': 'UNAVAILABLE', 'jepa_weight': 0,
          'Redmi': 'UNMEASURED', 'V13': 'INCOMPLETE'}
@@ -68,6 +73,12 @@ def probe(home, models_from, out, native=True, timeout=140):
         r.session = r.store.new_session('Run554 JEF native')
         if not native:
             fixture_speaker(r)
+            original_get = r.pool.get
+            def run554_fixture_get(role):
+                runner = original_get(role)
+                runner.generate = lambda *args, **kwargs: iter((FIXTURE_ANSWER,))
+                return runner
+            r.pool.get = run554_fixture_get
         first = r.store.event(r.session, QUESTION)
         live.goal_turn(r, first, {}, 'ERROR')
         goals = [g for g in hub(r).goals.tree('OPEN') if 'event:' + first['event_id'] in g['evidence']]
