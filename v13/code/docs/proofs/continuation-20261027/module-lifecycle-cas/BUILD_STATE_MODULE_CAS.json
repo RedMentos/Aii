@@ -38,7 +38,7 @@
   "evidence_scope": "isolated synthetic SQLite source-bound tests; no network/model/native/Redmi proof; not main",
   "residual_risks": [
     "Cross-table Notaus and filesystem replacement are not one atomic transaction.",
-    "Fetch can still write a file after revoke(delete=true) between final preflight and quarantine state update; follow-up package required.",
+    "Same-ID concurrent fetches remain fail-closed but are not proven linearizable.",
     "No end-to-end live module learning or semantic utility measurement."
   ],
   "negative_gates": {
@@ -50,6 +50,50 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next": "Preregister fetch write/commit race, preserve RED, then fix without overwriting foreign branches; run focused and independent review. Afterwards source-bound phone/operator smoke on five-way review commit.",
-  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest -v tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate"
+  "next": "Finish and byte-verify broad/phone workflows, then independently test typed module_recall prohibition on direct operator path and repair if confirmed; no age/learning gate promotion.",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest -v tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate",
+  "second_red": {
+    "source_commit": "abe9abce1dca53ed5aa717a102a02660a86410ab",
+    "actions_run": 40465483085,
+    "artifact_id": 12716705293,
+    "zip_sha256": "0c596a446a3f06e97fdbfc85d0d35bba0d3110cd77dede54ae7ab402c9c7129e",
+    "tests": 52,
+    "failures": 3,
+    "disproved": "postwrite revoke(delete=True) already removed file",
+    "private_backup_byte_verified": true
+  },
+  "second_green": {
+    "source_commit": "b80120860c6b33edcd98fcd23f0c26e5699cf0d0",
+    "actions_run": 40465545500,
+    "artifact_id": 12716552072,
+    "zip_sha256": "cc769ea0dcf131d08d44604fe27feb0f1359bee50fa72c5b70da10ed45d9dae0",
+    "tests": 52,
+    "unit_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "private_backup_byte_verified": true
+  },
+  "ownership_green": {
+    "source_commit": "7a4734d8dea06036af1b83f319482006656e7f31",
+    "actions_run": 40465641170,
+    "artifact_id": 12715713153,
+    "zip_sha256": "cf3bd885e13696824d708de15ef79500d8d290a3ae3e414ebb9b135548733b9f",
+    "tests": 54,
+    "unit_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "private_backup_byte_verified": true
+  },
+  "pending": [
+    {
+      "kind": "historical full-suite differential",
+      "workflow": ".github/workflows/module-lifecycle-fullsuite-diff.yml",
+      "status": "RUNNING_UNVERIFIED"
+    },
+    {
+      "kind": "source-only Termux ZIP and extracted operator",
+      "workflow": ".github/workflows/module-lifecycle-phone-source.yml",
+      "status": "RUNNING_UNVERIFIED"
+    }
+  ]
 }
