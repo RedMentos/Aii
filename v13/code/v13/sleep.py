@@ -277,7 +277,10 @@ class SleepCycle:
         budget=limit if limit is not None else min(policy['dream_max'],max(1,math.ceil(policy['dream_gain']*real))) if real else 0
         rep['budget']=budget
         if not budget:return rep
-        rows=self.s.rows("SELECT m.id,m.event_id,m.kind,m.key_text,m.value,m.session_id,s.hash,s.chars,m.source_id FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 ORDER BY m.created DESC LIMIT 512")
+        # Dream may create hypotheses, never facts; even hypotheses must not
+        # be seeded by a correction without a live F5 human authority chain.
+        rows=self.memory._verified_rows(rows)
         ref=lambda m:{'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,'char_end':m['chars'],'modality':'text'}
         def candidates():
             # 1) route alternatives on real anchored episodes (counterfactual replay, §37)
