@@ -189,6 +189,43 @@ class KnobAndLearningTests(Base):
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');e=self.ev('q2');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'q2');self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':0,'prompt_n':10}})
         self.assertEqual(len(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))),1)
 
+    def test_cache_observation_is_exactly_once_for_current_event(self):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        e=self.ev('cache-once');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'cache-once')
+        first=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':3,'prompt_n':7}})
+        second=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':3,'prompt_n':7}})
+        self.assertAlmostEqual(first['reuse_ratio'],.3)
+        self.assertIsNone(second['reuse_ratio'])
+        self.assertTrue(second['cache_rejected'])
+        cache=self.c._load()[0]['cache']
+        self.assertEqual(cache,{'n':1,'cached_tokens':3,'prompt_tokens':7})
+        self.assertEqual(len(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))),1)
+
+    def test_stale_event_cache_cost_never_credits_newer_plan(self):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        older=self.ev('old');self.c.plan(older,'C3_LANGUAGE','SYS',[],[],'old')
+        newer=self.ev('new');self.c.plan(newer,'C3_LANGUAGE','SYS',[],[],'new')
+        out=self.c.observe(older,'C3_LANGUAGE',{'timings':{'cache_n':8,'prompt_n':2}})
+        self.assertIsNone(out['reuse_ratio'])
+        self.assertTrue(out['cache_rejected'])
+        self.assertEqual(self.c._load()[0]['cache']['n'],0)
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(older,)),[])
+        valid=self.c.observe(newer,'C3_LANGUAGE',{'timings':{'cache_n':2,'prompt_n':8}})
+        self.assertAlmostEqual(valid['reuse_ratio'],.2)
+        self.assertEqual(self.c._load()[0]['cache']['n'],1)
+
+    def test_nonfinal_cache_outcome_cannot_train_cost(self):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        e=self.ev('interrupted');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'interrupted')
+        out=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':9,'prompt_n':1}},status='CANCELLED')
+        self.assertIsNone(out['reuse_ratio'])
+        self.assertTrue(out['cache_rejected'])
+        self.assertEqual(self.c._load()[0]['cache']['n'],0)
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,)),[])
+        final=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':2,'prompt_n':8}},status='FINAL')
+        self.assertAlmostEqual(final['reuse_ratio'],.2)
+        self.assertEqual(self.c._load()[0]['cache']['n'],1)
+
     def test_malformed_native_cache_metrics_never_gain_learning_cost_credit(self):
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
         e=self.ev('bad-cost');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'bad-cost')

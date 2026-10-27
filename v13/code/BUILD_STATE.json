@@ -1509,5 +1509,31 @@
     "green_tested_sha": "a3dee8063794a9ba79781eddd5598b602ff7c305",
     "broad_suite_actions_run": 40518088127,
     "broad_suite": "PENDING"
+  },
+  "n7_cache_observe_once_20261027": {
+    "owner_branch": "codex/automation11-n7-cache-observe-once-20261027",
+    "parent_pr": 721,
+    "parent_sha": "6150b2551a6cd4aefe9d2f499563985482a09c10",
+    "status": "REVIEW_ONLY_CI_PENDING",
+    "red_test_sha": "92bd873dab359e711fbd4198c2efa5ed2f784a45",
+    "red_actions_run": 40518457190,
+    "red_witness_sha": "172ea86e25251fdf4bd23d12c270018e22cb0005",
+    "green_candidate_sha": "cc6e7332591d6abe90cbef42d91f000b72d74e91",
+    "green_actions_run": 40518505881,
+    "tests": "PENDING",
+    "compile": "PENDING",
+    "privacy": "PENDING",
+    "native_evidence": false,
+    "global_crash_atomic_modulator_proof": false,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "bj1": "NO_SIGNAL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/n7-cache-observe-once/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
+    "next_prerequisite": "Verify exact RED/GREEN Actions, parent broad suite, independent review; no native/age promotion."
   }
 }
