@@ -1,0 +1,104 @@
+name: V13 LP3 pinned 350M real-master compatibility smoke
+on:
+  push:
+    branches: [codex/automation11-lp3-real-master-smoke-20261027]
+    paths:
+      - '.github/workflows/lp3-real-master-smoke.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-real-master-350m-serial
+  cancel-in-progress: false
+jobs:
+  real-master-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install isolated pinned CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/lp3-real-venv"
+          py="$RUNNER_TEMP/lp3-real-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'huggingface_hub==2.3.0'
+          "$py" -m pip check
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_lp3_real_master_smoke tests.test_lp3_state_prefix
+          "$py" -m py_compile scripts/lp3_real_master_smoke.py v13/lp3_state_prefix.py
+      - name: Download exact public revision and verify full master SHA
+        run: |
+          set -euo pipefail
+          py="$RUNNER_TEMP/lp3-real-venv/bin/python"
+          export MASTER="$RUNNER_TEMP/lp3-real-master"
+          "$py" - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+          cd v13/code
+          PYTHONPATH=. "$py" - <<'PY'
+          import os
+          from scripts.lp3_real_master_smoke import verify_master
+          print('EXACT_MASTER_SHA_PASS',verify_master(os.environ['MASTER']))
+          PY
+      - name: One bounded real-master compatibility step, raw evidence retained
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/lp3-real-evidence"
+          cd v13/code
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          timeout --signal=TERM --kill-after=15s 18m \
+            env PYTHONPATH=. "$RUNNER_TEMP/lp3-real-venv/bin/python" scripts/lp3_real_master_smoke.py \
+              --master "$RUNNER_TEMP/lp3-real-master" --out "$RUNNER_TEMP/lp3-real-evidence/RESULT.json" --execute-native \
+              > "$RUNNER_TEMP/lp3-real-evidence/NATIVE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-real-evidence/NATIVE_EXIT.txt"
+          cat "$RUNNER_TEMP/lp3-real-evidence/NATIVE_RAW.log"
+          exit 0
+      - name: Privacy scan, diff and source receipt
+        if: always()
+        run: |
+          set +e
+          git rev-parse HEAD > "$RUNNER_TEMP/lp3-real-evidence/HEAD.txt"
+          git hash-object v13/code/scripts/lp3_real_master_smoke.py > "$RUNNER_TEMP/lp3-real-evidence/SCRIPT_BLOB.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 158e2546e9de93a117ca43a50b94d3adf670c07b --head HEAD > "$RUNNER_TEMP/lp3-real-evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-real-evidence/PRIVACY_EXIT.txt"
+          git diff --check 158e2546e9de93a117ca43a50b94d3adf670c07b HEAD > "$RUNNER_TEMP/lp3-real-evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-real-evidence/DIFF_EXIT.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lp3-real-master-smoke-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/lp3-real-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce genuine exits; no utility or age promotion
+        if: always()
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/lp3-real-evidence"
+          test "$(cat "$evidence/NATIVE_EXIT.txt")" = 0
+          test "$(cat "$evidence/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$evidence/DIFF_EXIT.txt")" = 0
+          "$RUNNER_TEMP/lp3-real-venv/bin/python" - "$evidence/RESULT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['status']=='LP3_REAL_MASTER_COMPAT_PASS'
+          assert d['evidence_class']=='LINUX_NATIVE_COMPATIBILITY'
+          assert d['jepa_weight']==0 and d['age_authority']==0
+          assert d['utility_proven'] is False and d['redmi_measured'] is False
+          print('LP3_REAL_MASTER_COMPAT_ONLY_NO_UTILITY_OR_AGE_PROMOTION')
+          PY
