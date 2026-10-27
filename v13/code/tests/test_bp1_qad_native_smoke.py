@@ -16,6 +16,23 @@ def sample(mode, sha):
 
 
 class NativeSmokeSoftwareTests(unittest.TestCase):
+    def test_batch_encoding_is_normalized_to_tensor(self):
+        class Tensor:
+            pass
+        class Torch:
+            Tensor = Tensor
+        class BatchEncoding:
+            def __getitem__(self, key):
+                self_key = key
+                if self_key != "input_ids":
+                    raise KeyError(key)
+                return tensor
+        tensor = Tensor()
+        self.assertIs(N.tensor_input_ids(BatchEncoding(), Torch), tensor)
+        self.assertIs(N.tensor_input_ids(tensor, Torch), tensor)
+        with self.assertRaisesRegex(ValueError, "not a torch tensor"):
+            N.tensor_input_ids({"input_ids": [1, 2]}, Torch)
+
     def test_registered_prompts_immutable(self):
         self.assertEqual(len(N.PROMPTS), 4)
         self.assertEqual(N.PROMPTS[0], "What is 2 + 2?")
