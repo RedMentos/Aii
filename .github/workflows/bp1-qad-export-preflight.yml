@@ -1,0 +1,88 @@
+name: V13 BP1 pinned b10964 LFM2 synthetic LoRA GGUF export preflight
+on:
+  push:
+    branches: [codex/gpt6-bp1-gguf-b10964-export-preflight-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-export-preflight.yml'
+      - 'v13/code/scripts/bp1_qad_export_preflight.py'
+      - 'v13/code/tests/test_bp1_qad_export_preflight.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-export-preflight-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_PRODUCTION_ACTIVATION: '1'
+      BP1_GGUF_CHECKOUT: ${{ runner.temp }}/llama-source
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Exact upstream source and isolated pinned gguf-py dependency
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-export-preflight"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-export-preflight/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_export_preflight.py v13/code/tests/test_bp1_qad_export_preflight.py > "$RUNNER_TEMP/bp1-export-preflight/SOURCE_SHA256.txt"
+          git clone -q --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BP1_GGUF_CHECKOUT" > "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            git -C "$BP1_GGUF_CHECKOUT" checkout -q b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 >> "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            test "$(git -C "$BP1_GGUF_CHECKOUT" rev-parse HEAD)" = b29c606e28a01b1bc8c1351026a0fa6e616bf6c4
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            git -C "$BP1_GGUF_CHECKOUT" rev-parse HEAD > "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_HEAD.txt"
+            git -C "$BP1_GGUF_CHECKOUT" hash-object gguf-py/gguf/constants.py gguf-py/gguf/tensor_mapping.py > "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_BLOBS.txt"
+            python3 -m venv "$RUNNER_TEMP/bp1-gguf-venv" >> "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' "$BP1_GGUF_CHECKOUT/gguf-py" >> "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m pip freeze > "$RUNNER_TEMP/bp1-export-preflight/DEPS_LOCK.txt"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_EXIT.txt"
+          exit 0
+      - name: Synthetic LFM2 writer roundtrip, counterexamples, compile, privacy
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m unittest -v tests.test_bp1_qad_export_preflight) > "$RUNNER_TEMP/bp1-export-preflight/UNIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-export-preflight/UNIT_EXIT.txt"
+          else
+            echo 'PINNED_DEPENDENCY_FAILED' > "$RUNNER_TEMP/bp1-export-preflight/UNIT_RAW.log"
+            echo 2 > "$RUNNER_TEMP/bp1-export-preflight/UNIT_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/bp1_qad_export_preflight.py v13/code/tests/test_bp1_qad_export_preflight.py > "$RUNNER_TEMP/bp1-export-preflight/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-export-preflight/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f6d6812a493cc7d2235e97bf16e0324242d1ecd6 --head HEAD > "$RUNNER_TEMP/bp1-export-preflight/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-export-preflight/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-qad-export-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-export-preflight/
+          if-no-files-found: error
+      - name: Enforce all exact-source and software exits
+        run: |
+          set -euo pipefail
+          for n in UPSTREAM UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-export-preflight/${n}_EXIT.txt")" = 0 || {
+              echo "${n} failed"; tail -80 "$RUNNER_TEMP/bp1-export-preflight/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "PINNED_B10964_LFM2_SYNTHETIC_GGUF_ONLY; NO_TRAIN_OR_NATIVE_INFERENCE_OR_REDMi"
