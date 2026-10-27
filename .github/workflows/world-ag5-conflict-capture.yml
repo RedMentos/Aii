@@ -29,7 +29,7 @@ jobs:
           echo "$?" > "$RUNNER_TEMP/conflictproof/FETCH_EXIT.txt"
           git rev-parse FETCH_HEAD > "$RUNNER_TEMP/conflictproof/OTHER_HEAD.txt"
           git merge-base HEAD FETCH_HEAD > "$RUNNER_TEMP/conflictproof/MERGE_BASE.txt"
-          git merge --no-commit --no-ff FETCH_HEAD > "$RUNNER_TEMP/conflictproof/MERGE_RAW.log" 2>&1
+          git -c user.name='V13 Read-only Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff FETCH_HEAD > "$RUNNER_TEMP/conflictproof/MERGE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/conflictproof/MERGE_EXIT.txt"
           git diff --name-only --diff-filter=U > "$RUNNER_TEMP/conflictproof/CONFLICT_PATHS.txt"
           for path in v13/code/scripts/handy_pflicht.py v13/code/v13/operator.py; do
@@ -61,4 +61,6 @@ jobs:
           done
           test "$(cat "$RUNNER_TEMP/conflictproof/MERGE_EXIT.txt")" = 1
           test ! -s "$RUNNER_TEMP/conflictproof/POST_ABORT_STATUS.txt"
+          test "$(wc -l < "$RUNNER_TEMP/conflictproof/CONFLICT_PATHS.txt")" = 2
+          test "$(find "$RUNNER_TEMP/conflictproof/files" -type f -size +0c | wc -l)" = 8
           cat "$RUNNER_TEMP/conflictproof/CONFLICT_PATHS.txt"
