@@ -1,0 +1,56 @@
+name: V13 BP1 QAD V2 pinned b10964 default LoRA scale software review
+on:
+  push:
+    branches: [codex/automation11-bp1-v2-scale0-native-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-v2-scale0-software.yml'
+      - 'v13/code/scripts/bp1_qad_lora_eval.py'
+      - 'v13/code/tests/test_bp1_qad_lora_default_scale.py'
+      - 'v13/code/tests/test_bp1_qad_adapter_locator_workflow.py'
+      - '.github/workflows/bp1-qad-train-plus-v2-samejob.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-v2-scale0/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-v2-scale0-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Native LoRA descriptor argv, original V2, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-scale0"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-scale0/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_default_scale.py > "$RUNNER_TEMP/bp1-scale0/SOURCE_SHA256.txt"
+          git hash-object v13/code/v13/lora_trainer.py > "$RUNNER_TEMP/bp1-scale0/FROZEN_TRAINER_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_adapter_locator_workflow tests.test_bp1_qad_lora_default_scale tests.test_bp1_qad_lora_eval tests.test_bp1_qad_adapter_locator tests.test_bp1_qad_lora_proof_contract tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-scale0/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-scale0/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_default_scale.py > "$RUNNER_TEMP/bp1-scale0/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-scale0/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d6ccb20dde4d2bf5d87b8cbc31c91bec09fe425d --head HEAD > "$RUNNER_TEMP/bp1-scale0/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-scale0/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-scale0-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-scale0/
+          if-no-files-found: error
+      - name: Enforce source and tests
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/bp1-scale0/FROZEN_TRAINER_BLOB.txt")" = 49a752879ae5d19391963742a0f042e740edb2cc
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-scale0/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp1-scale0/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP1_QAD_SCALE0_SOFTWARE_ONLY_NO_NATIVE_UTILITY_PROMOTION"
