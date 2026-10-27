@@ -143,7 +143,10 @@ def resolve():
     unresolved = git('ls-files', '-u')
     if unresolved:
         raise ValueError('Unresolved paths remain')
-    # Immutable original raw proof logs contain historic trailing whitespace.\n    # Never rewrite evidence to satisfy formatting; enforce all code paths.\n    subprocess.check_call(['git', 'diff', '--cached', '--check', '--',\n                           'v13/code/v13', 'v13/code/scripts', 'v13/code/tests'])
+    # Immutable original raw proof logs contain historic trailing whitespace.
+    # Never rewrite evidence to satisfy formatting; enforce all code paths.
+    subprocess.check_call(['git', 'diff', '--cached', '--check', '--',
+                           'v13/code/v13', 'v13/code/scripts', 'v13/code/tests'])
     # Preserve AG5 V2 byte-exact, no World V1 regression.
     actual_handy = git('hash-object', HANDY)
     if actual_handy != AG5_HANDY_BLOB:
