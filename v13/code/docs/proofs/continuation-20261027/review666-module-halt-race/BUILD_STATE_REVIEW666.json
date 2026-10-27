@@ -1,0 +1,59 @@
+{
+  "schema": "V13_PR666_INDEPENDENT_MODULE_FETCH_REVIEW_V1",
+  "date": "2026-10-27",
+  "scope": "REVIEW_BRANCH_ONLY",
+  "base": "ed5010708bdb3d11c5e495f01cc07d99d359ba39",
+  "branch": "codex/v13-review666-module-halt-race-20261027",
+  "source_fix": "255fb7c73b161cc9ae95b11b4575d1a9def3c45b",
+  "red": [
+    {
+      "run": 40459519547,
+      "head": "72c69da5864ecf297519e98bfda33f0ece1dd95b",
+      "tests": 43,
+      "fail": 3,
+      "artifact": 12712954630,
+      "zip_sha256": "44f801435b9667d19f3c59ad6306db6937868424070044cc87c41958893c4401"
+    },
+    {
+      "run": 40459657917,
+      "head": "9c497975ce7ea3d76715226cc7e8ba8384302468",
+      "tests": 45,
+      "fail": 5,
+      "artifact": 12713254263,
+      "zip_sha256": "d63a3fe55c7570a42d011e62a78ed540802647a57a84c9c2634f98ac06edb4c9"
+    }
+  ],
+  "green": {
+    "run": 40459751403,
+    "head": "255fb7c73b161cc9ae95b11b4575d1a9def3c45b",
+    "tests": 45,
+    "fail": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "artifact": 12713857387,
+    "zip_sha256": "da34e376e8fae690c8d6b9f985a5bf43ecf01a303ee1411584959d82942982b6"
+  },
+  "backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Review666-Module-Halt-Race/",
+    "original_zip_bytes_reverified": true
+  },
+  "owner": "GPT-6 independent review",
+  "next_owner": "AG5/World integration coordinator then Claude/GPT cross-review",
+  "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_review666_module_halt_race tests.test_modules_gate tests.test_guard2",
+  "open_questions": [
+    "PR666 lacks committed AG5 runtime despite stacking on PR665 harness; no main merge",
+    "Residual check/activate and last-gate filesystem TOCTOU",
+    "Generated .pyc files in PR666 need cleanup",
+    "Qwen3Guard local remote-code provenance and Redmi tests unavailable"
+  ],
+  "evidence_level": "LINUX_SYNTHETIC_SQLITE_ONLY",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED"
+  }
+}
