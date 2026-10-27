@@ -35,9 +35,18 @@ def tool(store):
         hits=recall(store,query);return {'hits':hits,'count':len(hits),'label':LABEL}
     return run
 
+def _export_gate(store):
+    # An export writes locally; a typed ban on this exact tool must take
+    # precedence even when the read-only module corpus is still available.
+    why=M.gate(store,'module_export','WRITE_LOCAL',({'WRITE_LOCAL','LEARN'},{'MODULE','FILE'}))
+    if why:raise PermissionError('Modul-Export gesperrt: '+why)
+
+
 def export_dataset(store,path):
     """JSONL, one tagged item per line, plus the digest of the content. Returns {'path','items','digest'}; raises when nothing is released."""
+    _export_gate(store)  # Notaus/ban before corpus or no-data error.
     items=M.corpus(store)
     if not items:raise ValueError('Nichts freigegeben oder Lernen aus: kein Export (:modul lernen an, Modul freigeben)')
     body='\n'.join(json.dumps({'text':i['text'],'title':i['title'],'tag':i['tag']},ensure_ascii=False,sort_keys=True) for i in items)+'\n'
+    _export_gate(store)  # Recheck after source reads, before write.
     atomic_write(path,body.encode());return {'path':str(path),'items':len(items),'digest':digest(body)}

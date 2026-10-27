@@ -1,0 +1,53 @@
+{
+  "schema": "V13_BP11B_MODULE_EXPORT_FIXED_GATE_REVIEW_V1",
+  "date": "2026-10-27",
+  "branch": "codex/v13-review666-bp11b-export-gate-20261027",
+  "base": "e505364c78d6ef222eb287d84d84aed81ecc53e3",
+  "scope": "REVIEW_ONLY",
+  "source_fix": "b48eb40341da1f2bd4d02f33b4201ad5dfc02b15",
+  "green_head": "36294ea855627f48abe22e243934d1a075a29426",
+  "red": [
+    {
+      "run": 40460829626,
+      "fail": 2,
+      "error": 2,
+      "zip_sha256": "be29cda177ab48445a879a7c2ae7af13bd3a88d2faef76b646dd560dac6da402"
+    },
+    {
+      "run": 40460973215,
+      "fail": 1,
+      "error": 2,
+      "zip_sha256": "91b377c920c97937aee036311244cf7c2a1687e160c82818ae76d2e23027d48f"
+    },
+    {
+      "run": 40461002336,
+      "fail": 1,
+      "error": 0,
+      "zip_sha256": "70cce25fc385cd9600e224072cbe1b30b00fbc8ccbbb8979ab88a39212141e6c"
+    }
+  ],
+  "green": {
+    "run": 40461135118,
+    "tests": 48,
+    "fail": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "artifact": 12713994555,
+    "zip_sha256": "462dab7aee44104e7e75ac882a37ee42325a9059eac4bf7b4e0b71dce7ff6b38"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Review666-BP11b-Export-Gate/",
+  "raw_sha_roundtrip_verified": true,
+  "claim": "EXACT_TOOL_MODULE_EXPORT_BAN_BYPASS_FIXED",
+  "disproved_claim": "WRITE_LOCAL risk ban already stopped export indirectly; did not write file",
+  "owner": "GPT-6 independent review",
+  "next_owner": "Claude/GPT cross-review and three-way integration",
+  "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_review666_bp11b_export_gate tests.test_modules_gate tests.test_guard2",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  }
+}
