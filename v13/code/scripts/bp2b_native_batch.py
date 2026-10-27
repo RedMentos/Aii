@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 
-from scripts.bp2b_native_runner import ARMS, SEEDS, plan, PIN_PATH, MASTER_SHA
+from scripts.bp2b_native_runner import ARMS, SEEDS, plan, PIN_PATH, MASTER_SHA, _verified_adapter_sha256
 from scripts.bp2b_master_preflight import verify as verify_master
 
 REVISION = 'bp2b-native-batch-v1'
@@ -61,6 +61,27 @@ def _sidecar_hashes(attempt):
             raise ValueError('Empty or oversized native evidence sidecar: ' + name)
         result[name] = _digest(path)
     return result
+
+
+
+def _adapter_manifest_sha(attempt, result_path):
+    """Rehash the exported adapter bytes and its manifest before native skip."""
+    trainer = Path(attempt) / 'trainer'
+    manifest_path = trainer / 'manifest.json'
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError('Missing or symlinked trainer manifest')
+    size = manifest_path.stat().st_size
+    if not 0 < size <= 8 * 1024 * 1024:
+        raise ValueError('Empty or oversized trainer manifest')
+    trained = json.loads(manifest_path.read_text(encoding='utf-8'))
+    result = json.loads(Path(result_path).read_text(encoding='utf-8'))
+    if (type(trained) is not dict or type(result) is not dict
+            or trained.get('hash') != result.get('adapter_sha256')):
+        raise ValueError('Trainer manifest and result adapter identity differ')
+    actual = _verified_adapter_sha256(trained, trainer)
+    if actual != result['adapter_sha256']:
+        raise ValueError('Trained adapter byte SHA256 differs from native result')
+    return _digest(manifest_path)
 
 
 def _write_atomic(path, value):
@@ -164,6 +185,8 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
                 sha = _result_matches(result, job, old.get('result_sha256'))
                 if old.get('sidecar_sha256') != _sidecar_hashes(attempt):
                     raise ValueError('Previously checkpointed native evidence sidecars changed')
+                if old.get('trainer_manifest_sha256') != _adapter_manifest_sha(attempt, result):
+                    raise ValueError('Previously checkpointed trained adapter changed')
                 log = state_dir / f"log-s{job['seed']}-{job['arm']}.txt"
                 if not log.is_file() or _digest(log) != old.get('log_sha256'):
                     raise ValueError('Previously checkpointed raw log changed')
@@ -198,6 +221,7 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
                 try:
                     record['result_sha256'] = _result_matches(result, job)
                     record['sidecar_sha256'] = _sidecar_hashes(attempt)
+                    record['trainer_manifest_sha256'] = _adapter_manifest_sha(attempt, result)
                     record['status'] = 'COMPLETED'
                 except (ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
                     record['reason'] = 'RESULT_VALIDATION_' + type(exc).__name__

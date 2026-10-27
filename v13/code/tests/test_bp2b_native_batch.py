@@ -1,5 +1,6 @@
 """Software-only BP2b serial batch tests: no model, no native weights."""
 import contextlib
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -41,6 +42,14 @@ class NativeBatchSoftwareTests(unittest.TestCase):
                   'age_authority': 0, 'jepa_weight': 0,
                   'master_sha256_verified_locally': True,
                   'adapter_sha256': 'a' * 64}
+        trainer = path / 'trainer'
+        trainer.mkdir()
+        adapter = trainer / 'adapter.gguf'
+        adapter.write_bytes(b'SOFTWARE_FAKE_ADAPTER')
+        adapter_sha = hashlib.sha256(adapter.read_bytes()).hexdigest()
+        (trainer / 'manifest.json').write_text(
+            json.dumps({'artifact': str(adapter), 'hash': adapter_sha}), encoding='utf-8')
+        result['adapter_sha256'] = adapter_sha
         (path / 'RESULT.json').write_text(json.dumps(result), encoding='utf-8')
         (path / 'ATTEMPT.json').write_text(json.dumps({'status': 'STARTED', 'plan': nr.plan(seed, arm)}), encoding='utf-8')
         (path / 'SCORE.json').write_text(json.dumps({'leak_hits': 0, 'heldout_count': 32}), encoding='utf-8')
@@ -131,6 +140,31 @@ class NativeBatchSoftwareTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 self.run_batch(prefix=prefix, max_jobs=2)
             self.assertEqual(len(self.calls), before)
+
+    def test_tampered_native_adapter_or_manifest_refuses_resume(self):
+        for index, name in enumerate(('adapter.gguf', 'manifest.json')):
+            prefix = 'adapter' + str(index)
+            self.run_batch(prefix=prefix, max_jobs=1)
+            before = len(self.calls)
+            attempt = self.out / 'seed-41' / 'legacy' / ('attempt-' + prefix + '-s41-legacy')
+            artifact = attempt / 'trainer' / name
+            artifact.write_bytes(artifact.read_bytes() + b'TAMPER')
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                self.run_batch(prefix=prefix, max_jobs=2)
+            self.assertEqual(len(self.calls), before)
+
+    def test_missing_adapter_cannot_publish_completed_checkpoint(self):
+        def missing_adapter(cmd, stdout, stderr, timeout, check):
+            result = self.fake_runner(cmd, stdout, stderr, timeout, check)
+            attempt = cmd[cmd.index('--attempt') + 1]
+            path = self.out / 'seed-41' / 'legacy' / ('attempt-' + attempt)
+            (path / 'trainer' / 'adapter.gguf').unlink()
+            return result
+
+        with self.assertRaises(RuntimeError):
+            self.run_batch(runner=missing_adapter)
+        state = json.loads((self.out / '.bp2b-batch' / 'software1' / 'STATE.json').read_text())
+        self.assertEqual(state['attempts']['41:legacy']['status'], 'FAILED')
 
     def test_missing_sidecar_cannot_publish_completed_checkpoint(self):
         def incomplete_runner(cmd, stdout, stderr, timeout, check):
