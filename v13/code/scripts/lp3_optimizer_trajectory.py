@@ -36,13 +36,16 @@ def _grad_stat(module, torch):
     params = list(module.parameters())
     grads = [p.grad for p in params]
     present = sum(g is not None for g in grads)
-    if present != len(params):
-        return {'abs_sum': 0., 'finite': True, 'missing_tensors': len(params)-present,
-                'nonfinite_elements': 0}
-    nonfinite = sum(int((~torch.isfinite(g)).sum()) for g in grads)
+    missing = len(params) - present
+    # A missing tensor must not hide NaN/Inf in a different present tensor.
+    # Stop the optimizer on any nonfinite gradient, even for a partial graph.
+    nonfinite = sum(int((~torch.isfinite(g)).sum()) for g in grads if g is not None)
     if nonfinite:
-        return {'abs_sum': None, 'finite': False, 'missing_tensors': 0,
+        return {'abs_sum': None, 'finite': False, 'missing_tensors': missing,
                 'nonfinite_elements': nonfinite}
+    if missing:
+        return {'abs_sum': 0., 'finite': True, 'missing_tensors': missing,
+                'nonfinite_elements': 0}
     # Accumulate in float64: finite FP32 elements can overflow an FP32 sum.
     total = sum(float(g.detach().abs().double().sum()) for g in grads)
     return {'abs_sum': total if math.isfinite(total) else None,
