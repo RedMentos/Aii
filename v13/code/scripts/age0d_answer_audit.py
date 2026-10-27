@@ -10,24 +10,24 @@ import json
 import re
 
 REVISION = 'age0d-answer-audit-v1'
-NUMBER = r'[+-]?(?:\\d{1,12}(?:[.,]\\d{1,12})?)'
+NUMBER = r'[+-]?(?:\d{1,12}(?:[.,]\d{1,12})?)'
 BINARY = re.compile(
-    rf'(?:what is|calculate|compute|wie viel ist|berechne)\\s+'
-    rf'(?P<left>{NUMBER})\\s*(?P<op>[+*/x×÷-])\\s*(?P<right>{NUMBER})\\s*\\??',
+    rf'(?:what is|calculate|compute|wie viel ist|berechne)\s+'
+    rf'(?P<left>{NUMBER})\s*(?P<op>[+*/x×÷-])\s*(?P<right>{NUMBER})\s*\??',
     re.IGNORECASE,
 )
 HALF = re.compile(
     rf'(?:what is half of|calculate half of|wie viel ist die hälfte von|'
-    rf'berechne die hälfte von)\\s+(?P<value>{NUMBER})\\s*(?:euro|€)?\\s*[?.]?',
+    rf'berechne die hälfte von)\s+(?P<value>{NUMBER})\s*(?:euro|€)?\s*[?.]?',
     re.IGNORECASE,
 )
 BUDGET_HALF = re.compile(
-    rf'budget\\s+(?P<value>{NUMBER})\\s+euro\\.\\s*berechne die hälfte\\.',
+    rf'budget\s+(?P<value>{NUMBER})\s+euro\.\s*berechne die hälfte\.',
     re.IGNORECASE,
 )
 ANSWER = re.compile(
-    rf'(?:(?:answer|ergebnis)\\s*:\\s*|(?:the answer is|das ergebnis ist)\\s+)?'
-    rf'(?P<value>{NUMBER})\\s*(?:euro|€)?\\s*\\.?',
+    rf'(?:(?:answer|ergebnis)\s*:\s*|(?:the answer is|das ergebnis ist)\s+)?'
+    rf'(?P<value>{NUMBER})\s*(?:euro|€)?\s*\.?',
     re.IGNORECASE,
 )
 STATUSES = ('CORRECT', 'MISMATCH', 'ABSTAIN')
@@ -57,7 +57,7 @@ def _exact_divide(left, right):
 
 
 def _question(text):
-    if type(text) is not str or not 1 <= len(text) <= 160 or any(c in text for c in '\\r\\n\\t'):
+    if type(text) is not str or not 1 <= len(text) <= 160 or any(c in text for c in '\r\n\t'):
         return None
     q = text.strip()
     half = HALF.fullmatch(q) or BUDGET_HALF.fullmatch(q)
@@ -90,7 +90,7 @@ def audit(question, answer):
     expected = _question(question)
     if expected is None or type(answer) is not str or not 1 <= len(answer) <= 120:
         return result
-    if any(c in answer for c in '\\r\\n\\t'):
+    if any(c in answer for c in '\r\n\t'):
         return result
     m = ANSWER.fullmatch(answer.strip())
     if m is None:
