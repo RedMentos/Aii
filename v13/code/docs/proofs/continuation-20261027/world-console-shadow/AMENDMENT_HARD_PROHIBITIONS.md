@@ -1,0 +1,7 @@
+# Prospective safety amendment: operator read must honor fixed hard prohibitions
+
+Initial console bridge RED/GREEN proved origin-only gating and no writes, but independent review before final checkpoint found that a directly invoked `:world shadow` reads local files outside the transaction tool registry. Although only explicit TTY can call it, the user's fixed `:verbot art READ_LOCAL`, `:verbot alles`, named tool prohibition, `:notaus` and `:verbot ansage an` must not be silently bypassed by a new read-like command. This is a policy integrity issue, not a model utility improvement.
+
+Before adding tests/source, extend acceptance: call the existing model-independent `prohibitions.blocked(store, 'world_shadow_probe', 'READ_LOCAL', True)` **before any checkpoint/provenance/input read**. Reject with `PermissionError` on any hard block or unreadable prohibition state. Because this console command does not create approval proposals, also reject when `prohibitions.announce_all(store)` is active. Ordinary explicit TTY call with no prohibition still returns identical SHADOW JSON; `:world` status remains readable. Non-TTY origin stays denied. No changes to existing fixed rule storage or to any permission/age gate. Tests must prove no file is read under block by patching the model loader and JSON loader to fail if called.
+
+The initial GREEN is preserved as historically passing its narrower tests, not silently treated as satisfying this new policy acceptance.

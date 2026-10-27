@@ -1,0 +1,17 @@
+# AG5 + World integration candidate: guide regression repaired in disposable merge (2026-10-27)
+
+## Original independent RED (retained)
+
+PR #665 exact head `763476dd368909e4feff133310872ad5eaf75dc2` / Actions **40458296328**: three pinned merge conflicts resolved (RESOLVE0, EXPORT0), 84 focused tests PASS/2 SKIP, compile0, privacy CLEAN. The broad merged suite ran **4424 tests, 7 FAIL, 73 ERROR, 28 SKIP**; the AG5 parent already had 5 FAIL and 73 ERROR. The **two additional FAIL entries** were the duplicated `tests.test_phone_halt.GuideTests.test_every_operator_command_is_explained`: World `:ersetze` had been added to operator but not to AG5 `docs/BEFEHLE.md`. Original ZIP artifact **12714150443**, SHA256 `f6fe7cb6c8735bf66d68d09b5b88e743c941b30376bbd53e1aaf17d4a1e2499d`, 35 members, CRC clean, exact HEAD/exits verified and byte-identically backed up in private Library `/V13-Checkpoints/2026-10-27/AG5-World-Merge/`. This full-suite RED remains a failed attempt, not a success.
+
+## Independent fix, focused evidence
+
+Review-only child branch `codex/ag5-world-guide-regression-review-20261027`, exact parent #665, no owner/main overwrite. Prereg `c7adfbca3be11a039d12d32557f13684307dbc26` preceded source fix `7766d2aa34c720c21be12110c90bdab4006882dd`. Exact conflict-stage resolver now modifies **only the disposable merged tree**: it adds the `:ersetze route|list|undo` explanation to the existing AG5 user guide and updates the `:effort detail|gist` guide option. It fails closed if guide anchors changed, stages the guide with the original three resolved conflicts, preserves AG5 V2 handy byte-exact and checks staged code/guide whitespace. No committed merged runtime or two-parent remote merge.
+
+**Focused GREEN:** Actions **40460150870** at `7b3e3ffdf2c446da5219c7813f98ef11da37d1c1`; exact 3-conflict merge exit1, RESOLVE0, **50 tests PASS (1 skipped)** covering phone guide, route supersession, World shadow, AG5 language, idle-locked config, toolforecast, compile0, ephemeral commit0 and privacy CLEAN. ZIP artifact **12713823451**, SHA256 `1fa38673be629e4aee863a88ea6dee12365ba13129e4f94cc2ddb735c27688ff`, CRC clean, exact HEAD/exits checked, privately saved and byte-reverified at `/V13-Checkpoints/2026-10-27/AG5-World-Guide-Regression/`.
+
+## Negative gates and next work
+
+**Full-suite green is NOT claimed**: original merged broad suite remains RED, 5 historical FAIL and 73 ERROR not yet repaired or proven unchanged after this patch. No production integration, no native/Redmi, no model/cohort/seed/approval change. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, V13 INCOMPLETE. Independent reviewer should run exact broad disposable merge after this fix and compare failures against parent baseline before any two-parent review commit. PR #666/Claude remains stacked on PR #665's **source harness**, not the resolved merged runtime, so its runtime must be integrated separately and cross-tested. Do not silently treat PR #666 as AG5+World integration.
+
+Next exact focused replay: `cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_phone_halt tests.test_route_supersede tests.test_world_console_shadow tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_toolforecast` **on the disposable resolved tree**, not on the unmerged source branch. Current owner GPT-6 independent integration review; next owner full-suite regression auditor / cross-integration coordinator.

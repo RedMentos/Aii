@@ -1,0 +1,5 @@
+# Parent-binding clarification — 2026-10-27
+
+The World **lineage** is PR #664 at `aab74aa900bfbd767f2983ba40a16fc0b8b95a3b`. The disposable merge is actually executed from the **review harness branch HEAD** (which includes this preregistration and resolver scripts) into AG5 `c615497384dc5519be59232451895ca443ce9e45`. Therefore the candidate's first parent must be the **exact `WORLD_HEAD.txt` of the CI run**, not hardcoded `aab74...`. Its ancestor World lineage remains `aab74...`.
+
+The exporter now records both `candidate_first_parent_sha` dynamically from `git rev-parse HEAD` before the ephemeral merge commit and `world_lineage_sha=aab74...` separately. Any later remote review commit must use that exact first parent and AG5 as second parent; no force-push, no owner/main overwrite, and no mismatch between local candidate tree and server commit. Prior CI artifacts with a hardcoded `world_parent_sha` must not be used to create a remote merge commit. This is provenance correction only, not a model/test/architecture change.

@@ -1,0 +1,65 @@
+name: V13 World-JEPA v2 SHADOW inference probe
+on:
+  push:
+    branches:
+      - codex/automation11-world-shadow-probe-20261027
+    paths:
+      - '.github/workflows/world-shadow-probe.yml'
+      - 'v13/code/v13/world_jepa_shadow_probe.py'
+      - 'v13/code/scripts/world_jepa_shadow_probe.py'
+      - 'v13/code/tests/test_world_jepa_shadow_probe.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-shadow-probe/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-shadow-probe
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldshadow"
+          timeout 240s "$RUNNER_TEMP/worldshadow/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve original raw outputs
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/worldshadowproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/worldshadowproof/HEAD.txt"
+          for p in v13/code/v13/world_jepa_shadow_probe.py v13/code/scripts/world_jepa_shadow_probe.py v13/code/tests/test_world_jepa_shadow_probe.py v13/code/v13/world_jepa_slots.py; do
+            test -f "$p" && sha256sum "$p" || echo "MISSING $p"
+          done > "$RUNNER_TEMP/worldshadowproof/SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldshadow/bin/python" -m unittest -v tests.test_world_jepa_shadow_probe tests.test_z12c_control_calibration tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint tests.test_world_jepa_slots tests.test_world_jepa) > "$RUNNER_TEMP/worldshadowproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldshadowproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/worldshadow/bin/python" -m compileall -q v13/code/v13/world_jepa_shadow_probe.py v13/code/scripts/world_jepa_shadow_probe.py v13/code/tests/test_world_jepa_shadow_probe.py > "$RUNNER_TEMP/worldshadowproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldshadowproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldshadow/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9c6cb2435d11bf58d3b18b0d830aeda261809d3e --head HEAD > "$RUNNER_TEMP/worldshadowproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldshadowproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-shadow-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/worldshadowproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/worldshadowproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/worldshadowproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -18 "$RUNNER_TEMP/worldshadowproof/UNIT_RAW.log"

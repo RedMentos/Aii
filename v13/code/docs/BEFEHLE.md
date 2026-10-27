@@ -112,6 +112,9 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
     Korrigiert die letzte Antwort: Tatsache, Stil oder Vorliebe. Mit --learn darf daraus gelernt werden.
 :feedback route simple|detail|gist|both [--learn]
     Hätte V13 einfach antworten oder einen der Denk-Körper (Detail, Überblick, beide) fragen sollen?
+:ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id>
+    Ersetzt ältere widersprechende Routen-Korrekturen für diese Wörter, ohne Belege zu löschen.
+    --sofort setzt zusätzlich eine feste Route für passende neue Fragen. Undo stellt ältere Labels wieder her.
 :feedback wake none|detail|gist|both [--learn]
     Welcher Denk-Körper hätte geweckt werden sollen.
 :feedback halt halt|continue [--learn]
@@ -202,6 +205,10 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
     Schreiben, Netz und Wirkung nach außen laufen erst nach deinem :tx approve.
 :toolforecast [status|shadow|off|score]
     Sagt vorher, was ein Werkzeug bewirken würde (SCHATTEN).
+:modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>|frage <M> <Text>|export <M> <Pfad>]
+    Neue Wissens-Module: standardmäßig aus, nur deine getippten Freigaben. Herkunft/Hash prüfen, Export ist kein Modelltraining.
+:wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>]
+    Zweiter Sicherheitswächter: standardmäßig aus, nur strenger; ein Modellordner wird nicht automatisch geladen.
 :live
     Welche Zusatz-Fähigkeiten im Gespräch gerade mitlaufen.
 
@@ -226,7 +233,7 @@ Tasten im Vollbild-Chat: Strg+C bricht ab, Strg+D beendet, Tab springt zwischen 
 :language [status|en|de]                Sprache neuer Modellantworten: Englisch (Standard) oder Deutsch; dauerhaft, Wechsel nur wenn V13 frei ist. Das ist kein gelerntes Deutsch.
 :route auto|simple|detail|gist|both   Wer antwortet: automatisch, nur Sprache, oder mit Denk-Körpern.
 :observers <Art>                        Wie die Beobachter mitlaufen (off, background, nacheinander, …).
-:effort [disabled|low|adaptive|high|max] Wie gründlich V13 nachdenkt.
+:effort [disabled|low|adaptive|high|max|detail|gist] Wie gründlich V13 nachdenkt.
 :sampling [anti_echo|legacy]            Wortwahl-Verfahren (anti_echo verhindert Wiederholungen).
 :decode [server|same_causal_zero|same_causal]   Technischer Antwort-Weg (Forschung).
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC   Wie Teile untereinander Nachrichten schicken.

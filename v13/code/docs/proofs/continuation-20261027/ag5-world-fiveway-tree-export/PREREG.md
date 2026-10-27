@@ -1,0 +1,5 @@
+# Five-way durable review tree export (preregistered before CI)
+
+Source is the exact focused GREEN PR671 head `6ea818ba57a2a5360ccee2fc3b8aeeb367688449`. This package does **not** merge into main or change production. Replay the same pinned AG5+World 3-conflict resolver, Claude PR666, PR667 fetch fix, PR669 export fix, and disposable two-command guide addition. Run the same focused 128-test suite, compile and privacy scan. Then export the exact disposable merged tree SHA, parent SHA, all changed path blob SHAs/modes/content SHA256 and a tarball of changed file bytes; record failures before any interpretation.
+
+Use these objects only to reconstruct a **separate review integration commit**, with independent byte/tree verification and no force-push. A valid export is not a quality gate: full-suite 5 FAIL/73 ERROR baseline remains negative until independent broad audit. No model/network/native/Redmi or age/learning/approval changes. Exact next command is the new workflow `.github/workflows/ag5-world-fiveway-tree-export.yml` on this branch.

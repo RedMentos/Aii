@@ -98,6 +98,24 @@ FACTS = [
 ]
 
 
+FIRST = ('Mira', 'Oskar', 'Lena', 'Tomas', 'Ines', 'Jonas', 'Clara', 'Felix', 'Nora', 'Paul', 'Greta', 'Emil', 'Hanna', 'David',
+         'Sofie', 'Lukas', 'Alma', 'Bruno', 'Cora', 'Dario', 'Elif', 'Falk', 'Gesa', 'Hilko', 'Ilka', 'Janno', 'Kira', 'Lorenz')
+LAST = ('Kessel', 'Brandt', 'Duvall', 'Reiff', 'Halberg', 'Wiel', 'Moos', 'Aaron', 'Stade', 'Ettrich', 'Lund', 'Rosch', 'Vogt', 'Kolb',
+        'Brack', 'Fenn', 'Asmus', 'Bertram', 'Corell', 'Dornbach', 'Erlach', 'Fiebig', 'Gantz', 'Holm', 'Iserlo', 'Jaspers')
+SYL = ('tol', 'vane', 'vel', 'mora', 'kar', 'sith', 'ober', 'lune', 'pras', 'tow', 'esk', 'arra', 'dun', 'velt', 'sor', 'vik',
+       'quel', 'mir', 'bram', 'holt', 'ys', 'merin', 'tad', 'doria', 'lur', 'enzia', 'mes', 'trava', 'nim', 'brook', 'cor', 'valis')
+
+
+def fresh_facts(seed, n=16):
+    """WP-Z10a: a different fictional fact set per seed (Z10a prereg), so seeds are real replications."""
+    rng = random.Random(1000 + seed); names, cities, out = set(), set(), []
+    while len(out) < n:
+        name = rng.choice(FIRST) + ' ' + rng.choice(LAST); city = (rng.choice(SYL) + rng.choice(SYL)).capitalize()
+        if name in names or city in cities: continue
+        names.add(name); cities.add(city); out.append((name, city))
+    return out
+
+
 def fact_text(name, city):
     return f"{name} was born in the town of {city}."
 
@@ -299,7 +317,7 @@ def param_groups(body, window):
     return groups
 
 
-def part_update(body, cal, out, window, seeds, old_texts, steps, lr, target, min_forgetting):
+def part_update(body, cal, out, window, seeds, old_texts, steps, lr, target, min_forgetting, fresh=False):
     torch = body.torch
     groups = param_groups(body, window)
     for p in body.model.parameters():
@@ -344,8 +362,8 @@ def part_update(body, cal, out, window, seeds, old_texts, steps, lr, target, min
     results = []
     for seed in seeds:
         torch.manual_seed(seed)
-        facts = list(FACTS)
-        random.Random(seed).shuffle(facts)
+        facts = fresh_facts(seed) if fresh else list(FACTS)
+        if not fresh: random.Random(seed).shuffle(facts)
         train = [body.ids(fact_text(n, c))[0] for n, c in facts]
         for arm in ('shared', 'router', 'experts', 'all'):
             restore(groups)
@@ -398,7 +416,7 @@ def part_update(body, cal, out, window, seeds, old_texts, steps, lr, target, min
             per_layer = {str(i): {k: v for k, v in d.items() if k in (
                 'router_kl', 'topk_flip_rate', 'router_input_drift', 'router_input_norm_shift',
                 'shared_drift', 'residual_norm_shift', 'expert_hist_shift')} for i, d in rep.pop('per_layer').items()}
-            results.append({'seed': seed, 'arm': arm, 'window': list(window), 'steps': used, 'lr': lr,
+            results.append({'seed': seed, 'arm': arm, 'window': list(window), 'steps': used, 'lr': lr, 'fresh_facts': fresh,
                             'new_task_loss_start': start, 'new_task_loss_end': end,
                             'seconds': round(time.time() - t0, 1), 'monitor': rep, 'per_layer': per_layer})
             print(f'update seed={seed} arm={arm} steps={used} new {start:.3f}->{end:.3f} '
@@ -406,7 +424,7 @@ def part_update(body, cal, out, window, seeds, old_texts, steps, lr, target, min
                   f'rin={rep["router_input_drift"]:.4f} kl={rep["old_task_route_shift"]:.4f} '
                   f'{rep["verdict"]} {rep["restoration_recovery"]}', flush=True)
     restore(groups)
-    out['update'] = results
+    out.setdefault('update', []).extend(results)
 
 
 def main():
@@ -427,6 +445,8 @@ def main():
     ap.add_argument('--min-forgetting', type=float, default=0.02)
     ap.add_argument('--threads', type=int, default=4)
     ap.add_argument('--hash', action='store_true')
+    ap.add_argument('--fresh-facts', action='store_true', help='WP-Z10a: different fact set per seed')
+    ap.add_argument('--windows', default='', help='WP-Z10a: several update windows, e.g. 8,9;16,17 (overrides --window)')
     a = ap.parse_args()
     seeds = [int(s) for s in a.seeds.split(',')]
     texts = [('en', t) for t in OLD_EN] + [('de', t) for t in OLD_DE]
@@ -455,7 +475,8 @@ def main():
     if 'latent' in parts:
         part_latent(body, cal, out, a.layer, [float(x) for x in a.alphas.split(',')], seeds, texts)
     if 'update' in parts:
-        part_update(body, cal, out, [int(x) for x in a.window.split(',')], seeds, texts, a.steps, a.lr, a.target, a.min_forgetting)
+        for win in (a.windows.split(';') if a.windows else [a.window]):
+            part_update(body, cal, out, [int(x) for x in win.split(',')], seeds, texts, a.steps, a.lr, a.target, a.min_forgetting, a.fresh_facts)
     out['seconds'] = round(time.time() - t0, 1)
     import resource
     out['maxrss_mb'] = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1)
