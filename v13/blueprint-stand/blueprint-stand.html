@@ -1,0 +1,381 @@
+<title>V13 Blueprint-Stand</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: eine schmale Lesespalte fürs Handy; Bereiche als aufklappbare Akten, jede Zeile mit Ampel-Punkt links */
+:root{
+  --bg:#f3f5f7; --card:#ffffff; --fg:#1b2430; --muted:#5b6878; --line:#d9dfe6; --accent:#2f5d8a;
+  --ok:#2e8b57; --warn:#c98a0b; --bad:#c8443a; --diff:#6a4fb3; --later:#8a94a0;
+  --ok-bg:#e5f3ea; --warn-bg:#fbf1dc; --bad-bg:#f8e3e1; --diff-bg:#ece7f8; --later-bg:#eceef1;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --card:#1a2129; --fg:#e4e9ef; --muted:#9aa6b4; --line:#2c3642; --accent:#7fb0e0;
+  --ok:#5cc58a; --warn:#e8b54a; --bad:#f07a6e; --diff:#a993f0; --later:#8d97a3;
+  --ok-bg:#183326; --warn-bg:#382c12; --bad-bg:#3a1d1a; --diff-bg:#2a2340; --later-bg:#242b33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --card:#1a2129; --fg:#e4e9ef; --muted:#9aa6b4; --line:#2c3642; --accent:#7fb0e0;
+  --ok:#5cc58a; --warn:#e8b54a; --bad:#f07a6e; --diff:#a993f0; --later:#8d97a3;
+  --ok-bg:#183326; --warn-bg:#382c12; --bad-bg:#3a1d1a; --diff-bg:#2a2340; --later-bg:#242b33; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15.5px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lead{display:flex;flex-direction:column;gap:10px}
+.sum{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.counts{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:5px 11px;font:inherit;font-size:.85rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dot{width:11px;height:11px;border-radius:50%;flex:none;display:inline-block}
+.s-ok{background:var(--ok)} .s-warn{background:var(--warn)} .s-bad{background:var(--bad)} .s-diff{background:var(--diff)} .s-later{background:var(--later)}
+section{display:flex;flex-direction:column;gap:10px}
+details.area{background:var(--card);border:1px solid var(--line);border-radius:10px}
+details.area>summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+details.area>summary::-webkit-details-marker{display:none}
+.sumright{display:flex;gap:4px;flex:none}
+.sumright .dot{width:9px;height:9px}
+.area-body{border-top:1px solid var(--line);display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:14px 1fr;gap:4px 10px;padding:12px 16px;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item .dot{margin-top:6px}
+.item-main{min-width:0;display:flex;flex-direction:column;gap:4px}
+.item-name{font-weight:600}
+.item-text{color:var(--fg)}
+.meta{font-size:.82rem;color:var(--muted)}
+.meta b{font-weight:600;color:var(--fg)}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:1px 7px;border-radius:5px;margin-right:4px;vertical-align:1px}
+.t-pre{background:var(--warn-bg);color:var(--fg);border:1px dashed var(--warn)}
+.t-yes{background:var(--ok-bg);color:var(--fg)} .t-no{background:var(--later-bg);color:var(--fg)} .t-run{background:var(--diff-bg);color:var(--fg)}
+.t-gpt{background:var(--diff-bg);color:var(--fg)}
+.t-diff{background:var(--diff-bg);color:var(--fg)}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 14px;font-size:.88rem}
+.legend div{display:flex;gap:8px;align-items:flex-start}
+.legend .dot{margin-top:5px}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;display:flex;flex-direction:column;gap:3px}
+.step .n{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.step .t{font-weight:600;font-size:.92rem}
+.step .d{font-size:.8rem;color:var(--muted)}
+ol.plan{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:p}
+ol.plan li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px 12px 50px;position:relative;counter-increment:p;display:flex;flex-direction:column;gap:4px}
+ol.plan li::before{content:counter(p);position:absolute;left:14px;top:11px;font-family:var(--f-display);font-weight:800;font-size:1.25rem;color:var(--accent);font-variant-numeric:tabular-nums}
+.plain{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px}
+.plain .row{padding:10px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+.plain .row:first-child{border-top:none}
+.note{font-size:.85rem;color:var(--muted)}
+.callout{border-left:3px solid var(--warn);background:var(--warn-bg);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.92rem}
+code{font-family:var(--f-mono);font-size:.82em}
+footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+@media (prefers-reduced-motion:no-preference){details.area[open] .area-body{animation:fade .18s ease-out}@keyframes fade{from{opacity:.4}to{opacity:1}}}
+</style>
+
+<div class="wrap">
+  <header class="lead">
+    <span class="eyebrow">Stand 27.10.2026 · Blueprint v10.16.1 · ganz gelesen</span>
+    <h1>Wo steht V13 gegenüber dem Blueprint?</h1>
+    <p>Jeder Baustein aus dem Blueprint mit Ampel und einem Satz. Lila heißt: anders gelöst als im Blueprint, mit Grund. Grundlage sind der Code von Claude und GPT (alle Zweige bis heute früh), ROADMAP, ABDECKUNG und die Messbefunde.</p>
+  </header>
+
+  <div class="sum">
+    <h3>Kurz gesagt</h3>
+    <p>Das <b>Fundament</b> ist fertig: Speichern, Herkunft jeder Info, Rückgängig, Ressourcen, Bedienung, Sicherheits-Verbote. Die <b>Gehirn-Mitte</b> ist fast vollständig gebaut, aber ihr Nutzen ist meist noch nicht gezeigt.</p>
+    <p>Viele Fehlschläge haben denselben Grund: Das kleine Sprachorgan (C3) kann die Hinweise der Gehirnhälften kaum verwerten, und Lernen in den Modellgewichten läuft noch nicht im Alltag. Solche Fälle sind unten mit <span class="tag t-pre">Voraussetzung fehlt</span> markiert. Dort war nicht die Idee falsch, sondern es fehlte ein Teil, auf dem sie aufbaut.</p>
+    <p>Von den zehn Pflicht-Prüfungen aus §100 ist eine bestanden (in der Cloud). Das Handy-Testpaket kommt erst, wenn alle Teile drin sind.</p>
+  </div>
+
+  <section aria-labelledby="leg">
+    <h2 id="leg">Ampel</h2>
+    <div class="legend">
+      <div><span class="dot s-ok"></span><span><b>Grün:</b> läuft und tut nachweislich, was es soll.</span></div>
+      <div><span class="dot s-warn"></span><span><b>Gelb:</b> gebaut, aber Nutzen noch nicht oder nur teilweise gezeigt.</span></div>
+      <div><span class="dot s-bad"></span><span><b>Rot:</b> fehlt, oder Messung durchgefallen.</span></div>
+      <div><span class="dot s-diff"></span><span><b>Lila:</b> anders gelöst als im Blueprint, Grund steht dabei.</span></div>
+      <div><span class="dot s-later"></span><span><b>Grau:</b> laut Blueprint erst später, oder bewusst nicht.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="bs">
+    <h2 id="bs">Bausteine</h2>
+    <div class="counts" id="filters" role="group" aria-label="Nach Ampel filtern"></div>
+    <div id="areas" style="display:flex;flex-direction:column;gap:10px"></div>
+  </section>
+
+  <section aria-labelledby="steps">
+    <h2 id="steps">Bau-Stufen laut Blueprint (STEP 0 bis 11)</h2>
+    <p class="note">Der Blueprint baut in dieser Reihenfolge. Eine Stufe gilt erst als geschafft, wenn ihre Ausgangsprüfung besteht.</p>
+    <div class="steps" id="stepgrid"></div>
+  </section>
+
+  <section aria-labelledby="g100">
+    <h2 id="g100">Die zehn Pflicht-Prüfungen (§100)</h2>
+    <p class="note">Diese Prüfungen entscheiden, ob ein Gehirn-Baustein mehr bringt als einfache Ersatzlösungen.</p>
+    <div class="plain" id="gates"></div>
+  </section>
+
+  <section aria-labelledby="anders">
+    <h2 id="anders">Anders gelöst als im Blueprint</h2>
+    <div class="plain" id="diffs"></div>
+  </section>
+
+  <section aria-labelledby="spaeter">
+    <h2 id="spaeter">Bewusst später oder nicht</h2>
+    <div class="plain" id="later"></div>
+  </section>
+
+  <section aria-labelledby="forsch">
+    <h2 id="forsch">Was die Forschung heute anders oder besser kann</h2>
+    <p class="note">Abgleich vom 27.10. (Thread „Aktuelle Forschung gegen Blueprint prüfen“, Pakete WP-FS1 bis FS10). Einzelheiten und Quellen: <a href="https://claude.ai/artifact/EzsTnCEMozw2GznwEv6Tef" style="color:var(--accent)">Forschungs-Seite</a>.</p>
+    <div class="plain" id="research"></div>
+  </section>
+
+  <section aria-labelledby="regel">
+    <h2 id="regel">Regel vor jedem Test</h2>
+    <div class="plain">
+      <div class="row"><b>1. Hat der Baustein, was er laut Blueprint braucht?</b><span class="meta">Daten, Vorstufen und einen Teil, der sein Ergebnis verwertet. Fehlt etwas, wird erst gebaut, nicht gemessen.</span></div>
+      <div class="row"><b>2. Wie viel Gewinn kann überhaupt sichtbar werden?</b><span class="meta">Auch für den Baustein allein. Ist der mögliche Gewinn kleiner als das Rauschen, lohnt der Test nicht.</span></div>
+      <div class="row"><b>3. Erst dann testen</b><span class="meta">Bei jedem Baustein oben steht deshalb, was er braucht, ob es da ist, und ob ein Test jetzt sinnvoll ist.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="plan">
+    <h2 id="plan">Nächste Bauschritte, Voraussetzungen zuerst</h2>
+    <p class="note">So steht es auch in ROADMAP.md (Pakete WP-BP1 bis WP-BP12). Ein Umsetzungs-Thread arbeitet die Liste ab, GPT bekommt jeweils die Gegenprüfung.</p>
+    <ol class="plan" id="planlist"></ol>
+  </section>
+
+  <footer>
+    <span>Quellen: Blueprint <code>V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md</code>, <code>ROADMAP.md</code>, <code>ABDECKUNG.md</code>, <code>ZIELABGLEICH.md</code>, Messlauf <code>measure_suite.py</code> vom 27.10., Git-Zweige von Claude und GPT (zuletzt GPT Run 629 bis 648).</span>
+    <span>Diese Seite wird laufend nachgeführt.</span>
+  </footer>
+</div>
+
+<script>
+const S={ok:"Grün",warn:"Gelb",bad:"Rot",diff:"Lila",later:"Grau"};
+// pre: Fehlschlag, der an einer fehlenden Voraussetzung lag
+const AREAS=[
+ {id:"sinne",name:"Sinne: was reinkommt",items:[
+  ["ok","Text lesen und in Abschnitte teilen","Eingaben werden mit Herkunft gespeichert und an mehreren Signalen in sinnvolle Stücke geteilt.","A0, A1, A5"],
+  ["warn","Lehrer-Auge und Schüler-Auge","Ein eingefrorenes Lehrer-Modell gibt Ziele vor, ein kleiner Schüler lernt nach. Abschalten des Lehrers ist als Versuch da, Nutzen nicht gemessen.","A2, A3, §18"],
+  ["warn","Was ist am Eingang wichtig","Die Eingangs-Aufmerksamkeit läuft in jedem Durchgang, ihr Nutzen für die Antwort ist nicht gemessen.","A4, F1","Braucht zuerst: einen Verbraucher, der die Auswahl nutzt (Schritt 2)."],
+  ["diff","Sehen (Bilder)","Ein Bild-Labor gibt es schon, obwohl der Blueprint Sehen erst nach Stufe 7 will. Es bleibt außerhalb des Kerns, weil du es so gewünscht hast.","§18.9, STEP8"],
+  ["later","Hören und Sprechen","Kommt laut Blueprint erst nach der Stabilitäts-Stufe.","STEP9 bis 11"]]},
+ {id:"haelften",name:"Die zwei Gehirnhälften",items:[
+  ["warn","Zwei verschiedene Hälften: Detail und Überblick","Zwei verschiedene Modelle laufen (B1 Detail, B2 Überblick). Die Hauptprüfung, dass zwei verschiedene Hälften mehr bringen als eine, ist durchgefallen: ein Modell mit zwei Zuständen reicht bisher genauso.","B1, B2, §1.2, STEP2","pre","Die Hälften liefern brauchbare Hinweise, aber das Sprachorgan verwertet sie kaum. Echte verschiedene Experten-Hälften sind noch nicht verdrahtet."],
+  ["warn","Überblick in kleinen Häppchen","Die Überblicks-Hälfte gruppiert Text in Häppchen an echten Textgrenzen. Das findet Stellen besser, der Nutzen für die Antwort ist offen.","§1.2.2, G1B"],
+  ["ok","Detail und Überblick verknüpft","Jedes Überblicks-Häppchen zeigt auf die genauen Stellen im Detail.","§3.2A"],
+  ["ok","Balken zwischen den Hälften: einfache Kanäle","Die Hälften tauschen genaue Zitate, Steuer-Signale und Symbole aus. Das läuft (Stufe 6A).","B3, §1.4"],
+  ["bad","Balken mit „Gedanken-Vektoren“","Der direkte Austausch innerer Zustände hat auf einzelnen Aufgaben bestanden, auf frischen Durchläufen aber nicht wiederholt. Versuch 7 mit fünfmal mehr Daten ist angemeldet.","B3-H3 L1, STEP6B","pre","Die Feinabstimmung des Empfängers braucht ein echtes Paar abgegriffener Zustände B1 zu B2, das es noch nicht gibt."],
+  ["bad","Balken-Stufen L2 bis L4","Gesperrt, solange Stufe L1 nicht stabil besteht. Ein Vorab-Versuch L2 ist durchgefallen.","B3-H3, B3-H8"],
+  ["warn","Gemeinsamer Arbeitsbereich mit Plätzen","Der Arbeitsbereich mit begrenzten Plätzen läuft und der Überlauf in langen Sitzungen ist behoben. Gegen feste Plätze bringt die Auswahl noch keinen Gewinn.","B4, §8.2, §55","pre","Was im Arbeitsbereich steht, muss jemand verwerten. Das Sprachorgan tut das kaum."],
+  ["bad","Hälften mit vielen Experten (MoE)","Zwei offene Experten-Modelle laufen in der Cloud und sind vermessen, aber nicht ins System eingebaut.","§81, §91, Z10"],
+  ["warn","Lernen im Inneren der Hälften (Body-JEPA)","Der Lern-Baustein existiert im Trainer, wird aber im Alltag nicht genutzt.","§13, L3-B1/B2"]]},
+ {id:"jef",name:"Chef-Seite (JEF): denken, entscheiden, sprechen",items:[
+  ["ok","Chef-Zustand","Ziel, Aufgabe, offene Fragen und Angebote der Hälften werden versioniert mit Herkunft geführt.","C1, §3.4.1"],
+  ["ok","Schnelle Steuerung","Ein kleines Steuer-Modell (Needle) plus gelernter Routen-Kopf entscheiden, wohin eine Anfrage geht. Neue Hinweise von dir lernt der Kopf jetzt selbst (3 von 3 frischen Durchläufen, Standard an).","C2, §3.3.0"],
+  ["diff","Kleines Sprachorgan (C3)","C3 spricht, entscheidet aber nicht selbst. Regeln und Zahlen liest ein fester Leser (exakt richtige Antworten stiegen damit von 8 auf 36). GPT baut gerade echtes Nachtrainieren von C3 am Gerät.","C3, §58","pre","Grund: C3 mit 350 Mio. Parametern traf direkt 0 von 117 Entscheidungen."],
+  ["warn","Fokus-Schleife und Nachdenken in Runden","Prüfen, Nachfragen bei den Hälften und Halten bei stabiler Antwort laufen. Anpassbare Denktiefe ist durchgefallen, die Messung zur Denktiefe (§24.17) läuft gerade.","C4, §10, §24.17","pre","Mehr Runden helfen nur, wenn der Verbraucher die neuen Hinweise nutzt."],
+  ["warn","Nur die nötigen Hälften wecken","Gebaut. In der Messung war C3 allein besser als mit geweckten Hälften.","§4.3, §24.22","pre","Gleicher Engpass beim Verbraucher."],
+  ["warn","Angebote der Hälften","Die Hälften melden Widersprüche und Lücken richtig. C3 nutzt die Meldungen nicht, darum ist ohne Beobachter am besten.","§3.4.3, §24.25","pre","Gleicher Engpass beim Verbraucher."],
+  ["ok","Handlungs-Tor und eine Stelle nach außen","Nur eine Stelle gibt Antworten aus, mit fester Rangfolge: feste Regel vor genauer Kopie vor Modell.","C5, C6, §11"],
+  ["ok","Kopie eigener Handlungen (Corollary)","Das System merkt sich, was es selbst getan hat, und trennt eigene von fremden Ursachen. Die Prüfung mit echten Fällen hat bestanden.","§7.5, G-SELF-WORLD"],
+  ["warn","Chef-Seite lernt selbst","Externe Köpfe lernen im Schatten und brauchen Freigabe. Die Steuerung selbst lernt noch nicht als Ganzes.","§3.3.8, L3-C"]]},
+ {id:"quer",name:"Querschnitt: Aufmerksamkeit, Welt, Gedächtnis",items:[
+  ["warn","Aufmerksamkeit und Verstärkung","Läuft in jedem Durchgang, Nutzen nicht gemessen.","F1, §5.1"],
+  ["warn","Unterbrechen bei Wichtigem","Deine Eingabe kann eine laufende Antwort unterbrechen. Wann genau, ist noch fest eingestellt statt gelernt.","F2, §5.2"],
+  ["ok","Reflexe","Schutz bei Zeitüberschreitung, Speichermangel und Hitze.","§5.3"],
+  ["warn","Gewohnheiten ohne Nachdenken","Wiederholte Abläufe werden zu Fertigkeiten. In der Simulation 52 % weniger Aufwand, die echte Messung am Handy fehlt.","§6, §75, G-PROCEDURALIZATION"],
+  ["warn","Weltmodell","Ein Weltmodell sagt Folgen eigener Handlungen voraus. Als Ganzes im Kopf durchgefallen, aufgeteilt je Gegenstand bestanden (95 % gegen 14 % bei neuen Kombinationen). Im Alltag nur im Schatten.","§7.2, §92.2, Z12"],
+  ["ok","Selbstbild und Körpergefühl","Fähigkeiten, Grenzen, Gesundheit und Ressourcen sind im Selbstbild. Die Messung am Handy fehlt noch.","§7.3, §7.4"],
+  ["ok","Kontext-Verwaltung","Spart 44 bis 62 % Neuberechnung und stellt exakte Zahlen und Zitate wieder her.","§8.3, §8.4"],
+  ["ok","Schnelles Gedächtnis","Beim zweiten Versuch besser ohne Gewichts-Änderung, gemessen.","§9.1, STEP3"],
+  ["ok","Herkunft jeder Information","Jede Info trägt ihre Quelle, nichts wird still überschrieben.","§1.8, §9.1"],
+  ["warn","Gedächtnis in den Gewichten","Ein Speicher, der nur bei passendem Schlüssel anspringt, lernt 8 von 8 Fakten ohne Vergessen, läuft aber nur im Labor.","§9.1, §14"],
+  ["diff","Deine Regeln verstehen","Ein fester Regel-Leser mit Zweitleser statt freiem Verstehen durch ein Modell. Alle Runden mit freiem Lesen waren unsicher, der Zweitleser halbiert die Fehler.","§20.1"]]},
+ {id:"lernen",name:"Lernen, Schlaf und Reifen",items:[
+  ["ok","Lernen aus Korrekturen","Kleine Köpfe lernen aus deinen Korrekturen und neuen Hinweisen. Ein Nachfolger wird nur übernommen, wenn er den alten Kopf auf denselben Prüf-Fragen schlägt.","§12, §14, §17A"],
+  ["bad","Botenstoff-artige Lernsignale","Getrennte Signale je Lernart schlagen ein einfaches Pfad-Signal, aber nicht „nur Mensch“ oder „nur Ergebnis“.","§12.3, G-MODULATOR","pre","Der Lerner darunter schwankt selbst mit sauberen Daten stark. Es fehlt echtes Lernen in den Modellen."],
+  ["warn","Lernen in den Modellgewichten","In der Cloud mit Probelauf, Wiederaufnahme und Rücksetzen nachgewiesen. Am Handy offen, und noch zu viel Vergessen. GPT arbeitet an C3-Nachtraining am Gerät.","§14.5, §22.4, §89"],
+  ["warn","Schlaf und Wiederholen","Wiederholen im Leerlauf, Prüfen von Vermutungen und Ausgleich laufen. Im Schlaf werden aber noch keine Gewichte gefestigt.","§15, §94"],
+  ["bad","Träumen","Träume bleiben reine Vermutungen und bringen in der Messung keinen Gewinn.","L8.2, §43.9, Z9","pre","Ohne Festigen im Schlaf kann ein Traum nichts dauerhaft verbessern."],
+  ["ok","Gegen Vergessen","Anker-Sätze, Drift-Prüfung und Ausgleich laufen. Gemessen: Vergessen entsteht vor allem vor dem Experten-Verteiler.","§16, §69"],
+  ["warn","Reife-Stufen (Age)","Die Stufen und die Rechte je Fähigkeit sind fertig. Die Prüfung „Wiederöffnen stabilisiert“ ist durchgefallen.","§17, §95, G-AGE-REOPEN","pre","Wiederöffnen soll Lernen in Gewichten steuern, das im Alltag noch nicht läuft."],
+  ["ok","Lehrer von außen","Ein stärkerer Lehrer wird als Referenz angehört, nie als Wahrheit. Stufe 4 bestanden.","STEP4, §18"]]},
+ {id:"handy",name:"Handy und Laufzeit",items:[
+  ["ok","Speichern, Generationen, Rückgängig","Jeder Stand ist eine Generation und kann ohne Neustart zurückgesetzt werden.","IH-H17 bis H20"],
+  ["warn","Ressourcen-Modi","Grün/Gelb/Orange/Rot je nach Speicher und Hitze ist eingebaut. Die Schwellen müssen am Redmi gemessen werden.","§97.2"],
+  ["ok","Braucht V13 8 GB?","Nein, nach Rechnung und Cloud-Messung reichen die 6 GB. Am Gerät bestätigen.","§73, WP-RAM"],
+  ["bad","Langlauf über Wochen","Nur 7 simulierte Tage in der Cloud. Der echte Langlauf am Handy fehlt.","STEP7, G13"],
+  ["ok","Bedienung","Status-Befehle, Doktor-Bericht und Stop-Knöpfe am Homescreen.","IH-H15, §21"],
+  ["diff","Termux statt eigener App","Bleibt in Termux, weil eine App oder Web-Oberfläche mehr Speicher kostet und nichts Nötiges bringt.","Entscheidung 22.10."]]},
+ {id:"sicher",name:"Sicherheit und dein Ziel",items:[
+  ["ok","Nie Menschen schaden: feste Verbote","Verbote gelten unabhängig vom Modell und lassen sich nicht wegtrainieren.","§6.4, IH-H29"],
+  ["ok","Werkzeuge nur mit Freigabe","Schreibende Werkzeuge laufen erst als Probe, brauchen deine Freigabe und lassen sich zurücknehmen.","§6.4.1, IH-H29"],
+  ["warn","Module nur mit bewusster Erlaubnis holen","Eine abgeschottete Probierumgebung gibt es. Das Holen fremder Module mit Erlaubnis-Prüfung ist noch nicht gebaut.","dein Ziel, IH-H29"],
+  ["ok","Ehrlichkeit","Nichts wird als „lernt“ verkauft, ohne Messung mit Gegenprobe.","IH-H0, IH-H33"]]}
+];
+const STEPS=[
+ ["0","Grundgerüst","ok","fertig"],["1","Chef-Seite allein","ok","fertig, C3 bleibt schwach"],
+ ["2","Zwei Hälften beobachten","bad","durchgefallen: Voraussetzung fehlt"],["3","Schnelles Gedächtnis","ok","fertig"],
+ ["4","Lehrer von außen","ok","bestanden 27.10."],["5","Lernen im Schatten","warn","Handy-Nachweis fehlt"],
+ ["6A","Balken: einfache Kanäle","ok","fertig"],["6B","Balken: Gedanken-Vektoren","bad","nicht wiederholbar"],
+ ["6C","Lernen in den Hälften","warn","Experten-Hälften fehlen"],["7","Wochen am Handy","bad","offen, Handy-Paket"],
+ ["8 bis 11","Sehen, Hören, höhere Reife","later","erst nach 7"]];
+const GATES=[
+ ["bad","Zwei Hälften ergänzen sich","Durchgefallen: ein Modell mit zwei Zuständen reicht genauso.",true],
+ ["bad","Gedanken-Vektoren schlagen einfache Kanäle","Nur auf einzelnen Aufgaben, nicht wiederholt.",true],
+ ["warn","Begrenzter Fokus schlägt „alles in den Kontext“","Teilweise; gegen feste Plätze kein Gewinn.",true],
+ ["warn","Gewohnheiten sparen Zeit und Strom","In der Simulation ja, am Handy offen.",false],
+ ["ok","Eigene und fremde Ursache unterscheiden","Bestanden mit echten Fällen (Cloud).",false],
+ ["warn","Kein Lern-Commit ohne Trainings-Nachweis","Cloud bestanden, Handy offen.",false],
+ ["bad","Wiederholen und Festigen bringt etwas","Traum ohne Gewinn.",true],
+ ["bad","Getrennte Lernsignale schlagen einfache","Durchgefallen gegen „nur Mensch“.",true],
+ ["bad","Reife-Wiederöffnen stabilisiert","Durchgefallen.",true],
+ ["bad","Langlauf am Handy","Noch nicht gemessen, kommt mit dem Handy-Paket.",false]];
+const DIFFS=[
+ ["C3 entscheidet nicht selbst","Ein fester Leser und Werkzeuge treffen Regel- und Zahlen-Entscheidungen. C3 lag bei direkten Entscheidungen bei 0 von 117."],
+ ["Deine Regeln liest ein fester Leser","Plus Zweitleser, der nur vorsichtiger machen darf. Alle Versuche mit freiem Modell-Lesen waren unsicher."],
+ ["Ein Körper mit zwei Zuständen statt zwei Modellen","Bisher bringt das genauso viel. Der Blueprint-Weg mit zwei verschiedenen Experten-Hälften bleibt offen und wird mit Schritt 3 neu geprüft."],
+ ["Weltmodell je Gegenstand statt als Ganzes","Das Ganze ist durchgefallen, die Aufteilung je Gegenstand bestand."],
+ ["Neue Hinweise: Vergleich statt fester Schwelle","Ein neuer Kopf muss den alten auf denselben Fragen schlagen. Feste Schwellen waren bei wenigen Korrekturen unsicher."],
+ ["Viele Werkzeug-Pakete (Rechnen, Werkzeugwahl)","Kein Blueprint-Baustein, aber praktisch nötig. Zählt nicht als Blueprint-Abdeckung."],
+ ["Zusätze aus Harness² und DeepSeek-Kritik","Erfahrungs-Bibliothek, abgeschottete Probierumgebung, Gegenprüfung von Antwort und Werkzeug. Nicht im Blueprint, ergänzend."],
+ ["Bild-Labor vor Stufe 8","Auf deinen Wunsch, außerhalb des Kerns."],
+ ["Spekulatives Dekodieren aus","Gemessen langsamer auf diesen Modellen und 330 MB mehr Speicher."]];
+const LATER=[
+ ["Hören, Sprechen, weitere Ausgaben, höhere Reife","Der Blueprint will das erst nach dem Wochen-Langlauf (Stufe 7)."],
+ ["Cache-Tricks, die die Modelle nicht haben","Drei der fünf Blueprint-Varianten setzen eine andere Modellbauart voraus. Gemessen und als nicht vorhanden markiert."],
+ ["Speicherplan je Kopf und Schicht","Die Laufzeit (llama.cpp) kann das nicht."],
+ ["MobileMoE-S-QAT","Gesperrte Lizenz, kein Handy-Format. Ersetzt durch offene Experten-Modelle."]];
+const RESEARCH=[
+ ["Weltmodell, das auf Entscheidungen zielt (FS1, FS10)","Neue Arbeiten trainieren das Weltmodell darauf, welche mögliche Zukunft real besser ausging, statt nur Vorhersagefehler klein zu machen. Dazu: überholte Annahmen im Arbeitsbereich aktiv als veraltet markieren. Baut auf unserem Weltmodell je Gegenstand auf."],
+ ["Lernen ohne Vergessen (FS2, FS7)","Änderungen nur in einem kleinen Unterraum der Gewichte vergessen weniger. Abläufe als Schema (Schritte, Abhängigkeiten, Prüfung) lernen statt als Wortlaut. Beides geht in Schritt 2 als Variante mit Gegenprobe."],
+ ["Schlaf mit Prüfliste und Rekonsolidierung (FS6, FS8)","Vor jedem Festigen: Privates herausfiltern, Widersprüche und Drift prüfen. Abruf darf einen Eintrag nachbessern. Welcher Gedächtnis-Standard gilt, erst nach einem Test über simulierte Wochen."],
+ ["Selbsteinschätzung messbar machen (FS3, FS4)","Ein Maß, wie gut das System weiß, wann es richtig liegt (meta-I), statt nur Trefferquote. Dazu ein prüfbarer Test: es sagt vorher, ob eine geänderte Frage seine Antwort ändert."],
+ ["Sicherheit gegen Umformulieren (FS5)","Verbote mit gezielt umformulierten Prüfsätzen testen. Qwen3Guard-Stream (0,6 Mrd., offen) als zweiter Wächter, Speicher und Deutsch am Handy messen."],
+ ["Welche Hälfte fragen (FS9)","Kleine Sonden auf den inneren Zuständen des kleinen Modells sagen voraus, ob B1, B2 oder der Lehrer hilft. Feinheiten am Verteiler nicht weiter ausbauen."],
+ ["Handy","Es gibt keine neuen Modelle um 1 Mrd. Parameter, die besser passen. Dauer-Training am Handy halbiert den Durchsatz durch Hitze, darum Lernen in kurzen Fenstern planen."]];
+const PLAN=[
+ ["WP-BP1 Verbraucher für die Hälften","C3 lernt, Hinweise der Hälften zu verwerten: Nachtraining mit Angeboten und Arbeitsbereich im Text, Gegenprobe ohne. Zusammen mit GPTs C3-Nachtraining.","Braucht: nichts Neues. Macht möglich: 4, 6, und die Messungen mit „Voraussetzung fehlt“."],
+ ["WP-BP2 Lernen in den Gewichten im Alltag","Lernen mit wenig Vergessen hinter dem Freigabe-Tor, in der Cloud und als Handy-Bauteil. Varianten: wenige Speicher-Zeilen, LoRA je Rolle, Unterraum-Updates (FS2), Ablauf-Schemata (FS7).","Braucht: nichts Neues. Macht möglich: 7, 8, 9."],
+ ["WP-BP3 Experten-Hälften einbauen (Z10)","Die zwei offenen Experten-Modelle als B1 und B2, Vergessen vor dem Verteiler messen, Experten-Änderungen bei eingefrorenem Verteiler. Welche Hälfte gefragt wird, sagen kleine Sonden voraus (FS9).","Braucht: 2. Macht möglich: 4, 5."],
+ ["WP-BP4 Zwei Hälften neu prüfen","Stufe-2-Prüfung mit echtem Verbraucher und verschiedenen Experten-Hälften gegen „ein Körper, zwei Zustände“.","Braucht: 1, 3."],
+ ["WP-BP5 Balken: Gedanken-Vektoren","Versuch 7 auswerten. Danach Empfänger-Abstimmung mit echtem Paar B1 zu B2. Bleibt es durchgefallen, als Abweichung festhalten.","Braucht: 3."],
+ ["WP-BP6 Gehirn-Mitte im Zusammenspiel","Denktiefe, Wecken, Angebote, Balken-Brücke und Fähigkeits-Werdegang erneut messen, jetzt mit Verbraucher und allen Teilen an. Neues Pflichtmaß Selbsteinschätzung (FS3) und Selbstvorhersage-Test (FS4).","Braucht: 1."],
+ ["WP-BP7 Schlaf festigt, Traum mit Kontrolle","Festigen von Gewichten im Schlaf mit Prüfliste davor (FS6) und Rekonsolidierung beim Abruf (FS8), dann Traum-Messung mit der fehlenden Kontrolle „nur Strategie“ und Gedächtnis-Test über simulierte Wochen.","Braucht: 2."],
+ ["WP-BP8 Reife-Wiederöffnen neu","Wiederöffnen-Prüfung mit echtem Gewichts-Lernen.","Braucht: 2."],
+ ["WP-BP9 Lernsignale mit echten Modellen","Getrennte Lernsignale an echten Updates statt am schwankenden Hilfs-Lerner.","Braucht: 2."],
+ ["WP-BP10 Weltmodell in den Alltag","Weltmodell je Gegenstand im Werkzeug-Pfad (erst Schatten), mit Konfidenz-Kontrolle von GPT. Danach auf Entscheidungen trainieren (FS1) und überholte Annahmen markieren (FS10).","Braucht: nichts Neues."],
+ ["WP-BP11 Module nur mit Erlaubnis","Fremde Module holen: Herkunft prüfen, in der Probierumgebung testen, nur nach deiner bewussten Freigabe aktiv, jederzeit zurück. Verbote gegen Umformulieren härten, Zweitwächter prüfen (FS5).","Braucht: nichts Neues."],
+ ["WP-BP12 Handy-Paket komplett","Wenn 1 bis 11 drin sind: ein Paket, ein großer Testlauf je Bauteil (Training, Langlauf, Ressourcen, Gewohnheiten). Lernen in kurzen Fenstern wegen Hitze. Schließt Stufen 5 und 7.","Braucht: alle davor."]];
+
+
+// Vor jedem Test: braucht / ist es da / Test jetzt sinnvoll (ja, nein, läuft, bestanden) / welcher Gewinn überhaupt sichtbar sein kann
+const CHECK={
+"Text lesen und in Abschnitte teilen":["Eingaben mit Herkunft","da","bestanden","Grundfunktion, kein Vergleich nötig."],
+"Lehrer-Auge und Schüler-Auge":["eingefrorener Lehrer, Schüler, Aufgaben, bei denen der Schüler den Lehrer ersetzen soll","Lehrer und Schüler da, Ersatz-Aufgaben fehlen","nein","Allein nur ein kleiner Gewinn (weniger Rechenzeit). Erst sinnvoll, wenn der Schüler im Alltag lernt (Schritt 2)."],
+"Was ist am Eingang wichtig":["Verbraucher, der die ausgewählten Stellen nutzt","fehlt (C3 verwertet kaum)","nein","Allein kaum sichtbar; Gewinn erst mit Schritt 1."],
+"Sehen (Bilder)":["Kamera-Eingang, Stufe 7 geschafft","nein","nein","Laut Blueprint erst nach Stufe 7."],
+"Hören und Sprechen":["Stufe 7 geschafft","nein","nein","Später."],
+"Zwei verschiedene Hälften: Detail und Überblick":["zwei wirklich verschiedene Hälften, ein Verbraucher, der beide nutzt","Verbraucher fehlt, Experten-Hälften fehlen","nein","Der Test lief zu früh. Neu erst nach Schritt 1 und 3."],
+"Überblick in kleinen Häppchen":["Verbraucher für die Häppchen","fehlt","nein","Fundstellen-Gewinn ist gezeigt; Antwort-Gewinn erst nach Schritt 1."],
+"Detail und Überblick verknüpft":["beide Hälften","da","bestanden","Strukturfunktion."],
+"Balken zwischen den Hälften: einfache Kanäle":["beide Hälften","da","bestanden","Kanäle laufen; Nutzen hängt am Verbraucher."],
+"Balken mit „Gedanken-Vektoren“":["Empfänger-Abstimmung aus echtem Zustands-Paar B1 zu B2, genug Trainingsdaten","Paar fehlt, Daten jetzt 3000 Zeilen","läuft","Versuch 7 prüft nur die Datenmenge. Voller Test erst nach Schritt 3."],
+"Balken-Stufen L2 bis L4":["Stufe L1 stabil bestanden","nein","nein","Gesperrt bis L1 steht."],
+"Gemeinsamer Arbeitsbereich mit Plätzen":["Verbraucher, Aufgaben mit echtem Platzmangel","Aufgaben da, Verbraucher fehlt","nein","Mehr Messen bringt jetzt nichts; erst nach Schritt 1."],
+"Hälften mit vielen Experten (MoE)":["offene Experten-Modelle, Einbau, Lernen in Gewichten","Modelle da, Einbau fehlt","nein","Erst bauen (Schritt 3)."],
+"Lernen im Inneren der Hälften (Body-JEPA)":["Lernen in den Gewichten im Alltag","fehlt","nein","Erst Schritt 2."],
+"Chef-Zustand":["—","da","bestanden","Grundfunktion."],
+"Schnelle Steuerung":["Korrekturen und Hinweise von dir","da","bestanden","3 von 3 frischen Durchläufen."],
+"Kleines Sprachorgan (C3)":["Nachtraining am Gerät","GPT baut es","ja","Großer Gewinn möglich, weil hier der Engpass sitzt."],
+"Fokus-Schleife und Nachdenken in Runden":["Verbraucher, der neue Hinweise nutzt","fehlt","läuft","Läuft (§24.17), Ergebnis vermutlich begrenzt; nach Schritt 1 wiederholen."],
+"Nur die nötigen Hälften wecken":["Verbraucher; Hälften, die etwas Eigenes beitragen","fehlt","nein","Nach Schritt 1 und 3."],
+"Angebote der Hälften":["Verbraucher","fehlt","nein","Erkennen ist gezeigt; Nutzen erst nach Schritt 1."],
+"Handlungs-Tor und eine Stelle nach außen":["—","da","bestanden","Grundfunktion."],
+"Kopie eigener Handlungen (Corollary)":["echte Handlungsfolgen","da","bestanden","Cloud bestanden."],
+"Chef-Seite lernt selbst":["Lernen in den Gewichten, Freigabe-Tor","Tor da, Lernen fehlt","nein","Nach Schritt 2."],
+"Aufmerksamkeit und Verstärkung":["Verbraucher","fehlt","nein","Allein kaum sichtbar."],
+"Unterbrechen bei Wichtigem":["Aufnahmen echter Unterbrechungen","wenige","nein","Erst Daten sammeln, im Handy-Paket."],
+"Reflexe":["—","da","bestanden","Schutzfunktion."],
+"Gewohnheiten ohne Nachdenken":["Handy für Zeit und Strom","nein","nein","Gewinn nur am Gerät messbar; im Handy-Paket."],
+"Weltmodell":["eigene Handlungsfolgen, Konfidenz-Kontrolle","da","ja","Im Schatten mitlaufen lassen (Schritt 10), Gewinn bei Werkzeug-Vorhersage zu erwarten."],
+"Selbstbild und Körpergefühl":["Handy-Messwerte","nein","nein","Im Handy-Paket."],
+"Kontext-Verwaltung":["—","da","bestanden","44 bis 62 % gespart."],
+"Schnelles Gedächtnis":["—","da","bestanden","Gemessen."],
+"Herkunft jeder Information":["—","da","bestanden","Grundfunktion."],
+"Gedächtnis in den Gewichten":["Einbau in den Alltag","fehlt","nein","Laborgewinn gezeigt; erst Schritt 2 bauen."],
+"Deine Regeln verstehen":["frische Regel-Runden","da","ja","Zweitleser im Alltag weiter prüfen."],
+"Lernen aus Korrekturen":["deine Korrekturen","da","bestanden","3 von 3."],
+"Botenstoff-artige Lernsignale":["echte Gewichts-Updates, stabiler Lerner","fehlt","nein","Der Test lief zu früh; nach Schritt 2."],
+"Lernen in den Modellgewichten":["Trainer am Handy, Vergessens-Schutz","Cloud da, Handy fehlt","ja","Das ist der Kern-Baustein (Schritt 2)."],
+"Schlaf und Wiederholen":["Festigen in Gewichten","fehlt","nein","Nach Schritt 2."],
+"Träumen":["Festigen im Schlaf","fehlt","nein","Der Test lief zu früh; nach Schritt 7 neu."],
+"Gegen Vergessen":["—","da","bestanden","Gemessen und wiederholt."],
+"Reife-Stufen (Age)":["Lernen in Gewichten, das die Reife steuert","fehlt","nein","Der Test lief zu früh; nach Schritt 2."],
+"Lehrer von außen":["—","da","bestanden","Stufe 4."],
+"Speichern, Generationen, Rückgängig":["—","da","bestanden","Grundfunktion."],
+"Ressourcen-Modi":["Redmi-Messwerte","nein","nein","Im Handy-Paket."],
+"Braucht V13 8 GB?":["Redmi","nein","nein","Rechnung reicht vorerst; Bestätigung im Handy-Paket."],
+"Langlauf über Wochen":["alle Teile drin, Handy","nein","nein","Letzter Schritt (12)."],
+"Bedienung":["—","da","bestanden",""],
+"Termux statt eigener App":["—","da","bestanden","Entschieden."],
+"Nie Menschen schaden: feste Verbote":["—","da","bestanden","Unabhängig vom Modell."],
+"Werkzeuge nur mit Freigabe":["—","da","bestanden",""],
+"Module nur mit bewusster Erlaubnis holen":["Herkunfts-Prüfung, Probierumgebung, Freigabe","Probierumgebung da","nein","Erst bauen (Schritt 11)."],
+"Ehrlichkeit":["—","da","bestanden",""]};
+const TL={ja:"Test jetzt sinnvoll",nein:"Test jetzt nicht sinnvoll",läuft:"Test läuft",bestanden:"schon bestanden"};
+
+const counts={ok:0,warn:0,bad:0,diff:0,later:0};
+AREAS.forEach(a=>a.items.forEach(i=>counts[i[0]]++));
+let filter="all";
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+function renderFilters(){
+  const f=document.getElementById("filters");f.innerHTML="";
+  const total=Object.values(counts).reduce((a,b)=>a+b,0);
+  const mk=(k,label,n)=>{const b=el("button","chip");b.type="button";b.id="f-"+k;b.setAttribute("aria-pressed",filter===k);b.innerHTML=(k!=="all"?'<span class="dot s-'+k+'"></span>':"")+label+" "+n;b.onclick=()=>{filter=k;try{localStorage.setItem("bpfilter",k)}catch(e){}renderFilters();renderAreas()};f.appendChild(b)};
+  mk("all","Alle",total);["ok","warn","bad","diff","later"].forEach(k=>mk(k,S[k],counts[k]));
+  const p=el("button","chip");p.type="button";p.id="f-pre";p.setAttribute("aria-pressed",filter==="pre");p.innerHTML='<span class="tag t-pre" style="margin:0">Voraussetzung fehlt</span>';p.onclick=()=>{filter="pre";renderFilters();renderAreas()};f.appendChild(p);
+}
+function renderAreas(){
+  const box=document.getElementById("areas");box.innerHTML="";
+  AREAS.forEach(a=>{
+    const items=a.items.filter(i=>filter==="all"||(filter==="pre"?i[4]==="pre":i[0]===filter));
+    if(!items.length)return;
+    const d=el("details","area");d.open=true;
+    const s=el("summary");s.appendChild(el("h3",null,a.name));
+    const r=el("span","sumright");a.items.forEach(i=>r.appendChild(el("span","dot s-"+i[0])));s.appendChild(r);d.appendChild(s);
+    const body=el("div","area-body");
+    items.forEach(i=>{
+      const it=el("div","item");it.appendChild(el("span","dot s-"+i[0]));
+      const m=el("div","item-main");m.appendChild(el("div","item-name",i[1]));m.appendChild(el("p","item-text",i[2]));
+      let meta='<b>'+S[i[0]]+'</b> · Blueprint '+i[3];
+      m.appendChild(el("div","meta",meta));
+      const c=CHECK[i[1]];
+      if(c&&c[2]!=="bestanden")m.appendChild(el("div","meta check",'<span class="tag t-'+(c[2]==="ja"?"yes":c[2]==="läuft"?"run":"no")+'">'+TL[c[2]]+'</span>Braucht: '+c[0]+'. Da: '+c[1]+'. '+c[3]));
+      if(i[4]==="pre")m.appendChild(el("div","meta",'<span class="tag t-pre">Voraussetzung fehlt</span>'+i[5]));
+      else if(i[4])m.appendChild(el("div","meta",i[4]));
+      it.appendChild(m);body.appendChild(it)});
+    d.appendChild(body);box.appendChild(d)});
+}
+function renderRest(){
+  const g=document.getElementById("stepgrid");
+  STEPS.forEach(s=>{const c=el("div","step");c.innerHTML='<span class="n"><span class="dot s-'+s[2]+'"></span>STEP '+s[0]+'</span><span class="t">'+s[1]+'</span><span class="d">'+s[3]+'</span>';g.appendChild(c)});
+  const gt=document.getElementById("gates");
+  GATES.forEach(x=>{const r=el("div","row");r.innerHTML='<div style="display:flex;gap:8px;align-items:center"><span class="dot s-'+x[0]+'"></span><b>'+x[1]+'</b></div><span class="meta">'+x[2]+(x[3]?' <span class="tag t-pre">Voraussetzung fehlt</span>':'')+'</span>';gt.appendChild(r)});
+  const df=document.getElementById("diffs");DIFFS.forEach(x=>{const r=el("div","row");r.innerHTML='<div style="display:flex;gap:8px;align-items:center"><span class="dot s-diff"></span><b>'+x[0]+'</b></div><span class="meta">'+x[1]+'</span>';df.appendChild(r)});
+  const lt=document.getElementById("later");LATER.forEach(x=>{const r=el("div","row");r.innerHTML='<div style="display:flex;gap:8px;align-items:center"><span class="dot s-later"></span><b>'+x[0]+'</b></div><span class="meta">'+x[1]+'</span>';lt.appendChild(r)});
+  const rs=document.getElementById("research");RESEARCH.forEach(x=>{const r=el("div","row");r.innerHTML='<b>'+x[0]+'</b><span class="meta">'+x[1]+'</span>';rs.appendChild(r)});
+  const pl=document.getElementById("planlist");PLAN.forEach(x=>{const li=el("li");li.innerHTML='<b>'+x[0]+'</b><span>'+x[1]+'</span><span class="meta">'+x[2]+'</span>';pl.appendChild(li)});
+}
+try{const v=localStorage.getItem("bpfilter");if(v)filter=v}catch(e){}
+renderFilters();renderAreas();renderRest();
+</script>
