@@ -1,0 +1,86 @@
+name: V13 LP3 pinned tokenizer metadata-only shape probe
+on:
+  push:
+    branches: [codex/automation11-lp3-tokenizer-shape-probe-20261027]
+    paths:
+      - '.github/workflows/lp3-tokenizer-shape-probe.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-tokenizer-shape-metadata
+  cancel-in-progress: false
+jobs:
+  tokenizer-shape:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Exact pinned tokenizer-only metadata probe
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/lp3-tokenizer-venv"
+          py="$RUNNER_TEMP/lp3-tokenizer-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'huggingface_hub==2.3.0'
+          export TOK_DIR="$RUNNER_TEMP/lp3-tokenizer-only"
+          "$py" - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['TOK_DIR'],
+              allow_patterns=['*.json','*.jinja','LICENSE'])
+          PY
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          "$py" - <<'PY' > "$RUNNER_TEMP/LP3_TOKENIZER_SHAPE.json"
+          import json,os
+          from transformers import AutoTokenizer
+          tok=AutoTokenizer.from_pretrained(os.environ['TOK_DIR'],local_files_only=True)
+          prompts=('What is the name of my cat?','What is the name of my dog?')
+          records=[]
+          def normalize(x):
+              if hasattr(x,'input_ids'):x=x.input_ids
+              if hasattr(x,'tolist'):x=x.tolist()
+              if isinstance(x,dict):x=x['input_ids']
+              if isinstance(x,list) and len(x)==1 and isinstance(x[0],list):x=x[0]
+              if not isinstance(x,list) or not x or not all(isinstance(t,int) for t in x):
+                  raise ValueError('Unsupported tokenizer return contract')
+              return x
+          for prompt in prompts:
+              raw=tok.apply_chat_template([{'role':'user','content':prompt}],
+                                          add_generation_prompt=True,tokenize=True)
+              ids=normalize(raw)
+              records.append({'raw_type':type(raw).__name__,
+                              'has_input_ids':hasattr(raw,'input_ids'),
+                              'raw_length':len(raw) if hasattr(raw,'__len__') else None,
+                              'normalized_length':len(ids),
+                              'nested_type':type(raw[0]).__name__ if isinstance(raw,list) and raw else None,
+                              'first_id_type':type(ids[0]).__name__})
+          answers=[tok.encode(x,add_special_tokens=False) for x in ('Brombeer','Tromso')]
+          assert all(x and all(type(t) is int for t in x) for x in answers)
+          print(json.dumps({'schema':'lp3-tokenizer-shape-v1','evidence_class':'METADATA_ONLY',
+                            'model_id':'LiquidAI/LFM2.5-350M',
+                            'revision':'120bf032c36dd1273de754669da040dba7ad4982',
+                            'records':records,'answer_token_lengths':[len(x) for x in answers],
+                            'equal_prompt_lengths':records[0]['normalized_length']==records[1]['normalized_length'],
+                            'model_loaded':False,'training_performed':False,
+                            'age_authority':0,'jepa_weight':0,'utility_proven':False},
+                            sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/LP3_TOKENIZER_SHAPE.json"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5bf412533ecaf8115a84f90beed03ebe5c514206 --head HEAD
+          git diff --check 5bf412533ecaf8115a84f90beed03ebe5c514206 HEAD
+          echo 'TOKENIZER_METADATA_ONLY_NO_NATIVE_MODEL_OR_AGE_PROMOTION'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lp3-tokenizer-shape-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/LP3_TOKENIZER_SHAPE.json
+          if-no-files-found: warn
+          retention-days: 30
