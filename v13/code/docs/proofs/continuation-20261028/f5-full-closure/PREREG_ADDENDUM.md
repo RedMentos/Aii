@@ -1,0 +1,5 @@
+# Prereg addendum: parent PR801 cross-organ test correction (no scope change)
+
+UTC 2026-10-28. Original prereg `cf7eb7251cb516c40751cb9e658bd29b1375e860` remains unchanged and predates any production source edit. After prereg, parent PR801 had two preserved failed *new test fixture* attempts: Actions 40604363502 (2 failures: invalid route-kind warm assumption), and 40604682367 (1 failure: older warm activation assumption). Both had original Run271/274/275 and other focused tests PASS, full SKIPPED_RED, privacy CLEAN, and private byte-exact raw backups. The corrected parent test blob is now `026411036e19786402869e562a1f5af5fd8c05b5`, parent exact commit `67dcf9abe58c8360c94dd183e9d9deb3392729ad`, Actions 40604909600 pending.
+
+This addendum changes **no production scope**: cumulative branch must include the corrected fact/world-relation test from the exact GREEN PR801 parent, never the earlier failing fixture blob `24f018548c50344dc4ebaba361802b89d2a13517`. Integrate only after parent CI GREEN; retain all raw RED and negative gates. No native/Redmi, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 incomplete.
