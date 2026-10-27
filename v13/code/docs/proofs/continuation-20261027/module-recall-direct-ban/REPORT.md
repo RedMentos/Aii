@@ -11,3 +11,7 @@
 **Residual:** no guarantee of strict cross-table linearizability if a ban is added after the final gate check; direct readers cannot roll back information already emitted. No semantic gain, module training, real fetch, native or Redmi proof. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, complete V13 false.
 
 **Next command:** `cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate`. Independently review source, compare broad suite after parent PR #675 differential, and run source-only phone package on combined head before production consideration. Original raw ZIPs: private `/V13-Checkpoints/2026-10-27/Module-Lifecycle-CAS/`.
+
+## Combined current source-only phone proof (after direct reader fix)
+
+Actions `40466379868` at exact source `fa70ba4722c5b2ddfd2303680472da9c885a5b2a`: extracted **51/51 module direct-ban/lifecycle tests PASS** plus **94/94 portable selftests PASS**. Source-only phone ZIP SHA256 `44ec326a0482a0010f8a41bbfcdd89caf368624528eb3a197fd9567050ce1d07`, **1,418/1,418 member hashes and CRC PASS**, privacy CLEAN, all step exits0. Outer raw+ZIP artifact `12716811392` SHA256 `88551027b741e9f6a78bf2ee021b77bdbb6e8ef05390a2dd00ae0faaa728f084`, CRC/HEAD/exits checked and private Library byte-identical. Negative gates in ZIP remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, V13 INCOMPLETE; no native/Redmi inference. Review-only, not production.
