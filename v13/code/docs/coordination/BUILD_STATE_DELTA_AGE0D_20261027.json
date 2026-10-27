@@ -1,0 +1,50 @@
+{
+  "date_utc": "2026-10-27",
+  "scope": "WP-AGE0d answer-aware arithmetic diagnostic; software-only, no runtime hook",
+  "repo": "RedMentos/Aii",
+  "pr": 755,
+  "branch": "assistant/v13-age0d-answer-aware-audit-20261027",
+  "source_tested_head": "151f66df9b068c85d0460bdb3adbf69955a7126d",
+  "parent": "3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2",
+  "prereg_commit": "b59b80c1834d706c60182054569564b14f4e6366",
+  "exact_source_ci": {
+    "run": 40562064478,
+    "conclusion": "SUCCESS",
+    "tests": 1946,
+    "skipped": 1,
+    "focused": 6,
+    "raw_zip_sha256": "4268706268595e04da23b2a14931c2c8636ad150feb94fa47b9234523a8957e8",
+    "all_exits_zero": true,
+    "privacy": "CLEAN",
+    "private_backup_verified": true
+  },
+  "fixture": {
+    "sha256": "15fffe3a93475e1faa98a5eaf0dba6d69d3528ca12502f5c8dcab5a27793f9a3",
+    "correct": 12,
+    "false_mismatch": 0,
+    "wrong": 12,
+    "detected_wrong": 12,
+    "unsupported": 8,
+    "abstained": 8
+  },
+  "age0c_stay_shadow": true,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "owner": "GPT-6 review candidate",
+  "open_questions": [
+    "Heldout genuine answer trace false-alarm and coverage evaluation",
+    "Independent review before any runtime integration",
+    "Redmi measurements and full blueprint acceptance remain open"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_age0d_answer_audit",
+  "next_package": "Review and test PR757 local CLI; do not enable live delivery"
+}

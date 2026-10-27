@@ -1,0 +1,13 @@
+# AGE0d answer-aware arithmetic audit — verified software checkpoint (2026-10-27)
+
+Review-only PR #755 `assistant/v13-age0d-answer-aware-audit-20261027` exact source HEAD `151f66df9b068c85d0460bdb3adbf69955a7126d`; base `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2` (#754 child, not main). Prereg `b59b80c1834d706c60182054569564b14f4e6366` remotely verified before implementation. Owner: GPT-6 candidate package; no shared frozen runtime files changed.
+
+**What runs:** standalone `scripts/age0d_answer_audit.py` checks the original arithmetic question against the actual completed numeric answer, not observer-offer number overlap. Anchored EN/DE grammar, exact Decimal arithmetic, recurring-division abstention, no arbitrary substring parsing, no message delivery. It is a diagnostic function, **not** an integrated runtime correction. Separate manual CLI candidate PR #757 builds on this source, pending independent focused verification.
+
+**Exact-source GitHub Actions 40562064478 SUCCESS:** original raw ZIP artifact 12761392736 SHA256 `4268706268595e04da23b2a14931c2c8636ad150feb94fa47b9234523a8957e8`; ZIP CRC clean; HEAD.txt equals `151f66df9b068c85d0460bdb3adbf69955a7126d`; INSTALL/FOCUSED/FULL/RESULT/COMPILE/PRIVACY/DIFF raw exits all 0, privacy CLEAN. Focused 6/6 PASS. Full source-wide software suite **1946 OK (1 skipped)** in 167.017s. Frozen fixture SHA256 `15fffe3a93475e1faa98a5eaf0dba6d69d3528ca12502f5c8dcab5a27793f9a3`: correct 12/12 (0 false MISMATCH), wrong 12/12 detected, unsupported 8/8 abstain. PR merge Actions 40562100437 independently SUCCESS, 1946 OK (1 skipped), original ZIP SHA256 `0cf22db3758bb59b6350d598239f67114189e35b91c70d107c23824c2bbee686`.
+
+Both raw ZIPs privately uploaded under `/V13-Checkpoints/2026-10-27/Automation11Z-Age0d-Answer-Audit/` and re-materialized SHA256 byte-identical. No raw private user question/answer in public evidence.
+
+**Limitations / next:** Frozen 32 synthetic rows are not a statistically meaningful real-user false-alarm evaluation; no native LFM2.5, no Redmi, no real response traces, no integration. Review PR #755/#757; collect user-authorized heldout correct/incorrect real answers with private provenance, quantify abstention and false alarms, and keep default SHADOW until explicit authorization and gate proof. Do not turn `:self correction deliver` on based on this. Next command for source-only reproducibility: `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_age0d_answer_audit`. Full suite command: `PYTHONPATH=. python -m unittest discover -s tests -p 'test_*.py' -q`.
+
+**Unchanged:** AGE0c STAY_SHADOW; LP1 NO_ATTRIBUTABLE_GAIN; LP2 ALIGNS_NO_GAIN; BJ1 NO_SIGNAL; STEP2 UTILITY_FAIL; B3 L1 FAIL; jepa_weight0; Age authority0; Redmi unmeasured; V13 incomplete. No promotion.
