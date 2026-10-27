@@ -36,6 +36,7 @@ KNOBS={
  "replay_batch":(4,"COUNT",1,16,"BOOT maximum experiences in one explicit replay job"),
  "replay_tokens":(96,"COUNT",16,256,"BOOT native replay output token cap"),
  "learning_steps":(80,"COUNT",1,1000,"Shadow step budget")}
+KNOBS['route_recency_half_life']=(0,"COUNT",0,256,"WP-KL1 route-head training weight half-life in corrections (newer human evidence counts more); 0 = all equal")
 KNOBS['readout_steps']=(480,"COUNT",1,1000,"BOOT bounded JEF wake/halt fit; route budget unchanged")
 KNOBS['predictor_steps']=(240,"COUNT",1,1000,"BOOT small projector/predictor shadow optimizer steps")
 KNOBS['student_steps']=(640,"COUNT",1,2000,"BOOT text A3 alignment/reconstruction optimizer steps")
@@ -79,6 +80,8 @@ DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"
  # rule questions are asked only on rule-decision turns; deciding stays with the fixed recipe, never a language model.
  "offer_quote_context_chars":200,"b2_quote_select":"pointer","b2_offer_body_state":False,"offer_quote_min_chars":90,"b1_recent_source_chars":600,
  "body_question_scope":"rule_decision","eligibility_reader":"fixed","tool_answer_first":True,
+ "route_head_words":True,  # WP-Z6i/Z6i2: fixed word channel for new route heads (route_words.py); ON after Z6I2_PASS (2026-10-27)
+ "route_head_gate":"relative",  # WP-Z6i2: a word-channel successor head must beat the active head (not a fixed 75 %); ON after Z6I2_PASS
  "body_question_b1":"Which option figures apply here: cost, duration and locality of Option A and Option B? Quote the exact source sentences that state them, or say they are not in the source.",
  "body_question_b2":"Which earlier project rules apply here: budget, deadline and local-only requirement? Quote the exact earlier source sentence that states them, or say they are not in the source."}
 # Values before the 2026-10-21 quote-help decision. Frozen measurement harnesses and their regression tests pin these, so a
@@ -129,6 +132,8 @@ def validate(cfg):
         if not (isinstance(cfg.get(key,""),str) and len(cfg.get(key,""))<=400):raise ValueError(key+" text 0..400 chars")
     if cfg.get("body_question_scope","always") not in {"always","rule_decision"}:raise ValueError("body_question_scope always|rule_decision")
     if not isinstance(cfg.get("tool_answer_first",False),bool):raise ValueError("tool_answer_first true|false")
+    if not isinstance(cfg.get("route_head_words",False),bool):raise ValueError("route_head_words true|false")
+    if cfg.get("route_head_gate","fixed75") not in {"fixed75","relative"}:raise ValueError("route_head_gate fixed75|relative")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
     return cfg
 def initialize(home):
