@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN638_C3_DOSE_RESPONSE_BUILD_STATE_V1",
+  "schema": "V13_RUN638_C3_DOSE_RESPONSE_BUILD_STATE_V2",
   "date_utc": "2026-10-27",
   "branch": "codex/gpt6-run638-c3-dose-response-20261027",
   "owner": "GPT-6 scheduled V13 implementation, isolated C3 learning/evaluation files",
@@ -36,9 +36,37 @@
   "native_ci": {
     "run_id": 40431064922,
     "head_sha": "d6d97601d75ccaee05da96278549651edd3bb43d",
-    "status": "IN_PROGRESS_NOT_VERIFIED",
-    "utility": "UNKNOWN",
-    "raw_backup": "PENDING"
+    "status": "GREEN_EXECUTION_NEGATIVE_UTILITY",
+    "source_tests": "43/43 PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12702091198,
+    "zip_sha256": "d295a534aee3bb541b31fdfe760df1ec0b355ec0dd5642abbb949b198707b65c",
+    "crc": "PASS",
+    "inner_sha": "31/31 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run638/Run638-native-32step-40431064922.zip",
+    "private_byte_roundtrip": "PASS",
+    "train_proof_sha256": "f49ea0206e717c85b1018ea62204bdc8e876519e9c4f404f4ca21e9bb16b6d2e",
+    "native_proof_sha256": "82b9073b9b955286c705b9ab506e49622c68745465b0a52b11213fdc9f72fd10",
+    "adapter_gguf_sha256": "bd5fb8e523ba5444602401911d7fc8e0b2a571980cc95bf1a42f15c2bfb1cb83",
+    "adapter_peft_sha256": "7ae4d6b337cd5a5d553fdb4be10017c351b5b07ecc431dabce061b619596156d",
+    "training": {
+      "steps": 32,
+      "final_ce": 0.00019,
+      "master_recall": 1,
+      "heldout_kl_to_base": 5.8776185512542725,
+      "peak_rss_mb": 2420.8,
+      "seconds": 30.85,
+      "lora_b_nonzero": 38912
+    },
+    "deployed": {
+      "status": "NO_ANSWER_UTILITY",
+      "tokenizer_and_baseline_parity": true,
+      "numeric_effect": true,
+      "train_hits": "2/2 vs original 0/2",
+      "heldout_hits": "0/2 vs original 1/2",
+      "near_miss_leak": "2/2 vs original 0/2",
+      "bounded_synthetic_utility": false
+    }
   },
   "original_native": {
     "run_id": 40429819193,
@@ -62,10 +90,9 @@
   },
   "production_integrated": false,
   "open_questions": [
-    "Does 32-step training yield >0/2 train hits while preserving heldout and Cedar near-miss on deployed QAD-Q4?",
-    "Is native original 2-step baseline bit-reproducible across runner hosts?",
-    "Is exact-key '4' false-negative for 'four' worth a separate prospective scorer study (not Run638 frozen scorer)?",
-    "Body-JEPA weight-path, B1/B2 native sparse, STEP2 complementarity, Redmi remain unproven."
+    "Run638 confirms severe overfit: 32-step master recall 2/2 but QAD-Q4 heldout retention 0/2, Cedar leakage 2/2, KL 5.8776. Test independent prospective anchor/locality regularization, never reinterpret Run638 as utility.",
+    "Exact-key '4' false-negative for 'four' persists in original and candidate; scorer caveat separately.",
+    "Body-JEPA weight path, B1/B2 sparse training, STEP2 complementarity and Redmi unproven."
   ],
-  "next_exact_command": "Read GitHub Actions 40431064922 jobs/logs; download artifact; verify ZIP SHA256/CRC/inner hashes, frozen source/model/seed/proof; retain failed raw; upload to private /V13-Checkpoints/2026-10-27/Run638/ with byte roundtrip; update scoped report/PR; continue next independent canonical package."
+  "next_exact_command": "Read Run638 GREEN execution / negative utility original artifact 12702091198, already SHA/CRC/31/31/private byte-verified; preregister new independent C3 anchor/locality cohort with disjoint training anchors before any new optimizer, preserving Run638 raw, then source tests -> native evidence -> backup. Continue other blueprint organs."
 }
