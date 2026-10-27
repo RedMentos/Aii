@@ -1659,7 +1659,7 @@
   "bp2b_rss_clock_review_20261027": {
     "owner_branch": "codex/automation11-bp2b-rss-clock-review-20261027",
     "parent_sha": "a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3",
-    "status": "REVIEW_ONLY_SOFTWARE_CI_PENDING",
+    "status": "REVIEW_ONLY_SOFTWARE_PASS_FINAL_METADATA_CI_PENDING",
     "scope": "Independent Linux-native first-step raw receipt audit plus future RSS relative clock fix",
     "native_run_id": 40520099854,
     "native_run_commit": "b4892519705af0099fc83704c368d53f4b3027b9",
@@ -1682,6 +1682,9 @@
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/bp2b-rss-clock-review/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_first_step_diagnostic",
-    "next_prerequisite": "Verify exact-head synthetic CI and independent review; no overlapping heavy native run."
+    "next_prerequisite": "Verify exact-head synthetic CI and independent review; no overlapping heavy native run.",
+    "focused_ci_run": 40522267037,
+    "focused_ci_tested_sha": "38788c6e6413a0363ed89f41c9689e898253c8f8",
+    "focused_ci_tests": "7/7 PASS"
   }
 }
