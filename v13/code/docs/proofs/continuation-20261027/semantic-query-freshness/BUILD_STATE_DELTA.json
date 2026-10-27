@@ -1,0 +1,66 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 741,
+  "parent_sha": "fe57536308819b6facc5947d24fcff66468ab34e",
+  "branch": "codex/automation11l-semantic-query-freshness-20261027",
+  "pr": 742,
+  "prereg": "84fce9a19920aadc0fa3613a0ff3b03161e9cce7",
+  "red": {
+    "source_commit": "7f91dd1065b59521b949a3169d3ecd7356799304",
+    "actions": 40538480865,
+    "tests": "27 tests 2 expected FAIL 0 ERROR",
+    "artifact": 12749915629,
+    "zip_sha256": "0566c897991087096be8ddde6ac33fa496ab6683e13145672be29e58c010d515",
+    "private_backup_verified": true,
+    "earlier_failed_fixture_run": 40538336718
+  },
+  "green": {
+    "source_commit": "1281f8c13e0283db463291a7ed7e584b07a45621",
+    "memory_blob": "98fc0e30f42f885fb759b7e8b5dbab761932c5a5",
+    "semantic_blob": "21767b69232db976eb011dd4c578003498f044e0",
+    "actions": 40538755066,
+    "tests": "27/27 PASS",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12748529749,
+    "zip_sha256": "30eab2255b0a0c306dfd16948284c134a26c6b66f08d59b2eee73404d8492755",
+    "private_backup_verified": true
+  },
+  "full_suite": {
+    "source_commit": "bb27d538f12fcb65b747cac96b1a2013fcd05915",
+    "actions": 40538877446,
+    "status": "SOFTWARE_FULLSUITE_PASS",
+    "tests": "1913 OK (1 skipped)",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12749358237,
+    "zip_sha256": "81e46713102a8399f738d851eeae7ec70eb40e7403252898f2b53adf9e9962c4",
+    "private_backup_verified": true
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Independent review PR742; continue child WP-N8 episode vector-boundary branch, do not promote native/Redmi/Age gates.",
+  "note": "Branch-scoped; do not overwrite shared BUILD_STATE, do not merge main automatically."
+}

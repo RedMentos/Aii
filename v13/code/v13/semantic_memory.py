@@ -79,6 +79,7 @@ class SemanticKeys:
         return 'memory-embed:'+m['source_id']+':'+digest(m['key_text'])[:16]+':'+self.revision+':'+str(self.cfg['memory_embed_dim'])+':'+PROMPT_VERSION
     def similarities(self,query,rows,cancel,deadline,cap=None):
         """Cosine query↔stored key per memory id. Up to `cap` missing keys are encoded in the query batch; the rest follow on later turns."""
+        self.last_query=None  # fail closed on direct-call errors and repeat queries
         dim=self.cfg['memory_embed_dim'];started=time.monotonic();cached={};missing=[]
         for r in rows:
             v,_=self.s.state(self.cache_key(r))
@@ -89,12 +90,12 @@ class SemanticKeys:
         vectors=self.encoder([query]+[r['key_text'] for r in missing],cancel,deadline)
         if len(vectors)!=1+len(missing):raise Unavailable('Embedding-Anzahl passt nicht')
         q=truncate(vectors[0],dim)
-        self.last_query={'digest':digest(query),'vector':q}  # reused by WP-N8 event boundaries (no extra encode)
         for r,v in zip(missing,vectors[1:]):
             v=[round(x,6) for x in truncate(v,dim)];cached[r['id']]=v;self.s.set_state(self.cache_key(r),v)
         result={mid:cosine(q,v) for mid,v in cached.items()}
         self.last={'status':'OK','mode':self.mode(),'candidates':len(rows),'encoded_keys':len(missing),'deferred_keys':max(0,deferred),'dim':dim,
                    'duration_s':round(time.monotonic()-started,4),'encoder':dict(getattr(self.encoder,'last_metrics',{}) or {})}
+        self.last_query={'digest':digest(query),'vector':q}  # only a completed current call is reusable by WP-N8
         return result
 
 def attach(runtime):
