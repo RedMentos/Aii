@@ -120,7 +120,7 @@ class NativeBatchSoftwareTests(unittest.TestCase):
     def test_prefix_matches_actual_child_native_attempt_contract(self):
         # Real run_arm rejects >32 characters and dots; fake subprocesses do not.
         import re
-        child = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,31}\\Z')
+        child = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,31}\Z')
         for job in batch.registered('x' * 17):
             self.assertIsNotNone(child.fullmatch(job['attempt']))
             self.assertLessEqual(len(job['attempt']), 32)
