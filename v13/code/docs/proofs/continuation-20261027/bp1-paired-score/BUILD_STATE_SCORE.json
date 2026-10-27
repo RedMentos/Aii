@@ -1,0 +1,46 @@
+{
+  "package": "WP-BP1-paired-C3-consumer-scoring",
+  "date_utc": "2026-10-27",
+  "status": "REVIEW_ONLY_SOFTWARE_SCORER_PASS",
+  "branch": "codex/gpt6-bp1-paired-scoring-20261027-0905",
+  "pr": 678,
+  "base_pr": 677,
+  "base_commit": "74d84d06b9ed99041146a45ce35a0627a4beec28",
+  "prereg_commit": "364fc78794603da696f0fc19a285be507d04a5ae",
+  "source_test_workflow_commit": "65e14c6b15a3cf992834b25daca851ee62d72d61",
+  "actions_run": 40471426660,
+  "original_artifact_id": 12718324426,
+  "original_zip_sha256": "db04157f1feb1729f56a6b86d624ddf7fbccd8aba714af1951850259da7523d4",
+  "artifact_crc": "PASS",
+  "exits": {
+    "UNIT": 0,
+    "FETCH": 0,
+    "SELFCHECK": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0
+  },
+  "unit_tests": "14/14 PASS",
+  "dataset_sha256": "7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c",
+  "dataset_rows": 22,
+  "source_pairs": 11,
+  "source_sha256": {
+    "v13/code/scripts/bp1_paired_score.py": "5069ae0d9f815e4cc3ef78065a04f2e02bfdf23a12476d3bc96e5926c05d374d",
+    "v13/code/tests/test_bp1_paired_score.py": "bac9f34e56389b10c5f32149b123e3f2fa268892f4ace3ab6eb7885d145586c1"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-Paired-Score/bp1-paired-score-40471426660.zip",
+  "private_backup_byte_identical": true,
+  "evidence_level": "SOFTWARE_SCORING_WITH_VERIFIED_NATIVE_B2_DERIVED_DATASET_ONLY",
+  "native_c3_training": false,
+  "native_c3_inference": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Serial native C3 prediction collector and separately preregistered selected C3 master/GGUF training+paired ablation; no heldout tuning",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 scripts/bp1_paired_score.py --dataset /verified/bp1-output --selfcheck"
+}

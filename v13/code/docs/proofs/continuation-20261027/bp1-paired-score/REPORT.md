@@ -1,0 +1,15 @@
+# WP-BP1 paired C3 offer-consumer scorer — closed software evidence (2026-10-27)
+
+**Status:** REVIEW_ONLY_SOFTWARE_SCORER_PASS. Branch `codex/gpt6-bp1-paired-scoring-20261027-0905`, draft PR #678 stacked on dataset PR #677 at `74d84d06b9ed99041146a45ce35a0627a4beec28`, not main. Preregistered before source implementation at commit `364fc78794603da696f0fc19a285be507d04a5ae`. Source `v13/code/scripts/bp1_paired_score.py`, tests `tests/test_bp1_paired_score.py`, workflow `.github/workflows/bp1-paired-score.yml`. No existing frozen model/source/cohort/runtime file changed.
+
+**Exact run:** GitHub Actions `40471426660`, HEAD `65e14c6b15a3cf992834b25daca851ee62d72d61`, completed SUCCESS 2026-10-27 08:10Z. Original artifact ID `12718324426`, ZIP SHA256 `db04157f1feb1729f56a6b86d624ddf7fbccd8aba714af1951850259da7523d4`. Independently downloaded, ZIP CRC OK, all five recorded exits UNIT/FETCH/SELFCHECK/COMPILE/PRIVACY = 0; 14/14 unit tests PASS; official privacy scan CLEAN. `SOURCE_SHA256.txt`: scorer `5069ae0d9f815e4cc3ef78065a04f2e02bfdf23a12476d3bc96e5926c05d374d`, tests `bac9f34e56389b10c5f32149b123e3f2fa268892f4ace3ab6eb7885d145586c1`.
+
+**Immutable dataset selfcheck:** Original upstream BP1 artifact `12715684803` ZIP hash `12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c` verified by workflow. Scorer read `heldout_paired.jsonl` SHA256 `7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c`; 22 heldout rows, 11 source pairs. The original 25 training rows were not used for evaluation or tuning.
+
+**Private durable backup:** `/V13-Checkpoints/2026-10-27/BP1-Paired-Score/bp1-paired-score-40471426660.zip` uploaded, re-read and byte-compared to the original artifact, SHA256 identical. GitHub source and raw ZIP are independently persisted.
+
+**What works:** fail-closed source/prompt SHA binding, duplicate/missing/extra JSON guards, source-exact evidence quote validation, supported answer-key equality, unsupported commitment/abstention metrics, 11-pair within-model offer/no-offer and candidate/base contrasts, exclusive output. Counterexamples include swapped prompt arm, fabricated evidence, malformed JSON, tampered source, incomplete prediction and duplicate keys. Outputs never promote model or blueprint gates.
+
+**Not measured:** The 14 tests are synthetic software fixtures. No C3 native inference, training, learned consumer gain, real model pair, heldout significance, Redmi measurement or whole-system end-to-end acceptance occurred. Existing STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, full scope false. Source branch is review-only and not merged.
+
+**Next exact command (after a separately pinned serial native run writes the binding and 44 predictions):** `cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/bp1_paired_score.py --dataset /verified/bp1-output --binding /verified/RUN_BINDING.json --predictions /verified/predictions.jsonl --out /new/empty/bp1-scores`. Until then use `--dataset /verified/bp1-output --selfcheck`. Next package: native C3 paired prediction collector + separately registered selected C3 training/retention/near-miss ablation.
