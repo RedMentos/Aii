@@ -1,0 +1,82 @@
+name: V13 BP1 paired consumer scorer source-bound software check
+on:
+  push:
+    branches: [codex/gpt6-bp1-paired-scoring-20261027-0905]
+    paths:
+      - '.github/workflows/bp1-paired-score.yml'
+      - 'v13/code/scripts/bp1_paired_score.py'
+      - 'v13/code/tests/test_bp1_paired_score.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-paired-score/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-paired-score-review
+  cancel-in-progress: false
+jobs:
+  source-bound-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Run software-only tests and privacy audit (preserve RED)
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-score-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-score-proof/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_paired_score.py v13/code/tests/test_bp1_paired_score.py > "$RUNNER_TEMP/bp1-score-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-score-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-score-proof/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_paired_score.py v13/code/tests/test_bp1_paired_score.py > "$RUNNER_TEMP/bp1-score-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-score-proof/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 74d84d06b9ed99041146a45ce35a0627a4beec28 --head HEAD > "$RUNNER_TEMP/bp1-score-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-score-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Fetch original immutable BP1 dataset and selfcheck (preserve RED)
+        run: |
+          set +e
+          curl -fsSL --retry 1 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip" -o "$RUNNER_TEMP/bp1-original.zip" > "$RUNNER_TEMP/bp1-score-proof/FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c  $RUNNER_TEMP/bp1-original.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1-score-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/bp1-unpack"
+            unzip -q "$RUNNER_TEMP/bp1-original.zip" -d "$RUNNER_TEMP/bp1-unpack" >> "$RUNNER_TEMP/bp1-score-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-score-proof/FETCH_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/bp1_paired_score.py --dataset "$RUNNER_TEMP/bp1-unpack/bp1-output" --selfcheck) > "$RUNNER_TEMP/bp1-score-proof/SELFCHECK_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-score-proof/SELFCHECK_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-score-proof/SELFCHECK_EXIT.txt"
+          fi
+          exit 0
+      - name: Preserve original software logs and source-bound checks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-paired-score-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-score-proof/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce checks; no native/model claim
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY FETCH SELFCHECK; do
+            test "$(cat "$RUNNER_TEMP/bp1-score-proof/${n}_EXIT.txt")" = 0 || { echo "$n failed"; tail -80 "$RUNNER_TEMP/bp1-score-proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/bp1-score-proof/SELFCHECK_RAW.log"
+          echo "BP1_SCORER_SOFTWARE_ONLY; NO_NATIVE_C3_OR_UTILITY_PROOF"
