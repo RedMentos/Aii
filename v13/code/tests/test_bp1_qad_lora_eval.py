@@ -42,8 +42,15 @@ def train_proof():
         "redmi_measured": False,
         "model_utility_proven": False,
         "gates": dict(E.T.GATES),
-        "adapter": {"gguf_sha256": "a" * 64, "lora_b_nonzero": 3},
-        "metrics": {"steps": 2, "trainable_parameter_count": 100, "jepa_weight": 0},
+        "adapter": {"gguf_sha256": "a" * 64, "lora_b_nonzero": 3,
+                    "peft_sha256": "c" * 64, "gguf_bytes": 1024,
+                    "gguf_tensors": 4, "lora_b_tensors": 2},
+        "metrics": {"steps": 2, "trainable_parameter_count": 100, "jepa_weight": 0.0,
+                    "anchor_weight": 0.0, "rank": 2, "alpha": 4.0,
+                    "targets": ["v_proj", "out_proj"], "final_ce": 2.0,
+                    "loss_history": [{"step": 1, "ce": 3.0}, {"step": 2, "ce": 2.0}],
+                    "resumed": False, "base_generation": "BP1_QAD_C3_TRAIN_ONLY_SHADOW",
+                    "trained_on": "master"},
     }
 
 
