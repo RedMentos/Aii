@@ -73,6 +73,7 @@ def run_arm(installed, policy, seed):
     flags = set(policy.split('+')[1:]); base_policy = policy.split('+')[0]
     sup = bool(flags & {'sup', 'now'}); now_rule = 'now' in flags  # WP-Z6c: '+sup' = the human states the new scope once
     words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-Z6i: '+lex' word channel, '+rec' newer corrections count more
+    folds = 4 if 'cv' in flags else 0  # WP-Z6j: '+cv' out-of-sample gate over the newest half of each route's corrections
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
@@ -85,7 +86,7 @@ def run_arm(installed, policy, seed):
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
-        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life
+        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds
         cache = {}
         def emb(text):
             if text not in cache:
@@ -247,6 +248,17 @@ def criteria_z6i(s):
     return c, 'Z6I_HEAD_LEARNS_PASS' if all(c.values()) else 'Z6I_HEAD_LEARNS_FAIL'
 
 
+def criteria_z6j(s):
+    a = [s['fixed+lex+rec+cv'], s['adaptive+lex+rec+cv']]
+    c = {'J1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'J2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'J3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'J4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'J5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'J6_runtime_path_half_ge_80pct': (s['fixed+lex+rec+cv'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'Z6J_STABLE_GATE_PASS' if all(c.values()) else 'Z6J_STABLE_GATE_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -261,13 +273,16 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec+cv', 'adaptive+lex+rec+cv', 'fixed'} <= set(scores):
+        doc['criteria_z6j'], doc['verdict_z6j'] = criteria_z6j(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6j-stable-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+lex+rec', 'adaptive+lex+rec', 'fixed'} <= set(scores):
         doc['criteria_z6i'], doc['verdict_z6i'] = criteria_z6i(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i-head-learns/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'verdict_z6j', 'criteria_z6j', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

@@ -55,6 +55,26 @@ class RouteFeaturesTest(unittest.TestCase):
             self.assertTrue(m1['gradient_check']); self.assertTrue(m1['deterministic_repeat'])
             with np.load(Path(d) / 'candidate.npz') as z: self.assertEqual(z['route_w'].shape, (4 + RF.LEX_DIM, 4))
 
+    def test_cv_gate_adopts_a_changed_preference_without_scope_words(self):
+        # old: "half" questions labelled 1 (detail); newer evidence: label 0 (simple). Embeddings identical for all arithmetic.
+        texts, labels, emb = [], [], []
+        def add(t, lab, e): texts.append(t); labels.append(lab); emb.append(e)
+        for i in range(8):
+            add('Was ist die Hälfte von %d?' % i, 1, [1., 0., 0.]); add('Rechne %d mal 3 aus.' % i, 1, [1., 0., 0.])
+            add('Hallo Anna %d' % i, 0, [0., 1., 0.]); add('Vergleiche Bus und Bahn %d' % i, 3, [0., 0., 1.]); add('Fasse zusammen: Kern %d' % i, 2, [0., .5, .5])
+        cfg = {'learning_steps': 300, 'eligibility_decay': .95, 'learning_rate': .5, 'max_update_norm': 1., 'retention_max_delta': .02, 'route_recency_half_life': 8, 'route_gate_folds': 4}
+        with tempfile.TemporaryDirectory() as d:
+            train({'config': cfg, 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels), 'texts': texts}, d)
+            parent = Path(d) / 'parent.npz'; (Path(d) / 'candidate.npz').rename(parent)
+            for i in range(8):
+                add('Wie viel ist die Hälfte von %d Euro?' % i, 0, [1., 0., 0.]); add('Rechne bitte %d mal 4 aus.' % i, 1, [1., 0., 0.])
+            m = train({'config': cfg, 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels), 'texts': texts, 'active_checkpoint': str(parent)}, d)
+            self.assertEqual(m['held_out']['folds'], 4); self.assertTrue(m['gradient_check']); self.assertTrue(m['deterministic_repeat'])
+            self.assertTrue(m['commit_eligible'], m['held_out'])
+            with np.load(Path(d) / 'candidate.npz') as z: w = z['route_w']
+            x = RF.build(features([[1., 0., 0.], [1., 0., 0.]]), ['Wie viel ist die Hälfte von 70 Euro?', 'Rechne 7 mal 5 aus.'])
+            self.assertEqual(np.argmax(x @ w, axis=1).tolist(), [0, 1])
+
 
 if __name__ == '__main__':
     unittest.main()
