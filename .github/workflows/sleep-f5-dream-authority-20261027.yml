@@ -37,7 +37,7 @@ jobs:
           git rev-parse HEAD > "$evidence/HEAD.txt"
           git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
           for item in \
-            "v13/code/v13/sleep.py:469101c9979b9cabe0dbd154cffde40912fa8a2c" \
+            "v13/code/v13/sleep.py:8a3a8e719aa4ff9cbc49a3b5e5d3e02ae22a3ec1" \
             "v13/code/v13/memory.py:501c8f43c92f031e034e4b93f4adbd4c67b7edfe" \
             "v13/code/tests/test_sleep_memory_authority_run274.py:a0a62163e48c657df56540b52a6438880b4a5235"; do
             path="${item%%:*}"; expected="${item##*:}"

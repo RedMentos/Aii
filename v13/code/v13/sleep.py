@@ -184,8 +184,16 @@ class SleepCycle:
         env=json.loads(ev['packet'])
         try:text=self.s.read_source(env['source_ref'])
         except ValueError:return 'RETIRE','SOURCE_DELETED',{}
-        mems=self.s.rows('SELECT m.id,m.kind,m.value,m.source_id,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
+        mems=self.s.rows('SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
         if not mems:return 'RETIRE','SUPERSEDED_OR_FORGOTTEN',{}
+        # Sleep A must not grant retention credit to a correction whose original
+        # F5 HumanDecision/feedback was revoked, even when its blob still reads.
+        valid={m['id'] for m in self.memory._verified_rows(mems)}
+        invalid=[m['id'] for m in mems if m['id'] not in valid]
+        if invalid:
+            return 'FAIL',['HUMAN_AUTHORITY_LOST:'+mid for mid in invalid],{
+                'checks':[{'memory_id':mid,'probe':'HUMAN_AUTHORITY','pass':False} for mid in invalid],
+                'source_refs':[env['source_ref']],'affected_paths':['memory_provenance']}
         errors=[];checks=[];refs=[env['source_ref']];paths=set()
         recallable=[m for m in mems if m['kind'] in RECALL_KINDS]
         if recallable:
