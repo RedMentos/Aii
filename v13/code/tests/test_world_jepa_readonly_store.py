@@ -115,5 +115,16 @@ class ReadOnlyStoreTests(unittest.TestCase):
         self.assertEqual(json.loads(out.getvalue())['reason'], 'CLOSED_STORE_INVALID_OR_INSUFFICIENT')
 
 
+    def test_nonfinite_or_unserializable_metrics_fail_closed(self):
+        for report in ({'metric': float('nan')}, {'metric': object()}):
+            with self.subTest(report=repr(report)):
+                out = io.StringIO()
+                with patch.object(local, 'run_db', return_value=report):
+                    code = local.main(['--db', str(self.db), '--ack-closed-store'], stdout=out)
+                self.assertEqual(code, 2)
+                self.assertEqual(json.loads(out.getvalue())['status'], 'UNAVAILABLE')
+                self.assertNotIn(str(self.db), out.getvalue())
+
+
 if __name__ == '__main__':
     unittest.main()
