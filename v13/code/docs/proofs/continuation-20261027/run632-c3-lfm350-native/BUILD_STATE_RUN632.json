@@ -1,0 +1,80 @@
+{
+  "schema": "V13_RUN632_SELECTED_C3_LFM350_PENDING_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation; selected C3 LFM2.5-350M native master",
+  "branch": "codex/automation12-run632-c3-lfm350-native-lora-20261027",
+  "review_pr": 627,
+  "parent_pr": 626,
+  "parent_head": "dd0fb81675645ffaadf904f0716528c451004a1c",
+  "prereg_commit": "847cee149455c37e77bd9b96f94283dc01dd74cb",
+  "prospective_amendment_commit": "56be3cec3c9821c04ad8be23e0afd6a566a93d58",
+  "cohort_v1_blob": "5107dfc6577739eb4a8776d1d1be2e7890c21a89",
+  "cohort_v1_status": "SUPERSEDED_UNEXECUTED",
+  "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
+  "trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+  "experiment_commit": "15576713fdf546769c171ba83dfbf607adfae879",
+  "run_id": 40426395156,
+  "run_status": "TWO_FAILURES_CLOSED_THIRD_RETRY_PENDING",
+  "model": {
+    "master_repo": "LiquidAI/LFM2.5-350M",
+    "master_revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "license": "LFM Open License v1.0",
+    "selected_gguf_repo": "LiquidAI/LFM2.5-350M-GGUF",
+    "selected_gguf_revision": "657e078c94084481950a2d555a941481f715536b",
+    "selected_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "master_gguf_equivalence_proven": false
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "next_exact_command": "Inspect Actions 40426758913 and original raw. Verify SHA-closed failure/success and back up. If successful selected C3 master LoRA, measure nonzero LoRA-B and continue deployed QAD Q4 compatibility; otherwise preserve exact new blocker and switch to independent canonical package.",
+  "production_integrated": false,
+  "first_run": {
+    "id": 40426395156,
+    "conclusion": "failure",
+    "artifact_id": 12700610343,
+    "raw_zip_sha256": "00fcae86f29271cdafd49497d1f5792357fdcd8870c85310bbb49cd0b306771d",
+    "inner_sha256_verified": 14,
+    "source_tests": "5/5 PASS",
+    "dependencies": "PASS",
+    "download": "PASS",
+    "master_sha": "PASS",
+    "license_sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+    "train": "FAIL_TOKENIZERSBACKEND_TRANSFORMERS4",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run632/Run632-first-failed-40426395156.zip",
+    "private_roundtrip": "PASS"
+  },
+  "retry": {
+    "commit": "b72b675c553c36c47dcb48deabbef0584b5675be",
+    "run_id": 40426758913,
+    "status": "IN_PROGRESS_UNVERIFIED",
+    "dependency_changes": {
+      "transformers": "5.0.0",
+      "peft": "0.18.0",
+      "huggingface_hub": "1.26.0"
+    },
+    "cohort_changed": false,
+    "model_changed": false
+  },
+  "second_run": {
+    "id": 40426609358,
+    "conclusion": "failure",
+    "artifact_id": 12700645185,
+    "raw_zip_sha256": "aa4952d9a00129ed4e14bc4624360aad0cced42825787513fb8298da49fe24fb",
+    "inner_sha256_verified": 13,
+    "source_tests": "5/5 PASS",
+    "dependencies": "FAIL_HF_HUB_VERSION_RESOLUTION",
+    "download": "NOT_ATTEMPTED",
+    "train": "NOT_ATTEMPTED",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run632/Run632-second-failed-40426609358.zip",
+    "private_roundtrip": "PASS"
+  }
+}

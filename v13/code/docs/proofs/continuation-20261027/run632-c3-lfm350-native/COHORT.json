@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN632_C3_LFM350_NATIVE_COHORT_V1",
+  "scope": "LINUX_NATIVE_SELECTED_C3_MASTER_LORA_SHADOW",
+  "master": {
+    "repo_id": "LiquidAI/LFM2.5-350M",
+    "revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
+    "sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "architecture": "lfm2",
+    "license": "LFM Open License v1.0"
+  },
+  "deployed_reference": {
+    "repo_id": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "equivalence_proven": false
+  },
+  "train_rows": [
+    {
+      "prompt": "In the fictional Alder protocol, what is the marker color?",
+      "target": "violet"
+    },
+    {
+      "prompt": "In the fictional Alder protocol, what is the gate number?",
+      "target": "83"
+    }
+  ],
+  "heldout_rows": [
+    {
+      "prompt": "What is two plus two?",
+      "target": "4"
+    },
+    {
+      "prompt": "Write a brief greeting.",
+      "target": "hello"
+    }
+  ],
+  "config": {
+    "lora_r": 2,
+    "lora_alpha": 4,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "learning_rate": 0.001,
+    "max_steps": 2,
+    "min_steps": 2,
+    "checkpoint_every": 1,
+    "anchor_weight": 0,
+    "jepa_weight": 0,
+    "threads": 2,
+    "max_tokens": 96,
+    "locality_swaps": 0,
+    "seed": 13
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "production_weight_authority": 0,
+  "age_change": false,
+  "approval_change": false
+}
