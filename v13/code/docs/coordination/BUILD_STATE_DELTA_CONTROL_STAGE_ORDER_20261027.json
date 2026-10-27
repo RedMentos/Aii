@@ -1,0 +1,60 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP_T14_STAGE_ORDER_INTEGRITY_REVIEW",
+  "status": "REVIEW_ONLY_FULL_SOFTWARE_PASS_NOT_INTEGRATED",
+  "parent_pr": 766,
+  "parent_sha": "14a08bab05e17a77508e23d1c1d25d5d142c9b89",
+  "review_pr": 767,
+  "prereg_sha": "35d95e2c1826859cfe72af2e14d3f6004f4ce965",
+  "source_blob": "b51d173aa562321f3cfb3da9bc7373733eb0d733",
+  "red": {
+    "run": 40575282391,
+    "sha": "114eec1ed7f616a9e92bc3e096bb4893f8d51309",
+    "tests": 20,
+    "failures": 2,
+    "zip_sha256": "c19111d6f7004fdfd1f9a570ba3a53a8db10b198917b0738f004e4f6cf3ec5fb"
+  },
+  "green": {
+    "run": 40575320349,
+    "sha": "83f145ab47c2e56e47616b8334199db3c6b36294",
+    "tests": 20,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "4f6c13ac9d4386b299a5d6f1bcde0f83340870793b7cbc9cc008ed85450dae44"
+  },
+  "full": {
+    "run": 40575372933,
+    "sha": "1cddfab18f0252fcac77dc0573c22670dc8e4264",
+    "tests": 1956,
+    "skipped": 1,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "7f5c0d921a83e8cdb883578f05af3436c21826882e8412b188bc1979cb5798fc"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZK-Control-Stage-Order",
+  "private_backup_byte_verified": true,
+  "owner": "assistant/GPT independent review",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_control_budget_stage_order_review tests.test_control_budget_created_overflow_review tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_checkpoint_containment_review tests.test_control_budget",
+  "next_prerequisite": "Independent review and reconciliation of stacked PR767 after PR766/765/763; no auto-merge",
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  }
+}
