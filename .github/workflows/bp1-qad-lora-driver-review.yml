@@ -1,0 +1,55 @@
+name: V13 BP1 QAD FP32 LoRA train-only driver software review
+on:
+  push:
+    branches: [codex/gpt6-bp1-qad-lora-driver-20261027-0935]
+    paths:
+      - '.github/workflows/bp1-qad-lora-driver-review.yml'
+      - 'v13/code/scripts/bp1_qad_lora_train.py'
+      - 'v13/code/tests/test_bp1_qad_lora_train.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-lora-driver-software
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NO_PRODUCTION_ACTIVATION: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Fake-trainer guard tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-lora-driver-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-lora-driver-proof/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_lora_train.py v13/code/tests/test_bp1_qad_lora_train.py > "$RUNNER_TEMP/bp1-lora-driver-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_lora_train) > "$RUNNER_TEMP/bp1-lora-driver-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-driver-proof/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_lora_train.py v13/code/tests/test_bp1_qad_lora_train.py > "$RUNNER_TEMP/bp1-lora-driver-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-driver-proof/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a71121d30fa1b83fa4c9b86b8f5fa3bc5fe710aa --head HEAD > "$RUNNER_TEMP/bp1-lora-driver-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-driver-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve all original software evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-lora-driver-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-lora-driver-proof/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software only
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-lora-driver-proof/${n}_EXIT.txt")" = 0 || { echo "$n failed"; tail -80 "$RUNNER_TEMP/bp1-lora-driver-proof/${n}_RAW.log"; exit 1; }
+          done
+          echo "FAKE_TRAINER_ONLY; NO_QAD_LORA_OPTIMIZER_OR_ADAPTER_ACTIVATION"
