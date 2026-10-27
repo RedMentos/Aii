@@ -1799,5 +1799,30 @@
     "predictor_grad_abs_sum": 6904.861283779144,
     "projector_grad_abs_sum": 10969.523635864258,
     "rss_kib_after_not_peak": 2211452
+  },
+  "lp3_variable_source_control_20261027": {
+    "owner_branch": "codex/automation11-lp3-variable-source-control-20261027",
+    "parent_sha": "aeefa413fdcb06252ac280493539371a208eb3d5",
+    "status": "SOFTWARE_14_14_PASS_FINAL_METADATA_CI_PENDING",
+    "scope": "Research-only explicit source_prompt_ids for variable-length wrong-source controls",
+    "software_tests_expected": 14,
+    "real_model_utility_proven": false,
+    "live_runtime_integrated": false,
+    "source_provenance_gate": "REQUIRED_FOR_FUTURE_UTILITY",
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/lp3-variable-source-control/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_lp3_state_prefix",
+    "next_prerequisite": "Exact-head synthetic CI, independent review, then preregistered real utility study",
+    "focused_ci_run": 40525062343,
+    "focused_ci_source_sha": "8a3c406d2e3998049587c2f7b37b4fb96a9ebf86",
+    "focused_ci_tests": "14/14 PASS"
   }
 }

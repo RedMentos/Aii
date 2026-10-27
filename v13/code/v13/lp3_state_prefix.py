@@ -158,3 +158,75 @@ class StateConditionedPrefix(nn.Module):
     def answer_loss(self, prompt_ids, answer_ids, assignment='own', features=None):
         logits = self.answer_logits(prompt_ids, answer_ids, assignment, features)
         return F.cross_entropy(logits.reshape(-1, logits.shape[-1]), answer_ids.reshape(-1))
+
+    def _prefix_from_source(self, target_prompt_ids, source_prompt_ids):
+        """Research-only explicit wrong-source control; never accepts raw features.
+
+        The caller is responsible for preregistering source prompts that contain
+        no target answers. This API proves source provenance only as token input.
+        """
+        self._check_prompt(target_prompt_ids)
+        self._check_prompt(source_prompt_ids)
+        if (source_prompt_ids.shape[0] != target_prompt_ids.shape[0]
+                or source_prompt_ids.device != target_prompt_ids.device):
+            raise ValueError('Source and target prompt batch/device mismatch')
+        if torch.equal(source_prompt_ids, target_prompt_ids):
+            raise ValueError('Wrong-source control requires a distinct source prompt')
+        features = self.prompt_features(source_prompt_ids)
+        features = features.detach().to(device=self.predictor[0].weight.device,
+                                        dtype=self.predictor[0].weight.dtype)
+        z = self.predictor(features)
+        return self.prefix_projector(z).reshape(
+            target_prompt_ids.shape[0], self.prefix_tokens, self.hidden)
+
+    def answer_logits_from_source(self, target_prompt_ids, source_prompt_ids, answer_ids):
+        """Teacher-forced CE for a source state extracted from separate prompt tokens."""
+        self._check_tokens(target_prompt_ids, answer_ids)
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if (context is not None and self.prefix_tokens + target_prompt_ids.shape[1]
+                + answer_ids.shape[1] > context):
+            raise ValueError('Teacher-forced source-control sequence exceeds decoder context')
+        prefix = self._prefix_from_source(target_prompt_ids, source_prompt_ids)
+        embed = self.base.get_input_embeddings()
+        seq = torch.cat((prefix, embed(target_prompt_ids), embed(answer_ids)), dim=1)
+        logits = self.base(inputs_embeds=seq, use_cache=False).logits
+        start = self.prefix_tokens + target_prompt_ids.shape[1] - 1
+        answer_logits = logits[:, start:start + answer_ids.shape[1], :]
+        if answer_logits.shape[:2] != answer_ids.shape:
+            raise ValueError('Source-control answer alignment mismatch')
+        return answer_logits
+
+    def answer_loss_from_source(self, target_prompt_ids, source_prompt_ids, answer_ids):
+        logits = self.answer_logits_from_source(target_prompt_ids, source_prompt_ids, answer_ids)
+        return F.cross_entropy(logits.reshape(-1, logits.shape[-1]), answer_ids.reshape(-1))
+
+    def next_token_logits_from_source(self, target_prompt_ids, source_prompt_ids):
+        """Target-free logits; wrong source may have different token length."""
+        self._check_prompt(target_prompt_ids)
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if context is not None and self.prefix_tokens + target_prompt_ids.shape[1] > context:
+            raise ValueError('Source-control inference exceeds decoder context')
+        prefix = self._prefix_from_source(target_prompt_ids, source_prompt_ids)
+        embed = self.base.get_input_embeddings()
+        seq = torch.cat((prefix, embed(target_prompt_ids)), dim=1)
+        return self.base(inputs_embeds=seq, use_cache=False).logits[:, -1, :]
+
+    @torch.no_grad()
+    def greedy_from_source(self, target_prompt_ids, source_prompt_ids, max_new_tokens=8):
+        """Bounded target-free wrong-source generation; research-only."""
+        self._check_prompt(target_prompt_ids)
+        if type(max_new_tokens) is not int or not 1 <= max_new_tokens <= 32:
+            raise ValueError('Invalid generation token budget')
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if (context is not None and self.prefix_tokens + target_prompt_ids.shape[1]
+                + max_new_tokens > context):
+            raise ValueError('Source-control generation exceeds decoder context')
+        prefix = self._prefix_from_source(target_prompt_ids, source_prompt_ids)
+        embed = self.base.get_input_embeddings()
+        generated = target_prompt_ids
+        for _ in range(max_new_tokens):
+            seq = torch.cat((prefix, embed(generated)), dim=1)
+            token = self.base(inputs_embeds=seq, use_cache=False).logits[:, -1, :].argmax(
+                dim=-1, keepdim=True)
+            generated = torch.cat((generated, token), dim=1)
+        return generated[:, target_prompt_ids.shape[1]:]
