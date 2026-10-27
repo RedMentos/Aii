@@ -110,7 +110,8 @@ class EventScheduler:
                          else e['created'])>=last))
                    for e in st['events']+st['history']
                    if e['origin']!='USER' and e.get('action') not in (None,'notice')
-                   and (e.get('dispatch_log') or e['status'] in {'DISPATCHED','DONE','FAILED'}))
+                   and (e.get('dispatch_log') or e.get('dispatched') is not None
+                        or e['status'] in {'DISPATCHED','DONE','FAILED'}))
     def next(self,idle=True,resource_state='NORMAL',quiet=False):
         with self.s.mutex:return self._next(idle,resource_state,quiet)
     def _next(self,idle=True,resource_state='NORMAL',quiet=False):
