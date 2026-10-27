@@ -506,10 +506,17 @@ class SleepCycle:
         return report
     def _finish(self,report,st,v,started):
         if st is not None:
-            try:self.queue.save(st,v)
+            try:
+                self.queue.save(st,v)
+                report['schedule_saved']=True
             except ValueError:
-                # A concurrent explicit edit won; re-run is safe because every step is idempotent per item.
+                # A concurrent explicit edit won. Work may have run, but the
+                # replay schedule (including last_full) did NOT commit.
+                # Never publish a completed cycle or advance scheduler credit.
                 report['schedule_saved']=False
+                if report.get('status')=='DONE':
+                    report['status']='INTERRUPTED'
+                    report['reason']='SCHEDULE_CAS_CONFLICT'
         report['duration_s']=round(self.monotonic()-started,3)
         path=self.home/'exports/sleep-last.json';atomic_write(path,dumps(report));report['artifact']=str(path)
         self.s.set_state(LAST_KEY,{k:report[k] for k in ('mode','origin','status','resource_state','started','duration_s')}|{'phases':[{k:p.get(k) for k in ('phase','status','selected','passed','failed','retired','retention_old','regression_flag')} for p in report['phases']]})
