@@ -1,4 +1,27 @@
 {
+  "automation11_z12c_control_confidence_20261027": {
+    "status": "SOFTWARE_RED_GREEN_PASS_REVIEW_ONLY",
+    "parent_pr": 649,
+    "parent_sha": "293ccf7dd8b24a9dd25e0ceffac1792e8e14cc53",
+    "source_commit": "5f40522e342f0c48233d28e939579954036c2052",
+    "source_blob": "340b568a1270c82559901196f7cd8fcc04e14e0f",
+    "red_actions": 40447670335,
+    "red_tests": "21 tests: 1 FAIL 2 ERROR",
+    "red_artifact_sha256": "2a16ed0376ef560bdaa2fa6d17f844cbc620f6ba270d47100f4b026d4f273156",
+    "green_actions": 40447726469,
+    "green_tests": "21/21 PASS; compile 0; privacy CLEAN",
+    "green_artifact_sha256": "9dd4d21622dec648279222c636d08870365d153a553f4ee317d563059c0e3c76",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-Z12c-Control/",
+    "native_or_redmi_proof": false,
+    "registered_z12c_remeasurement": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Review child PR; unregistered real-file-world smoke and read-only SHADOW inference consumer"
+  },
   "canon": "V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
   "completed_this_run": [
     "Completed interrupted STEP2 real-weight ablation evidence inspection without discarding rows",
