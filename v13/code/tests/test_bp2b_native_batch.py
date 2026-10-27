@@ -112,28 +112,25 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         import os
         from unittest import mock
         original_fsync = os.fsync
-        synced_inodes = set()
+        synced_paths = set()
 
         def recording_fsync(fd):
-            stat = os.fstat(fd)
-            synced_inodes.add((stat.st_dev, stat.st_ino))
+            synced_paths.add(os.readlink(f'/proc/self/fd/{fd}'))
             return original_fsync(fd)
 
         with mock.patch.object(batch.os, 'fsync', side_effect=recording_fsync):
             self.run_batch(max_jobs=1)
         log = self.out / '.bp2b-batch' / 'software1' / 'log-s41-legacy.txt'
-        stat = log.stat()
-        self.assertIn((stat.st_dev, stat.st_ino), synced_inodes)
+        self.assertIn(str(log), synced_paths)
 
     def test_failed_raw_log_is_fsynced_before_failure_checkpoint(self):
         import os
         from unittest import mock
         original_fsync = os.fsync
-        synced_inodes = set()
+        synced_paths = set()
 
         def recording_fsync(fd):
-            stat = os.fstat(fd)
-            synced_inodes.add((stat.st_dev, stat.st_ino))
+            synced_paths.add(os.readlink(f'/proc/self/fd/{fd}'))
             return original_fsync(fd)
 
         def failed_runner(cmd, stdout, stderr, timeout, check):
@@ -144,8 +141,7 @@ class NativeBatchSoftwareTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 self.run_batch(max_jobs=1, runner=failed_runner)
         log = self.out / '.bp2b-batch' / 'software1' / 'log-s41-legacy.txt'
-        stat = log.stat()
-        self.assertIn((stat.st_dev, stat.st_ino), synced_inodes)
+        self.assertIn(str(log), synced_paths)
 
     def test_timeout_is_failure_not_partial_success(self):
         def timed_out(cmd, stdout, stderr, timeout, check):
