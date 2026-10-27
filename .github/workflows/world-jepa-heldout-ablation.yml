@@ -1,0 +1,79 @@
+name: V13 registered World-JEPA heldout ensemble ablation
+on:
+  push:
+    branches: [assistant/v13-world-jepa-heldout-20261027]
+    paths:
+      - '.github/workflows/world-jepa-heldout-ablation.yml'
+      - 'v13/code/scripts/world_jepa_heldout_ablation.py'
+      - 'v13/code/tests/test_world_jepa_heldout_ablation.py'
+      - 'v13/code/v13/world_jepa.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-jepa-heldout-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  heldout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Frozen cohort verification, unit tests, measurement and closed raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-world-jepa-heldout"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/WORLD_JEPA_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_heldout_ablation.py > "$evidence/HARNESS_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-heldout-venv"
+          py="$RUNNER_TEMP/v13-heldout-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 5m env PYTHONPATH=. "$py" -m unittest -v tests.test_world_jepa tests.test_world_jepa_coverage_integrity tests.test_world_jepa_heldout_ablation
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=. "$py" scripts/world_jepa_heldout_ablation.py --run --out "$evidence/RESULT.json"
+          ) > "$evidence/MEASURE_RAW.log" 2>&1
+          echo "$?" > "$evidence/MEASURE_EXIT.txt"
+          python3 -m py_compile v13/code/v13/world_jepa.py v13/code/scripts/world_jepa_heldout_ablation.py v13/code/tests/test_world_jepa_heldout_ablation.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 50c0a73c22d53eeb708a491f7c6b26cddd492d8d --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 50c0a73c22d53eeb708a491f7c6b26cddd492d8d HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-jepa-heldout-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-world-jepa-heldout/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits without promoting synthetic outcomes
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-world-jepa-heldout"
+          for name in INSTALL UNIT MEASURE COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'WORLD_JEPA_HELDOUT_SYNTHETIC_ONLY_NO_AGE_PROMOTION'
