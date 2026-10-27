@@ -25,6 +25,10 @@ def first_issue(trace):
             return {'step': row['step'], 'kind': 'NONFINITE'}
         if row['pred_abs_sum'] == 0 or row['proj_abs_sum'] == 0:
             return {'step': row['step'], 'kind': 'ZERO_GRADIENT'}
+        if row.get('optimizer_moments_finite') is False:
+            return {'step': row['step'], 'kind': 'OPTIMIZER_NONFINITE'}
+        if 'update_abs_sum' in row and row['update_abs_sum'] is None:
+            return {'step': row['step'], 'kind': 'UPDATE_NONFINITE'}
     return None
 
 
@@ -39,8 +43,11 @@ def _grad_stat(module, torch):
     if nonfinite:
         return {'abs_sum': None, 'finite': False, 'missing_tensors': 0,
                 'nonfinite_elements': nonfinite}
-    return {'abs_sum': sum(float(g.detach().abs().sum()) for g in grads),
-            'finite': True, 'missing_tensors': 0, 'nonfinite_elements': 0}
+    # Accumulate in float64: finite FP32 elements can overflow an FP32 sum.
+    total = sum(float(g.detach().abs().double().sum()) for g in grads)
+    return {'abs_sum': total if math.isfinite(total) else None,
+            'finite': math.isfinite(total), 'missing_tensors': 0,
+            'nonfinite_elements': 0}
 
 
 def _param_hash(candidate):
@@ -112,11 +119,12 @@ def _train_arm(candidate, tok, torch, rows, pre_eval):
             break
         before = [p.detach().clone() for p in candidate.trainable_parameters()]
         opt.step()
-        entry['update_abs_sum'] = sum(float((p.detach()-old).abs().sum())
-                                  for p, old in zip(candidate.trainable_parameters(), before))
+        delta = sum(float((p.detach()-old).abs().double().sum())
+                    for p, old in zip(candidate.trainable_parameters(), before))
+        entry['update_abs_sum'] = delta if math.isfinite(delta) else None
         entry['optimizer_moments_finite'] = _optimizer_finite(opt, torch)
         trace.append(entry)
-        if not entry['optimizer_moments_finite'] or not math.isfinite(entry['update_abs_sum']):
+        if not entry['optimizer_moments_finite'] or entry['update_abs_sum'] is None:
             break
     return {'pre_eval': bool(pre_eval), 'pre_eval_rows': pre_eval_count,
             'trace': trace, 'first_issue': first_issue(trace),
