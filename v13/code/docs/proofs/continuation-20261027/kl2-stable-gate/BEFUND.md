@@ -29,3 +29,10 @@ Wort-Kanals ohne Bedeutung; ein besserer Encoder bleibt nötig, damit Lernen üb
 Nächster Schritt (WP-KL3, neu vorregistrieren): Prüf-Kennzahlen je Job ins Ergebnis, Eltern-Bewertung fair machen
 (Eltern und Kandidat beide nur auf Korrekturen, die nach der Eltern-Freigabe kamen), neue Seeds.
 Grenzen: nur Routen-Kopf, generierte deutsche Umschreibungen, Mensch durch Harness ersetzt, Cloud, kein Handy.
+
+Nachtrag (Review auf PR #640): „außerhalb der Stichprobe“ gilt nur für den Optimierer-Lauf des Kandidaten. Jeder
+Fold-Kandidat startet vom aktiven Eltern-Kopf, und unter der bewerteten neuesten Hälfte können Korrekturen liegen,
+die dieser Eltern-Kopf schon gelernt hat. Das ist eine Prüfung „Änderung gegenüber Eltern“, kein strenger Beleg für
+Verallgemeinerung auf ungesehene Korrekturen. Die Prüfung nur auf frischen Korrekturen (erst nach dem Eltern-Kopf
+beobachtet, zu wenige = keine Freigabe) ist die Probezeit aus WP-KL6 (`route_probation.py`): `KL6_PROBATION_FAIL`,
+weil 8 frische Korrekturen zu wenig sind. Keine Freigabe-Regel aus KL2 wird als Standard empfohlen.
