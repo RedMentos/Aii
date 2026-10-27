@@ -104,6 +104,7 @@ class Ports:
         for p in sorted(d.glob('*.json')) if d.is_dir() else []:
             try:man=json.loads(p.read_text())
             except Exception:continue
+            if not isinstance(man,dict):continue
             snd,rcv=direction_roles(man.get('direction') or p.stem)
             for side,key_field,r_ in (('sender_revision','sender_bridge_key',snd),
                                       ('receiver_revision','receiver_bridge_key',rcv)):
