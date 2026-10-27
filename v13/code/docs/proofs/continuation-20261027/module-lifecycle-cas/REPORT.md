@@ -15,3 +15,13 @@
 **Resume command:** `cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate`.
 
 **Private backups:** `/V13-Checkpoints/2026-10-27/Module-Lifecycle-CAS/`. Source/next command/negative gates also in `BUILD_STATE_MODULE_CAS.json`.
+
+## Follow-up package: post-write authorization + ownership
+
+Original preregistered RED `abe9abce1dca53ed5aa717a102a02660a86410ab`, Actions `40465483085`: **52 tests, 3 FAIL** (disable, Notaus, typed NETWORK ban). Revoke(delete=True) in the **post-write** callback already passed because revoke unlinked the file; the predicted failure for that ordering was disproved. Original ZIP `12716705293` SHA256 `0c596a446a3f06e97fdbfc85d0d35bba0d3110cd77dede54ae7ab402c9c7129e`, CRC/HEAD/exits checked and private backup byte-exact.
+
+Source fix `b80120860c6b33edcd98fcd23f0c26e5699cf0d0` rechecks the typed policy after the quarantine write and inside the optimistic state mutation, and removes stale bytes only when no other fetch owns the state. Actions `40465545500`: **52/52 PASS**, compile0, privacy CLEAN; ZIP `12716552072` SHA256 `cc769ea0dcf131d08d44604fe27feb0f1359bee50fa72c5b70da10ed45d9dae0`, CRC/HEAD/exits checked, private backup byte-exact.
+
+Two additional counterexamples test revoke(delete=True) **before** the file write and competing same-ID fetch ownership; source unchanged, tests `7a4734d8dea06036af1b83f319482006656e7f31`. Actions `40465641170`: **54/54 PASS**, compile0, privacy CLEAN. ZIP `12715713153` SHA256 `cf3bd885e13696824d708de15ef79500d8d290a3ae3e414ebb9b135548733b9f`, CRC/HEAD/exits checked, private backup byte-exact. Current source SHA256 `modules_gate.py` `3203460dce8db9a8b83f56635dfc52a73c610d5231a7bc8c744741c53e7c7714`, `module_learn.py` `58dd97fc7a8984803901539ab1e76d5d7de976bd44d3b560ed0296f70774dc36`, tests `61e8888f1b3f8d76e7d97014a19d65fc557f4b1ef43a28122cbe966d1f6443fe`.
+
+New independent exact-source broad differential workflow `module-lifecycle-fullsuite-diff.yml` and source-only Termux ZIP/operator workflow `module-lifecycle-phone-source.yml` are queued/running; **their results are not yet claimed**. Existing full-suite historical 5 FAIL/73 ERROR remains RED unless the new differential proves otherwise. All raw ZIPs are in private `/V13-Checkpoints/2026-10-27/Module-Lifecycle-CAS/` with byte verification. Remaining cross-table final-check/filesystem TOCTOU is not proven absent.
