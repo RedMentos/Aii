@@ -36,12 +36,32 @@ def main(home, out, threads=4, seeds=5):
     data_sha = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
     if cache.exists():
         c = np.load(cache); d = {k: c[k] for k in c.files}
-    else:
-        Hs, Ms = H2.tokens(home, b1, [r['text'] for r in rows], threads)
-        sp, _ = H2.pooled(home, b1, [r['text'] for r in rows], threads)
-        rp, lat_p = H2.pooled(home, b2, [r['private'] for r in rows], threads)
-        cs, lat_c = H2.pooled(home, b2, [r['cue_span'] for r in rows], threads)
-        d = {'Hs': Hs.astype(np.float16), 'Ms': Ms, 'send_pool': sp, 'recv_private': rp, 'cue_span': cs, 'lat': np.array([lat_p, lat_c])}
+    else:  # memory-bounded states (attempt-6 sizes ran in RAM; 3000 rows OOM-killed llama-server at 8.7 GB): stage files, fresh server per 500 texts, fp16 tokens
+        def staged(name, fn):
+            f = out/f'stage_{name}.npz'
+            if f.exists(): z = np.load(f); return z['a'], float(z['lat'])
+            a, lat = fn(); np.savez(f, a=a, lat=lat); return a, lat
+        def chunked_pooled(model, texts):
+            parts, lats = [], []
+            for i in range(0, len(texts), 500):
+                a, l = H2.pooled(home, model, texts[i:i+500], threads); parts.append(a); lats.append(l)
+            return np.concatenate(parts), float(np.mean(lats))
+        sp, _ = staged('send_pool', lambda: chunked_pooled(b1, [r['text'] for r in rows]))
+        rp, lat_p = staged('recv_private', lambda: chunked_pooled(b2, [r['private'] for r in rows]))
+        cs, lat_c = staged('cue_span', lambda: chunked_pooled(b2, [r['cue_span'] for r in rows]))
+        def tok():
+            texts = [r['text'] for r in rows]; Hl, Ml = [], []
+            for i in range(0, len(texts), 250):
+                H, M = H2.tokens(home, b1, texts[i:i+250], threads); Hl.append(H.astype(np.float16)); Ml.append(M); del H
+            T = max(h.shape[1] for h in Hl); D = Hl[0].shape[2]
+            Hs = np.zeros((len(texts), T, D), np.float16); Ms = np.zeros((len(texts), T), np.float32); k = 0
+            for h, m in zip(Hl, Ml): Hs[k:k+len(h), :h.shape[1]] = h; Ms[k:k+len(h), :h.shape[1]] = m; k += len(h)
+            return Hs, Ms
+        f = out/'stage_tokens.npz'
+        if f.exists(): z = np.load(f); Hs16, Ms = z['H'], z['M']
+        else:
+            Hs16, Ms = tok(); np.savez(f, H=Hs16, M=Ms)
+        d = {'Hs': Hs16, 'Ms': Ms, 'send_pool': sp, 'recv_private': rp, 'cue_span': cs, 'lat': np.array([lat_p, lat_c])}
         np.savez_compressed(cache, **d)
     Hs = d['Hs'].astype(np.float32); Ms = d['Ms']; emb_s = time.time()-t
     mu, V = H2.pca(d['cue_span'], V3.R*2); exact = (d['cue_span']-mu)@V.T; exact_bytes = float(np.mean([len(r['cue_span'].encode()) for r in rows]))

@@ -23,3 +23,8 @@ A FAIL here at this power counts as evidence against a useful L1 gain on that ta
 Per task: canon PASS/FAIL exactly as in attempts 4-6. G-CALLOSUM-UTILITY-002 needs more than L1; a PASS here only re-opens the
 L2 prefix SHADOW experiment for that task (as after attempt 4). A PASS on escalate is still one seed: it must be replicated on a
 second fresh 3000-row seed (20261302) before any L2 work. LATENT authority stays 0; runtime unchanged.
+
+## Amendment A1 (2026-10-27, after the first start crashed before any result)
+The first start died while computing states: the Linux OOM killer ended llama-server (8.7 GB) at the third embedding stage,
+before any model output was evaluated (no accuracy was seen). Change: state computation only — stage files on disk, a fresh
+server per 500 texts, fp16 tokens in chunks. Texts, models, data, recipe and criteria are untouched.
