@@ -24,7 +24,17 @@
     "artifact": 12728746126,
     "zip_sha256": "584336a064e51475602b9f06b86502ed55a39b94025e9bba46cfdd63669f72b5",
     "backup": "private Library byte-exact",
-    "native_activated": false
+    "native_activated": false,
+    "trigger_static": {
+      "source": "7a2e8856d7b4c78bdf863c2bf858b6af5de12c84",
+      "run": 40490750138,
+      "tests": "47/47 PASS",
+      "compile_exit": 0,
+      "privacy": "CLEAN",
+      "artifact": 12728491920,
+      "zip_sha256": "d722292ff7b262c66b2c587e53a84d582be30f7148059c2635e5272424786127",
+      "backup": "private Library byte-exact"
+    }
   },
   "frozen": {
     "trainer_git_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
@@ -44,5 +54,16 @@
     "Redmi_measured": false,
     "V13": "INCOMPLETE"
   },
-  "next": "Verify no queued/in_progress heavy owner; create ACTIVATE_SCALE0.txt on own review branch; independently audit new original native ZIP and retain RED if failed."
+  "next": "After no heavy owner, create ACTIVATE_SCALE0_RETRY.txt on review branch; audit original native ZIP and all exits; no utility promotion on partial.",
+  "first_activation_red": {
+    "run": 40490474566,
+    "source": "50b940fa1834947a809408833d024f8684509f82",
+    "artifact": 12727636825,
+    "zip_sha256": "31776afbeacfe5250e88f9c591fb0b3c3317dd96fbc60a57fd2f5f6e13c99dfd",
+    "software_unit_exit": 1,
+    "tests": "56 PASS 1 FAIL",
+    "native": "SKIPPED",
+    "reason": "static inherited workflow test expected old branch/trigger",
+    "backup": "private Library byte-exact"
+  }
 }
