@@ -36,7 +36,18 @@
   "full_suite": {
     "source_commit": "bb27d538f12fcb65b747cac96b1a2013fcd05915",
     "actions": 40538877446,
-    "status": "PENDING"
+    "status": "SOFTWARE_FULLSUITE_PASS",
+    "tests": "1913 OK (1 skipped)",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12749358237,
+    "zip_sha256": "81e46713102a8399f738d851eeae7ec70eb40e7403252898f2b53adf9e9962c4",
+    "private_backup_verified": true
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -50,6 +61,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect Actions 40538877446 raw exits, CRC/hash and private backup, update report, independently review PR742, then proceed distinct canonical package.",
+  "next_command": "Independent review PR742; continue child WP-N8 episode vector-boundary branch, do not promote native/Redmi/Age gates.",
   "note": "Branch-scoped; do not overwrite shared BUILD_STATE, do not merge main automatically."
 }
