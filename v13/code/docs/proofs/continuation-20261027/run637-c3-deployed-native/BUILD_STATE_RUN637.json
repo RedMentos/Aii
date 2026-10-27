@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN637_SELECTED_C3_DEPLOYED_NATIVE_PENDING_V1",
+  "schema": "V13_RUN637_DEPLOYED_NATIVE_RETRY_PENDING_V2",
   "date_utc": "2026-10-27",
   "branch": "codex/automation11-run637-c3-deployed-native-20261027",
   "owner": "GPT-6 automation actual selected C3 QAD Q4 utility",
@@ -9,8 +9,8 @@
   "test_commit": "5ca3598ee48ad75c851689d91fae5764e342848d",
   "workflow_commit": "6316d3c349d34411dcbf07c3e106f8da9d05ddb9",
   "workflow_blob": "6bc1576ebd95160194192d3bb6cf6d4d6879f88f",
-  "run_id": 40429549368,
-  "status": "IN_PROGRESS_UNVERIFIED",
+  "run_id": 40429819193,
+  "status": "RETRY_IN_PROGRESS_UNVERIFIED",
   "original_adapter": {
     "run_id": 40428833150,
     "artifact_id": 12701530582,
@@ -37,5 +37,26 @@
     "V13_complete": false
   },
   "production_integrated": false,
-  "next_exact_command": "Inspect Actions 40429549368 exact head 6316d3c349d34411dcbf07c3e106f8da9d05ddb9, download original raw artifact, verify ZIP CRC and inner SHA, preserve all negative cases and byte-backup privately; if native parity fails do not infer utility, continue independent canonical package."
+  "next_exact_command": "Inspect Actions 40429819193 exact head bf9541488fcb3cdd9458e252c16ea4cbada21734; SHA-close original raw; verify actual selected C3 native token parity and base/scale0/scale1 utility, back up privately with byte roundtrip. If fail, preserve RED and continue another organ.",
+  "first_attempt": {
+    "run_id": 40429549368,
+    "head_sha": "6316d3c349d34411dcbf07c3e106f8da9d05ddb9",
+    "status": "RED_PRE_NATIVE_JINJA2_MISSING",
+    "source_tests": "30/30_PASS",
+    "deps": 0,
+    "adapter_fetch": 0,
+    "server_fetch": 0,
+    "model_download": 0,
+    "native_exit": 1,
+    "privacy": "CLEAN",
+    "original_inner_sha": "MISSING_EVIDENCE_CLOSE_SHELL_BUG",
+    "raw_zip_sha256": "17c13e741a55de1bc1212540b30bdec66637c9776f83dab0b5caccde9e821283",
+    "original_raw_members": 19,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run637/Run637-first-RED-40429549368.zip",
+    "roundtrip": "PASS"
+  },
+  "amendment_1_commit": "6d23cba575be9e88d5bc0d651fbe90d2e19cfcfb",
+  "repair_test_commit": "843c342642ff730043269a363923c58960dda263",
+  "repair_workflow_commit": "bf9541488fcb3cdd9458e252c16ea4cbada21734",
+  "repair_workflow_blob": "84506c50b2e405e13f5574b4a2a462beb0b574fd"
 }
