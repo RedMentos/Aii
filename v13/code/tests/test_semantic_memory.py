@@ -51,6 +51,19 @@ class SemanticRecall(unittest.TestCase):
         self.assertEqual(self.recall('How much money does Project Alpha have?'),[])
         self.assertEqual(self.keys.last['status'],'OK');self.assertEqual(self.keys.last['mode'],'shadow')
         row=self.r.store.one("SELECT metrics FROM telemetry WHERE kind='memory_embedding' ORDER BY id DESC LIMIT 1");self.assertNotIn('Alpha',row['metrics']);self.assertIn('"mode": "shadow"',row['metrics'].replace('"mode":"shadow"','"mode": "shadow"'))
+    def test_nonunit_persisted_cache_must_not_fake_max_similarity(self):
+        import time
+        mid=self.remember()
+        row=dict(self.r.store.one('SELECT * FROM memories WHERE id=?',(mid,)))
+        dim=self.r.cfg['memory_embed_dim']
+        # Finite and valid JSON, but not a normalized embedding.
+        self.r.store.set_state(self.keys.cache_key(row),[1e6]*dim)
+        result=self.keys.similarities('Will it rain tomorrow?',[row],
+                                      threading.Event(),time.monotonic()+30)
+        self.assertEqual(self.keys.last['encoded_keys'],1)
+        self.assertEqual(len(self.fake.calls[-1]),2)
+        self.assertLess(result[mid],.5)
+
     def test_key_cache_reused_invalidated_by_revision_and_removed_by_forget(self):
         mid=self.remember();self.r.cfg['memory_embedding']='on'
         self.recall('How much money does Project Alpha have?');self.recall('Project Alpha funds?')
@@ -71,6 +84,11 @@ class SemanticRecall(unittest.TestCase):
         with self.assertRaises(Cancelled):self.r.memory.recall('How much money does Project Alpha have?',self.r.session,cancel=stop)
 
 class SemanticPieces(unittest.TestCase):
+    def test_cosine_rejects_malformed_vectors_instead_of_clamping(self):
+        from v13.semantic_memory import cosine
+        with self.assertRaises(Unavailable):cosine([float('nan')],[1.])
+        with self.assertRaises(Unavailable):cosine([1.],[1.,0.])
+
     def test_matryoshka_truncation_and_modes(self):
         v=truncate([3.,4.,99.],2);self.assertAlmostEqual(v[0],.6);self.assertAlmostEqual(v[1],.8)
         with self.assertRaises(Unavailable):truncate([1.],2)
