@@ -128,5 +128,21 @@
     "V13 stopped and SQLite closed/checkpointed without WAL/SHM/journal",
     "Keep aggregate results and raw private evidence private"
   ],
-  "platform_remaining_budget": "UNKNOWN"
+  "platform_remaining_budget": "UNKNOWN",
+  "concurrent_child_owners": [
+    {
+      "branch": "codex/automation11-control-budget-row-integrity-20261027",
+      "observed_head": "81ae3eefed324206f2a526fa98287b0c861a883b",
+      "parent_pr": 761,
+      "scope": "persisted control-budget metadata/timestamp integrity",
+      "status": "ACTIVE_OWNER_REVIEW_ONLY_DO_NOT_OVERWRITE"
+    },
+    {
+      "branch": "codex/automation11-age0d-exact-representability-20261027",
+      "observed_head": "5f0d4b250b393592bbeb75f24419f6de637226e3",
+      "parent_pr": 759,
+      "scope": "exact-result representability on parallel AGE0d candidate",
+      "status": "ACTIVE_OWNER_REVIEW_ONLY_RECONCILE_CANONICAL"
+    }
+  ]
 }
