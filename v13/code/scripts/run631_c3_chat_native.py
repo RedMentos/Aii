@@ -5,7 +5,6 @@ import json
 import math
 from pathlib import Path
 import time
-from transformers import AutoTokenizer
 from scripts import run630_c3_llama_native as P
 
 CASES = (
@@ -91,6 +90,7 @@ def aggregate(rows):
 
 def run(master_dir, model, adapter, proof, cohort, server, output):
     binding = P.verify_inputs(master_dir, model, adapter, proof, server, cohort)
+    from transformers import AutoTokenizer  # lazy: negative source tests do not need native deps
     tokenizer = AutoTokenizer.from_pretrained(str(master_dir))
     formatted = [(group, question, keys, format_chat(tokenizer, question))
                  for group, question, keys in CASES]
