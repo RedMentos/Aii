@@ -34,6 +34,10 @@ STATUSES = ('CORRECT', 'MISMATCH', 'ABSTAIN')
 
 
 def _number(text):
+    # 1,234 / 1.234 can mean 1234 (grouping) or 1.234 (fraction).
+    # A doubtful number must abstain, never generate a false correction.
+    if re.fullmatch(r'[+-]?[1-9][0-9]{0,2}[.,][0-9]{3}', text):
+        return None
     try:
         return Decimal(text.replace(',', '.'))
     except (InvalidOperation, ValueError):
