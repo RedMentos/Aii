@@ -5,6 +5,8 @@ import tempfile
 import time
 import unittest
 import numpy as np
+from v13 import b3bridge as BB
+from tests.test_b3_l1_baseline_completeness_review import complete
 from v13 import b3calibration as B
 from v13 import b3degrade as D
 from v13 import b3order as O
@@ -20,7 +22,7 @@ def write(home,**man):
 def full(**kw):
     cal=B.compute(X,X,body_pair_id='B1->B2',sender_revision='s1',receiver_revision='r1',target_tap_id='t')|{'created_wall_time':time.time()}
     return {'sender_revision':'s1','receiver_revision':'r1','sha256':'0'*64,'train':{'samples':80},'receiver_calibration':cal,
-            'l1_gate':{'verdict':'PASS','criteria':{'receiver_ood':{'significant':True}}}}|kw
+            'l1_gate':BB.l1_gate(complete())}|kw
 
 class Order(unittest.TestCase):
     def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name)

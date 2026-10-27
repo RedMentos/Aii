@@ -1,0 +1,87 @@
+name: V13 B3 promotion legacy fixture full compatibility
+on:
+  push:
+    branches: [assistant/v13-b3-promotion-legacy-fixture-review-20261027]
+    paths:
+      - '.github/workflows/b3-promotion-legacy-fixture-review.yml'
+      - 'v13/code/tests/test_b3order.py'
+      - 'v13/code/tests/test_b3calibration.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-b3-promotion-legacy-fixture
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture focused and full raw software exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/b3-promotion-legacy"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/tests/test_b3order.py > "$evidence/ORDER_TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_b3calibration.py > "$evidence/CAL_TEST_BLOB.txt"
+          git hash-object v13/code/v13/b3degrade.py > "$evidence/DEGRADE_SOURCE_BLOB.txt"
+          git merge-base --is-ancestor 912a55cda10690c5e3418be556c023f58cb91a13 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor e6e9acec3ecd39a87fed6621afd3faa985840ad5 HEAD
+          echo "$?" > "$evidence/PARENT_EXIT.txt"
+          if [ "$(cat "$evidence/ORDER_TEST_BLOB.txt")" = "0732c065578ae323f9903bb2a67c82ec5337f4db" ] && [ "$(cat "$evidence/CAL_TEST_BLOB.txt")" = "26d75f622e0c21f28757dfc58ce4d9b9e8c4b739" ] && [ "$(cat "$evidence/DEGRADE_SOURCE_BLOB.txt")" = "5cc822ecad749887acfad69f5fcba39a5a2dae8f" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/b3-promotion-legacy-venv"
+          py="$RUNNER_TEMP/b3-promotion-legacy-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_b3calibration tests.test_b3order tests.test_b3_l1_promotion_evidence_review tests.test_b3_l1_report_revalidation_review tests.test_b3_completion tests.test_b3bridge
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e6e9acec3ecd39a87fed6621afd3faa985840ad5 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check e6e9acec3ecd39a87fed6621afd3faa985840ad5 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-b3-promotion-legacy-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/b3-promotion-legacy/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/b3-promotion-legacy"
+          for name in PREREG PARENT FROZEN INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'B3_PROMOTION_LEGACY_SOFTWARE_ONLY_NO_PROMOTION'

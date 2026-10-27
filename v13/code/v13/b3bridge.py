@@ -311,6 +311,24 @@ def l1_gate(task,role_drop=.01,ood_max=.05):
             'missing_baselines':[],'invalid_evidence':[],
             'consequence':'L2 prefix SHADOW test allowed; LATENT authority stays 0' if ok else 'B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only'}
 
+def l1_report_valid(gate):
+    """Revalidate a persisted L1 PASS before doctor/completion may report it.
+
+    This checks internal evidence completeness, not external artifact
+    authenticity; a native receiver proof still requires separate gates.
+    """
+    if not isinstance(gate,dict) or gate.get('verdict')!='PASS':
+        return False
+    if gate.get('missing_baselines')!=[] or gate.get('invalid_evidence')!=[]:
+        return False
+    crit=gate.get('criteria')
+    required=('beats_no_message','beats_latent_shuffled','beats_latent_random',
+              'utility_beats_exact','utility_beats_control','utility_beats_symbolic',
+              'role_retention','receiver_ood','restart_reproducibility')
+    return isinstance(crit,dict) and all(
+        isinstance(crit.get(k),dict) and crit[k].get('significant') is True
+        for k in required)
+
 # -- :doctor (B3-H11) ---------------------------------------------------------------------------------------
 def bridge_dir(home):return Path(home)/'b3'
 
@@ -320,8 +338,8 @@ def doctor_fields(home,direction,receiver_revision=None):
     if not p.exists():return {'bridge':None}
     try:man=json.loads(p.read_text())
     except Exception as exc:return {'bridge':{'error':type(exc).__name__}}
-    gate=man.get('l1_gate') or {};stale=receiver_revision is not None and man.get('receiver_revision') not in (None,receiver_revision)
-    level='L1_PASSED_L2_SHADOW_ALLOWED' if gate.get('verdict')=='PASS' and not stale else 'unavailable'
+    gate=man.get('l1_gate') if isinstance(man.get('l1_gate'),dict) else {};stale=receiver_revision is not None and man.get('receiver_revision') not in (None,receiver_revision)
+    level='L1_PASSED_L2_SHADOW_ALLOWED' if l1_report_valid(gate) and not stale else 'unavailable'
     return {'latent_level':level,'calibration':'calibrated' if man.get('calibrated') else None,'message_rank':man.get('r'),'slot_budget':man.get('K'),
             'bridge':{'sha256':man.get('sha256'),'param_count':(man.get('budget') or {}).get('param_count'),'weights_bf16_bytes':(man.get('budget') or {}).get('weights_bf16_bytes'),
                       'message_bf16_bytes':(man.get('budget') or {}).get('message_bf16_bytes'),'l1_verdict':gate.get('verdict'),'stale_receiver_revision':stale,
@@ -341,7 +359,8 @@ def completion_gate(home,direction,row,messages=0,app=None):
     if p.exists():
         try:man=json.loads(p.read_text())
         except Exception:man=None
-    gate=(man or {}).get('l1_gate') or {};crit=gate.get('criteria') or {};bridge=row.get('bridge') or {}
+    gate=(man or {}).get('l1_gate') or {};gate=gate if isinstance(gate,dict) else {}
+    crit=gate.get('criteria') if isinstance(gate.get('criteria'),dict) else {};bridge=row.get('bridge') or {}
     stale=bool(bridge.get('stale_receiver_revision'))
     c={'CODE':(app/'v13/b3bridge.py').exists(),
        'REAL_SENDER_STATE_PATH':bool(row.get('native_taps')),
@@ -357,9 +376,9 @@ def completion_gate(home,direction,row,messages=0,app=None):
        'EXACT_ABLATION':'utility_beats_exact' in crit,
        'SYMBOLIC_CONTROL_ABLATION':'utility_beats_symbolic' in crit and 'utility_beats_control' in crit,
        'REAL_TARGET_RUNNER_MEASUREMENT':bool(row.get('hardware_proof_id'))}
-    implemented=all(c.values())
+    implemented=l1_report_valid(gate) and not stale and all(c.values())
     if implemented:status='active'
-    elif gate.get('verdict')=='PASS' and not stale:status='L1_shadow'
+    elif l1_report_valid(gate) and not stale:status='L1_shadow'
     elif c['CODE']:status='scaffold'
     else:status='unavailable'
     return {'criteria':c,'missing':[k for k in COMPLETION if not c[k]],'status':status,'B3_LATENT_IMPLEMENTED':implemented,
