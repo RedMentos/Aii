@@ -41,7 +41,7 @@ def verify_cohort(path):
     if R.git_blob_sha(raw) != COHORT_BLOB:
         raise ValueError("Run639 prospective cohort blob changed")
     c = json.loads(raw)
-    if c.get("schema") != "V13_RUN639_C3_32STEP_DOSE_RESPONSE_V1":
+    if c.get("schema") != "V13_RUN639_C3_ANCHORED_32STEP_V1":
         raise ValueError("wrong cohort schema")
     if c.get("scope") != "LINUX_NATIVE_SELECTED_C3_MASTER_LORA_SHADOW":
         raise ValueError("not shadow-only")
@@ -66,7 +66,7 @@ def verify_cohort(path):
             c.get("age_change") is not False or c.get("approval_change") is not False):
         raise ValueError("production authority/age/approval changed")
     if c.get("baseline") != BASELINE:
-        raise ValueError("original 2-step comparator changed")
+        raise ValueError("original unanchored 32-step comparator changed")
     def pairs(name):
         rows = c.get(name)
         if not isinstance(rows, list) or any(
@@ -146,7 +146,7 @@ def execute(cohort_path, master_dir, specs_path, output_dir):
     shutil.copyfile(files["safetensors"], output / "RUN639_ADAPTER.safetensors")
     shutil.copyfile(Path(master_dir) / "LICENSE", output / "RUN639_LICENSE.txt")
     proof = {
-        "schema": "V13_RUN639_C3_32STEP_NATIVE_V1",
+        "schema": "V13_RUN639_C3_ANCHORED_32STEP_NATIVE_V1",
         "evidence_scope": "LINUX_NATIVE_SELECTED_C3_MASTER_LORA_SHADOW",
         "binding": binding, "cohort_blob": COHORT_BLOB,
         "cohort_sha256": R.sha256(cohort_path),
