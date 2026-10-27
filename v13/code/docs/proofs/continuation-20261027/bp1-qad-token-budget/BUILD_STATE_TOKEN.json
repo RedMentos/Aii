@@ -1,0 +1,77 @@
+{
+  "package": "WP-BP1-QAD-C3-train-only-token-budget",
+  "date_utc": "2026-10-27",
+  "status": "TRAIN_ONLY_TOKEN_BUDGET_VERIFIED",
+  "branch": "codex/gpt6-bp1-qad-token-budget-20261027-0920",
+  "base_pr": 680,
+  "prereg_commit": "a7dba3c45f6df653580d8b1598e872115ee20dc2",
+  "green_source_commit": "db2994bb7f4b5dd70b79b5659dc49bf698d24174",
+  "original_train_sha256": "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86",
+  "train_rows": 25,
+  "tokenizer_sha256": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd",
+  "template_sha256": "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6",
+  "tokenizer_revision": "657e078c94084481950a2d555a941481f715536b",
+  "windows": {
+    "160": {
+      "truncated_rows": 25,
+      "max_prefix_lost": 587
+    },
+    "1024": {
+      "truncated_rows": 0,
+      "max_prefix_lost": 0
+    },
+    "2048": {
+      "truncated_rows": 0,
+      "max_prefix_lost": 0
+    }
+  },
+  "max_total_tokens": 747,
+  "mean_total_tokens": 678.6,
+  "red": [
+    {
+      "run": 40472696833,
+      "artifact": 12719891377,
+      "zip_sha256": "0510b7587aff16f8e2ae9a9a0b01064429b8370184f3398608258dd2a512953a",
+      "reason": "new preflight mis-transcribed immutable original train hash",
+      "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Token-Budget/bp1-token-40472696833-RED.zip"
+    },
+    {
+      "run": 40472878380,
+      "artifact": 12719812144,
+      "zip_sha256": "456a305ed07bd1bb3e24c1f4415537fb2b46de43f51d8b77e2d008223d0c1e96",
+      "reason": "isolated transformers lacked optional Jinja2",
+      "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Token-Budget/bp1-token-40472878380-RED2.zip"
+    }
+  ],
+  "pass": {
+    "run": 40473146923,
+    "artifact": 12719473072,
+    "zip_sha256": "df574657356307081b4c573ae090cd7524ca2b7f0c581a98db7680d58399c829",
+    "tests": "8/8 PASS",
+    "exits": {
+      "UNIT": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "VENV": 0,
+      "PIP": 0,
+      "FETCH": 0,
+      "SNAPSHOT": 0,
+      "AUDIT": 0
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Token-Budget/bp1-token-40473146923-PASS.zip"
+  },
+  "all_backups_byte_identical": true,
+  "native_c3_training": false,
+  "native_c3_inference": false,
+  "heldout_targets_used": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false
+  },
+  "next": "QAD FP32 and deployed GGUF real Linux-native smoke, then isolated 25-row BP1 LoRA at preflight 1024 tokens",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 scripts/bp1_qad_token_budget.py --train /verified/bp1-output/train_offer.jsonl --tokenizer-dir /verified/qad-snapshot --out /new/TOKEN_BUDGET.json"
+}

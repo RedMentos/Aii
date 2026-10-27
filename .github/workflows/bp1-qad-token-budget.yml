@@ -47,7 +47,7 @@ jobs:
           set +e
           python3 -m venv "$RUNNER_TEMP/bp1-token-venv" > "$RUNNER_TEMP/bp1-token-proof/VENV_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-token-proof/VENV_EXIT.txt"
-          timeout 240s "$RUNNER_TEMP/bp1-token-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.9.0' > "$RUNNER_TEMP/bp1-token-proof/PIP_RAW.log" 2>&1
+          timeout 240s "$RUNNER_TEMP/bp1-token-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.9.0' 'jinja2==3.1.6' > "$RUNNER_TEMP/bp1-token-proof/PIP_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-token-proof/PIP_EXIT.txt"
           exit 0
       - name: Fetch exact source-bound train rows and official qad tokenizer files (no model weights)
