@@ -272,11 +272,25 @@ class ContextOS:
             # (measured 2026-10-09, bench-results/context-cache-20261009). Re-enter the stored transcript: old prompt +
             # the committed answer + new volatile block + query. Any mismatch falls back to stable_prefix.
             prev=st.get('transcripts',{}).get(role);last=turns[-1] if turns else None
-            if prev and last and prev['event_id']==last[0] and prev['system']==stable and last[1][-1]['role']=='assistant':
+            # Re-enter only the exact still-valid prefix. A changed/removed volatile
+            # memory or rewritten source turn must never survive in a cached prompt.
+            # In ACTIVE, a SHADOW counterfactual was not actually sent to the runner.
+            if not (prev and last and prev.get('event_id')==last[0] and prev.get('system')==stable
+                    and len(last[1])==2 and last[1][0]['role']=='user'
+                    and last[1][-1]['role']=='assistant'):
+                reason='append_no_matching_transcript'
+            elif st['mode']=='ACTIVE' and not prev.get('applied',False):
+                reason='append_unapplied_transcript'
+            elif prev.get('volatile_hash')!=digest(vtext):
+                reason='append_volatile_changed'
+            elif prev.get('history_hash')!=digest(dumps(turns[:-1])):
+                reason='append_history_changed'
+            elif prev.get('query')!=last[1][0]['content']:
+                reason='append_query_changed'
+            else:
                 cand=prev['messages']+[{'role':'assistant','content':last[1][-1]['content']}]+tail
                 if sum(len(m['content']) for m in cand)<=budget:planned=cand;decisions.append('append_reentry')
                 else:reason='append_budget_rebuild'
-            else:reason='append_no_matching_transcript'
             if planned is None:layout='stable_prefix'
         if planned is None:
             if layout=='stable_prefix' and vtext:planned=[{'role':'system','content':stable}]+hist+tail
@@ -295,7 +309,9 @@ class ContextOS:
             st2['last'][role]={'legacy':fp_legacy,'planned':fp_planned,'event_id':event_id,'packet_id':p['packet_id'],'decisions':sorted(set(decisions)),'applied':applied}
             st2['recall']=(st2['recall']+[recall])[-RECALL_WINDOW:];st2['plans']+=1
             if st2['layout']=='append_only' and sum(len(m['content']) for m in planned)<=TRANSCRIPT_MAX_CHARS:
-                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned}
+                st2.setdefault('transcripts',{})[role]={'event_id':event_id,'system':stable,'messages':planned,
+                    'volatile_hash':digest(vtext),'history_hash':digest(dumps(turns)),
+                    'query':query,'applied':applied}
             else:st2.get('transcripts',{}).pop(role,None)
         self._mutate(fn)
         if self.n is not None:
