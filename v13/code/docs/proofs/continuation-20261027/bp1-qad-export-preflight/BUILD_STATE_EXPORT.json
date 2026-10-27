@@ -1,0 +1,53 @@
+{
+  "schema": "V13_BP1_QAD_EXPORT_PREFLIGHT_STATE_V1",
+  "branch": "codex/gpt6-bp1-gguf-b10964-export-preflight-20261027",
+  "owner": "GPT-6 independent",
+  "base": "f6d6812a493cc7d2235e97bf16e0324242d1ecd6",
+  "status": "SOFTWARE_SYNTHETIC_LFM2_GGUF_WRITER_GREEN_NATIVE_TRAIN_RED",
+  "source_commit": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+  "gguf_source_blobs": {
+    "constants": "e54ee5a0fd41416f191130cdf1efd08507f63894",
+    "tensor_mapping": "d2dfeece59522ffb417f70939cf94ee157591eee"
+  },
+  "red": {
+    "run": 40478739329,
+    "artifact": 12722110243,
+    "zip_sha256": "21585ef3dfec1ce1afb1519aa8959d1792172797c7391f4a3093ee04995878f9",
+    "tests": "4 pass 1 error",
+    "compile_exit": 0,
+    "privacy": "CLEAN"
+  },
+  "green": {
+    "run": 40478870140,
+    "artifact": 12721429876,
+    "zip_sha256": "a427bd7e2edb305e35813b41d17464da251b523978cb516d952a182f2d52b5e1",
+    "tests": "5/5 PASS",
+    "compile_exit": 0,
+    "privacy": "CLEAN"
+  },
+  "native_red": {
+    "run": 40476209086,
+    "artifact": 12720663578,
+    "zip_sha256": "2177331d444a1deb5706e8a95c8f8543f590cc035b93d40bf7ee7b7a43d98040",
+    "reason": "gguf 0.16.3 LFM2 exporter unavailable",
+    "adapter_exported": false
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Export-Preflight/",
+  "backup_verified_byte_identical": true,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "Serial genuine QAD native train using exact pinned b10964 gguf-py writer; no public adapter bytes",
+  "next_command": "cd v13/code && BP1_GGUF_CHECKOUT=/path/to/llama-b10964 PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest discover -s tests -p 'test_bp1_qad_export_preflight.py' -v",
+  "prerequisites": [
+    "original 25-row train/model/seed pins unchanged",
+    "no active heavy owner",
+    "isolated gguf source commit verified",
+    "native raw evidence closed"
+  ]
+}
