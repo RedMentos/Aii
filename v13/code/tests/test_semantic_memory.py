@@ -70,6 +70,36 @@ class SemanticRecall(unittest.TestCase):
         self.assertEqual(self.keys.last['encoded_keys'],1)
         self.assertLess(result2[mid],.5)
 
+    def test_last_query_is_only_from_successful_current_recall(self):
+        import time
+        from v13.common import digest
+        mid=self.remember()
+        q='How much money does Project Alpha have?'
+        self.r.cfg['memory_embedding']='on'
+        self.recall(q)
+        self.assertEqual(self.keys.last_query['digest'],digest(q))
+        # The same text on a later turn must not reuse the old embedding.
+        self.r.cfg['memory_embedding']='off'
+        self.recall(q)
+        self.assertIsNone(self.keys.last_query)
+        self.r.cfg['memory_embedding']='on'
+        self.recall(q)
+        self.assertEqual(self.keys.last_query['digest'],digest(q))
+        self.r.memory.recall(q,self.r.session,top_k=0)
+        self.assertIsNone(self.keys.last_query)
+        self.recall(q)
+        self.keys.encoder=Fake(Unavailable('no current embedding'))
+        self.recall(q)
+        self.assertIsNone(self.keys.last_query)
+        # Direct callers also must not leave the previous successful vector.
+        self.keys.encoder=Fake()
+        self.recall(q)
+        self.keys.encoder=Fake(Unavailable('direct failure'))
+        row=dict(self.r.store.one('SELECT * FROM memories WHERE id=?',(mid,)))
+        with self.assertRaises(Unavailable):
+            self.keys.similarities(q,[row],threading.Event(),time.monotonic()+10)
+        self.assertIsNone(self.keys.last_query)
+
     def test_key_cache_reused_invalidated_by_revision_and_removed_by_forget(self):
         mid=self.remember();self.r.cfg['memory_embedding']='on'
         self.recall('How much money does Project Alpha have?');self.recall('Project Alpha funds?')
