@@ -1514,15 +1514,15 @@
     "owner_branch": "codex/automation11-n7-cache-observe-once-20261027",
     "parent_pr": 721,
     "parent_sha": "6150b2551a6cd4aefe9d2f499563985482a09c10",
-    "status": "REVIEW_ONLY_CI_PENDING",
+    "status": "REVIEW_ONLY_FOCUSED_PASS",
     "red_test_sha": "92bd873dab359e711fbd4198c2efa5ed2f784a45",
     "red_actions_run": 40518457190,
     "red_witness_sha": "172ea86e25251fdf4bd23d12c270018e22cb0005",
     "green_candidate_sha": "cc6e7332591d6abe90cbef42d91f000b72d74e91",
     "green_actions_run": 40518505881,
-    "tests": "PENDING",
-    "compile": "PENDING",
-    "privacy": "PENDING",
+    "tests": "26/26 focused PASS Actions 40518505881",
+    "compile": "PASS",
+    "privacy": "CLEAN",
     "native_evidence": false,
     "global_crash_atomic_modulator_proof": false,
     "step2": "UTILITY_FAIL",
@@ -1534,6 +1534,8 @@
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/n7-cache-observe-once/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
-    "next_prerequisite": "Verify exact RED/GREEN Actions, parent broad suite, independent review; no native/age promotion."
+    "next_prerequisite": "Independent review and combined BJ1+N7 full suite Actions 40518877350; no native utility or age promotion.",
+    "red_tests": "Independent RED witness Actions 40518545104: 26 tests, 3 expected FAIL",
+    "red_witness_actions_run": 40518545104
   }
 }
