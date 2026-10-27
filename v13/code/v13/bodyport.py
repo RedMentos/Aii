@@ -165,22 +165,25 @@ class Ports:
                 'receiver_bridge_key':bridge_key(rcv,right)}
 
     def bridge_valid(self,direction):
-        """Only exact live model-byte/bridge-key-bound manifests may be valid.
+        """Require live model identities AND loadable, digest-matching bridge weights.
 
-        Legacy revision-only manifests intentionally fail closed until retrained
-        or explicitly rebound to current bytes; no B3 L1 authority is granted.
+        A manifest with the right model keys is not a valid bridge if its NPZ
+        is missing, corrupt, or differs from the saved array digest. The loaded
+        manifest is the one checked, avoiding a separate JSON-only precheck.
+        This is an integrity predicate, never B3 L1/latent authority.
         """
-        from .b3bridge import bridge_dir
+        from zipfile import BadZipFile
+        from .b3bridge import Bridge,bridge_dir
         if direction not in ('B1_TO_B2','B2_TO_B1'):
             return False
-        p=bridge_dir(self.r.home)/(direction+'.json')
         try:
-            man=json.loads(p.read_text())
-            if not isinstance(man,dict) or man.get('direction')!=direction:
-                return False
             expected=self.bridge_binding(direction)
-            return all(man.get(k)==v for k,v in expected.items())
-        except (OSError,ValueError,TypeError,KeyError):
+            loaded=Bridge.load(bridge_dir(self.r.home)/direction,
+                               expected['sender_revision'],expected['receiver_revision'])
+            man=loaded.manifest
+            return (man.get('direction')==direction and
+                    all(man.get(k)==v for k,v in expected.items()))
+        except (OSError,ValueError,TypeError,KeyError,IndexError,EOFError,BadZipFile):
             return False
     def report(self):
         st=self.s.state(KEY,None)[0] or self._default();keys=self.s.state(BRIDGE_KEY,None)[0] or {}
