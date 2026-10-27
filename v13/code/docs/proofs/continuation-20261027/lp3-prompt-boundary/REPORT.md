@@ -13,7 +13,7 @@ Three new synthetic counterexample tests cover supplied answer-dependent feature
 
 ## Evidence boundary
 
-Review workflow: `.github/workflows/lp3-prompt-boundary-review.yml`, isolated CPU Torch 2.14.1 / Transformers 5.20.2, `python -m unittest -v tests.test_lp3_state_prefix`, `py_compile`, privacy scan and `git diff --check` against exact parent. **Workflow result must be read from the exact GitHub Actions run; no local transformer or Redmi/native model run is claimed.** At report creation the run was pending. Source and test bytes are remote Git objects on the review branch; no private data or optimizer/model bytes uploaded.
+Review workflow: `.github/workflows/lp3-prompt-boundary-review.yml`, isolated CPU Torch 2.14.1 / Transformers 5.20.2, `python -m unittest -v tests.test_lp3_state_prefix`, `py_compile`, privacy scan and `git diff --check` against exact parent. **Workflow result must be read from the exact GitHub Actions run; no local transformer or Redmi/native model run is claimed.** Focused CI **12/12 synthetic tests PASS**, Python compile PASS, privacy CLEAN and diff check PASS on exact tested source commit `ee83b581277f9aa783576d5312ad738ab9fbd223`, Actions `40521798793`. Final metadata-head recheck pending; no real-model/Redmi evidence. Source and test bytes are remote Git objects on the review branch; no private data or optimizer/model bytes uploaded.
 
 ## Unchanged gates and next step
 
