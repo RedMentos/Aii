@@ -23,6 +23,8 @@ from v13.world_jepa_slots import SlotWorldJEPA
 SCHEMA = 'V13_WORLD_JEPA_FRESH_HOLDOUT_AUDIT_V1'
 MAX_REPORT_BYTES = 1024 * 1024
 MAX_ROWS = 20000
+CLAIM_LIMIT = ('Fresh Linux synthetic-content file-world; exploratory latent MSE controls only, '
+               'not semantic/causal utility, Redmi or decision authority')
 AUDITOR_PATH = Path(__file__).resolve()
 
 
@@ -169,7 +171,7 @@ def run_holdout(training_dir, output_dir, seed, rows):
             'jepa_weight': 0,
             'canonical_architecture_complete': False,
             'user_full_scope_complete': False,
-            'claim_limit': 'Fresh Linux synthetic-content file-world; exploratory latent MSE controls only, not semantic/causal utility, Redmi or decision authority',
+            'claim_limit': CLAIM_LIMIT,
         }
         out.mkdir(parents=True, exist_ok=False)
         for name, raw in (
@@ -192,6 +194,17 @@ def verify_holdout_export(output_dir, training_dir):
             or manifest.get('authority') != 0
             or manifest.get('training_performed') is not False
             or manifest.get('calibration_performed') is not False
+            or manifest.get('action_executed_by_model') is not False
+            or manifest.get('redmi_measured') is not False
+            or manifest.get('native_body_training') is not False
+            or manifest.get('canonical_architecture_complete') is not False
+            or manifest.get('user_full_scope_complete') is not False
+            or manifest.get('step2') != 'UTILITY_FAIL'
+            or manifest.get('b3') != 'L1_FAIL'
+            or manifest.get('body_jepa') != 'UNAVAILABLE'
+            or type(manifest.get('jepa_weight')) is not int
+            or manifest.get('jepa_weight') != 0
+            or manifest.get('claim_limit') != CLAIM_LIMIT
             or manifest.get('collection') != 'LINUX_TEMP_FILE_WORLD_PROCESS'
             or type(manifest.get('holdout_seed')) is not int
             or type(manifest.get('holdout_rows')) is not int
