@@ -6,7 +6,9 @@ on:
     paths:
       - '.github/workflows/run642-c3-protocol-locality-source.yml'
       - 'v13/code/scripts/run642_c3_protocol_locality.py'
+      - 'v13/code/scripts/run642_c3_native_compare.py'
       - 'v13/code/tests/test_run642_c3_protocol_locality.py'
+      - 'v13/code/tests/test_run642_c3_native_compare.py'
       - 'v13/code/docs/proofs/continuation-20261027/run642-c3-protocol-locality/**'
 permissions:
   contents: read
@@ -34,6 +36,8 @@ jobs:
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
           test "$(git hash-object v13/code/scripts/run642_c3_protocol_locality.py)" = 5d7dc8e9cb5c97cc2ffb90d6e14ed14b72c5c076
           test "$(git hash-object v13/code/tests/test_run642_c3_protocol_locality.py)" = cb8ca99c78d3326f3269ae6f4a635b9f6f2c0e78
+          test "$(git hash-object v13/code/scripts/run642_c3_native_compare.py)" = 6f70bbe13c964f93c4a3693efc3bc1f5aa47aaf6
+          test "$(git hash-object v13/code/tests/test_run642_c3_native_compare.py)" = eae4311c34a2ff9e17692d70e1b4da1573e9fb12
           test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN642_HOST.txt"
@@ -41,10 +45,10 @@ jobs:
       - name: Run frozen C3 candidate source tests and historical controls
         run: |
           set +e
-          python3 -m py_compile v13/code/scripts/run642_c3_protocol_locality.py v13/code/tests/test_run642_c3_protocol_locality.py > "$RUNNER_TEMP/RUN642_COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/run642_c3_protocol_locality.py v13/code/tests/test_run642_c3_protocol_locality.py v13/code/scripts/run642_c3_native_compare.py v13/code/tests/test_run642_c3_native_compare.py > "$RUNNER_TEMP/RUN642_COMPILE_RAW.log" 2>&1
           compile=$?
           if [ "$compile" = 0 ]; then
-            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run642_c3_protocol_locality tests.test_run639_c3_kl_anchor tests.test_run639_c3_native_anchor_compare tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN642_TEST_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run642_c3_protocol_locality tests.test_run642_c3_native_compare tests.test_run639_c3_kl_anchor tests.test_run639_c3_native_anchor_compare tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN642_TEST_RAW.log" 2>&1
             rc=$?
           else
             echo 'COMPILE_FAILED' > "$RUNNER_TEMP/RUN642_TEST_RAW.log"
