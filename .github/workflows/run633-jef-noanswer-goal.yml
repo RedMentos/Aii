@@ -1,0 +1,67 @@
+name: V13 Run633 JEF no-answer goal receipt software
+on:
+  push:
+    branches:
+      - codex/automation11-run633-jef-noanswer-goal-20261027
+    paths:
+      - '.github/workflows/run633-jef-noanswer-goal.yml'
+      - 'v13/code/tests/test_run633_jef_noanswer_goal.py'
+      - 'v13/code/v13/agi/live.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run633-jef-goal
+  cancel-in-progress: false
+jobs:
+  jef-noanswer-receipt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Exact prereg and pre-source test binding
+        run: |
+          set -euo pipefail
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run633-jef-noanswer-goal/PREREG.md)" = db94233b91d91f4fa219b6789fffb9b92d4a736a
+          test "$(git hash-object v13/code/tests/test_run633_jef_noanswer_goal.py)" = 398c47e9c5aa0be8abb252b0deabb687dd9e5ca8
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN633_HEAD.txt"
+          sha256sum v13/code/v13/agi/live.py v13/code/tests/test_run633_jef_noanswer_goal.py > "$RUNNER_TEMP/RUN633_SOURCE_SHA256.txt"
+      - name: SQLite JEF goal focused and adjacent tests
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD" python3 -m unittest -v \
+            tests.test_run633_jef_noanswer_goal \
+            tests.test_run552_jef_goal_final_receipt \
+            tests.test_run555_jef_goal_session \
+            tests.test_agi_live) > "$RUNNER_TEMP/RUN633_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN633_TEST_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9fde39e647400025126631efab6617684e938d9d --head HEAD > "$RUNNER_TEMP/RUN633_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN633_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw SHA evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          for k in TEST PRIVACY; do test -f "RUN633_${k}_EXIT.txt" || echo 2 > "RUN633_${k}_EXIT.txt"; done
+          find . -maxdepth 1 -type f -name 'RUN633_*' ! -name 'RUN633_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN633_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run633-JEF-NoAnswer-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN633_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce test and privacy gates
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/RUN633_TEST_EXIT.txt")" = 0
+          test "$(cat "$RUNNER_TEMP/RUN633_PRIVACY_EXIT.txt")" = 0
