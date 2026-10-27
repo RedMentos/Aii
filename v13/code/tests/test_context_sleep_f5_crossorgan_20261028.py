@@ -1,6 +1,7 @@
 """Cross-organ F1/F5 authority: ContextOS warm, Sleep A/B and queued Dream.
 
-Actual Runtime/SQLite synthetic human correction, no native model or fact writes.
+Actual Runtime/SQLite synthetic human facts, no native model or fact writes.
+Warm only admits fact/style/preference, not route; WORLD_RELATION uses facts.
 """
 import json
 import tempfile
@@ -26,9 +27,9 @@ class ContextSleepF5CrossOrgan(unittest.TestCase):
         self.r.close()
         self.tmp.cleanup()
 
-    def correction(self, key, route):
+    def correction(self, key, value):
         event = self.s.event(self.session, key)
-        mid = self.r.memory.feedback(event['event_id'], 'route', route, key=key)
+        mid = self.r.memory.feedback(event['event_id'], 'fact', value, key=key)
         sid = self.s.one(
             'SELECT source_id FROM memories WHERE id=?', (mid,))['source_id']
         self.context.observe(
@@ -42,39 +43,40 @@ class ContextSleepF5CrossOrgan(unittest.TestCase):
                 "DELETE FROM packets WHERE kind='HumanDecision' "
                 "AND json_extract(payload,'$.source_ref.source_id')=?", (sid,))
 
-    def test_one_revocation_clears_all_four_read_paths(self):
-        key = 'Explain Project Orion precisely'
-        event, mid, sid = self.correction(key, 'detail')
-        self.assertEqual(self.context.warm(key, self.session, [])['ids'], [mid])
-        self.assertEqual(self.cy._probe({'event_id': event['event_id']})[0], 'PASS')
+    def test_one_revocation_clears_warm_sleep_and_queued_world_relation(self):
+        key = 'Project Aurora budget'
+        first, mid, sid = self.correction(key, '120 credits')
+        self.correction('Project Borealis budget', '120 credits')
+        self.assertIn(mid, self.context.warm(key, self.session, [])['ids'])
+        self.assertEqual(self.cy._probe({'event_id': first['event_id']})[0], 'PASS')
         st, _ = self.cy.queue.load()
-        dream = self.cy.sleep_b(st, self.cy.policy(), limit=8)
-        self.assertTrue(dream['hypotheses'])
-        rid = dream['hypotheses'][0]['replay_id']
+        dream = self.cy.sleep_b(st, self.cy.policy(), limit=12)
+        worlds = [h for h in dream['hypotheses'] if h['kind'] == 'WORLD_RELATION']
+        self.assertTrue(worlds, dream)
+        rid = worlds[0]['replay_id']
         row = self.s.one(
             "SELECT payload FROM packets WHERE kind='ReplayItem' "
             "AND json_extract(payload,'$.replay_id')=? "
             "AND json_extract(payload,'$.stage')='QUEUED'", (rid,))
         self.assertIsNotNone(row)
         queued = json.loads(row['payload'])
+        self.assertEqual(queued['fact_write_authority'], 0)
         self.revoke(sid)
-        self.assertEqual(self.context.warm(key, self.session, [])['ids'], [])
-        self.assertNotEqual(self.cy._probe({'event_id': event['event_id']})[0], 'PASS')
-        self.assertEqual(self.cy.sleep_b(
-            self.cy.queue.load()[0], self.cy.policy(), limit=8)['hypotheses'], [])
+        self.assertNotIn(mid, self.context.warm(key, self.session, [])['ids'])
+        self.assertNotEqual(self.cy._probe({'event_id': first['event_id']})[0], 'PASS')
+        later = self.cy.sleep_b(self.cy.queue.load()[0], self.cy.policy(), limit=12)
+        self.assertFalse(any(h['kind'] == 'WORLD_RELATION' for h in later['hypotheses']))
         self.assertEqual(self.cy.check_hypothesis(queued)['verdict'], 'STALE')
         self.assertEqual(self.s.rows('SELECT * FROM updates'), [])
-        self.assertEqual(dream['fact_write_authority'], 0)
 
-    def test_independent_valid_correction_survives_other_revocation(self):
+    def test_independent_valid_fact_survives_other_revocation(self):
         first, first_mid, first_sid = self.correction(
-            'Explain Project Orion precisely', 'detail')
+            'Project Orion budget', '120 credits')
         second, second_mid, _ = self.correction(
-            'Explain Project Vega precisely', 'gist')
+            'Project Vega budget', '42 credits')
         self.revoke(first_sid)
-        self.assertEqual(self.context.warm(
-            'Explain Project Vega precisely', self.session, [])['ids'],
-            [second_mid])
+        self.assertIn(second_mid, self.context.warm(
+            'Project Vega budget', self.session, [])['ids'])
         self.assertEqual(self.cy._probe({'event_id': second['event_id']})[0], 'PASS')
         self.assertNotEqual(self.cy._probe({'event_id': first['event_id']})[0], 'PASS')
         self.assertEqual(self.s.rows('SELECT * FROM updates'), [])

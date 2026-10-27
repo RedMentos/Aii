@@ -47,7 +47,9 @@ jobs:
             "v13/code/tests/test_sleep_memory_authority_run274.py:a0a62163e48c657df56540b52a6438880b4a5235" \
             "v13/code/tests/test_sleep_a_exact_recall_identity_review.py:d7c76c42ccaf523d0e6dd227ec66f9276770f9f6" \
             "v13/code/v13/context_os.py:127af0b872bfce002c6dd72020a22574f52691e8" \
-            "v13/code/tests/test_context_warm_authority_run271.py:cc1423c7f4961b038f073c77ceec6a31cbc99a43"; do
+            "v13/code/tests/test_context_warm_authority_run271.py:cc1423c7f4961b038f073c77ceec6a31cbc99a43" \
+            "v13/code/tests/test_dream_validation_authority_run275.py:152933e4afaf0e7d1defd991ab3e5c3267315a00" \
+            "v13/code/tests/test_context_sleep_f5_crossorgan_20261028.py:24f018548c50344dc4ebaba361802b89d2a13517"; do
             path="${item%%:*}"; expected="${item##*:}"
             observed="$(git hash-object "$path")"
             printf '%s %s %s\n' "$path" "$expected" "$observed" >> "$evidence/BLOBS.txt"
