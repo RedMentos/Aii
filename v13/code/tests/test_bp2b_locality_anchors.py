@@ -72,6 +72,18 @@ class LocalityAnchorsTests(unittest.TestCase):
         self.assertTrue(all('SECRET_SENTINEL' not in q for q in out))
         self.assertEqual([x['prompt'] for x in items], [q for q, *_ in POOL])
 
+    def test_lowercase_first_person_must_not_survive(self):
+        q = 'What is my cat and where i work?'
+        self.assertIsNone(shift_question(q, 'friend'))
+        self.assertEqual(generate_anchors([{'prompt': q}], 2), [])
+
+    def test_single_quoted_literal_must_not_be_rewritten(self):
+        q = "What does 'my cat' mean?"
+        self.assertIsNone(shift_question(q, 'friend'))
+        self.assertEqual(generate_anchors([{'prompt': q}], 2), [])
+        self.assertEqual(shift_question("What is my cat's name?", 'friend'),
+                         "What is my friend's cat's name?")
+
     def test_bounded_and_untrusted_items(self):
         self.assertEqual(generate_anchors([{'prompt': 'Where I work?'}]), [])
         self.assertEqual(generate_anchors([{'prompt': 'What is my cat?'}], 0), [])
