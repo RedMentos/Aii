@@ -1,0 +1,57 @@
+{
+  "schema": "V13_RUN629_NATIVE_C3_LORA_CLOSED_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation; Run629 prereg/dependency-only CI/proof",
+  "branch": "codex/automation12-run629-c3-native-lora-compat-20261027",
+  "review_pr": 624,
+  "parent_pr": 623,
+  "parent_head": "3738ea7f9ecc959c09ac94a2afe77f6f337abd22",
+  "prereg_commit": "55340428fbe47783bdee99ae60c867479469c8e5",
+  "experiment_commit": "14239e94bef21ad6a8be1de92e1e2fbf2ae505b5",
+  "run_id": 40424448052,
+  "run_conclusion": "success",
+  "raw_artifact_id": 12698827815,
+  "raw_zip_sha256": "27e3aa76ef58bcdfc1682aa0c0cb6da429048a0fa910eb90801dbe49204862f5",
+  "inner_sha256_verified": 17,
+  "failed_original": {
+    "run_id": 40420000984,
+    "conclusion": "failure",
+    "raw_zip_sha256": "62663422b5fb1be210364a12121bd1342ccbc2cee35c3b1c41a9feb75bbbfe44",
+    "cause": "transformers 4.51.3 dtype unsupported",
+    "raw_preserved": true
+  },
+  "checks": {
+    "source_tests": "4/4 PASS",
+    "local_related_tests": "39/39 PASS (Run627 source, matching frozen trainer)",
+    "source_members": "1329/1329 PASS (Run627)",
+    "dependencies": "PASS",
+    "official_model_sha": "PASS",
+    "train": "PASS",
+    "privacy": "CLEAN",
+    "private_library_roundtrip": "PASS"
+  },
+  "native": {
+    "master_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "steps": 2,
+    "trainable_params": 115200,
+    "lora_b_nonzero": 46080,
+    "ce_last": 1.95274,
+    "kl_heldout": 0.0005325629972503521,
+    "master_learned_recall": 0,
+    "peak_rss_mb": 1086.9,
+    "wall_seconds": 5.33,
+    "gguf_sha256": "e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b",
+    "safetensors_sha256": "516177efae6ce05ca2121b1c106ecbcddbf257bf0bc5b925e86589ce241aa345"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "backup": "/V13-Checkpoints/2026-10-27/Run629/Run629-native-success-raw-40424448052.zip",
+  "next_exact_command": "Preregister Run630 isolated llama.cpp b10964 native GGUF+LoRA loader/scale-0-vs-scale-1 probe with pinned source/master/adapter and no utility promotion; run CI and archive original raw.",
+  "production_integrated": false
+}
