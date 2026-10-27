@@ -1,0 +1,5 @@
+{"arm": "ce", "steps": 30, "ce": 0.00144, "train_s": 675.68, "learned_recall": 1.0, "paraphrase_recall": 1.0, "near_miss_leak": 0.8125, "probe_correct": 0.75, "subspace": null}
+{"arm": "locality", "steps": 30, "ce": 0.00163, "train_s": 823.13, "learned_recall": 1.0, "paraphrase_recall": 0.96875, "near_miss_leak": 0.1875, "probe_correct": 0.875, "subspace": null}
+{"arm": "minor", "steps": 30, "ce": 0.00201, "train_s": 619.34, "learned_recall": 1.0, "paraphrase_recall": 0.96875, "near_miss_leak": 0.8125, "probe_correct": 1.0, "subspace": {"modules": 80, "frozen_side_params": 1236992, "mean_low_singular_mass_share": 0.001346}}
+{"arm": "both", "steps": 30, "ce": 0.00307, "train_s": 618.8, "learned_recall": 1.0, "paraphrase_recall": 0.875, "near_miss_leak": 0.1875, "probe_correct": 1.0, "subspace": {"modules": 80, "frozen_side_params": 1236992, "mean_low_singular_mass_share": 0.001346}}
+/tmp/claude-0/bj1/bp2a/bp2a-seed1.json
