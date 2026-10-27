@@ -1,0 +1,49 @@
+{
+  "schema": "V13_RUN630_LLAMA_NATIVE_CHECKPOINT_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation; isolated Run630 probe/tests/workflow/proof",
+  "branch": "codex/automation12-run630-c3-llama-native-parity-20261027",
+  "review_pr": 625,
+  "parent_pr": 624,
+  "parent_head": "9186dec6609a45f18eeb3063c68f9a267e0b601e",
+  "prereg_commit": "a871d9e5abc90b2bf20300d67229670ba41f86c4",
+  "first_probe_commit": "2517748a0e1f687df0197b81f4b729ddd1e10d4d",
+  "first_run": {
+    "id": 40425045598,
+    "conclusion": "failure",
+    "source_tests": "7/7 PASS",
+    "adapter_fetch": "PASS",
+    "runner_fetch": "PASS",
+    "deps": "PASS",
+    "model_download": "PASS",
+    "convert": "PASS",
+    "native": "FAIL_UNSUPPORTED_--no-mmap",
+    "privacy": "CLEAN",
+    "artifact_id": 12699740178,
+    "raw_zip_sha256": "1151d80d8098bb84323c0c65318201bd7c365c06c951e5ccf87d47d9c7c66a3d",
+    "inner_sha256_verified": 24,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run630/Run630-native-first-failed-40425045598.zip",
+    "private_roundtrip": "PASS"
+  },
+  "repair_commit": "bd75bf58bac88a275b5ed629d310ccd44a6eb3b0",
+  "repair": "remove unsupported --no-mmap from b10964 server args; add regression test, atomic source/test/workflow update",
+  "retry_run_id": 40425441422,
+  "retry_status": "IN_PROGRESS_UNVERIFIED",
+  "model": {
+    "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+  },
+  "adapter_sha256": "e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b",
+  "runner_tag": "b10964",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "next_exact_command": "Inspect Actions 40425441422 jobs/artifacts; download original raw, verify inner SHA; preserve failures; if native loader fails diagnose GGUF/CLI without changing frozen model/cohort; if native works report exact scale0/1 parity/effect and continue actual deployed C3 350M path.",
+  "production_integrated": false
+}
