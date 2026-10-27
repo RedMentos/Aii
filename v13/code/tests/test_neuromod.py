@@ -148,7 +148,7 @@ class SleepAndHookTests(Base):
         class Trainer:
             method='fixture'
             def fit(self,items,base,cancel=None,deadline=None):return {'artifact':'x','hash':'h','method':'fixture','metrics':{'kl_to_base':.5}}
-        w=WeightConsolidation(self.r.store,self.r.cfg|{'learning_mode':'SHADOW_UPDATE'},trainer=Trainer(),home=self.home)
+        w=WeightConsolidation(self.r.store,self.r.cfg|{'learning_mode':'SHADOW_UPDATE','sleep_d_checklist':'off'},trainer=Trainer(),home=self.home)
         ref={'source_id':'s','sha256':'0'*64,'char_start':0,'char_end':1,'modality':'text'}
         w.candidates=lambda require_replay_pass=True,**kw:[{'memory_id':'m1','event_id':'e1','kind':'fact','prompt':'p','target':'t','source_ref':ref}]
         st=w.stage('USER');self.assertEqual(st['status'],'STAGED')

@@ -95,8 +95,8 @@ class Checklist:
         mid=item.get('memory_id')
         if mid and not str(mid).startswith('rating:') and kind in FACT_KINDS:
             m=self.s.one("SELECT m.kind,m.key_text,m.value,m.active,m.session_id,m.scope,m.created FROM memories m WHERE m.id=?",(mid,))
-            if m is None or not m['active']:add('CONFLICT','memory inactive or missing')
-            else:
+            if m is not None and not m['active']:add('CONFLICT','memory inactive (corrected or forgotten)')
+            elif m is not None:  # no row = item not from the store (synthetic); real candidates always have one
                 newer=self.s.one("SELECT value FROM memories WHERE active=1 AND kind=? AND key_text=? AND scope=? AND session_id=? AND created>? AND value!=? LIMIT 1",
                                  (m['kind'],m['key_text'],m['scope'],m['session_id'],m['created'],m['value']))
                 if newer:add('CONFLICT','a newer active memory holds another value')

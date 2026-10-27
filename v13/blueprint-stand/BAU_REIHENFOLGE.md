@@ -16,7 +16,7 @@ Grundlage: Blueprint v10.16.1 ganz gelesen (13 773 Zeilen), Code aller Claude- u
 4. **WP-BP4 Zwei Hälften neu prüfen:** STEP2_EXIT / G-B-TIMESCALE-DIVERGENCE mit Verbraucher und verschiedenen Experten-Hälften gegen „ein Körper, zwei Zustände“ (Z2l). Braucht: BP1, BP3.
 5. **WP-BP5 B3 Latent:** Z4e (Versuch 7) auswerten; dann echtes B1→B2-Tap-Paar für B3-H4-Kalibrierung. Bleibt L1 FAIL, als Blueprint-Abweichung festhalten. Braucht: BP3.
 6. **WP-BP6 Gehirn-Mitte im Zusammenspiel (Rest WP-Z6):** 24.17, 24.22, 24.23, 24.25, 24.26, 24.32 mit Verbraucher und allen Teilen an; neues Pflichtmaß meta-I (WP-FS3) und Selbstvorhersage-Test (WP-FS4). Braucht: BP1.
-7. **WP-BP7 Schlaf festigt, Traum mit Kontrolle (= Z9 neu):** Gewichts-Festigung in Sleep mit SSGM-Prüfliste (WP-FS6) und Rekonsolidierung (WP-FS8); dann Traum mit Kontrolle „policy-only“ und Gedächtnis-Test über simulierte Wochen. Braucht: BP2.
+7. **WP-BP7 Schlaf festigt, Traum mit Kontrolle (= Z9 neu) — Software-Teil erledigt 2026-10-27 (Branch a667fm, Trainings-Teil wartet auf BP2):** Gewichts-Festigung in Sleep mit SSGM-Prüfliste (WP-FS6) und Rekonsolidierung (WP-FS8); dann Traum mit Kontrolle „policy-only“ und Gedächtnis-Test über simulierte Wochen. Braucht: BP2.
 8. **WP-BP8 Age-Wiederöffnen neu (G-AGE-REOPEN):** mit echtem Gewichts-Lernen, `noise_aware`. Braucht: BP2.
 9. **WP-BP9 Typisierte Modulatoren an echten Updates (G-MODULATOR, Nachfolger Z6k).** Braucht: BP2.
 10. **WP-BP10 Weltmodell in den Alltag:** Z12c im Werkzeug-Pfad (SHADOW) mit GPTs Konfidenz-Kontrolle; danach Entscheidungs-Ziel (WP-FS1) und Veraltet-Markierung im Workspace (WP-FS10). Braucht: nichts Neues.
