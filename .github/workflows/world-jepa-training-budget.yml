@@ -63,7 +63,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/budgetproof"
           git rev-parse HEAD > "$RUNNER_TEMP/budgetproof/HEAD.txt"
           sha256sum v13/code/scripts/world_jepa_training_budget.py v13/code/tests/test_world_jepa_training_budget.py > "$RUNNER_TEMP/budgetproof/SOURCE_SHA256.txt"
-          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/budget-original/closed" V13_TRAIN_BUDGET_EVIDENCE_DIR="$RUNNER_TEMP/budgetproof/candidates" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/budget/bin/python" -m unittest -v tests.test_world_jepa_ensemble_ablation) > "$RUNNER_TEMP/budgetproof/UNIT_RAW.log" 2>&1
+          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/budget-original/closed" V13_TRAIN_BUDGET_EVIDENCE_DIR="$RUNNER_TEMP/budgetproof/candidates" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/budget/bin/python" -m unittest -v tests.test_world_jepa_training_budget) > "$RUNNER_TEMP/budgetproof/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/budgetproof/UNIT_EXIT.txt"
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/budget/bin/python" scripts/world_jepa_training_budget.py verify --frozen-root "$RUNNER_TEMP/budget-original/closed" --output-dir "$RUNNER_TEMP/budgetproof/candidates") > "$RUNNER_TEMP/budgetproof/VERIFY_RAW.json" 2>&1
           echo "$?" > "$RUNNER_TEMP/budgetproof/VERIFY_EXIT.txt"
