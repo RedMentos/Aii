@@ -43,8 +43,16 @@ def lfs_sha(file):
     oid = lfs.get("oid")
     if isinstance(oid, str) and oid.startswith("sha256:"):
         oid = oid[7:]
-    if not isinstance(oid, str) or re.fullmatch(r"[0-9a-f]{64}", oid) is None:
+    primary = lfs.get("sha256")
+    if primary is not None and (not isinstance(primary, str) or re.fullmatch(r"[0-9a-f]{64}", primary) is None):
+        raise ValueError("invalid LFS sha256 for " + file["rfilename"])
+    if oid is not None and (not isinstance(oid, str) or re.fullmatch(r"[0-9a-f]{64}", oid) is None):
         raise ValueError("invalid LFS oid for " + file["rfilename"])
+    if primary is not None and oid is not None and primary != oid:
+        raise ValueError("conflicting LFS hashes for " + file["rfilename"])
+    oid = primary or oid
+    if oid is None:
+        raise ValueError("missing immutable LFS hash for " + file["rfilename"])
     size = lfs.get("size")
     if type(size) is not int or size <= 0:
         raise ValueError("invalid LFS size for " + file["rfilename"])
