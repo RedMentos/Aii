@@ -33,3 +33,7 @@ cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_r
 ```
 
 No user action required for this isolated fix. Whole-system acceptance remains incomplete.
+
+## Subsequent Claude BP11b integration review — 2026-10-27
+
+After original PR667 GREEN, Claude PR666 advanced independently to `e505364c78d6ef222eb287d84d84aed81ecc53e3`, adding `module_learn.py` and recall/export tool wiring. Our original review branch had not tested that new source. Prospective amendment `AMENDMENT_CLAUDE_BP11B.md` preceded an exact disposable, **zero-conflict** merge of our fix and that new Claude head; no remote merge commit, no owner overwrite. Actions **40460531847** at review head `da218259b1f8f2ca07b13e56ca0c8793ef84d1bb`: **50/50 synthetic tests PASS**, compile0, ephemeral commit0, privacy CLEAN, no merge conflicts. ZIP artifact **12714845067**, SHA256 `437bbbc08f5ec48541d751f8637c9af4aa8dc36927603b96930065c2ea56b467`, CRC clean, exact HEAD/exits inspected, privately saved and byte-reverified under the same Review666 folder. This proves BP11b + our fetch-revocation patch can coexist in this disposable Linux synthetic tree; it does **not** prove module retrieval improves model answers or that PR666 contains the AG5 resolved runtime.
