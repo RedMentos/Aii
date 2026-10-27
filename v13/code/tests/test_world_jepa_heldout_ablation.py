@@ -76,6 +76,8 @@ class WorldJEPAHeldoutAblationTests(unittest.TestCase):
             np.where(np.arange(len(action)) == 5, 4, action),
             action.astype(float),
             action.astype(bool),
+            action.astype(object),
+            np.where(np.arange(len(action)) == 5, 4, action).astype(np.uint64),
             action.reshape(-1, 1),
         ):
             with self.subTest(bad_dtype=str(bad.dtype), bad_shape=bad.shape):
