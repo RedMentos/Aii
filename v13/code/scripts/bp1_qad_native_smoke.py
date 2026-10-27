@@ -57,6 +57,18 @@ def common(mode, model_sha):
             "evidence_class": "LINUX_NATIVE_CLOUD_ONLY_IF_ACTUALLY_EXECUTED"}
 
 
+def tensor_input_ids(value, torch_module):
+    """Transformers 5.9 may return BatchEncoding, not a dict or tensor."""
+    if not isinstance(value, torch_module.Tensor):
+        try:
+            value = value["input_ids"]
+        except (KeyError, TypeError):
+            raise ValueError("tokenizer did not return input_ids tensor") from None
+    if not isinstance(value, torch_module.Tensor):
+        raise ValueError("tokenizer input_ids is not a torch tensor")
+    return value
+
+
 def hf(model_dir):
     model_dir = Path(model_dir)
     master = model_dir / "model.safetensors"
@@ -74,8 +86,7 @@ def hf(model_dir):
         ids = tokenizer.apply_chat_template([{"role": "user", "content": prompt}],
                                             add_generation_prompt=True, tokenize=True,
                                             return_tensors="pt")
-        if isinstance(ids, dict):
-            ids = ids["input_ids"]
+        ids = tensor_input_ids(ids, torch)
         start = time.monotonic()
         with torch.inference_mode():
             output = model.generate(ids, max_new_tokens=MAX_TOKENS, do_sample=False,
