@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-27",
+  "scope": "review_only_c1_world_b3_allgates_sleep_a_exact_id_integration",
+  "base_head": "117f503aea0503c39351cbf064e7e64898cf4eb0",
+  "sleep_head": "c6e78f72dfa8da0cb23d8be75ad032bbb1ffebac",
+  "merge_commit": "9efef52d74d7d15f23864df1cf0f2e5764690dbf",
+  "tested_head": "a5afac87f19b46c100a1bfa51dccb8dcc4981c87",
+  "actions_run_id": 40595165234,
+  "actions_result": "SUCCESS",
+  "focused_tests": {
+    "passed": 80,
+    "failed": 0
+  },
+  "full_tests": {
+    "total": 2015,
+    "skipped": 1,
+    "result": "OK"
+  },
+  "raw_exits": {
+    "PARENTS": 0,
+    "FROZEN": 0,
+    "INSTALL": 0,
+    "FOCUSED": 0,
+    "FULL": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "artifact": {
+    "id": 12776820040,
+    "sha256": "93a03e8790b5f9519a659f56be77485f9901dd2a83ac83c59e2652a1df89c9d0",
+    "crc": "PASS",
+    "internal_sha256_count": 21,
+    "internal_sha256_match": true,
+    "private_library_backup_byte_identical": true
+  },
+  "evidence_level": "Linux software only; no native receiver, no Redmi",
+  "gates": {
+    "B3_L1": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "jepa_weight": 0,
+    "Age": 0,
+    "latent_authority": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "production_merged": false,
+  "next": "Independent review PR #787; rerun full suite on any future integration; continue HX134 approval-origin child",
+  "owner": "GPT integration reviewer"
+}
