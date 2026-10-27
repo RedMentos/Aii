@@ -1,0 +1,4787 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 151,
+ "scores": {
+  "fixed+words+rel+rec": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 4,
+   "promotions": 3,
+   "approval_requests": 3,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.8,
+   "final_half_items": 0.125,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_a1fcd5684f694a10afa16d944540bc29",
+    "expected_parent_acc": 0.775,
+    "after_rollback_acc": 0.775,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.125,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "nowords_head_simple": 0.0,
+   "handovers": 0,
+   "lifecycle": []
+  },
+  "adaptive+words+rel+rec": {
+   "shadow_jobs": 6,
+   "unnecessary_updates": 2,
+   "promotions": 3,
+   "approval_requests": 3,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.925,
+   "final_half_items": 0.75,
+   "retention_unchanged": 1.0334,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_744efd8b8b5b4cfebe3dff7213353087",
+    "expected_parent_acc": 0.8,
+    "after_rollback_acc": 0.8,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "nowords_head_simple": 0.875,
+   "handovers": 0,
+   "lifecycle": []
+  },
+  "fixed+words+rel": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 4,
+   "promotions": 2,
+   "approval_requests": 2,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.775,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_15d6eb9fd0ee4e84a1c2af927756b953",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "nowords_head_simple": 0.0,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "fixed+words+rel+rec": {
+   "policy": "fixed+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0ed4200dd8d94ad691fc09d54f2df473 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0ed4200dd8d94ad691fc09d54f2df473",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Schönen Abend, David! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.08767056446024296
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_8dfb6c4bc04946efb1c374df203229ef PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_8dfb6c4bc04946efb1c374df203229ef",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.5491625826991264,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.20840179746903556
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_6ff3c31d1b9d4a29919e08ff4df43457 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_6ff3c31d1b9d4a29919e08ff4df43457",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9583333333333334,
+       "known_accuracy_before": 0.9583333333333334,
+       "known_items_lost": 0,
+       "loss_after": 0.42889397654211375,
+       "loss_before": 0.5363723913035232,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.317898087791732,
+      "loss_after": 0.12314275605473113
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_5f7a9519ec5140f9ad40a31acee6f7c0 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5f7a9519ec5140f9ad40a31acee6f7c0",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9375,
+       "known_items_lost": 0,
+       "loss_after": 0.2251390902335957,
+       "loss_before": 0.6704574735582467,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.40603793423336065,
+      "loss_after": 0.11006285687874262
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_63e7c3b06bd1403b9efbb7dde2866c95 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_63e7c3b06bd1403b9efbb7dde2866c95",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17542355171100002,
+       "loss_before": 0.25283500040083257,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1386172855831606,
+      "loss_after": 0.07101422715803182
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a22a15c238a74cc3b2df3c1b0aa297f0 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a22a15c238a74cc3b2df3c1b0aa297f0",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17341048588107666,
+       "loss_before": 0.20802898071458684,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.142723171909769,
+      "loss_after": 0.07766419202475346
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a1fcd5684f694a10afa16d944540bc29 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_a1fcd5684f694a10afa16d944540bc29",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9464285714285714,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.764204193538678,
+       "loss_before": 0.7820419514184963,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.31221377203193335,
+      "loss_after": 0.22432394243875814
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_55600c2429134a749256bdafb6139e22 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_55600c2429134a749256bdafb6139e22",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.625,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7142857142857143,
+       "active_accuracy": 0.7142857142857143,
+       "gate": "relative",
+       "known_accuracy_after": 0.9206349206349206,
+       "known_accuracy_before": 0.8888888888888888,
+       "known_items_lost": 1,
+       "loss_after": 0.5874971848979172,
+       "loss_before": 0.9584604831562403,
+       "n": 14,
+       "outvoted": 1,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.4
+        },
+        "1": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.3893583998226602,
+      "loss_after": 0.2321368668752808
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b7648abe95a443c0afbb812a00813234 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b7648abe95a443c0afbb812a00813234",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8,
+       "active_accuracy": 0.7333333333333333,
+       "gate": "relative",
+       "known_accuracy_after": 0.9411764705882353,
+       "known_accuracy_before": 0.8529411764705882,
+       "known_items_lost": 1,
+       "loss_after": 0.34547779038278326,
+       "loss_before": 0.8539275355326332,
+       "n": 15,
+       "outvoted": 4,
+       "per_class": {
+        "0": {
+         "after": 0.8333333333333334,
+         "before": 0.5
+        },
+        "1": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.4975207942504026,
+      "loss_after": 0.24370329059458845
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b19a4c6121d4471abea10863ba09cea7 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b19a4c6121d4471abea10863ba09cea7",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7,
+       "active_accuracy": 0.65,
+       "gate": "relative",
+       "known_accuracy_after": 0.9078947368421053,
+       "known_accuracy_before": 0.8157894736842105,
+       "known_items_lost": 1,
+       "loss_after": 0.5232243296098088,
+       "loss_before": 1.2159840816652085,
+       "n": 20,
+       "outvoted": 4,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 0.75,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.55
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.6355622634784174,
+      "loss_after": 0.30335096642453413
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_a1fcd5684f694a10afa16d944540bc29",
+    "expected_parent_acc": 0.775,
+    "after_rollback_acc": 0.775,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.125,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.0,
+    "routes": [
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail"
+    ]
+   }
+  },
+  "adaptive+words+rel+rec": {
+   "policy": "adaptive+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_460e6fef05e24419895b609fe66ef636 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_460e6fef05e24419895b609fe66ef636",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Schönen Abend, David! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.08767056446024296
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dff3c67db8fa42f7b806b1eb0c1566aa PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dff3c67db8fa42f7b806b1eb0c1566aa",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.5491625826991264,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.20840179746903556
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dd21ca7c92d04765b1e55e1f63fc8b9a PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dd21ca7c92d04765b1e55e1f63fc8b9a",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9464285714285714,
+       "known_accuracy_before": 0.8928571428571429,
+       "known_items_lost": 0,
+       "loss_after": 0.6918561390020226,
+       "loss_before": 0.712906909501124,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5106048141339647,
+      "loss_after": 0.2366400690612557
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_931782e7898b494ab8761338af27b03e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_931782e7898b494ab8761338af27b03e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.625,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7142857142857143,
+       "active_accuracy": 0.7142857142857143,
+       "gate": "relative",
+       "known_accuracy_after": 0.9206349206349206,
+       "known_accuracy_before": 0.8888888888888888,
+       "known_items_lost": 1,
+       "loss_after": 0.5915288048856991,
+       "loss_before": 0.8715026403750816,
+       "n": 14,
+       "outvoted": 1,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.4
+        },
+        "1": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.3754822016860188,
+      "loss_after": 0.24644911174838452
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_744efd8b8b5b4cfebe3dff7213353087 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_744efd8b8b5b4cfebe3dff7213353087",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8666666666666667,
+       "active_accuracy": 0.7333333333333333,
+       "gate": "relative",
+       "known_accuracy_after": 0.9558823529411765,
+       "known_accuracy_before": 0.8529411764705882,
+       "known_items_lost": 0,
+       "loss_after": 0.3579955250381001,
+       "loss_before": 0.7817490286485618,
+       "n": 15,
+       "outvoted": 4,
+       "per_class": {
+        "0": {
+         "after": 0.8333333333333334,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.4638525277970642,
+      "loss_after": 0.26059992974759144
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cb678998383b4a3fb7a51d228fd5c6ee EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_cb678998383b4a3fb7a51d228fd5c6ee",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.875,
+       "known_accuracy_before": 0.875,
+       "known_items_lost": 0,
+       "loss_after": 0.4042410933034744,
+       "loss_before": 0.49248873702175705,
+       "n": 20,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.55
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.2951338469166791,
+      "loss_after": 0.2638464612905098
+     },
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_744efd8b8b5b4cfebe3dff7213353087",
+    "expected_parent_acc": 0.8,
+    "after_rollback_acc": 0.8,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.875,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "detail",
+     "simple"
+    ]
+   }
+  },
+  "fixed+words+rel": {
+   "policy": "fixed+words+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cde6af64b3eb41ef850a815a2baeb54b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_cde6af64b3eb41ef850a815a2baeb54b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Schönen Abend, David! Alles gut bei dir?",
+        "both"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0867753368120886
+     },
+     "active_acc_after": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.5,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 140 plus 48 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 12 plus 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 96 plus 72 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 160 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Wärme?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Ruhe?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Pflege?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Flüsse brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Ruhe.",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bus ab.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_c24f23f162154d7f9f3e3726cb839718 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_c24f23f162154d7f9f3e3726cb839718",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.5510829515447186,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.20539521452696546
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1a61a6231a39441fa58df5971cf8a901 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_1a61a6231a39441fa58df5971cf8a901",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9583333333333334,
+       "known_accuracy_before": 0.9583333333333334,
+       "known_items_lost": 0,
+       "loss_after": 0.4295177915053445,
+       "loss_before": 0.5217619035989829,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.308901275773251,
+      "loss_after": 0.1267606999450911
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Wäge Land gegen Bus ab.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_15d6eb9fd0ee4e84a1c2af927756b953 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_15d6eb9fd0ee4e84a1c2af927756b953",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9375,
+       "known_items_lost": 0,
+       "loss_after": 0.25876521625342336,
+       "loss_before": 0.6654557647597916,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.39803989801988615,
+      "loss_after": 0.12328424088370143
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_86a5f65f50e04730aaa89803380109ec EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_86a5f65f50e04730aaa89803380109ec",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17375332016667108,
+       "loss_before": 0.26357971401078717,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.15134333550911858,
+      "loss_after": 0.07529801926263566
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a8ff238d88fd4c029779458abd7a074d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a8ff238d88fd4c029779458abd7a074d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.16391032579822337,
+       "loss_before": 0.200167250092374,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1518714699190191,
+      "loss_after": 0.07988796147532472
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_373052520a624863a85f4d628a862c8a EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_373052520a624863a85f4d628a862c8a",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9464285714285714,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.7973614731402168,
+       "loss_before": 0.7796038862410821,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.3196034615861078,
+      "loss_after": 0.24302905862123586
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_747cf9b5c865400a9381fd5c68bb1fd6 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_747cf9b5c865400a9381fd5c68bb1fd6",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.625,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.25,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7142857142857143,
+       "active_accuracy": 0.6428571428571429,
+       "gate": "relative",
+       "known_accuracy_after": 0.921875,
+       "known_accuracy_before": 0.859375,
+       "known_items_lost": 1,
+       "loss_after": 0.7151088547370491,
+       "loss_before": 1.1779605514322835,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.5176693300196933,
+      "loss_after": 0.2833279869387683
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b316955d775348d99b45869a48283432 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b316955d775348d99b45869a48283432",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8666666666666667,
+       "active_accuracy": 0.6666666666666666,
+       "gate": "relative",
+       "known_accuracy_after": 0.9305555555555556,
+       "known_accuracy_before": 0.8194444444444444,
+       "known_items_lost": 1,
+       "loss_after": 0.46406086239869065,
+       "loss_before": 0.9835516456055085,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 0.8333333333333334,
+         "before": 0.3333333333333333
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5333333333333333
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.624678395759052,
+      "loss_after": 0.27110800278428543
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0b845258f65543808f8d098fd4f09c63 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0b845258f65543808f8d098fd4f09c63",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Rechne bitte 24 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 12 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.65,
+       "active_accuracy": 0.65,
+       "gate": "relative",
+       "known_accuracy_after": 0.875,
+       "known_accuracy_before": 0.7875,
+       "known_items_lost": 3,
+       "loss_after": 0.7143962193532263,
+       "loss_before": 1.3135083784757713,
+       "n": 20,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 0.5,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.55
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.7659772415884119,
+      "loss_after": 0.34767366103749053
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Auto und Winter?",
+        "gist"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 200 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 36?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_15d6eb9fd0ee4e84a1c2af927756b953",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.0,
+    "routes": [
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/z6i3-corrections-only/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6i3": {
+  "R1_head_half_ge_80pct": false,
+  "R2_retention_ge_90pct": true,
+  "R3_no_false_promotion": true,
+  "R4_rollback_restores": true,
+  "R5_control_without_recency_lt_50pct": true
+ },
+ "verdict_z6i3": "Z6I3_FAIL"
+}
