@@ -139,11 +139,24 @@ def fetch(store,mid,authority=None,fetcher=None,clock=time.time,guard=None):
     why=gate(store,TOOL,RISK,EFFECTS_FETCH)
     if why:raise PermissionError('Gesperrt durch deine Regeln: '+why)
     data=(fetcher or default_fetcher)(m['url'])
+    # The network call may block for up to TIMEOUT_S. The human can press
+    # Notaus, add a prohibition, disable modules or revoke this proposal while
+    # it runs. The pre-network permission is NOT a standing authorization.
+    latest=state(store)
+    if not latest['enabled'] or _get(latest,mid)['state']!='PROPOSED':
+        raise PermissionError('Modul wurde während des Holens ausgeschaltet oder zurückgenommen')
+    why=gate(store,TOOL,RISK,EFFECTS_FETCH)
+    if why:raise PermissionError('Gesperrt während des Holens: '+why)
+    def advance(st,new,who,**extra):
+        # A later state mutation must not resurrect a revoked proposal.
+        if not st['enabled'] or _get(st,mid)['state']!='PROPOSED':
+            raise PermissionError('Modulvorschlag inzwischen zurückgenommen oder ausgeschaltet')
+        return _to(st,mid,new,clock,who,**extra)
     if not isinstance(data,(bytes,bytearray)):raise ValueError('Antwort ist kein Byte-Block')
     if len(data)>MAX_BYTES:
-        box(store).mutate(lambda s:_to(s,mid,'REJECTED',clock,'check',findings=['TOO_BIG'],size=len(data)));_log(store,'rejected',id=mid,why='TOO_BIG');return _rec(store,mid)
+        box(store).mutate(lambda s:advance(s,'REJECTED','check',findings=['TOO_BIG'],size=len(data)));_log(store,'rejected',id=mid,why='TOO_BIG');return _rec(store,mid)
     sha=hashlib.sha256(data).hexdigest();p=_file(store,mid);atomic_write(p,bytes(data))
-    box(store).mutate(lambda s:_to(s,mid,'QUARANTINED',clock,'HUMAN',sha256=sha,size=len(data),quarantined=clock()))
+    box(store).mutate(lambda s:advance(s,'QUARANTINED','HUMAN',sha256=sha,size=len(data),quarantined=clock()))
     _log(store,'quarantined',id=mid,sha8=sha[:8],size=len(data))
     return check(store,mid,clock=clock,guard=guard)
 
