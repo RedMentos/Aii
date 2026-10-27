@@ -73,12 +73,13 @@ def run_arm(installed, policy, seed):
     flags = set(policy.split('+')[1:]); base_policy = policy.split('+')[0]
     sup = bool(flags & {'sup', 'now'}); now_rule = 'now' in flags  # WP-Z6c: '+sup' = the human states the new scope once
     words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-KL1: '+lex' word channel, '+rec' newer corrections count more
-    folds = 4 if 'cv' in flags else 0  # WP-KL2: '+cv' out-of-sample gate over the newest half of each route's corrections
+    folds = 4 if 'cv' in flags else 0; prob = 'prob' in flags  # WP-KL6: candidates go on probation, approved only when READY  # WP-KL2: '+cv' out-of-sample gate over the newest half of each route's corrections
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
     from v13.learning_worker import features
     from v13.route_features import for_head
+    from v13 import route_probation
     import numpy as np
     heldout_all, record, p1, p2, n_main = stream(seed); log = []
     heldout = heldout_all[:n_main]; novel = heldout_all[n_main:]
@@ -145,9 +146,23 @@ def run_arm(installed, policy, seed):
                     dis = batch_disagreement(batch)
                     for t, lab in batch:
                         e = r.store.event(r.session, t); r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
+                        if prob: route_probation.observe(r, e['event_id'], lab)   # same call as Operator ':feedback route'
                     shifted = phase == 'p2'; act_before = acc(active_path(), shifted)
+                    prob_row = None
+                    if prob:
+                        st = route_probation.state(r.store)
+                        if st and st['verdict'] in ('READY', 'REJECT'):
+                            prob_row = {k: st[k] for k in ('update_id', 'verdict', 'observed', 'candidate_hits', 'parent_hits')}
+                            if st['verdict'] == 'READY':
+                                r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + st['update_id']); promos.append(st['update_id'])
+                                r.cfg['learning_mode'] = 'RECORD_ONLY'
+                            else: Operator(r).run(':reject ' + st['update_id'])
+                            route_probation._set(r.store, dict(st, verdict='DONE_' + st['verdict']))
                     do = base_policy == 'fixed' or (base_policy == 'adaptive' and (dis is None or dis >= .25))
                     row = {'phase': phase, 'batch': bi, 'corrections': corrections, 'disagreement_before': dis, 'shadow': do, 'active_acc_before': act_before}
+                    if prob_row:
+                        row['probation'] = prob_row
+                        if prob_row['verdict'] == 'READY': row['promoted'] = True; row['promoted_update'] = prob_row['update_id']; row['active_acc_after_probation'] = acc(active_path(), shifted)
                     if do and base_policy != 'none':
                         r.cfg['learning_mode'] = 'SHADOW_UPDATE'
                         try: res = r.learner.shadow(); row['shadow_result'] = res
@@ -157,9 +172,11 @@ def run_arm(installed, policy, seed):
                             cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand,
                                                                          superseded=len(json.loads(u['manifest']).get('superseded_labels', [])),
                                                                          gate=(json.loads(u['manifest']).get('metrics') or {}).get('held_out'))  # WP-KL3: the worker's own check
-                            if u['status'] == 'PENDING_APPROVAL':
+                            if u['status'] == 'PENDING_APPROVAL' and prob:
+                                route_probation.start(r, u['id']); row['probation_started'] = u['id']
+                            elif u['status'] == 'PENDING_APPROVAL':
                                 r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + u['id']); promos.append(u['id'])
-                                row['promoted'] = active_path() is not None and r.store.generation_id != before
+                                row['promoted'] = active_path() is not None and r.store.generation_id != before; row['promoted_update'] = u['id']
                         r.cfg['learning_mode'] = 'RECORD_ONLY'
                     row['active_acc_after'] = acc(active_path(), shifted); log.append(row)
                     print(json.dumps({'policy': policy, 'phase': phase, 'batch': bi, 'shadow': do, 'status': row.get('status'),
@@ -179,7 +196,7 @@ def run_arm(installed, policy, seed):
             # rollback of the last promotion must restore the measured parent accuracy (L11 safety path)
             rb = None
             if promos:
-                last = promos[-1]; idx = max(i for i, x in enumerate(log) if x.get('update_id') == last)
+                last = promos[-1]; idx = max(i for i, x in enumerate(log) if x.get('promoted_update') == last)
                 expect = log[idx]['active_acc_before']['all']; r.store.rollback(last)
                 got = acc(active_path(), log[idx]['phase'] == 'p2')['all']  # same label set as the parent measurement
                 rb = {'update_id': last, 'expected_parent_acc': expect, 'after_rollback_acc': got, 'restored': abs(got-expect) < 1e-9}
@@ -193,7 +210,7 @@ def run_arm(installed, policy, seed):
 def score(arm):
     log = arm['log']; jobs = [x for x in log if x.get('update_id')]
     unnecessary = [x for x in jobs if x['candidate_acc']['all'] - x['active_acc_before']['all'] < .01]
-    promoted = [x for x in jobs if x.get('promoted')]
+    promoted = [x for x in log if x.get('promoted')]  # WP-KL6: a probation promotion may happen in a row without a new job
     false_promo = [x for x in promoted if x['active_acc_after']['all'] < x['active_acc_before']['all'] - .01
                    or x['active_acc_after']['unchanged'] < x['active_acc_before']['unchanged'] - .05]
     def first(pred):
@@ -276,6 +293,11 @@ def criteria_kl3b(s):
     return c, 'KL3B_STRICT_GATE_PASS' if all(c.values()) else 'KL3B_STRICT_GATE_FAIL'
 
 
+def criteria_kl6(s):
+    c, _ = criteria_kl3({'fixed+lex+rec+cv+ov': s['fixed+lex+rec+cv+ov+prob'], 'adaptive+lex+rec+cv+ov': s['adaptive+lex+rec+cv+ov+prob'], 'fixed': s['fixed']})
+    return {k.replace('L', 'P', 1): v for k, v in c.items()}, 'KL6_PROBATION_PASS' if all(c.values()) else 'KL6_PROBATION_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -290,6 +312,9 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec+cv+ov+prob', 'adaptive+lex+rec+cv+ov+prob', 'fixed'} <= set(scores):
+        doc['criteria_kl6'], doc['verdict_kl6'] = criteria_kl6(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl6-probation/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+lex+rec+cv+ovs', 'adaptive+lex+rec+cv+ovs', 'fixed'} <= set(scores):
         doc['criteria_kl3b'], doc['verdict_kl3b'] = criteria_kl3b(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3b-strict-gate/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
@@ -305,7 +330,7 @@ def main(argv=None):
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'verdict_kl3b', 'criteria_kl3b', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'verdict_kl3b', 'criteria_kl3b', 'verdict_kl6', 'criteria_kl6', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':
