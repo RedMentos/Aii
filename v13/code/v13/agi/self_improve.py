@@ -43,6 +43,9 @@ def require_approved_origin(store, proposal, kind=None):
         raise PermissionError('AG8 regression shield not passed')
     if not isinstance(saved.get('request_id'),str) or not saved['request_id']:
         raise PermissionError('AG8 approval request missing')
+    row=store.one("SELECT status FROM requests WHERE id=?",(saved['request_id'],))
+    if row is None or row['status']!='APPROVED':
+        raise PermissionError('AG8 human approval request was not approved or was revoked')
     if saved.get('base_generation')!=store.generation_id:
         raise PermissionError('AG8 approval generation changed')
     return saved

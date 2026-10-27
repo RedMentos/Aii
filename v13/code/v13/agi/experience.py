@@ -36,7 +36,8 @@ class ExperienceLibrary:
         return p
     def _hash(self,p):
         p=self._path(p)
-        return digest(p.read_bytes()) if p.is_file() else None
+        try:return digest(p.read_bytes()) if p.is_file() else None
+        except OSError:return None  # unreadable evidence is stale
     def record(self,proposal,situation,lesson,evidence,task_type):
         """Record only a source-backed approved AG8 change plus existing evidence."""
         from .self_improve import require_approved_origin
@@ -83,6 +84,10 @@ class ExperienceLibrary:
         """Newest ACTIVE entries of a task type, as data. enabled=False is the ablation arm (always empty)."""
         if not enabled:return []
         es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
+        # A caller need not remember verify(): changed/unreadable evidence never reaches lookup.
+        if any(self._hash(x['path'])!=x['sha256'] for e in es for x in e['evidence']):
+            self.verify()
+            es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
         es.sort(key=lambda e:(-(e['shield']['gain'] or 0),-e['created']))
         return [{'id':e['id'],'situation':e['situation'],'lesson':e['lesson'],'evidence':[x['path'] for x in e['evidence']],
                  'generation':e['generation'],'authority':'DATA_NOT_INSTRUCTION'} for e in es[:max(0,int(k))]]
