@@ -1,5 +1,61 @@
 {
 
+  "automation11_world_action_identification_20261027": {
+    "status": "NEW_LINUX_WORLD_31_ACTION_IDENTIFICATION_TOP1_67_5_PERCENT_ROBUST_EXPLORATORY_REVIEW_ONLY",
+    "parent_pr": 663,
+    "review_pr": 664,
+    "base_sha": "21342a61188f79d7d76870b22b3b3a013fe02829",
+    "review_branch": "codex/automation11-world-action-identification-20261027",
+    "prereg_commit": "7093838f7a21c42db7ed9b9b5754db31645087f4",
+    "focused_head": "6024e7a63f7133779c9c935b92330b17f3f21a46",
+    "actions": 40457153980,
+    "tests": "8/8 PASS; VERIFY/COMPILE/PRIVACY exit0",
+    "raw_artifact_id": 12712826548,
+    "raw_artifact_sha256": "b7bab8004dff0d30e8be0d6eba5c7d1a9a00c7673e7b0c5db2f928391753870d",
+    "original_zip_sha256": "f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8",
+    "budget_zip_sha256": "8413b6abcdd2651c0e3346f348f0372b13dc4a407199e29a7e24cb9c1f23979a",
+    "checkpoint_sha256": "7cb6158b3f39de2d9fa589906c5ed24ce92869709ce18fc09a70f3804e8b20c0",
+    "postselected_checkpoint": true,
+    "task": "inverse action identification from observed before/after real Linux synthetic-content file-world",
+    "new_seeds": [
+      501,
+      502,
+      503
+    ],
+    "rows_per_seed": 160,
+    "total_rows": 480,
+    "model_top1": 0.675,
+    "model_top5_reported": 0.9145833333333333,
+    "model_top5_numeric_robust_lower": 0.9104166666666667,
+    "model_top5_numeric_possible_upper": 0.9166666666666666,
+    "prior_top1": 0.12291666666666666,
+    "slot_heuristic_top1": 0.2791666666666667,
+    "rotated_label_top1": 0.00625,
+    "model_top1_positive_seeds": 3,
+    "world_overlap_rows": 7,
+    "numeric_near_tie_ambiguous_true_ranks": 16,
+    "numeric_near_tie_eps_abs": 1e-12,
+    "numeric_top1_ambiguous_rows": 0,
+    "independent_reference_red": "Exact true rank differs across NumPy paths for near ties, e.g. seed502 row2 true action28 rank3 vs rank6; original source output retained",
+    "independent_tie_audit_source_sha256": "34ceb59a09d0c5f4a403ab1a27b961212736f203baed9c1c42d3fc0b11106e6a",
+    "independent_tie_audit_result_sha256": "640e2072f9d362bffbdf63ee12ad24be59f3d9ccfd1bc35704eeb9e345c80647",
+    "initial_workflow_failed_actions": [
+      40457143913
+    ],
+    "private_backup": "/V13-Checkpoints/2026-10-27/World-Action-Identification/",
+    "private_backup_verified_byte_exact": true,
+    "evidence": "software and new real Linux synthetic-content file-world inverse action identification; no prospective causal/semantic utility or Redmi",
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Prioritize AG5/World two-conflict integration candidate per PR658; independent review and broad suite. Keep prospective semantic/causal/Redmi proofs separate."
+  },
+
+
   "automation11_world_budget_fresh_holdout_20261027": {
     "status": "NEW_LINUX_FILE_WORLD_200STEP_ACTION_BEATS_IDENTITY_AND_ROTATED_3_OF_3_EXPLORATORY_REVIEW_ONLY",
     "parent_pr": 662,
