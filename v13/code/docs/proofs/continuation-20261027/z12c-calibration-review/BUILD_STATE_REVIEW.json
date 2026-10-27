@@ -1,0 +1,60 @@
+{
+  "schema": "V13_Z12C_CALIBRATION_REVIEW_BUILD_STATE_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 independent review",
+  "scope": "REVIEW_CHILD_OF_Z12C_SHADOW_NOT_MAIN",
+  "parent_branch": "codex/z12c-world-jepa-persistent-shadow-20261027",
+  "base_sha": "74bc1010826db437d3e1ef21fac9c8946986f89b",
+  "branch": "codex/review-z12c-calibration-required-20261027",
+  "prereg_commit": "f8dbec37c9d1b3dbf3e166b54f9d36133c5ec549",
+  "tests_commit": "073fbc30107ca3124ba58db9e2f8cc09b2f6256d",
+  "red": {
+    "run": 40444019062,
+    "head": "e908bdcc5f2416d4f7dd858c8d001c49bfa21540",
+    "tests": "16 tests, 6 FAIL",
+    "artifact": 12706829139,
+    "zip_sha256": "7637df1e09d88b1920558b76f2ab773ec968f2a6bbfde4c4c2845d641f0b534e"
+  },
+  "green": {
+    "run": 40444186901,
+    "head": "a88e2aa868a1939e5ecd837cad48cdde24265f77",
+    "tests": "16/16 PASS, compile PASS, privacy CLEAN",
+    "artifact": 12707368107,
+    "zip_sha256": "2fd966a19f0f81a7b5703b86638b4a756b419d9bee536d3d94988bcde4c27557"
+  },
+  "code_blobs": {
+    "v13/code/v13/world_jepa_slots.py": "65636468f10ed22b1b743aba14a1144f55e9708f",
+    "v13/code/tests/test_world_jepa_slots_calibration_guard.py": "f89fcab4d7add8620926eb5f82ac03a3dec2c5d1"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Z12c-Calibration-Review/",
+    "red_byte_verified": true,
+    "green_byte_verified": true
+  },
+  "change": "Z12c SHADOW World-JEPA confidence and inference-only save require structural per-operation calibration; invalid later calibration revokes authority; checkpoint schema explicit v2 and v1 rejected.",
+  "compatibility": "Experimental v1 inference checkpoints cannot be loaded by v2; explicit calibrated re-export needed. No production v1 migration.",
+  "evidence_level": "LINUX_NUMPY_SYNTHETIC_ONLY",
+  "native": false,
+  "redmi": false,
+  "fullsuite": "NOT_PROMOTED; parent 4335 tests 5 FAIL 73 ERROR",
+  "model_cohort_hashes_changed": false,
+  "age_approval_changed": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint tests.test_world_jepa_slots tests.test_world_jepa",
+  "open_questions": [
+    "Independent review of deliberate v1->v2 checkpoint incompatibility required before integration",
+    "Caller-supplied calibration cohort disjointness/quality is NOT verified by this guard",
+    "No runtime wiring, no native Body-JEPA or Redmi proof",
+    "C3 Run642 native experiment completed but failed utility: Alder 2/2, heldout 1/2, Cedar leak 2/2; original evidence preserved"
+  ],
+  "next_owner": "substantive canonical World-JEPA runtime shadow or C3 learning package, coordinate owner"
+}
