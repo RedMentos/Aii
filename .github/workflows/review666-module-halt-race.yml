@@ -6,6 +6,13 @@ on:
       - '.github/workflows/review666-module-halt-race.yml'
       - 'v13/code/v13/modules_gate.py'
       - 'v13/code/tests/test_review666_module_halt_race.py'
+  pull_request:
+    branches: [claude/project-thread-07uqqx]
+    paths:
+      - '.github/workflows/review666-module-halt-race.yml'
+      - 'v13/code/v13/modules_gate.py'
+      - 'v13/code/v13/module_learn.py'
+      - 'v13/code/tests/test_review666_module_halt_race.py'
 permissions:
   contents: read
 concurrency:
