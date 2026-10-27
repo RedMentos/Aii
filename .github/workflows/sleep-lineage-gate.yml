@@ -1,0 +1,61 @@
+name: V13 Sleep S7 lineage gate
+on:
+  push:
+    branches: [codex/automation11-sleep-lineage-gate-20261027]
+    paths:
+      - '.github/workflows/sleep-lineage-gate.yml'
+      - 'v13/code/v13/sleep_offline.py'
+      - 'v13/code/tests/test_sleep_lineage_gate.py'
+      - 'v13/code/docs/proofs/continuation-20261027/sleep-lineage/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-sleep-lineage-gate
+  cancel-in-progress: false
+jobs:
+  sqlite:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+          ref: ${{ github.sha }}
+      - name: Isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/sleeplineage"
+          timeout 240s "$RUNNER_TEMP/sleeplineage/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Capture original SQLite evidence
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/sleepproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/sleepproof/HEAD.txt"
+          sha256sum v13/code/v13/sleep_offline.py v13/code/tests/test_sleep_lineage_gate.py > "$RUNNER_TEMP/sleepproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 240s "$RUNNER_TEMP/sleeplineage/bin/python" -m unittest -v tests.test_sleep_lineage_gate tests.test_sleep_offline) > "$RUNNER_TEMP/sleepproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/sleepproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/sleeplineage/bin/python" -m compileall -q v13/code/v13/sleep_offline.py v13/code/tests/test_sleep_lineage_gate.py > "$RUNNER_TEMP/sleepproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/sleepproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/sleeplineage/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 949afa149460478661d54cfa944e321d195a7b03 --head HEAD > "$RUNNER_TEMP/sleepproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/sleepproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sleep-lineage-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/sleepproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/sleepproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/sleepproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -25 "$RUNNER_TEMP/sleepproof/UNIT_RAW.log"
