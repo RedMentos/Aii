@@ -1,5 +1,6 @@
 """Source-backed correction retrieval; never a cache of generated answers."""
 import json
+import sqlite3
 import re
 from .common import uid,now,dumps,digest
 from .contracts import packet
@@ -165,6 +166,104 @@ class Memory:
                   'target_policy':'Only explicit HumanDecision learning_permission=learn can authorize a supported typed objective; references never authorize themselves.'}
         metadata=path.with_suffix('.manifest.json');atomic_write(metadata,dumps(manifest))
         return {'dataset':str(path),'manifest':str(metadata),'records':count,'sha256':manifest['sha256']}
+    def _verified_rows(self,rows):
+        """Read-only F1/F5 lineage check before any lexical or learned recall.
+
+        A MemoryRecord alone is not the human decision that authorizes its
+        value. Require exactly one matching live HumanDecision *and* feedback
+        source; malformed/duplicated or revoked evidence cannot reach C3.
+        One scan per packet/feedback class avoids per-memory query amplification.
+        """
+        if not rows:return rows
+        wanted={r['id'] for r in rows}
+        sources={r['source_id'] for r in rows}
+        records={};decisions={};feedbacks={}
+        for row in self.s.rows("SELECT id,event_id,generation_id,payload FROM packets WHERE kind='MemoryRecord'"):
+            try:
+                p=json.loads(row['payload'])
+                if type(p) is not dict:continue
+                mid=p.get('memory_id')
+                if mid in wanted:
+                    records[mid]=None if mid in records else (row,p)
+            except (ValueError,TypeError):continue
+        for row in self.s.rows("SELECT id,event_id,generation_id,payload FROM packets WHERE kind='HumanDecision'"):
+            try:
+                p=json.loads(row['payload'])
+                if type(p) is not dict or type(p.get('source_ref')) is not dict:continue
+                sid=p['source_ref'].get('source_id')
+                if sid in sources:
+                    decisions[sid]=None if sid in decisions else (row,p)
+            except (ValueError,TypeError):continue
+        for row in self.s.rows("SELECT event_id,source_id,kind,value,permission FROM feedback"):
+            sid=row['source_id']
+            if sid in sources:
+                feedbacks[sid]=None if sid in feedbacks else row
+        events={}
+        verified=[]
+        for m in rows:
+            try:
+                rec=records.get(m['id']);decision=decisions.get(m['source_id'])
+                feedback=feedbacks.get(m['source_id'])
+                if rec is None or decision is None or feedback is None:continue
+                record_row,record=rec;decision_row,human=decision
+                ref={'source_id':m['source_id'],'sha256':m['hash'],'char_start':0,
+                     'char_end':m['chars'],'modality':'text'}
+                if (record_row['id']!=record.get('packet_id') or
+                        record_row['event_id']!=m['event_id'] or
+                        record.get('event_id')!=m['event_id'] or
+                        record.get('producer_component')!='F1_MEMORY' or
+                        record.get('kind')!=m['kind'] or record.get('scope')!=m['scope'] or
+                        record.get('key')!=m['key_text'] or record.get('source_ref')!=ref or
+                        type(record.get('provenance')) is not list or ref not in record['provenance']):
+                    continue
+                if (decision_row['id']!=human.get('packet_id') or
+                        decision_row['event_id']!=m['event_id'] or
+                        human.get('event_id')!=m['event_id'] or
+                        human.get('producer_component')!='F5_HUMAN_CONTROL' or
+                        human.get('kind')!=m['kind'] or human.get('value')!=m['value'] or
+                        human.get('source_ref')!=ref or
+                        type(human.get('provenance')) is not list or ref not in human['provenance'] or
+                        human.get('learning_permission') not in ('record','learn')):
+                    continue
+                if (feedback['event_id']!=m['event_id'] or
+                        feedback['kind']!=m['kind'] or feedback['value']!=m['value'] or
+                        feedback['permission']!=human['learning_permission']):
+                    continue
+                if m['event_id'] not in events:
+                    events[m['event_id']]=self.s.one(
+                        'SELECT packet,generation_id,source_id FROM events WHERE id=?',
+                        (m['event_id'],))
+                event=events[m['event_id']]
+                if event is None:continue
+                envelope=json.loads(event['packet'])
+                if (type(envelope) is not dict or
+                        envelope.get('event_id')!=m['event_id'] or
+                        envelope.get('authority')!='AUTHORITATIVE' or
+                        envelope.get('kind')!='USER_TEXT' or
+                        type(envelope.get('source_ref')) is not dict or
+                        envelope['source_ref'].get('source_id')!=event['source_id'] or
+                        record_row['generation_id']!=event['generation_id'] or
+                        decision_row['generation_id']!=event['generation_id'] or
+                        record.get('brain_generation_id')!=event['generation_id'] or
+                        human.get('brain_generation_id')!=event['generation_id']):
+                    continue
+                source=self.s.one('SELECT kind,deleted FROM sources WHERE id=?',
+                                  (m['source_id'],))
+                if source is None or source['deleted'] or source['kind']!='HUMAN_DECISION':continue
+                if (type(envelope.get('provenance')) is not list or
+                        envelope['source_ref'] not in envelope['provenance'] or
+                        self.s.read_source(envelope['source_ref'])==''):continue
+                if self.s.read_source(ref)!=m['value']:continue
+                selection=human.get('selection')
+                if selection is not None:
+                    if type(selection) is not dict:continue
+                    selected=selection.get('source_ref')
+                    if selected is None or selected not in human['provenance'] or not self.s.read_source(selected):continue
+                verified.append(m)
+            except (ValueError,TypeError,KeyError,OSError,UnicodeError,OverflowError,sqlite3.Error):
+                continue
+        return verified
+
     def recall(self,query,session,semantic=None,cancel=None,deadline=None,top_k=None):
         # A semantic vector belongs to this recall, not to matching text on a later turn.
         keys=getattr(self,'semantic_keys',None)
@@ -172,7 +271,8 @@ class Memory:
         top_k=self.cfg['memory_top_k'] if top_k is None else max(0,min(8,int(top_k)))  # WP-T1 memory head: skip/deep
         if not top_k:return []
         candidates=[]
-        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(session,))
+        rows=self.s.rows("SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id JOIN events e ON e.id=m.event_id AND e.session_id=m.session_id WHERE m.active=1 AND s.deleted=0 AND m.kind IN ('fact','style','preference') AND (m.session_id=? OR m.scope='global')",(session,))
+        rows=self._verified_rows(rows)  # verify live F1/F5 before semantic ranking
         local={(r['kind'],r['key_text']):r['value'] for r in rows if r['scope']=='session' and r['session_id']==session}
         rows=[r for r in rows if r['scope']!='global' or (r['kind'],r['key_text']) not in local or local[(r['kind'],r['key_text'])]==r['value']]
         sims=self._embedding_similarities(query,rows,cancel,deadline)
