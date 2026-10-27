@@ -1,0 +1,79 @@
+name: V13 World-JEPA incremental outcome readout synthetic audit
+on:
+  push:
+    branches: [codex/automation11-world-jepa-incremental-probe-20261027]
+    paths:
+      - '.github/workflows/world-jepa-incremental-probe.yml'
+      - 'v13/code/scripts/world_jepa_incremental_probe.py'
+      - 'v13/code/tests/test_world_jepa_incremental_probe.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-incremental-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen-source software tests and preregistered synthetic 400-step probe
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-incremental"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_digital_shadow.py > "$evidence/BRIDGE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_probe.py > "$evidence/PROBE_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/BRIDGE_BLOB.txt")" = "4ab37e11d8238d376e568567f901c85c12d09da8" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-incremental-venv"
+          py="$RUNNER_TEMP/world-incremental-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 5m env PYTHONPATH=. "$py" -m unittest -v tests.test_world_jepa_incremental_probe tests.test_world_jepa_digital_shadow tests.test_world_jepa tests.test_world_model
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=. "$py" scripts/world_jepa_incremental_probe.py --synthetic-smoke
+          ) > "$evidence/SYNTHETIC_REPORT.json" 2> "$evidence/SYNTHETIC_RAW.log"
+          echo "$?" > "$evidence/SYNTHETIC_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_incremental_probe.py v13/code/tests/test_world_jepa_incremental_probe.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-incremental-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-incremental/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all closed raw exits, no utility promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-incremental"
+          for name in FROZEN INSTALL UNIT SYNTHETIC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              if [ -f "$evidence/${name}_RAW.log" ]; then tail -80 "$evidence/${name}_RAW.log"; fi
+              exit 1
+            fi
+          done
+          echo 'WORLD_JEPA_INCREMENTAL_SYNTHETIC_ONLY_NO_GATE_PROMOTION'
