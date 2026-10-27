@@ -1,0 +1,53 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 744,
+  "parent_sha": "55314b3e2d97d3d7b4ce2513e54ccd36486d07c8",
+  "branch": "codex/automation11o-world-finite-20261027",
+  "pr": null,
+  "prereg": "04db70bba23fc96d229dbe5389880658e564f467",
+  "red": [
+    {
+      "source_commit": "ac0e7c00b9fa384aeba66f6a695189826166ebb7",
+      "actions": 40542723218,
+      "tests": "11 tests 2 expected ERROR",
+      "zip_sha256": "9ce9a0e43f0efd7536babe7c8c949f1a5e8080385529e3b45f6a27eb1e539da7",
+      "private_backup": true
+    },
+    {
+      "source_commit": "0e7b8001a9154dac3528df9557aec9048e8750f6",
+      "actions": 40542928135,
+      "tests": "11 tests 2 expected ERROR",
+      "zip_sha256": "5b8fb0dc4e793ad3f4f609ce6cfe577e69b72d29b21074373c6defa30d45366c",
+      "private_backup": true
+    }
+  ],
+  "green": {
+    "source_commit": "3521be48270de00dc40b97ba3504d4188160c72b",
+    "world_model_blob": "95059f97bf58a1979cc8c016ba6061d94be85512",
+    "actions": 40543003774,
+    "tests": "11/11 PASS",
+    "exits": "INSTALL UNIT COMPILE PRIVACY DIFF 0",
+    "zip_sha256": "9238428b95f5ddf5939a19e2b1005faa1ca62fbae65a17e1963d4e24bd1c3e0d",
+    "private_backup": true
+  },
+  "full_suite": {
+    "source_commit": "b0d53501299d8ffcbab8d10b1b6600dc4896200b",
+    "actions": 40543059492,
+    "status": "PENDING"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect Actions 40543059492 raw artifact and exits; privately verify ZIP bytes; independent for_event boundary review; no main merge."
+}
