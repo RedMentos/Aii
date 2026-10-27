@@ -1,0 +1,19 @@
+# BP1 V2 exact ephemeral adapter locator — software GREEN, native retry gated (2026-10-27)
+
+Owner: GPT-6 automation11. Parent PR #689 exact activated source `ca954bf471a4d96abb4e84c8dcd847c75a5b1186`; new independent review branch. Prereg committed `7754e1d95163d1c9fd7226034dd7b7cd3de29cfd` before fix. Frozen trainer `49a752879ae5d19391963742a0f042e740edb2cc`, 25-row train SHA `9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86`, 22 heldout SHA `7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c`, QAD FP32/Q4, b10964, seed13, rank2/alpha4/2 steps/1024, `jepa_weight=0` unchanged.
+
+## Preserved original native RED
+
+Actions [40486038454](https://github.com/RedMentos/Aii/actions/runs/40486038454) at `ca954bf471a4d96abb4e84c8dcd847c75a5b1186` **FAILURE**. Original native ZIP artifact `12726075228`, SHA256 `7842807741b11b909a8eab64a7cb2b839a58286e05bca4a71535ce179d334c1a`, CRC PASS, 29 entries, no weights. Original software ZIP `12725212858`, SHA256 `e3f11bfa89c18de4168fcd89fd8bd4f34fb846bfd73768eb5650946ec9cd6700`, software GREEN. Independently verified all original stage exits: BUDGET0, DATASET_FETCH0, DEPS0, GGUF_SOURCE0, MASTER_FETCH0, TRAIN0, V2_MODEL0, V2_HELDOUT0, **V2_EXIT1**. Train proof: 25 rows, 2 CPU steps, CE0.90984→0.64171, LoRA-B 38,912 nonzero, GGUF tensors44, peak RSS4,248.2 MB, heldout not opened during training. `V2_BINDING_RAW.log` original FileNotFoundError: `$RUNNER_TEMP/bp1-train-output/adapter.gguf` absent. The actual frozen trainer writes `bp1-train-output/trainer-work/<24hex>/adapter.gguf`. No 44-response predictions or V2 scores produced. Both original ZIPs privately backed up in `/V13-Checkpoints/2026-10-27/BP1-QAD-Native-Verified-20261027/` and re-materialized SHA-identical. **RED is retained.**
+
+## Exact fix and closed software evidence
+
+`scripts/bp1_qad_adapter_locator.py` requires exactly one owned `trainer-work/<24hex>/adapter.gguf` with adjacent PEFT safetensors, regular non-symlink files, exact proof GGUF/PEFT SHA and GGUF byte size, nonzero LoRA-B, train-only/negative gates. Writes only the verified ephemeral path into runner temp; no weights copied/uploaded. `.github/workflows/bp1-qad-train-plus-v2-samejob.yml` now binds that path to V2 proof and collector, records `V2_ADAPTER_LOCATOR_EXIT.txt` and original raw, retains serial global heavy group, uses **new branch and `ACTIVATE_RETRY.txt` trigger**. Original owner branch untouched. Additional bash -n static shell test verifies nested if/heredoc syntax. No model/adapter weights published.
+
+Actions [40487869220](https://github.com/RedMentos/Aii/actions/runs/40487869220) at `1a144c9cbf399ba7134caf00d6bbcdc9f0b2a2ad`: **41/41 software tests PASS**, compile0, privacy CLEAN. Original software ZIP artifact `12726395376`, SHA256 `bf78d1291129c4b631eeded8646480fbcaf5111f64d4f563af985790a94c2e27`, CRC PASS, all UNIT/COMPILE/PRIVACY exits0, privately backed up as `V2-LOCATOR-SOFTWARE-40487869220-ORIGINAL.zip` and re-materialized byte-identical.
+
+## Exact next step and limits
+
+Before native retry: check Actions no in_progress/queued heavy owner, verify current branch/workflow/PREREG/HEAD and frozen hashes, then create **only** `v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt` on this branch. This triggers a fresh isolated 25-row train + 44-response source-disjoint V2; no reuse of unavailable ephemeral adapter from failed runner. Download and independently audit original native ZIP, retain all failed/partial attempts, run independent 44-row raw auditor and quote rescorer from PR #691 if complete. If another native failure occurs, preserve RED and pursue independent canonical work; do not fabricate scores.
+
+No STEP2/B3/Body-JEPA/Redmi/full-V13 promotion. STEP2 UTILITY_FAIL, B3 L1_FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, Redmi unmeasured, whole V13 incomplete.

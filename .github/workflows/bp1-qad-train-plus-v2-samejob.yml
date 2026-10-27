@@ -1,9 +1,9 @@
 name: V13 BP1 genuine 25-row QAD train plus 44-row source-disjoint V2 paired heldout
 on:
   push:
-    branches: [codex/gpt6-bp1-qad-train-plus-v2-20261027]
+    branches: [codex/automation11-bp1-v2-adapter-locator-retry-20261027]
     paths:
-      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE.txt'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt'
 permissions:
   contents: read
   actions: read
@@ -26,10 +26,10 @@ jobs:
           mkdir -p "$RUNNER_TEMP/bp1-native-train-software"
           git rev-parse HEAD > "$RUNNER_TEMP/bp1-native-train-software/HEAD.txt"
           git hash-object v13/code/v13/lora_trainer.py > "$RUNNER_TEMP/bp1-native-train-software/TRAINER_GIT_BLOB.txt"
-          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train-software/SOURCE_SHA256.txt"
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_train_candidate tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-native-train-software/UNIT_RAW.log" 2>&1
+          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py v13/code/scripts/bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator_workflow.py > "$RUNNER_TEMP/bp1-native-train-software/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_train_candidate tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score tests.test_bp1_qad_adapter_locator tests.test_bp1_qad_adapter_locator_workflow) > "$RUNNER_TEMP/bp1-native-train-software/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/UNIT_EXIT.txt"
-          python3 -m compileall -q v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train-software/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py v13/code/scripts/bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator_workflow.py > "$RUNNER_TEMP/bp1-native-train-software/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 1789a4c979720d4630de2d1c9414ffcdf67c9750 --head HEAD > "$RUNNER_TEMP/bp1-native-train-software/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/PRIVACY_EXIT.txt"
@@ -74,7 +74,7 @@ jobs:
           set +e
           mkdir -p "$RUNNER_TEMP/bp1-native-train"
           git rev-parse HEAD > "$RUNNER_TEMP/bp1-native-train/HEAD.txt"
-          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train/SOURCE_SHA256.txt"
+          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py v13/code/scripts/bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator.py v13/code/tests/test_bp1_qad_adapter_locator_workflow.py > "$RUNNER_TEMP/bp1-native-train/SOURCE_SHA256.txt"
           (free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true) > "$RUNNER_TEMP/bp1-native-train/RESOURCE_BEFORE.log" 2>&1
           python3 - <<'PY' > "$RUNNER_TEMP/bp1-native-train/BUDGET_RAW.log" 2>&1
           import os,shutil
@@ -279,15 +279,20 @@ jobs:
         run: |
           set +e
           rc=2
+          echo 2 > "$RUNNER_TEMP/bp1-native-train/V2_ADAPTER_LOCATOR_EXIT.txt"
           if [ "$(cat "$RUNNER_TEMP/bp1-native-train/TRAIN_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/V2_MODEL_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_EXIT.txt")" = 0 ]; then
-            PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-native-train/V2_BINDING_RAW.log" 2>&1
+            PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_adapter_locator.py --trainer-work "$RUNNER_TEMP/bp1-train-output/trainer-work" --proof "$RUNNER_TEMP/bp1-train-output/BP1_QAD_TRAIN_PROOF.json" --path-file "$RUNNER_TEMP/bp1-native-train/V2_ADAPTER_PATH.txt" > "$RUNNER_TEMP/bp1-native-train/V2_ADAPTER_LOCATOR_RAW.log" 2>&1
+            rc="$?"
+            echo "$rc" > "$RUNNER_TEMP/bp1-native-train/V2_ADAPTER_LOCATOR_EXIT.txt"
+            if [ "$rc" = 0 ]; then
+              PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-native-train/V2_BINDING_RAW.log" 2>&1
           import json,os
           from pathlib import Path
           from scripts import bp1_qad_lora_eval as E, bp1_paired_score as S
           from scripts import bp1_qad_native_smoke as N, bp1_qad_train_candidate as T
           tmp=Path(os.environ["RUNNER_TEMP"])
           proof=tmp/"bp1-train-output"/"BP1_QAD_TRAIN_PROOF.json"
-          adapter=tmp/"bp1-train-output"/"adapter.gguf"
+          adapter=Path((tmp/"bp1-native-train"/"V2_ADAPTER_PATH.txt").read_text().strip())
           index,ds=S.load_dataset(tmp/"bp1-v2-heldout")
           b={"schema":E.SCHEMA,"dataset_sha256":ds,"base_master_sha256":N.MASTER_SHA,
              "base_gguf_sha256":N.GGUF_SHA,"adapter_gguf_sha256":S.sha(adapter.read_bytes()),
@@ -300,10 +305,11 @@ jobs:
           (tmp/"bp1-v2-binding.json").write_text(json.dumps(b,sort_keys=True)+"\n")
           print("QAD V2 strict native proof and source binding verified",len(index))
           PY
-            rc="$?"
+              rc="$?"
+            fi
             if [ "$rc" = 0 ]; then
               SERVER="$(cat "$RUNNER_TEMP/bp1-native-train/V2_SERVER_PATH.txt")"
-              timeout 1600s env LD_LIBRARY_PATH="$(dirname "$SERVER")" PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_lora_eval.py --mode collect --dataset "$RUNNER_TEMP/bp1-v2-heldout" --binding "$RUNNER_TEMP/bp1-v2-binding.json" --server "$SERVER" --base-gguf "$RUNNER_TEMP/bp1-v2-model/base.gguf" --adapter-gguf "$RUNNER_TEMP/bp1-train-output/adapter.gguf" --train-proof "$RUNNER_TEMP/bp1-train-output/BP1_QAD_TRAIN_PROOF.json" --out "$RUNNER_TEMP/bp1-v2-collect" --serial-owner-confirmed > "$RUNNER_TEMP/bp1-native-train/V2_COLLECT_RAW.log" 2>&1
+              timeout 1600s env LD_LIBRARY_PATH="$(dirname "$SERVER")" PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_lora_eval.py --mode collect --dataset "$RUNNER_TEMP/bp1-v2-heldout" --binding "$RUNNER_TEMP/bp1-v2-binding.json" --server "$SERVER" --base-gguf "$RUNNER_TEMP/bp1-v2-model/base.gguf" --adapter-gguf "$(cat "$RUNNER_TEMP/bp1-native-train/V2_ADAPTER_PATH.txt")" --train-proof "$RUNNER_TEMP/bp1-train-output/BP1_QAD_TRAIN_PROOF.json" --out "$RUNNER_TEMP/bp1-v2-collect" --serial-owner-confirmed > "$RUNNER_TEMP/bp1-native-train/V2_COLLECT_RAW.log" 2>&1
               rc="$?"
             fi
             if [ "$rc" = 0 ]; then
@@ -341,7 +347,7 @@ jobs:
       - name: Enforce all source and actual optimizer exits
         run: |
           set -euo pipefail
-          for n in BUDGET DATASET_FETCH DEPS GGUF_SOURCE MASTER_FETCH TRAIN V2_MODEL V2_HELDOUT V2; do
+          for n in BUDGET DATASET_FETCH DEPS GGUF_SOURCE MASTER_FETCH TRAIN V2_MODEL V2_HELDOUT V2_ADAPTER_LOCATOR V2; do
             test "$(cat "$RUNNER_TEMP/bp1-native-train/${n}_EXIT.txt")" = 0 || { echo "${n} failed"; tail -100 "$RUNNER_TEMP/bp1-native-train/${n}_RAW.log"; exit 1; }
           done
           test -s "$RUNNER_TEMP/bp1-native-train/BP1_QAD_TRAIN_PROOF.json"

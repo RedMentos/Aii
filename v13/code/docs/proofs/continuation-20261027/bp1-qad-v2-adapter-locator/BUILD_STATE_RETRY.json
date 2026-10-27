@@ -1,0 +1,38 @@
+{
+  "schema": "V13_BP1_V2_ADAPTER_LOCATOR_RETRY_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "ca954bf471a4d96abb4e84c8dcd847c75a5b1186",
+  "prereg": "7754e1d95163d1c9fd7226034dd7b7cd3de29cfd",
+  "original_red": {
+    "run": 40486038454,
+    "native_artifact": 12726075228,
+    "native_zip_sha256": "7842807741b11b909a8eab64a7cb2b839a58286e05bca4a71535ce179d334c1a",
+    "software_artifact": 12725212858,
+    "software_zip_sha256": "e3f11bfa89c18de4168fcd89fd8bd4f34fb846bfd73768eb5650946ec9cd6700",
+    "failure": "V2_BINDING FileNotFoundError bp1-train-output/adapter.gguf",
+    "train_exit": 0,
+    "V2_exit": 1,
+    "predictions": 0,
+    "backups": "private Library byte verified"
+  },
+  "fix": {
+    "source": "1a144c9cbf399ba7134caf00d6bbcdc9f0b2a2ad",
+    "software_run": 40487869220,
+    "artifact": 12726395376,
+    "zip_sha256": "bf78d1291129c4b631eeded8646480fbcaf5111f64d4f563af985790a94c2e27",
+    "tests_pass": 41,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "backup": "private Library byte verified"
+  },
+  "native_retry": "NOT_ACTIVATED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "check heavy owner; create ACTIVATE_RETRY.txt on own branch; audit new original raw; never promote on partial"
+}
