@@ -1,0 +1,52 @@
+{
+ "A1": {
+  "train_seed": "A1",
+  "on": 1.0,
+  "base": 0.6375,
+  "wrong_commit": 0.0,
+  "gap_gain": [
+   0.8083,
+   0.7333
+  ],
+  "overall_gain": [
+   0.3625,
+   0.3125
+  ],
+  "dep_on": 1.0,
+  "dep_removed": 0.0,
+  "follow_rate_shuffled_calc_use": 1.0,
+  "drift_mean_kl": 0.7566,
+  "c1": true,
+  "c2": true,
+  "c3": true,
+  "c5": false
+ },
+ "A2": {
+  "train_seed": "A2",
+  "on": 0.9938,
+  "base": 0.6375,
+  "wrong_commit": 0.0063,
+  "gap_gain": [
+   0.8,
+   0.725
+  ],
+  "overall_gain": [
+   0.3563,
+   0.3031
+  ],
+  "dep_on": 1.0,
+  "dep_removed": 0.0,
+  "follow_rate_shuffled_calc_use": 0.9375,
+  "drift_mean_kl": 0.777,
+  "c1": true,
+  "c2": true,
+  "c3": true,
+  "c5": false
+ },
+ "control_C1": {
+  "dep_on": 0.0625,
+  "overall": 0.6156,
+  "c4": true
+ },
+ "verdict": "CONSUMER_PARTIAL"
+}

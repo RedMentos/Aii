@@ -1,0 +1,5504 @@
+{
+ "adapter": "/tmp/bp1/A1",
+ "seed": 101,
+ "n": 320,
+ "revision": "v13-offer-consumer-v1",
+ "arms": {
+  "adapter:offers": {
+   "overall": 1.0,
+   "wrong_commit": 0.0,
+   "n": 320,
+   "per_family": {
+    "calc_use": 1.0,
+    "calc_hedge": 1.0,
+    "lookup_use": 1.0,
+    "source_wins": 1.0,
+    "pick_quoted": 1.0,
+    "ignore": 1.0,
+    "abstain": 1.0,
+    "plain": 1.0
+   }
+  },
+  "adapter:removed": {
+   "overall": 0.7469,
+   "wrong_commit": 0.1125,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.0,
+    "calc_hedge": 0.0,
+    "lookup_use": 1.0,
+    "source_wins": 1.0,
+    "pick_quoted": 0.975,
+    "ignore": 1.0,
+    "abstain": 1.0,
+    "plain": 1.0
+   }
+  },
+  "adapter:shuffled": {
+   "overall": 0.65,
+   "wrong_commit": 0.1344,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.0,
+    "calc_hedge": 0.0,
+    "lookup_use": 0.975,
+    "source_wins": 0.95,
+    "pick_quoted": 0.975,
+    "ignore": 1.0,
+    "abstain": 0.3,
+    "plain": 1.0
+   }
+  },
+  "base_adapter_off:offers": {
+   "overall": 0.6375,
+   "wrong_commit": 0.2062,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.5,
+    "calc_hedge": 0.0,
+    "lookup_use": 0.95,
+    "source_wins": 0.95,
+    "pick_quoted": 0.875,
+    "ignore": 0.875,
+    "abstain": 0.075,
+    "plain": 0.875
+   }
+  },
+  "base_adapter_off:removed": {
+   "overall": 0.5312,
+   "wrong_commit": 0.1625,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.025,
+    "calc_hedge": 0.0,
+    "lookup_use": 0.85,
+    "source_wins": 0.85,
+    "pick_quoted": 0.725,
+    "ignore": 0.775,
+    "abstain": 0.15,
+    "plain": 0.875
+   }
+  },
+  "base_adapter_off:shuffled": {
+   "overall": 0.6031,
+   "wrong_commit": 0.1844,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.15,
+    "calc_hedge": 0.0,
+    "lookup_use": 0.975,
+    "source_wins": 0.925,
+    "pick_quoted": 0.9,
+    "ignore": 0.875,
+    "abstain": 0.1,
+    "plain": 0.9
+   }
+  }
+ },
+ "answers": {
+  "adapter:offers": [
+   "The answer is 351 units.",
+   "The answer is 210 euros.",
+   "It is 592 rivets.",
+   "The answer is 342 units.",
+   "436 MB.",
+   "Unverified: about 2079 valves. This is an internal estimate and not confirmed.",
+   "It is 60 units.",
+   "That is not given in the text.",
+   "It is 7 people.",
+   "It is 764 MB.",
+   "Not stated in the text.",
+   "That is not given in the text.",
+   "It is 762 euros.",
+   "The answer is 107 MB.",
+   "It is 671 euros.",
+   "10 days.",
+   "It is 595 euros.",
+   "It is 632 euros.",
+   "Unverified: about 7087 valves. This is an internal estimate and not confirmed.",
+   "It is 311 euros.",
+   "25 people.",
+   "It is 783 pipes.",
+   "920 euros.",
+   "The answer is 1321 valves.",
+   "The answer is 52 days.",
+   "The answer is 966 euros.",
+   "It is 2846 filters.",
+   "Unverified: about 2539 rivets. This is an internal estimate and not confirmed.",
+   "It is 630 units.",
+   "It is 552 euros.",
+   "188 euros.",
+   "The answer is 39 days.",
+   "The answer is 2456 pipes.",
+   "6 people.",
+   "978 euros.",
+   "25 people.",
+   "40 units.",
+   "243 MB.",
+   "The answer is 2123 hinges.",
+   "It is 17 people.",
+   "The answer is 442 MB.",
+   "The answer is 344 units.",
+   "Unverified: about 4606 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "It is 6106 hinges.",
+   "Unverified: about 916 lenses. This is an internal estimate and not confirmed.",
+   "13 people.",
+   "It is 27 people.",
+   "Not stated in the text. An unverified internal hypothesis says 574 units.",
+   "1405 rivets.",
+   "It is 93 days.",
+   "It is 2392 filters.",
+   "92 days.",
+   "It is 494 euros.",
+   "Unverified: about 944 rivets. This is an internal estimate and not confirmed.",
+   "It is 85 MB.",
+   "Unverified: about 1929 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 501 units.",
+   "The answer is 138 units.",
+   "The answer is 3941 valves.",
+   "720 euros.",
+   "43 units.",
+   "It is 421 MB.",
+   "It is 701 euros.",
+   "Not stated in the text. An unverified estimate says 649 MB.",
+   "390 MB.",
+   "The answer is 85 units.",
+   "The answer is 1327 pipes.",
+   "It is 49 days.",
+   "11 days.",
+   "The answer is 93 units.",
+   "90 days.",
+   "It is 56 days.",
+   "It is 28 people.",
+   "4885 valves.",
+   "It is 359 MB.",
+   "488 units.",
+   "466 euros.",
+   "It is 568 euros.",
+   "It is 58 hinges.",
+   "It is 722 euros.",
+   "The answer is 312 units.",
+   "It is 71 days.",
+   "273 euros.",
+   "Unverified: about 3939 lenses. This is an internal estimate and not confirmed.",
+   "It is 677 MB.",
+   "It is 14 people.",
+   "The answer is 366 euros.",
+   "The answer is 683 euros.",
+   "270 euros.",
+   "The answer is 1580 valves.",
+   "The answer is 723 MB.",
+   "965 euros.",
+   "The answer is 42 people.",
+   "It is 691 euros.",
+   "370 MB.",
+   "Unverified: about 3456 filters. This is an internal estimate and not confirmed.",
+   "It is 375 units.",
+   "Unverified: about 276 lenses. This is an internal estimate and not confirmed.",
+   "22 days.",
+   "171 units.",
+   "Not stated in the text. An unverified internal hypothesis says 7 people.",
+   "That is not given in the text.",
+   "12 people.",
+   "17 days.",
+   "459 MB.",
+   "It is 53 days.",
+   "The answer is 932 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 71 days.",
+   "Unverified: about 1790 filters. This is an internal estimate and not confirmed.",
+   "It is 39 people.",
+   "Unverified: about 3521 lenses. This is an internal estimate and not confirmed.",
+   "Unverified: about 2327 lenses. This is an internal estimate and not confirmed.",
+   "Unverified: about 3799 pipes. This is an internal estimate and not confirmed.",
+   "It is 8098 filters.",
+   "The answer is 282 units.",
+   "The answer is 172 MB.",
+   "2253 lenses.",
+   "It is 16 people.",
+   "The answer is 72 euros.",
+   "It is 614 euros.",
+   "It is 675 euros.",
+   "Unverified: about 554 filters. This is an internal estimate and not confirmed.",
+   "The answer is 7951 pipes.",
+   "It is 522 MB.",
+   "Not stated in the text.",
+   "20 days.",
+   "It is 5832 hinges.",
+   "Not stated in the text.",
+   "Unverified: about 1530 filters. This is an internal estimate and not confirmed.",
+   "It is 1519 pipes.",
+   "Not stated in the text.",
+   "It is 24 days.",
+   "Not stated in the text. An unverified internal hypothesis says 214 euros.",
+   "It is 385 units.",
+   "It is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "The answer is 2475 lenses.",
+   "It is 748 MB.",
+   "The answer is 36 people.",
+   "471 MB.",
+   "The answer is 4147 rivets.",
+   "It is 534 euros.",
+   "It is 17 people.",
+   "375 euros.",
+   "21 people.",
+   "Unverified: about 6080 hinges. This is an internal estimate and not confirmed.",
+   "Unverified: about 6939 filters. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 30 people.",
+   "It is 6161 valves.",
+   "It is 74 MB.",
+   "Unverified: about 1020 pipes. This is an internal estimate and not confirmed.",
+   "That is not given in the text.",
+   "It is 31 people.",
+   "The answer is 29 people.",
+   "It is 44 days.",
+   "It is 241 units.",
+   "The answer is 36 people.",
+   "Unverified: about 1947 rivets. This is an internal estimate and not confirmed.",
+   "It is 677 euros.",
+   "The answer is 215 MB.",
+   "Unverified: about 6618 hinges. This is an internal estimate and not confirmed.",
+   "Unverified: about 4981 valves. This is an internal estimate and not confirmed.",
+   "Unverified: about 865 filters. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "The answer is 4449 filters.",
+   "Not stated in the text.",
+   "40 people.",
+   "It is 169 units.",
+   "139 euros.",
+   "611 euros.",
+   "It is 928 euros.",
+   "561 units.",
+   "Unverified: about 416 valves. This is an internal estimate and not confirmed.",
+   "16 days.",
+   "It is 593 euros.",
+   "That is not given in the text.",
+   "Unverified: about 1913 rivets. This is an internal estimate and not confirmed.",
+   "20 people.",
+   "The answer is 458 units.",
+   "It is 4919 hinges.",
+   "505 euros.",
+   "15 people.",
+   "The answer is 35 days.",
+   "196 euros.",
+   "390 units.",
+   "It is 669 MB.",
+   "Unverified: about 1254 filters. This is an internal estimate and not confirmed.",
+   "It is 887 euros.",
+   "273 units.",
+   "It is 788 pipes.",
+   "565 MB.",
+   "Unverified: about 551 filters. This is an internal estimate and not confirmed.",
+   "The answer is 30 days.",
+   "Not stated in the text. An unverified internal hypothesis says 721 euros.",
+   "The answer is 35 days.",
+   "11 people.",
+   "372 euros.",
+   "The answer is 178 units.",
+   "It is 60 days.",
+   "It is 45 people.",
+   "It is 29 days.",
+   "Unverified: about 5625 hinges. This is an internal estimate and not confirmed.",
+   "136 units.",
+   "Not stated in the text. An unverified internal hypothesis says 923 MB.",
+   "That is not given in the text.",
+   "Unverified: about 1671 pipes. This is an internal estimate and not confirmed.",
+   "44 people.",
+   "125 euros.",
+   "It is 178 units.",
+   "Not stated in the text.",
+   "Unverified: about 4343 lenses. This is an internal estimate and not confirmed.",
+   "298 euros.",
+   "It is 184 MB.",
+   "It is 946 MB.",
+   "53 units.",
+   "It is 255 euros.",
+   "It is 890 MB.",
+   "That is not given in the text.",
+   "It is 14 people.",
+   "Unverified: about 5580 pipes. This is an internal estimate and not confirmed.",
+   "1217 valves.",
+   "Not stated in the text. An unverified internal hypothesis says 467 euros.",
+   "That is not given in the text.",
+   "It is 652 MB.",
+   "333 units.",
+   "The answer is 379 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 200 MB.",
+   "40 people.",
+   "The answer is 4316 rivets.",
+   "407 MB.",
+   "Unverified: about 5043 pipes. This is an internal estimate and not confirmed.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "The answer is 1132 hinges.",
+   "It is 680 euros.",
+   "92 days.",
+   "571 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 492 euros.",
+   "It is 689 pipes.",
+   "The answer is 685 euros.",
+   "Not stated in the text.",
+   "Not stated in the text. An unverified internal hypothesis says 37 days.",
+   "It is 78 units.",
+   "Unverified: about 1557 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 105 MB.",
+   "It is 93 days.",
+   "It is 814 euros.",
+   "21 days.",
+   "It is 28 people.",
+   "243 euros.",
+   "The answer is 9 people.",
+   "The answer is 6619 rivets.",
+   "It is 732 euros.",
+   "That is not given in the text.",
+   "The answer is 213 MB.",
+   "607 euros.",
+   "The answer is 1983 pipes.",
+   "It is 19 people.",
+   "Not stated in the text. An unverified internal hypothesis says 775 MB.",
+   "It is 317 euros.",
+   "The answer is 1135 valves.",
+   "It is 3 people.",
+   "It is 69 days.",
+   "Unverified: about 420 filters. This is an internal estimate and not confirmed.",
+   "It is 793 MB.",
+   "It is 638 euros.",
+   "It is 709 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 768 euros.",
+   "It is 348 euros.",
+   "The answer is 84 days.",
+   "Unverified: about 903 hinges. This is an internal estimate and not confirmed.",
+   "It is 413 units.",
+   "196 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 530 units.",
+   "It is 429 euros.",
+   "The answer is 1358 rivets.",
+   "It is 928 MB.",
+   "209 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 43 people.",
+   "Unverified: about 2571 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 466 valves.",
+   "It is 1160 pipes.",
+   "The answer is 258 units.",
+   "It is 202 MB.",
+   "It is 71 days.",
+   "It is 47 days.",
+   "Not stated in the text. An unverified internal hypothesis says 524 MB.",
+   "The answer is 2284 valves.",
+   "Unverified: about 2952 valves. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "It is 557 rivets.",
+   "31 days.",
+   "Not stated in the text. An unverified internal hypothesis says 80 days.",
+   "The answer is 6772 filters.",
+   "Unverified: about 3260 valves. This is an internal estimate and not confirmed.",
+   "Unverified: about 3875 pipes. This is an internal estimate and not confirmed.",
+   "266 units.",
+   "It is 778 rivets.",
+   "The answer is 472 units.",
+   "It is 569 euros.",
+   "It is 6953 lenses.",
+   "Not stated in the text. An unverified internal hypothesis says 39 days.",
+   "917 MB.",
+   "906 euros.",
+   "It is 19 people.",
+   "The answer is 23 people.",
+   "It is 311 units.",
+   "It is 168 units.",
+   "47 days.",
+   "25 days.",
+   "It is 49 days.",
+   "8 days.",
+   "The answer is 107 units.",
+   "Unverified: about 4683 hinges. This is an internal estimate and not confirmed.",
+   "It is 934 euros.",
+   "485 euros."
+  ],
+  "adapter:removed": [
+   "It is 351 units.",
+   "It is 210 euros.",
+   "The answer is 13 rivets per tray.",
+   "The answer is 342 units.",
+   "It is 436 MB.",
+   "The answer is 137 valves.",
+   "It is 60 units.",
+   "That is not given in the text.",
+   "It is 7 people.",
+   "It is 764 MB.",
+   "Not stated in the text.",
+   "That is not given in the text.",
+   "It is 762 euros.",
+   "The answer is 107 MB.",
+   "It is 671 euros.",
+   "10 days.",
+   "It is 595 euros.",
+   "It is 632 euros.",
+   "The answer is 86 valves.",
+   "It is 311 euros.",
+   "25 people.",
+   "The answer is 243 pipes.",
+   "It is 920 euros.",
+   "Not stated in the text.",
+   "It is 52 days.",
+   "It is 966 euros.",
+   "The answer is 58 filters.",
+   "The answer is 46 rivets per tray.",
+   "It is 630 units.",
+   "It is 552 euros.",
+   "188 euros.",
+   "It is 39 days.",
+   "The answer is 400 pipes.",
+   "It is 6 people.",
+   "It is 978 euros.",
+   "25 people.",
+   "40 units.",
+   "243 MB.",
+   "The answer is 269 hinges.",
+   "17 people.",
+   "It is 442 MB.",
+   "The answer is 344 units.",
+   "It is 151 hinges.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 78 hinges per tray.",
+   "Not stated in the text.",
+   "13 people.",
+   "It is 27 people.",
+   "That is not given in the text.",
+   "The answer is 181 rivets.",
+   "It is 93 days.",
+   "The answer is 54 filters.",
+   "92 days.",
+   "It is 494 euros.",
+   "The answer is 37 rivets per tray.",
+   "It is 85 MB.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 138 units.",
+   "The answer is 58 valves per tray.",
+   "It is 720 euros.",
+   "43 units.",
+   "It is 421 MB.",
+   "It is 701 euros.",
+   "Not stated in the text.",
+   "390 MB.",
+   "It is 85 units.",
+   "The answer is 69 pipes per tray.",
+   "49 days.",
+   "11 days.",
+   "It is 93 units.",
+   "90 days.",
+   "It is 56 days.",
+   "It is 28 people.",
+   "The answer is 74 valves.",
+   "It is 359 MB.",
+   "488 units.",
+   "466 euros.",
+   "It is 568 euros.",
+   "The answer is 25 hinges per tray.",
+   "It is 722 euros.",
+   "It is 312 units.",
+   "It is 71 days.",
+   "273 euros.",
+   "The answer is 81 lenses.",
+   "It is 677 MB.",
+   "It is 14 people.",
+   "It is 366 euros.",
+   "It is 683 euros.",
+   "270 euros.",
+   "Not stated in the text.",
+   "It is 723 MB.",
+   "965 euros.",
+   "The answer is 42 people.",
+   "It is 691 euros.",
+   "370 MB.",
+   "The answer is 229 filters.",
+   "It is 375 units.",
+   "Not stated in the text.",
+   "22 days.",
+   "171 units.",
+   "That is not given in the text.",
+   "That is not given in the text.",
+   "12 people.",
+   "17 days.",
+   "459 MB.",
+   "It is 53 days.",
+   "It is 932 MB.",
+   "That is not given in the text.",
+   "The answer is 63 filters per tray.",
+   "It is 39 people.",
+   "The answer is 99 lenses.",
+   "The answer is 69 lenses.",
+   "The answer is 94 pipes.",
+   "The answer is 88 filters.",
+   "The answer is 282 units.",
+   "It is 172 MB.",
+   "The answer is 309 lenses.",
+   "It is 16 people.",
+   "72 euros.",
+   "It is 614 euros.",
+   "It is 675 euros.",
+   "Not stated in the text.",
+   "The answer is 92 pipes.",
+   "It is 522 MB.",
+   "Not stated in the text.",
+   "20 days.",
+   "The answer is 251 hinges.",
+   "Not stated in the text.",
+   "The answer is 98 filters.",
+   "The answer is 105 pipes.",
+   "Not stated in the text.",
+   "It is 24 days.",
+   "That is not given in the text.",
+   "It is 385 units.",
+   "It is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "The answer is 67 lenses.",
+   "It is 748 MB.",
+   "It is 36 people.",
+   "471 MB.",
+   "The answer is 137 rivets.",
+   "It is 534 euros.",
+   "It is 17 people.",
+   "375 euros.",
+   "21 people.",
+   "The answer is 256 hinges.",
+   "The answer is 282 filters.",
+   "That is not given in the text.",
+   "The answer is 279 valves.",
+   "It is 74 MB.",
+   "The answer is 387 pipes.",
+   "That is not given in the text.",
+   "It is 31 people.",
+   "It is 29 people.",
+   "It is 44 days.",
+   "It is 241 units.",
+   "It is 36 people.",
+   "The answer is 373 rivets.",
+   "It is 677 euros.",
+   "The answer is 215 MB.",
+   "The answer is 80 hinges.",
+   "The answer is 87 valves.",
+   "The answer is 343 filters.",
+   "Not stated in the text.",
+   "The answer is 64 filters per tray.",
+   "Not stated in the text.",
+   "40 people.",
+   "It is 169 units.",
+   "It is 139 euros.",
+   "It is 611 euros.",
+   "It is 928 euros.",
+   "It is 561 units.",
+   "The answer is 13 valves per tray.",
+   "16 days.",
+   "It is 593 euros.",
+   "That is not given in the text.",
+   "The answer is 38 rivets per tray.",
+   "20 people.",
+   "It is 458 units.",
+   "The answer is 241 hinges.",
+   "505 euros.",
+   "15 people.",
+   "The answer is 35 days.",
+   "196 euros.",
+   "390 units.",
+   "It is 669 MB.",
+   "The answer is 144 filters.",
+   "It is 887 euros.",
+   "It is 273 units.",
+   "The answer is 367 pipes.",
+   "It is 565 MB.",
+   "Not stated in the text.",
+   "The answer is 30 days.",
+   "That is not given in the text.",
+   "It is 35 days.",
+   "11 people.",
+   "372 euros.",
+   "It is 178 units.",
+   "It is 60 days.",
+   "It is 45 people.",
+   "It is 29 days.",
+   "The answer is 204 hinges.",
+   "136 units.",
+   "Not stated in the text.",
+   "That is not given in the text.",
+   "The answer is 26 pipes.",
+   "44 people.",
+   "Not stated in the text.",
+   "It is 178 units.",
+   "Not stated in the text.",
+   "The answer is 60 lenses.",
+   "298 euros.",
+   "It is 184 MB.",
+   "It is 946 MB.",
+   "It is 53 units.",
+   "It is 255 euros.",
+   "It is 890 MB.",
+   "That is not given in the text.",
+   "It is 14 people.",
+   "The answer is 263 pipes.",
+   "The answer is 59 valves.",
+   "Not stated in the text.",
+   "That is not given in the text.",
+   "It is 652 MB.",
+   "333 units.",
+   "It is 379 MB.",
+   "That is not given in the text.",
+   "40 people.",
+   "Not stated in the text.",
+   "407 MB.",
+   "The answer is 69 pipes.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "The answer is 363 hinges.",
+   "It is 680 euros.",
+   "92 days.",
+   "It is 571 MB.",
+   "Not stated in the text.",
+   "The answer is 399 pipes.",
+   "It is 685 euros.",
+   "Not stated in the text.",
+   "That is not given in the text.",
+   "It is 78 units.",
+   "The answer is 17 pipes.",
+   "105 MB.",
+   "It is 93 days.",
+   "It is 814 euros.",
+   "21 days.",
+   "It is 28 people.",
+   "243 euros.",
+   "It is 9 people.",
+   "The answer is 77 rivets.",
+   "It is 732 euros.",
+   "That is not given in the text.",
+   "It is 213 MB.",
+   "It is 607 euros.",
+   "The answer is 54 pipes.",
+   "It is 19 people.",
+   "Not stated in the text.",
+   "It is 317 euros.",
+   "The answer is 65 valves per tray.",
+   "It is 3 people.",
+   "It is 69 days.",
+   "The answer is 36 filters.",
+   "It is 793 MB.",
+   "It is 638 euros.",
+   "It is 709 euros.",
+   "That is not given in the text.",
+   "It is 348 euros.",
+   "It is 84 days.",
+   "The answer is 27 hinges.",
+   "It is 413 units.",
+   "196 euros.",
+   "Not stated in the text.",
+   "It is 429 euros.",
+   "The answer is 226 rivets.",
+   "It is 928 MB.",
+   "209 euros.",
+   "That is not given in the text.",
+   "The answer is 126 pipes.",
+   "The answer is 35 valves per tray.",
+   "The answer is 340 pipes.",
+   "The answer is 258 units.",
+   "It is 202 MB.",
+   "It is 71 days.",
+   "It is 47 days.",
+   "Not stated in the text.",
+   "The answer is 57 valves.",
+   "The answer is 51 valves.",
+   "Not stated in the text.",
+   "The answer is 283 rivets.",
+   "It is 31 days.",
+   "That is not given in the text.",
+   "Not stated in the text.",
+   "Not stated in the text. An unverified internal hypothesis says 171 valves were rejected.",
+   "The answer is 84 pipes.",
+   "266 units.",
+   "The answer is 22 rivets per tray.",
+   "It is 472 units.",
+   "It is 569 euros.",
+   "The answer is 87 lenses.",
+   "Not stated in the text.",
+   "It is 917 MB.",
+   "906 euros.",
+   "It is 19 people.",
+   "It is 23 people.",
+   "It is 311 units.",
+   "It is 168 units.",
+   "47 days.",
+   "25 days.",
+   "It is 49 days.",
+   "8 days.",
+   "The answer is 107 units.",
+   "The answer is 56 hinges.",
+   "It is 934 euros.",
+   "485 euros."
+  ],
+  "adapter:shuffled": [
+   "It is 351 units.",
+   "The answer is 210 euros.",
+   "The answer is 13 rivets per tray.",
+   "The answer is 342 units.",
+   "It is 436 MB.",
+   "The answer is 98 valves.",
+   "It is 60 units.",
+   "That is not given in the text.",
+   "It is 7 people.",
+   "The answer is 764 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 458 units.",
+   "Not stated in the text. An unverified internal hypothesis says 1358 rivets.",
+   "It is 762 euros.",
+   "The answer is 107 MB.",
+   "The answer is 671 euros.",
+   "10 days.",
+   "It is 595 euros.",
+   "It is 632 euros.",
+   "The answer is 86 valves.",
+   "It is 311 euros.",
+   "25 people.",
+   "The answer is 243 pipes.",
+   "It is 920 euros.",
+   "The answer is 17 valves.",
+   "The answer is 52 days.",
+   "The answer is 966 euros.",
+   "The answer is 58 filters.",
+   "The answer is 46 rivets per tray.",
+   "It is 630 units.",
+   "It is 552 euros.",
+   "188 euros.",
+   "It is 39 days.",
+   "The answer is 400 pipes.",
+   "6 people.",
+   "It is 978 euros.",
+   "25 people.",
+   "40 units.",
+   "243 MB.",
+   "The answer is 269 hinges.",
+   "17 people.",
+   "It is 442 MB.",
+   "The answer is 344 units.",
+   "The answer is 71 hinges per tray.",
+   "Not stated in the text. An unverified internal hypothesis says 11 people.",
+   "Not stated in the text. An unverified internal hypothesis says 529 euros.",
+   "Unverified: about 1254 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 78 lenses.",
+   "13 people.",
+   "It is 27 people.",
+   "That is not given in the text.",
+   "Unverified: about 5625 rivets. This is an internal estimate and not confirmed.",
+   "It is 93 days.",
+   "The answer is 4316 filters.",
+   "92 days.",
+   "It is 494 euros.",
+   "Unverified: about 5580 rivets. This is an internal estimate and not confirmed.",
+   "It is 85 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 191 hinges were rejected.",
+   "Not stated in the text. An unverified internal hypothesis says 20 people.",
+   "The answer is 138 units.",
+   "Not stated in the text. An unverified internal hypothesis says 58 valves per tray.",
+   "It is 720 euros.",
+   "43 units.",
+   "It is 421 MB.",
+   "It is 701 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 506 units.",
+   "390 MB.",
+   "The answer is 85 units.",
+   "The answer is 69 pipes.",
+   "It is 49 days.",
+   "11 days.",
+   "It is 93 units.",
+   "90 days.",
+   "It is 56 days.",
+   "It is 28 people.",
+   "The answer is 2475 valves.",
+   "It is 359 MB.",
+   "488 units.",
+   "It is 466 euros.",
+   "It is 568 euros.",
+   "Unverified: about 1530 hinges. This is an internal estimate and not confirmed.",
+   "It is 722 euros.",
+   "The answer is 312 units.",
+   "It is 71 days.",
+   "273 euros.",
+   "The answer is 81 lenses.",
+   "It is 677 MB.",
+   "It is 14 people.",
+   "It is 366 euros.",
+   "It is 683 euros.",
+   "270 euros.",
+   "The answer is 32 valves.",
+   "The answer is 723 MB.",
+   "965 euros.",
+   "The answer is 42 people.",
+   "It is 691 euros.",
+   "370 MB.",
+   "The answer is 1321 filters.",
+   "It is 375 units.",
+   "Not stated in the text. An unverified internal hypothesis says 202 lenses were rejected.",
+   "22 days.",
+   "171 units.",
+   "That is not given in the text.",
+   "Not stated in the text.",
+   "It is 12 people.",
+   "17 days.",
+   "459 MB.",
+   "It is 53 days.",
+   "It is 932 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 466 MB.",
+   "The answer is 63 filters per tray.",
+   "It is 39 people.",
+   "Unverified: about 554 lenses. This is an internal estimate and not confirmed.",
+   "The answer is 69 lenses.",
+   "The answer is 94 pipes.",
+   "The answer is 88 filters.",
+   "The answer is 282 units.",
+   "It is 172 MB.",
+   "The answer is 61 lenses per tray.",
+   "It is 16 people.",
+   "The answer is 72 euros.",
+   "Not stated in the text. An unverified internal hypothesis says about 2327 lenses.",
+   "It is 675 euros.",
+   "Unverified: about 1929 filters. This is an internal estimate and not confirmed.",
+   "Unverified: about 2952 pipes. This is an internal estimate and not confirmed.",
+   "It is 522 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 55 people.",
+   "20 days.",
+   "Unverified: about 276 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 306 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 226 MB.",
+   "The answer is 58 pipes.",
+   "Not stated in the text. An unverified internal hypothesis says 424 units.",
+   "It is 24 days.",
+   "Not stated in the text. An unverified internal hypothesis says 582 euros.",
+   "It is 385 units.",
+   "It is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "The answer is 67 lenses.",
+   "It is 748 MB.",
+   "The answer is 36 people.",
+   "The answer is 471 MB.",
+   "The answer is 689 rivets.",
+   "It is 534 euros.",
+   "It is 17 people.",
+   "The answer is 375 euros.",
+   "21 people.",
+   "The answer is 256 hinges.",
+   "The answer is 282 filters.",
+   "Not stated in the text. An unverified internal hypothesis says 321 units.",
+   "The answer is 279 valves.",
+   "It is 74 MB.",
+   "The answer is 387 pipes.",
+   "Not stated in the text. An unverified internal hypothesis says 530 units.",
+   "It is 31 people.",
+   "It is 29 people.",
+   "It is 44 days.",
+   "It is 241 units.",
+   "It is 36 people.",
+   "The answer is 49 rivets.",
+   "It is 677 euros.",
+   "The answer is 215 MB.",
+   "The answer is 80 hinges.",
+   "Not stated in the text. An unverified internal hypothesis says 27 valves were rejected.",
+   "The answer is 65 filters.",
+   "Not stated in the text. An unverified internal hypothesis says 390 units.",
+   "The answer is 1135 filters.",
+   "Not stated in the text. An unverified internal hypothesis says 6772 filters.",
+   "It is 40 people.",
+   "It is 169 units.",
+   "It is 139 euros.",
+   "It is 611 euros.",
+   "It is 928 euros.",
+   "It is 561 units.",
+   "The answer is 13 valves per tray.",
+   "16 days.",
+   "It is 593 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 262 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 38 rivets per tray.",
+   "20 people.",
+   "The answer is 458 units.",
+   "Unverified: about 276 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified estimate says about 3939 lenses.",
+   "15 people.",
+   "The answer is 35 days.",
+   "196 euros.",
+   "390 units.",
+   "It is 669 MB.",
+   "The answer is 144 filters.",
+   "It is 887 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 273 units.",
+   "The answer is 33 pipes.",
+   "It is 565 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 15 filters each.",
+   "The answer is 30 days.",
+   "Not stated in the text. An unverified internal hypothesis says 8 people.",
+   "The answer is 35 days.",
+   "11 people.",
+   "372 euros.",
+   "It is 178 units.",
+   "It is 60 days.",
+   "It is 45 people.",
+   "It is 29 days.",
+   "The answer is 204 hinges.",
+   "136 units.",
+   "Not stated in the text. An unverified internal hypothesis says about 4343 lenses.",
+   "Not stated in the text.",
+   "The answer is 29 pipes.",
+   "44 people.",
+   "Not stated in the text. An unverified internal hypothesis says 923 MB.",
+   "It is 178 units.",
+   "Not stated in the text. An unverified internal hypothesis says 343 MB.",
+   "The answer is 60 lenses.",
+   "It is 298 euros.",
+   "It is 184 MB.",
+   "It is 946 MB.",
+   "53 units.",
+   "The answer is 255 euros.",
+   "It is 890 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 250 units.",
+   "It is 14 people.",
+   "The answer is 263 pipes.",
+   "The answer is 59 valves per tray.",
+   "Not stated in the text. An unverified internal hypothesis says 940 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 363 euros.",
+   "It is 652 MB.",
+   "The answer is 333 units.",
+   "It is 379 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 437 euros.",
+   "40 people.",
+   "Not stated in the text. An unverified internal hypothesis says 97 rivets.",
+   "407 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 69 pipes.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "The answer is 363 hinges.",
+   "It is 680 euros.",
+   "It is 92 days.",
+   "It is 571 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 428 euros.",
+   "The answer is 399 pipes.",
+   "It is 685 euros.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "It is 78 units.",
+   "The answer is 17 pipes.",
+   "The answer is 105 MB.",
+   "It is 93 days.",
+   "It is 814 euros.",
+   "21 days.",
+   "It is 28 people.",
+   "The answer is 243 euros.",
+   "It is 9 people.",
+   "The answer is 77 rivets.",
+   "It is 732 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 2284 valves.",
+   "It is 213 MB.",
+   "607 euros.",
+   "Unverified: about 4343 pipes. This is an internal estimate and not confirmed.",
+   "It is 19 people.",
+   "Not stated in the text. An unverified estimate says about 1790 filters.",
+   "It is 317 euros.",
+   "Unverified: about 1947 valves. This is an internal estimate and not confirmed.",
+   "It is 3 people.",
+   "It is 69 days.",
+   "The answer is 36 filters.",
+   "It is 793 MB.",
+   "It is 638 euros.",
+   "It is 709 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 143 euros.",
+   "It is 348 euros.",
+   "It is 84 days.",
+   "The answer is 20 hinges.",
+   "It is 413 units.",
+   "196 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 93 days.",
+   "It is 429 euros.",
+   "It is 8098 rivets.",
+   "It is 928 MB.",
+   "209 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 100 people.",
+   "The answer is 126 pipes.",
+   "The answer is 35 valves.",
+   "The answer is 30 pipes.",
+   "The answer is 258 units.",
+   "It is 202 MB.",
+   "It is 71 days.",
+   "It is 47 days.",
+   "Not stated in the text.",
+   "The answer is 6619 valves.",
+   "The answer is 1580 valves.",
+   "Not stated in the text. An unverified internal hypothesis says 669 MB.",
+   "Unverified: about 1530 rivets. This is an internal estimate and not confirmed.",
+   "It is 31 days.",
+   "Not stated in the text. An unverified internal hypothesis says 478 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 93 filters.",
+   "Not stated in the text. An unverified internal hypothesis says 47 valves.",
+   "The answer is 84 pipes.",
+   "It is 266 units.",
+   "The answer is 234 rivets.",
+   "It is 472 units.",
+   "It is 569 euros.",
+   "The answer is 1321 lenses.",
+   "Not stated in the text. An unverified internal hypothesis says about 4343 units.",
+   "It is 917 MB.",
+   "The answer is 906 euros.",
+   "It is 19 people.",
+   "It is 23 people.",
+   "It is 311 units.",
+   "It is 168 units.",
+   "47 days.",
+   "25 days.",
+   "It is 49 days.",
+   "8 days.",
+   "The answer is 107 units.",
+   "The answer is 56 hinges.",
+   "The answer is 934 euros.",
+   "485 euros."
+  ],
+  "base_adapter_off:offers": [
+   "The daily target is 351 units.",
+   "210 euros",
+   "51 × 13 - 71 = 592 - 71 = 521 good rivets.",
+   "917",
+   "Juniper memory ceiling is 436 MB.",
+   "34 valves remain.",
+   "The daily target for Pylon is 60 units.",
+   "The crew size for Pylon is unknown.",
+   "The note gives 7.",
+   "764",
+   "Pylon crew size",
+   "Insurance cap not provided.",
+   "762",
+   "The memory ceiling of project Pylon is 107 MB.",
+   "The note gives 671 euros.",
+   "Yes, the lead time is 10 days.",
+   "The contingency fund for Juniper is 595 euros.",
+   "Quartz insurance cap is 632 euros.",
+   "91 valves remain.",
+   "311",
+   "Tea is provided.",
+   "Pipes good: 54 × 19 = 1056  \nHarm: 243  \n\n**Answer:** 1056",
+   "920 euros",
+   "5 valves remain.",
+   "The note gives 52 euros for the lead time.",
+   "966",
+   "50 × 58 - 54 = 2846\n\nGood: 2846",
+   "63 * 46 = 2808  \n2808 - 97 = 2691  \n\nRivets good: 2691",
+   "630",
+   "The insurance cap for Meridian is 552 euros.",
+   "The note gives 188 euros for the contingency fund of Meridian.",
+   "Juniper lead time is 39 days.",
+   "400 - 34 = 366\n\nOrchid: 84",
+   "The crew size for Quartz is 6 people.",
+   "978",
+   "The crew size of project Nimbus is 25 people.",
+   "The daily target for Pylon is 40 units.",
+   "The memory ceiling of project Lantern is 243 MB.",
+   "269 - 92 = 177",
+   "The crew size is 17 people.",
+   "Quick check: Lantern memory ceiling is 442 MB.",
+   "The daily target of project Orchid is 366 units.",
+   "67 * 71 - 151 = 4606 - 151 = 4505 good hinges.",
+   "Lead time is not specified.",
+   "Orchid insurance cap not specified.",
+   "81 * 78 - 212 = 6106  \n\nGood hinges = 6106 - 212 = 5804  \n\nAnswer: 5804",
+   "16 × 78 = 1228  \n57 - 57 = 0  \n0",
+   "The crew size of project Nimbus is 13 people.",
+   "The crew size for Pylon is 27 people.",
+   "The daily target for Lantern is 574 units.",
+   "61 * 26 - 181 = 1405 good rivets.",
+   "The lead time of project Quartz is 93 days.",
+   "49 × 54 = 2656  \n2656 - 254 = 2392  \n\n**Answer:** 2392",
+   "Kestrel lead time is 92 days.",
+   "The contingency fund for Juniper is €494.",
+   "21 × 37 = 777; 777 - 58 = 719\n\n**Answer:** 719",
+   "The memory ceiling for Juniper is 85 MB.",
+   "191 - 29 = 162",
+   "Kestrel daily target is 501 units.",
+   "138",
+   "Valves good: 3941 - 177 = 3940",
+   "The contingency fund of project Orchid is 720 euros.",
+   "43",
+   "421 MB",
+   "The insurance cap of project Juniper is 701 euros.",
+   "The memory ceiling of project Juniper is 649 MB.",
+   "390",
+   "85",
+   "23 × 69 = 1557  \n1557 - 260 = 1327  \n\n**Answer:** 1327",
+   "886",
+   "The lead time for Pylon is 11 days.",
+   "The daily target of project Lantern is 93 units.",
+   "Yes, the lead time is 90 days.",
+   "Quartz lead time is 56 days.",
+   "The crew size of project Quartz is 28 people.",
+   "221 - 74 = 147",
+   "The memory ceiling of project Kestrel is 359 MB.",
+   "488",
+   "466",
+   "The contingency fund of project Juniper is 568 euros.",
+   "13 * 25 - 267 = 325 - 267 = 58 hinges are good.",
+   "The contingency fund of project Pylon is 722 euros.",
+   "The daily target of project Meridian is 312 units.",
+   "The lead time of project Meridian is 71 days.",
+   "274",
+   "51 × 81 - 26 = 4131 - 26 = 4035 lenses good.",
+   "677",
+   "The crew size of project Lantern is 14 people.",
+   "366",
+   "The contingency fund of project Quartz is 683 euros.",
+   "Contingency fund of project Quartz is 135 euros.",
+   "52",
+   "The memory ceiling of project Orchid is 723 MB.",
+   "The insurance cap of project Quartz is 965 euros.",
+   "The crew size of project Quartz is 42 people.",
+   "The insurance cap for project Pylon is 691 euros.",
+   "The memory ceiling of project Meridian is 370 MB.",
+   "230 filters remain.",
+   "375",
+   "4",
+   "The lead time for Kestrel is 22 days.",
+   "Juniper daily target is 183.",
+   "The crew size for Orchid is 7 people.",
+   "Crew size not provided.",
+   "The crew size of project Kestrel is 12 people.",
+   "The note gives 17 days.",
+   "Yes",
+   "Quick check: Juniper lead time is 53 days.",
+   "The memory ceiling of project Juniper is 932 MB.",
+   "The lead time of project Juniper is 71 days.",
+   "27 × 63 = 1701; 1701 - 39 = 1690\n\n**Answer:** 1690",
+   "The crew size for Lantern is 39 people.",
+   "38 * 99 = 3702  \n3702 - 38 = 3570  \n\n**Answer:** 3570",
+   "34 × 69 = 2396  \n2396 - 19 = 2377  \n\n**Answer:** 2377",
+   "There are 45 × 94 = 4180 pipes. Discarding 305 leaves 4180 - 305 = 4035 pipes.\n\n**Answer:** 4035",
+   "4",
+   "282",
+   "The memory ceiling of project Nimbus is 172 MB.",
+   "42 × 61 = 2522  \n2522 - 309 = 2253  \n\n**Answer:** 2253",
+   "The crew size for Lantern is 16 people.",
+   "72",
+   "614 euros",
+   "Yes, the insurance cap is 675 euros.",
+   "196 - 27 = 169",
+   "53 pipes remain.",
+   "Yes, the memory ceiling is 522 MB.",
+   "Contingency fund: 496 - 794 = -298 euros",
+   "The lead time for Nimbus is 20 days.",
+   "79 * 77 - 251 = 5832 - 251 = 5831 good hinges.",
+   "Memory ceiling is 478 / 35 = 13.",
+   "38",
+   "28 × 58 = 1584; 1584 - 105 = 1519\n\n**Answer:** 1519",
+   "The memory ceiling is 424.",
+   "The lead time is 24 days.",
+   "The insurance cap of project Lantern is 214 euros.",
+   "The daily target for Pylon is 385 units.",
+   "Yes, the memory ceiling of project Kestrel is 269 MB.",
+   "480",
+   "490 euros",
+   "38 lenses remain.",
+   "The memory ceiling of project Meridian is negligible.",
+   "206",
+   "471",
+   "137 - 63 = 74",
+   "Yes, the insurance cap is 534 euros.",
+   "The crew size for Juniper is 17 people.",
+   "The contingency fund of project Lantern is 375 euros.",
+   "The crew size for Meridian is 21 people.",
+   "72 * 88 = 6248; 6248 - 256 = 6080 good hinges.",
+   "53 filters remain.",
+   "The crew size for Orchid is 30 people.",
+   "Valuable valves remain.",
+   "Yes, the memory ceiling of project Juniper is 74 MB.",
+   "387 - 67 = 320\n\nJuniper: 320",
+   "Memory ceiling: 500",
+   "31",
+   "The note gives 29 people.",
+   "The lead time for Lantern is 44 days.",
+   "Yes, the daily target is 241 units.",
+   "The crew size of project Meridian is 20 people.",
+   "Remaining rivets: 1947 - 373 = 1497",
+   "The insurance cap for project Orchid is 677 euros.",
+   "215",
+   "Remaining hinges: 6618 - 22 = 6616",
+   "47 valves remain.",
+   "343 filters remain.",
+   "The memory ceiling is 390 - 556 = -66 units.",
+   "74 * 64 - 287 = 4449 - 287 = 4442",
+   "Daily target: 943 ÷ 23 = 41",
+   "40",
+   "The note gives the daily target of 169 units.",
+   "139 euros",
+   "The insurance cap of project Meridian is 611 euros.",
+   "The insurance cap for Nimbus is 928 euros.",
+   "561",
+   "Valves good: 55 × 13 = 715.",
+   "The lead time of project Pylon is 16 days.",
+   "The contingency fund of project Juniper is 593 euros.",
+   "The insurance cap for Juniper is 150 euros.",
+   "59 * 38 = 2242  \n329 - 2242 = -1433  \n\nNo rivets are good.",
+   "The crew size for Juniper is 20 people.",
+   "Kestrel daily target is 458 units.",
+   "86 × 60 = 5160  \n5160 - 241 = 4919  \n\n**Answer:** 4919",
+   "Yes, the contingency fund of project Juniper is 505 euros.",
+   "The crew size for Nimbus is 15 people.",
+   "The lead time of Nimbus is 35 days.",
+   "Orchid insurance cap is 196 euros.",
+   "390",
+   "The memory ceiling of project Pylon is 669 MB.",
+   "There are 144 - 75 = 69 remaining filters.",
+   "The insurance cap of project Kestrel is 887 euros.",
+   "Yes, the daily target is 273 units.",
+   "367 ÷ 33 = 11\n\n**Answer:** 11",
+   "The memory ceiling of project Meridian is 565 MB.",
+   "52 - 21 = 31",
+   "The note gives 62 days for the lead time of Orchid.",
+   "The contingency fund for Kestrel is 721 euros.",
+   "The lead time for Orchid is 35 days.",
+   "Juniper crew size is 11 people.",
+   "The contingency fund of project Pylon is 372 euros.",
+   "The daily target of project Quartz is 178 units.",
+   "669 euros",
+   "Quartz crew size is 45 people.",
+   "Yes, the lead time of project Pylon is 29 days.",
+   "4",
+   "The daily target of project Meridian is 136 units.",
+   "The memory ceiling of project Meridian is 923 MB.",
+   "The insurance cap for Lantern is 500 euros.",
+   "Pipes good: 50 × 29 - 26 = 1670",
+   "The crew size is 44 people.",
+   "The contingency fund of project Meridian is 125 euros.",
+   "Orchid daily target is 178 units.",
+   "740",
+   "Lenses good: 75 × 60 = 4500; discard = 157; good = 4500 - 157 = 4363.",
+   "The insurance cap of project Lantern is 298 euros.",
+   "The memory ceiling of project Pylon is 184 MB.",
+   "The memory ceiling of project Orchid is 946 MB.",
+   "53",
+   "The insurance cap is 255 euros.",
+   "Quick check: Meridian memory ceiling is 890 MB.",
+   "Lead time: 7 days",
+   "The crew size of project Lantern is 14 people.",
+   "Pipes good: 92 × 65 = 5980  \nPipes discarded: 263  \nPipes remaining: 5980 - 263 = 5807  \n\n**Answer:** 5807",
+   "21 × 59 = 1279  \n1279 - 22 = 1257  \n\n**Answer:** 1257",
+   "467 euros",
+   "The insurance cap for Orchid is 363 euros.",
+   "The memory ceiling of project Pylon is 652 MB.",
+   "The note gives the daily target of Pylon as **338 units**.",
+   "379",
+   "The memory ceiling for Pylon is 200 MB.",
+   "40",
+   "49 rivets remain.",
+   "Yes, the memory ceiling of project Lantern is 407 MB.",
+   "4",
+   "372 euros",
+   "The crew size of project Juniper is 26.",
+   "Yes",
+   "23 × 65 = 1495  \n1495 - 363 = 983  \n\n\\boxed{983}",
+   "The contingency fund of project Pylon is 680 euros.",
+   "Lead time for Meridian is 92 days.",
+   "The memory ceiling of project Meridian is 571 MB.",
+   "The contingency fund for Meridian is 492 euros.",
+   "Pipes good: 689 - 399 = 290  \n\nAnswer: 290",
+   "685",
+   "Depot is next to the harbor.",
+   "The lead time for Nimbus is 37 days.",
+   "78",
+   "77 - 30 = 47\n\n47",
+   "105",
+   "The lead time of project Lantern is 93 days.",
+   "814",
+   "The lead time for Kestrel is 21 days.",
+   "The crew size for Quartz is 28 people.",
+   "243",
+   "Quartz crew size is 9 people.",
+   "Remaining rivets: 90 - (77 × 311) = 90 - 23667 = -23677\n\nThe calculation yields a negative number, indicating a problem.",
+   "The contingency fund for Lantern is 732 euros.",
+   "Memory ceiling for Quartz is 500 GB.",
+   "Juniper memory ceiling is 248 MB.",
+   "607 euros",
+   "40 × 54 = 2160  \n177 - 2160 = -1590  \n(Note: Negative result indicates rejection, but pipes remain)",
+   "The crew size of project Meridian is 19 people.",
+   "Orchid memory ceiling is 775 MB.",
+   "The contingency fund of project Nimbus is 317 euros.",
+   "20 × 65 = 1300  \n1300 - 165 = 1135  \n\n**Answer:** 1135",
+   "The crew size for Orchid is 3 people.",
+   "The lead time of project Nimbus is 69 days.",
+   "4",
+   "Memory ceiling of project Pylon is 793 MB.",
+   "The insurance cap for Juniper is 638 euros.",
+   "The contingency fund for Nimbus is 709 euros.",
+   "The insurance cap of project Meridian is 768 euros.",
+   "The contingency fund of project Orchid is 348 euros.",
+   "The lead time of project Nimbus is 84 days.",
+   "27 hinges remain.",
+   "413",
+   "196",
+   "709 euros",
+   "The insurance cap of project Lantern is 429 euros.",
+   "36 × 44 = 1584  \n1584 - 226 = 1358  \n\nRivets are good.",
+   "928 MB",
+   "Yes, the insurance cap is 209 euros.",
+   "The crew size of project Meridian is 43 people.",
+   "126 remaining",
+   "14 × 35 = 490  \n490 - 24 = 466  \n\n466  \n\nThis is the number of good valves.",
+   "50 * 30 - 340 = 1500 - 340 = 1100 pipes good.",
+   "The daily target of project Pylon is 258 units.",
+   "Yes",
+   "71",
+   "The lead time for Nimbus is 47 days.",
+   "The memory ceiling of project Meridian is 524 MB.",
+   "167",
+   "Valuable valves remain.",
+   "669",
+   "42 × 20 - 283 = 840 - 283 = 557 good rivets.",
+   "The lead time of project Nimbus is 31 days.",
+   "The lead time of project Nimbus is 80 days.",
+   "53 filters remain.",
+   "73 - 171 = 52\n\n52",
+   "8",
+   "266",
+   "46 × 22 - 234 = 778 good rivets.",
+   "The daily target for Kestrel is 472 units.",
+   "The contingency fund of project Nimbus is 569 euros.",
+   "80 × 87 - 7 = 6953 good lenses.",
+   "The note gives 39 days for the lead time of Meridian.",
+   "The memory ceiling of project Quartz is 917 MB.",
+   "906",
+   "The crew size of project Kestrel is 19 people.",
+   "The note gives 23 as the crew size of Orchid.",
+   "The daily target is 311 units.",
+   "168",
+   "392",
+   "The lead time of project Pylon is 25 days.",
+   "49",
+   "The lead time of project Juniper is 8 days.",
+   "946",
+   "88 * 56 = 4932  \n4932 - 245 = 4687  \n\n**Answer:** 4687 hinges are good.",
+   "Pylon insurance cap is 934 euros.",
+   "The contingency fund of project Kestrel is 485 euros."
+  ],
+  "base_adapter_off:removed": [
+   "Yes",
+   "210 euros",
+   "4",
+   "917",
+   "Yes.",
+   "34 valves remain.",
+   "The daily target for Pylon is 60 units.",
+   "The crew size for Pylon is unknown.",
+   "The note gives 7.",
+   "764",
+   "Pylon crew size",
+   "Insurance cap not provided.",
+   "762",
+   "107 MB",
+   "671",
+   "Lead time is 10 days.",
+   "The contingency fund for Juniper is 595 euros.",
+   "Yes, the insurance cap is 632 euros.",
+   "14 valves remain.",
+   "311",
+   "Tea is provided.",
+   "9",
+   "571",
+   "4 valves remain.",
+   "The note gives 52 days.",
+   "966",
+   "4",
+   "4",
+   "630",
+   "The insurance cap for Meridian is 552 euros.",
+   "974",
+   "Lead time is 39 days.",
+   "34 - 400 = 30",
+   "The crew size for Quartz is 6 people.",
+   "978",
+   "Lead time is 83 days.",
+   "40",
+   "243",
+   "0",
+   "Nimbus crew size",
+   "Yes",
+   "344",
+   "4",
+   "Lead time is not specified.",
+   "Orchid insurance cap not specified.",
+   "4",
+   "14 lenses remain.",
+   "The crew size of project Nimbus is 13 people.",
+   "The crew size for Pylon is 27 people.",
+   "The daily target is 12.",
+   "26",
+   "The lead time is 93 days.",
+   "There are 54 - 49 = 5 good filters.",
+   "Kestrel lead time is 92 days.",
+   "The contingency fund is 494 euros.",
+   "4",
+   "85 MB",
+   "17 hinges remain.",
+   "Kestrel's daily target is likely to be 1000 units.",
+   "138",
+   "There are 58 * 71 = 4088 good valves.",
+   "720",
+   "43",
+   "421 MB",
+   "701 + 145 - 676 + 204 = 701",
+   "Memory ceiling is 500 units.",
+   "390",
+   "85",
+   "23 × 69 = 1533; 1533 - 260 = 1213",
+   "886",
+   "The lead time for Pylon is 11 days.",
+   "93",
+   "Yes",
+   "Quartz lead time is 56 days.",
+   "Depot",
+   "74 - 221 = 53",
+   "359 MB",
+   "488",
+   "466",
+   "568 + (13 × 597) = 568 + 7671 = 8399 euros contingency fund.",
+   "13 ÷ 25 = 0.52, so 0 hinges are good.",
+   "The contingency fund for Pylon is 722 euros.",
+   "The daily target for Meridian is 312 units.",
+   "71",
+   "274",
+   "26",
+   "677",
+   "Lantern crew size is 14.",
+   "366",
+   "683 euros",
+   "Contingency fund of project Quartz is 270 euros.",
+   "4",
+   "723",
+   "The insurance cap of project Quartz is 965 euros.",
+   "42",
+   "691 euros",
+   "Memory ceiling is 370 MB.",
+   "22",
+   "375",
+   "12 lenses remain.",
+   "The lead time for Kestrel is 22 days.",
+   "Daily target is 171 units.",
+   "The crew size for Orchid is not specified in the provided information.",
+   "Crew size not provided.",
+   "12",
+   "17",
+   "Yes",
+   "Quick check: Juniper lead time is 53 days.",
+   "932 MB",
+   "Lead time: 10 days",
+   "4",
+   "The crew size for Lantern is 39 people.",
+   "38 good lenses",
+   "17",
+   "4",
+   "4",
+   "282",
+   "172 MB",
+   "30",
+   "The crew size for Lantern is 16 people.",
+   "72",
+   "614 - 117 + 262 = 613 euros",
+   "Yes, the insurance cap is 675 euros.",
+   "14",
+   "34 pipes remain.",
+   "Yes, the memory ceiling is 522 MB.",
+   "Contingency fund: 496 - 794 = -298 euros",
+   "The lead time for Nimbus is 20 days.",
+   "There are 77 good hinges.",
+   "Memory ceiling is 478 / 35 = 13.",
+   "14",
+   "4",
+   "The memory ceiling is 424.",
+   "The lead time is 24 days.",
+   "Insurance cap: 500 euros",
+   "The daily target for Pylon is 385 units.",
+   "Yes",
+   "480",
+   "490",
+   "34 lenses remain.",
+   "Yes",
+   "206",
+   "471",
+   "34 rivets remain.",
+   "Yes, the insurance cap is 534 euros.",
+   "Crew size: 17",
+   "The contingency fund of project Lantern is 375 euros.",
+   "The crew size for Meridian is 21 people.",
+   "4",
+   "0",
+   "The crew size for Orchid is not specified in the provided information.",
+   "70 - 279 = 161",
+   "Yes",
+   "4",
+   "Memory ceiling: 500",
+   "31",
+   "The note gives 29.",
+   "The lead time for Lantern is 44 days.",
+   "Daily target is 241 units.",
+   "The crew size of project Meridian is 36.",
+   "37 rivets remain.",
+   "The insurance cap for Orchid is 677 euros.",
+   "215",
+   "0",
+   "14 valves remain.",
+   "0",
+   "The memory ceiling is 390 - 556 = -66 units.",
+   "There are 64 × 74 = 4,656 good filters.",
+   "Daily target: 943 ÷ 23 = 41",
+   "40",
+   "83",
+   "139",
+   "582",
+   "The insurance cap for Nimbus is 928 euros.",
+   "561",
+   "13 ÷ 55 = 0.2 valves per tray.  \n299 × 0.2 = 59 good valves.",
+   "The lead time is 16 days.",
+   "593",
+   "The insurance cap for Juniper is 150 euros.",
+   "33",
+   "The crew size for Juniper is 20 people.",
+   "Daily target is 458",
+   "4",
+   "Yes",
+   "The crew size for Nimbus is 15 people.",
+   "35",
+   "Orchid insurance cap is 196 euros.",
+   "390",
+   "The memory ceiling for Pylon is 669 MB.",
+   "40",
+   "887 euros",
+   "Yes",
+   "4",
+   "565",
+   "4",
+   "320 euros",
+   "Contingency fund: 493 - 332 = 161 MB",
+   "The lead time for Orchid is 35 days.",
+   "11",
+   "The contingency fund of project Pylon is 372 euros.",
+   "178",
+   "669",
+   "Contingency fund",
+   "Yes",
+   "0",
+   "136",
+   "Quick check: Meridian memory ceiling is likely moderate based on crew size and lead time.",
+   "The insurance cap for Lantern is 500 euros.",
+   "12",
+   "The crew size is 44.",
+   "The contingency fund is 125 euros.",
+   "Orchid daily target is 178.",
+   "740",
+   "40",
+   "298",
+   "The memory ceiling for Pylon is 184 MB.",
+   "946",
+   "53",
+   "The insurance cap is 255 euros.",
+   "Yes, the memory ceiling is 890 MB.",
+   "Lead time: 7 days",
+   "The crew size of project Lantern is 14.",
+   "4",
+   "22",
+   "940",
+   "The insurance cap for Orchid is 363 euros.",
+   "The memory ceiling of project Pylon is 652 MB.",
+   "333",
+   "379",
+   "Memory ceiling for Pylon is 500 units.",
+   "40",
+   "52 rivets remain.",
+   "Yes",
+   "34",
+   "372",
+   "The crew size of project Juniper is 26.",
+   "Yes",
+   "23 × 65 = 1495  \n1495 - 363 = 986  \n\n\\boxed{986}",
+   "680 euros",
+   "Lead time: 92 days",
+   "571 MB",
+   "Contingency fund available: 428 euros",
+   "3",
+   "685",
+   "Depot is next to the harbor.",
+   "The lead time for Nimbus is 10 days.",
+   "78",
+   "4",
+   "105",
+   "The lead time is 93 days.",
+   "814",
+   "The lead time for Kestrel is 21 days.",
+   "The crew size for Quartz is 28.",
+   "243",
+   "9",
+   "38",
+   "The contingency fund for Lantern is 732 euros.",
+   "Memory ceiling for Quartz is 500 GB.",
+   "Yes",
+   "607",
+   "34",
+   "The crew size is 19 people.",
+   "Yes, the memory ceiling is likely limited by the insurance cap.",
+   "317 - 562 = -145 euros",
+   "4",
+   "The crew size for Orchid is 3 people.",
+   "The contingency fund of 572 euros is not directly relevant to the lead time.",
+   "4",
+   "Memory ceiling of project Pylon is 793 MB.",
+   "638 euros",
+   "The contingency fund is 709 euros.",
+   "Insurance cap: 143 euros",
+   "Contingency fund is 148 euros.",
+   "The lead time of project Nimbus is 84 days.",
+   "14",
+   "413",
+   "196",
+   "709 euros",
+   "429 euros",
+   "There are 36 × 44 = 1584 rivets.  \n226 - 1584 = -1430.  \n\nNo rivets are good.",
+   "928 MB",
+   "Yes, the insurance cap is 209 euros.",
+   "Crew size unknown",
+   "42",
+   "14 × 35 = 490  \n490 - 24 = 466  \n\n**Answer:** 466",
+   "20",
+   "The daily target for Pylon is 258 units.",
+   "Yes",
+   "71",
+   "The lead time for Nimbus is 47 days.",
+   "Memory ceiling: 433",
+   "34 valves remain.",
+   "34 valves remain.",
+   "669",
+   "28",
+   "The lead time of project Nimbus is 31 days.",
+   "Lead time: 14 days",
+   "0",
+   "34 valves remain.",
+   "4",
+   "266",
+   "234 ÷ 22 = 10\n\n10",
+   "472",
+   "569 euros",
+   "4",
+   "The note gives 10 days for the lead time.",
+   "917",
+   "906",
+   "The crew size for Kestrel is 19 people.",
+   "The note gives 23.",
+   "The audit is scheduled for autumn.",
+   "168",
+   "392",
+   "Yes",
+   "49",
+   "The lead time of project Juniper is 8 days.",
+   "946",
+   "48",
+   "Pylon insurance cap is 934 euros.",
+   "The contingency fund for Kestrel is 485 euros."
+  ],
+  "base_adapter_off:shuffled": [
+   "Yes, the daily target is 351 units.",
+   "210 euros",
+   "There are 13 rivets per tray, so 51 trays × 13 = 663 rivets. Discarding 71 leaves 663 - 71 = 592 good rivets.",
+   "917",
+   "The memory ceiling is 436 MB.",
+   "38 valves remain.",
+   "The daily target for Pylon is 60 units.",
+   "The crew size for Pylon is not specified in the provided information.",
+   "The note gives 7 as the crew size.",
+   "764",
+   "Quick check: Pylon crew size",
+   "The insurance cap is 1,000,000.",
+   "762",
+   "107 MB",
+   "671",
+   "Yes, the lead time is 10 days.",
+   "The contingency fund for Juniper is 595 euros.",
+   "Quartz insurance cap is 632 euros.",
+   "91 - 86 = 5",
+   "311",
+   "The crew size of project Meridian is 25 people.",
+   "There are 19 pipes per tray, so 54 trays × 19 pipes = 1,116 pipes. Discarding 243 leaves 1,116 - 243 = 873 pipes.\n\nThe quotes are:  \n\"The",
+   "920",
+   "78 - (5 × 17) = 78 - 85 = -7\n\nThe valves remain -7",
+   "The note gives 52 euros for the lead time of Kestrel.",
+   "966",
+   "There are 58 × 50 = 2900 filters in total. Discarding 54 leaves 2900 - 54 = 2846 filters good.",
+   "The daily target is 322 units, with 63 trays × 46 rivets = 28,188 rivets. Discarding 97 leaves 28,188 - 97 = 28,191 good rivets.",
+   "630",
+   "The insurance cap for Meridian is 552 euros.",
+   "The note gives 188 euros for the contingency fund of Meridian.",
+   "The lead time is 39 days.",
+   "84 - (34 × 4) = 84 - 136 = 28",
+   "The crew size for Quartz is 6 people.",
+   "978",
+   "Lead time of 83 days is within the contingency fund of 661 euros.",
+   "The daily target for Pylon is 40 units.",
+   "The memory ceiling of project Lantern is 243 MB.",
+   "26 × 92 = 1,512; 269 - 1,512 = -1\n\n(Note: Negative result indicates insufficient inventory, but context suggests rejection may be due to quality control or quantity mismatch.)",
+   "The crew size of project Nimbus is 17 people.",
+   "The memory ceiling of project Lantern is negligible.",
+   "344",
+   "67 × 71 = 4757; 151 ÷ 4757 ≈ 0.031\n\n0.031",
+   "Lead time is unknown.",
+   "Orchid insurance cap is not specified in the provided details.",
+   "81 ÷ 78 = 0.84375, rounded down to 0.",
+   "16 × 78 = 1248  \n57 × 1 = 57  \nTotal rejected = 57  \nRemaining = 1248 - 57 = 1185  \n\n\\boxed{1185}",
+   "The crew size of project Nimbus is 13 people.",
+   "The crew size for Pylon is 27 people.",
+   "The daily target for Lantern is 37 days.",
+   "181 ÷ 26 = 7 good rivets.",
+   "The lead time of project Quartz is 93 days.",
+   "There are 54 * 49 = 2652 filters good.",
+   "The lead time is 92 days.",
+   "The contingency fund is 494 euros.",
+   "58 ÷ 37 = 1 good rivet.",
+   "The memory ceiling for Juniper is 85 MB.",
+   "29 - (191 × 75) = 29 - 14225 = -14296\n\n(Note: Negative result indicates insufficient inventory.)",
+   "Depot is next to the harbor.",
+   "138",
+   "There are 71 × 58 = 4138 valves. Discarding 177 leaves 4138 - 177 = 4031 valves.\n\nAnswer: 4031",
+   "720 euros",
+   "The daily target for Lantern is 1160 usable pipes.",
+   "421 MB",
+   "701 euros",
+   "Memory ceiling: 283 euros",
+   "390 MB",
+   "85",
+   "There are 69 pipes per tray, so 23 trays × 69 = 1577 pipes. Discarding 260 leaves 1577 - 260 = 1417 pipes.\n\nAnswer: 1417",
+   "886",
+   "The lead time for Pylon is 11 days.",
+   "The daily target for Lantern is 93 units.",
+   "Yes, the lead time is 90 days.",
+   "Quartz lead time is 56 days.",
+   "The crew size is 28 people.",
+   "221 - 0 = 221",
+   "359 MB",
+   "488",
+   "466",
+   "The contingency fund of project Juniper is 568 euros.",
+   "13 × 25 = 325  \n325 - 267 = 58  \n\n**Answer:** 58 hinges are good.",
+   "The contingency fund for Pylon is 722 euros.",
+   "The daily target for Meridian is 312 units.",
+   "71",
+   "274 euros",
+   "81 ÷ 51 = 1 remainder 30\n\nLenses good: 30",
+   "677",
+   "The crew size of project Lantern is 14 people.",
+   "366",
+   "The contingency fund of project Quartz is 683 euros.",
+   "The contingency fund of project Quartz is 270 euros.",
+   "52 - 26 = 26",
+   "The memory ceiling of project Orchid is 723 MB.",
+   "642 euros",
+   "42 people",
+   "The insurance cap for Pylon is 691 euros.",
+   "The memory ceiling of project Meridian is 370 MB.",
+   "55 × 67 = 3695  \n229 - 3695 = -3164  \n\nNo filters remain.",
+   "The daily target for Juniper is 375 units.",
+   "45 × 14 = 630  \n630 - 202 = 428  \n\n\\boxed{428}",
+   "The lead time for Kestrel is 22 days.",
+   "Yes, Juniper's daily target is 171 units.",
+   "The crew size for Orchid is not specified in the provided information.",
+   "The crew size of project Juniper is 30.",
+   "The crew size of project Kestrel is 12 people.",
+   "17",
+   "Yes, the memory ceiling is 459 MB.",
+   "Yes, the lead time is 53 days.",
+   "The memory ceiling for Juniper is 932 MB.",
+   "Lead time: 14 days",
+   "There are 63 * 27 = 1701 filters in total. Discarding 39 leaves 1701 - 39 = 1672 filters good.",
+   "The crew size for Lantern is 39 people.",
+   "38 × 99 = 3742; discard = 3742 - 38 = 3720.\n\n**Answer:** 3720",
+   "34 × 69 = 2392  \n19 × 1 = 19  \nTotal good lenses = 2392 - 19 = 2373  \n\n\\boxed{2373}",
+   "There are 94 pipes per tray, so 45 trays × 94 = 4180 pipes. Discarding 305 leaves 4180 - 305 = 4035 pipes.\n\nAnswer: 4035",
+   "There are 88 - 86 = 2 filters remaining.",
+   "282",
+   "The memory ceiling for Nimbus is 172 MB.",
+   "The crew size of project Juniper is 17 people.  \nThe crew size of team Kestrel is 42 people.  \nTotal trays = 17 × 42 = 714.  \nTotal lenses = 61 ×",
+   "The crew size for Lantern is 16 people.",
+   "72",
+   "614 euros is insufficient for the contingency fund.",
+   "Yes, Nimbus insurance cap.",
+   "196 - 27 = 169",
+   "53 pipes remain.",
+   "Yes, the memory ceiling of project Pylon is 522 MB.",
+   "Contingency fund = 496 × 3 = 1484 euros",
+   "The lead time for Nimbus is 20 days.",
+   "251 ÷ 77 ≈ 3.3, so 3 hinges are good.",
+   "The memory ceiling of project Nimbus is 478 units.",
+   "38",
+   "There are 28 × 58 = 1624 pipes in total. Discarding 105 leaves 1624 - 105 = 1519 pipes.\n\n**Answer:** 1519",
+   "The memory ceiling of Quartz is 424.",
+   "The lead time of project Juniper is 24 days.",
+   "The insurance cap is 500 euros.",
+   "The daily target for Pylon is 385 units.",
+   "Yes, the memory ceiling is 269 MB.",
+   "The note gives 480 euros for the insurance cap.",
+   "490",
+   "39 × 67 = 2533  \n138 - 2533 = -1943  \n\nNo lenses remain.",
+   "Yes, the memory ceiling of project Meridian is 748 MB.",
+   "206",
+   "The note gives 471 euros for the memory ceiling.",
+   "137 - 63 = 74",
+   "Yes, the insurance cap is 534 euros.",
+   "The crew size for Juniper is 17 people.",
+   "The contingency fund of project Lantern is 375 euros.",
+   "The crew size for Meridian is 21 people.",
+   "The memory ceiling of project Orchid is 382 MB. With 72 trays and 88 hinges per tray, the total capacity is 72 × 88 = 6336 hinges. Discarding 256 leaves 633",
+   "83 - (282 × 17) = 83 - 4794 = -4641\n\n(Note: Negative result indicates no filters remain.)",
+   "The crew size for Orchid is not provided in the information given.",
+   "70 × 92 = 6432  \n279 - 6432 = -4622  \n\nNo valves remain.",
+   "Yes, the memory ceiling is 74 MB.",
+   "21 × 67 = 1437  \n387 - 1437 = -954  \n\n(Note: Negative result indicates no pipes remain.)",
+   "The memory ceiling for Juniper is approximately 1.5 terabytes.",
+   "The crew size for Nimbus is 31 people.",
+   "The note gives 29 for the crew size.",
+   "The lead time for Lantern is 44 days.",
+   "Yes, the daily target is 241 units.",
+   "The crew size of project Meridian is 36 people.",
+   "Remaining rivets: 49 - 373 = -324\n\n(Note: Negative value indicates no remaining rivets)",
+   "The insurance cap for Orchid is 677 euros.",
+   "The note gives 215 MB.",
+   "83 - (22 × 80) = 83 - 1760 = -163\n\nThe result is -163",
+   "47 valves remain.",
+   "343 - 0 = 343",
+   "The memory ceiling of Quartz is 390 units.",
+   "There are 64 * 74 = 4640 filters.  \nThere are 4640 - 287 = 4263 filters good.",
+   "Daily target: Yes",
+   "40",
+   "The note gives the daily target of 169 units.",
+   "139",
+   "582",
+   "The insurance cap for Nimbus is 928 euros.",
+   "561",
+   "There are 13 valves per tray, so 55 trays × 13 valves = 715 valves. Discarding 299 leaves 715 - 299 = 416 valves good.\n\nAnswer: 416",
+   "The lead time of project Pylon is 16 days.",
+   "The contingency fund of project Juniper is 593 euros.",
+   "The insurance cap for Juniper is 500 euros.",
+   "The crew size of project Orchid is 7 people.  \nThe summary: The crew size of project Orchid is 7 people.  \nThe uncertainty: one pass  \n\nGood rivets = 38 × 7 = 266",
+   "The crew size for Juniper is 20 people.",
+   "Yes, the daily target is 458 units.",
+   "There are 86 × 60 = 4,160 hinges. Discarding 241 leaves 4,160 - 241 = 3,919 good hinges.",
+   "Yes, Juniper contingency fund is sufficient.",
+   "The crew size for Nimbus is 15 people.",
+   "The note gives 35 days for the lead time of Nimbus.",
+   "Yes, the insurance cap is 196 euros.",
+   "1913",
+   "The memory ceiling for Pylon is 669 MB.",
+   "75 - (144 × 15) = 75 - 2160 = -201\n\nNone",
+   "The insurance cap of project Kestrel is 682 euros.",
+   "Yes, the daily target is 273 units.",
+   "367 ÷ 33 = 11\n\n**Answer:** 11",
+   "The memory ceiling of project Meridian is 565 MB.",
+   "21 × 15 = 315  \n52 × 1 = 52  \nTotal rejected = 52  \nRemaining = 315 - 52 = 263  \n\n\\boxed{263}",
+   "The note gives 30 days for the lead time of Orchid.",
+   "Contingency fund: 493 MB / 332 units = 1.49 MB per unit.",
+   "The lead time for Orchid is 35 days.",
+   "The crew size is 11 people.",
+   "The contingency fund of project Pylon is 372 euros.",
+   "178",
+   "669 euros",
+   "The crew size is 45 people.",
+   "Yes, the lead time is 29 days.",
+   "67 - 204 = 49",
+   "136",
+   "Quick check: Meridian memory ceiling is likely moderate based on typical project sizes and audit complexity.",
+   "The insurance cap for Lantern is 500 euros.",
+   "There are 29 * 50 = 1450 pipes in total. Discarding 26 leaves 1450 - 26 = 1434 pipes.\n\nThe memory ceiling of project Nimbus is 886 MB.\n\n**",
+   "The crew size is 44 people.",
+   "The contingency fund for Meridian is 125 euros.",
+   "Yes, the daily target is 178 units.",
+   "740 euros",
+   "There are 60 × 75 = 4500 lenses.  \nThe daily target is 157, so 4500 − 157 = 4393 lenses are good.  \n\n**Answer:** 4393",
+   "The insurance cap of project Lantern is 298 euros.",
+   "The memory ceiling of project Pylon is 184 MB.",
+   "The memory ceiling of project Orchid is 946 MB.",
+   "53",
+   "The insurance cap of project Juniper is 255 euros.",
+   "Yes, the memory ceiling is 890 MB.",
+   "Lead time: 14 days",
+   "The crew size of project Lantern is 14.",
+   "263 ÷ 65 = 4\n\n4",
+   "21 × 59 = 1289  \n22 × 59 = 1308  \nGood valves: 1308 - 1289 = 19  \n\n\\boxed{19}",
+   "940",
+   "The insurance cap for Orchid is 363 euros.",
+   "The memory ceiling of project Pylon is 652 MB.",
+   "The note gives the daily target of 333 units.",
+   "379",
+   "The memory ceiling for Pylon is 500 units.",
+   "40",
+   "49 rivets remain.",
+   "Yes, the memory ceiling is 407 MB.",
+   "76 - (20 × 69) = 76 - 1176 = -100\n\nNone remain",
+   "The insurance cap of project Pylon is 372 euros.",
+   "The crew size of project Juniper is 26.",
+   "Yes, the daily target is 107 units.",
+   "There are 65 * 23 = 1495 hinges in total. Discarding 363 leaves 1495 - 363 = 982 hinges good.",
+   "The contingency fund for Pylon is 680 euros.",
+   "Lead time: 92 days",
+   "The memory ceiling for Meridian is 571 MB.",
+   "Contingency fund: 428 euros",
+   "399 ÷ 68 = 5\n\n5",
+   "685",
+   "Depot is next to the harbor.",
+   "The lead time for Nimbus is not explicitly provided in the information given.",
+   "78",
+   "77 × 17 = 1369; 30 × 17 = 510; 1369 - 510 = 959\n\nAnswer: 959",
+   "105",
+   "The lead time of project Lantern is 93 days.",
+   "814",
+   "The lead time for Kestrel is 21 days.",
+   "The crew size for Quartz is 28 people.",
+   "The contingency fund for Juniper is 243 euros.",
+   "The crew size is 9 people.",
+   "77 - 311 = 40",
+   "The contingency fund for Lantern is 732 euros.",
+   "The memory ceiling for Quartz is 1.5 terabytes.",
+   "Yes, the memory ceiling is 213 MB.",
+   "607",
+   "40 × 54 = 2160  \n177 - 2160 = -1590  \nPipes remaining: 0",
+   "The crew size is 19 people.",
+   "Orchid memory ceiling?",
+   "The contingency fund of project Nimbus is 317 euros.",
+   "Valves good: 65*20=1300",
+   "The crew size for Orchid is 3 people.",
+   "The contingency fund of project Nimbus is 572 euros.",
+   "4",
+   "The memory ceiling of project Pylon is 793 MB.",
+   "The insurance cap for Juniper is 638 euros.",
+   "The contingency fund for Nimbus is 709 euros.",
+   "The insurance cap is 143 euros.",
+   "Yes, the contingency fund of project Orchid is 348 euros.",
+   "The lead time of project Nimbus is 84 days.",
+   "27",
+   "413",
+   "196",
+   "709 euros",
+   "The insurance cap of project Lantern is 429 euros.",
+   "226 ÷ 44 = 5 good rivets.",
+   "928 MB",
+   "Yes, the insurance cap of project Lantern is 209 euros.",
+   "Crew size: 12",
+   "126 - 42 = 84\n\n84",
+   "There are 14 × 35 = 490 good valves.  \nThe discarded valves are 24, so the remaining are 490 - 24 = 466.  \nThis is negligible uncertainty.",
+   "340 ÷ 30 = 11.33, rounded down to 11.",
+   "The daily target for Pylon is 258 units.",
+   "Yes, the memory ceiling is 202 MB.",
+   "71",
+   "The lead time for Nimbus is 47 days.",
+   "Memory ceiling: 433",
+   "43 cartons × 57 valves = 2439 valves  \n167 rejected valves × 0 = 0 valves remaining  \n\n**Answer:** 0",
+   "64 × 51 = 3264; 312 - 3264 = -3002\n\n(Note: The negative result indicates a discrepancy; likely a data error or system inconsistency.)",
+   "669",
+   "There are 20 rivets per tray, so 42 trays × 20 = 840 rivets. Discarding 283 leaves 840 - 283 = 557 good rivets.",
+   "The lead time of project Nimbus is 31 days.",
+   "Lead time: 14 days",
+   "53",
+   "47 - 171 = 26",
+   "8",
+   "The note gives 783 for the daily target.",
+   "234 ÷ 22 = 10 good rivets.",
+   "The daily target for Kestrel is 472 units.",
+   "The contingency fund of project Nimbus is 569 euros.",
+   "7",
+   "The note gives 10 days for the lead time.",
+   "917",
+   "906",
+   "The crew size for Kestrel is 19 people.",
+   "The note gives 23 as the crew size.",
+   "The audit is scheduled for autumn.",
+   "168",
+   "The note gives 47 days for the lead time of Pylon.",
+   "Yes, the lead time is 25 days.",
+   "49",
+   "The lead time of project Juniper is 8 days.",
+   "The note gives the daily target of 107 units.",
+   "There are 56 × 88 = 5,888 hinges. Discarding 245 leaves 5,888 - 245 = 4,643 hinges good.",
+   "The insurance cap of project Pylon is 934 euros.",
+   "The contingency fund for Kestrel is 485 euros."
+  ]
+ },
+ "items": [
+  {
+   "id": "lookup_use-1-101-104",
+   "family": "lookup_use",
+   "must": [
+    "351"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-140",
+   "family": "source_wins",
+   "must": [
+    "210"
+   ],
+   "forbid": [
+    "242"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-27",
+   "family": "calc_use",
+   "must": [
+    "592"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-216",
+   "family": "ignore",
+   "must": [
+    "342"
+   ],
+   "forbid": [
+    "790"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-176",
+   "family": "pick_quoted",
+   "must": [
+    "436"
+   ],
+   "forbid": [
+    "400"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-48",
+   "family": "calc_hedge",
+   "must": [
+    "2079"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-86",
+   "family": "lookup_use",
+   "must": [
+    "60"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-251",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-306",
+   "family": "plain",
+   "must": [
+    "7"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-99",
+   "family": "lookup_use",
+   "must": [
+    "764"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-266",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-275",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-290",
+   "family": "plain",
+   "must": [
+    "762"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-136",
+   "family": "source_wins",
+   "must": [
+    "107"
+   ],
+   "forbid": [
+    "125"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-203",
+   "family": "ignore",
+   "must": [
+    "671"
+   ],
+   "forbid": [
+    "226"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-103",
+   "family": "lookup_use",
+   "must": [
+    "10"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-302",
+   "family": "plain",
+   "must": [
+    "595"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-96",
+   "family": "lookup_use",
+   "must": [
+    "632"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-64",
+   "family": "calc_hedge",
+   "must": [
+    "7087"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-291",
+   "family": "plain",
+   "must": [
+    "311"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-288",
+   "family": "plain",
+   "must": [
+    "25"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-9",
+   "family": "calc_use",
+   "must": [
+    "783"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-124",
+   "family": "source_wins",
+   "must": [
+    "920"
+   ],
+   "forbid": [
+    "958"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-1",
+   "family": "calc_use",
+   "must": [
+    "1321"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-237",
+   "family": "ignore",
+   "must": [
+    "52"
+   ],
+   "forbid": [
+    "30"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-116",
+   "family": "lookup_use",
+   "must": [
+    "966"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-28",
+   "family": "calc_use",
+   "must": [
+    "2846"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-70",
+   "family": "calc_hedge",
+   "must": [
+    "2539"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-318",
+   "family": "plain",
+   "must": [
+    "630"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-311",
+   "family": "plain",
+   "must": [
+    "552"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-81",
+   "family": "lookup_use",
+   "must": [
+    "188"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-117",
+   "family": "lookup_use",
+   "must": [
+    "39"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-13",
+   "family": "calc_use",
+   "must": [
+    "2456"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-89",
+   "family": "lookup_use",
+   "must": [
+    "6"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-141",
+   "family": "source_wins",
+   "must": [
+    "978"
+   ],
+   "forbid": [
+    "963"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-193",
+   "family": "pick_quoted",
+   "must": [
+    "25"
+   ],
+   "forbid": [
+    "1"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-201",
+   "family": "ignore",
+   "must": [
+    "40"
+   ],
+   "forbid": [
+    "23"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-171",
+   "family": "pick_quoted",
+   "must": [
+    "243"
+   ],
+   "forbid": [
+    "246"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-24",
+   "family": "calc_use",
+   "must": [
+    "2123"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-209",
+   "family": "ignore",
+   "must": [
+    "17"
+   ],
+   "forbid": [
+    "355"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-187",
+   "family": "pick_quoted",
+   "must": [
+    "442"
+   ],
+   "forbid": [
+    "479"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-182",
+   "family": "pick_quoted",
+   "must": [
+    "344"
+   ],
+   "forbid": [
+    "366"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-57",
+   "family": "calc_hedge",
+   "must": [
+    "4606"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-243",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-269",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-26",
+   "family": "calc_use",
+   "must": [
+    "6106"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-74",
+   "family": "calc_hedge",
+   "must": [
+    "916"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-309",
+   "family": "plain",
+   "must": [
+    "13"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-289",
+   "family": "plain",
+   "must": [
+    "27"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-247",
+   "family": "abstain",
+   "must": [
+    "574"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-38",
+   "family": "calc_use",
+   "must": [
+    "1405"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-94",
+   "family": "lookup_use",
+   "must": [
+    "93"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-5",
+   "family": "calc_use",
+   "must": [
+    "2392"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-83",
+   "family": "lookup_use",
+   "must": [
+    "92"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-231",
+   "family": "ignore",
+   "must": [
+    "494"
+   ],
+   "forbid": [
+    "746"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-49",
+   "family": "calc_hedge",
+   "must": [
+    "944"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-219",
+   "family": "ignore",
+   "must": [
+    "85"
+   ],
+   "forbid": [
+    "28"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-54",
+   "family": "calc_hedge",
+   "must": [
+    "1929"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-262",
+   "family": "abstain",
+   "must": [
+    "501"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "lookup_use-1-101-98",
+   "family": "lookup_use",
+   "must": [
+    "138"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-8",
+   "family": "calc_use",
+   "must": [
+    "3941"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-110",
+   "family": "lookup_use",
+   "must": [
+    "720"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-298",
+   "family": "plain",
+   "must": [
+    "43"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-222",
+   "family": "ignore",
+   "must": [
+    "421"
+   ],
+   "forbid": [
+    "726"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-207",
+   "family": "ignore",
+   "must": [
+    "701"
+   ],
+   "forbid": [
+    "204"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-253",
+   "family": "abstain",
+   "must": [
+    "649"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-174",
+   "family": "pick_quoted",
+   "must": [
+    "390"
+   ],
+   "forbid": [
+    "366"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-158",
+   "family": "source_wins",
+   "must": [
+    "85"
+   ],
+   "forbid": [
+    "54"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-18",
+   "family": "calc_use",
+   "must": [
+    "1327"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-215",
+   "family": "ignore",
+   "must": [
+    "49"
+   ],
+   "forbid": [
+    "886"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-160",
+   "family": "pick_quoted",
+   "must": [
+    "11"
+   ],
+   "forbid": [
+    "32"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-138",
+   "family": "source_wins",
+   "must": [
+    "93"
+   ],
+   "forbid": [
+    "114"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-230",
+   "family": "ignore",
+   "must": [
+    "90"
+   ],
+   "forbid": [
+    "446"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-205",
+   "family": "ignore",
+   "must": [
+    "56"
+   ],
+   "forbid": [
+    "597"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-152",
+   "family": "source_wins",
+   "must": [
+    "28"
+   ],
+   "forbid": [
+    "21"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-14",
+   "family": "calc_use",
+   "must": [
+    "4885"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-108",
+   "family": "lookup_use",
+   "must": [
+    "359"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-102",
+   "family": "lookup_use",
+   "must": [
+    "488"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-199",
+   "family": "pick_quoted",
+   "must": [
+    "466"
+   ],
+   "forbid": [
+    "431"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-235",
+   "family": "ignore",
+   "must": [
+    "568"
+   ],
+   "forbid": [
+    "33"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-10",
+   "family": "calc_use",
+   "must": [
+    "58"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-88",
+   "family": "lookup_use",
+   "must": [
+    "722"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-189",
+   "family": "pick_quoted",
+   "must": [
+    "312"
+   ],
+   "forbid": [
+    "322"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-105",
+   "family": "lookup_use",
+   "must": [
+    "71"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-312",
+   "family": "plain",
+   "must": [
+    "273"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-56",
+   "family": "calc_hedge",
+   "must": [
+    "3939"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-317",
+   "family": "plain",
+   "must": [
+    "677"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-211",
+   "family": "ignore",
+   "must": [
+    "14"
+   ],
+   "forbid": [
+    "574"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-172",
+   "family": "pick_quoted",
+   "must": [
+    "366"
+   ],
+   "forbid": [
+    "381"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-115",
+   "family": "lookup_use",
+   "must": [
+    "683"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-229",
+   "family": "ignore",
+   "must": [
+    "270"
+   ],
+   "forbid": [
+    "405"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-22",
+   "family": "calc_use",
+   "must": [
+    "1580"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-127",
+   "family": "source_wins",
+   "must": [
+    "723"
+   ],
+   "forbid": [
+    "720"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-280",
+   "family": "plain",
+   "must": [
+    "965"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-101",
+   "family": "lookup_use",
+   "must": [
+    "42"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-214",
+   "family": "ignore",
+   "must": [
+    "691"
+   ],
+   "forbid": [
+    "580"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-100",
+   "family": "lookup_use",
+   "must": [
+    "370"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-75",
+   "family": "calc_hedge",
+   "must": [
+    "3456"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-305",
+   "family": "plain",
+   "must": [
+    "375"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-63",
+   "family": "calc_hedge",
+   "must": [
+    "276"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-132",
+   "family": "source_wins",
+   "must": [
+    "22"
+   ],
+   "forbid": [
+    "60"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-151",
+   "family": "source_wins",
+   "must": [
+    "171"
+   ],
+   "forbid": [
+    "183"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-277",
+   "family": "abstain",
+   "must": [
+    "7"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-254",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-126",
+   "family": "source_wins",
+   "must": [
+    "12"
+   ],
+   "forbid": [
+    "53"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-196",
+   "family": "pick_quoted",
+   "must": [
+    "17"
+   ],
+   "forbid": [
+    "47"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-293",
+   "family": "plain",
+   "must": [
+    "459"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-281",
+   "family": "plain",
+   "must": [
+    "53"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-143",
+   "family": "source_wins",
+   "must": [
+    "932"
+   ],
+   "forbid": [
+    "902"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-248",
+   "family": "abstain",
+   "must": [
+    "71"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-53",
+   "family": "calc_hedge",
+   "must": [
+    "1790"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-221",
+   "family": "ignore",
+   "must": [
+    "39"
+   ],
+   "forbid": [
+    "626"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-68",
+   "family": "calc_hedge",
+   "must": [
+    "3521"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-50",
+   "family": "calc_hedge",
+   "must": [
+    "2327"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-66",
+   "family": "calc_hedge",
+   "must": [
+    "3799"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-3",
+   "family": "calc_use",
+   "must": [
+    "8098"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-239",
+   "family": "ignore",
+   "must": [
+    "282"
+   ],
+   "forbid": [
+    "83"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-198",
+   "family": "pick_quoted",
+   "must": [
+    "172"
+   ],
+   "forbid": [
+    "184"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-15",
+   "family": "calc_use",
+   "must": [
+    "2253"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-307",
+   "family": "plain",
+   "must": [
+    "16"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-192",
+   "family": "pick_quoted",
+   "must": [
+    "72"
+   ],
+   "forbid": [
+    "47"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-119",
+   "family": "lookup_use",
+   "must": [
+    "614"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-319",
+   "family": "plain",
+   "must": [
+    "675"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-62",
+   "family": "calc_hedge",
+   "must": [
+    "554"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-20",
+   "family": "calc_use",
+   "must": [
+    "7951"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-287",
+   "family": "plain",
+   "must": [
+    "522"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-242",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-164",
+   "family": "pick_quoted",
+   "must": [
+    "20"
+   ],
+   "forbid": [
+    "59"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-17",
+   "family": "calc_use",
+   "must": [
+    "5832"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-249",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-41",
+   "family": "calc_hedge",
+   "must": [
+    "1530"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-30",
+   "family": "calc_use",
+   "must": [
+    "1519"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-270",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-310",
+   "family": "plain",
+   "must": [
+    "24"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-252",
+   "family": "abstain",
+   "must": [
+    "214"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-226",
+   "family": "ignore",
+   "must": [
+    "385"
+   ],
+   "forbid": [
+    "9"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-168",
+   "family": "pick_quoted",
+   "must": [
+    "269"
+   ],
+   "forbid": [
+    "239"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-300",
+   "family": "plain",
+   "must": [
+    "480"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-134",
+   "family": "source_wins",
+   "must": [
+    "490"
+   ],
+   "forbid": [
+    "522"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-2",
+   "family": "calc_use",
+   "must": [
+    "2475"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-118",
+   "family": "lookup_use",
+   "must": [
+    "748"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-165",
+   "family": "pick_quoted",
+   "must": [
+    "36"
+   ],
+   "forbid": [
+    "61"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-206",
+   "family": "ignore",
+   "must": [
+    "471"
+   ],
+   "forbid": [
+    "201"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-31",
+   "family": "calc_use",
+   "must": [
+    "4147"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-292",
+   "family": "plain",
+   "must": [
+    "534"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-82",
+   "family": "lookup_use",
+   "must": [
+    "17"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-283",
+   "family": "plain",
+   "must": [
+    "375"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-175",
+   "family": "pick_quoted",
+   "must": [
+    "21"
+   ],
+   "forbid": [
+    "61"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-55",
+   "family": "calc_hedge",
+   "must": [
+    "6080"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-45",
+   "family": "calc_hedge",
+   "must": [
+    "6939"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-268",
+   "family": "abstain",
+   "must": [
+    "30"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-25",
+   "family": "calc_use",
+   "must": [
+    "6161"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-170",
+   "family": "pick_quoted",
+   "must": [
+    "74"
+   ],
+   "forbid": [
+    "87"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-67",
+   "family": "calc_hedge",
+   "must": [
+    "1020"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-244",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-301",
+   "family": "plain",
+   "must": [
+    "31"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-184",
+   "family": "pick_quoted",
+   "must": [
+    "29"
+   ],
+   "forbid": [
+    "17"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-194",
+   "family": "pick_quoted",
+   "must": [
+    "44"
+   ],
+   "forbid": [
+    "4"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-85",
+   "family": "lookup_use",
+   "must": [
+    "241"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-90",
+   "family": "lookup_use",
+   "must": [
+    "36"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-71",
+   "family": "calc_hedge",
+   "must": [
+    "1947"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-177",
+   "family": "pick_quoted",
+   "must": [
+    "677"
+   ],
+   "forbid": [
+    "683"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-107",
+   "family": "lookup_use",
+   "must": [
+    "215"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-40",
+   "family": "calc_hedge",
+   "must": [
+    "6618"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-46",
+   "family": "calc_hedge",
+   "must": [
+    "4981"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-61",
+   "family": "calc_hedge",
+   "must": [
+    "865"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-255",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-16",
+   "family": "calc_use",
+   "must": [
+    "4449"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-245",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-299",
+   "family": "plain",
+   "must": [
+    "40"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-97",
+   "family": "lookup_use",
+   "must": [
+    "169"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-128",
+   "family": "source_wins",
+   "must": [
+    "139"
+   ],
+   "forbid": [
+    "118"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-210",
+   "family": "ignore",
+   "must": [
+    "611"
+   ],
+   "forbid": [
+    "582"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-200",
+   "family": "ignore",
+   "must": [
+    "928"
+   ],
+   "forbid": [
+    "513"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-135",
+   "family": "source_wins",
+   "must": [
+    "561"
+   ],
+   "forbid": [
+    "535"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-77",
+   "family": "calc_hedge",
+   "must": [
+    "416"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-91",
+   "family": "lookup_use",
+   "must": [
+    "16"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-111",
+   "family": "lookup_use",
+   "must": [
+    "593"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-250",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-52",
+   "family": "calc_hedge",
+   "must": [
+    "1913"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-304",
+   "family": "plain",
+   "must": [
+    "20"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-180",
+   "family": "pick_quoted",
+   "must": [
+    "458"
+   ],
+   "forbid": [
+    "480"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-34",
+   "family": "calc_use",
+   "must": [
+    "4919"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-144",
+   "family": "source_wins",
+   "must": [
+    "505"
+   ],
+   "forbid": [
+    "516"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-294",
+   "family": "plain",
+   "must": [
+    "15"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-87",
+   "family": "lookup_use",
+   "must": [
+    "35"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-185",
+   "family": "pick_quoted",
+   "must": [
+    "196"
+   ],
+   "forbid": [
+    "235"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-166",
+   "family": "pick_quoted",
+   "must": [
+    "390"
+   ],
+   "forbid": [
+    "376"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-95",
+   "family": "lookup_use",
+   "must": [
+    "669"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-59",
+   "family": "calc_hedge",
+   "must": [
+    "1254"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-228",
+   "family": "ignore",
+   "must": [
+    "887"
+   ],
+   "forbid": [
+    "230"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-156",
+   "family": "source_wins",
+   "must": [
+    "273"
+   ],
+   "forbid": [
+    "249"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-29",
+   "family": "calc_use",
+   "must": [
+    "788"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-167",
+   "family": "pick_quoted",
+   "must": [
+    "565"
+   ],
+   "forbid": [
+    "589"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-60",
+   "family": "calc_hedge",
+   "must": [
+    "551"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-159",
+   "family": "source_wins",
+   "must": [
+    "30"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-240",
+   "family": "abstain",
+   "must": [
+    "721"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-120",
+   "family": "source_wins",
+   "must": [
+    "35"
+   ],
+   "forbid": [
+    "32"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-123",
+   "family": "source_wins",
+   "must": [
+    "11"
+   ],
+   "forbid": [
+    "29"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-285",
+   "family": "plain",
+   "must": [
+    "372"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-92",
+   "family": "lookup_use",
+   "must": [
+    "178"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-238",
+   "family": "ignore",
+   "must": [
+    "60"
+   ],
+   "forbid": [
+    "669"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-93",
+   "family": "lookup_use",
+   "must": [
+    "45"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-169",
+   "family": "pick_quoted",
+   "must": [
+    "29"
+   ],
+   "forbid": [
+    "6"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-51",
+   "family": "calc_hedge",
+   "must": [
+    "5625"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-84",
+   "family": "lookup_use",
+   "must": [
+    "136"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-278",
+   "family": "abstain",
+   "must": [
+    "923"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-263",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-78",
+   "family": "calc_hedge",
+   "must": [
+    "1671"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-227",
+   "family": "ignore",
+   "must": [
+    "44"
+   ],
+   "forbid": [
+    "824"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-181",
+   "family": "pick_quoted",
+   "must": [
+    "125"
+   ],
+   "forbid": [
+    "120"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-125",
+   "family": "source_wins",
+   "must": [
+    "178"
+   ],
+   "forbid": [
+    "157"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-276",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-73",
+   "family": "calc_hedge",
+   "must": [
+    "4343"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-130",
+   "family": "source_wins",
+   "must": [
+    "298"
+   ],
+   "forbid": [
+    "308"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-109",
+   "family": "lookup_use",
+   "must": [
+    "184"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-234",
+   "family": "ignore",
+   "must": [
+    "946"
+   ],
+   "forbid": [
+    "14"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-179",
+   "family": "pick_quoted",
+   "must": [
+    "53"
+   ],
+   "forbid": [
+    "46"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-303",
+   "family": "plain",
+   "must": [
+    "255"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-232",
+   "family": "ignore",
+   "must": [
+    "890"
+   ],
+   "forbid": [
+    "695"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-274",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-147",
+   "family": "source_wins",
+   "must": [
+    "14"
+   ],
+   "forbid": [
+    "55"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-69",
+   "family": "calc_hedge",
+   "must": [
+    "5580"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-19",
+   "family": "calc_use",
+   "must": [
+    "1217"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-258",
+   "family": "abstain",
+   "must": [
+    "467"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-265",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-208",
+   "family": "ignore",
+   "must": [
+    "652"
+   ],
+   "forbid": [
+    "34"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-162",
+   "family": "pick_quoted",
+   "must": [
+    "333"
+   ],
+   "forbid": [
+    "338"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-191",
+   "family": "pick_quoted",
+   "must": [
+    "379"
+   ],
+   "forbid": [
+    "382"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-241",
+   "family": "abstain",
+   "must": [
+    "200"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-217",
+   "family": "ignore",
+   "must": [
+    "40"
+   ],
+   "forbid": [
+    "81"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-35",
+   "family": "calc_use",
+   "must": [
+    "4316"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-173",
+   "family": "pick_quoted",
+   "must": [
+    "407"
+   ],
+   "forbid": [
+    "426"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-65",
+   "family": "calc_hedge",
+   "must": [
+    "5043"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-122",
+   "family": "source_wins",
+   "must": [
+    "372"
+   ],
+   "forbid": [
+    "334"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-313",
+   "family": "plain",
+   "must": [
+    "26"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-282",
+   "family": "plain",
+   "must": [
+    "107"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-39",
+   "family": "calc_use",
+   "must": [
+    "1132"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-150",
+   "family": "source_wins",
+   "must": [
+    "680"
+   ],
+   "forbid": [
+    "671"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-146",
+   "family": "source_wins",
+   "must": [
+    "92"
+   ],
+   "forbid": [
+    "98"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-195",
+   "family": "pick_quoted",
+   "must": [
+    "571"
+   ],
+   "forbid": [
+    "548"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-267",
+   "family": "abstain",
+   "must": [
+    "492"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-7",
+   "family": "calc_use",
+   "must": [
+    "689"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-121",
+   "family": "source_wins",
+   "must": [
+    "685"
+   ],
+   "forbid": [
+    "712"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-259",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-272",
+   "family": "abstain",
+   "must": [
+    "37"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "lookup_use-1-101-113",
+   "family": "lookup_use",
+   "must": [
+    "78"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-58",
+   "family": "calc_hedge",
+   "must": [
+    "1557"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-112",
+   "family": "lookup_use",
+   "must": [
+    "105"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-223",
+   "family": "ignore",
+   "must": [
+    "93"
+   ],
+   "forbid": [
+    "431"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-213",
+   "family": "ignore",
+   "must": [
+    "814"
+   ],
+   "forbid": [
+    "395"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-149",
+   "family": "source_wins",
+   "must": [
+    "21"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-154",
+   "family": "source_wins",
+   "must": [
+    "28"
+   ],
+   "forbid": [
+    "44"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-316",
+   "family": "plain",
+   "must": [
+    "243"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-80",
+   "family": "lookup_use",
+   "must": [
+    "9"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-4",
+   "family": "calc_use",
+   "must": [
+    "6619"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-236",
+   "family": "ignore",
+   "must": [
+    "732"
+   ],
+   "forbid": [
+    "93"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-257",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-161",
+   "family": "pick_quoted",
+   "must": [
+    "213"
+   ],
+   "forbid": [
+    "248"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-224",
+   "family": "ignore",
+   "must": [
+    "607"
+   ],
+   "forbid": [
+    "191"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-36",
+   "family": "calc_use",
+   "must": [
+    "1983"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-114",
+   "family": "lookup_use",
+   "must": [
+    "19"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-261",
+   "family": "abstain",
+   "must": [
+    "775"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-197",
+   "family": "pick_quoted",
+   "must": [
+    "317"
+   ],
+   "forbid": [
+    "330"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-33",
+   "family": "calc_use",
+   "must": [
+    "1135"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-296",
+   "family": "plain",
+   "must": [
+    "3"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-131",
+   "family": "source_wins",
+   "must": [
+    "69"
+   ],
+   "forbid": [
+    "105"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-43",
+   "family": "calc_hedge",
+   "must": [
+    "420"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-315",
+   "family": "plain",
+   "must": [
+    "793"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-218",
+   "family": "ignore",
+   "must": [
+    "638"
+   ],
+   "forbid": [
+    "34"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-225",
+   "family": "ignore",
+   "must": [
+    "709"
+   ],
+   "forbid": [
+    "623"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-264",
+   "family": "abstain",
+   "must": [
+    "768"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-212",
+   "family": "ignore",
+   "must": [
+    "348"
+   ],
+   "forbid": [
+    "910"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-188",
+   "family": "pick_quoted",
+   "must": [
+    "84"
+   ],
+   "forbid": [
+    "98"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-79",
+   "family": "calc_hedge",
+   "must": [
+    "903"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-314",
+   "family": "plain",
+   "must": [
+    "413"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-286",
+   "family": "plain",
+   "must": [
+    "196"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-256",
+   "family": "abstain",
+   "must": [
+    "530"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-204",
+   "family": "ignore",
+   "must": [
+    "429"
+   ],
+   "forbid": [
+    "89"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-12",
+   "family": "calc_use",
+   "must": [
+    "1358"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-284",
+   "family": "plain",
+   "must": [
+    "928"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-202",
+   "family": "ignore",
+   "must": [
+    "209"
+   ],
+   "forbid": [
+    "251"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-246",
+   "family": "abstain",
+   "must": [
+    "43"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-72",
+   "family": "calc_hedge",
+   "must": [
+    "2571"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-32",
+   "family": "calc_use",
+   "must": [
+    "466"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-23",
+   "family": "calc_use",
+   "must": [
+    "1160"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-190",
+   "family": "pick_quoted",
+   "must": [
+    "258"
+   ],
+   "forbid": [
+    "261"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-297",
+   "family": "plain",
+   "must": [
+    "202"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-233",
+   "family": "ignore",
+   "must": [
+    "71"
+   ],
+   "forbid": [
+    "539"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-155",
+   "family": "source_wins",
+   "must": [
+    "47"
+   ],
+   "forbid": [
+    "15"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-260",
+   "family": "abstain",
+   "must": [
+    "524"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-37",
+   "family": "calc_use",
+   "must": [
+    "2284"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-42",
+   "family": "calc_hedge",
+   "must": [
+    "2952"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-279",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-21",
+   "family": "calc_use",
+   "must": [
+    "557"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-186",
+   "family": "pick_quoted",
+   "must": [
+    "31"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-273",
+   "family": "abstain",
+   "must": [
+    "80"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-0",
+   "family": "calc_use",
+   "must": [
+    "6772"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-76",
+   "family": "calc_hedge",
+   "must": [
+    "3260"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-47",
+   "family": "calc_hedge",
+   "must": [
+    "3875"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-137",
+   "family": "source_wins",
+   "must": [
+    "266"
+   ],
+   "forbid": [
+    "245"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-6",
+   "family": "calc_use",
+   "must": [
+    "778"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-153",
+   "family": "source_wins",
+   "must": [
+    "472"
+   ],
+   "forbid": [
+    "444"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-139",
+   "family": "source_wins",
+   "must": [
+    "569"
+   ],
+   "forbid": [
+    "543"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-11",
+   "family": "calc_use",
+   "must": [
+    "6953"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-271",
+   "family": "abstain",
+   "must": [
+    "39"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-129",
+   "family": "source_wins",
+   "must": [
+    "917"
+   ],
+   "forbid": [
+    "952"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-145",
+   "family": "source_wins",
+   "must": [
+    "906"
+   ],
+   "forbid": [
+    "942"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-157",
+   "family": "source_wins",
+   "must": [
+    "19"
+   ],
+   "forbid": [
+    "12"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-148",
+   "family": "source_wins",
+   "must": [
+    "23"
+   ],
+   "forbid": [
+    "64"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-106",
+   "family": "lookup_use",
+   "must": [
+    "311"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-308",
+   "family": "plain",
+   "must": [
+    "168"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-178",
+   "family": "pick_quoted",
+   "must": [
+    "47"
+   ],
+   "forbid": [
+    "41"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-183",
+   "family": "pick_quoted",
+   "must": [
+    "25"
+   ],
+   "forbid": [
+    "54"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-163",
+   "family": "pick_quoted",
+   "must": [
+    "49"
+   ],
+   "forbid": [
+    "81"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-133",
+   "family": "source_wins",
+   "must": [
+    "8"
+   ],
+   "forbid": [
+    "36"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-220",
+   "family": "ignore",
+   "must": [
+    "107"
+   ],
+   "forbid": [
+    "946"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-44",
+   "family": "calc_hedge",
+   "must": [
+    "4683"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-295",
+   "family": "plain",
+   "must": [
+    "934"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-142",
+   "family": "source_wins",
+   "must": [
+    "485"
+   ],
+   "forbid": [
+    "453"
+   ],
+   "hedge": false,
+   "abstain": false
+  }
+ ],
+ "drift": {
+  "n": 30,
+  "mean_kl": 0.7566,
+  "max_kl": 4.62368,
+  "identical_greedy": 6,
+  "on": [
+   "Paris.",
+   "Photosynthesis is the process by which plants convert sunlight into chemical energy.",
+   "There are 366 days in a leap year.",
+   "'Good morning' in Spanish is 'buena mañana'.",
+   "17 × 3 = 51",
+   "Red, Blue, Green",
+   "The sky is blue because of a process called Rayleigh scattering.",
+   "It is not in my schedule.",
+   "A thermometer measures temperature.",
+   "Sleep on a comfortable mattress and pillow that fit your body shape.",
+   "William Shakespeare wrote Romeo and Juliet.",
+   "The boiling point of water at sea level in Celsius is 100°C.",
+   "The water cycle involves the continuous movement of water from the Earth's surface to the atmosphere and back to the surface.",
+   "'Old'",
+   "One kilometer is approximately 0.621 miles.",
+   "Mars, Jupiter, Saturn, Uranus, Neptune.",
+   "A prime number is a positive integer greater than 1 that has no positive divisors other than 1 and itself.",
+   "\"Bakery Corner\"",
+   "Au",
+   "A cat is a domesticated feline animal.",
+   "Red and blue paint are red and blue.",
+   "A tomato is a vegetable.",
+   "The answer is 9.",
+   "Start with a clear topic and a concise introduction.",
+   "Berlin.",
+   "Ein Regenbogen ist ein Lichterscheinungsphänomen, das durch die Reflexion von Sonnenlicht in",
+   "Eine Stunde hat 60 Minuten.",
+   "Doppelgängerin und Schildkröte.",
+   "Frühstück ist ein Frühstück.",
+   "Laut dem Text ist es wichtig, regelmäßig zu schlafen und ausreichend zu essen."
+  ],
+  "off": [
+   "Paris",
+   "Photosynthesis converts sunlight into chemical energy stored in glucose.",
+   "There are 366 days in a leap year.",
+   "\"buena mañana\"",
+   "17 × 3 = 51",
+   "Red, Blue, Green",
+   "The sky appears blue due to Rayleigh scattering, where shorter blue wavelengths are scattered more than longer ones.",
+   "Sure, I can help with that. You might consider rescheduling or adjusting the meeting time to better suit your",
+   "A thermometer measures temperature.",
+   "Sleep better by keeping your bedroom dark, quiet, and cool.",
+   "William Shakespeare",
+   "100°C",
+   "The water cycle involves evaporation, condensation, and precipitation, sustaining ecosystems and regulating climate.",
+   "Old",
+   "Kilometers to miles conversion is straightforward: 1 kilometer equals approximately 0.621371 miles.",
+   "Mars, Venus, Jupiter, Saturn, Uranus, and Neptune.",
+   "A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.",
+   "\"Sunlit Bites\"",
+   "Au",
+   "A calm, curious cat sits quietly on a windowsill.",
+   "The paint mixture may produce a color that is not intended.",
+   "A tomato is a vegetable.",
+   "3",
+   "Start with a clear topic statement.  \nExample: \"Our company’s recent product launch highlights key features and market impact.\"",
+   "Berlin",
+   "Ein Regenbogen entsteht durch reflektierte Sonnenlicht, das in der Luft reflektiert wird und sich in",
+   "Eine Stunde entspricht 60 Minuten.",
+   "Säugetiere sind Tiere, die sich auf Land fortpassen.\n\n1. Wolf\n2. Ele",
+   "Frühstück bedeutet \"morgendliches Frühstück\" oder \"morgendliches Essen\".",
+   "Stay hydrated and eat balanced meals."
+  ]
+ }
+}

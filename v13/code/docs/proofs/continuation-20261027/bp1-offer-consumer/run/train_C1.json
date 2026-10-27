@@ -1,0 +1,25 @@
+{
+ "mode": "no_offers",
+ "seed": 1,
+ "per_family": 60,
+ "epochs": 2,
+ "lr": 0.0003,
+ "batch": 8,
+ "examples": 510,
+ "replay": 30,
+ "steps": 128,
+ "loss_first": [
+  1.8368,
+  2.816,
+  3.0216
+ ],
+ "loss_last": [
+  0.2872,
+  0.1451,
+  0.3356,
+  0.4669,
+  0.4423
+ ],
+ "seconds": 1214,
+ "revision": "v13-offer-consumer-v1"
+}

@@ -711,3 +711,10 @@ Vor Beginn Status-Zeile „in Arbeit (<Thread>)“ setzen; Tests + Doku + Überg
 - **Status 2026-10-10: erledigt (Pakete E).** `v13/episodic_route.py` + Haken in `runtime._route` (nach der prozeduralen Konsolidierung, vor dem Scaffold): aktive menschliche Routen-Korrektur mit Relevanz ≥ 0,6 (entitätsbewusst, gelöschte Quellen zählen nicht) → Vorschlag mit Erinnerungs-/Event-/Quellen-Bezug; `shadow` (Standard) schreibt ihn nach `meta.route.episodic_route`, `active` (`:episodes route active`) nimmt ihn als Route, `off` aus. Tests `tests/test_episodic_route.py` (3), volle Suite 940 grün.
 - Eine einzelne menschliche Routen-Korrektur bei einer sehr ähnlichen früheren Anfrage (gleiche Entitäten, hohe Relevanz) wird beim nächsten Mal sofort als Routen-Vorschlag genutzt, ohne auf die prozedurale Konsolidierung (≥ 3 Bestätigungen) zu warten; mit Episoden-/Quellen-Bezug. Standard SHADOW (Vorschlag in `meta.route`), wirkt mit `:episodes route active`.
 
+
+
+## WP-BP1 Verbraucher für die Hälften (2026-10-27, Thread „Gehirnmitte nutzt Körper-Angebote“, Branch `claude/project-thread-hq9olw`)
+- **Status: CONSUMER_PARTIAL** (Wirkung ursächlich gezeigt, Drift-Tor verfehlt). Lehrplan `code/v13/offer_consumer.py` (8 Aufgabenfamilien, Live-Format der Schicht `Internal hypotheses:`), `code/scripts/bp1_consumer.py` (LoRA-Training/Test), `code/scripts/bp1_judge.py`, Befund `code/docs/proofs/continuation-20261027/bp1-offer-consumer/BEFUND.md`.
+- Ergebnis auf 320 Test-Items mit disjunkten Vorlagen: Basis 0.64 → Adapter 1.00 / 0.99 (2 Trainingsseeds), falsche Festlegung 0.21 → 0.00; Rechenaufgaben ohne Angebote 0 %, mit vertauschten Angeboten folgt C3 dem Angebot (94–100 %); Kontrolle ohne Angebote im Training 6 % → Lesen statt Raten. Drift auf allgemeinen Fragen KL 0.76 (Grenze 0.05; Kontrolle 0.66, also Antwortstil).
+- Grenzen: synthetische Angebote, HF-fp32 statt GGUF, lexikalische Bewertung. Keine Autorität, nichts eingeschaltet.
+- Nächste Schritte: BP1b Drift schließen (Stil-Replay/KL-Anker), BP1c echte B1/B2-Angebote + Arbeitsbereich-Schicht, GGUF-Pfad mit GPTs nativem C3-LoRA. Öffnet BP4/BP6 erst nach BP1c.

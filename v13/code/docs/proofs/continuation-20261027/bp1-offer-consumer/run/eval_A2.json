@@ -1,0 +1,4493 @@
+{
+ "adapter": "/tmp/bp1/A2",
+ "seed": 101,
+ "n": 320,
+ "revision": "v13-offer-consumer-v1",
+ "arms": {
+  "adapter:offers": {
+   "overall": 0.9938,
+   "wrong_commit": 0.0063,
+   "n": 320,
+   "per_family": {
+    "calc_use": 1.0,
+    "calc_hedge": 1.0,
+    "lookup_use": 1.0,
+    "source_wins": 1.0,
+    "pick_quoted": 1.0,
+    "ignore": 0.975,
+    "abstain": 0.975,
+    "plain": 1.0
+   }
+  },
+  "adapter:removed": {
+   "overall": 0.7469,
+   "wrong_commit": 0.125,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.0,
+    "calc_hedge": 0.0,
+    "lookup_use": 1.0,
+    "source_wins": 1.0,
+    "pick_quoted": 1.0,
+    "ignore": 1.0,
+    "abstain": 0.975,
+    "plain": 1.0
+   }
+  },
+  "adapter:shuffled": {
+   "overall": 0.6625,
+   "wrong_commit": 0.1656,
+   "n": 320,
+   "per_family": {
+    "calc_use": 0.0,
+    "calc_hedge": 0.0,
+    "lookup_use": 0.95,
+    "source_wins": 0.95,
+    "pick_quoted": 0.925,
+    "ignore": 0.925,
+    "abstain": 0.55,
+    "plain": 1.0
+   }
+  }
+ },
+ "answers": {
+  "adapter:offers": [
+   "351 units.",
+   "The answer is 210 euros.",
+   "It is 592 rivets.",
+   "342 units.",
+   "It is 436 MB.",
+   "Unverified: about 2079 valves. This is an internal estimate and not confirmed.",
+   "60 units.",
+   "Not stated in the text.",
+   "7 people.",
+   "The answer is 764 MB.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 762 euros.",
+   "107 MB.",
+   "The answer is 671 euros.",
+   "The answer is 10 days.",
+   "595 euros.",
+   "632 euros.",
+   "Unverified: about 7087 valves. This is an internal estimate and not confirmed.",
+   "311 euros.",
+   "25 people.",
+   "783 pipes.",
+   "920 euros.",
+   "It is 1321 valves.",
+   "The answer is 52 days.",
+   "The answer is 966 euros.",
+   "It is 2846 filters.",
+   "Unverified: about 2539 rivets. This is an internal estimate and not confirmed.",
+   "The answer is 630 units.",
+   "552 euros.",
+   "The answer is 188 euros.",
+   "39 days.",
+   "It is 2456 pipes.",
+   "6 people.",
+   "978 euros.",
+   "25 people.",
+   "40 units.",
+   "The answer is 243 MB.",
+   "It is 2123 hinges.",
+   "The answer is 17 people.",
+   "The answer is 442 MB.",
+   "344 units.",
+   "Unverified: about 4606 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "6106 hinges.",
+   "Unverified: about 916 lenses. This is an internal estimate and not confirmed.",
+   "It is 13 people.",
+   "27 people.",
+   "Not stated in the text. An unverified internal hypothesis says 574 units.",
+   "1405 rivets.",
+   "The answer is 93 days.",
+   "It is 2392 filters.",
+   "The answer is 92 days.",
+   "It is 494 euros.",
+   "Unverified: about 944 rivets. This is an internal estimate and not confirmed.",
+   "The answer is 85 MB.",
+   "Unverified: about 1929 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 501 units.",
+   "The answer is 138 units.",
+   "It is 3941 valves.",
+   "720 euros.",
+   "43 units.",
+   "The answer is 421 MB.",
+   "701 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 649 MB.",
+   "390 MB.",
+   "The answer is 85 units.",
+   "It is 1327 pipes.",
+   "49 days.",
+   "11 days.",
+   "The answer is 93 units.",
+   "It is 90 days.",
+   "It is 56 days.",
+   "28 people.",
+   "It is 4885 valves.",
+   "The answer is 359 MB.",
+   "The answer is 488 units.",
+   "466 euros.",
+   "568 euros.",
+   "It is 58 hinges.",
+   "The answer is 722 euros.",
+   "The answer is 312 units.",
+   "71 days.",
+   "273 euros.",
+   "Unverified: about 3939 lenses. This is an internal estimate and not confirmed.",
+   "677 MB.",
+   "It is 14 people.",
+   "The answer is 366 euros.",
+   "The answer is 683 euros.",
+   "The answer is 270 euros.",
+   "It is 1580 valves.",
+   "The answer is 723 MB.",
+   "965 euros.",
+   "42 people.",
+   "691 euros.",
+   "370 MB.",
+   "Unverified: about 3456 filters. This is an internal estimate and not confirmed.",
+   "The answer is 375 units.",
+   "Unverified: about 276 lenses. This is an internal estimate and not confirmed.",
+   "The answer is 22 days.",
+   "171 units.",
+   "Not stated in the text. An unverified internal hypothesis says 7 people.",
+   "Not stated in the text.",
+   "12 people.",
+   "The answer is 17 days.",
+   "459 MB.",
+   "53 days.",
+   "932 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 71 days.",
+   "Unverified: about 1790 filters. This is an internal estimate and not confirmed.",
+   "39 people.",
+   "Unverified: about 3521 lenses. This is an internal estimate and not confirmed.",
+   "Unverified: about 2327 lenses. This is an internal estimate and not confirmed.",
+   "Unverified: about 3799 pipes. This is an internal estimate and not confirmed.",
+   "8098 filters.",
+   "282 units.",
+   "172 MB.",
+   "It is 2253 lenses.",
+   "It is 16 people.",
+   "The answer is 72 euros.",
+   "The answer is 614 euros.",
+   "675 euros.",
+   "Unverified: about 554 filters. This is an internal estimate and not confirmed.",
+   "7951 pipes.",
+   "The answer is 522 MB.",
+   "Not stated in the text.",
+   "20 days.",
+   "5832 hinges.",
+   "Not stated in the text.",
+   "Unverified: about 1530 filters. This is an internal estimate and not confirmed.",
+   "It is 1519 pipes.",
+   "The answer is 424 units.",
+   "The answer is 24 days.",
+   "Not stated in the text. An unverified internal hypothesis says 214 euros.",
+   "385 units.",
+   "The answer is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "It is 2475 lenses.",
+   "The answer is 748 MB.",
+   "The answer is 36 people.",
+   "The answer is 471 MB.",
+   "The answer is 4147 rivets.",
+   "The answer is 534 euros.",
+   "17 people.",
+   "375 euros.",
+   "21 people.",
+   "Unverified: about 6080 hinges. This is an internal estimate and not confirmed.",
+   "Unverified: about 6939 filters. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 30 people.",
+   "6161 valves.",
+   "The answer is 74 MB.",
+   "Unverified: about 1020 pipes. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "31 people.",
+   "29 people.",
+   "The answer is 44 days.",
+   "241 units.",
+   "The answer is 36 people.",
+   "Unverified: about 1947 rivets. This is an internal estimate and not confirmed.",
+   "677 euros.",
+   "The answer is 215 MB.",
+   "Unverified: about 6618 hinges. This is an internal estimate and not confirmed.",
+   "Unverified: about 4981 valves. This is an internal estimate and not confirmed.",
+   "Unverified: about 865 filters. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "It is 4449 filters.",
+   "The answer is not stated in the text.",
+   "40 people.",
+   "The answer is 169 units.",
+   "It is 139 euros.",
+   "The answer is 611 euros.",
+   "The answer is 928 euros.",
+   "561 units.",
+   "Unverified: about 416 valves. This is an internal estimate and not confirmed.",
+   "The answer is 16 days.",
+   "593 euros.",
+   "Not stated in the text.",
+   "Unverified: about 1913 rivets. This is an internal estimate and not confirmed.",
+   "20 people.",
+   "The answer is 458 units.",
+   "4919 hinges.",
+   "505 euros.",
+   "15 people.",
+   "The answer is 35 days.",
+   "It is 196 euros.",
+   "390 units.",
+   "The answer is 669 MB.",
+   "Unverified: about 1254 filters. This is an internal estimate and not confirmed.",
+   "It is 887 euros.",
+   "273 units.",
+   "788 pipes.",
+   "565 MB.",
+   "Unverified: about 551 filters. This is an internal estimate and not confirmed.",
+   "30 days.",
+   "Not stated in the text. An unverified internal hypothesis says 721 euros.",
+   "35 days.",
+   "11 people.",
+   "372 euros.",
+   "The answer is 178 units.",
+   "The answer is 60 days.",
+   "The answer is 45 people.",
+   "29 days.",
+   "Unverified: about 5625 hinges. This is an internal estimate and not confirmed.",
+   "The answer is 136 units.",
+   "Not stated in the text. An unverified internal hypothesis says 923 MB.",
+   "Not stated in the text.",
+   "Unverified: about 1671 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 44 people.",
+   "The answer is 125 euros.",
+   "The answer is 178 units.",
+   "Not stated in the text.",
+   "Unverified: about 4343 lenses. This is an internal estimate and not confirmed.",
+   "The answer is 298 euros.",
+   "The answer is 184 MB.",
+   "The answer is 946 MB.",
+   "53 units.",
+   "The answer is 255 euros.",
+   "890 MB.",
+   "Not stated in the text.",
+   "It is 14 people.",
+   "Unverified: about 5580 pipes. This is an internal estimate and not confirmed.",
+   "1217 valves.",
+   "Not stated in the text. An unverified internal hypothesis says 467 euros.",
+   "Not stated in the text.",
+   "The answer is 652 MB.",
+   "333 units.",
+   "379 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 200 MB.",
+   "40 people.",
+   "4316 rivets.",
+   "The answer is 407 MB.",
+   "Unverified: about 5043 pipes. This is an internal estimate and not confirmed.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "It is 1132 hinges.",
+   "680 euros.",
+   "92 days.",
+   "571 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 492 euros.",
+   "It is 689 pipes.",
+   "685 euros.",
+   "Not stated in the text.",
+   "Not stated in the text. An unverified internal hypothesis says 37 days.",
+   "The answer is 78 units.",
+   "Unverified: about 1557 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 105 MB.",
+   "The answer is 93 days.",
+   "The answer is 814 euros.",
+   "21 days.",
+   "28 people.",
+   "It is 243 euros.",
+   "9 people.",
+   "The answer is 6619 rivets.",
+   "The answer is 732 euros.",
+   "Not stated in the text.",
+   "The answer is 213 MB.",
+   "607 euros.",
+   "It is 1983 pipes.",
+   "It is 19 people.",
+   "Not stated in the text. An unverified internal hypothesis says 775 MB.",
+   "317 euros.",
+   "It is 1135 valves.",
+   "3 people.",
+   "The answer is 69 days.",
+   "Unverified: about 420 filters. This is an internal estimate and not confirmed.",
+   "793 MB.",
+   "The answer is 638 euros.",
+   "709 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 768 euros.",
+   "910 euros.",
+   "The answer is 84 days.",
+   "Unverified: about 903 hinges. This is an internal estimate and not confirmed.",
+   "413 units.",
+   "It is 196 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 530 units.",
+   "The answer is 429 euros.",
+   "It is 1358 rivets.",
+   "The answer is 928 MB.",
+   "The answer is 209 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 43 people.",
+   "Unverified: about 2571 pipes. This is an internal estimate and not confirmed.",
+   "466 valves.",
+   "1160 pipes.",
+   "The answer is 258 units.",
+   "The answer is 202 MB.",
+   "71 days.",
+   "47 days.",
+   "Not stated in the text. An unverified internal hypothesis says 524 MB.",
+   "The answer is 2284 valves.",
+   "Unverified: about 2952 valves. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "It is 557 rivets.",
+   "31 days.",
+   "Not stated in the text. An unverified internal hypothesis says 80 days.",
+   "6772 filters.",
+   "Unverified: about 3260 valves. This is an internal estimate and not confirmed.",
+   "Unverified: about 3875 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 266 units.",
+   "It is 778 rivets.",
+   "The answer is 472 units.",
+   "The answer is 569 euros.",
+   "6953 lenses.",
+   "Not stated in the text. An unverified internal hypothesis says 39 days.",
+   "It is 917 MB.",
+   "The answer is 906 euros.",
+   "19 people.",
+   "The answer is 23 people.",
+   "311 units.",
+   "The answer is 168 units.",
+   "The answer is 47 days.",
+   "The answer is 25 days.",
+   "49 days.",
+   "The answer is 8 days.",
+   "The answer is 107 units.",
+   "Unverified: about 4683 hinges. This is an internal estimate and not confirmed.",
+   "934 euros.",
+   "It is 485 euros."
+  ],
+  "adapter:removed": [
+   "351 units.",
+   "The answer is 210 euros.",
+   "It is 13 rivets per tray.",
+   "342 units.",
+   "It is 436 MB.",
+   "It is 137 valves.",
+   "60 units.",
+   "Not stated in the text.",
+   "7 people.",
+   "The answer is 764 MB.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 762 euros.",
+   "107 MB.",
+   "671 euros.",
+   "10 days.",
+   "595 euros.",
+   "632 euros.",
+   "91 valves.",
+   "311 euros.",
+   "25 people.",
+   "It is 19 pipes per tray.",
+   "920 euros.",
+   "5 valves.",
+   "The answer is 52 days.",
+   "966 euros.",
+   "It is 58 filters per tray.",
+   "It is 46 rivets per tray.",
+   "The answer is 630 units.",
+   "552 euros.",
+   "It is 188 euros.",
+   "39 days.",
+   "400 pipes.",
+   "6 people.",
+   "978 euros.",
+   "25 people.",
+   "40 units.",
+   "The answer is 243 MB.",
+   "269 hinges.",
+   "17 people.",
+   "It is 442 MB.",
+   "344 units.",
+   "71 hinges per tray.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "78 hinges per tray.",
+   "57 lenses.",
+   "It is 13 people.",
+   "27 people.",
+   "Not stated in the text.",
+   "It is 26 rivets per tray.",
+   "It is 93 days.",
+   "It is 54 filters per tray.",
+   "92 days.",
+   "It is 494 euros.",
+   "It is 37 rivets per tray.",
+   "The answer is 85 MB.",
+   "191 hinges.",
+   "Not stated in the text.",
+   "The answer is 138 units.",
+   "It is 58 valves per tray.",
+   "720 euros.",
+   "43 units.",
+   "The answer is 421 MB.",
+   "701 euros.",
+   "Not stated in the text.",
+   "390 MB.",
+   "The answer is 85 units.",
+   "69 pipes per tray.",
+   "49 days.",
+   "11 days.",
+   "It is 93 units.",
+   "90 days.",
+   "It is 56 days.",
+   "28 people.",
+   "221 valves.",
+   "359 MB.",
+   "The answer is 488 units.",
+   "466 euros.",
+   "568 euros.",
+   "It is 25 hinges per tray.",
+   "The answer is 722 euros.",
+   "The answer is 312 units.",
+   "71 days.",
+   "273 euros.",
+   "81 lenses per tray.",
+   "677 MB.",
+   "It is 14 people.",
+   "The answer is 366 euros.",
+   "The answer is 683 euros.",
+   "270 euros.",
+   "The answer is 52 valves.",
+   "The answer is 723 MB.",
+   "965 euros.",
+   "42 people.",
+   "691 euros.",
+   "370 MB.",
+   "229 filters.",
+   "The answer is 375 units.",
+   "The answer is 202 lenses.",
+   "The answer is 22 days.",
+   "171 units.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "12 people.",
+   "17 days.",
+   "459 MB.",
+   "53 days.",
+   "932 MB.",
+   "Not stated in the text.",
+   "63 filters per tray.",
+   "39 people.",
+   "It is 99 lenses per tray.",
+   "The answer is 69 lenses.",
+   "It is 94 pipes per tray.",
+   "86 filters.",
+   "282 units.",
+   "172 MB.",
+   "61 lenses per tray.",
+   "It is 16 people.",
+   "72 euros.",
+   "The answer is 614 euros.",
+   "675 euros.",
+   "196 filters.",
+   "It is 92 pipes.",
+   "The answer is 522 MB.",
+   "Not stated in the text.",
+   "20 days.",
+   "77 hinges per tray.",
+   "Not stated in the text.",
+   "The answer is 38 filters.",
+   "It is 58 pipes per tray.",
+   "The answer is 424 units.",
+   "The answer is 24 days.",
+   "Not stated in the text.",
+   "385 units.",
+   "The answer is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "It is 138 lenses.",
+   "The answer is 748 MB.",
+   "36 people.",
+   "The answer is 471 MB.",
+   "137 rivets.",
+   "The answer is 534 euros.",
+   "17 people.",
+   "375 euros.",
+   "21 people.",
+   "It is 88 hinges per tray.",
+   "It is 282 filters.",
+   "Not stated in the text.",
+   "It is 279 valves.",
+   "It is 74 MB.",
+   "387 pipes.",
+   "Not stated in the text.",
+   "31 people.",
+   "29 people.",
+   "It is 44 days.",
+   "241 units.",
+   "It is 36 people.",
+   "373 rivets.",
+   "677 euros.",
+   "The answer is 215 MB.",
+   "The answer is 22 hinges.",
+   "27 valves.",
+   "343 filters.",
+   "Not stated in the text.",
+   "64 filters per tray.",
+   "The answer is not stated in the text.",
+   "40 people.",
+   "The answer is 169 units.",
+   "It is 139 euros.",
+   "611 euros.",
+   "It is 928 euros.",
+   "561 units.",
+   "It is 13 valves per tray.",
+   "The answer is 16 days.",
+   "It is 593 euros.",
+   "Not stated in the text.",
+   "It is 38 rivets per tray.",
+   "20 people.",
+   "The answer is 458 units.",
+   "60 hinges per tray.",
+   "It is 505 euros.",
+   "15 people.",
+   "35 days.",
+   "It is 196 euros.",
+   "390 units.",
+   "The answer is 669 MB.",
+   "144 filters.",
+   "It is 887 euros.",
+   "The answer is 273 units.",
+   "33 pipes per tray.",
+   "565 MB.",
+   "The answer is 52 filters.",
+   "30 days.",
+   "Not stated in the text.",
+   "35 days.",
+   "11 people.",
+   "372 euros.",
+   "The answer is 178 units.",
+   "60 days.",
+   "It is 45 people.",
+   "29 days.",
+   "The answer is 204 hinges.",
+   "The answer is 136 units.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "It is 29 pipes per tray.",
+   "44 people.",
+   "It is 125 euros.",
+   "The answer is 178 units.",
+   "Not stated in the text.",
+   "60 lenses per tray.",
+   "The answer is 298 euros.",
+   "The answer is 184 MB.",
+   "The answer is 946 MB.",
+   "53 units.",
+   "The answer is 255 euros.",
+   "It is 890 MB.",
+   "Not stated in the text.",
+   "It is 14 people.",
+   "It is 65 pipes per tray.",
+   "59 valves per tray.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 652 MB.",
+   "333 units.",
+   "379 MB.",
+   "Not stated in the text.",
+   "40 people.",
+   "49 rivets.",
+   "407 MB.",
+   "20 pipes.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "It is 363 hinges.",
+   "680 euros.",
+   "92 days.",
+   "571 MB.",
+   "Not stated in the text.",
+   "68 pipes per tray.",
+   "685 euros.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 78 units.",
+   "30 pipes.",
+   "The answer is 105 MB.",
+   "It is 93 days.",
+   "The answer is 814 euros.",
+   "21 days.",
+   "28 people.",
+   "It is 243 euros.",
+   "9 people.",
+   "311 rivets.",
+   "The answer is 732 euros.",
+   "Not stated in the text.",
+   "It is 213 MB.",
+   "607 euros.",
+   "It is 177 pipes.",
+   "19 people.",
+   "Not stated in the text.",
+   "317 euros.",
+   "It is 65 valves per tray.",
+   "3 people.",
+   "The answer is 69 days.",
+   "The answer is 36 filters.",
+   "793 MB.",
+   "638 euros.",
+   "709 euros.",
+   "Not stated in the text.",
+   "348 euros.",
+   "It is 84 days.",
+   "27 hinges.",
+   "413 units.",
+   "It is 196 euros.",
+   "Not stated in the text.",
+   "The answer is 429 euros.",
+   "It is 44 rivets per tray.",
+   "The answer is 928 MB.",
+   "It is 209 euros.",
+   "Not stated in the text.",
+   "It is 126 pipes.",
+   "35 valves per tray.",
+   "340 pipes.",
+   "The answer is 258 units.",
+   "The answer is 202 MB.",
+   "71 days.",
+   "47 days.",
+   "Not stated in the text.",
+   "The answer is 57 valves.",
+   "312 valves.",
+   "Not stated in the text.",
+   "20 rivets per tray.",
+   "31 days.",
+   "Not stated in the text.",
+   "It is 203 filters.",
+   "171 valves.",
+   "It is 84 pipes per tray.",
+   "The answer is 266 units.",
+   "It is 22 rivets per tray.",
+   "472 units.",
+   "The answer is 569 euros.",
+   "87 lenses per tray.",
+   "Not stated in the text.",
+   "It is 917 MB.",
+   "It is 906 euros.",
+   "19 people.",
+   "The answer is 23 people.",
+   "311 units.",
+   "The answer is 168 units.",
+   "47 days.",
+   "25 days.",
+   "49 days.",
+   "It is 8 days.",
+   "The answer is 107 units.",
+   "56 hinges per tray.",
+   "934 euros.",
+   "It is 485 euros."
+  ],
+  "adapter:shuffled": [
+   "351 units.",
+   "The answer is 210 euros.",
+   "13 rivets per tray.",
+   "342 units.",
+   "The answer is 453 units.",
+   "The answer is 98 valves.",
+   "60 units.",
+   "Not stated in the text.",
+   "The answer is 7 people.",
+   "The answer is 764 MB.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 762 euros.",
+   "107 MB.",
+   "Unverified: about 554 euros. This is an internal estimate and not confirmed.",
+   "10 days.",
+   "595 euros.",
+   "632 euros.",
+   "91 valves.",
+   "311 euros.",
+   "25 people.",
+   "19 pipes per tray.",
+   "920 euros.",
+   "17 valves.",
+   "The answer is 52 days.",
+   "966 euros.",
+   "58 filters per tray.",
+   "It is 46 rivets per tray.",
+   "The answer is 630 units.",
+   "552 euros.",
+   "The answer is 188 euros.",
+   "39 days.",
+   "400 pipes.",
+   "6 people.",
+   "978 euros.",
+   "25 people.",
+   "40 units.",
+   "The answer is 243 MB.",
+   "269 hinges.",
+   "The answer is 17 people.",
+   "The answer is 442 MB.",
+   "344 units.",
+   "71 hinges per tray.",
+   "Not stated in the text.",
+   "Not stated in the text. An unverified internal hypothesis says 91 days.",
+   "Unverified: about 1254 hinges. This is an internal estimate and not confirmed.",
+   "57 lenses.",
+   "It is 13 people.",
+   "27 people.",
+   "Not stated in the text.",
+   "Unverified: about 5625 rivets. This is an internal estimate and not confirmed.",
+   "It is 93 days.",
+   "4316 filters.",
+   "92 days.",
+   "It is 494 euros.",
+   "Unverified: about 5580 rivets. This is an internal estimate and not confirmed.",
+   "The answer is 85 MB.",
+   "191 hinges.",
+   "Not stated in the text. An unverified internal hypothesis says 76 days.",
+   "The answer is 138 units.",
+   "It is 58 valves per tray.",
+   "720 euros.",
+   "It is 43 units.",
+   "The answer is 421 MB.",
+   "701 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 506 units.",
+   "390 MB.",
+   "The answer is 85 units.",
+   "69 pipes per tray.",
+   "The answer is 49 days.",
+   "11 days.",
+   "The answer is 93 units.",
+   "90 days.",
+   "It is 56 days.",
+   "28 people.",
+   "The answer is 2475 valves.",
+   "The answer is 359 MB.",
+   "The answer is 488 units.",
+   "Unverified: about 6080 hinges. This is an internal estimate and not confirmed.",
+   "568 euros.",
+   "Unverified: about 1530 hinges. This is an internal estimate and not confirmed.",
+   "The answer is 722 euros.",
+   "The answer is 312 units.",
+   "71 days.",
+   "273 euros.",
+   "81 lenses per tray.",
+   "The answer is 677 MB.",
+   "It is 14 people.",
+   "The answer is 366 euros.",
+   "The answer is 683 euros.",
+   "270 euros.",
+   "The answer is 32 valves.",
+   "The answer is 723 MB.",
+   "965 euros.",
+   "42 people.",
+   "691 euros.",
+   "370 MB.",
+   "It is 1321 filters.",
+   "The answer is 375 units.",
+   "The answer is 202 lenses.",
+   "The answer is 22 days.",
+   "171 units.",
+   "Not stated in the text.",
+   "Not stated in the text. An unverified internal hypothesis says 89 days.",
+   "It is 12 people.",
+   "The answer is 17 days.",
+   "The answer is 459 MB.",
+   "53 days.",
+   "The answer is 932 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 466 MB.",
+   "63 filters per tray.",
+   "39 people.",
+   "Unverified: about 554 lenses. This is an internal estimate and not confirmed.",
+   "69 lenses per tray.",
+   "It is 94 pipes per tray.",
+   "86 filters.",
+   "The answer is 282 units.",
+   "172 MB.",
+   "61 lenses per tray.",
+   "The answer is 16 people.",
+   "The answer is 72 euros.",
+   "Unverified: about 2327 lenses. This is an internal estimate and not confirmed.",
+   "The answer is 675 euros.",
+   "Unverified: about 1929 filters. This is an internal estimate and not confirmed.",
+   "Unverified: about 2952 pipes. This is an internal estimate and not confirmed.",
+   "The answer is 522 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 3 people.",
+   "20 days.",
+   "Unverified: about 276 hinges. This is an internal estimate and not confirmed.",
+   "Not stated in the text. An unverified internal hypothesis says 306 euros.",
+   "The answer is 98 filters.",
+   "58 pipes per tray.",
+   "The answer is 424 units.",
+   "The answer is 24 days.",
+   "Not stated in the text. An unverified internal hypothesis says 582 euros.",
+   "385 units.",
+   "The answer is 269 MB.",
+   "480 euros.",
+   "490 euros.",
+   "The answer is 138 lenses.",
+   "The answer is 748 MB.",
+   "The answer is 36 people.",
+   "307 euros.",
+   "689 rivets.",
+   "The answer is 534 euros.",
+   "It is 17 people.",
+   "375 euros.",
+   "21 people.",
+   "It is 88 hinges per tray.",
+   "282 filters.",
+   "Not stated in the text.",
+   "The answer is 279 valves.",
+   "The answer is 74 MB.",
+   "387 pipes.",
+   "Not stated in the text. An unverified internal hypothesis says 530 units.",
+   "31 people.",
+   "29 people.",
+   "It is 44 days.",
+   "241 units.",
+   "The answer is 36 people.",
+   "373 rivets.",
+   "The answer is 677 euros.",
+   "The answer is 215 MB.",
+   "The answer is 80 hinges.",
+   "27 valves.",
+   "343 filters.",
+   "390 units.",
+   "It is 1135 filters.",
+   "Not stated in the text.",
+   "40 people.",
+   "The answer is 169 units.",
+   "It is 139 euros.",
+   "611 euros.",
+   "The answer is 928 euros.",
+   "561 units.",
+   "It is 13 valves per tray.",
+   "The answer is 16 days.",
+   "593 euros.",
+   "Not stated in the text.",
+   "38 rivets per tray.",
+   "20 people.",
+   "The answer is 458 units.",
+   "Unverified: about 276 hinges. This is an internal estimate and not confirmed.",
+   "Unverified: about 3939 lenses. This is an internal estimate and not confirmed.",
+   "The answer is 15 people.",
+   "The answer is 35 days.",
+   "The answer is 196 euros.",
+   "390 units.",
+   "The answer is 669 MB.",
+   "144 filters.",
+   "The answer is 682 euros.",
+   "The answer is 273 units.",
+   "33 pipes per tray.",
+   "565 MB.",
+   "The answer is 52 filters.",
+   "30 days.",
+   "Not stated in the text. An unverified internal hypothesis says 34 people.",
+   "35 days.",
+   "11 people.",
+   "372 euros.",
+   "The answer is 178 units.",
+   "60 days.",
+   "It is 45 people.",
+   "29 days.",
+   "The answer is 204 hinges.",
+   "The answer is 136 units.",
+   "Unverified: about 4343 lenses. This is an internal estimate and not confirmed.",
+   "Not stated in the text.",
+   "It is 29 pipes per tray.",
+   "44 people.",
+   "It is 125 euros.",
+   "The answer is 178 units.",
+   "Not stated in the text. An unverified internal hypothesis says 343 MB.",
+   "60 lenses per tray.",
+   "The answer is 298 euros.",
+   "The answer is 21 days.",
+   "The answer is 946 MB.",
+   "53 units.",
+   "The answer is 255 euros.",
+   "It is 890 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 250 units.",
+   "It is 14 people.",
+   "The answer is 65 pipes per tray.",
+   "59 valves per tray.",
+   "The answer is 940 euros.",
+   "Not stated in the text.",
+   "The answer is 652 MB.",
+   "The answer is 333 units.",
+   "379 MB.",
+   "The answer is 437 euros.",
+   "40 people.",
+   "49 rivets.",
+   "The answer is 407 MB.",
+   "69 pipes.",
+   "372 euros.",
+   "26 people.",
+   "The answer is 107 units.",
+   "It is 65 hinges per tray.",
+   "The answer is 680 euros.",
+   "92 days.",
+   "571 MB.",
+   "Not stated in the text. An unverified internal hypothesis says 191 MB.",
+   "68 pipes per tray.",
+   "The answer is 466 euros.",
+   "Not stated in the text.",
+   "Not stated in the text.",
+   "The answer is 78 units.",
+   "30 pipes.",
+   "The answer is 105 MB.",
+   "The answer is 93 days.",
+   "It is 814 euros.",
+   "21 days.",
+   "28 people.",
+   "It is 243 euros.",
+   "9 people.",
+   "The answer is 311 rivets.",
+   "The answer is 732 euros.",
+   "Not stated in the text.",
+   "7951 pipes.",
+   "607 euros.",
+   "Unverified: about 4343 pipes. This is an internal estimate and not confirmed.",
+   "19 people.",
+   "Unverified: about 1790 items. This is an internal estimate and not confirmed.",
+   "317 euros.",
+   "Unverified: about 1947 valves. This is an internal estimate and not confirmed.",
+   "3 people.",
+   "The answer is 69 days.",
+   "The answer is 36 filters.",
+   "793 MB.",
+   "638 euros.",
+   "709 euros.",
+   "Not stated in the text.",
+   "348 euros.",
+   "It is 84 days.",
+   "27 hinges.",
+   "The answer is 413 units.",
+   "It is 196 euros.",
+   "Not stated in the text. An unverified internal hypothesis says 269 MB.",
+   "The answer is 429 euros.",
+   "It is 44 rivets per tray.",
+   "The answer is 928 MB.",
+   "The answer is 209 euros.",
+   "Not stated in the text.",
+   "The answer is 126 pipes.",
+   "35 valves per tray.",
+   "30 pipes per tray.",
+   "The answer is 258 units.",
+   "The answer is 202 MB.",
+   "71 days.",
+   "47 days.",
+   "90 days.",
+   "6619 valves.",
+   "It is 1580 valves.",
+   "The answer is 669 MB.",
+   "Unverified: about 1530 rivets. This is an internal estimate and not confirmed.",
+   "31 days.",
+   "Not stated in the text. An unverified internal hypothesis says 478 euros.",
+   "The answer is 203 filters.",
+   "171 valves.",
+   "It is 84 pipes per tray.",
+   "It is 266 units.",
+   "The answer is 22 rivets per tray.",
+   "472 units.",
+   "The answer is 569 euros.",
+   "It is 1321 lenses.",
+   "Not stated in the text. An unverified internal hypothesis says about 4343 lenses.",
+   "It is 917 MB.",
+   "The answer is 906 euros.",
+   "19 people.",
+   "The answer is 23 people.",
+   "The answer is 311 units.",
+   "The answer is 168 units.",
+   "47 days.",
+   "25 days.",
+   "49 days.",
+   "The answer is 8 days.",
+   "The answer is 107 units.",
+   "56 hinges per tray.",
+   "934 euros.",
+   "It is 485 euros."
+  ]
+ },
+ "items": [
+  {
+   "id": "lookup_use-1-101-104",
+   "family": "lookup_use",
+   "must": [
+    "351"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-140",
+   "family": "source_wins",
+   "must": [
+    "210"
+   ],
+   "forbid": [
+    "242"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-27",
+   "family": "calc_use",
+   "must": [
+    "592"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-216",
+   "family": "ignore",
+   "must": [
+    "342"
+   ],
+   "forbid": [
+    "790"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-176",
+   "family": "pick_quoted",
+   "must": [
+    "436"
+   ],
+   "forbid": [
+    "400"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-48",
+   "family": "calc_hedge",
+   "must": [
+    "2079"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-86",
+   "family": "lookup_use",
+   "must": [
+    "60"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-251",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-306",
+   "family": "plain",
+   "must": [
+    "7"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-99",
+   "family": "lookup_use",
+   "must": [
+    "764"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-266",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-275",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-290",
+   "family": "plain",
+   "must": [
+    "762"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-136",
+   "family": "source_wins",
+   "must": [
+    "107"
+   ],
+   "forbid": [
+    "125"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-203",
+   "family": "ignore",
+   "must": [
+    "671"
+   ],
+   "forbid": [
+    "226"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-103",
+   "family": "lookup_use",
+   "must": [
+    "10"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-302",
+   "family": "plain",
+   "must": [
+    "595"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-96",
+   "family": "lookup_use",
+   "must": [
+    "632"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-64",
+   "family": "calc_hedge",
+   "must": [
+    "7087"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-291",
+   "family": "plain",
+   "must": [
+    "311"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-288",
+   "family": "plain",
+   "must": [
+    "25"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-9",
+   "family": "calc_use",
+   "must": [
+    "783"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-124",
+   "family": "source_wins",
+   "must": [
+    "920"
+   ],
+   "forbid": [
+    "958"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-1",
+   "family": "calc_use",
+   "must": [
+    "1321"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-237",
+   "family": "ignore",
+   "must": [
+    "52"
+   ],
+   "forbid": [
+    "30"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-116",
+   "family": "lookup_use",
+   "must": [
+    "966"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-28",
+   "family": "calc_use",
+   "must": [
+    "2846"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-70",
+   "family": "calc_hedge",
+   "must": [
+    "2539"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-318",
+   "family": "plain",
+   "must": [
+    "630"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-311",
+   "family": "plain",
+   "must": [
+    "552"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-81",
+   "family": "lookup_use",
+   "must": [
+    "188"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-117",
+   "family": "lookup_use",
+   "must": [
+    "39"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-13",
+   "family": "calc_use",
+   "must": [
+    "2456"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-89",
+   "family": "lookup_use",
+   "must": [
+    "6"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-141",
+   "family": "source_wins",
+   "must": [
+    "978"
+   ],
+   "forbid": [
+    "963"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-193",
+   "family": "pick_quoted",
+   "must": [
+    "25"
+   ],
+   "forbid": [
+    "1"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-201",
+   "family": "ignore",
+   "must": [
+    "40"
+   ],
+   "forbid": [
+    "23"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-171",
+   "family": "pick_quoted",
+   "must": [
+    "243"
+   ],
+   "forbid": [
+    "246"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-24",
+   "family": "calc_use",
+   "must": [
+    "2123"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-209",
+   "family": "ignore",
+   "must": [
+    "17"
+   ],
+   "forbid": [
+    "355"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-187",
+   "family": "pick_quoted",
+   "must": [
+    "442"
+   ],
+   "forbid": [
+    "479"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-182",
+   "family": "pick_quoted",
+   "must": [
+    "344"
+   ],
+   "forbid": [
+    "366"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-57",
+   "family": "calc_hedge",
+   "must": [
+    "4606"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-243",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-269",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-26",
+   "family": "calc_use",
+   "must": [
+    "6106"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-74",
+   "family": "calc_hedge",
+   "must": [
+    "916"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-309",
+   "family": "plain",
+   "must": [
+    "13"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-289",
+   "family": "plain",
+   "must": [
+    "27"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-247",
+   "family": "abstain",
+   "must": [
+    "574"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-38",
+   "family": "calc_use",
+   "must": [
+    "1405"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-94",
+   "family": "lookup_use",
+   "must": [
+    "93"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-5",
+   "family": "calc_use",
+   "must": [
+    "2392"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-83",
+   "family": "lookup_use",
+   "must": [
+    "92"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-231",
+   "family": "ignore",
+   "must": [
+    "494"
+   ],
+   "forbid": [
+    "746"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-49",
+   "family": "calc_hedge",
+   "must": [
+    "944"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-219",
+   "family": "ignore",
+   "must": [
+    "85"
+   ],
+   "forbid": [
+    "28"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-54",
+   "family": "calc_hedge",
+   "must": [
+    "1929"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-262",
+   "family": "abstain",
+   "must": [
+    "501"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "lookup_use-1-101-98",
+   "family": "lookup_use",
+   "must": [
+    "138"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-8",
+   "family": "calc_use",
+   "must": [
+    "3941"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-110",
+   "family": "lookup_use",
+   "must": [
+    "720"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-298",
+   "family": "plain",
+   "must": [
+    "43"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-222",
+   "family": "ignore",
+   "must": [
+    "421"
+   ],
+   "forbid": [
+    "726"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-207",
+   "family": "ignore",
+   "must": [
+    "701"
+   ],
+   "forbid": [
+    "204"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-253",
+   "family": "abstain",
+   "must": [
+    "649"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-174",
+   "family": "pick_quoted",
+   "must": [
+    "390"
+   ],
+   "forbid": [
+    "366"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-158",
+   "family": "source_wins",
+   "must": [
+    "85"
+   ],
+   "forbid": [
+    "54"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-18",
+   "family": "calc_use",
+   "must": [
+    "1327"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-215",
+   "family": "ignore",
+   "must": [
+    "49"
+   ],
+   "forbid": [
+    "886"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-160",
+   "family": "pick_quoted",
+   "must": [
+    "11"
+   ],
+   "forbid": [
+    "32"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-138",
+   "family": "source_wins",
+   "must": [
+    "93"
+   ],
+   "forbid": [
+    "114"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-230",
+   "family": "ignore",
+   "must": [
+    "90"
+   ],
+   "forbid": [
+    "446"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-205",
+   "family": "ignore",
+   "must": [
+    "56"
+   ],
+   "forbid": [
+    "597"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-152",
+   "family": "source_wins",
+   "must": [
+    "28"
+   ],
+   "forbid": [
+    "21"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-14",
+   "family": "calc_use",
+   "must": [
+    "4885"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-108",
+   "family": "lookup_use",
+   "must": [
+    "359"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-102",
+   "family": "lookup_use",
+   "must": [
+    "488"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-199",
+   "family": "pick_quoted",
+   "must": [
+    "466"
+   ],
+   "forbid": [
+    "431"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-235",
+   "family": "ignore",
+   "must": [
+    "568"
+   ],
+   "forbid": [
+    "33"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-10",
+   "family": "calc_use",
+   "must": [
+    "58"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-88",
+   "family": "lookup_use",
+   "must": [
+    "722"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-189",
+   "family": "pick_quoted",
+   "must": [
+    "312"
+   ],
+   "forbid": [
+    "322"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-105",
+   "family": "lookup_use",
+   "must": [
+    "71"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-312",
+   "family": "plain",
+   "must": [
+    "273"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-56",
+   "family": "calc_hedge",
+   "must": [
+    "3939"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-317",
+   "family": "plain",
+   "must": [
+    "677"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-211",
+   "family": "ignore",
+   "must": [
+    "14"
+   ],
+   "forbid": [
+    "574"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-172",
+   "family": "pick_quoted",
+   "must": [
+    "366"
+   ],
+   "forbid": [
+    "381"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-115",
+   "family": "lookup_use",
+   "must": [
+    "683"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-229",
+   "family": "ignore",
+   "must": [
+    "270"
+   ],
+   "forbid": [
+    "405"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-22",
+   "family": "calc_use",
+   "must": [
+    "1580"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-127",
+   "family": "source_wins",
+   "must": [
+    "723"
+   ],
+   "forbid": [
+    "720"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-280",
+   "family": "plain",
+   "must": [
+    "965"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-101",
+   "family": "lookup_use",
+   "must": [
+    "42"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-214",
+   "family": "ignore",
+   "must": [
+    "691"
+   ],
+   "forbid": [
+    "580"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-100",
+   "family": "lookup_use",
+   "must": [
+    "370"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-75",
+   "family": "calc_hedge",
+   "must": [
+    "3456"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-305",
+   "family": "plain",
+   "must": [
+    "375"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-63",
+   "family": "calc_hedge",
+   "must": [
+    "276"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-132",
+   "family": "source_wins",
+   "must": [
+    "22"
+   ],
+   "forbid": [
+    "60"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-151",
+   "family": "source_wins",
+   "must": [
+    "171"
+   ],
+   "forbid": [
+    "183"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-277",
+   "family": "abstain",
+   "must": [
+    "7"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-254",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-126",
+   "family": "source_wins",
+   "must": [
+    "12"
+   ],
+   "forbid": [
+    "53"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-196",
+   "family": "pick_quoted",
+   "must": [
+    "17"
+   ],
+   "forbid": [
+    "47"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-293",
+   "family": "plain",
+   "must": [
+    "459"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-281",
+   "family": "plain",
+   "must": [
+    "53"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-143",
+   "family": "source_wins",
+   "must": [
+    "932"
+   ],
+   "forbid": [
+    "902"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-248",
+   "family": "abstain",
+   "must": [
+    "71"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-53",
+   "family": "calc_hedge",
+   "must": [
+    "1790"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-221",
+   "family": "ignore",
+   "must": [
+    "39"
+   ],
+   "forbid": [
+    "626"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-68",
+   "family": "calc_hedge",
+   "must": [
+    "3521"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-50",
+   "family": "calc_hedge",
+   "must": [
+    "2327"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-66",
+   "family": "calc_hedge",
+   "must": [
+    "3799"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-3",
+   "family": "calc_use",
+   "must": [
+    "8098"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-239",
+   "family": "ignore",
+   "must": [
+    "282"
+   ],
+   "forbid": [
+    "83"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-198",
+   "family": "pick_quoted",
+   "must": [
+    "172"
+   ],
+   "forbid": [
+    "184"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-15",
+   "family": "calc_use",
+   "must": [
+    "2253"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-307",
+   "family": "plain",
+   "must": [
+    "16"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-192",
+   "family": "pick_quoted",
+   "must": [
+    "72"
+   ],
+   "forbid": [
+    "47"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-119",
+   "family": "lookup_use",
+   "must": [
+    "614"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-319",
+   "family": "plain",
+   "must": [
+    "675"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-62",
+   "family": "calc_hedge",
+   "must": [
+    "554"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-20",
+   "family": "calc_use",
+   "must": [
+    "7951"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-287",
+   "family": "plain",
+   "must": [
+    "522"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-242",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-164",
+   "family": "pick_quoted",
+   "must": [
+    "20"
+   ],
+   "forbid": [
+    "59"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-17",
+   "family": "calc_use",
+   "must": [
+    "5832"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-249",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-41",
+   "family": "calc_hedge",
+   "must": [
+    "1530"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-30",
+   "family": "calc_use",
+   "must": [
+    "1519"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-270",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-310",
+   "family": "plain",
+   "must": [
+    "24"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-252",
+   "family": "abstain",
+   "must": [
+    "214"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-226",
+   "family": "ignore",
+   "must": [
+    "385"
+   ],
+   "forbid": [
+    "9"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-168",
+   "family": "pick_quoted",
+   "must": [
+    "269"
+   ],
+   "forbid": [
+    "239"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-300",
+   "family": "plain",
+   "must": [
+    "480"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-134",
+   "family": "source_wins",
+   "must": [
+    "490"
+   ],
+   "forbid": [
+    "522"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-2",
+   "family": "calc_use",
+   "must": [
+    "2475"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-118",
+   "family": "lookup_use",
+   "must": [
+    "748"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-165",
+   "family": "pick_quoted",
+   "must": [
+    "36"
+   ],
+   "forbid": [
+    "61"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-206",
+   "family": "ignore",
+   "must": [
+    "471"
+   ],
+   "forbid": [
+    "201"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-31",
+   "family": "calc_use",
+   "must": [
+    "4147"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-292",
+   "family": "plain",
+   "must": [
+    "534"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-82",
+   "family": "lookup_use",
+   "must": [
+    "17"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-283",
+   "family": "plain",
+   "must": [
+    "375"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-175",
+   "family": "pick_quoted",
+   "must": [
+    "21"
+   ],
+   "forbid": [
+    "61"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-55",
+   "family": "calc_hedge",
+   "must": [
+    "6080"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-45",
+   "family": "calc_hedge",
+   "must": [
+    "6939"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-268",
+   "family": "abstain",
+   "must": [
+    "30"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-25",
+   "family": "calc_use",
+   "must": [
+    "6161"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-170",
+   "family": "pick_quoted",
+   "must": [
+    "74"
+   ],
+   "forbid": [
+    "87"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-67",
+   "family": "calc_hedge",
+   "must": [
+    "1020"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-244",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-301",
+   "family": "plain",
+   "must": [
+    "31"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-184",
+   "family": "pick_quoted",
+   "must": [
+    "29"
+   ],
+   "forbid": [
+    "17"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-194",
+   "family": "pick_quoted",
+   "must": [
+    "44"
+   ],
+   "forbid": [
+    "4"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-85",
+   "family": "lookup_use",
+   "must": [
+    "241"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-90",
+   "family": "lookup_use",
+   "must": [
+    "36"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-71",
+   "family": "calc_hedge",
+   "must": [
+    "1947"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-177",
+   "family": "pick_quoted",
+   "must": [
+    "677"
+   ],
+   "forbid": [
+    "683"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-107",
+   "family": "lookup_use",
+   "must": [
+    "215"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-40",
+   "family": "calc_hedge",
+   "must": [
+    "6618"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-46",
+   "family": "calc_hedge",
+   "must": [
+    "4981"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-61",
+   "family": "calc_hedge",
+   "must": [
+    "865"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-255",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-16",
+   "family": "calc_use",
+   "must": [
+    "4449"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-245",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "plain-1-101-299",
+   "family": "plain",
+   "must": [
+    "40"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-97",
+   "family": "lookup_use",
+   "must": [
+    "169"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-128",
+   "family": "source_wins",
+   "must": [
+    "139"
+   ],
+   "forbid": [
+    "118"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-210",
+   "family": "ignore",
+   "must": [
+    "611"
+   ],
+   "forbid": [
+    "582"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-200",
+   "family": "ignore",
+   "must": [
+    "928"
+   ],
+   "forbid": [
+    "513"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-135",
+   "family": "source_wins",
+   "must": [
+    "561"
+   ],
+   "forbid": [
+    "535"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-77",
+   "family": "calc_hedge",
+   "must": [
+    "416"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-91",
+   "family": "lookup_use",
+   "must": [
+    "16"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-111",
+   "family": "lookup_use",
+   "must": [
+    "593"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-250",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-52",
+   "family": "calc_hedge",
+   "must": [
+    "1913"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-304",
+   "family": "plain",
+   "must": [
+    "20"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-180",
+   "family": "pick_quoted",
+   "must": [
+    "458"
+   ],
+   "forbid": [
+    "480"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-34",
+   "family": "calc_use",
+   "must": [
+    "4919"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-144",
+   "family": "source_wins",
+   "must": [
+    "505"
+   ],
+   "forbid": [
+    "516"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-294",
+   "family": "plain",
+   "must": [
+    "15"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-87",
+   "family": "lookup_use",
+   "must": [
+    "35"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-185",
+   "family": "pick_quoted",
+   "must": [
+    "196"
+   ],
+   "forbid": [
+    "235"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-166",
+   "family": "pick_quoted",
+   "must": [
+    "390"
+   ],
+   "forbid": [
+    "376"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-95",
+   "family": "lookup_use",
+   "must": [
+    "669"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-59",
+   "family": "calc_hedge",
+   "must": [
+    "1254"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-228",
+   "family": "ignore",
+   "must": [
+    "887"
+   ],
+   "forbid": [
+    "230"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-156",
+   "family": "source_wins",
+   "must": [
+    "273"
+   ],
+   "forbid": [
+    "249"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-29",
+   "family": "calc_use",
+   "must": [
+    "788"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-167",
+   "family": "pick_quoted",
+   "must": [
+    "565"
+   ],
+   "forbid": [
+    "589"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-60",
+   "family": "calc_hedge",
+   "must": [
+    "551"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-159",
+   "family": "source_wins",
+   "must": [
+    "30"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-240",
+   "family": "abstain",
+   "must": [
+    "721"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-120",
+   "family": "source_wins",
+   "must": [
+    "35"
+   ],
+   "forbid": [
+    "32"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-123",
+   "family": "source_wins",
+   "must": [
+    "11"
+   ],
+   "forbid": [
+    "29"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-285",
+   "family": "plain",
+   "must": [
+    "372"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-92",
+   "family": "lookup_use",
+   "must": [
+    "178"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-238",
+   "family": "ignore",
+   "must": [
+    "60"
+   ],
+   "forbid": [
+    "669"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-93",
+   "family": "lookup_use",
+   "must": [
+    "45"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-169",
+   "family": "pick_quoted",
+   "must": [
+    "29"
+   ],
+   "forbid": [
+    "6"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-51",
+   "family": "calc_hedge",
+   "must": [
+    "5625"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-84",
+   "family": "lookup_use",
+   "must": [
+    "136"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-278",
+   "family": "abstain",
+   "must": [
+    "923"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-263",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-78",
+   "family": "calc_hedge",
+   "must": [
+    "1671"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-227",
+   "family": "ignore",
+   "must": [
+    "44"
+   ],
+   "forbid": [
+    "824"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-181",
+   "family": "pick_quoted",
+   "must": [
+    "125"
+   ],
+   "forbid": [
+    "120"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-125",
+   "family": "source_wins",
+   "must": [
+    "178"
+   ],
+   "forbid": [
+    "157"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-276",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-73",
+   "family": "calc_hedge",
+   "must": [
+    "4343"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-130",
+   "family": "source_wins",
+   "must": [
+    "298"
+   ],
+   "forbid": [
+    "308"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-109",
+   "family": "lookup_use",
+   "must": [
+    "184"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-234",
+   "family": "ignore",
+   "must": [
+    "946"
+   ],
+   "forbid": [
+    "14"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-179",
+   "family": "pick_quoted",
+   "must": [
+    "53"
+   ],
+   "forbid": [
+    "46"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-303",
+   "family": "plain",
+   "must": [
+    "255"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-232",
+   "family": "ignore",
+   "must": [
+    "890"
+   ],
+   "forbid": [
+    "695"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-274",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-147",
+   "family": "source_wins",
+   "must": [
+    "14"
+   ],
+   "forbid": [
+    "55"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-69",
+   "family": "calc_hedge",
+   "must": [
+    "5580"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-19",
+   "family": "calc_use",
+   "must": [
+    "1217"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-258",
+   "family": "abstain",
+   "must": [
+    "467"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-265",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-208",
+   "family": "ignore",
+   "must": [
+    "652"
+   ],
+   "forbid": [
+    "34"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-162",
+   "family": "pick_quoted",
+   "must": [
+    "333"
+   ],
+   "forbid": [
+    "338"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-191",
+   "family": "pick_quoted",
+   "must": [
+    "379"
+   ],
+   "forbid": [
+    "382"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-241",
+   "family": "abstain",
+   "must": [
+    "200"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-217",
+   "family": "ignore",
+   "must": [
+    "40"
+   ],
+   "forbid": [
+    "81"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-35",
+   "family": "calc_use",
+   "must": [
+    "4316"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-173",
+   "family": "pick_quoted",
+   "must": [
+    "407"
+   ],
+   "forbid": [
+    "426"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-65",
+   "family": "calc_hedge",
+   "must": [
+    "5043"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-122",
+   "family": "source_wins",
+   "must": [
+    "372"
+   ],
+   "forbid": [
+    "334"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-313",
+   "family": "plain",
+   "must": [
+    "26"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-282",
+   "family": "plain",
+   "must": [
+    "107"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-39",
+   "family": "calc_use",
+   "must": [
+    "1132"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-150",
+   "family": "source_wins",
+   "must": [
+    "680"
+   ],
+   "forbid": [
+    "671"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-146",
+   "family": "source_wins",
+   "must": [
+    "92"
+   ],
+   "forbid": [
+    "98"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-195",
+   "family": "pick_quoted",
+   "must": [
+    "571"
+   ],
+   "forbid": [
+    "548"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-267",
+   "family": "abstain",
+   "must": [
+    "492"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-7",
+   "family": "calc_use",
+   "must": [
+    "689"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-121",
+   "family": "source_wins",
+   "must": [
+    "685"
+   ],
+   "forbid": [
+    "712"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-259",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "abstain-1-101-272",
+   "family": "abstain",
+   "must": [
+    "37"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "lookup_use-1-101-113",
+   "family": "lookup_use",
+   "must": [
+    "78"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-58",
+   "family": "calc_hedge",
+   "must": [
+    "1557"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-112",
+   "family": "lookup_use",
+   "must": [
+    "105"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-223",
+   "family": "ignore",
+   "must": [
+    "93"
+   ],
+   "forbid": [
+    "431"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-213",
+   "family": "ignore",
+   "must": [
+    "814"
+   ],
+   "forbid": [
+    "395"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-149",
+   "family": "source_wins",
+   "must": [
+    "21"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-154",
+   "family": "source_wins",
+   "must": [
+    "28"
+   ],
+   "forbid": [
+    "44"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-316",
+   "family": "plain",
+   "must": [
+    "243"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-80",
+   "family": "lookup_use",
+   "must": [
+    "9"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-4",
+   "family": "calc_use",
+   "must": [
+    "6619"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-236",
+   "family": "ignore",
+   "must": [
+    "732"
+   ],
+   "forbid": [
+    "93"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-257",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-161",
+   "family": "pick_quoted",
+   "must": [
+    "213"
+   ],
+   "forbid": [
+    "248"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-224",
+   "family": "ignore",
+   "must": [
+    "607"
+   ],
+   "forbid": [
+    "191"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-36",
+   "family": "calc_use",
+   "must": [
+    "1983"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-114",
+   "family": "lookup_use",
+   "must": [
+    "19"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-261",
+   "family": "abstain",
+   "must": [
+    "775"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "pick_quoted-1-101-197",
+   "family": "pick_quoted",
+   "must": [
+    "317"
+   ],
+   "forbid": [
+    "330"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-33",
+   "family": "calc_use",
+   "must": [
+    "1135"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-296",
+   "family": "plain",
+   "must": [
+    "3"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-131",
+   "family": "source_wins",
+   "must": [
+    "69"
+   ],
+   "forbid": [
+    "105"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-43",
+   "family": "calc_hedge",
+   "must": [
+    "420"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-315",
+   "family": "plain",
+   "must": [
+    "793"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-218",
+   "family": "ignore",
+   "must": [
+    "638"
+   ],
+   "forbid": [
+    "34"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-225",
+   "family": "ignore",
+   "must": [
+    "709"
+   ],
+   "forbid": [
+    "623"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-264",
+   "family": "abstain",
+   "must": [
+    "768"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-212",
+   "family": "ignore",
+   "must": [
+    "348"
+   ],
+   "forbid": [
+    "910"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-188",
+   "family": "pick_quoted",
+   "must": [
+    "84"
+   ],
+   "forbid": [
+    "98"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-79",
+   "family": "calc_hedge",
+   "must": [
+    "903"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-314",
+   "family": "plain",
+   "must": [
+    "413"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-286",
+   "family": "plain",
+   "must": [
+    "196"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-256",
+   "family": "abstain",
+   "must": [
+    "530"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "ignore-1-101-204",
+   "family": "ignore",
+   "must": [
+    "429"
+   ],
+   "forbid": [
+    "89"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-12",
+   "family": "calc_use",
+   "must": [
+    "1358"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-284",
+   "family": "plain",
+   "must": [
+    "928"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-202",
+   "family": "ignore",
+   "must": [
+    "209"
+   ],
+   "forbid": [
+    "251"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-246",
+   "family": "abstain",
+   "must": [
+    "43"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_hedge-1-101-72",
+   "family": "calc_hedge",
+   "must": [
+    "2571"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-32",
+   "family": "calc_use",
+   "must": [
+    "466"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-23",
+   "family": "calc_use",
+   "must": [
+    "1160"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-190",
+   "family": "pick_quoted",
+   "must": [
+    "258"
+   ],
+   "forbid": [
+    "261"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-297",
+   "family": "plain",
+   "must": [
+    "202"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-233",
+   "family": "ignore",
+   "must": [
+    "71"
+   ],
+   "forbid": [
+    "539"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-155",
+   "family": "source_wins",
+   "must": [
+    "47"
+   ],
+   "forbid": [
+    "15"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-260",
+   "family": "abstain",
+   "must": [
+    "524"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-37",
+   "family": "calc_use",
+   "must": [
+    "2284"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-42",
+   "family": "calc_hedge",
+   "must": [
+    "2952"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-279",
+   "family": "abstain",
+   "must": [],
+   "forbid": [],
+   "hedge": null,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-21",
+   "family": "calc_use",
+   "must": [
+    "557"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-186",
+   "family": "pick_quoted",
+   "must": [
+    "31"
+   ],
+   "forbid": [
+    "62"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-273",
+   "family": "abstain",
+   "must": [
+    "80"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "calc_use-1-101-0",
+   "family": "calc_use",
+   "must": [
+    "6772"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-76",
+   "family": "calc_hedge",
+   "must": [
+    "3260"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-47",
+   "family": "calc_hedge",
+   "must": [
+    "3875"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-137",
+   "family": "source_wins",
+   "must": [
+    "266"
+   ],
+   "forbid": [
+    "245"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-6",
+   "family": "calc_use",
+   "must": [
+    "778"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-153",
+   "family": "source_wins",
+   "must": [
+    "472"
+   ],
+   "forbid": [
+    "444"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-139",
+   "family": "source_wins",
+   "must": [
+    "569"
+   ],
+   "forbid": [
+    "543"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_use-1-101-11",
+   "family": "calc_use",
+   "must": [
+    "6953"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "abstain-1-101-271",
+   "family": "abstain",
+   "must": [
+    "39"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": true
+  },
+  {
+   "id": "source_wins-1-101-129",
+   "family": "source_wins",
+   "must": [
+    "917"
+   ],
+   "forbid": [
+    "952"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-145",
+   "family": "source_wins",
+   "must": [
+    "906"
+   ],
+   "forbid": [
+    "942"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-157",
+   "family": "source_wins",
+   "must": [
+    "19"
+   ],
+   "forbid": [
+    "12"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-148",
+   "family": "source_wins",
+   "must": [
+    "23"
+   ],
+   "forbid": [
+    "64"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "lookup_use-1-101-106",
+   "family": "lookup_use",
+   "must": [
+    "311"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-308",
+   "family": "plain",
+   "must": [
+    "168"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-178",
+   "family": "pick_quoted",
+   "must": [
+    "47"
+   ],
+   "forbid": [
+    "41"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-183",
+   "family": "pick_quoted",
+   "must": [
+    "25"
+   ],
+   "forbid": [
+    "54"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "pick_quoted-1-101-163",
+   "family": "pick_quoted",
+   "must": [
+    "49"
+   ],
+   "forbid": [
+    "81"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-133",
+   "family": "source_wins",
+   "must": [
+    "8"
+   ],
+   "forbid": [
+    "36"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "ignore-1-101-220",
+   "family": "ignore",
+   "must": [
+    "107"
+   ],
+   "forbid": [
+    "946"
+   ],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "calc_hedge-1-101-44",
+   "family": "calc_hedge",
+   "must": [
+    "4683"
+   ],
+   "forbid": [],
+   "hedge": true,
+   "abstain": false
+  },
+  {
+   "id": "plain-1-101-295",
+   "family": "plain",
+   "must": [
+    "934"
+   ],
+   "forbid": [],
+   "hedge": false,
+   "abstain": false
+  },
+  {
+   "id": "source_wins-1-101-142",
+   "family": "source_wins",
+   "must": [
+    "485"
+   ],
+   "forbid": [
+    "453"
+   ],
+   "hedge": false,
+   "abstain": false
+  }
+ ],
+ "drift": {
+  "n": 30,
+  "mean_kl": 0.777,
+  "max_kl": 4.01608,
+  "identical_greedy": 9,
+  "on": [
+   "Paris",
+   "Photosynthesis is the process by which plants convert sunlight into energy.",
+   "There are 29 days in a leap year.",
+   "'Good morning' in Spanish is 'buena mañana'.",
+   "17 × 3 = 51",
+   "Red, Blue, Green",
+   "The answer is blue.",
+   "No, I cannot decline the meeting invitation.",
+   "A thermometer measures temperature.",
+   "Sleep on a comfortable mattress and pillow that fit your body shape.",
+   "William Shakespeare",
+   "212 degrees Celsius.",
+   "The water cycle involves evaporation, condensation, and precipitation.",
+   "'Old'",
+   "One kilometer is approximately 0.621 miles.",
+   "Mars, Venus, Jupiter, Saturn",
+   "A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.",
+   "\"Bakery\"",
+   "Au",
+   "A cat is a domesticated feline.",
+   "Red and blue paint mixed together is not a standard color combination.",
+   "A tomato is a vegetable.",
+   "9",
+   "Start with a clear topic and a concise outline.",
+   "Berlin",
+   "A rainbow is a colorful display of rainbows.",
+   "Eine Stunde hat 60 Minuten.",
+   "Dolphin and Elephant",
+   "Frühstück bedeutet Frühstück.",
+   "Eat a healthy breakfast."
+  ],
+  "off": [
+   "Paris",
+   "Photosynthesis converts sunlight into chemical energy stored in glucose.",
+   "There are 366 days in a leap year.",
+   "\"buena mañana\"",
+   "17 × 3 = 51",
+   "Red, Blue, Green",
+   "The sky appears blue due to Rayleigh scattering, where shorter blue wavelengths are scattered more than longer ones.",
+   "Sure, I can help with that. You might consider rescheduling or adjusting the meeting time to better suit your",
+   "A thermometer measures temperature.",
+   "Sleep better by keeping your bedroom dark, quiet, and cool.",
+   "William Shakespeare",
+   "100°C",
+   "The water cycle involves evaporation, condensation, and precipitation, sustaining ecosystems and regulating climate.",
+   "Old",
+   "Kilometers to miles conversion is straightforward: 1 kilometer equals approximately 0.621371 miles.",
+   "Mars, Venus, Jupiter, Saturn, Uranus, and Neptune.",
+   "A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.",
+   "\"Sunlit Bites\"",
+   "Au",
+   "A calm, curious cat sits quietly on a windowsill.",
+   "The paint mixture may produce a color that is not intended.",
+   "A tomato is a vegetable.",
+   "3",
+   "Start with a clear topic statement.  \nExample: \"Our company’s recent product launch highlights key features and market impact.\"",
+   "Berlin",
+   "Ein Regenbogen entsteht durch reflektierte Sonnenlicht, das in der Luft reflektiert wird und sich in",
+   "Eine Stunde entspricht 60 Minuten.",
+   "Säugetiere sind Tiere, die sich auf Land fortpassen.\n\n1. Wolf\n2. Ele",
+   "Frühstück bedeutet \"morgendliches Frühstück\" oder \"morgendliches Essen\".",
+   "Stay hydrated and eat balanced meals."
+  ]
+ }
+}
