@@ -1,0 +1,55 @@
+{
+  "status": "C1_TASK_ORIGIN_AND_CLEAR_DISAMBIGUATION_REVIEW_ONLY",
+  "owner": "GPT automation11 C1 independent review",
+  "parent_pr": 773,
+  "parent_sha": "86c440a5607b0610adfdd6ca8605186db4d6a56a",
+  "preregs": [
+    "21176608486efc584a899e7f7c15e9d84e4cf5b8",
+    "2fd634043863dfa9792051adfd80ebc0b642a3e9"
+  ],
+  "source_blob_before": "45169c0a9d4153c1acd6e39dc391bdf65876867f",
+  "source_blob_after": "05500ee25d7cd83b3412f027e1503ca907e12d43",
+  "test_blob": "08f45aad0e668b5a1083eed705d4667764808f2f",
+  "red_origin": {
+    "run": 40583307593,
+    "failures": 4,
+    "sha256": "84865c74690bc3e336e57166b9eebea4bc271c3b38831635ec880ab09c1b8866"
+  },
+  "green_origin": {
+    "run": 40583461652,
+    "tests": 27,
+    "sha256": "2fd99854584a0fea37eef74219130c48eeef68b95e4875bc4e8745142f4dff92"
+  },
+  "red_sentinel": {
+    "run": 40584693597,
+    "errors": 1,
+    "sha256": "b29f67bb6b87c32ebd848a5dd1b91c5255d1642cd61ca7e5c4b947ccb578b859"
+  },
+  "green_sentinel": {
+    "run": 40585001107,
+    "tests": 28,
+    "sha256": "1e721c7371b5907912a29a0c77ee16ad9d0dd736fe15f2b03b4c92eb9ad71793"
+  },
+  "full": {
+    "run": 40585040617,
+    "tests": 1954,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "49bb7c4e390f26cadb0687bfffa15e423e6b433297609f5fc0c21e901203ac7c"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-C1-Task-Origin/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_model_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_executive_task_origin_binding_review tests.test_executive_source_action_integrity_review tests.test_executive_context",
+  "next": "Independent C1 review; confirm Termux SQLite JSON1 and source task migration; no production integration without review."
+}
