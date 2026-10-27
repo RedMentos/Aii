@@ -118,6 +118,55 @@ class BodyJepaStepCheckpointTests(unittest.TestCase):
             save(self.root, SHA, 1, *c, h)
         self.assertEqual(json.loads((self.root/'CURRENT.json').read_text()), first)
 
+    def test_rehashed_checkpoint_without_optimizer_moments_is_rejected(self):
+        # A hash-consistent but incomplete optimizer cannot be an exact resume.
+        c = setup()
+        h = [run_step(c, 1)]
+        pointer = save(self.root, SHA, 1, *c, h)
+        state = torch.load(self.root / pointer['file'], weights_only=True)
+        self.assertTrue(state['optimizer']['state'])
+        state['optimizer']['state'].clear()
+        candidate = self.root / 'incomplete.tmp'
+        torch.save(state, candidate)
+        sha = hashlib.sha256(candidate.read_bytes()).hexdigest()
+        name = 'step-000001-' + sha[:16] + '.pt'
+        candidate.rename(self.root / name)
+        pointer.update(file=name, size=(self.root / name).stat().st_size, sha256=sha)
+        (self.root / 'CURRENT.json').write_text(json.dumps(pointer))
+        target = setup()
+        before = [p.detach().clone() for p in target[0].parameters()]
+        with self.assertRaisesRegex(ValueError, 'optimizer state'):
+            restore(self.root, SHA, *target)
+        self.assertTrue(all(torch.equal(a, b) for a, b in zip(before, target[0].parameters())))
+
+    def test_missing_optimizer_moments_cannot_be_saved(self):
+        c = setup()
+        h = [run_step(c, 1)]
+        c[2].state.clear()
+        with self.assertRaisesRegex(ValueError, 'Missing optimizer state'):
+            save(self.root, SHA, 1, *c, h)
+        self.assertFalse((self.root / 'CURRENT.json').exists())
+
+    def test_rehashed_incomplete_optimizer_slot_is_rejected(self):
+        c = setup()
+        h = [run_step(c, 1)]
+        pointer = save(self.root, SHA, 1, *c, h)
+        state = torch.load(self.root / pointer['file'], weights_only=True)
+        first = next(iter(state['optimizer']['state'].values()))
+        first.pop('exp_avg')
+        candidate = self.root / 'incomplete-slot.tmp'
+        torch.save(state, candidate)
+        sha = hashlib.sha256(candidate.read_bytes()).hexdigest()
+        name = 'step-000001-' + sha[:16] + '.pt'
+        candidate.rename(self.root / name)
+        pointer.update(file=name, size=(self.root / name).stat().st_size, sha256=sha)
+        (self.root / 'CURRENT.json').write_text(json.dumps(pointer))
+        target = setup()
+        before = [p.detach().clone() for p in target[0].parameters()]
+        with self.assertRaisesRegex(ValueError, 'Incomplete optimizer state slot'):
+            restore(self.root, SHA, *target)
+        self.assertTrue(all(torch.equal(a, b) for a, b in zip(before, target[0].parameters())))
+
     def test_optimizer_order_mismatch_rejected_before_mutation(self):
         c = setup()
         h = [run_step(c, 1)]
