@@ -1,0 +1,9 @@
+# WP-BP2b source-manifest binding independent review prereg · 2026-10-27
+
+Owner GPT-6 independent review branch `assistant/v13-bp2b-manifest-binding-20261027`; parent exact `b6ad3d025a8f93cbafd9bca97d2e9e5a657b83c5` (PR #709, review-only), original native runner base `4d6e468f3a8ca30668063e85d6d8c06eb8f24f7a`. Own only BP2b runner/tests, this proof folder and new CI workflow; do not mutate foreign branches or shared root state.
+
+Problem: `run_arm()` computes a preregistered plan with frozen train/source/heldout hashes, then calls `prepare()` but checks only the model-facing SHA. If the prepared manifest's `train_sha256`, `selected_indices`, or scoring-only SHA differs while the model-facing prompts remain identical, training can proceed and the attempt's `plan` falsely attests the original source. This is an evidence-binding defect, not a model gain.
+
+Before fix, add counterexamples that inject changed train SHA, selected indices, and scoring-only SHA from `prepare()` while leaving model-facing SHA unchanged. Expected RED: all three are accepted. Minimal fix: include scoring-only SHA in the frozen plan and reject any mismatched source/heldout/train/model-facing/scoring/selected-index fields **before creating the attempt directory or training**. Keep existing 4 arms, 3 seeds, model hash, learning gates, and fake/native evidence distinction.
+
+Verify with branch-scoped GitHub Actions: `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_runner tests.test_bp2b_transfer_score`, dry-run, compileall and public privacy scan. Preserve original RED/GREEN ZIPs and hashes, privately back up and byte-readback. No native model download, no heavy jobs, no age promotion. After this package, prioritize actual FP32 native readiness and Q4 evaluation over more source-only helper expansion.
