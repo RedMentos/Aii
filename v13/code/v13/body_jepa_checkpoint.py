@@ -73,6 +73,28 @@ def _params(model):
     return result
 
 
+def _optimizer_layout(model, predictor, optimizer):
+    names = {id(p): 'adapter:' + n for n, p in _params(model).items()}
+    for n, p in predictor.named_parameters():
+        if id(p) in names:
+            raise ValueError('Shared adapter/predictor optimizer parameter')
+        names[id(p)] = 'predictor:' + n
+    groups = []
+    seen = set()
+    for group in optimizer.param_groups:
+        row = []
+        for p in group['params']:
+            name = names.get(id(p))
+            if name is None or name in seen:
+                raise ValueError('Unbound or duplicate optimizer parameter')
+            seen.add(name)
+            row.append(name)
+        groups.append(row)
+    if seen != set(names.values()):
+        raise ValueError('Optimizer omits a trainable parameter')
+    return groups
+
+
 def _validate_source(source_sha):
     if type(source_sha) is not str or not SHA.fullmatch(source_sha):
         raise ValueError('A full pinned source SHA256 is required')
@@ -105,6 +127,7 @@ def save(root, source_sha, step, model, predictor, optimizer, ema, generator, hi
                'adapter': {n: p.detach().cpu().clone() for n, p in params.items()},
                'predictor': {n: p.detach().cpu().clone() for n, p in predictor.state_dict().items()},
                'optimizer': optimizer.state_dict(),
+               'optimizer_layout': _optimizer_layout(model, predictor, optimizer),
                'ema': [v.detach().cpu().clone() for v in ema.shadow],
                'ema_updates': ema.updates, 'generator_rng': generator.get_state().clone(),
                'torch_rng': torch.get_rng_state().clone(), 'history': history}
@@ -173,7 +196,7 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
         raise ValueError('Missing or modified checkpoint blob')
     state = torch.load(path, map_location='cpu', weights_only=True)
     if (type(state) is not dict or set(state) != {'revision', 'source_sha256', 'step', 'adapter', 'predictor',
-                                                 'optimizer', 'ema', 'ema_updates', 'generator_rng', 'torch_rng', 'history'}
+                                                 'optimizer', 'optimizer_layout', 'ema', 'ema_updates', 'generator_rng', 'torch_rng', 'history'}
             or state['revision'] != REVISION or state['source_sha256'] != source_sha
             or state['step'] != pointer['step'] or type(state['step']) is not int
             or type(state['ema_updates']) is not int or state['ema_updates'] != state['step']
@@ -206,6 +229,8 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
             or not isinstance(state['torch_rng'], torch.Tensor) or state['torch_rng'].dtype != torch.uint8
             or state['torch_rng'].shape != torch.get_rng_state().shape):
         raise ValueError('Invalid RNG state')
+    if state['optimizer_layout'] != _optimizer_layout(model, predictor, optimizer):
+        raise ValueError('Optimizer parameter names/order differ from checkpoint')
     incoming = state['optimizer']
     current = optimizer.state_dict()
     if (type(incoming) is not dict or set(incoming) != {'state', 'param_groups'}
@@ -217,6 +242,23 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
                 or len(new['params']) != len(old['params'])
                 or any(new[k] != old[k] for k in old if k != 'params')):
             raise ValueError('Optimizer source/config mismatch')
+    param_by_name = {'adapter:' + n: p for n, p in params.items()}
+    param_by_name.update({'predictor:' + n: p for n, p in predictor.named_parameters()})
+    known_ids = set()
+    for group, names in zip(incoming['param_groups'], state['optimizer_layout']):
+        for pid, name in zip(group['params'], names):
+            if type(pid) is not int or pid in known_ids:
+                raise ValueError('Duplicate or invalid optimizer state id')
+            known_ids.add(pid)
+            slot = incoming['state'].get(pid, {})
+            if type(slot) is not dict:
+                raise ValueError('Invalid optimizer state slot')
+            for moment in ('exp_avg', 'exp_avg_sq', 'max_exp_avg_sq'):
+                if moment in slot and (not isinstance(slot[moment], torch.Tensor)
+                                       or slot[moment].shape != param_by_name[name].shape):
+                    raise ValueError('Optimizer moment shape mismatch')
+    if set(incoming['state']) - known_ids:
+        raise ValueError('Orphan optimizer state id')
     old_params = {n: p.detach().clone() for n, p in params.items()}
     old_pred = copy.deepcopy(predictor.state_dict())
     old_opt = copy.deepcopy(current)
