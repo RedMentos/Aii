@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts import bp2b_native_runner as nr
 
@@ -176,6 +177,24 @@ class NativeRunnerSoftwareTests(unittest.TestCase):
             self.run_fake(trainer_factory=LinkTrainer, attempt='symlink001')
         receipt = json.loads((self.root/'seed-41'/'bp2b'/'attempt-symlink001'/'FAILED.json').read_text())
         self.assertEqual(receipt['phase'], 'train')
+
+    def test_prepared_source_manifest_must_match_all_frozen_plan_fields(self):
+        original_prepare = nr.prepare
+        cases = (
+            ('train_sha256', '0' * 64, 'trainsha'),
+            ('scoring_only_sha256', '0' * 64, 'scorehash'),
+            ('selected_indices', list(reversed(nr.plan(41, 'bp2b')['selected_indices'])), 'indices'),
+        )
+        for key, changed, attempt in cases:
+            with self.subTest(key=key):
+                def altered_prepare(root, seed):
+                    manifest = dict(original_prepare(root, seed))
+                    manifest[key] = changed
+                    return manifest
+                with patch.object(nr, 'prepare', side_effect=altered_prepare):
+                    with self.assertRaises(ValueError):
+                        self.run_fake(attempt=attempt)
+                self.assertFalse((self.root/'seed-41'/'bp2b'/('attempt-' + attempt)).exists())
 
     def test_invalid_prediction_schema_preserves_failed_receipt(self):
         def leak_keys(tr, facing):
