@@ -131,6 +131,37 @@ class KnobAndLearningTests(Base):
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');e=self.ev('q2');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'q2');self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':0,'prompt_n':10}})
         self.assertEqual(len(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))),1)
 
+    def test_malformed_native_cache_metrics_never_gain_learning_cost_credit(self):
+        self.c.set_mode('ACTIVE','EXPLICIT_HUMAN')
+        e=self.ev('bad-cost');self.c.plan(e,'C3_LANGUAGE','SYS',[],[],'bad-cost')
+        invalid=(
+            {'timings':{'cache_n':True,'prompt_n':10}},
+            {'timings':{'cache_n':-2,'prompt_n':10}},
+            {'timings':{'cache_n':11,'prompt_n':-2}},
+            {'timings':{'cache_n':1.5,'prompt_n':10}},
+            {'timings':{'cache_n':float('nan'),'prompt_n':10}},
+            {'timings':{'cache_n':2**31,'prompt_n':10}},
+            {'timings':{'cache_n':0,'prompt_n':0}},
+            {'timings':{'cache_n':5}},
+            {'timings':['not a dictionary']},
+            'bad-envelope',
+        )
+        for bad in invalid:
+            with self.subTest(bad=repr(bad)):
+                out=self.c.observe(e,'C3_LANGUAGE',bad)
+                self.assertIsNone(out['reuse_ratio'])
+                self.assertTrue(out['cache_rejected'])
+        self.assertIsNone(self.c.report()['measured_cache_reuse'])
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,)),[])
+        absent=self.c.observe(e,'C3_LANGUAGE',{})
+        self.assertIsNone(absent['reuse_ratio'])
+        self.assertFalse(absent['cache_rejected'])
+        valid=self.c.observe(e,'C3_LANGUAGE',{'timings':{'cache_n':3,'prompt_n':7}})
+        self.assertFalse(valid['cache_rejected'])
+        self.assertAlmostEqual(valid['reuse_ratio'],.3)
+        self.assertAlmostEqual(self.c.report()['measured_cache_reuse'],.3)
+        self.assertEqual(len(self.r.store.rows("SELECT * FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))),1)
+
 class WarmTests(Base):
     def remember(self,key,value):
         e=self.r.store.event(self.r.session,key)
