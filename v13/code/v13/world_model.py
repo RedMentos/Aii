@@ -38,7 +38,11 @@ def _finite_nonnegative(v):
     return type(v) in (int,float) and math.isfinite(v) and v>=0
 
 def _finite_vector(v,dim):
-    if not isinstance(v,(list,tuple,np.ndarray)) or len(v)!=dim:return False
+    if not isinstance(v,(list,tuple,np.ndarray)):return False
+    try:
+        if len(v)!=dim:return False
+    except (TypeError,ValueError):
+        return False  # 0-D NumPy arrays are unsized; invalid evidence, not an exception
     return all(not isinstance(x,(bool,np.bool_)) and isinstance(x,(int,float,np.number))
                and math.isfinite(float(x)) for x in v)
 

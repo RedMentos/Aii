@@ -1,0 +1,9 @@
+# T8 scalar observed-state fail-closed review prereg (2026-10-27)
+
+Exact parent `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`, review-only branch `assistant/v13-t8-scalar-state-review-20261027`. This prereg is committed before RED test and GREEN source change. Owner: `v13/code/v13/world_model.py` **candidate only**, `v13/code/tests/test_world_model_scalar_state_review.py`, isolated CI and this proof folder. Current SourceHandoff runtime is frozen; this is not production integration.
+
+Observed static defect: `world_model._finite_vector` checks `len(v)` for any `np.ndarray`, but a 0-D NumPy scalar array has no length. The documented fail-closed numerical guard can throw `TypeError` in `coverage` and `counterfactual` rather than return `invalid=True` or `SIMULATION_UNCERTAIN`. This is a narrow input-integrity review, not a new model or utility gain.
+
+RED protocol: add tests for 0-D NumPy float, int and bool arrays at `_finite_vector`, `coverage`, and `counterfactual`; original source unchanged. Expect exceptions in original code; retain raw exit and tests. GREEN protocol: minimal guard around shape/length in `_finite_vector` so invalid 0-D inputs return False; no changes to valid 4-D vectors, model parameters, training split, confidence constants, registered seeds or cohorts. Verify existing counterfactual positive path and at least one malformed list case. Focused CI with NumPy 2.2.6, compile, privacy scan, diff check, original raw evidence. Then full software suite on the fixed source if feasible.
+
+No native, no Redmi, no model training or Age/utility promotion. LP1 NO_ATTRIBUTABLE_GAIN, LP2 ALIGNS_NO_GAIN, BJ1 NO_SIGNAL, STEP2 UTILITY_FAIL, B3 L1 FAIL, jepa_weight0, Age authority0, V13 incomplete. Independent review and frozen-runtime owner approval required before integrating this candidate.
