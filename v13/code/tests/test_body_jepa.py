@@ -164,6 +164,7 @@ class WeightPreflightTests(unittest.TestCase):
     def test_invalid_weights_rejected_before_any_model_load(self):
         from unittest import mock
         trainer=object.__new__(bj.BodyJepaTrainer)
+        trainer.cfg=dict(bj.DEFAULTS)  # isolate preflight from unrelated uninitialised trainer state
         bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'),1e100)
         for weight in bad:
             with self.subTest(weight=repr(weight)), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
