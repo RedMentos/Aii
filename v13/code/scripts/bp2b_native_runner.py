@@ -42,6 +42,7 @@ def plan(seed, arm):
             'source_sha256': manifest['source_sha256'],
             'heldout_sha256': manifest['heldout_sha256'],
             'model_facing_sha256': manifest['model_facing_sha256'],
+            'scoring_only_sha256': manifest['scoring_only_sha256'],
             'train_sha256': manifest['train_sha256'],
             'selected_indices': selected, 'heldout_count': len(facing),
             'config': cfg, 'anchor_count_explicit': len(anchors),
@@ -137,8 +138,15 @@ def run_arm(master_dir, out, seed, arm, attempt, *,
                 or receipt.get('master_expected_sha256') != MASTER_SHA):
             raise ValueError('Full pinned master preflight required before native training')
         manifest = prepare(root, seed)
-        if manifest['model_facing_sha256'] != work['model_facing_sha256']:
-            raise ValueError('Frozen model-facing source mismatch')
+        bound_fields = ('seed', 'source_sha256', 'heldout_sha256',
+                        'model_facing_sha256', 'scoring_only_sha256',
+                        'train_sha256', 'selected_indices')
+        if (type(manifest) is not dict
+                or any(manifest.get(field) != work[field] for field in bound_fields)
+                or manifest.get('heldout_rows') != work['heldout_count']
+                or manifest.get('age_authority') != 0
+                or manifest.get('jepa_weight') != 0):
+            raise ValueError('Prepared cohort differs from frozen arm plan')
         attempt_dir = root / ('seed-%d' % seed) / arm / ('attempt-' + attempt)
         attempt_dir.mkdir(parents=True, exist_ok=False)
         real_path = (trainer_factory is BodyJepaTrainer and predictor is native_predict
