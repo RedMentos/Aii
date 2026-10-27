@@ -1,5 +1,53 @@
 {
 
+  "automation11_world_budget_fresh_holdout_20261027": {
+    "status": "NEW_LINUX_FILE_WORLD_200STEP_ACTION_BEATS_IDENTITY_AND_ROTATED_3_OF_3_EXPLORATORY_REVIEW_ONLY",
+    "parent_pr": 662,
+    "review_pr": 663,
+    "base_sha": "e310f0fd0ed17175daa9c58207265fda0fe44512",
+    "review_branch": "codex/automation11-world-budget-fresh-holdout-20261027",
+    "prereg_commit": "04f8b862983166b201dd8a162ecb6ba170124d6a",
+    "source_commit": "0ecd9a995365b0e27816f1e1ea1c823768377e41",
+    "actions": 40456753777,
+    "tests": "8/8 PASS; VERIFY/COMPILE/PRIVACY exit0",
+    "artifact_id": 12713510151,
+    "artifact_sha256": "0cd1e9426e7810f17f72bde399268791579e61784e64cb89d3adb4f5b77f1f33",
+    "original_zip_sha256": "f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8",
+    "budget_zip_sha256": "8413b6abcdd2651c0e3346f348f0372b13dc4a407199e29a7e24cb9c1f23979a",
+    "selected_checkpoint_sha256": "7cb6158b3f39de2d9fa589906c5ed24ce92869709ce18fc09a70f3804e8b20c0",
+    "selected_after_prior_holdout_inspection": true,
+    "training_seed": 212,
+    "holdout_seeds": [
+      401,
+      402,
+      403
+    ],
+    "rows_per_seed": 160,
+    "holdout_rows": 480,
+    "weighted_action_mse": 0.10142814931677578,
+    "weighted_identity_mse": 0.26727600528270984,
+    "weighted_rotated_mse": 0.27790883866450866,
+    "weighted_action_over_identity": 0.3794884213773349,
+    "weighted_action_over_rotated": 0.3649691380964668,
+    "action_beats_both_controls_seeds": 3,
+    "uncertain_rows": 479,
+    "independent_reference_source_sha256": "b6098bc379f3934a6e4a246360cb11d740928f32d4ca84dd7cb21ee2bbd069b9",
+    "independent_reference_result_sha256": "3e31443f8d3367168be7a3da147c75412a58f44bd20e9910a05cf88d767a67b3",
+    "independent_reference_max_mse_difference": "<1e-12",
+    "private_backup": "/V13-Checkpoints/2026-10-27/World-Budget-Fresh-Holdout/",
+    "private_backup_verified_byte_exact": true,
+    "evidence": "new independent real Linux synthetic-content file-world holdouts after 200-step post-selection; not native/Redmi/semantic utility",
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Pre-register real file-world consequence/task-level intervention metric with deterministic baselines on new seeds; independent review, AG5/World integration separately"
+  },
+
+
   "automation11_world_budget_ablation_20261027": {
     "status": "FIXED_50_200_800_STEP_WORLD_ACTION_PREDICTION_BEATS_IDENTITY_AND_ROTATED_ON_FROZEN_HOLDOUTS_REVIEW_ONLY",
     "parent_pr": 661,
