@@ -12,6 +12,11 @@
 
 All source/test/workflow branches have GitHub review PRs and original raw Actions ZIPs privately backed up under `/V13-Checkpoints/2026-10-27/` in distinct scoped folders; ZIP CRC, exit files, SHA256 and re-materialized bytes were verified. No Drive upload or public private-data export. No force push or main merge.
 
+## New concurrent child owners discovered before final handoff
+
+- Codex child `codex/automation11-control-budget-row-integrity-20261027` exact observed head `81ae3eefed324206f2a526fa98287b0c861a883b` builds **on PR #761's finite-mark candidate**, not on main. Its separate prereg covers invalid persisted JSON metadata shapes and created timestamps in `control_budget.latency`; it retains our finite mark guard. Dedicated CI is active. **Do not edit or overwrite that branch**; let its owner close RED/GREEN/full proof and review integration.
+- Codex child `codex/automation11-age0d-exact-representability-20261027` exact observed head `5f0d4b250b393592bbeb75f24419f6de637226e3` builds on our parallel PR #759 locale branch. It tests exact-result representability; dedicated CI is active. It still requires reconciliation with canonical Run134/517/521/532 before any live merge. **Do not overwrite that branch**.
+
 ## Exact next actions
 
 1. Actions 40566360651 completed SUCCESS and raw ZIP privately byte-verified. Independently review PR #758 exact source `7b1f00bd5e508150c9ca29dd61fccf64912b2f02`; documentation-only final head `0a66e68796cf294aaec360efa10199a5951e156f`.
