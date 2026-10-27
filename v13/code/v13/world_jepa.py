@@ -36,15 +36,15 @@ class Adam:
             self.p[k] -= self.lr*mh/(np.sqrt(vh)+1e-8)
 
 
-def _init(rng, d, a):
-    g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
-    enc = {'W1': g(H, d), 'b1': np.zeros(H), 'W2': g(Z, H), 'b2': np.zeros(Z)}
-    return enc, _init_pred(rng, a)
+def _init(rng, d, a, h=None, z=None, hp=None):
+    h, z = h or H, z or Z; g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
+    enc = {'W1': g(h, d), 'b1': np.zeros(h), 'W2': g(z, h), 'b2': np.zeros(z)}
+    return enc, _init_pred(rng, a, z, hp)
 
 
-def _init_pred(rng, a):
-    g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
-    return {'P1': g(HP, Z+a), 'c1': np.zeros(HP), 'P2': g(Z, HP)*.1, 'c2': np.zeros(Z)}
+def _init_pred(rng, a, z=None, hp=None):
+    z, hp = z or Z, hp or HP; g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
+    return {'P1': g(hp, z+a), 'c1': np.zeros(hp), 'P2': g(z, hp)*.1, 'c2': np.zeros(z)}
 
 
 def encode(enc, x):
@@ -55,15 +55,15 @@ def predict(pred, z, a):
     u = np.concatenate([z, a], 1); hp = np.tanh(u@pred['P1'].T+pred['c1']); return z+hp@pred['P2'].T+pred['c2'], (u, hp)
 
 
-def _init_inv(rng, a):
-    g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
-    return {'Q1': g(HP, 2*Z), 'd1': np.zeros(HP), 'Q2': g(a, HP), 'd2': np.zeros(a)}
+def _init_inv(rng, a, z=None, hp=None):
+    z, hp = z or Z, hp or HP; g = lambda o, i: rng.normal(0, 1/np.sqrt(i), (o, i))
+    return {'Q1': g(hp, 2*z), 'd1': np.zeros(hp), 'Q2': g(a, hp), 'd2': np.zeros(a)}
 
 
 def loss_grads(enc, pred, x, a, zt, var_w=VAR_W, cov_w=COV_W, train_enc=True, inv=None, x2=None, inv_w=0.):
     """Loss and gradients for one batch; zt = target latents of the next observations (stop-gradient).
     With inv (and x2): inverse-dynamics head, sigmoid cross-entropy of the action vector from [z, online z(x2)] (§7.2.1)."""
-    n = len(x); z, h = encode(enc, x); zp, (u, hp) = predict(pred, z, a)
+    n = len(x); Z = pred['P2'].shape[0]; z, h = encode(enc, x); zp, (u, hp) = predict(pred, z, a)
     diff = zp-zt; lp = float((diff**2).mean())
     dzp = 2*diff/diff.size
     gp = {'P2': dzp.T@hp, 'c2': dzp.sum(0)}
