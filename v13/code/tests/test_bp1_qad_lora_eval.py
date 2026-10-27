@@ -28,6 +28,25 @@ def binding():
     }
 
 
+def train_proof():
+    return {
+        "schema": E.T.SCHEMA, "mode": "train",
+        "status": "TRAINED_SHADOW_ADAPTER_NOT_DEPLOYED",
+        "train_sha256": E.T.TRAIN_SHA,
+        "master": {"master_sha256": E.N.MASTER_SHA},
+        "config": dict(E.T.CFG),
+        "train_rows": 25,
+        "heldout_files_opened": False,
+        "native_training_executed": True,
+        "production_weight_authority": 0,
+        "redmi_measured": False,
+        "model_utility_proven": False,
+        "gates": dict(E.T.GATES),
+        "adapter": {"gguf_sha256": "a" * 64, "lora_b_nonzero": 3},
+        "metrics": {"steps": 2, "trainable_parameter_count": 100, "jepa_weight": 0},
+    }
+
+
 def index():
     rows = {}
     for i in range(11):
@@ -114,6 +133,60 @@ class QADLoraEvalTests(unittest.TestCase):
                     with E.serve(binary, base, adapter, 8832, Path(d) / "bad.log"):
                         pass
 
+    def test_train_proof_bytes_and_optimizer_are_required(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "proof.json"
+            p.write_text(json.dumps(train_proof(), sort_keys=True))
+            b = binding()
+            b["train_proof_sha256"] = E.S.sha(p.read_bytes())
+            self.assertTrue(E.verify_train_proof(b, p))
+            bad = train_proof()
+            bad["native_training_executed"] = False
+            p.write_text(json.dumps(bad, sort_keys=True))
+            with self.assertRaises(ValueError):
+                E.verify_train_proof(b, p)
+            bad = train_proof()
+            bad["adapter"]["lora_b_nonzero"] = 0
+            p.write_text(json.dumps(bad, sort_keys=True))
+            with self.assertRaises(ValueError):
+                E.verify_train_proof(b, p)
+
+    def test_resume_only_missing_records_and_preserves_exact_binding(self):
+        rows = index()
+        @contextmanager
+        def fake_serve(*args):
+            yield
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            bind = root / "binding.json"
+            bind.write_text(json.dumps(binding()))
+            proof = root / "proof.json"
+            proof.write_text(json.dumps(train_proof()))
+            out = root / "out"
+            seen = []
+            def interrupt(port, prompt, seed, scale):
+                seen.append((prompt, scale))
+                if len(seen) == 6:
+                    raise RuntimeError("injected interruption")
+                return json.dumps({"answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""})
+            with patch.object(E.S, "load_dataset", return_value=(rows, S.HELDOUT_SHA)), \\
+                 patch.object(E, "validate_native_files", return_value={"verified": True}), \\
+                 patch.object(E, "validate_train_proof", return_value=True):
+                with self.assertRaisesRegex(RuntimeError, "injected interruption"):
+                    E.collect("unused", bind, "server", "base", "adapter", out,
+                        train_proof_path=proof, owner_confirmed=True, ask=interrupt,
+                        server_context=fake_serve)
+                self.assertEqual(len(S.read_jsonl(out / "predictions.jsonl")[0]), 5)
+                completed = E.collect("unused", bind, "server", "base", "adapter", out,
+                    train_proof_path=proof, resume=True, owner_confirmed=True,
+                    ask=lambda *args: json.dumps({"answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""}),
+                    server_context=fake_serve)
+                self.assertEqual(completed["rows"], 44)
+                with self.assertRaises(ValueError):
+                    E.collect("unused", bind, "server", "base", "adapter", out,
+                        train_proof_path=proof, resume=True, owner_confirmed=True,
+                        ask=lambda *args: "x", server_context=fake_serve)
+
     def test_owner_confirmation_is_required(self):
         with self.assertRaises(PermissionError):
             E.collect("none", "none", "none", "none", "none", "none")
@@ -130,7 +203,7 @@ class QADLoraEvalTests(unittest.TestCase):
             with patch.object(E.S, "load_dataset", return_value=(rows, S.HELDOUT_SHA)), \
                  patch.object(E, "validate_native_files", return_value={"verified": True}):
                 result = E.collect("unused", bind, "server", "base", "adapter", root / "out",
-                    owner_confirmed=True, ask=lambda port, prompt, seed, scale: json.dumps({
+                    train_proof_path="mock-proof", owner_confirmed=True, ask=lambda port, prompt, seed, scale: json.dumps({
                         "answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""}),
                     server_context=fake_serve)
             self.assertEqual(result["rows"], 44)
