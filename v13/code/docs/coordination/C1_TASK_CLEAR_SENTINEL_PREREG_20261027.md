@@ -1,0 +1,7 @@
+# C1 task literal clear-sentinel collision — follow-up prereg 2026-10-27
+
+On review branch `assistant/v13-c1-task-origin-binding-review-20261027`, current source blob `0141c0b787d0ce78d7db5a41f75df626af59b555` and original task-origin RED/GREEN/full evidence preserved. New independent counterexample: `Executive.task(session, 'CLEAR_ACTIVE_TASK')` is a legal nonempty 17-character human task value, but the candidate `_task_valid` treats its exact bytes as a clear operation and drops the valid pinned task. The existing `task(clear=True)` uses the same legacy `HumanDecision.value` sentinel, so source bytes alone cannot distinguish SET vs CLEAR.
+
+**RED:** pin the literal string `CLEAR_ACTIVE_TASK` with `clear=False`, expect it to survive `view` and the next user event; clear afterward, expect it to be absent and unrecoverable. Existing 27 focused tests remain unchanged.
+
+**GREEN:** include explicit `task_operation='SET'|'CLEAR'` in newly issued `HumanDecision` packets; accept latest same-session `SET` even when the task value equals the legacy sentinel; reject `CLEAR`. For historical packets without `task_operation`, preserve backward-compatible behavior: sentinel means clear, all other exact source-bound values are valid SET. No authority changes. Test before source change, preserve raw failure, then focused and full regression. No production merge, native/Redmi or learning/age promotion.
