@@ -10,7 +10,7 @@ The fix accepts only exact Python integers with `0 <= cache_n,prompt_n <= 2**31-
 Added regression cases to `tests/test_context_os.py`: bool, negative, zero-total, float, NaN, oversized, incomplete and non-dict timings, with explicit no-modulator/no-aggregate assertions, followed by a valid positive control.
 
 ## Evidence and gate limits
-- Focused software CI workflow: `.github/workflows/n7-cache-integrity-review.yml`, no models downloaded.
+- Focused software CI workflow: `.github/workflows/n7-cache-integrity-review.yml`, no models downloaded. Exact source SHA `e6e8534e5d2a119b3bc6f7bc5013522631128606`, Actions run `40515482977`: **18/18 tests PASS**, Python compile PASS, privacy CLEAN, diff check PASS.
 - This is software integrity evidence only. It does not establish native KV reuse, Context OS utility, STEP2 success, B3 success, age promotion, Redmi measurements or completed V13.
 - Keep all Canon requirements, provenance and negative gates intact. No private data or training states added.
 
