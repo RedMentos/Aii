@@ -23,6 +23,11 @@ Added RED counterexamples for revoked volatile memory and rewritten earlier hist
 - **GREEN:** Actions `40517582552`, source `a3dee8063794a9ba79781eddd5598b602ff7c305`: **23/23 focused PASS**, compile PASS, privacy CLEAN, diff check PASS. Native/model tests were not run.
 - **Broad suite:** Actions `40518088127` queued at this checkpoint; raw artifact and result must be inspected before claiming broad PASS. Independent RED witness branch exists for reproducibility; its separate result is not needed to reinterpret the original RED.
 
+## Broad-suite observed RED (not promoted)
+
+- Actions `40518088127`, exact code `644bf6bc2618b60d0a76119192d72bb27c4d29ba`: **1,866 tests, 1 ERROR, 1 skip**, `UNIT_EXIT=1`; compile/privacy/diff/install passed. Error: optional historical `/root/native/restore/round8-note-tool-raw` raised `PermissionError` in `test_toolforecast.CheckpointTests.test_competence_check_scores_states_not_calls`. This path is unrelated to N7's append-only change but remains a genuine suite RED. Raw original artifact `12739414623` uploaded by Actions, not rewritten. No broad PASS claimed.
+- The separate BJ1 candidate PR #719/#722 contains a narrow `test_toolforecast` optional-path guard. Combined integration must independently rerun the suite; this parent remains unchanged.
+
 ## Limits / continuation
 
 This is a software/source-view integrity candidate, not a native cache-performance measurement. It does not establish revoked-source invalidation in any other subsystem. `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, registered `jepa_weight=0`, Age authority 0, Redmi unmeasured, full V13 incomplete.
