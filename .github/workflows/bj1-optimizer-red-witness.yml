@@ -1,0 +1,29 @@
+name: V13 BJ1 missing Adam moments RED witness
+on:
+  push:
+    branches: [codex/automation11-bj1-optimizer-red-witness-20261027]
+    paths: ['.github/workflows/bj1-optimizer-red-witness.yml']
+permissions:
+  contents: read
+jobs:
+  expected-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Run unchanged helper against rehashed missing-moment regression (expect nonzero)
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bj1-venv"
+          py="$RUNNER_TEMP/bj1-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_body_jepa_checkpoint
