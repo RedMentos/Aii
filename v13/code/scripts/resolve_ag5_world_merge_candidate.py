@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Disposable, exact-SHA AG5/World merge-conflict resolver for CI review only.
 
-Run ONLY after git merge --no-commit has reported exactly the two preregistered
+Run ONLY after git merge --no-commit has reported exactly the three amended and pinned
 conflicts. Does not create a commit, push, change Age/approval or touch main.
 """
 import hashlib
@@ -11,6 +11,7 @@ import subprocess
 OP = 'v13/code/v13/operator.py'
 HANDY = 'v13/code/scripts/handy_pflicht.py'
 TOOLFORECAST_TEST = 'v13/code/tests/test_toolforecast.py'
+GUIDE = 'v13/code/docs/BEFEHLE.md'
 WORLD_OPERATOR_BLOB = '52886e7a20772bb5732e44dc12f9d6f8e5ab3d18'
 AG5_OPERATOR_BLOB = '4065a5f34768477d55719ef450b8ee1fdd2b7f49'
 WORLD_HANDY_BLOB = '06d5b0b59c68532d2d9a2c665eb96bd7b4993ab6'
@@ -136,10 +137,28 @@ def resolve():
             or ag5_test.count('plan = optional_native_plan(cc)') != 1):
         raise ValueError('AG5/World optional native test behavior missing')
 
+    # The merged operator gains :ersetze and two explicit one-body effort
+    # modes. AG5's operator-command guide is part of the executable user
+    # contract; a command without a documented entry fails its phone test.
+    guide_path = Path(GUIDE)
+    guide = guide_path.read_text(encoding='utf-8')
+    guide_anchor = ':feedback wake none|detail|gist|both [--learn]'
+    old_guide_effort = ':effort [disabled|low|adaptive|high|max]'
+    if (guide.count(guide_anchor) != 1 or guide.count(old_guide_effort) != 1
+            or ':ersetze route ' in guide):
+        raise ValueError('Unexpected AG5 command-guide anchors')
+    guide_entry = (':ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id>\\n'
+                   '    Ersetzt ältere widersprechende Routen-Korrekturen für diese Wörter, ohne Belege zu löschen.\\n'
+                   '    --sofort setzt zusätzlich eine feste Route für passende neue Fragen. Undo stellt ältere Labels wieder her.\\n')
+    guide = guide.replace(guide_anchor, guide_entry + guide_anchor, 1)
+    guide = guide.replace(old_guide_effort,
+                          ':effort [disabled|low|adaptive|high|max|detail|gist]', 1)
+
     Path(OP).write_text(ag5)
     Path(HANDY).write_text(ag5_handy)
     Path(TOOLFORECAST_TEST).write_text(ag5_test)
-    subprocess.check_call(['git', 'add', OP, HANDY, TOOLFORECAST_TEST])
+    guide_path.write_text(guide, encoding='utf-8')
+    subprocess.check_call(['git', 'add', OP, HANDY, TOOLFORECAST_TEST, GUIDE])
     unresolved = git('ls-files', '-u')
     if unresolved:
         raise ValueError('Unresolved paths remain')
@@ -147,6 +166,7 @@ def resolve():
     # Never rewrite evidence to satisfy formatting; enforce all code paths.
     subprocess.check_call(['git', 'diff', '--cached', '--check', '--',
                            'v13/code/v13', 'v13/code/scripts', 'v13/code/tests'])
+    subprocess.check_call(['git', 'diff', '--cached', '--check', '--', GUIDE])
     # Preserve AG5 V2 byte-exact, no World V1 regression.
     actual_handy = git('hash-object', HANDY)
     if actual_handy != AG5_HANDY_BLOB:
@@ -155,6 +175,7 @@ def resolve():
         'operator_blob_sha': git('hash-object', OP),
         'handy_blob_sha': actual_handy,
         'toolforecast_test_blob_sha': git('hash-object', TOOLFORECAST_TEST),
+        'guide_blob_sha': git('hash-object', GUIDE),
         'candidate_tree_sha': git('write-tree'),
         'operator_sha256': hashlib.sha256(Path(OP).read_bytes()).hexdigest(),
         'handy_sha256': hashlib.sha256(Path(HANDY).read_bytes()).hexdigest(),
