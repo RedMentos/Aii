@@ -159,5 +159,28 @@ class MinorSubspaceTests(unittest.TestCase):
         self.check(10, 6)
 
 
+
+class WeightPreflightTests(unittest.TestCase):
+    def test_invalid_weights_rejected_before_any_model_load(self):
+        from unittest import mock
+        trainer=object.__new__(bj.BodyJepaTrainer)
+        bad=(True,'1',-1.,float('nan'),float('inf'),float('-inf'))
+        for weight in bad:
+            with self.subTest(weight=repr(weight)), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
+                with self.assertRaises(ValueError):
+                    trainer.fit([{'prompt':'x','target':'y','weight':weight}],base_generation=0)
+                load.assert_not_called()
+        for weights in ((0.,0.),(1e308,1e308)):
+            with self.subTest(weights=weights), mock.patch.object(bj.BodyJepaTrainer,'_load',side_effect=AssertionError('model load occurred')) as load:
+                with self.assertRaises(ValueError):
+                    trainer.fit([{'prompt':'x','target':'y','weight':v} for v in weights],base_generation=0)
+                load.assert_not_called()
+
+    def test_valid_weights_preserve_baseline_and_jepa_numeric_values(self):
+        items=[{'prompt':'a','target':'b'},
+               {'prompt':'c','target':'d','weight':0.},
+               {'prompt':'e','target':'f','weight':2.5}]
+        self.assertEqual(bj.BodyJepaTrainer._validated_weights(items),[1.,0.,2.5])
+
 if __name__ == '__main__':
     unittest.main()
