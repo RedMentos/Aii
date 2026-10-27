@@ -1,0 +1,64 @@
+name: V13 BP2b question-only locality generator review
+on:
+  push:
+    branches: [codex/automation11-bp2b-locality-generator-20261027]
+    paths:
+      - '.github/workflows/bp2b-locality-review.yml'
+      - 'v13/code/v13/locality_anchors.py'
+      - 'v13/code/v13/body_jepa.py'
+      - 'v13/code/tests/test_bp2b_locality_anchors.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-locality/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-locality-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software prerequisites (no model downloads)
+        run: |
+          set -euo pipefail
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/bp2b-venv"
+          "$RUNNER_TEMP/bp2b-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Closed raw test, syntax, privacy evidence
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp2b"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp2b/HEAD.txt"
+          git hash-object v13/code/v13/locality_anchors.py > "$RUNNER_TEMP/bp2b/ANCHORS_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$RUNNER_TEMP/bp2b/BODY_JEPA_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD" "$RUNNER_TEMP/bp2b-venv/bin/python" -m unittest -v tests.test_bp2b_locality_anchors) > "$RUNNER_TEMP/bp2b/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-venv/bin/python" -m compileall -q v13/code/v13/locality_anchors.py v13/code/v13/body_jepa.py v13/code/tests/test_bp2b_locality_anchors.py > "$RUNNER_TEMP/bp2b/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 89055e5b5542336bd24f521382a3fd5cd1d8c616 --head HEAD > "$RUNNER_TEMP/bp2b/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-locality-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b/
+          if-no-files-found: error
+      - name: Enforce software-only gates
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp2b/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp2b/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP2B_SOFTWARE_ONLY_NO_NATIVE_OR_AGE_PROMOTION"
