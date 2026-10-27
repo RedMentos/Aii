@@ -163,6 +163,9 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
                 except Exception as exc:
                     code = 125
                     stream.write(('RUNNER_EXCEPTION ' + type(exc).__name__ + '\n').encode())
+                # Flush and fsync the raw log before publishing a durable state receipt.
+                stream.flush()
+                os.fsync(stream.fileno())
             record = {'status': 'FAILED', 'exit_code': code, 'command': cmd,
                       'log_sha256': _digest(log), 'completed_unix': int(time.time())}
             if code == 0:
