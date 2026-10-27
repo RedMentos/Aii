@@ -1,0 +1,153 @@
+name: V13 AG5 World broad baseline-RED equivalence audit
+on:
+  push:
+    branches: [codex/ag5-world-fullsuite-baseline-audit-20261027]
+    paths:
+      - '.github/workflows/ag5-world-fullsuite-baseline-audit.yml'
+      - 'v13/code/scripts/resolve_ag5_world_merge_candidate.py'
+      - 'v13/code/scripts/export_ag5_world_candidate.py'
+      - 'v13/code/docs/proofs/continuation-20261027/ag5-world-merge-candidate/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-ag5-world-fullsuite-baseline-audit
+  cancel-in-progress: false
+jobs:
+  disposable-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/ag5world"
+          timeout 240s "$RUNNER_TEMP/ag5world/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Exact-parent disposable merge and safe conflict resolution
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/mergeproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/mergeproof/WORLD_HEAD.txt"
+          git rev-parse c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/mergeproof/AG5_HEAD.txt"
+          git merge-base HEAD c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/mergeproof/MERGE_BASE.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/mergeproof/MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/mergeproof/MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt"
+          git ls-files -u > "$RUNNER_TEMP/mergeproof/CONFLICT_STAGES_RAW.txt"
+          if [ "$(cat "$RUNNER_TEMP/mergeproof/MERGE_EXIT.txt")" != 1 ]; then
+            echo 'EXPECTED_EXACTLY_TWO_CONTENT_CONFLICTS' > "$RUNNER_TEMP/mergeproof/RESOLVE_RAW.log"
+            echo 1 > "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt"
+          else
+            "$RUNNER_TEMP/ag5world/bin/python" v13/code/scripts/resolve_ag5_world_merge_candidate.py > "$RUNNER_TEMP/mergeproof/RESOLVE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt")" = 0 ]; then
+            git write-tree > "$RUNNER_TEMP/mergeproof/CANDIDATE_TREE.txt"
+            git diff --cached --binary > "$RUNNER_TEMP/mergeproof/CANDIDATE_DIFF.patch"
+            git diff --cached --name-status > "$RUNNER_TEMP/mergeproof/CANDIDATE_PATHS.txt"
+            git diff --cached --check > "$RUNNER_TEMP/mergeproof/RAW_EVIDENCE_WHITESPACE_WARNINGS.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/RAW_EVIDENCE_WHITESPACE_EXIT.txt"
+            "$RUNNER_TEMP/ag5world/bin/python" v13/code/scripts/export_ag5_world_candidate.py "$RUNNER_TEMP/mergeproof" > "$RUNNER_TEMP/mergeproof/EXPORT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/EXPORT_EXIT.txt"
+            git ls-files -s > "$RUNNER_TEMP/mergeproof/CANDIDATE_INDEX.txt"
+            git status --short > "$RUNNER_TEMP/mergeproof/STATUS_AFTER_RESOLVE.txt"
+            cp v13/code/v13/operator.py "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py"
+            cp v13/code/scripts/handy_pflicht.py "$RUNNER_TEMP/mergeproof/RESOLVED_HANDY_PFLICHT.py"
+            cp v13/code/tests/test_toolforecast.py "$RUNNER_TEMP/mergeproof/RESOLVED_TOOLFORECAST_TEST.py"
+            sha256sum "$RUNNER_TEMP/mergeproof/RESOLVED_OPERATOR.py" "$RUNNER_TEMP/mergeproof/RESOLVED_HANDY_PFLICHT.py" "$RUNNER_TEMP/mergeproof/RESOLVED_TOOLFORECAST_TEST.py" > "$RUNNER_TEMP/mergeproof/RESOLVED_SHA256.txt"
+          fi
+          exit 0
+      - name: Focused AG5 and World safety regression on resolved tree
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 420s "$RUNNER_TEMP/ag5world/bin/python" -m unittest -v tests.test_effort tests.test_route_supersede tests.test_world_console_shadow tests.test_handy_pflicht tests.test_handy_pflicht_resume tests.test_language_operator_run620 tests.test_operator_config_atomic_run623 tests.test_run611_chat_session_paging tests.test_run594_chat_export_stream tests.test_world_jepa_action_identification tests.test_toolforecast) > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/FOCUSED_EXIT.txt"
+          else
+            echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log"
+            echo 99 > "$RUNNER_TEMP/mergeproof/FOCUSED_EXIT.txt"
+            echo 99 > "$RUNNER_TEMP/mergeproof/EXPORT_EXIT.txt"
+            echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/EXPORT_RAW.log"
+          fi
+          exit 0
+      - name: Broad merged software suite, compile and exact staged privacy scan
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/mergeproof/RESOLVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/ag5world/bin/python" -m unittest discover -s tests -p 'test_*.py' -v) > "$RUNNER_TEMP/mergeproof/UNIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/UNIT_EXIT.txt"
+            "$RUNNER_TEMP/ag5world/bin/python" -m compileall -q v13/code/v13 v13/code/scripts v13/code/tests > "$RUNNER_TEMP/mergeproof/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/COMPILE_EXIT.txt"
+            # Ephemeral local two-parent commit ONLY for exact Git diff/privacy
+            # scanning. It is NEVER pushed or used to alter an owner branch.
+            git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only disposable AG5 World merge candidate' > "$RUNNER_TEMP/mergeproof/EPHEMERAL_COMMIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/mergeproof/EPHEMERAL_COMMIT_EXIT.txt"
+            if [ "$(cat "$RUNNER_TEMP/mergeproof/EPHEMERAL_COMMIT_EXIT.txt")" = 0 ]; then
+              git rev-parse HEAD > "$RUNNER_TEMP/mergeproof/EPHEMERAL_COMMIT.txt"
+              "$RUNNER_TEMP/ag5world/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base aab74aa900bfbd767f2983ba40a16fc0b8b95a3b --head HEAD > "$RUNNER_TEMP/mergeproof/PRIVACY_RAW.log" 2>&1
+              echo "$?" > "$RUNNER_TEMP/mergeproof/PRIVACY_EXIT.txt"
+            else
+              echo 'NO_EPHEMERAL_COMMIT' > "$RUNNER_TEMP/mergeproof/PRIVACY_RAW.log"
+              echo 99 > "$RUNNER_TEMP/mergeproof/PRIVACY_EXIT.txt"
+            fi
+          else
+            for n in UNIT COMPILE PRIVACY EPHEMERAL_COMMIT; do echo 99 > "$RUNNER_TEMP/mergeproof/${n}_EXIT.txt"; echo 'SKIPPED_DUE_RESOLUTION_FAIL' > "$RUNNER_TEMP/mergeproof/${n}_RAW.log"; done
+          fi
+          exit 0
+      - name: Record immutable baseline-RED classification
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'mergeproof'
+          raw=(root/'UNIT_RAW.log').read_text(errors='replace') if (root/'UNIT_RAW.log').exists() else ''
+          m=re.search(r'Ran (\\d+) tests in [0-9.]+s\\s+FAILED \\(failures=(\\d+), errors=(\\d+), skipped=(\\d+)\\)', raw)
+          found=tuple(map(int,m.groups())) if m else None
+          guide_failure=bool(re.search(r'^FAIL: test_every_operator_command_is_explained',raw,re.M))
+          expected=(4424,5,73,28)
+          report={'schema':'V13_AG5_WORLD_BASELINE_RED_AUDIT_V1','observed':found,
+                  'expected':expected,'guide_failure':guide_failure,
+                  'unit_exit':(root/'UNIT_EXIT.txt').read_text().strip() if (root/'UNIT_EXIT.txt').exists() else None,
+                  'baseline_red_equivalent':found==expected and not guide_failure}
+          (root/'BASELINE_AUDIT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+      - name: Upload all conflict stages, candidate patch and raw tests including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ag5-world-baseline-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/mergeproof/
+          if-no-files-found: error
+      - name: Enforce focused green and exact baseline-RED equivalence (not full-suite green)
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/mergeproof/MERGE_EXIT.txt")" = 1
+          test "$(wc -l < "$RUNNER_TEMP/mergeproof/CONFLICT_PATHS.txt")" = 3
+          for n in RESOLVE EXPORT FOCUSED COMPILE EPHEMERAL_COMMIT PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/mergeproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/mergeproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          test "$(cat "$RUNNER_TEMP/mergeproof/UNIT_EXIT.txt")" = 1
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'mergeproof/BASELINE_AUDIT.json').read_text())
+          assert r['baseline_red_equivalent'],r
+          print('BASELINE_RED_EQUIVALENT; full suite remains 5 FAIL / 73 ERROR, NOT GREEN')
+          PY
+          tail -12 "$RUNNER_TEMP/mergeproof/FOCUSED_RAW.log"
+          tail -12 "$RUNNER_TEMP/mergeproof/UNIT_RAW.log"
