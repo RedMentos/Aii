@@ -1,0 +1,48 @@
+{
+  "status": "B3_L1_COMPLETE_PAIRED_BASELINE_REVIEW_ONLY",
+  "owner": "GPT independent B3 review",
+  "parent_sha": "87dd02f82abdcc3762029dac3ea8170c9db30e7c",
+  "prereg": "6233286b33715f482a0fa0a11741d78aafa745a7",
+  "source_blob_before": "577eda716b5fc17607ff46d11267b2e08eee2794",
+  "source_blob_after": "050ad0e9e3948261a23a752e5379383a13d2e61b",
+  "test_blob": "869c98dc79000673ec1ae7e739c8d2aa548204b8",
+  "corrected_test_blob": "50b9fcf38bee7e04aa792be51df164adeb88d2a7",
+  "red": {
+    "run": 40589646648,
+    "tests": 24,
+    "failed_subcases": 28,
+    "errors": 24,
+    "sha256": "6b2a842791fba29349f0fab37c2e7357107d76137e6c08edeafa8d22963a6a4f"
+  },
+  "green": {
+    "run": 40590038371,
+    "tests": 27,
+    "sha256": "f51a7a99a15aab515212d5231e12089b75912c233c4260d63ddba03631803b98"
+  },
+  "full": {
+    "run": 40590142469,
+    "tests": 1988,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "f5457169114b4312be24c5d9197dde68b1218a9eb6dfdc8700488a39e8054894"
+  },
+  "intermediate_failed_runs": [
+    40589861257,
+    40589877878
+  ],
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-B3-L1-Baseline/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_receiver_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_b3_l1_baseline_completeness_review tests.test_b3bridge tests.test_b3_completion tests.test_b3degrade",
+  "next": "Independent review, then downstream report and promotion gate revalidation; no auto-merge or native/age promotion."
+}
