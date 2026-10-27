@@ -1,0 +1,81 @@
+name: V13 Run638 C3 32-step prospective source contract
+on:
+  push:
+    branches:
+      - codex/gpt6-run638-c3-dose-response-20261027
+    paths:
+      - '.github/workflows/run638-c3-dose-response-source.yml'
+      - 'v13/code/scripts/run638_c3_dose_response.py'
+      - 'v13/code/tests/test_run638_c3_dose_response.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run638-source-only
+  cancel-in-progress: false
+jobs:
+  run638-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Freeze prereg cohort original model trainer and source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN638_SOURCE_HEAD.txt"
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/PREREG.md)" = e784a1d74b0fa37996a5befecad2b642e0b104a0
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json)" = 94c8558de44069b4e3baa351b6ca74e5e9f4ec9c
+          test "$(git hash-object v13/code/scripts/run638_c3_dose_response.py)" = 46ffa54fa7267eecc31e6db6f3db3c3c06d585a0
+          test "$(git hash-object v13/code/tests/test_run638_c3_dose_response.py)" = 9758a19f24f423f9de24693740be4ef938d030ff
+          test "$(git hash-object v13/code/scripts/run632_c3_lfm350_native.py)" = b59f45f06bf0b8428fba502b8146c02205228edd
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json)" = c282077912ec4e284476825b3e03728620d8bad0
+          test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/RUN638_SOURCE_HOST.txt"
+          sha256sum v13/code/scripts/run638_c3_dose_response.py v13/code/tests/test_run638_c3_dose_response.py v13/code/docs/proofs/continuation-20261027/run638-c3-dose-response/COHORT.json > "$RUNNER_TEMP/RUN638_SOURCE_INPUTS.txt"
+      - name: Compile and run 20 frozen source-only negative controls
+        run: |
+          set +e
+          python3 -m py_compile v13/code/scripts/run638_c3_dose_response.py v13/code/tests/test_run638_c3_dose_response.py > "$RUNNER_TEMP/RUN638_COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN638_COMPILE_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run638_c3_dose_response tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN638_SOURCE_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN638_SOURCE_TEST_EXIT.txt"
+          exit 0
+      - name: Public repository privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 60077686e5dcadade6e7a1a08934b55aca3cd665 --head HEAD > "$RUNNER_TEMP/RUN638_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN638_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw evidence and hashes
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in COMPILE SOURCE_TEST PRIVACY; do
+            test -f "RUN638_${k}_EXIT.txt" || echo 2 > "RUN638_${k}_EXIT.txt"
+          done
+          find . -maxdepth 1 -type f -name 'RUN638_*' ! -name RUN638_SOURCE_SHA256SUMS.txt -print0 | sort -z | xargs -0 -r sha256sum > RUN638_SOURCE_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run638-C3-Source-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN638_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source tests and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in COMPILE SOURCE_TEST PRIVACY; do
+            echo "RUN638 $k exit $(cat "$RUNNER_TEMP/RUN638_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN638_${k}_EXIT.txt")" = 0
+          done
+          (cd "$RUNNER_TEMP" && sha256sum -c RUN638_SOURCE_SHA256SUMS.txt)
