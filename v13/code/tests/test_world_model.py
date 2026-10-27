@@ -40,6 +40,51 @@ class Objectives(Base):
         self.assertEqual(WM.for_event(self.r.store,'nope','gist')['reason'],'NO_OBSERVED_STATE')
 
 class Counterfactuals(Base):
+    def test_legacy_leaky_world_state_requires_explicit_refit(self):
+        data=synthetic(n=48)
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['revision'],WM.REVISION)
+        legacy=dict(st,revision='t8-world-model-v1')
+        self.r.store.set_state(WM.KEY,legacy)
+        self.assertIsNone(WM.load(self.r.store))
+        cf=WM.counterfactual(self.r.store,WM.state_vec(100),'detail')
+        self.assertEqual(cf['reason'],'NO_WORLD_MODEL')
+        direct=WM.counterfactual(self.r.store,WM.state_vec(100),'detail',st=legacy)
+        self.assertEqual(direct['reason'],'NO_WORLD_MODEL')
+        with mock.patch.object(WM,'transitions',return_value=data):
+            WM.fit(self.r.store)
+        self.assertEqual(WM.load(self.r.store)['revision'],WM.REVISION)
+
+    def test_support_counts_match_retained_training_states(self):
+        data=synthetic(n=400)
+        for row in data:row['a']='simple'
+        train,_=WM._split(len(data))
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['counts']['simple'],400)
+        self.assertEqual(st['train_counts']['simple'],len(train))
+        self.assertEqual(st['support_counts']['simple'],256)
+        self.assertEqual(len(st['states']['simple']),256)
+        self.assertEqual(st['support_counts']['both'],0)
+
+    def test_heldout_only_action_is_not_training_support(self):
+        data=synthetic(n=48)
+        train,heldout=WM._split(len(data))
+        for row in data:row['a']='simple'
+        unique=data[heldout[0]]
+        unique['a']='both'  # a measured held-out observation, not training evidence
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['status'],'FITTED')
+        self.assertEqual(st['counts']['both'],1)  # observed total remains visible
+        self.assertEqual(st['states']['both'],[])  # held-out state must never be support
+        self.assertEqual(st['support_counts']['both'],0)
+        self.assertEqual(len(st['states']['simple']),len(train))
+        cf=WM.counterfactual(self.r.store,unique['s'],'both')
+        self.assertEqual(cf['coverage']['samples'],0)
+        self.assertEqual((cf['label'],cf['confidence']),('SIMULATION_UNCERTAIN',0.))
+
     def test_confidence_follows_coverage_not_frequency(self):
         data=synthetic()+[{'action_id':'rare','s':WM.state_vec(500,'NORMAL',12.),'a':'both','y':[1.,1.,.5],'latent':None}]
         data=[t for t in data if t['a']!='both' or t['action_id']=='rare']
