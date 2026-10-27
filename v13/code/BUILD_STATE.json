@@ -1627,7 +1627,7 @@
   "bp2b_first_step_diagnostic_20261027": {
     "owner_branch": "codex/automation11-bp2b-first-step-diagnostic-20261027",
     "parent_integration_sha": "5323f65e2b37144c81820a9a250e87c6add8fbc7",
-    "status": "REVIEW_ONLY_SOFTWARE_CI_PENDING_NATIVE_NOT_RUN",
+    "status": "REVIEW_ONLY_SOFTWARE_PASS_NATIVE_NOT_RUN",
     "script_blob_sha": "1a1087a04ac5a81855f4255992fcb910e169acd4",
     "reference_seed": 41,
     "reference_arm": "legacy",
@@ -1635,7 +1635,7 @@
     "registered_steps_unchanged": 30,
     "jepa_weight": 0,
     "age_authority": 0,
-    "software_tests": "PENDING",
+    "software_tests": "6/6 PASS Actions 40519620315",
     "native_evidence": false,
     "first_step_time_s": null,
     "first_step_rss_kib": null,
@@ -1648,6 +1648,10 @@
     "prereg": "docs/proofs/continuation-20261027/bp2b-first-step-diagnostic/PREREG.md",
     "report": "docs/proofs/continuation-20261027/bp2b-first-step-diagnostic/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_first_step_diagnostic",
-    "next_prerequisite": "Verify exact-head software CI before launching separately registered 20-minute native diagnostic."
+    "next_prerequisite": "Software gate passed; after independent review, run one bounded native diagnostic on isolated owner-clear runner. Original cohort unchanged.",
+    "software_tested_sha": "c843d2573d8e56bc1b739cb5e2c9d22630057651",
+    "software_actions_run": 40519620315,
+    "compile": "PASS",
+    "privacy": "CLEAN"
   }
 }
