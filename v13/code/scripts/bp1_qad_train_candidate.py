@@ -61,7 +61,7 @@ def validate_manifest(manifest):
         "schema": MANIFEST_SCHEMA,
         "scope": "LINUX_NATIVE_B2_INPUT_SOFTWARE_DATASET_ONLY",
         "source_report_sha256": "ea379b52c7b95c2bb30cd6725f539f443521a64210fdf6bf6fa726c413126880",
-        "source_corpus_sha256": "1872a3adf6e51e05e604053539d50ae05c955b221f78f0cce39c0703f8cf",
+        "source_corpus_sha256": "1872a3adf6e51e05e604053539d50ae05c955b221f78f1951d1f68e2a12f926c",
         "b2_model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
         "train_projects": list(TRAIN_PROJECTS),
         "heldout_projects": list(HELDOUT_PROJECTS),
