@@ -63,7 +63,25 @@ class Ports:
         sl=self.r.bodies.slots.box.load()[0]['slots'].get(role) if getattr(self.r,'bodies',None) else None
         for cand in ([sl.get('candidate'),sl.get('active'),sl.get('previous')] if sl else []):
             if cand and cand.get('path') and self._abs(cand['path'])==path.resolve():
-                return {'model_id':cand['model_id'],'revision':cand['revision'],'sha256':cand.get('sha256') or cand['revision'],'dims':cand.get('dims'),
+                sha=cand.get('sha256')
+                if not isinstance(sha,str) or re.fullmatch(r'[a-f0-9]{64}',sha) is None:
+                    # ModelSlots.from_installed carries the file path/revision but
+                    # not the installed file hash. Bind only to an exact matching
+                    # installed entry; a revision label is never a byte digest.
+                    sha=None
+                    for entry in m.installed.values():
+                        try:
+                            f=entry['files'][entry['main_file']]
+                            if (entry['model_id']==cand['model_id'] and
+                                    entry['exact_revision']==cand['revision'] and
+                                    self._abs(f['path'])==path.resolve() and
+                                    isinstance(f.get('sha256'),str) and
+                                    re.fullmatch(r'[a-f0-9]{64}',f['sha256'])):
+                                sha=f['sha256']
+                                break
+                        except (KeyError,TypeError,ValueError,OSError):
+                            continue
+                return {'model_id':cand['model_id'],'revision':cand['revision'],'sha256':sha,'dims':cand.get('dims'),
                         'tokenizer':cand.get('tokenizer'),'capabilities':cand.get('capabilities') or [],'path':str(path)}
         e=m.installed.get(model_key(role,m.b2_control)) or {}
         f=(e.get('files') or {}).get(e.get('main_file')) or {}
