@@ -1,0 +1,89 @@
+name: V13 World-JEPA matched-action 400-step synthetic ablation
+on:
+  push:
+    branches: [assistant/v13-world-matched-action-cohort-20261027]
+    paths:
+      - '.github/workflows/world-matched-action-synthetic400.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-gradient-350m
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned matched-state action ablation raw evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-matched-400"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COHORT_BLOB.txt"
+          git hash-object v13/code/docs/coordination/WORLD_MATCHED_ACTION_PREREG_20261027.md > "$evidence/PREREG_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/COHORT_BLOB.txt")" = "f4c1136bb9a527a776522ccd776f03c390bdd3a3" ] && [ "$(cat "$evidence/PREREG_BLOB.txt")" = "7ea24ad07c734f2bd658c25c124e0f01c4ce53d1" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git merge-base --is-ancestor d00c35b4daddac7f30cadb9a1489f61c535872dc HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-matched-400-venv"
+          py="$RUNNER_TEMP/world-matched-400-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=. "$py" - <<'PY'
+          import json
+          from scripts import world_jepa_matched_action_cohort as m
+          r=m.run()
+          assert r['source_sha256']=='65f6881137771a87a5c7a8353b349ade633a96064a05a884c9771ccc06b4639e'
+          assert r['train_ids_sha256']=='d86d0d975e24d55cf4564905d9eeb6c49bf7022191d0905a33fd4a5ce043c537'
+          assert r['heldout_ids_sha256']=='c09921ffb68612ad7991bea716cef291c113ec87b4955a97f61be9325b52c9b7'
+          assert r['n']==192 and r['distinct_states']==48
+          assert r['train_n']==144 and r['heldout_n']==48
+          assert r['model_seeds']==[3,7] and r['shuffle_seeds']==[11,23,37]
+          assert r['steps']==400 and r['ensemble']==3
+          assert r['heldout_action_counts']==[12,12,12,12]
+          assert r['heldout_state_action_pairs_seen_in_train']==0
+          assert not r['utility_proven'] and not r['runtime_wired']
+          assert r['negative_gates_unchanged']['jepa_weight']==0
+          print(json.dumps(r,sort_keys=True,allow_nan=False))
+          PY
+          ) > "$evidence/SYNTHETIC_REPORT.json" 2> "$evidence/SYNTHETIC_RAW.log"
+          echo "$?" > "$evidence/SYNTHETIC_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3bf1b9a06b2eba573635880df67a5cddba650850 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 3bf1b9a06b2eba573635880df67a5cddba650850 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-matched-400-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-matched-400/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all real exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-matched-400"
+          for name in FROZEN PREREG INSTALL SYNTHETIC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_MATCHED_ACTION_SYNTHETIC_ONLY_NO_UTILITY_PROMOTION'
