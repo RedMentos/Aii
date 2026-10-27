@@ -118,6 +118,19 @@ class BodyJepaStepCheckpointTests(unittest.TestCase):
             save(self.root, SHA, 1, *c, h)
         self.assertEqual(json.loads((self.root/'CURRENT.json').read_text()), first)
 
+    def test_optimizer_order_mismatch_rejected_before_mutation(self):
+        c = setup()
+        h = [run_step(c, 1)]
+        save(self.root, SHA, 1, *c, h)
+        other = setup()
+        model, pred, _, ema, gen = other
+        wrong_order = torch.optim.AdamW(list(reversed(list(model.parameters())))
+                                      + list(pred.parameters()), lr=.01)
+        before = [p.detach().clone() for p in model.parameters()]
+        with self.assertRaises(ValueError):
+            restore(self.root, SHA, model, pred, wrong_order, ema, gen)
+        self.assertTrue(all(torch.equal(a, b) for a, b in zip(before, model.parameters())))
+
     def test_pointer_symlink_refused(self):
         c = setup()
         h = [run_step(c, 1)]
