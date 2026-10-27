@@ -1,0 +1,9 @@
+# Context OS warm F5 authority — verified software result
+
+Date UTC: 2026-10-27. Review-only PR #795, dependent on F1/F5 PR #793. Prereg `4569bcddb0d540e62bf542204d13f90b1f080d43` predates source commit `c20fed260662740741815b9fdbfde2455c1a595b`.
+
+The previously verified Run271 `ContextOS.warm` F5 authority guard was transplanted **only into the warm method**, preserving the current ContextOS source outside that method. It batch-validates eligible warm candidates against `Memory._verified_rows` before the two-slot budget, so revoked HumanDecision/feedback/source kind or duplicate decisions cannot reappear in C3 warm context or starve a valid later memory. SHADOW/explicit ACTIVE and warm-state persistence are unchanged. Remote source blob `context_os.py` `127af0b872bfce002c6dd72020a22574f52691e8`; exact Run271 test blob `cc1423c7f4961b038f073c77ceec6a31cbc99a43`; parent memory blob `501c8f43c92f031e034e4b93f4adbd4c67b7edfe`.
+
+**New exact-head Actions 40600569995 SUCCESS** at `0bbf6abe1cf95c6089d48e2f83d5fa7444f3895a`: **69/69 focused PASS**, **2056 full software tests OK (1 skipped)**, all raw exits `BLOBS=INSTALL=FOCUSED=FULL=COMPILE=PRIVACY=DIFF=0`, official privacy CLEAN. Artifact `12778911782`, ZIP SHA256 `e39f69dbfec91901954a7ace8e1cfdd160408d6e67af4cd70e6a32d02db89ab8`, ZIP CRC/internal SHA256SUMS PASS. Private Library `/V13-Checkpoints/2026-10-27/Automation11-Context-Warm-F5/v13-context-warm-f5-40600569995.zip`; materialized byte-exact readback PASS.
+
+Software/synthetic Runtime/SQLite only. No native/Redmi, semantic gain, training, age/approval or whole-system promotion. STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; V13 incomplete. Next: independently integrate this guarded warm method with combined Sleep/Context/F1/F5 PR #794 after a fresh combined full suite; Sleep A/B F5 source-authority child PR #796 remains separate and RED-first. Do not merge automatically.
