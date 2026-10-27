@@ -37,5 +37,5 @@ jobs:
           "$py" -m py_compile scripts/bp2b_first_step_diagnostic.py tests/test_bp2b_first_step_diagnostic.py
           cd ../..
           "$py" v13/code/scripts/public_repo_privacy_scan.py --base a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3 --head HEAD
-          git diff --check 5323f65e2b37144c81820a9a250e87c6add8fbc7 HEAD
+          git diff --check a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3 HEAD
           echo 'BP2B_FIRST_STEP_SOFTWARE_FAKE_ONLY_NO_NATIVE_OR_AGE_PROMOTION'
