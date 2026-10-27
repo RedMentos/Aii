@@ -132,6 +132,9 @@ def export_from_rows(rows, output_dir, seed, steps, collection='CALLER_SUPPLIED_
         'runtime_authority': False,
         'claim_limit': 'Offline synthetic-content digital transitions; no causal/semantic utility or live decision rights',
     }
+    # Preserve the exact canonical rows used for training/calibration so the
+    # cohort digest can be recomputed independently from persisted bytes.
+    atomic_write(out / 'cohort.json', _canonical(data))
     for name, obj in (('provenance.json', provenance), ('request.json', request),
                       ('probe.json', probe), ('manifest.json', manifest)):
         atomic_write(out / name, _canonical(obj) + b'\n')
@@ -150,9 +153,20 @@ def main(argv=None):
     with tempfile.TemporaryDirectory(prefix='v13-world-shadow-') as td:
         work = Path(td)
         rows = z12b.collect_train(work, args.seed, args.train, held=set())
+        # Read originals BEFORE export; a missing process log must not leave a
+        # seemingly valid checkpoint package with unverifiable collection.
+        log_raw = (work / ('world-%d.log' % args.seed)).read_bytes()
+        schedule_raw = (work / ('world-%d.json' % args.seed)).read_bytes()
         manifest = export_from_rows(
             rows, args.output_dir, seed=args.seed, steps=args.steps,
             collection='LINUX_TEMP_FILE_WORLD_PROCESS')
+        out = Path(args.output_dir)
+        atomic_write(out / ('world-%d.log' % args.seed), log_raw)
+        atomic_write(out / ('world-%d.json' % args.seed), schedule_raw)
+        manifest['world_process_log_sha256'] = hashlib.sha256(log_raw).hexdigest()
+        manifest['world_process_schedule_sha256'] = hashlib.sha256(schedule_raw).hexdigest()
+        manifest['world_process_log_events'] = sum(bool(line.strip()) for line in log_raw.splitlines())
+        atomic_write(out / 'manifest.json', _canonical(manifest) + b'\\n')
     print(json.dumps({'schema': manifest['schema'], 'mode': manifest['mode'],
                       'checkpoint_sha256': manifest['checkpoint_sha256'],
                       'cohort_sha256': manifest['cohort_sha256'],
