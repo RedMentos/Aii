@@ -45,7 +45,8 @@ def export(out):
     digest = hashlib.sha256(tar_path.read_bytes()).hexdigest()
     result = {
         'schema': 'V13_AG5_WORLD_DISPOSABLE_DELTA_V1',
-        'world_parent_sha': 'aab74aa900bfbd767f2983ba40a16fc0b8b95a3b',
+        'candidate_first_parent_sha': git('rev-parse', 'HEAD').decode().strip(),
+        'world_lineage_sha': 'aab74aa900bfbd767f2983ba40a16fc0b8b95a3b',
         'ag5_parent_sha': 'c615497384dc5519be59232451895ca443ce9e45',
         'candidate_tree_sha': git('write-tree').decode().strip(),
         'changed_paths': len(entries), 'entries': entries,
