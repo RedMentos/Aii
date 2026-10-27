@@ -35,7 +35,7 @@ I6, I7, I8 in beiden Seeds). Urteil **`Z6I_LEARN_FAIL`**. Schalter `route_head_w
   Übergabe (Z6i) funktionieren; was A1 kippt, ist die **Freigabe-Prüfung des Workers** mit zu wenigen Prüffragen
   (absolute 75 %-Hürde und Behalten je Route auf 1–4 Fragen).
 
-## Nächster Schritt (neu vorregistrieren, WP-Z6j)
+## Nächster Schritt (neu vorregistrieren, WP-Z6i2 → `Z6I2_PASS`, siehe `../z6i2-relative-gate/BEFUND.md`)
 Freigabe-Prüfung mit mehr Prüfmaterial: alle bekannten menschlich gelabelten Fragen plus Anker als zweite Prüfung
 (nicht nur das neueste Viertel), relative Hürde „nicht schlechter als der aktive Kopf“ statt fester 75 %, dann frische Seeds.
 

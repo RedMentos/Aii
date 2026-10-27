@@ -138,7 +138,7 @@ def status(store, rule_id, head_id):
     out = {'rule': rule_id, 'head': head_id, 'observed': len(obs), 'agree_in_a_row': run, 'needed': HANDOVER_N,
            'learned': learned(r, head_id), 'handover': bool(r.get('handover'))}
     if out['learned'] and not out['handover']: out['next'] = ':ersetze gelernt ' + rule_id
-    elif r.get('teach') and obs and not obs[-1]['agree']: out['next'] = ':shadow route'  # WP-Z6j: learn while the head still disagrees
+    elif r.get('teach') and obs and not obs[-1]['agree']: out['next'] = ':learn route'  # WP-Z6i2: learn while the head still disagrees
     return out
 
 

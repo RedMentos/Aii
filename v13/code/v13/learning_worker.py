@@ -88,7 +88,7 @@ def train(inp,out):
                 held['anchors']=len(xa);held['anchors_changed']=int(np.sum(old_a!=new_a));held['anchors_moved_into_rule_route']=int(np.sum((old_a!=new_a)&np.isin(new_a,ks)))
         hurdle=accuracy>=.75
         if wdim and inp.get('gate')=='relative' and inp.get('active_checkpoint'):
-            # WP-Z6j: the validation quarter holds 1-4 questions per route, so a fixed 75 % bar mostly measures which old
+            # WP-Z6i2: the validation quarter holds 1-4 questions per route, so a fixed 75 % bar mostly measures which old
             # questions landed there (Z6i seed 83). A successor head must instead beat the active head on the same
             # validation questions, lose no known human-labelled question, and route strictly more of them right.
             old_val=float(np.mean(oldp.argmax(1)==y[vi]));known_before=float(np.mean(oldall.argmax(1)==y));known_after=float(np.mean(newall.argmax(1)==y))
