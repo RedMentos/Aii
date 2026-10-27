@@ -17,6 +17,7 @@ def complete_proof():
         "anchor_weight": 0.0, "final_ce": 2.0,
         "resumed": False, "base_generation": "BP1_QAD_C3_TRAIN_ONLY_SHADOW",
         "trained_on": "master",
+        "loss_history": [{"step": 1, "ce": 3.0}, {"step": 2, "ce": 2.0}],
     })
     p["adapter"].update({
         "peft_sha256": "c" * 64, "gguf_bytes": 1024,
@@ -45,6 +46,7 @@ class ProofContractReview(unittest.TestCase):
             "anchor_weight": 0.5, "final_ce": float("nan"),
             "resumed": True, "base_generation": "OTHER",
             "trained_on": "other GGUF",
+            "loss_history": [{"step": 1, "ce": 3.0}, {"step": 2, "ce": -1.0}],
         }
         for field, value in mutations.items():
             with self.subTest(field=field):
