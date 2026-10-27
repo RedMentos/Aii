@@ -131,6 +131,22 @@ class BodyTrainerChoice(Trainers):
             with self.assertRaises(ValueError):
                 tr.set_lora_cfg(self.g, self.r, {'locality_genn': 2})
 
+    def test_gate_held_out_switch_applies_to_either_trainer_class(self):
+        self.r.models = FakeModels(self.gguf)
+
+        class FakeLlama:
+            def __init__(s, *a, **k):
+                pass
+        with mock.patch.object(tr, '_torch', return_value=True), mock.patch('v13.lora_trainer.LlamaCppEvaluator', FakeLlama):
+            tr.choose(self.g, self.r, 'lora', str(self.master))
+            self.assertFalse(getattr(self.g.weights.trainer.evaluator('x.gguf'), 'held_out', False))
+            tr.set_lora_cfg(self.g, self.r, {'gate_held_out': True})
+            t = self.g.weights.trainer
+            self.assertEqual(t.method, 'lora-torch-cpu')  # evaluation switch only, same trainer class
+            self.assertTrue(t.evaluator('x.gguf').held_out)
+            tr.set_lora_cfg(self.g, self.r, {'locality_gen': 2})
+            self.assertTrue(self.g.weights.trainer.evaluator('x.gguf').held_out)
+
     def test_gate_adds_held_out_person_near_misses(self):
         calls = {}
 

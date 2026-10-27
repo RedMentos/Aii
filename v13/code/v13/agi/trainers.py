@@ -101,6 +101,7 @@ class LiveNearMissEvaluator:
         return rep
     def close(self):self.inner.close()
 
+GATE_KEYS=frozenset(('gate_held_out',))  # evaluation-only switch, does not change the trainer class
 BODY_KEYS=frozenset(('locality_gen','lora_subspace','jepa_weight','jepa_target','jepa_ema_decay','jepa_layer'))
 
 def _held_out(evaluator):
@@ -128,10 +129,10 @@ def build(runtime,kind=None):
         if body:
             from ..body_jepa import BodyJepaTrainer
             cfg.setdefault('jepa_weight',0.);cfg.setdefault('locality_swaps',2)  # JEPA stays off unless set explicitly
-            if int(cfg.get('locality_gen',0))>0:
-                ev0=ev;ev=lambda path:_held_out(ev0(path))
             t=BodyJepaTrainer(req['master'],work,master_sha256=sha,anchors=anchors,probes=probe,cfg=cfg,evaluator=ev,arch=None);info['body_trainer']=sorted(body)
         else:t=LoraTrainer(req['master'],work,master_sha256=sha,anchors=anchors,probes=probe,cfg=cfg,evaluator=ev)
+        if cfg.get('gate_held_out') or int(cfg.get('locality_gen',0))>0:  # gate also asks near-misses about persons never used in training anchors
+            ev0=ev;t.evaluator=lambda path:_held_out(ev0(path))
         t.role=ROLE;info['served_live']=True;return t,info
     from ..memory_trainer import SparseMemoryAG6Trainer,live_system
     t=SparseMemoryAG6Trainer(req['master'],work,background=anchors,probes=probe,master_sha256=sha,store=runtime.store,
@@ -147,7 +148,7 @@ def install(growth,runtime,kind=None):
 def set_lora_cfg(growth,runtime,overrides):
     """Measured per-device LoRA overrides (keys of lora_trainer.DEFAULTS only)."""
     from ..lora_trainer import DEFAULTS
-    bad=[k for k in overrides if (k not in DEFAULTS and k not in BODY_KEYS) or k in ('threads','base_gguf')]
+    bad=[k for k in overrides if (k not in DEFAULTS and k not in BODY_KEYS and k not in GATE_KEYS) or k in ('threads','base_gguf')]
     if bad:raise ValueError('Unbekannte LoRA-Regler: '+', '.join(bad))
     def f(st):st['lora_cfg']=dict(overrides)
     _box(runtime.store).mutate(f);return install(growth,runtime)
