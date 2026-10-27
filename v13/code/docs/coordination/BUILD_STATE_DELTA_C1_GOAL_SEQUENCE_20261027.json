@@ -1,0 +1,43 @@
+{
+  "status": "C1_GOAL_SEQUENCE_EVENT_PROVENANCE_REVIEW_ONLY",
+  "owner": "GPT independent C1 review",
+  "parent_pr": 776,
+  "parent_sha": "1d0ab1ca8cf64f7d2d4f9e313ca39e87bf2370c5",
+  "prereg": "ed24839630b1c7da77c4ef683deebdf995192e85",
+  "source_blob_before": "05500ee25d7cd83b3412f027e1503ca907e12d43",
+  "source_blob_after": "e42e586b7e685cf3b0abc80a17c203bfc7dfc845",
+  "test_blob": "86cbbb3b20a7fe11aad77802d4be1ffaf2197925",
+  "red": {
+    "run": 40587974925,
+    "tests": 16,
+    "expected_failures": 3,
+    "sha256": "72d44d77fcfa430d7549f85a2268a921efb3b6b600f118b1b19937b928e002fa"
+  },
+  "green": {
+    "run": 40588131719,
+    "tests": 16,
+    "sha256": "51e2518cfcdfa492f2a1bd926a74eeec617afbca3d5d81a368b79017bcea4cf0"
+  },
+  "full": {
+    "run": 40588165109,
+    "tests": 1958,
+    "skipped": 1,
+    "exits_all_zero": true,
+    "privacy": "CLEAN",
+    "sha256": "046b7d2a12a8630ab8a904152194147603f42f6bec7901673b78710a795310dc"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-C1-GoalSequence/",
+  "backup_byte_exact": true,
+  "redmi_measured": false,
+  "native_model_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_executive_goal_sequence_binding_review tests.test_executive_task_origin_binding_review tests.test_executive_source_action_integrity_review tests.test_executive_context",
+  "next": "Independent review and sequential integration; no auto-merge; next source-bound question review in separate child."
+}

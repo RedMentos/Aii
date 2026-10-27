@@ -1,0 +1,73 @@
+name: V13 C1 goal-sequence event provenance focused review
+on:
+  push:
+    branches: [assistant/v13-c1-goal-sequence-binding-review-20261027]
+    paths:
+      - '.github/workflows/c1-goal-sequence-binding-review.yml'
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/tests/test_executive_goal_sequence_binding_review.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-goal-sequence-binding
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw focused evidence before enforcing exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-goal-sequence"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_goal_sequence_binding_review.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor ed24839630b1c7da77c4ef683deebdf995192e85 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-goal-sequence-venv"
+          py="$RUNNER_TEMP/c1-goal-sequence-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 6m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_goal_sequence_binding_review tests.test_executive_task_origin_binding_review tests.test_executive_source_action_integrity_review tests.test_executive_context
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/executive.py v13/code/tests/test_executive_goal_sequence_binding_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1d0ab1ca8cf64f7d2d4f9e313ca39e87bf2370c5 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 1d0ab1ca8cf64f7d2d4f9e313ca39e87bf2370c5 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-goal-sequence-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-goal-sequence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce genuine focused exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-goal-sequence"
+          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_GOAL_SEQUENCE_SOFTWARE_ONLY_NO_AGE_PROMOTION'
