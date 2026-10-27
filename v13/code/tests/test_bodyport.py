@@ -158,6 +158,14 @@ class ExactBridgeIdentityTests(Swap):
                 ports.bridge_binding('B1_TO_B2')
             self.assertFalse(ports.bridge_valid('B1_TO_B2'))
 
+    def test_malformed_nonobject_bridge_manifest_does_not_abort_invalidation(self):
+        d=self.home/'b3';d.mkdir(exist_ok=True)
+        (d/'B1_TO_B2.json').write_text('[]')
+        ports=self.r.bodies.ports
+        old=ports.spec('B2_GIST');new=old|{'sha256':'f'*64}
+        self.assertEqual(ports.check_bridges('B2_GIST',old,new)['stale'],[])
+        self.assertFalse(ports.bridge_valid('B1_TO_B2'))
+
     def test_key_fields_reject_wrong_side_even_when_revision_matches(self):
         p,man=self.manifest()
         man['sender_bridge_key'],man['receiver_bridge_key']=man['receiver_bridge_key'],man['sender_bridge_key']
