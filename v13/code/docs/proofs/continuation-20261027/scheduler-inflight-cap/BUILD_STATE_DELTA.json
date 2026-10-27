@@ -33,7 +33,17 @@
   "full_suite": {
     "source_commit": "6c1085039daf5aec7bb24c799984e3264dc8a804",
     "actions": 40532176820,
-    "status": "PENDING_AT_CHECKPOINT"
+    "status": "SOFTWARE_PASS_1904_OK_1_SKIPPED",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12746777353,
+    "zip_sha256": "04760be4a601a8fe9170c80b796f347fe890a5c96842fa301a3c32ce537f510e",
+    "private_backup_verified": true
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -47,6 +57,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect GitHub Actions run 40532176820, download raw artifact and verify all exits; then independent review of foreground-kind action spoofing with separate prereg.",
+  "next_command": "Independently review PR #738 full-suite-passing diff; follow child foreground action boundary prereg, tests and raw proof.",
   "note": "Additive review-branch delta; do not overwrite concurrent owners' shared BUILD_STATE.json; no production merge."
 }
