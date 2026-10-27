@@ -106,7 +106,13 @@ def observe(store, rule_id, head_route, head_id, event_id=None):
     """Record what the active head would do on a question the rule matched; returns the updated rule."""
     def fn(st):
         r = _find(st, rule_id); o = {'head': head_id, 'route': head_route, 'agree': head_route == r['route'], 'at': now(), 'event': event_id}
-        r['obs'] = (r.get('obs', []) + [o])[-OBS_KEEP:]; return dict(r)
+        obs = r.get('obs', [])
+        # Re-entering the same source event must not manufacture eight
+        # independent agreements. The newest observation for that event wins,
+        # including a disagreement after a retry or head swap.
+        if event_id is not None:
+            obs = [old for old in obs if old.get('event') != event_id]
+        r['obs'] = (obs + [o])[-OBS_KEEP:]; return dict(r)
     return _mutate(store, fn)
 
 
