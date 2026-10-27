@@ -123,6 +123,13 @@ class Run638NativeCompareContracts(unittest.TestCase):
             r["thirtytwo_effect"]["max_abs_logprob_delta"] = 0
         self.assertFalse(N.aggregate(rows)["both_adapters_numeric_effect"])
 
+    def test_missing_or_nonfinite_logprob_effect_fails_closed(self):
+        for value in (None, float("nan"), float("inf")):
+            rows = synthetic_rows()
+            for row in rows:
+                row["thirtytwo_effect"]["max_abs_logprob_delta"] = value
+            self.assertFalse(N.aggregate(rows)["both_adapters_numeric_effect"])
+
     def test_original_proof_valid_and_negative_status_bound(self):
         N.validate_original(original_proof())
         p = original_proof()
