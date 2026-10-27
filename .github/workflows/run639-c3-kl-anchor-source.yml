@@ -34,7 +34,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/RUN639_SOURCE_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/PREREG.md)" = a2e6edc75f4880694512951b8f1c723d26693e80
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
-          test "$(git hash-object v13/code/scripts/run639_c3_kl_anchor.py)" = 5ee4adf90a3486fd4c1f2090a3a173dc411d9703
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/PREREG_AMENDMENT_1.md)" = fa61ac7a1cb848b40027dd6a1bb4662d86c5f700
+          test "$(git hash-object v13/code/scripts/run639_c3_kl_anchor.py)" = c1f5a17d034891c9fc0368ac604a0d071184e387
           test "$(git hash-object v13/code/scripts/run639_c3_native_anchor_compare.py)" = 023c4e08f41f4d7bba641078be3f5c0e3e1a7703
           test "$(git hash-object v13/code/tests/test_run639_c3_native_anchor_compare.py)" = abacb1d2de535dfd069ad67a556715c7b88b650a
           test "$(git hash-object v13/code/tests/test_run639_c3_kl_anchor.py)" = 576a5f919af744128519f76c81cb48ae548d84fb
