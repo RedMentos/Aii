@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import socket
 from pathlib import Path
 import subprocess
 import time
@@ -111,11 +112,21 @@ def stop(proc):
         proc.wait(timeout=12)
 
 
+def assert_loopback_port_available(port):
+    """Reject a pre-existing localhost listener before attributing output to QAD."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.bind(("127.0.0.1", port))
+        except OSError as exc:
+            raise RuntimeError(f"QAD GGUF localhost port {port} already occupied") from exc
+
+
 def gguf(model, server, log_path, port=8834):
     if sha(model) != GGUF_SHA:
         raise ValueError("QAD deployed GGUF SHA mismatch")
     if not Path(server).is_file() or not os.access(server, os.X_OK):
         raise ValueError("native server binary not executable")
+    assert_loopback_port_available(port)
     with Path(log_path).open("ab") as log:
         proc = subprocess.Popen([str(server), "-m", str(model), "--host", "127.0.0.1",
             "--port", str(port), "-c", "2048", "-t", "4", "-np", "1",
