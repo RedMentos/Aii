@@ -124,8 +124,9 @@ def _mae(pred, truth):
             or not np.isfinite(pred).all() or not np.isfinite(truth).all()):
         raise ValueError('Invalid heldout outcome prediction')
     values = np.mean(np.abs(pred-truth), axis=0)
-    return {'duration': float(values[0]), 'success': float(values[1]),
-            'output_chars': float(values[2]), 'pooled': float(values.mean())}
+    # Stored y uses log-duration and log-output-char units, not raw seconds/chars.
+    return {'log_duration': float(values[0]), 'success': float(values[1]),
+            'log_output_chars': float(values[2]), 'pooled': float(values.mean())}
 
 
 def score_fitted(model, data):
