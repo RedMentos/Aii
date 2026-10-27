@@ -46,7 +46,8 @@ jobs:
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT.json)" = 5107dfc6577739eb4a8776d1d1be2e7890c21a89
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json)" = c282077912ec4e284476825b3e03728620d8bad0
           test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
-          test "$(git hash-object v13/code/tests/test_run634_c3_template_contract.py)" = 70c627afc32ac83bfdac2e4458826295d517805d
+          test "$(git hash-object v13/code/tests/test_run634_c3_template_contract.py)" = e89f9d185ff4919b3db54c7fb959910fde4ec704
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run634-c3-pinned-chat-template/PREREG_AMENDMENT_1.md)" = 53263108dd9faba448de3c4df90dded4f498665f
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run634-c3-pinned-chat-template/PREREG.md)" = 392d45549a02a16cd04f0e8e96aca5d220d93c66
           test "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
@@ -118,7 +119,7 @@ jobs:
           assert rendered.startswith(tok.bos_token+'<|im_start|>user\n'), repr(rendered[:100])
           assert '<|im_end|>\n<|im_start|>assistant\n' in rendered,repr(rendered[-100:])
           ids=tok(rendered,add_special_tokens=False)['input_ids']
-          ids2=tok.apply_chat_template(msg,add_generation_prompt=True,tokenize=True)
+          ids2=tok.apply_chat_template(msg,add_generation_prompt=True,tokenize=True,return_dict=False)
           assert ids==ids2 and len(ids)>4, 'HF tokenizer template parity failed'
           print('RUN634_PINNED_JINJA_PASS',h,'bytes',f.stat().st_size,'tokens',len(ids))
           PY
