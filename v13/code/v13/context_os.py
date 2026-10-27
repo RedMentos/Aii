@@ -338,16 +338,25 @@ class ContextOS:
         def fn(st):
             for mid in memory_ids:st['warm'][str(mid)]=1.
             if len(st['warm'])>WARM_MAX:st['warm']=dict(sorted(st['warm'].items(),key=lambda kv:-kv[1])[:WARM_MAX])
-            if ratio is not None:
-                c=st['cache'];c['n']+=1;c['cached_tokens']+=cached;c['prompt_tokens']+=prompt
             last=st['last'].get(role)
-            if last and last['event_id']==event_id:last['measured_reuse']=ratio;last['status']=status
-            return last
-        last=self._mutate(fn)
-        if self.n is not None and ratio is not None and last and last.get('applied'):
+            matches=bool(last and last.get('event_id')==event_id)
+            # One current FINAL result per role/event. CAS in _mutate makes
+            # concurrent replays observe the committed receipt before credit.
+            # Older events cannot contaminate the current plan's cost baseline.
+            credited=bool(ratio is not None and status=='FINAL' and matches
+                          and not last.get('cache_recorded',False))
+            if credited:
+                c=st['cache'];c['n']+=1;c['cached_tokens']+=cached;c['prompt_tokens']+=prompt
+                last['measured_reuse']=ratio;last['cache_recorded']=True
+            if matches and not (last.get('cache_recorded') and not credited):
+                last['status']=status
+            return {'credited':credited,'applied':bool(last.get('applied')) if matches else False}
+        outcome=self._mutate(fn)
+        if self.n is not None and outcome['credited'] and outcome['applied']:
             try:self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',cost_error=1-ratio)
             except Exception:pass
-        return {'reuse_ratio':ratio,'warm':list(memory_ids),'cache_rejected':rejected}
+        return {'reuse_ratio':ratio if outcome['credited'] else None,'warm':list(memory_ids),
+                'cache_rejected':rejected or bool(ratio is not None and not outcome['credited'])}
     def outcome(self,event_id,utility,source_class='internal_crosscheck'):
         """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
         u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY created DESC LIMIT 1",(event_id,))
