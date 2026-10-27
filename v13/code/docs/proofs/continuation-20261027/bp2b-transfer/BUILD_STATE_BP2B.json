@@ -1,0 +1,56 @@
+{
+  "schema": "v13-bp2b-transfer-build-state-v1",
+  "as_of_utc": "2026-10-27T12:15:00Z",
+  "owner": "automation11 BP2b transfer cohort",
+  "branch": "codex/automation11-bp2b-transfer-cohort-20261027",
+  "pr": 706,
+  "base_pr": 705,
+  "base_sha": "592e8975e52e3765e5acd893cd56aa69e936473f",
+  "status": "SOURCE_ONLY_PREPARED_NATIVE_NOT_RUN",
+  "prereg_commit": "6cdc0caec3a1ddc73a59b5c63290c6168eeecf00",
+  "software_run": 40501836243,
+  "run_head": "faf4896d5a9542c1d25da48a1f9e6eda57eb0d46",
+  "tests": "14/14 PASS",
+  "prepared_seeds": [
+    41,
+    42,
+    43
+  ],
+  "prepared_rows_per_seed": 32,
+  "raw_zip_sha256": "d2c96330be15593f8b0c1d10a0665fa7cedde5922c866bfbf7f48516cc13bf35",
+  "raw_zip_crc": "PASS",
+  "raw_artifact_id": 12733496282,
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP2b-Transfer-Cohort/bp2b-transfer-40501836243.zip",
+  "private_backup_byte_exact": true,
+  "source_git_blob": "853660938b55ac1d8ac3a022c942cd99f4fad7e2",
+  "source_pool_sha256": "7af8de5f8c052c2e008f517cc3b287e7d39d803d30c8efbaea1d9b2dacc08155",
+  "heldout_sha256": "2d974299db28854f6565bf9f00896d408c5ee000530e845fd6b6f37bc12ab113",
+  "seeds": {
+    "41": {
+      "train": "2519682a8d27e63419c30a226815d2bf2896c76ec6848d9ccd09a24c2bfe7f49",
+      "model_facing": "853c3abb8e703362e31a5936d06bb7af8ca53ace1c10cc11d349c2b97068ce87",
+      "scoring": "95983d3f3c4d7b27c0461b99d115f9b8a8a48ee73ee58cf4a23e19b178005576"
+    },
+    "42": {
+      "train": "068e9db4320578d56a705e2671afcfe005eced4c0dbac690a2996e9c0d591dad",
+      "model_facing": "06b0ff607ffb69b0b8200307ca88d2550b5b4ad084da81a99f1d325965e68542",
+      "scoring": "57c825470de5d9da95156a9b3b5ee4bf3d13fa43b1ab6876f10f5a02c9641d51"
+    },
+    "43": {
+      "train": "43bf3d7db1b33176586b041bf81bb86ca28aec00aa6f9bbc6253f6a2864d60d2",
+      "model_facing": "cba5c121f6cce69ece59c7edb73feb59b20aa1ed756a69bd09c68d70410b0e44",
+      "scoring": "d4b2e5eeff47ce1aab71ad3dd9898bcfbb6e80bc9c388306e7acd1d7c94758ea"
+    }
+  },
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "jepa_weight=0",
+    "Redmi_unmeasured",
+    "full_V13_incomplete"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_transfer_cohort tests.test_bp2b_locality_anchors",
+  "next_package": "build source-bound native 4-arm runner; pin master/tokenizer/adapter/seed and heavy owner before activation",
+  "blocked_native": "No native run authorized until master/source pins and serial heavy-job owner are checked"
+}
