@@ -170,8 +170,11 @@ class StateConditionedPrefix(nn.Module):
         if (source_prompt_ids.shape[0] != target_prompt_ids.shape[0]
                 or source_prompt_ids.device != target_prompt_ids.device):
             raise ValueError('Source and target prompt batch/device mismatch')
-        if torch.equal(source_prompt_ids, target_prompt_ids):
-            raise ValueError('Wrong-source control requires a distinct source prompt')
+        # A whole-batch equality check is insufficient: one identical row can
+        # silently act as an own-source control in an otherwise wrong-source batch.
+        if (source_prompt_ids.shape[1] == target_prompt_ids.shape[1]
+                and bool((source_prompt_ids == target_prompt_ids).all(dim=1).any())):
+            raise ValueError('Wrong-source control requires a distinct source prompt per row')
         features = self.prompt_features(source_prompt_ids)
         features = features.detach().to(device=self.predictor[0].weight.device,
                                         dtype=self.predictor[0].weight.dtype)

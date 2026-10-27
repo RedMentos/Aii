@@ -1,0 +1,46 @@
+name: V13 LP3 row-identity independent synthetic audit
+on:
+  push:
+    branches: [codex/automation11b-lp3-row-identity-audit-20261027]
+    paths:
+      - '.github/workflows/lp3-row-identity-review.yml'
+      - 'v13/code/v13/lp3_state_prefix.py'
+      - 'v13/code/tests/test_lp3_state_prefix.py'
+      - 'v13/code/BUILD_STATE.json'
+      - 'v13/code/docs/proofs/continuation-20261027/lp3-row-identity-audit/REPORT.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-row-identity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify per-row wrong-source controls with frozen tiny synthetic decoder
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/lp3-venv"
+          py="$RUNNER_TEMP/lp3-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2'
+          "$py" -m pip check
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_lp3_state_prefix
+          "$py" -m py_compile v13/lp3_state_prefix.py tests/test_lp3_state_prefix.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base 41ec2d4a4e83e7a35314c2603208b7e139da3572 --head HEAD
+          git diff --check 41ec2d4a4e83e7a35314c2603208b7e139da3572 HEAD
+          echo 'LP3_ROW_IDENTITY_SYNTHETIC_ONLY_NO_UTILITY_OR_AGE_PROMOTION'
