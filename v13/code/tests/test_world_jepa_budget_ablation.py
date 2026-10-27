@@ -23,15 +23,16 @@ class FrozenWorldBudgetAblationTests(unittest.TestCase):
         if not root or not Path(root).is_dir():
             raise unittest.SkipTest('Original SHA-bound Actions artifact not mounted')
         cls.root = Path(root)
-        cls.temp = tempfile.TemporaryDirectory()
-        cls.output = Path(cls.temp.name) / 'budget'
+        durable = os.environ.get('V13_BUDGET_OUTPUT_ROOT')
+        cls.temp = None if durable else tempfile.TemporaryDirectory()
+        cls.output = Path(durable) if durable else Path(cls.temp.name) / 'budget'
         cls.before = sorted((str(p.relative_to(cls.root)), sha(p))
                             for p in cls.root.rglob('*') if p.is_file())
         cls.report = ablate(cls.root, cls.output)
 
     @classmethod
     def tearDownClass(cls):
-        if hasattr(cls, 'temp'):
+        if getattr(cls, 'temp', None) is not None:
             cls.temp.cleanup()
 
     def test_all_four_exact_budgets_and_negative_gates(self):
