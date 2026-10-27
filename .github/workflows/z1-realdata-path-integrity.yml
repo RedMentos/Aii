@@ -1,0 +1,52 @@
+name: V13 Z1 real_data file path integrity software review
+on:
+  push:
+    branches: [codex/automation11-z1-realdata-path-integrity-20261027]
+    paths:
+      - '.github/workflows/z1-realdata-path-integrity.yml'
+      - 'v13/code/v13/gates.py'
+      - 'v13/code/tests/test_z1_realdata_path_integrity.py'
+      - 'v13/code/docs/proofs/continuation-20261027/z1-realdata-path-integrity/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-realdata-path-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Adversarial path proof checks, original verdicts, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/z1-realdata"
+          git rev-parse HEAD > "$RUNNER_TEMP/z1-realdata/HEAD.txt"
+          sha256sum v13/code/v13/gates.py v13/code/tests/test_z1_realdata_path_integrity.py > "$RUNNER_TEMP/z1-realdata/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_z1_realdata_path_integrity tests.test_z1_gate_evidence_type tests.test_register_gates) > "$RUNNER_TEMP/z1-realdata/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-realdata/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/gates.py v13/code/tests/test_z1_realdata_path_integrity.py > "$RUNNER_TEMP/z1-realdata/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-realdata/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6e10df6dafc433e668b1f28a1092e4c88d104aa3 --head HEAD > "$RUNNER_TEMP/z1-realdata/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z1-realdata/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-realdata-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/z1-realdata/
+          if-no-files-found: error
+      - name: Enforce software exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/z1-realdata/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/z1-realdata/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "Z1_REALDATA_PATH_SOFTWARE_ONLY_NO_GATE_PROMOTION"
