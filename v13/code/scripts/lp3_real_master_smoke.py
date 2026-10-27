@@ -61,11 +61,19 @@ def smoke(master):
         str(master), dtype=torch.float32, local_files_only=True)
     base.eval()
     candidate = StateConditionedPrefix(base, prefix_tokens=2)
-    prompts = [tok.apply_chat_template(
-        [{'role': 'user', 'content': q}],
-        add_generation_prompt=True, tokenize=True) for q in PROMPTS]
-    if not all(isinstance(ids, list) and ids and all(type(t) is int for t in ids) for ids in prompts):
-        raise ValueError('Tokenizer did not return prompt token ID lists')
+    def encode_prompt(q):
+        encoded = tok.apply_chat_template(
+            [{'role': 'user', 'content': q}],
+            add_generation_prompt=True, tokenize=True,
+            return_dict=True, return_tensors='pt')
+        if not hasattr(encoded, 'input_ids'):
+            raise ValueError('Tokenizer did not return BatchEncoding.input_ids')
+        ids = encoded.input_ids
+        if (not isinstance(ids, torch.Tensor) or ids.ndim != 2
+                or ids.shape[0] != 1 or ids.dtype != torch.long or not ids.shape[1]):
+            raise ValueError('Tokenizer input_ids must be a single nonempty LongTensor row')
+        return ids[0].tolist()
+    prompts = [encode_prompt(q) for q in PROMPTS]
     if len(prompts[0]) != len(prompts[1]):
         raise ValueError('Preregistered prompts tokenize to unequal lengths')
     answers = [tok.encode(a, add_special_tokens=False) for a in TARGETS]
