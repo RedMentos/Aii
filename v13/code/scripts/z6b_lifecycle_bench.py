@@ -86,7 +86,7 @@ def run_arm(installed, policy, seed):
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
-        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds; r.cfg['route_gate_outvoted'] = int('ov' in flags)  # WP-KL3
+        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds; r.cfg['route_gate_outvoted'] = 2 if 'ovs' in flags else int('ov' in flags)  # WP-KL3 / KL3b ('+ovs' strict on routes without outvoted labels)
         cache = {}
         def emb(text):
             if text not in cache:
@@ -271,6 +271,11 @@ def criteria_kl3(s):
     return c, 'KL3_FAIR_GATE_PASS' if all(c.values()) else 'KL3_FAIR_GATE_FAIL'
 
 
+def criteria_kl3b(s):
+    c, _ = criteria_kl3({'fixed+lex+rec+cv+ov': s['fixed+lex+rec+cv+ovs'], 'adaptive+lex+rec+cv+ov': s['adaptive+lex+rec+cv+ovs'], 'fixed': s['fixed']})
+    return c, 'KL3B_STRICT_GATE_PASS' if all(c.values()) else 'KL3B_STRICT_GATE_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -285,6 +290,9 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec+cv+ovs', 'adaptive+lex+rec+cv+ovs', 'fixed'} <= set(scores):
+        doc['criteria_kl3b'], doc['verdict_kl3b'] = criteria_kl3b(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3b-strict-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+lex+rec+cv+ov', 'adaptive+lex+rec+cv+ov', 'fixed'} <= set(scores):
         doc['criteria_kl3'], doc['verdict_kl3'] = criteria_kl3(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3-fair-gate/PREREG.md'
         doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
@@ -297,7 +305,7 @@ def main(argv=None):
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'verdict_kl3b', 'criteria_kl3b', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

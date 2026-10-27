@@ -71,6 +71,9 @@ class RouteFeaturesTest(unittest.TestCase):
             m = train({'config': cfg, 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels), 'texts': texts, 'active_checkpoint': str(parent)}, d)
             self.assertEqual(m['held_out']['folds'], 4); self.assertTrue(m['gradient_check']); self.assertTrue(m['deterministic_repeat'])
             self.assertTrue(m['commit_eligible'], m['held_out'])
+            for ov in (1, 2):
+                m2 = train({'config': dict(cfg, route_gate_outvoted=ov), 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels), 'texts': texts, 'active_checkpoint': str(parent)}, d)
+                self.assertIn('outvoted', m2['held_out']); self.assertTrue(m2['gradient_check'])
             with np.load(Path(d) / 'candidate.npz') as z: w = z['route_w']
             x = RF.build(features([[1., 0., 0.], [1., 0., 0.]]), ['Wie viel ist die Hälfte von 70 Euro?', 'Rechne 7 mal 5 aus.'])
             self.assertEqual(np.argmax(x @ w, axis=1).tolist(), [0, 1])

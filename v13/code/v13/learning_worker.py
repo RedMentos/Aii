@@ -79,11 +79,12 @@ def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
     ys=y[sc];oldloss,_,oldp=objective(x[sc],ys,w);np_=newp[sc]
     newloss=float(-np.log(np.maximum(np_[np.arange(len(ys)),ys],1e-30)).mean())
     hit_new=np_.argmax(1)==ys;hit_old=oldp.argmax(1)==ys
-    perclass={str(c):{'before':float(hit_old[ys==c].mean()),'after':float(hit_new[ys==c].mean()),'n':int((ys==c).sum())} for c in sorted(set(ys.tolist()))}
+    perclass={str(c):{'before':float(hit_old[ys==c].mean()),'after':float(hit_new[ys==c].mean()),'n':int((ys==c).sum()),'outvoted':int((outvoted&(y==c)).sum())} for c in sorted(set(ys.tolist()))}
     accuracy=float(hit_new.mean());before_acc=float(hit_old.mean());baseline=float(np.mean(scaffold[sc]==ys))
     held={'n':int(sc.sum()),'folds':k,'scored':'newest half per route, out of sample','loss_before':float(oldloss),'loss_after':newloss,'accuracy':accuracy,
           'parent_accuracy':before_acc,'scaffold_accuracy':baseline,'per_class':perclass,'outvoted':int(outvoted.sum())}
-    retained=all(v['after']>=v['before']-max(cfg['retention_max_delta'],1./v['n'])-1e-12 for v in perclass.values())
+    strict=int(cfg.get('route_gate_outvoted',0))>=2  # WP-KL3b: one-item tolerance only where newer evidence outvoted labels
+    retained=all(v['after']>=v['before']-(cfg['retention_max_delta'] if strict and not v['outvoted'] else max(cfg['retention_max_delta'],1./v['n']))-1e-12 for v in perclass.values())
     eligible=len(y)>=12 and len(perclass)==4 and newloss<oldloss and (accuracy>before_acc or (cfg.get('route_gate_outvoted',0) and accuracy>=before_acc)) and accuracy>=.75 and accuracy>=baseline and retained
     return new,tr,held,eligible,retained,err,deterministic
 
