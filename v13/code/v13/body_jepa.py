@@ -210,13 +210,17 @@ class BodyJepaTrainer(LoraTrainer):
         for item in items:
             if not isinstance(item,dict):raise ValueError('training item must be a dict')
             v=item.get('weight',1.)
-            if type(v) not in (int,float) or not math.isfinite(v) or v<0:
+            if type(v) not in (int,float):
                 raise ValueError('sample weights must be finite nonnegative numbers')
-            try: f32=struct.unpack('f',struct.pack('f',float(v)))[0]
+            try: value=float(v)
+            except OverflowError:raise ValueError('sample weight exceeds numeric range')
+            if not math.isfinite(value) or value<0:
+                raise ValueError('sample weights must be finite nonnegative numbers')
+            try: f32=struct.unpack('f',struct.pack('f',value))[0]
             except (OverflowError,struct.error):raise ValueError('sample weight exceeds float32 CE range')
-            if not math.isfinite(f32) or (v>0 and f32==0):
+            if not math.isfinite(f32) or (value>0 and f32==0):
                 raise ValueError('sample weight is not representable in float32 CE')
-            weights.append(float(v));effective.append(f32)
+            weights.append(value);effective.append(f32)
         try: total_f32=struct.unpack('f',struct.pack('f',sum(effective)))[0]
         except (OverflowError,struct.error):raise ValueError('sample weight sum exceeds float32 CE range')
         if not math.isfinite(total_f32) or total_f32<=0:
