@@ -8,8 +8,10 @@ what it already knows (error≈0, LP≈0). choose() picks a practice target; the
 exploration_rate (0 at Age 0) and the right active_info_search bound what it may do on
 its own. Blocked regions (user/hard rules) are never chosen.
 """
+import json
 import math
 import random
+from ..common import dumps
 from .base import StateBox,age_allows,budget,clamp01
 
 KEY='G5_CURIOSITY';REVISION='g5-curiosity-v1'
@@ -37,6 +39,60 @@ class Curiosity:
             r['errors']=(r['errors']+[e])[-WINDOW:];r['visits']+=1
             return self._value(r)
         return self.box.mutate(f)
+    def observe_once(self,region,error,event_id,session_id):
+        """One durable AG5 learning-error observation per source event.
+
+        The region update and receipt are a single SQLite transaction, so
+        neither a crash nor a repeated terminal hook creates a second visit.
+        Unbound synthetic observations still use observe() unchanged.
+        """
+        if type(error) not in (int,float):
+            raise ValueError('Prediction error must be numeric')
+        try:finite=math.isfinite(error)
+        except (OverflowError,ValueError,TypeError):finite=False
+        if not finite:
+            raise ValueError('Prediction error must be finite')
+        if not isinstance(region,str) or not 0<len(region)<=200:
+            raise ValueError('region: required bounded name')
+        if not isinstance(event_id,str) or not 0<len(event_id)<=128:
+            raise ValueError('event_id: required bounded source ID')
+        if not isinstance(session_id,str) or not 0<len(session_id)<=128:
+            raise ValueError('session_id: required bounded source ID')
+        e=clamp01(error)
+        key='G5_EVENT:'+event_id
+        with self.box.s.tx() as c:
+            event=c.execute('SELECT session_id FROM events WHERE id=?',(event_id,)).fetchone()
+            if event is None or event['session_id']!=session_id:
+                raise ValueError('curiosity outcome event/session mismatch')
+            old=c.execute('SELECT payload FROM states WHERE key=?',(key,)).fetchone()
+            if old is not None:
+                receipt=json.loads(old['payload'])
+                if not isinstance(receipt,dict) or receipt.get('region')!=region or receipt.get('session_id')!=session_id:
+                    raise ValueError('curiosity receipt already bound to another region/session')
+                return False
+            row=c.execute('SELECT payload,version FROM states WHERE key=?',(KEY,)).fetchone()
+            st=json.loads(row['payload']) if row else {'regions':{},'blocked':[],'revision':REVISION}
+            if st.get('revision')!=REVISION:
+                raise ValueError('curiosity state revision mismatch')
+            r=st['regions'].get(region)
+            if r is None:
+                if len(st['regions'])>=MAX_REGIONS:
+                    least=min(st['regions'],key=lambda k:st['regions'][k]['visits'])
+                    st['regions'].pop(least)
+                r=st['regions'][region]={'errors':[],'visits':0}
+            r['errors']=(r['errors']+[e])[-WINDOW:]
+            r['visits']+=1
+            if row:
+                cursor=c.execute('UPDATE states SET payload=?,version=? WHERE key=? AND version=?',
+                                 (dumps(st),row['version']+1,KEY,row['version']))
+                if cursor.rowcount!=1:
+                    raise ValueError('stale curiosity state')
+            else:
+                c.execute('INSERT INTO states VALUES (?,?,?)',(KEY,1,dumps(st)))
+            c.execute('INSERT INTO states VALUES (?,?,?)',
+                      (key,1,dumps({'region':region,'session_id':session_id,'error':e})))
+        return True
+
     @staticmethod
     def _lp(errors):
         if len(errors)<4:return 0.
