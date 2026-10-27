@@ -1,0 +1,97 @@
+name: V13 BP1 QAD SCALE0 independent native raw audit and rescore
+on:
+  push:
+    branches: [codex/automation11-bp1-v2-scale0-independent-20261027]
+    paths:
+      - '.github/workflows/bp1-v2-scale0-independent.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-v2-scale0-independent/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-v2-scale0-independent-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DO_NOT_TRACK: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      V13_NO_AUTOSTART: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Download immutable original ZIPs and independently rescore
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-independent"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-independent/HEAD.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/bp1-independent/TREE.txt"
+          python3 - <<'PY' > "$RUNNER_TEMP/bp1-independent/SOURCE_PARITY_RAW.log" 2>&1
+          import subprocess
+          head='4fe821b7db267142895c148092af5597aad128a7'
+          paths=['v13/code/scripts/bp1_qad_v2_raw_audit.py','v13/code/scripts/bp1_qad_v2_rescore.py',
+                 'v13/code/tests/test_bp1_qad_v2_raw_audit.py','v13/code/tests/test_bp1_qad_v2_rescore.py']
+          for p in paths:
+              got=subprocess.check_output(['git','rev-parse','HEAD:'+p],text=True).strip()
+              expected=subprocess.check_output(['git','rev-parse',head+':'+p],text=True).strip()
+              if got!=expected:raise RuntimeError('SOURCE_DRIFT '+p)
+          print('EXACT_AUDITOR_BLOBS',len(paths))
+          PY
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/SOURCE_PARITY_EXIT.txt"
+          curl -fsSL --retry 2 --connect-timeout 15 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12727819132/zip \
+            -o "$RUNNER_TEMP/bp1-independent/native.zip" > "$RUNNER_TEMP/bp1-independent/NATIVE_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/NATIVE_DOWNLOAD_EXIT.txt"
+          curl -fsSL --retry 2 --connect-timeout 15 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip \
+            -o "$RUNNER_TEMP/bp1-independent/dataset.zip" > "$RUNNER_TEMP/bp1-independent/DATASET_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/DATASET_DOWNLOAD_EXIT.txt"
+          if [ -s "$RUNNER_TEMP/bp1-independent/native.zip" ] && [ -s "$RUNNER_TEMP/bp1-independent/dataset.zip" ]; then
+            sha256sum "$RUNNER_TEMP/bp1-independent/native.zip" "$RUNNER_TEMP/bp1-independent/dataset.zip" > "$RUNNER_TEMP/bp1-independent/ORIGINAL_SHA256.txt"
+            printf '%s  %s\n' 'ab102549b6a5538157572617f39e512e840a540bda683e502c7ab72c7b87f315' "$RUNNER_TEMP/bp1-independent/native.zip" '12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c' "$RUNNER_TEMP/bp1-independent/dataset.zip" | sha256sum -c - > "$RUNNER_TEMP/bp1-independent/ZIP_BINDING_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-independent/ZIP_BINDING_EXIT.txt"
+            unzip -p "$RUNNER_TEMP/bp1-independent/native.zip" V2_ADAPTER_LOCATOR_EXIT.txt > "$RUNNER_TEMP/bp1-independent/LOCATOR_EXIT.txt"
+            test "$(cat "$RUNNER_TEMP/bp1-independent/LOCATOR_EXIT.txt")" = 0
+            echo "$?" > "$RUNNER_TEMP/bp1-independent/LOCATOR_VERIFY_EXIT.txt"
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 scripts/bp1_qad_v2_rescore.py \
+              --native-zip "$RUNNER_TEMP/bp1-independent/native.zip" \
+              --dataset-zip "$RUNNER_TEMP/bp1-independent/dataset.zip" \
+              --expected-head 813458125cb98a0a9ad552305607e6155dee90a7 \
+              --expected-zip-sha ab102549b6a5538157572617f39e512e840a540bda683e502c7ab72c7b87f315) > "$RUNNER_TEMP/bp1-independent/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-independent/AUDIT_EXIT.txt"
+          else
+            echo 1 > "$RUNNER_TEMP/bp1-independent/ZIP_BINDING_EXIT.txt"
+            echo 1 > "$RUNNER_TEMP/bp1-independent/LOCATOR_VERIFY_EXIT.txt"
+            echo 1 > "$RUNNER_TEMP/bp1-independent/AUDIT_EXIT.txt"
+            echo "PREREQUISITE_ZIP_MISSING" > "$RUNNER_TEMP/bp1-independent/AUDIT_RAW.log"
+          fi
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_v2_raw_audit tests.test_bp1_qad_v2_rescore) > "$RUNNER_TEMP/bp1-independent/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_v2_raw_audit.py v13/code/scripts/bp1_qad_v2_rescore.py v13/code/tests/test_bp1_qad_v2_raw_audit.py v13/code/tests/test_bp1_qad_v2_rescore.py > "$RUNNER_TEMP/bp1-independent/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 813458125cb98a0a9ad552305607e6155dee90a7 --head HEAD > "$RUNNER_TEMP/bp1-independent/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-independent/PRIVACY_EXIT.txt"
+          rm -f "$RUNNER_TEMP/bp1-independent/native.zip" "$RUNNER_TEMP/bp1-independent/dataset.zip"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-v2-scale0-independent-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-independent/
+          if-no-files-found: error
+      - name: Enforce independent original ZIP and scorer gates
+        run: |
+          set -euo pipefail
+          for n in SOURCE_PARITY NATIVE_DOWNLOAD DATASET_DOWNLOAD ZIP_BINDING LOCATOR_VERIFY AUDIT UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-independent/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp1-independent/${n}_RAW.log" 2>/dev/null || true; exit 1;
+            }
+          done
+          echo "BP1_NATIVE_44_RESPONSE_RAW_AND_RESCORE_PASS_NO_LEARNED_UTILITY"
