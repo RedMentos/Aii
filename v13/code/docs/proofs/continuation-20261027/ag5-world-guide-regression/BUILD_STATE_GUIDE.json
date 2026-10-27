@@ -1,0 +1,49 @@
+{
+  "schema": "V13_AG5_WORLD_GUIDE_REVIEW_V1",
+  "date": "2026-10-27",
+  "branch": "codex/ag5-world-guide-regression-review-20261027",
+  "scope": "DISPOSABLE_MERGE_REVIEW_ONLY",
+  "base": "763476dd368909e4feff133310872ad5eaf75dc2",
+  "source_commit": "7766d2aa34c720c21be12110c90bdab4006882dd",
+  "workflow_commit": "7b3e3ffdf2c446da5219c7813f98ef11da37d1c1",
+  "original_red": {
+    "run": 40458296328,
+    "head": "763476dd368909e4feff133310872ad5eaf75dc2",
+    "tests": 4424,
+    "fail": 7,
+    "error": 73,
+    "skipped": 28,
+    "artifact": 12714150443,
+    "zip_sha256": "f6fe7cb6c8735bf66d68d09b5b88e743c941b30376bbd53e1aaf17d4a1e2499d"
+  },
+  "focused_green": {
+    "run": 40460150870,
+    "head": "7b3e3ffdf2c446da5219c7813f98ef11da37d1c1",
+    "tests": 50,
+    "fail": 0,
+    "skipped": 1,
+    "resolve_exit": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "artifact": 12713823451,
+    "zip_sha256": "1fa38673be629e4aee863a88ea6dee12365ba13129e4f94cc2ddb735c27688ff"
+  },
+  "private_backups_byte_reverified": true,
+  "owner": "GPT-6 independent AG5 World review",
+  "next_owner": "full-suite regression auditor and integration coordinator",
+  "next_command": "On disposable merge from this branch, run full unittest discover and compare exact failures to known AG5 baseline; do not merge main or promote gates",
+  "open_questions": [
+    "Historical full-suite 5 FAIL and 73 ERROR remain",
+    "Claude PR666 does not contain committed AG5 merged runtime",
+    "No two-parent remote merge commit or Redmi proof"
+  ],
+  "evidence_level": "LINUX_SYNTHETIC_SOFTWARE_ONLY",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  }
+}
