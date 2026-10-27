@@ -58,6 +58,12 @@ class EventScheduler:
         if kind not in PRIORITY:raise ValueError('Unbekannter Event-Typ: '+str(kind))
         if origin not in ORIGINS:raise ValueError('origin USER|SYSTEM|SELF')
         if action not in ACTIONS:raise ValueError('Unbekannte Scheduler-Aktion: '+str(action))
+        # Foreground kinds are signals, never a route around background resource,
+        # idle, quiet-hours or burn-out gates for executable sleep/learning jobs.
+        if kind in FOREGROUND and action not in (None,'notice'):
+            raise ValueError('Foreground-Ereignisse dürfen keine Hintergrundaktion ausführen')
+        if kind=='USER_INPUT' and origin!='USER':
+            raise ValueError('USER_INPUT benötigt origin USER')
         dumps(payload or {})
         st,v=self._load();now=self.clock()
         if dedup and any(e['dedup']==dedup and e['status'] in {'PENDING','DISPATCHED','HELD_AGE'} for e in st['events']):
