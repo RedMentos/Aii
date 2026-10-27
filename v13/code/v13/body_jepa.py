@@ -176,7 +176,7 @@ from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,
 from .common import digest,dumps,atomic_write
 
 REVISION='v13-body-jepa-trainer-v1'
-DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4,locality_policy='legacy')
+DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4)
 
 class BodyJepaTrainer(LoraTrainer):
     """LoRA body trainer with the §13 B-JEPA term (EMA adapter target + predictor) next to answer CE and KL anchors.
