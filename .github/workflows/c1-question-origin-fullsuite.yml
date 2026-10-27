@@ -1,0 +1,79 @@
+name: V13 C1 question-origin full software regression
+on:
+  push:
+    branches: [assistant/v13-c1-question-origin-binding-review-20261027]
+    paths:
+      - '.github/workflows/c1-question-origin-fullsuite.yml'
+      - 'v13/code/v13/executive.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-question-origin-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture complete raw software evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-question-origin-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_executive_question_origin_binding_review.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor c039da2893dd8d9aa15680c713cf8d55223966d0 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor b2de32645c96dffd1045ab31975876c1b42feb7f HEAD
+          echo "$?" > "$evidence/RED_TEST_COMMIT_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-question-origin-full-venv"
+          py="$RUNNER_TEMP/c1-question-origin-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b29c0436e5c39c2bda9ab6711b1437725a6c110f --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check b29c0436e5c39c2bda9ab6711b1437725a6c110f HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-question-origin-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-question-origin-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all genuine exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-question-origin-full"
+          for name in PREREG RED_TEST_COMMIT INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_QUESTION_FULL_SOFTWARE_ONLY_NO_AGE_PROMOTION'
