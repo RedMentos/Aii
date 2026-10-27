@@ -161,11 +161,34 @@ def gguf(model, server, log_path, port=8834):
             stop(proc)
 
 
+def _same_preregistered_value(actual, expected):
+    """Type-strict recursive equality; Python considers True == 1 otherwise."""
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return (actual.keys() == expected.keys() and
+                all(_same_preregistered_value(actual[key], value)
+                    for key, value in expected.items()))
+    if isinstance(expected, list):
+        return (len(actual) == len(expected) and
+                all(_same_preregistered_value(a, b) for a, b in zip(actual, expected)))
+    return actual == expected
+
+
 def compare(hf_report, gguf_report):
+    if not isinstance(hf_report, dict) or not isinstance(gguf_report, dict):
+        raise ValueError("invalid source model arms")
     if hf_report.get("mode") != "QAD_FP32_TRANSFORMERS" or gguf_report.get("mode") != "QAD_Q4_GGUF_LLAMA_CPP":
         raise ValueError("invalid source model arms")
     if hf_report.get("model_sha256") != MASTER_SHA or gguf_report.get("model_sha256") != GGUF_SHA:
         raise ValueError("model source hashes mismatch")
+    for report, mode, source_sha in (
+        (hf_report, "QAD_FP32_TRANSFORMERS", MASTER_SHA),
+        (gguf_report, "QAD_Q4_GGUF_LLAMA_CPP", GGUF_SHA),
+    ):
+        for key, expected in common(mode, source_sha).items():
+            if not _same_preregistered_value(report.get(key), expected):
+                raise ValueError(f"preregistered native {mode} {key} mismatch")
     a, b = hf_report.get("records"), gguf_report.get("records")
     if not isinstance(a, list) or not isinstance(b, list) or len(a) != 4 or len(b) != 4:
         raise ValueError("incomplete native paired records")
