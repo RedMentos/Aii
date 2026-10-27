@@ -214,7 +214,7 @@ def goal_turn(r,e,meta,status):
     # A measured grounding error is usable only after that receipt check.
     error=(float(gerr) if answered and type(gerr) in (int,float) and math.isfinite(gerr)
            else (0. if answered else 1.))
-    g.curiosity.observe('route:'+str(sel.get('route_hint') or 'unknown'),error)
+    g.curiosity.observe_once('route:'+str(sel.get('route_hint') or 'unknown'),error,eid,r.session)
     if delivered:
         # This is still a structural delivery check, not semantic task success.
         if not answered:return
