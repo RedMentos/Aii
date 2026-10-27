@@ -12,6 +12,7 @@ from scripts import bp1_paired_score as S
 
 MASTER_SHA = B.QAD_MASTER_SHA
 TRAIN_SHA = B.TRAIN_SHA
+TOKEN_AUDIT_SHA = "d6c67a1de8df4d056c674a2195f86a31c97636385f8cf37061b33c544e38ac40"
 TOKENIZER_SHA = "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd"
 TEMPLATE_SHA = "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6"
 ANCHORS = (
@@ -78,6 +79,8 @@ def run(train_path, token_audit_path, model_dir, out, *, owner_confirmed=False,
         execute_native=False, trainer_factory=None):
     rows, train_sha = B.load_train(train_path)
     report_raw = Path(token_audit_path).read_bytes()
+    if hashlib.sha256(report_raw).hexdigest() != TOKEN_AUDIT_SHA:
+        raise ValueError("original closed QAD token audit bytes mismatch")
     report = S.parse_json(report_raw.decode("utf-8"))
     validate_audit(report)
     items = make_items(rows)
