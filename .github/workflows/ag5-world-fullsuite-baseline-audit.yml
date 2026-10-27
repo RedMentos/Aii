@@ -115,7 +115,7 @@ jobs:
           from pathlib import Path
           root=Path(os.environ['RUNNER_TEMP'])/'mergeproof'
           raw=(root/'UNIT_RAW.log').read_text(errors='replace') if (root/'UNIT_RAW.log').exists() else ''
-          m=re.search(r'Ran (\\d+) tests in [0-9.]+s\\s+FAILED \\(failures=(\\d+), errors=(\\d+), skipped=(\\d+)\\)', raw)
+          m=re.search(r'Ran (\d+) tests in [0-9.]+s\s+FAILED \(failures=(\d+), errors=(\d+), skipped=(\d+)\)', raw)
           found=tuple(map(int,m.groups())) if m else None
           guide_failure=bool(re.search(r'^FAIL: test_every_operator_command_is_explained',raw,re.M))
           expected=(4424,5,73,28)
@@ -123,7 +123,7 @@ jobs:
                   'expected':expected,'guide_failure':guide_failure,
                   'unit_exit':(root/'UNIT_EXIT.txt').read_text().strip() if (root/'UNIT_EXIT.txt').exists() else None,
                   'baseline_red_equivalent':found==expected and not guide_failure}
-          (root/'BASELINE_AUDIT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\\n')
+          (root/'BASELINE_AUDIT.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
           print(json.dumps(report,sort_keys=True))
           PY
       - name: Upload all conflict stages, candidate patch and raw tests including RED
