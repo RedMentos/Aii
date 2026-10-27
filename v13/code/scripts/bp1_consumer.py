@@ -125,7 +125,7 @@ def cmd_eval(a):
     arms = {'offers': [oc.messages(i) for i in items], 'removed': [oc.messages(i, []) for i in items],
             'shuffled': [oc.messages(i, o) for i, o in zip(items, shuf)]}
     res = {'adapter': a.adapter, 'seed': a.seed, 'n': len(items), 'revision': oc.REVISION, 'arms': {}, 'answers': {}}
-    runs = [('adapter' if adapter else 'base', None)] + ([('base_adapter_off', 'off')] if adapter else [])
+    runs = [('adapter' if adapter else 'base', None)] + ([('base_adapter_off', 'off')] if adapter and not a.skip_base else [])
     for tag, mode in runs:
         for arm, ml in arms.items():
             if mode == 'off':
@@ -172,6 +172,6 @@ if __name__ == '__main__':
     t.add_argument('--batch', type=int, default=8); t.add_argument('--max-steps', type=int, default=0)
     e = sub.add_parser('eval')
     e.add_argument('--master', required=True); e.add_argument('--adapter', default='none'); e.add_argument('--out', required=True)
-    e.add_argument('--per-family', type=int, default=30); e.add_argument('--seed', type=int, default=101)
+    e.add_argument('--per-family', type=int, default=30); e.add_argument('--seed', type=int, default=101); e.add_argument('--skip-base', action='store_true')
     a = ap.parse_args()
     {'train': cmd_train, 'eval': cmd_eval}[a.cmd](a)
