@@ -1,0 +1,52 @@
+{
+  "schema": "V13_BP1_V2_SCALE0_INDEPENDENT_NATIVE_AUDIT_20261027",
+  "owner": "GPT-6 automation11",
+  "review_pr": 700,
+  "base_pr": 697,
+  "source_head": "813458125cb98a0a9ad552305607e6155dee90a7",
+  "prereg": "e23b7228223cea92af108a4da234aad56705f6ec",
+  "audit_source_parent": "4fe821b7db267142895c148092af5597aad128a7",
+  "auditor_blobs_exact": 4,
+  "original_native_run": 40490945294,
+  "original_native_artifact": 12727819132,
+  "original_native_zip_sha256": "ab102549b6a5538157572617f39e512e840a540bda683e502c7ab72c7b87f315",
+  "dataset_artifact": 12715684803,
+  "dataset_zip_sha256": "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c",
+  "independent_audit_run": 40494191600,
+  "independent_audit_artifact": 12729836741,
+  "independent_audit_zip_sha256": "0bfaed8c6a315694e4ff58c7ba6787f79b6d4017d2efcaa3a1ba4c8af2ffcbda",
+  "tests": "17/17 PASS; audit/ZIP/SHA/CRC/exit/source/44-row/quote-rescore/compile/privacy exit0",
+  "results": {
+    "base_no_offer_supported": 0,
+    "base_offer_supported": 2,
+    "candidate_no_offer_supported": 0,
+    "candidate_offer_supported": 0,
+    "n_per_arm": 11,
+    "candidate_vs_base_offer_losses": 2,
+    "candidate_vs_base_offer_wins": 0,
+    "train_ce_first": 0.90984,
+    "train_ce_last": 0.64171,
+    "adapter_nonzero_lora_b": 38912,
+    "train_rows": 25,
+    "native_responses": 44
+  },
+  "status": "NATIVE_SOURCE_BOUND_PASS_LEARNED_UTILITY_NEGATIVE",
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-V2-SCALE0-40490945294/",
+  "backup_original_bytes_verified": true,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "After no active native owner, preregister a new source-disjoint C3 objective/ablation; use current frozen QAD source/model/seed hashes unchanged for historical comparisons; do not reuse heldout for training.",
+  "open_questions": [
+    "Why 2-step LoRA CE improvement fails heldout source-quote support",
+    "Independent near-miss and retention 48-response native cohort not run",
+    "No Redmi sustained native training proof; no Body-JEPA native receiver utility"
+  ]
+}
