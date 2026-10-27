@@ -90,6 +90,46 @@ class StateConditionedPrefixTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.candidate.greedy(torch.ones((2, 47), dtype=torch.long), max_new_tokens=2)
 
+    def test_variable_length_wrong_source_controls_answer_and_next_token(self):
+        target = self.prompt[:1]
+        answer = self.answer[:1]
+        source = torch.tensor([[7, 8, 9, 10, 11]], dtype=torch.long)
+        own = self.candidate.answer_logits(target, answer)
+        wrong = self.candidate.answer_logits_from_source(target, source, answer)
+        self.assertEqual(tuple(own.shape), tuple(wrong.shape))
+        self.assertGreater(float((own - wrong).abs().max()), 1e-8)
+        next_own = self.candidate.next_token_logits(target)
+        next_wrong = self.candidate.next_token_logits_from_source(target, source)
+        self.assertEqual(tuple(next_own.shape), tuple(next_wrong.shape))
+        self.assertGreater(float((next_own - next_wrong).abs().max()), 1e-8)
+        self.candidate.zero_grad(set_to_none=True)
+        loss = self.candidate.answer_loss_from_source(target, source, answer)
+        loss.backward()
+        self.assertGreater(sum(float(p.grad.abs().sum()) for p in
+                               self.candidate.predictor.parameters() if p.grad is not None), 0)
+        self.assertGreater(sum(float(p.grad.abs().sum()) for p in
+                               self.candidate.prefix_projector.parameters() if p.grad is not None), 0)
+        self.assertTrue(all(p.grad is None for p in self.candidate.base.parameters()))
+        self.assertEqual(tuple(self.candidate.greedy_from_source(
+            target, source, max_new_tokens=2).shape), (1, 2))
+
+    def test_wrong_source_rejects_identity_bad_batch_and_invalid_tokens(self):
+        target = self.prompt[:1]
+        answer = self.answer[:1]
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits_from_source(target, target, answer)
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits_from_source(
+                target, self.prompt, answer)
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits_from_source(
+                target, torch.tensor([[999, 2, 3]], dtype=torch.long), answer)
+        with self.assertRaises(ValueError):
+            self.candidate.greedy_from_source(target, target, max_new_tokens=2)
+        with self.assertRaises(ValueError):
+            self.candidate.next_token_logits_from_source(
+                target, torch.empty((1, 0), dtype=torch.long))
+
     def test_supplied_features_cannot_encode_target_tokens(self):
         reference = self.candidate.prompt_features(self.prompt)
         self.assertEqual(tuple(self.candidate.answer_logits(
