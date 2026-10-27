@@ -17,7 +17,7 @@
   "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZP-C1-Source-Action/",
   "private_backup_byte_exact": true,
   "fullsuite_actions": 40579940901,
-  "fullsuite_status": "PENDING_AT_CLOSURE",
+  "fullsuite_status": "SUCCESS",
   "redmi_measured": false,
   "step2": "UTILITY_FAIL",
   "b3": "L1_FAIL",
@@ -28,5 +28,9 @@
   "age_authority": 0,
   "canonical_architecture_complete": false,
   "user_full_scope_complete": false,
-  "next": "Verify fullsuite and foreign-session counterexample; independent review and reconcile with current C1 chain."
+  "next": "Verify fullsuite and foreign-session counterexample; independent review and reconcile with current C1 chain.",
+  "fullsuite_tests": "1948 OK (1 skipped)",
+  "fullsuite_artifact_id": 12769022387,
+  "fullsuite_artifact_sha256": "3fc4dc98e602ea2d6a807f040584af05c7d333763c2a84d459d3c0b8857f2b57",
+  "fullsuite_private_backup_byte_exact": true
 }
