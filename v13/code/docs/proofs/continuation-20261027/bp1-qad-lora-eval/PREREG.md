@@ -1,0 +1,13 @@
+# BP1 QAD LoRA adapter paired native collector/scorer — additive V2 prereg (2026-10-27)
+
+Owner: GPT-6 automation11, review-only branch `codex/automation11-bp1-qad-lora-eval-20261027`, child of PR #684 at `18130b4b663705aed167fcf7b052a6eb6e38831e`. **Native adapter training is not yet verified**; this package implements only software collector/scorer integration with mocked server. No heldout execution or utility claim until the 25-row native train proof is closed and independently audited.
+
+Problem: existing `bp1_native_collect.py` and `bp1_paired_score.py` support two distinct full GGUF models, but canonical C3 training produces a LoRA **adapter GGUF**, not a full candidate model. Treating the adapter hash as the candidate full-GGUF hash would misrepresent source identity. Preserve original V1 protocols and cohorts unchanged.
+
+Additive V2 binding explicitly records one base QAD Q4 GGUF SHA, a separate candidate adapter GGUF SHA, official QAD master SHA, source train SHA, runner SHA, native training proof SHA, seed 13, greedy JSON-schema decoding, scale0 base vs scale1 candidate, no production authority. Source-disjoint heldout data remain immutable: 11 paired sources × no_offer/offer × base/candidate = 44 responses. Only the prompt is sent; never target or answer key. `llama-server` loads one base model and one LoRA with `--lora-init-without-apply`, and per-request `lora:[{id:0,scale:0/1}]` selects arm. Explicitly verify loaded adapter id/path before collection. Original V1 scorer retains identical default behavior; new V2 passes an explicit validator and emits a separate schema.
+
+Primary source basis: upstream llama.cpp server README documents per-request LoRA `lora` id/scale, `--lora-init-without-apply`, and schema-constrained chat completion. Reference: https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md . Actual pinned b10964 runtime behavior **still requires native proof**, not inferred from current docs.
+
+Software RED/negative tests before native: reject adapter hash == base, wrong runner/master/train hash, missing train proof, changed seed/scale/gates, heldout split drift, duplicate predictions, target leakage into outbound payload, missing adapter in server, resume mismatches, and missing 44 predictions. Preserve raw failures, source hashes and original negative gates. Do not alter original scorer semantics, native source cohorts, training dataset, seed or approvals.
+
+No native utility or training claim. STEP2 UTILITY_FAIL, B3 L1_FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, full V13 incomplete.
