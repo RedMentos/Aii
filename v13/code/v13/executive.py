@@ -119,7 +119,9 @@ class Executive:
             value=self.s.read_source(ref)
             return (decision.get('source_ref')==ref
                     and decision.get('value')==value
-                    and value!='CLEAR_ACTIVE_TASK'
+                    and (decision.get('task_operation')=='SET'
+                         or (decision.get('task_operation') is None
+                             and value!='CLEAR_ACTIVE_TASK'))
                     and decision.get('learning_permission')=='record')
         except (ValueError,TypeError,KeyError,OSError):
             return False
@@ -242,7 +244,7 @@ class Executive:
         if not clear and (not isinstance(value,str) or not value.strip() or len(value.encode())>4096):raise ValueError('Executive-Aufgabe: 1..4096 Bytes')
         event=json.loads(self.s.one('SELECT packet FROM events WHERE id=?',(old['last_event_id'],))['packet'])
         source=self.s.source(value or 'CLEAR_ACTIVE_TASK','HUMAN_DECISION')
-        self.s.add_packet('HumanDecision',packet('HumanDecision','F5_HUMAN_CONTROL',event['event_id'],event['brain_generation_id'],[source],kind='executive_task',value=value or 'CLEAR_ACTIVE_TASK',source_ref=source,learning_permission='record'))
+        self.s.add_packet('HumanDecision',packet('HumanDecision','F5_HUMAN_CONTROL',event['event_id'],event['brain_generation_id'],[source],kind='executive_task',value=value or 'CLEAR_ACTIVE_TASK',source_ref=source,learning_permission='record',task_operation='CLEAR' if clear else 'SET'))
         state=json.loads(dumps(old));fresh=packet('ExecState','C1_EXEC',event['event_id'],event['brain_generation_id'],session_id=session,state_version=v+1,goal=old['goal'],constraints=self.s.rules(),last_event_id=event['event_id'])
         state.update({name:fresh[name] for name in ['packet_id','created_monotonic_ns','created_wall_time']})
         if clear:state['open_questions']=[]
