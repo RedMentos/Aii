@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN635_PINNED_UPSTREAM_GGUF_EXPORT_PENDING_V1",
+  "schema": "V13_RUN635_SELECTED_C3_MASTER_LORA_EXPORTED_NATIVE_V2",
   "date_utc": "2026-10-27",
   "branch": "codex/automation11-run635-c3-upstream-gguf-export-20261027",
   "owner": "GPT-6 automation C3 native export package",
@@ -10,7 +10,7 @@
   "workflow_commit": "3019cf7c18170290a54d29aca0fd07203ba857dd",
   "workflow_blob": "108b275af88a406440e4a3e341490127c0744289",
   "run_id": 40428833150,
-  "status": "PENDING_UNVERIFIED",
+  "status": "LINUX_NATIVE_MASTER_LORA_EXPORT_PASS_UTILITY_NOT_PROVEN",
   "upstream": {
     "repo": "ggml-org/llama.cpp",
     "tag": "b10964",
@@ -35,5 +35,42 @@
     "V13_complete": false
   },
   "production_integrated": false,
-  "next_exact_command": "Inspect exact-source Actions 40428833150, download SHA-closed raw, verify LFM2 GGUF preflight and adapter export/LoRA-B. Back up privately with byte readback. If native RED, preserve raw and switch to independent canonical package; if GREEN, plan selected deployed GGUF parity/utility."
+  "next_exact_command": "Use frozen Run635 original adapter GGUF SHA 3674e88f... and source proof/COHORT_V2 to execute separately preregistered Run636 selected deployed C3 QAD Q4 llama.cpp b10964 native HF-token parity/base/scale0/scale1 6-case utility; never promote STEP2 from synthetic master training.",
+  "verified_run": {
+    "run_id": 40428833150,
+    "head_sha": "3019cf7c18170290a54d29aca0fd07203ba857dd",
+    "conclusion": "success",
+    "source_tests": "13/13_PASS",
+    "upstream_gguf_preflight": "PASS",
+    "template_parity": "PASS",
+    "master_sha_license": "PASS",
+    "train_exit": 0,
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "bd2ffc2969b3b98f8c64a4f776fc7195599a78e74802ace26b59c3dcb576c675",
+    "inner_sha_verified": 22,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run635/Run635-native-GREEN-40428833150.zip",
+    "roundtrip": "PASS",
+    "adapter": {
+      "gguf_sha256": "3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599",
+      "gguf_bytes": 339296,
+      "gguf_tensors": 44,
+      "peft_sha256": "f857aeb02366c8e98d94fe7d1e6c6de93ed4114b9e1a20e8ef190eb2910124c5",
+      "lora_b_nonzero": 38912,
+      "lora_b_tensors": 22
+    },
+    "metrics": {
+      "steps": 2,
+      "trainable_parameter_count": 83968,
+      "final_ce": 6.95563,
+      "initial_ce": 8.43541,
+      "master_learned_recall": 0,
+      "master_kl_to_base": 0.007352328859269619,
+      "peak_rss_mb": 2422.9,
+      "seconds": 10.59,
+      "training_device": "Linux torch CPU",
+      "jepa_weight": 0
+    },
+    "deployed_parity_proven": false,
+    "semantic_utility_proven": false
+  }
 }
