@@ -418,8 +418,10 @@ class Learner:
         if path is None:return None
         import numpy as np
         from .learning_worker import features
+        from .route_features import for_head
         x=features([self.embedding(text,source_id,deadline)])
-        with np.load(path,allow_pickle=False) as z:logits=(x@z['route_w'])[0]
+        with np.load(path,allow_pickle=False) as z:w=z['route_w']
+        logits=(for_head(x,[text],w.shape[0])@w)[0]  # WP-KL1: the checkpoint's shape says whether it reads the word channel
         p=np.exp(logits-logits.max());p/=p.sum();order=np.argsort(p)
         return {'route':ROUTES[int(order[-1])],'probabilities':p.tolist(),'margin':float(p[order[-1]]-p[order[-2]]),'generation':self.s.generation_id,'calibrated':False}
     def context_revision(self,component):
@@ -565,7 +567,9 @@ class Learner:
         if not features_['in_support']:return {'status':'OUT_OF_SUPPORT','routing_authority':0}
         import numpy as np
         from .learning_worker import features
-        with np.load(self.active(),allow_pickle=False) as a:logits=(features([features_['teacher_feature_prediction']])@a['route_w'])[0]
+        from .route_features import for_head
+        with np.load(self.active(),allow_pickle=False) as a:w=a['route_w']
+        logits=(for_head(features([features_['teacher_feature_prediction']]),[self.s.read_source(e['source_ref'])],w.shape[0])@w)[0]
         return {'route':ROUTES[int(np.argmax(logits))],'percept':p}
     def compare_student_route(self,e,teacher):
         """Actual JEF classifier consumer in T1 shadow (T2 fallback is gated in aplane.py)."""
@@ -792,7 +796,8 @@ class Learner:
         for ancestor in [entry['update_id'] for kind,entry in self.s.components().items() if kind=='route' and entry.get('update_id')]:
             u=self.s.one('SELECT manifest FROM updates WHERE id=?',(ancestor,))
             if u:lineage.extend(json.loads(u['manifest']).get('source_ids',[]))
-        emb=[];labels=[];baselines=[];manifest={'commit_eligible':False,'component':'route','encoder_revision':self.r.models.revision('C2_CONTROL'),'source_ids':lineage,'objective':'explicit-human-route-cross-entropy-v1','scope':'external_route_head_only','body_learning':False,'base_generation':base}
+        emb=[];labels=[];baselines=[];words=bool(self.r.cfg.get('route_word_channel',0));manifest={'commit_eligible':False,'component':'route','encoder_revision':self.r.models.revision('C2_CONTROL'),'source_ids':lineage,'objective':'explicit-human-route-cross-entropy-v1','scope':'external_route_head_only','body_learning':False,'base_generation':base}
+        if words:from .route_features import REVISION as WR;manifest['feature_view']={'kind':'needle+words','revision':WR,'fixed_rule':False}
         if superseded:manifest['superseded_labels']=superseded
         with self.s.tx() as c:c.execute('INSERT INTO updates VALUES (?,?,?,?,?,?,?)',(uid_,base,'SHADOW_TRAINING',None,None,dumps(manifest),now()))
         try:
@@ -800,7 +805,7 @@ class Learner:
                 check(self.r.cancel_event,deadline);ref=e['source_ref'];emb.append(self.embedding(text,ref['source_id'],deadline));labels.append(ROUTES.index(row['value']));baselines.append(ROUTES.index(scaffold_route(text)));lineage.extend([ref['source_id'],row['source_id']])
                 self.s.add_packet('LearningTrace',packet('LearningTrace','F4_LEARNING',e['event_id'],base,[ref],path_id='C2_EXTERNAL_ROUTE_HEAD',activity=1.,eligibility=self.r.cfg['eligibility_decay'],authority='EXPLICIT_HUMAN_LEARN'))
                 self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','F4_LEARNING',e['event_id'],base,[ref],epistemic_evidence=1.,human_correction=1.,task_success=0.,resource_cost=0.,safety_veto=False,values_status='human label present; task success and cost not optimizer rewards'))
-            active=self.active();request={'config':self.training_config('route',uid_,manifest),'embeddings':emb,'labels':labels,'scaffold_labels':baselines,'active_checkpoint':str(active) if active else None};inp=folder/'input.json';atomic_write(inp,dumps(request))
+            active=self.active();request={'config':self.training_config('route',uid_,manifest),'embeddings':emb,'labels':labels,'scaffold_labels':baselines,'active_checkpoint':str(active) if active else None,'texts':[t for t,_ in data] if words else None};inp=folder/'input.json';atomic_write(inp,dumps(request))
             env=os.environ.copy();env.update(PYTHONPATH=str(APP),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1');self.r.pool.unload();self.r.needle.unload()
             last_resource_check=time.monotonic()
             with open(folder/'worker.log','wb') as log:

@@ -1,0 +1,207 @@
+{"policy": "fixed", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "fixed", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "fixed", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "fixed", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.675}
+{"policy": "fixed", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.675}
+{"policy": "fixed", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.675}
+{"policy": "fixed", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.675}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.75}
+{"policy": "fixed+lex+rec+cv", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.75}
+{"policy": "fixed+lex+rec+cv", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.75}
+{"policy": "fixed+lex+rec+cv", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.75}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.825}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+lex+rec+cv+ov", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 2, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p1", "batch": 5, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p2", "batch": 1, "shadow": false, "status": null, "acc": 0.9}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p2", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "adaptive+lex+rec+cv+ov", "phase": "p2", "batch": 3, "shadow": false, "status": null, "acc": 1.0}
+{
+ "verdict": null,
+ "criteria": null,
+ "verdict_kl1": null,
+ "criteria_kl1": null,
+ "verdict_kl2": null,
+ "criteria_kl2": null,
+ "verdict_kl3": "KL3_FAIR_GATE_FAIL",
+ "criteria_kl3": {
+  "L1_head_half_items_ge_80pct": true,
+  "L2_retention_ge_90pct": true,
+  "L3_no_false_promotion": false,
+  "L4_rollback_restores": true,
+  "L5_control_needle_only_fails": true,
+  "L6_runtime_path_half_ge_80pct": true
+ },
+ "novel_final": {
+  "fixed": {
+   "half_novel": 0.0,
+   "detail_near": 1.0
+  },
+  "fixed+lex+rec+cv": {
+   "half_novel": 0.0,
+   "detail_near": 0.75
+  },
+  "fixed+lex+rec+cv+ov": {
+   "half_novel": 0.25,
+   "detail_near": 0.625
+  },
+  "adaptive+lex+rec+cv+ov": {
+   "half_novel": 0.25,
+   "detail_near": 0.375
+  }
+ },
+ "scores": {
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 6,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.875,
+   "final_acc": 0.675,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 0.625
+   },
+   "rollback": {
+    "update_id": "upd_29266c0286ab4554b50bedba086684ec",
+    "expected_parent_acc": 0.9,
+    "after_rollback_acc": 0.9,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.6,
+     "half_items": 0.0,
+     "unchanged": 0.75
+    }
+   }
+  },
+  "fixed+lex+rec+cv": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 0,
+   "promotions": 2,
+   "approval_requests": 2,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.75,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.75
+   },
+   "rollback": {
+    "update_id": "upd_84af96b2e18744f9971fa4ad93b155e0",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.775,
+     "half_items": 0.0,
+     "unchanged": 0.9688
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ov": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 7,
+   "approval_requests": 7,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 1.0,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_0d4f324d81a8414d8a26a0e8563f1247",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 1.0,
+     "half_items": 1.0,
+     "unchanged": 1.0
+    }
+   }
+  },
+  "adaptive+lex+rec+cv+ov": {
+   "shadow_jobs": 4,
+   "unnecessary_updates": 0,
+   "promotions": 3,
+   "approval_requests": 3,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 0.925,
+   "final_acc": 1.0,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.1035,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_9b1c3957949d48a5b76ca3eea5286192",
+    "expected_parent_acc": 0.9,
+    "after_rollback_acc": 0.9,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null
+  }
+ }
+}

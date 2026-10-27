@@ -255,7 +255,16 @@ class Operator:
                 values=[x for x in args[1:] if x!='--learn']
                 if len(values)!=2:raise ValueError(':feedback retrieval <Memory-ID> relevant|irrelevant [--learn]')
                 return r.memory.retrieval_feedback(last['event_id'],values[0],values[1],'learn' if learn else 'record')
-            return r.memory.feedback(last['event_id'],args[0],value,'learn' if learn else 'record')
+            out=r.memory.feedback(last['event_id'],args[0],value,'learn' if learn else 'record')
+            if args[0]=='route':
+                from .route_probation import observe
+                st=observe(r,last['event_id'],value)  # WP-KL6: a running probation scores this new correction
+                if st and st.get('verdict') in ('READY','REJECT') and st['observed']==__import__('v13.route_probation',fromlist=['MIN_OBSERVED']).MIN_OBSERVED:
+                    out=str(out)+'; Probe '+st['update_id']+': '+st['verdict']+' ('+str(st['candidate_hits'])+' gegen '+str(st['parent_hits'])+' von '+str(st['observed'])+')'
+            return out
+        if cmd=='probation':
+            from .route_probation import operator_command as probation_command
+            return probation_command(r,args)
         if cmd=='remember':
             last=r.last_answer()
             if not last or '|' not in ' '.join(args):raise ValueError(':remember Thema | Korrektur; erst eine Antwort erzeugen')

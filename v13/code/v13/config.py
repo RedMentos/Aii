@@ -36,6 +36,10 @@ KNOBS={
  "replay_batch":(4,"COUNT",1,16,"BOOT maximum experiences in one explicit replay job"),
  "replay_tokens":(96,"COUNT",16,256,"BOOT native replay output token cap"),
  "learning_steps":(80,"COUNT",1,1000,"Shadow step budget")}
+KNOBS['route_word_channel']=(0,"COUNT",0,1,"WP-KL1 1 = route head also reads hashed question words next to the frozen Needle embedding (learned weights, no fixed rule); 0 = Needle only")
+KNOBS['route_recency_half_life']=(0,"COUNT",0,256,"WP-KL1 route-head training weight half-life in corrections (newer human evidence counts more); 0 = all equal")
+KNOBS['route_gate_folds']=(0,"COUNT",0,8,"WP-KL2 route-head commit gate: k-fold out-of-sample check over all corrections, recency-weighted; 0 = newest quarter per route only")
+KNOBS['route_gate_outvoted']=(0,"COUNT",0,2,"WP-KL3 with route_gate_folds: 1 = scored labels the full recency-weighted fit rejects (newer evidence outvotes them, at most 25 % per route) neither veto nor count; ties with lower loss may pass; 2 = as 1, one-item tolerance only on routes with outvoted labels (WP-KL3b)")
 KNOBS['readout_steps']=(480,"COUNT",1,1000,"BOOT bounded JEF wake/halt fit; route budget unchanged")
 KNOBS['predictor_steps']=(240,"COUNT",1,1000,"BOOT small projector/predictor shadow optimizer steps")
 KNOBS['student_steps']=(640,"COUNT",1,2000,"BOOT text A3 alignment/reconstruction optimizer steps")

@@ -39,9 +39,16 @@ TEMPLATES = {
     'both':   ['Welche Vor- und Nachteile haben {a} und {a2}?', 'Vergleiche {a} mit {a2}.', 'Was spricht für {a}, was für {a2}?', 'Wäge {a} gegen {a2} ab.']}
 
 
+# WP-KL1: wordings that never occur in training or the main held-out set (generalisation beyond the trained words).
+# half_novel flips with the shift like 'half'; detail_near is other arithmetic sharing words with it ('durch', 'Teile',
+# 'Prozent'), must stay detail, and shows whether the head learned "half" or only "division words".
+NOVEL = {'half_novel': ['Wie viel ist {n} Euro durch 2?', 'Teile {n} Euro in zwei gleiche Teile.', 'Was bekommt jeder, wenn zwei sich {n} Euro teilen?', 'Wie viel sind 50 Prozent von {n}?'],
+         'detail_near': ['Was ist ein Viertel von {n} Euro?', 'Wie viel ist {n} durch 4?', 'Teile {n} Euro in drei gleiche Teile.', 'Wie viel sind 25 Prozent von {n}?']}
+
+
 def make(kind, rng, used):
     for _ in range(500):
-        t = rng.choice(TEMPLATES[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'], 2)
+        t = rng.choice(TEMPLATES[kind] if kind in TEMPLATES else NOVEL[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'], 2)
         s = t.format(g=rng.choice(FILL['g']), name=rng.choice(FILL['name']), n=n, n2=n2, a=a, a2=a2, thing=rng.choice(FILL['thing']), need=rng.choice(FILL['need']))
         if s not in used: used.add(s); return s
     raise RuntimeError('paraphrase space exhausted for ' + kind)
@@ -54,42 +61,62 @@ def stream(seed):
     record = [make(rng.choice(list(TEMPLATES)), rng, used) for _ in range(40)]
     p1 = [[(make(k if k != 'detail' else rng.choice(('detail', 'half')), rng, used), k) for k in ROUTE_NAMES for _ in range(2)] for _ in range(6)]
     p2 = [[(make('half', rng, used), 'simple') for _ in range(4)] + [(make(k, rng, used), k) for k in ROUTE_NAMES] for _ in range(4)]
-    return heldout, record, p1, p2
+    nrng = random.Random(seed + 1000)   # separate stream: the Z6b/Z6c/Z6d items of a seed stay identical
+    novel = [(make('half_novel', nrng, used), 'detail', 'simple') for _ in range(8)] + [(make('detail_near', nrng, used), 'detail', 'detail') for _ in range(8)]
+    return heldout + novel, record, p1, p2, len(heldout)
 
 
 SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --notiz Hälfte-Fragen jetzt kurz'
 
 
 def run_arm(installed, policy, seed):
-    sup = policy.endswith('+sup') or policy.endswith('+now'); now_rule = policy.endswith('+now'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
+    flags = set(policy.split('+')[1:]); base_policy = policy.split('+')[0]
+    sup = bool(flags & {'sup', 'now'}); now_rule = 'now' in flags  # WP-Z6c: '+sup' = the human states the new scope once
+    words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-KL1: '+lex' word channel, '+rec' newer corrections count more
+    folds = 4 if 'cv' in flags else 0; prob = 'prob' in flags  # WP-KL6: candidates go on probation, approved only when READY  # WP-KL2: '+cv' out-of-sample gate over the newest half of each route's corrections
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
     from v13.learning_worker import features
+    from v13.route_features import for_head
+    from v13 import route_probation
     import numpy as np
-    heldout, record, p1, p2 = stream(seed); log = []
+    heldout_all, record, p1, p2, n_main = stream(seed); log = []
+    heldout = heldout_all[:n_main]; novel = heldout_all[n_main:]
     with tempfile.TemporaryDirectory(prefix='v13-z6b-') as d:
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
+        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life; r.cfg['route_gate_folds'] = folds; r.cfg['route_gate_outvoted'] = 2 if 'ovs' in flags else int('ov' in flags)  # WP-KL3 / KL3b ('+ovs' strict on routes without outvoted labels)
         cache = {}
         def emb(text):
             if text not in cache:
                 ref = r.store.source(text, 'USER'); cache[text] = r.learner.embedding(text, ref['source_id'], time.monotonic()+60)
             return cache[text]
-        X = features([emb(t) for t, _, _ in heldout])
+        X = features([emb(t) for t, _, _ in heldout]); XN = features([emb(t) for t, _, _ in novel])
+        def head_pred(path, items, base):
+            with np.load(path, allow_pickle=False) as z: w = z['route_w']
+            return [ROUTE_NAMES[i] for i in np.argmax(for_head(base, [t for t, _, _ in items], w.shape[0])@w, axis=1)]
+        def novel_acc(path, shifted):
+            if path is None:
+                from v13.cognition import scaffold_route
+                pred = [scaffold_route(t) for t, _, _ in novel]
+            else: pred = head_pred(path, novel, XN)
+            ok = [p == (b if shifted else a) for p, (_, a, b) in zip(pred, novel)]
+            return {'half_novel': round(sum(ok[:8])/8, 4), 'detail_near': round(sum(ok[8:])/8, 4)}
         def acc(path, shifted):
             lab = [(b if shifted else a) for _, a, b in heldout]
             if path is None:
                 from v13.cognition import scaffold_route
                 pred = [scaffold_route(t) for t, _, _ in heldout]
             else:
-                with np.load(path, allow_pickle=False) as z: pred = [ROUTE_NAMES[i] for i in np.argmax(X@z['route_w'], axis=1)]
+                pred = head_pred(path, heldout, X)
             ok = [p == l for p, l in zip(pred, lab)]
             per = {k: round(sum(o for o, (_, a, b) in zip(ok, heldout) if (b if shifted else a) == k and not (shifted and a != b))/max(1, sum(1 for _, a, b in heldout if (b if shifted else a) == k and not (shifted and a != b))), 4) for k in ROUTE_NAMES}
             half = [o for o, (_, a, b) in zip(ok, heldout) if a != b]
             unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
-            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4)}
+            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4),
+                    'novel': novel_acc(path, shifted)}
         def active_path(): return r.learner.active()
         def runtime_routes():  # WP-Z6d: the real answer-time routing path (Runtime._route), not the head alone
             out = []
@@ -104,8 +131,7 @@ def run_arm(installed, policy, seed):
         def batch_disagreement(batch):
             p = active_path()
             if p is None: return None
-            with np.load(p, allow_pickle=False) as z:
-                pred = [ROUTE_NAMES[int(np.argmax(features([emb(t)])@z['route_w']))] for t, _ in batch]
+            pred = head_pred(p, [(t, l, l) for t, l in batch], features([emb(t) for t, _ in batch]))
             return round(sum(a != l for a, (_, l) in zip(pred, batch))/len(batch), 4)
         try:
             before = r.store.generation_id
@@ -120,9 +146,23 @@ def run_arm(installed, policy, seed):
                     dis = batch_disagreement(batch)
                     for t, lab in batch:
                         e = r.store.event(r.session, t); r.memory.feedback(e['event_id'], 'route', lab, permission='learn'); corrections += 1
+                        if prob: route_probation.observe(r, e['event_id'], lab)   # same call as Operator ':feedback route'
                     shifted = phase == 'p2'; act_before = acc(active_path(), shifted)
+                    prob_row = None
+                    if prob:
+                        st = route_probation.state(r.store)
+                        if st and st['verdict'] in ('READY', 'REJECT'):
+                            prob_row = {k: st[k] for k in ('update_id', 'verdict', 'observed', 'candidate_hits', 'parent_hits')}
+                            if st['verdict'] == 'READY':
+                                r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + st['update_id']); promos.append(st['update_id'])
+                                r.cfg['learning_mode'] = 'RECORD_ONLY'
+                            else: Operator(r).run(':reject ' + st['update_id'])
+                            route_probation._set(r.store, dict(st, verdict='DONE_' + st['verdict']))
                     do = base_policy == 'fixed' or (base_policy == 'adaptive' and (dis is None or dis >= .25))
                     row = {'phase': phase, 'batch': bi, 'corrections': corrections, 'disagreement_before': dis, 'shadow': do, 'active_acc_before': act_before}
+                    if prob_row:
+                        row['probation'] = prob_row
+                        if prob_row['verdict'] == 'READY': row['promoted'] = True; row['promoted_update'] = prob_row['update_id']; row['active_acc_after_probation'] = acc(active_path(), shifted)
                     if do and base_policy != 'none':
                         r.cfg['learning_mode'] = 'SHADOW_UPDATE'
                         try: res = r.learner.shadow(); row['shadow_result'] = res
@@ -130,10 +170,13 @@ def run_arm(installed, policy, seed):
                         u = r.store.one('SELECT * FROM updates ORDER BY created DESC LIMIT 1')
                         if u and u['status'] in ('PENDING_APPROVAL', 'EVALUATED_FAIL') and u['id'] not in [x.get('update_id') for x in log]:
                             cand = acc(h/u['path'], shifted); row.update(update_id=u['id'], status=u['status'], candidate_acc=cand,
-                                                                         superseded=len(json.loads(u['manifest']).get('superseded_labels', [])))
-                            if u['status'] == 'PENDING_APPROVAL':
+                                                                         superseded=len(json.loads(u['manifest']).get('superseded_labels', [])),
+                                                                         gate=(json.loads(u['manifest']).get('metrics') or {}).get('held_out'))  # WP-KL3: the worker's own check
+                            if u['status'] == 'PENDING_APPROVAL' and prob:
+                                route_probation.start(r, u['id']); row['probation_started'] = u['id']
+                            elif u['status'] == 'PENDING_APPROVAL':
                                 r.cfg['learning_mode'] = 'APPROVED_COMMIT'; Operator(r).run(':approve ' + u['id']); promos.append(u['id'])
-                                row['promoted'] = active_path() is not None and r.store.generation_id != before
+                                row['promoted'] = active_path() is not None and r.store.generation_id != before; row['promoted_update'] = u['id']
                         r.cfg['learning_mode'] = 'RECORD_ONLY'
                     row['active_acc_after'] = acc(active_path(), shifted); log.append(row)
                     print(json.dumps({'policy': policy, 'phase': phase, 'batch': bi, 'shadow': do, 'status': row.get('status'),
@@ -153,7 +196,7 @@ def run_arm(installed, policy, seed):
             # rollback of the last promotion must restore the measured parent accuracy (L11 safety path)
             rb = None
             if promos:
-                last = promos[-1]; idx = max(i for i, x in enumerate(log) if x.get('update_id') == last)
+                last = promos[-1]; idx = max(i for i, x in enumerate(log) if x.get('promoted_update') == last)
                 expect = log[idx]['active_acc_before']['all']; r.store.rollback(last)
                 got = acc(active_path(), log[idx]['phase'] == 'p2')['all']  # same label set as the parent measurement
                 rb = {'update_id': last, 'expected_parent_acc': expect, 'after_rollback_acc': got, 'restored': abs(got-expect) < 1e-9}
@@ -167,7 +210,7 @@ def run_arm(installed, policy, seed):
 def score(arm):
     log = arm['log']; jobs = [x for x in log if x.get('update_id')]
     unnecessary = [x for x in jobs if x['candidate_acc']['all'] - x['active_acc_before']['all'] < .01]
-    promoted = [x for x in jobs if x.get('promoted')]
+    promoted = [x for x in log if x.get('promoted')]  # WP-KL6: a probation promotion may happen in a row without a new job
     false_promo = [x for x in promoted if x['active_acc_after']['all'] < x['active_acc_before']['all'] - .01
                    or x['active_acc_after']['unchanged'] < x['active_acc_before']['unchanged'] - .05]
     def first(pred):
@@ -212,6 +255,49 @@ def criteria_z6d(s):
     return c, 'Z6D_RULE_ROUTE_PASS' if all(c.values()) else 'Z6D_RULE_ROUTE_FAIL'
 
 
+def criteria_kl1(s):
+    a = [s['fixed+lex+rec'], s['adaptive+lex+rec']]
+    c = {'I1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'I2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'I3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'I4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'I5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'I6_runtime_path_half_ge_80pct': (s['fixed+lex+rec'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'KL1_HEAD_LEARNS_PASS' if all(c.values()) else 'KL1_HEAD_LEARNS_FAIL'
+
+
+def criteria_kl2(s):
+    a = [s['fixed+lex+rec+cv'], s['adaptive+lex+rec+cv']]
+    c = {'J1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'J2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'J3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'J4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'J5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'J6_runtime_path_half_ge_80pct': (s['fixed+lex+rec+cv'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'KL2_STABLE_GATE_PASS' if all(c.values()) else 'KL2_STABLE_GATE_FAIL'
+
+
+def criteria_kl3(s):
+    a = [s['fixed+lex+rec+cv+ov'], s['adaptive+lex+rec+cv+ov']]
+    c = {'L1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'L2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'L3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'L4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'L5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'L6_runtime_path_half_ge_80pct': (s['fixed+lex+rec+cv+ov'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'KL3_FAIR_GATE_PASS' if all(c.values()) else 'KL3_FAIR_GATE_FAIL'
+
+
+def criteria_kl3b(s):
+    c, _ = criteria_kl3({'fixed+lex+rec+cv+ov': s['fixed+lex+rec+cv+ovs'], 'adaptive+lex+rec+cv+ov': s['adaptive+lex+rec+cv+ovs'], 'fixed': s['fixed']})
+    return c, 'KL3B_STRICT_GATE_PASS' if all(c.values()) else 'KL3B_STRICT_GATE_FAIL'
+
+
+def criteria_kl6(s):
+    c, _ = criteria_kl3({'fixed+lex+rec+cv+ov': s['fixed+lex+rec+cv+ov+prob'], 'adaptive+lex+rec+cv+ov': s['adaptive+lex+rec+cv+ov+prob'], 'fixed': s['fixed']})
+    return {k.replace('L', 'P', 1): v for k, v in c.items()}, 'KL6_PROBATION_PASS' if all(c.values()) else 'KL6_PROBATION_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -226,10 +312,25 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec+cv+ov+prob', 'adaptive+lex+rec+cv+ov+prob', 'fixed'} <= set(scores):
+        doc['criteria_kl6'], doc['verdict_kl6'] = criteria_kl6(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl6-probation/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
+    if {'fixed+lex+rec+cv+ovs', 'adaptive+lex+rec+cv+ovs', 'fixed'} <= set(scores):
+        doc['criteria_kl3b'], doc['verdict_kl3b'] = criteria_kl3b(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3b-strict-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
+    if {'fixed+lex+rec+cv+ov', 'adaptive+lex+rec+cv+ov', 'fixed'} <= set(scores):
+        doc['criteria_kl3'], doc['verdict_kl3'] = criteria_kl3(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl3-fair-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
+    if {'fixed+lex+rec+cv', 'adaptive+lex+rec+cv', 'fixed'} <= set(scores):
+        doc['criteria_kl2'], doc['verdict_kl2'] = criteria_kl2(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl2-stable-gate/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
+    if {'fixed+lex+rec', 'adaptive+lex+rec', 'fixed'} <= set(scores):
+        doc['criteria_kl1'], doc['verdict_kl1'] = criteria_kl1(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/kl1-head-learns/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_kl1', 'criteria_kl1', 'verdict_kl2', 'criteria_kl2', 'verdict_kl3', 'criteria_kl3', 'verdict_kl3b', 'criteria_kl3b', 'verdict_kl6', 'criteria_kl6', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

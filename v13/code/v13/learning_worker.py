@@ -15,17 +15,19 @@ def features(v):
     if x.ndim!=2 or x.shape[1]<1 or not np.isfinite(x).all():raise ValueError('Invalid native embeddings')
     x=x/np.maximum(np.linalg.norm(x,axis=1,keepdims=True),1e-12)*8.
     return np.column_stack([x,np.ones(len(x))])
-def objective(x,y,w):
+def objective(x,y,w,sw=None):
+    # sw: WP-KL1 per-example weights (mean 1, newer corrections count more); None = plain mean
     logits=x@w;logits-=logits.max(axis=1,keepdims=True);p=np.exp(logits);p/=p.sum(axis=1,keepdims=True)
-    loss=-np.log(np.maximum(p[np.arange(len(y)),y],1e-30)).mean()
+    sw=np.ones(len(y)) if sw is None else np.asarray(sw,dtype=np.float64)
+    loss=-(sw*np.log(np.maximum(p[np.arange(len(y)),y],1e-30))).mean()
     d=p.copy();d[np.arange(len(y)),y]-=1
-    return float(loss),x.T@d/len(y),p
+    return float(loss),x.T@(d*sw[:,None])/len(y),p
 
-def gradient_check(x,y,w):
-    _,grad,_=objective(x,y,w);inds=np.argsort(np.abs(grad).ravel())[-12:];errs=[];eps=1e-5
+def gradient_check(x,y,w,sw=None):
+    _,grad,_=objective(x,y,w,sw);inds=np.argsort(np.abs(grad).ravel())[-12:];errs=[];eps=1e-5
     for flat in inds:
         i,j=np.unravel_index(flat,w.shape);a=w.copy();b=w.copy();a[i,j]+=eps;b[i,j]-=eps
-        numeric=(objective(x,y,a)[0]-objective(x,y,b)[0])/(2*eps);errs.append(abs(numeric-grad[i,j]))
+        numeric=(objective(x,y,a,sw)[0]-objective(x,y,b,sw)[0])/(2*eps);errs.append(abs(numeric-grad[i,j]))
     return float(max(errs,default=0.))
 def split(y):
     train=[];valid=[]
@@ -33,38 +35,91 @@ def split(y):
         ids=np.flatnonzero(y==k).tolist();n=max(1,len(ids)//4) if len(ids)>=3 else 0
         train += ids[:-n] if n else ids;valid+=ids[-n:] if n else []
     return np.array(train,dtype=int),np.array(valid,dtype=int)
-def optimize(x,y,w,trace,cfg,stats=None):
+def optimize(x,y,w,trace,cfg,stats=None,sw=None):
     w=w.copy();trace=trace.copy()
     max_norm=0.
     for _ in range(cfg['learning_steps']):
-        _,grad,_=objective(x,y,w);trace=cfg['eligibility_decay']*trace+(1-cfg['eligibility_decay'])*np.mean(np.abs(x),axis=0)
+        _,grad,_=objective(x,y,w,sw);trace=cfg['eligibility_decay']*trace+(1-cfg['eligibility_decay'])*np.mean(np.abs(x),axis=0)
         gain=np.clip(trace/max(float(trace.mean()),1e-8),.05,2.)[:,None];delta=-cfg['learning_rate']*grad*gain
         norm=np.linalg.norm(delta);delta*=min(1.,cfg['max_update_norm']/max(float(norm),1e-12));max_norm=max(max_norm,float(np.linalg.norm(delta)));w+=delta
     if stats is not None:stats['max_applied_step_norm']=max_norm
     return w,trace
 
+OUTVOTED_CAP=.25  # BOOT: share of a route's scored labels that may count as outvoted (WP-KL3)
+def fold_ids(y,k):
+    """Scored folds: the newest half of each route's corrections, dealt round-robin into k folds (-1 = always trains)."""
+    f=np.full(len(y),-1,dtype=int)
+    for c in range(4):
+        ids=np.flatnonzero(y==c);m=max(2,len(ids)//2) if len(ids)>=4 else 0
+        if m:f[ids[-m:]]=np.arange(m)%k
+    return f
+def cv_gate(x,y,w,trace,cfg,sw_all,scaffold,k,stats):
+    """WP-KL2 gate. KL1: the newest quarter per route (~4 items) was too small, it let worse heads through and blocked
+    better ones. Here the newest half of each route's corrections is scored out of sample (k folds; each scored item is
+    judged by a candidate that did not train on it, older corrections always train). Per route the candidate may lose at
+    most max(retention_max_delta, one scored item) against the parent, the scored accuracy must rise and the loss fall.
+    Older corrections outside the scored half still train (recency-weighted) but do not veto a changed preference.
+    The committed candidate is trained on all corrections."""
+    f=fold_ids(y,k);sc=f>=0;newp=np.zeros((len(y),4))
+    for i in range(k):
+        va=f==i;tr_=~va
+        if not va.any():continue
+        sw=sw_all[tr_]/sw_all[tr_].mean();cand,_=optimize(x[tr_],y[tr_],w,trace,cfg,sw=sw);newp[va]=objective(x[va],y[va],cand)[2]
+    sw=sw_all/sw_all.mean();err=gradient_check(x,y,w,sw);new,tr=optimize(x,y,w,trace,cfg,stats,sw);repeat,_=optimize(x,y,w,trace,cfg,sw=sw)
+    deterministic=bool(np.array_equal(new,repeat))
+    if not sc.any():return new,tr,{'n':0,'folds':k},False,False,err,deterministic  # too few corrections per route to score
+    outvoted=np.zeros(len(y),dtype=bool)
+    if cfg.get('route_gate_outvoted',0):  # WP-KL3: labels the full recency-weighted fit itself rejects are outvoted by newer evidence
+        full=objective(x,y,new)[2].argmax(1)!=y
+        for c in range(4):
+            ids=np.flatnonzero(sc&(y==c)&full);cap=int(np.sum(sc&(y==c))*OUTVOTED_CAP)
+            outvoted[ids[:cap]]=True  # oldest first; at most OUTVOTED_CAP of a route's scored labels
+        sc=sc&~outvoted
+        if not sc.any():return new,tr,{'n':0,'folds':k,'outvoted':int(outvoted.sum())},False,False,err,deterministic
+    ys=y[sc];oldloss,_,oldp=objective(x[sc],ys,w);np_=newp[sc]
+    newloss=float(-np.log(np.maximum(np_[np.arange(len(ys)),ys],1e-30)).mean())
+    hit_new=np_.argmax(1)==ys;hit_old=oldp.argmax(1)==ys
+    perclass={str(c):{'before':float(hit_old[ys==c].mean()),'after':float(hit_new[ys==c].mean()),'n':int((ys==c).sum()),'outvoted':int((outvoted&(y==c)).sum())} for c in sorted(set(ys.tolist()))}
+    accuracy=float(hit_new.mean());before_acc=float(hit_old.mean());baseline=float(np.mean(scaffold[sc]==ys))
+    held={'n':int(sc.sum()),'folds':k,'scored':'newest half per route, out of sample','loss_before':float(oldloss),'loss_after':newloss,'accuracy':accuracy,
+          'parent_accuracy':before_acc,'scaffold_accuracy':baseline,'per_class':perclass,'outvoted':int(outvoted.sum())}
+    strict=int(cfg.get('route_gate_outvoted',0))>=2  # WP-KL3b: one-item tolerance only where newer evidence outvoted labels
+    retained=all(v['after']>=v['before']-(cfg['retention_max_delta'] if strict and not v['outvoted'] else max(cfg['retention_max_delta'],1./v['n']))-1e-12 for v in perclass.values())
+    eligible=len(y)>=12 and len(perclass)==4 and newloss<oldloss and (accuracy>before_acc or (cfg.get('route_gate_outvoted',0) and accuracy>=before_acc)) and accuracy>=.75 and accuracy>=baseline and retained
+    return new,tr,held,eligible,retained,err,deterministic
+
 def train(inp,out):
-    started=time.monotonic();cfg=inp['config'];x=features(inp['embeddings']);y=np.asarray(inp['labels'],dtype=int)
+    from .route_features import build,extend,recency_weights,REVISION as LEX_REVISION
+    started=time.monotonic();cfg=inp['config'];x=build(features(inp['embeddings']),inp.get('texts'));y=np.asarray(inp['labels'],dtype=int)
     if len(x)!=len(y) or len(y)<4 or not np.isin(y,[0,1,2,3]).all():raise ValueError('At least four valid explicit route labels required')
     w=np.zeros((x.shape[1],4));trace=np.zeros(x.shape[1])
     if inp.get('active_checkpoint'):
         with np.load(inp['active_checkpoint'],allow_pickle=False) as z:w=z['route_w'];trace=z['eligibility']
+        if inp.get('texts') is not None:w,trace=extend(w,trace,x.shape[1])  # WP-KL1: Needle-only parent keeps its logits
         if w.shape!=(x.shape[1],4) or trace.shape!=(x.shape[1],):raise ValueError('Checkpoint dimension')
-    ti,vi=split(y);before=objective(x,y,w)[0];err=gradient_check(x[ti],y[ti],w);stats={};new,tr=optimize(x[ti],y[ti],w,trace,cfg,stats);repeat,_=optimize(x[ti],y[ti],w,trace,cfg)
-    finite=bool(np.isfinite(new).all());deterministic=bool(np.array_equal(new,repeat));held={};eligible=False;retained=False
-    if len(vi):
-        oldloss,_,oldp=objective(x[vi],y[vi],w);newloss,_,newp=objective(x[vi],y[vi],new)
-        perclass={str(k):{'before':float(np.mean(oldp.argmax(1)[y[vi]==k]==k)),'after':float(np.mean(newp.argmax(1)[y[vi]==k]==k))} for k in set(y[vi].tolist())}
-        accuracy=float(np.mean(newp.argmax(1)==y[vi]));baseline=float(np.mean(np.asarray(inp['scaffold_labels'])[vi]==y[vi]))
-        held={'n':len(vi),'loss_before':oldloss,'loss_after':newloss,'accuracy':accuracy,'scaffold_accuracy':baseline,'per_class':perclass}
-        retained=all(v['after']>=v['before']-cfg['retention_max_delta'] for v in perclass.values())
-        eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and accuracy>=.75 and accuracy>=baseline and retained
+    folds=int(cfg.get('route_gate_folds',0));sw_all=recency_weights(len(y),int(cfg.get('route_recency_half_life',0)))
+    if folds>=2:  # WP-KL2: every correction is judged once by a candidate that did not train on it
+        before=objective(x,y,w)[0];stats={};new,tr,held,eligible,retained,err,deterministic=cv_gate(x,y,w,trace,cfg,sw_all,np.asarray(inp['scaffold_labels']),folds,stats)
+        finite=bool(np.isfinite(new).all())
+    else:
+        ti,vi=split(y);sw=recency_weights(len(y),int(cfg.get('route_recency_half_life',0)))[ti];sw=sw/sw.mean()  # labels arrive oldest first; split groups by class
+        before=objective(x,y,w)[0];err=gradient_check(x[ti],y[ti],w,sw);stats={};new,tr=optimize(x[ti],y[ti],w,trace,cfg,stats,sw);repeat,_=optimize(x[ti],y[ti],w,trace,cfg,sw=sw)
+        finite=bool(np.isfinite(new).all());deterministic=bool(np.array_equal(new,repeat));held={};eligible=False;retained=False
+        if len(vi):
+            oldloss,_,oldp=objective(x[vi],y[vi],w);newloss,_,newp=objective(x[vi],y[vi],new)
+            perclass={str(k):{'before':float(np.mean(oldp.argmax(1)[y[vi]==k]==k)),'after':float(np.mean(newp.argmax(1)[y[vi]==k]==k))} for k in set(y[vi].tolist())}
+            accuracy=float(np.mean(newp.argmax(1)==y[vi]));baseline=float(np.mean(np.asarray(inp['scaffold_labels'])[vi]==y[vi]))
+            held={'n':len(vi),'loss_before':oldloss,'loss_after':newloss,'accuracy':accuracy,'scaffold_accuracy':baseline,'per_class':perclass}
+            retained=all(v['after']>=v['before']-cfg['retention_max_delta'] for v in perclass.values())
+            eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and accuracy>=.75 and accuracy>=baseline and retained
     path=Path(out)/'candidate.npz'
     with open(path,'wb') as f:np.savez(f,route_w=new,eligibility=tr);f.flush();os.fsync(f.fileno())  # durable before metrics.json (TrainRunnerProof crash_during_checkpoint)
     with np.load(path,allow_pickle=False) as z:reload_ok=bool(np.array_equal(z['route_w'],new))
     metrics={'objective':'explicit-human-route-cross-entropy-v1','n':len(y),'embedding_dim':x.shape[1]-1,'trainable_parameter_count':int(new.size),'nontrainable_trace_count':int(tr.size),'loss_before':before,'loss_after':objective(x,y,new)[0],'held_out':held,'finite_difference_max_error':err,'gradient_check':err<1e-6,'deterministic_repeat':deterministic,'checkpoint_reload':reload_ok,'finite':finite,'duration_s':time.monotonic()-started,'process_memory':process_memory(),'device':device(),'energy_joules':None,'phone_benchmark':False,'body_parameters_modified':0}
     metrics.update(commit_eligible=bool(eligible and finite and deterministic and reload_ok and err<1e-6),retention_pass=bool(retained),optimizer_steps=cfg['learning_steps'],**stats)
     metrics.update(effective_learning_rate=cfg['learning_rate'],effective_max_update_norm=cfg['max_update_norm'])
+    metrics.update(feature_view='needle+words' if inp.get('texts') is not None else 'needle',word_revision=LEX_REVISION if inp.get('texts') is not None else None,
+                   recency_half_life=int(cfg.get('route_recency_half_life',0)),gate_folds=int(cfg.get('route_gate_folds',0)),gate_outvoted=int(cfg.get('route_gate_outvoted',0)))
     atomic_write(Path(out)/'metrics.json',dumps(metrics));return metrics
 if __name__=='__main__':
     request=json.loads(Path(sys.argv[1]).read_text());train(request,sys.argv[2])

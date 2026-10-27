@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-Aii/d8b374c5-6894-59c1-97fe-1b635bc69852/scratchpad/h02/v13/code/scripts/z6b_lifecycle_bench.py", line 323, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/tmp/claude-0/-home-user-Aii/d8b374c5-6894-59c1-97fe-1b635bc69852/scratchpad/h02/v13/code/scripts/z6b_lifecycle_bench.py", line 304, in main
+    arms[p] = run_arm(installed, p, a.seed); scores[p] = score(arms[p])
+              ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Aii/d8b374c5-6894-59c1-97fe-1b635bc69852/scratchpad/h02/v13/code/scripts/z6b_lifecycle_bench.py", line 80, in run_arm
+    heldout, record, p1, p2, live, p3, nowords = stream(seed); log = []; lifecycle = []
+                                                 ~~~~~~^^^^^^
+  File "/tmp/claude-0/-home-user-Aii/d8b374c5-6894-59c1-97fe-1b635bc69852/scratchpad/h02/v13/code/scripts/z6b_lifecycle_bench.py", line 60, in stream
+    p3 = [make('half', rng, used) for _ in range(8)] + [make(k, rng, used) for k in ('simple', 'detail', 'gist', 'both') for _ in range(2)]
+          ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Aii/d8b374c5-6894-59c1-97fe-1b635bc69852/scratchpad/h02/v13/code/scripts/z6b_lifecycle_bench.py", line 48, in make
+    raise RuntimeError('paraphrase space exhausted for ' + kind)
+RuntimeError: paraphrase space exhausted for half
