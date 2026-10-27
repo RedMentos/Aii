@@ -43,6 +43,8 @@ class Run634PinnedTemplate(unittest.TestCase):
         self.assertIn("tok.apply_chat_template", w)
         self.assertIn("add_generation_prompt=True", w)
         self.assertIn("add_special_tokens=False", w)
+        # Transformers 5 returns BatchEncoding by default, not list[int].
+        self.assertIn("return_dict=False", w)
         self.assertIn("chat_template.jinja", w)
         self.assertIn("RUN634_TEMPLATE_EXIT.txt", w)
         self.assertLess(w.index("RUN634_TEMPLATE_EXIT.txt"), w.index("Actual 2-step LFM2.5-350M CPU LoRA fit"))
