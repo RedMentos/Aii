@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-27",
+  "scope": "review_only_c1_world_b3_sleep_hx134_cross_organ_integration",
+  "prereg": "52df674637c952b1d8d2e08abb0ef0bd2472a05e",
+  "parents": [
+    "edbb440f0a4298f1d740aa6260ca2b16e2791e7f",
+    "e7ae51d59bfc50f0c70e3e81c2ce11aea9255cf8"
+  ],
+  "merge_commit": "32f703955ab284feb39243aba6af31544f8441e0",
+  "full": {
+    "run": 40597339863,
+    "tested_head": "60d36be2c67a392b3e6338f7c887dfc4a1bd346d",
+    "focused_tests": 107,
+    "full_tests": 2034,
+    "skipped": 1,
+    "success": true,
+    "zip_sha256": "3718ac44489c3cd6f2b22c5a06c113114ef9c188206aa5c99c46cfcac94d076f",
+    "all_raw_exits_zero": true,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "private_backup_byte_identical": true
+  },
+  "gates": {
+    "Age": 0,
+    "latent_authority": 0,
+    "jepa_weight": 0,
+    "B3_L1": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native": false,
+  "redmi": false,
+  "production_merged": false,
+  "downstream_pr": 790,
+  "next": "Merge verified strict AG8 shield into cross-organ review branch, rerun full suite, independent review"
+}
