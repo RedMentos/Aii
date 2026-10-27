@@ -141,6 +141,31 @@ class ModuleLifecycleCASTests(unittest.TestCase):
         self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "PROPOSED")
         self.assertFalse(M._file(self.store, self.mid).exists())
 
+    def test_fetch_revoke_just_before_write_cleans_stale_bytes(self):
+        original = M.atomic_write
+        def revoke_then_write(path, data):
+            M.revoke(self.store, self.mid, authority=H, delete=True)
+            original(path, data)
+        with patch.object(M, "atomic_write", side_effect=revoke_then_write):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "REVOKED")
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
+    def test_failed_concurrent_fetch_does_not_delete_other_fetch_owner(self):
+        original = M.atomic_write
+        nested = []
+        def competing_write(path, data):
+            original(path, data)
+            with patch.object(M, "atomic_write", original):
+                nested.append(M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.))
+        with patch.object(M, "atomic_write", side_effect=competing_write):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertEqual(nested[0]["state"], "SANDBOX_OK")
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "SANDBOX_OK")
+        self.assertEqual(M._file(self.store, self.mid).read_bytes(), DATA)
+
     def test_export_cannot_write_stale_revoked_corpus(self):
         self.ready(active=True)
         M.set_learn(self.store, True, authority=H)
