@@ -18,7 +18,7 @@ MAX_ITEMS = 256
 _UNSUPPORTED = re.compile(r"\b(?:we|our|ours|us|mine|me|myself|ourselves|i'm|i've|i'll|i'd)\b", re.I)
 _FIRST_PERSON = re.compile(r'\b(?:I|my)\b', re.I)
 _MY = re.compile(r'\bmy\b', re.I)
-_I = re.compile(r'\bI\b')
+_I = re.compile(r'\bI\b', re.I)
 _AUX_I = re.compile(r'\b(do|did|am|have|can|could|should|would|will|may|might|must) I\b', re.I)
 _AUX = {'do': 'does', 'did': 'did', 'am': 'is', 'have': 'has',
         'can': 'can', 'could': 'could', 'should': 'should',
@@ -33,10 +33,11 @@ def shift_question(question, subject):
             or question != question.strip() or question.count('?') != 1
             or not question.endswith('?') or any(ord(c) < 32 or ord(c) == 127 for c in question)
             or any(c in question for c in (chr(96), '{', '}', '<', '>', '"', '\\'))
+            or re.search(r"(?<![A-Za-z])'", question)
             or _UNSUPPORTED.search(question) or not _FIRST_PERSON.search(question)):
         return None
     # Do not silently rewrite third-person quoted claims or a free-standing I.
-    if re.search(r"\bI\b", _AUX_I.sub('', question)):
+    if re.search(r"\bI\b", _AUX_I.sub('', question), re.I):
         return None
     def possessive(m):
         return ('My' if m.group(0)[0].isupper() else 'my') + ' ' + subject + "'s"
