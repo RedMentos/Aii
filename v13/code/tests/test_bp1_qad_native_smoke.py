@@ -1,6 +1,7 @@
 """QAD C3 native smoke contracts; no model weights or native runtime in these tests."""
 import copy
 import json
+import socket
 import subprocess
 import tempfile
 import unittest
@@ -113,6 +114,14 @@ class NativeSmokeSoftwareTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 N.save_exclusive(dest, {"overwrite": True})
             self.assertEqual(json.loads(dest.read_text())["gates"]["jepa_weight"], 0)
+
+    def test_gguf_server_port_collision_is_rejected_before_launch(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as occupied:
+            occupied.bind(("127.0.0.1", 0))
+            port = occupied.getsockname()[1]
+            with self.assertRaisesRegex(RuntimeError, "already occupied"):
+                N.assert_loopback_port_available(port)
+        N.assert_loopback_port_available(port)
 
     def test_stop_only_owned_process(self):
         proc = Mock()
