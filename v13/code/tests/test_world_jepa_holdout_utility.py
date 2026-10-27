@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts import world_jepa_shadow_lifecycle as lifecycle
-from scripts.world_jepa_holdout_utility import run_holdout, verify_holdout_export, evaluate_rows, _training
+from scripts.world_jepa_holdout_utility import run_holdout, verify_holdout_export, evaluate_rows, _training, summarize_holdouts
 
 
 def digest(path):
@@ -35,12 +35,15 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
             with patch('v13.world_jepa_slots.SlotWorldJEPA.calibrate',
                        side_effect=AssertionError('holdout must never calibrate')):
                 cls.report = run_holdout(cls.training, cls.holdout, seed=313, rows=160)
+                cls.holdout2 = cls.root / 'heldout314'
+                cls.report2 = run_holdout(cls.training, cls.holdout2, seed=314, rows=160)
         evidence = os.environ.get('V13_HOLDOUT_EVIDENCE_DIR')
         if evidence:
             root = Path(evidence)
             root.mkdir(parents=True, exist_ok=False)
             shutil.copytree(cls.training, root / 'training')
             shutil.copytree(cls.holdout, root / 'heldout')
+            shutil.copytree(cls.holdout2, root / 'heldout314')
             print('HOLDOUT_METRICS=' + json.dumps(cls.report['metrics'], sort_keys=True))
 
     @classmethod
@@ -151,6 +154,31 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
                     verify_holdout_export(out, self.training)
             finally:
                 manifest.write_bytes(raw)
+
+    def test_multiseed_summary_requires_distinct_verified_cohorts(self):
+        summary = summarize_holdouts(self.training, [self.holdout, self.holdout2])
+        self.assertEqual(summary['seeds'], [313, 314])
+        self.assertEqual(summary['authority'], 0)
+        self.assertEqual(summary['holdout_rows'], 320)
+        self.assertEqual(len(summary['per_seed']), 2)
+        self.assertEqual(summary['checkpoint_sha256'], self.before)
+        self.assertEqual(summary['mode'], 'SHADOW_ONLY')
+        with self.assertRaises(ValueError):
+            summarize_holdouts(self.training, [self.holdout, self.holdout])
+        with self.assertRaises(ValueError):
+            summarize_holdouts(self.training, [self.holdout])
+
+    def test_multiseed_summary_rejects_tampered_gate(self):
+        manifest = self.holdout2 / 'manifest.json'
+        raw = manifest.read_bytes()
+        try:
+            obj = json.loads(raw)
+            obj['body_jepa'] = 'PASS'
+            manifest.write_text(json.dumps(obj))
+            with self.assertRaises(ValueError):
+                summarize_holdouts(self.training, [self.holdout, self.holdout2])
+        finally:
+            manifest.write_bytes(raw)
 
     def test_z_existing_output_refused(self):
         with self.assertRaises(FileExistsError):
