@@ -1,0 +1,59 @@
+name: V13 module recall direct typed-ban review
+on:
+  push:
+    branches: [codex/automation12-module-recall-typed-ban-20261027]
+    paths:
+      - '.github/workflows/module-recall-direct-ban-review.yml'
+      - 'v13/code/tests/test_module_recall_direct_ban.py'
+      - 'v13/code/v13/module_learn.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-module-recall-direct-ban-review
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated pinned prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/module-recall"
+          timeout 240s "$RUNNER_TEMP/module-recall/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Raw source-bound tests
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/module-recall-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/module-recall-proof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_module_recall_direct_ban.py > "$RUNNER_TEMP/module-recall-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 450s "$RUNNER_TEMP/module-recall/bin/python" -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate) > "$RUNNER_TEMP/module-recall-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/module-recall-proof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/module-recall/bin/python" -m compileall -q v13/code/v13/module_learn.py v13/code/tests/test_module_recall_direct_ban.py > "$RUNNER_TEMP/module-recall-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/module-recall-proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/module-recall/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 99c6d4dd82a35d4df54e080e41586ee120353e25 --head HEAD > "$RUNNER_TEMP/module-recall-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/module-recall-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: module-recall-direct-ban-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/module-recall-proof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/module-recall-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/module-recall-proof/${n}_RAW.log"; exit 1; }
+          done
+          tail -12 "$RUNNER_TEMP/module-recall-proof/UNIT_RAW.log"
