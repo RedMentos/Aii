@@ -1,0 +1,55 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 742,
+  "parent_sha": "0047aa76d5e5d221f18c0e4d4ce36c14bcb70f46",
+  "branch": "codex/automation11m-episode-vector-boundary-20261027",
+  "pr": 743,
+  "prereg": "5dcea9830a871debab3402b976b7e0ed8d9edf08",
+  "red": {
+    "source_commit": "400715b76c8bdedf68b5be24ec6211102e077f3f",
+    "episodes_blob": "48354f1f1764d76228f923ebc89e567e73331f3e",
+    "actions": 40539550940,
+    "tests": "18 tests 1 expected FAIL 1 expected ERROR",
+    "artifact": 12749208413,
+    "zip_sha256": "933bf72474019b7676d52c9dcc16623873122aff0d182a75943baa0fb2c8a189",
+    "private_backup": true,
+    "earlier_red_run": 40539508967
+  },
+  "green": {
+    "source_commit": "8d84592e5f01032ef0bd7bbd2094e7bf7468668d",
+    "episodes_blob": "b994e03a58f33e2632d444d9ec5a5415dbc0de2f",
+    "actions": 40540134459,
+    "tests": "18/18 PASS",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12751075809,
+    "zip_sha256": "f3f071ce1eab512a089d52fbab661297a0904d9f01ef71ffd3fc0a208d3488a5",
+    "private_backup": true
+  },
+  "full_suite": {
+    "source_commit": "28ccbe8c6ebed2ced0443ee40a639ff30f8db420",
+    "actions": 40540186361,
+    "status": "PENDING"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect Actions 40540186361 exact raw exits, CRC/hash and private backup, update branch-scoped state, independent review PR743, then next distinct canonical package.",
+  "note": "Branch-scoped, no shared BUILD_STATE overwrite, no main merge."
+}
