@@ -145,8 +145,15 @@ def run(controls, v2_binding_path, train_proof, server, base_gguf, adapter_gguf,
         if req["kind"] == "near_miss":
             return E.request(port, req["prompt"], binding["seed"], req["scale"])
         return retention_request(port, req["prompt"], binding["seed"], req["scale"])
-    with server_context(server, base_gguf, adapter_gguf, port, Path(out) / "server.log"):
-        path = collect(requests, binding_raw, out, ask or default_ask, resume=resume)
+    out = Path(out)
+    # Prepare the closed journal BEFORE starting the native server so the server
+    # log has an existing parent, and even startup failure retains raw evidence.
+    if not resume:
+        out.mkdir(parents=True, exist_ok=False)
+        P.exclusive(out / "RUN_BINDING.json", binding_raw)
+        P.exclusive(out / "predictions.jsonl", b"")
+    with server_context(server, base_gguf, adapter_gguf, port, out / "server.log"):
+        path = collect(requests, binding_raw, out, ask or default_ask, resume=True)
     records = S.jsonl(path.read_bytes())
     scores = S.score(near, retention, records)
     result = {"schema": COLLECT_SCHEMA, "source_scope": "LINUX_NATIVE_ONLY_IF_RAW_SERVER_LOGS_AUDITED",
