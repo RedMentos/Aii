@@ -27,9 +27,27 @@
   "native_ci": {
     "run_id": 40437401540,
     "head": "85108f2ef2fc09c9bd1648e57020385e9aa4361e",
-    "status": "RUNNING_AT_CHECKPOINT",
-    "result": "NOT_YET_MEASURED",
-    "raw_zip_sha256": null
+    "status": "COMPLETED_NATIVE_EXECUTION_SUCCESS_UTILITY_RED",
+    "source_test": "PASS",
+    "training_steps": 32,
+    "training_seconds": 198.8,
+    "peak_rss_mb": 2423.8,
+    "adapter_sha256": "29b1a14b77538bd14d05cfb7d53a9b7a43ba0b4065ef33d0b52bcbc28e47b163",
+    "train_proof_sha256": "40497ff90b77e919b9445959e6eb89fbd0ed075de66a409d0c1503954b7c3099",
+    "native_proof_sha256": "b39e8525690aafdd98cb5abf0bcf82df6eb500abaff0fd56fa41bf9dcd9fcd58",
+    "train_hits": 2,
+    "heldout_hits": 1,
+    "near_miss_leaks": 2,
+    "tokenizer_scale0_parity": true,
+    "numeric_effect": true,
+    "bounded_synthetic_utility": false,
+    "status_label": "NO_ANSWER_UTILITY",
+    "zip_sha256": "cecf2bf0d725886c6e47f0d1d44f69582b43ca5f852dad128136d710fefc2d5c",
+    "github_artifact_id": 12704852652,
+    "inner_sha256_count": 31,
+    "crc": "PASS",
+    "private_path": "/V13-Checkpoints/2026-10-27/Run642/Run642-native-utility-RED-40437401540.zip",
+    "private_bytes_verified": true
   },
   "historical_run639": {
     "native_run": 40431900872,
@@ -51,5 +69,5 @@
   },
   "no_production_weight_changes": true,
   "no_age_or_approval_changes": true,
-  "next": "Inspect native Actions 40437401540 exact source. If complete, download original raw ZIP, verify CRC/inner SHA and source/model hashes, private byte backup; record all native failures and exact six-case metrics. If blocked, preserve failed attempt and continue independent blueprint work."
+  "next": "Run642 native negative closed; do not tune frozen Cedar cohort. Inspect Run643 phone source ZIP and continue separate canonical functional package; any new C3 contrastive arm needs fresh prereg and disjoint training data."
 }
