@@ -34,20 +34,46 @@ def state_vec(input_chars,resource_state='NORMAL',hour=12.):
     return [math.log1p(max(0,float(input_chars)))/8,PRESSURE.get(resource_state,.5),math.sin(h),math.cos(h)]
 def onehot(a):return [1. if a==x else 0. for x in ACTIONS]
 
+def _finite_nonnegative(v):
+    return type(v) in (int,float) and math.isfinite(v) and v>=0
+
+def _finite_vector(v,dim):
+    if not isinstance(v,(list,tuple,np.ndarray)) or len(v)!=dim:return False
+    return all(not isinstance(x,(bool,np.bool_)) and isinstance(x,(int,float,np.number))
+               and math.isfinite(float(x)) for x in v)
+
 def transitions(store,limit=MAX_ROWS):
-    """Observed own transitions with a forecast and an outcome; the route comes from the committed ActionSelection."""
+    """Observed own transitions; malformed or nonfinite legacy rows cannot poison a fit."""
     rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created FROM actions a WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
-        exp=json.loads(r['expected']);fc=exp.get('forecast') or {};act=json.loads(r['outcome'] or '{}')
-        sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
-        route=json.loads(sel['payload']).get('route_hint') if sel else None
-        if route not in ACTIONS or not isinstance(fc.get('input_chars'),(int,float)) or not isinstance(act.get('action_duration_s'),(int,float)):continue
-        hour=(r['created']%86400)/3600
-        lat=(fc.get('learned_latent_prediction') or {}).get('latent')
-        out.append({'action_id':r['id'],'s':state_vec(fc['input_chars'],fc.get('resource_state','NORMAL'),hour),'a':route,
-                    'y':[math.log1p(act['action_duration_s']),1. if r['status']=='FINAL' else 0.,math.log1p(act.get('characters') or 0)/8],
-                    'latent':lat if isinstance(lat,list) and lat and all(isinstance(v,(int,float)) for v in lat) else None})
+        try:
+            exp=json.loads(r['expected']);act=json.loads(r['outcome'])
+            if type(exp) is not dict or type(act) is not dict:continue
+            fc=exp.get('forecast')
+            if type(fc) is not dict:continue
+            chars=act.get('characters')
+            chars=0 if chars is None else chars
+            if (not _finite_nonnegative(fc.get('input_chars'))
+                    or not _finite_nonnegative(act.get('action_duration_s'))
+                    or not _finite_nonnegative(chars)
+                    or not _finite_nonnegative(r['created'])):continue
+            resource=fc.get('resource_state','NORMAL')
+            if type(resource) is not str:continue
+            sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
+            payload=json.loads(sel['payload']) if sel else {}
+            route=payload.get('route_hint') if type(payload) is dict else None
+            if route not in ACTIONS:continue
+            hour=(r['created']%86400)/3600
+            lat=(fc.get('learned_latent_prediction') or {})
+            lat=lat.get('latent') if type(lat) is dict else None
+            if not isinstance(lat,list) or not lat or not _finite_vector(lat,len(lat)):lat=None
+            out.append({'action_id':r['id'],'s':state_vec(fc['input_chars'],resource,hour),'a':route,
+                        'y':[math.log1p(act['action_duration_s']),1. if r['status']=='FINAL' else 0.,math.log1p(chars)/8],
+                        'latent':lat})
+        except (ValueError,TypeError,KeyError,OverflowError,ZeroDivisionError):
+            # Corrupt/legacy observations are not training evidence.
+            continue
     return list(reversed(out))
 
 def ridge(X,Y,lam=RIDGE):
@@ -95,27 +121,56 @@ def load(store):
     return st if st and st.get('revision')==REVISION else None
 
 def coverage(st,s,a):
-    pts=np.array(st['states'].get(a) or [],float);n=len(pts)
+    if not _finite_vector(s,4):return {'samples':0,'ood_distance':None,'in_support':False,'invalid':True}
+    raw=st.get('states',{}).get(a) if type(st.get('states')) is dict else None
+    if not isinstance(raw,list) or any(not _finite_vector(p,4) for p in raw):
+        return {'samples':0,'ood_distance':None,'in_support':False,'invalid':True}
+    pts=np.asarray(raw,float);n=len(raw)
     if n==0:return {'samples':0,'ood_distance':None,'in_support':False}
-    d=np.sqrt(((pts-np.array(s))**2).sum(1));nearest=float(d.min())
+    d=np.sqrt(((pts-np.asarray(s,float))**2).sum(1));nearest=float(d.min())
     if n>=2:
         dd=np.sqrt(((pts[:,None,:]-pts[None,:,:])**2).sum(2));np.fill_diagonal(dd,np.inf);scale=float(np.median(dd.min(1)))
     else:scale=0.
     ood=nearest/max(scale,1e-3)
+    if not math.isfinite(ood):
+        return {'samples':0,'ood_distance':None,'in_support':False,'invalid':True}
     return {'samples':n,'ood_distance':round(ood,4),'in_support':ood<=OOD_SUPPORT}
 
+def _invalid_numeric(a):
+    return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN',
+            'reason':'INVALID_NUMERIC_EVIDENCE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
+
 def counterfactual(store,s,a,st=None):
-    """Predicted consequence of action a in state s, with coverage, model disagreement and a confidence label."""
+    """Predicted consequence of action a in state s; invalid evidence cannot create confidence."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
     if not st or st.get('revision')!=REVISION or st.get('status')!='FITTED':
         return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
-    x=np.array([1.]+list(s)+onehot(a));preds=np.array([x@np.array(W) for W in st['forward']])
-    mean=preds.mean(0);spread=float(preds.std(0).mean());cov=coverage(st,s,a)
+    if not _finite_vector(s,4) or st.get('support_scope')!='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED':
+        return _invalid_numeric(a)
+    try:
+        weights=np.asarray(st.get('forward'),float)
+    except (ValueError,TypeError,OverflowError):
+        return _invalid_numeric(a)
+    if weights.shape!=(ENSEMBLE,1+4+len(ACTIONS),len(TARGETS)) or not np.isfinite(weights).all():
+        return _invalid_numeric(a)
+    cov=coverage(st,s,a)
+    support=st.get('support_counts')
+    if cov.get('invalid') or type(support) is not dict or support.get(a)!=cov['samples']:
+        return _invalid_numeric(a)
+    x=np.asarray([1.]+list(s)+onehot(a),float)
+    preds=np.asarray([x@W for W in weights])
+    if not np.isfinite(preds).all():return _invalid_numeric(a)
+    mean=preds.mean(0);spread=float(preds.std(0).mean())
+    if not np.isfinite(mean).all() or not math.isfinite(spread):return _invalid_numeric(a)
     ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
     conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
+    if not math.isfinite(conf):return _invalid_numeric(a)
+    try:duration=math.expm1(float(mean[0]))
+    except OverflowError:return _invalid_numeric(a)
+    if not math.isfinite(duration):return _invalid_numeric(a)
     conf=round(max(0.,min(1.,conf)),4)
-    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(math.expm1(float(mean[0])),3)},
+    return {'action':a,'prediction':dict(zip(TARGETS,np.round(mean,4).tolist()))|{'duration_s':round(duration,3)},
             'coverage':cov,'model_spread':round(spread,4),'confidence':conf,'cause':'SELF_CAUSED','authority':'HYPOTHESIS',
             'label':'SIMULATION_SUPPORTED' if conf>=CF_MIN and cov['in_support'] else 'SIMULATION_UNCERTAIN'}
 
