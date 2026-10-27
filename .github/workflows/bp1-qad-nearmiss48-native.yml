@@ -344,7 +344,7 @@ jobs:
             PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_nearmiss_retention.py --out "$RUNNER_TEMP/bp1-nearmiss-controls" > "$RUNNER_TEMP/bp1-native-train/NM_CONTROL_RAW.log" 2>&1
             rc="$?"
             if [ "$rc" = 0 ]; then
-              printf '%s  %s\\n' 'ae9a8bad60a5c8322f5447a1eae308460d828c3aaeb273347de727133a2a41f9' "$RUNNER_TEMP/bp1-nearmiss-controls/near_miss.jsonl" 'b1c78b52853c6a1e37697d3f52daa8bbad951423aa622f7d517968e2340d7668' "$RUNNER_TEMP/bp1-nearmiss-controls/retention.jsonl" 'c5ee34e1c346b8054ea1607300eacfc0a0756eae0c90f1958d49c4f60ed0d3b6' "$RUNNER_TEMP/bp1-nearmiss-controls/MANIFEST.json" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/NM_CONTROL_RAW.log" 2>&1
+              printf '%s  %s\n' 'ae9a8bad60a5c8322f5447a1eae308460d828c3aaeb273347de727133a2a41f9' "$RUNNER_TEMP/bp1-nearmiss-controls/near_miss.jsonl" 'b1c78b52853c6a1e37697d3f52daa8bbad951423aa622f7d517968e2340d7668' "$RUNNER_TEMP/bp1-nearmiss-controls/retention.jsonl" 'c5ee34e1c346b8054ea1607300eacfc0a0756eae0c90f1958d49c4f60ed0d3b6' "$RUNNER_TEMP/bp1-nearmiss-controls/MANIFEST.json" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/NM_CONTROL_RAW.log" 2>&1
               rc="$?"
             fi
             if [ "$rc" = 0 ]; then
