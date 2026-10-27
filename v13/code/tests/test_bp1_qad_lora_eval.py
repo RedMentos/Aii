@@ -145,11 +145,18 @@ class QADLoraEvalTests(unittest.TestCase):
             p.write_text(json.dumps(bad, sort_keys=True))
             with self.assertRaises(ValueError):
                 E.verify_train_proof(b, p)
-            bad = train_proof()
-            bad["adapter"]["lora_b_nonzero"] = 0
-            p.write_text(json.dumps(bad, sort_keys=True))
-            with self.assertRaises(ValueError):
-                E.verify_train_proof(b, p)
+            for mutate in (
+                lambda d: d["adapter"].update(lora_b_nonzero=0),
+                lambda d: d.update(heldout_files_opened=True),
+                lambda d: d.update(production_weight_authority=1),
+                lambda d: d["metrics"].update(steps=0),
+                lambda d: d["adapter"].update(gguf_sha256="c" * 64),
+            ):
+                bad = train_proof()
+                mutate(bad)
+                p.write_text(json.dumps(bad, sort_keys=True))
+                with self.assertRaises(ValueError):
+                    E.verify_train_proof(b, p)
 
     def test_resume_only_missing_records_and_preserves_exact_binding(self):
         rows = index()
@@ -177,6 +184,21 @@ class QADLoraEvalTests(unittest.TestCase):
                         train_proof_path=proof, owner_confirmed=True, ask=interrupt,
                         server_context=fake_serve)
                 self.assertEqual(len(S.read_jsonl(out / "predictions.jsonl")[0]), 5)
+                original_binding = bind.read_bytes()
+                bind.write_bytes(original_binding + b" ")
+                with self.assertRaisesRegex(ValueError, "binding bytes changed"):
+                    E.collect("unused", bind, "server", "base", "adapter", out,
+                        train_proof_path=proof, resume=True, owner_confirmed=True,
+                        ask=lambda *args: "x", server_context=fake_serve)
+                bind.write_bytes(original_binding)
+                target = out / "predictions.jsonl"
+                original_predictions = target.read_bytes()
+                target.write_bytes(original_predictions + b'{"partial":')
+                with self.assertRaisesRegex(ValueError, "partial trailing"):
+                    E.collect("unused", bind, "server", "base", "adapter", out,
+                        train_proof_path=proof, resume=True, owner_confirmed=True,
+                        ask=lambda *args: "x", server_context=fake_serve)
+                target.write_bytes(original_predictions)
                 completed = E.collect("unused", bind, "server", "base", "adapter", out,
                     train_proof_path=proof, resume=True, owner_confirmed=True,
                     ask=lambda *args: json.dumps({"answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""}),
