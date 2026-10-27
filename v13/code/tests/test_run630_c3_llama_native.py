@@ -108,6 +108,17 @@ class Run630Contracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "reviewed absolute executable"):
             self.check()
 
+    def test_b10964_server_args_are_supported_and_loopback_only(self):
+        with patch.object(R.subprocess, "Popen") as popen, patch.object(R, "_stop"):
+            popen.return_value.poll.return_value = 1
+            popen.return_value.returncode = 1
+            with self.assertRaisesRegex(RuntimeError, "exited before readiness"):
+                R._start(self.server, self.model, None, self.root / "server.log")
+            argv = popen.call_args.args[0]
+            self.assertNotIn("--no-mmap", argv)
+            self.assertEqual(argv[argv.index("--host") + 1], "127.0.0.1")
+            self.assertEqual(argv[argv.index("--model") + 1], str(self.model))
+
     def test_finite_topk_and_delta(self):
         a = {"token_id": 7, "logprobs": {7: -0.5, 8: -1.0}}
         b = {"token_id": 7, "logprobs": {7: -0.4, 8: -1.0}}

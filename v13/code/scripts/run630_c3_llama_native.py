@@ -97,7 +97,7 @@ def _json(url, payload=None, timeout=12):
 def _start(server, model, adapter, logfile):
     port = _port()
     args = [str(server), "--model", str(model), "--host", "127.0.0.1",
-            "--port", str(port), "--ctx-size", "512", "--threads", "2", "--no-mmap"]
+            "--port", str(port), "--ctx-size", "512", "--threads", "2"]
     if adapter is not None:
         args += ["--lora", str(adapter)]
     handle = open(logfile, "wb")

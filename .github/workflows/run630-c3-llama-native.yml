@@ -38,8 +38,8 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/RUN630_HEAD.txt"
-          test "$(git hash-object v13/code/scripts/run630_c3_llama_native.py)" = a0ab226bd2aa49f87bc7fff67116ff46e1f848b3
-          test "$(git hash-object v13/code/tests/test_run630_c3_llama_native.py)" = 40be3b1bd69fbccde674f802960129b92b6aa0b1
+          test "$(git hash-object v13/code/scripts/run630_c3_llama_native.py)" = 45bb4a94eb6d59ae43ebc3760b0e1ee80dc1cfac
+          test "$(git hash-object v13/code/tests/test_run630_c3_llama_native.py)" = e245f04b76d315801864414a245e715d03b798ad
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run630-c3-llama-native/PREREG.md)" = 26dc81e102680040f22d0dfed05ccd34b0151314
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json)" = 7bf74a8b9de4f7765005093e4cb758da00b9ec0b
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
