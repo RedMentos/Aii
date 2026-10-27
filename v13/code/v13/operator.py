@@ -12,7 +12,7 @@ def obsched_names():
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
-:self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:self / :world / :world shadow [status|load <name.npz> <sha256> <cohortsha256> <sourcesha256>|predict '<X-JSON>' '<A-JSON>'|unload] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -222,6 +222,9 @@ class Operator:
         if cmd=='brain':return dumps(s.generation())
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
+        if cmd=='world' and args and args[0]=='shadow':
+            from .world_jepa_shadow_probe import operator_command
+            return dumps(operator_command(r,args[1:]))
         if cmd=='world':return dumps(r.world.world_state())
         if cmd in {'components','objectives'}:
             from .verification import component_registry,objective_registry
