@@ -31,6 +31,11 @@ class LP3OptimizerTrajectoryTests(unittest.TestCase):
     def test_all_positive_trace_has_no_issue(self):
         self.assertIsNone(d.first_issue([row(i) for i in range(24)]))
 
+    def test_optimizer_nonfinite_is_a_reported_issue(self):
+        trace = [row(0), {**row(1), 'optimizer_moments_finite': False,
+                          'update_abs_sum': 1.}]
+        self.assertEqual(d.first_issue(trace), {'step': 1, 'kind': 'OPTIMIZER_NONFINITE'})
+
     def test_execution_requires_opt_in_and_does_not_write(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)/'result.json'
@@ -64,6 +69,16 @@ class LP3OptimizerTrajectoryTests(unittest.TestCase):
         bad = d._grad_stat(m, torch)
         self.assertFalse(bad['finite'])
         self.assertEqual(bad['nonfinite_elements'], 1)
+
+    def test_finite_large_gradients_do_not_overflow_float32_sum(self):
+        import torch
+        from torch import nn
+        m = nn.Linear(10, 10)
+        m.weight.grad = torch.full_like(m.weight, 1e38)
+        m.bias.grad = torch.full_like(m.bias, 1e38)
+        result = d._grad_stat(m, torch)
+        self.assertTrue(result['finite'])
+        self.assertGreater(result['abs_sum'], 1e39)
 
 
 if __name__ == '__main__':
