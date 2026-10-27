@@ -1896,7 +1896,17 @@
     "prereg_commit": "fd3354f59fd84def242a222e4639a6501ff170df",
     "native_source_sha": "8b11cfde8670838ead5f8ed2773b178070521771",
     "native_run": 40528733559,
-    "status": "PREREG_NO_UPDATE_NATIVE_DIAGNOSTIC_RUNNING",
+    "native_result": "PASS_INITIAL_GRADIENTS_ALL_SIX_POSITIVE",
+    "native_exit": 0,
+    "privacy_exit": 0,
+    "diff_exit": 0,
+    "native_artifact_id": 12744098893,
+    "native_artifact_zip_sha256": "cb8aed75ae34809e06581557ca9cfce2dda088158f156077831f643b7d8114ed",
+    "native_result_sha256": "0114f75f6f26c39299a8c9d1180a71073eb9835de99919b2caaaa94eac737944",
+    "all_six_initial_full_grad_positive": true,
+    "private_library_backup": "/V13-Checkpoints/2026-10-27/LP3-Gradient-Diagnostic/lp3-gradient-diagnostic-40528733559.zip",
+    "private_library_byte_exact_readback": true,
+    "status": "LINUX_NATIVE_NO_UPDATE_GRADIENT_DIAGNOSTIC_PASS",
     "model_id": "LiquidAI/LFM2.5-350M",
     "revision": "120bf032c36dd1273de754669da040dba7ad4982",
     "model_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
@@ -1916,7 +1926,7 @@
     "redmi_measured": false,
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/lp3-gradient-diagnostic/REPORT.md",
-    "next_command": "Audit Actions 40528733559 original raw artifact for six+two per-prompt gradient results",
+    "next_command": "Preregister separate stepwise optimizer-gradient trace for fixed 24-step sequence; original utility FAIL unchanged",
     "next_prerequisite": "Exact native exit and independent raw review; no original cohort replay"
   }
 }
