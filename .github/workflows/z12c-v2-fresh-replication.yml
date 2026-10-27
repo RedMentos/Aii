@@ -1,0 +1,84 @@
+name: V13 Z12c strict-calibration fresh-seed full-budget replication
+on:
+  push:
+    branches:
+      - codex/automation11-z12c-v2-fresh-replication-20261027
+    paths:
+      - '.github/workflows/z12c-v2-fresh-replication.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z12c-v2-fresh-replication
+  cancel-in-progress: false
+jobs:
+  independent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated pinned dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/z12c-v2"
+          timeout 240s "$RUNNER_TEMP/z12c-v2/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve raw source, execution, host and result
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/z12c-v2-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/z12c-v2-proof/HEAD.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/z12c-v2-proof/HOST.txt"
+          sha256sum v13/code/scripts/z12b_world_jepa.py v13/code/scripts/z12c_slot_world_jepa.py v13/code/v13/world_jepa_slots.py v13/code/v13/world_jepa.py v13/code/v13/common.py > "$RUNNER_TEMP/z12c-v2-proof/SOURCE_SHA256.txt"
+          {
+            test "$(git hash-object v13/code/scripts/z12b_world_jepa.py)" = '2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4'
+            test "$(git hash-object v13/code/scripts/z12c_slot_world_jepa.py)" = '340b568a1270c82559901196f7cd8fcc04e14e0f'
+            test "$(git hash-object v13/code/v13/world_jepa_slots.py)" = '65636468f10ed22b1b743aba14a1144f55e9708f'
+            test "$(git hash-object v13/code/v13/world_jepa.py)" = '470377f999ccd250be284e674e4b8f165942889b'
+            test "$(git hash-object v13/code/v13/common.py)" = '8efd950c7bc221fbdae3fca200610cb383286001'
+          } > "$RUNNER_TEMP/z12c-v2-proof/SOURCE_RAW.log" 2>&1
+          source_rc=$?
+          echo "$source_rc" > "$RUNNER_TEMP/z12c-v2-proof/SOURCE_EXIT.txt"
+          if [ "$source_rc" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout --signal=TERM --kill-after=10s 2400s "$RUNNER_TEMP/z12c-v2/bin/python" scripts/z12c_slot_world_jepa.py "$RUNNER_TEMP/z12c-v2-proof/Z12C_V2_FRESH_214_215_216.json" --seeds 214,215,216 --train 4000 --cf 150 --attr 300 --steps 3000) > "$RUNNER_TEMP/z12c-v2-proof/BENCH_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/z12c-v2-proof/BENCH_EXIT.txt"
+          else
+            echo "BLOCKED_SOURCE_HASH_MISMATCH" > "$RUNNER_TEMP/z12c-v2-proof/BENCH_RAW.log"
+            echo 125 > "$RUNNER_TEMP/z12c-v2-proof/BENCH_EXIT.txt"
+          fi
+          "$RUNNER_TEMP/z12c-v2/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 3d39a7e0663ffbf72b804e5926822f2c9ab2ec7f --head HEAD > "$RUNNER_TEMP/z12c-v2-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z12c-v2-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload untouched original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: z12c-v2-fresh-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/z12c-v2-proof/
+          if-no-files-found: error
+      - name: Enforce structural experiment execution, not scientific PASS
+        run: |
+          set -euo pipefail
+          for n in SOURCE BENCH PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/z12c-v2-proof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/z12c-v2-proof/${n}_RAW.log"; exit 1; }
+          done
+          "$RUNNER_TEMP/z12c-v2/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'z12c-v2-proof/Z12C_V2_FRESH_214_215_216.json'
+          r=json.loads(p.read_text())
+          assert r['kind']=='V13_Z12C_SLOT_WORLD_JEPA'
+          assert r['args']['seeds']=='214,215,216'
+          assert len(r['seeds'])==3
+          assert set(r['criteria'])=={'C1_cf_retrieval_covered','C2_cf_retrieval_held_out_combinations','C3_controls_fail','C4_no_collapse','C5_confidence_tracks_error','C6_attribution_jepa','C7_action_free_control_worse'}
+          assert r['verdict'] in ('Z12C_SLOT_WORLD_JEPA_PASS','Z12C_SLOT_WORLD_JEPA_FAIL')
+          print('V2_REPLICATION_EXECUTED; SCIENTIFIC_VERDICT='+r['verdict'])
+          PY
