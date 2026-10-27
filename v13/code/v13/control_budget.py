@@ -12,6 +12,7 @@ verdict is NO_LIMITS (report only). With limits set, each one is PASS/FAIL and t
 set limits pass. Energy/thermal overhead needs the phone (WP-R) and is reported as UNMEASURED.
 """
 import json
+import math
 from pathlib import Path
 
 KEY='WP_T14_CONTROL_BUDGET';REVISION='wp-t14-control-budget-v1'
@@ -21,8 +22,14 @@ CONTROL=tuple(s for s in STAGES[:-1] if s not in BODY)
 LIMITS=(('control_budget_p95_ms','control_p95_ms'),('control_budget_state_mb','state_mb'),('control_budget_params_mb','params_mb'))
 
 def durations(marks):
-    """Cumulative stage marks (seconds since turn start) -> seconds per stage; a stage lasts until the next mark."""
-    seen=sorted(((t,s) for s,t in (marks or {}).items() if s in STAGES and isinstance(t,(int,float))),key=lambda x:x[0])
+    """Cumulative stage marks (seconds since turn start) -> seconds per stage; invalid evidence abstains."""
+    if not isinstance(marks,dict):return {}
+    for s,t in marks.items():
+        if s not in STAGES:continue
+        try:
+            if type(t) not in (int,float) or t<0 or not math.isfinite(t):return {}
+        except (OverflowError,ValueError):return {}
+    seen=sorted(((t,s) for s,t in marks.items() if s in STAGES),key=lambda x:x[0])
     return {s:max(0.,seen[i+1][0]-t) for i,(t,s) in enumerate(seen[:-1])}
 
 def pct(xs,q):
