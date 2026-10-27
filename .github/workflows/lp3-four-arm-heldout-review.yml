@@ -114,13 +114,13 @@ jobs:
           "$RUNNER_TEMP/lp3-four-arm-heldout-venv/bin/python" - "$evidence/RESULT.json" <<'PY'
           import json,sys
           d=json.load(open(sys.argv[1]))
-          assert d['schema']=='lp3-four-arm-heldout-ablation-v1'
+          assert d['schema']=='lp3-four-arm-heldout-v1'
           assert d['steps_per_arm']==24 and d['seed']==109
-          assert d['train_rows']==6 and d['prefix_tokens']==2
+          assert d['train_rows']==6 and d['heldout_prompts_per_family']==12
           assert [(a['normalization'],a['lr']) for a in d['arms']]==[
               ('raw',.005),('raw',.0005),('layernorm',.005),('layernorm',.0005)]
           assert len({a['initial_trainable_sha256'] for a in d['arms']})==1
-          assert all(a['steps_recorded']<=24 for a in d['arms'])
+          assert all(a['train_steps_recorded']<=24 for a in d['arms'])
           assert d['heldout_scored'] is True and d['retention_scored'] is True
           assert d['heldout_families']==['original','new_phrasings']
           assert d['new_facts']==0 and d['heldout_prompts_per_family']==12
