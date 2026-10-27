@@ -41,10 +41,13 @@ def latency(store,n=200):
     ctrl=[];body=[];per={s:[] for s in STAGES[:-1]};inline=0;times=[]
     for r in rows:
         try:meta=json.loads(r['metadata'] or '{}')
-        except ValueError:continue
+        except (ValueError,TypeError,UnicodeError):continue
+        if type(meta) is not dict:continue
+        created=r['created']
+        if type(created) not in (int,float) or created<0 or not math.isfinite(created):continue
         d=durations(meta.get('stage_marks_s'))
         if not d:continue
-        times.append(r['created'])
+        times.append(created)
         for s,v in d.items():per[s].append(v)
         ctrl.append(sum(v for s,v in d.items() if s in CONTROL));body.append(sum(v for s,v in d.items() if s in BODY))
         inline+=d.get('preanswer_observers',0.)>.001

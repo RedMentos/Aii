@@ -1,0 +1,70 @@
+name: V13 WP-T14 persisted row integrity RED GREEN review
+on:
+  push:
+    branches: [codex/automation11-control-budget-row-integrity-20261027]
+    paths:
+      - '.github/workflows/control-budget-row-integrity.yml'
+      - 'v13/code/v13/control_budget.py'
+      - 'v13/code/tests/test_control_budget_row_integrity_review.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-control-row-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound timing RED GREEN and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/control-row-integrity"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/control_budget.py > "$evidence/SOURCE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/control-finite-venv"
+          py="$RUNNER_TEMP/control-finite-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_budget
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/control_budget.py v13/code/tests/test_control_budget_row_integrity_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5458dce977ad22f82fb1749811c512bb543782fc --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 5458dce977ad22f82fb1749811c512bb543782fc HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-control-row-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/control-row-integrity/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits, preserve RED, no gate promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/control-row-integrity"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'CONTROL_BUDGET_ROW_SOFTWARE_ONLY_NO_GATE_PROMOTION'
