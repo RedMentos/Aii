@@ -6,6 +6,8 @@ on:
       - '.github/workflows/bp1-qad-v2-scale0-software.yml'
       - 'v13/code/scripts/bp1_qad_lora_eval.py'
       - 'v13/code/tests/test_bp1_qad_lora_default_scale.py'
+      - 'v13/code/tests/test_bp1_qad_adapter_locator_workflow.py'
+      - '.github/workflows/bp1-qad-train-plus-v2-samejob.yml'
       - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-v2-scale0/**'
 permissions:
   contents: read
@@ -29,7 +31,7 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/bp1-scale0/HEAD.txt"
           sha256sum v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_default_scale.py > "$RUNNER_TEMP/bp1-scale0/SOURCE_SHA256.txt"
           git hash-object v13/code/v13/lora_trainer.py > "$RUNNER_TEMP/bp1-scale0/FROZEN_TRAINER_BLOB.txt"
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_lora_default_scale tests.test_bp1_qad_lora_eval tests.test_bp1_qad_adapter_locator tests.test_bp1_qad_lora_proof_contract tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-scale0/UNIT_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_adapter_locator_workflow tests.test_bp1_qad_lora_default_scale tests.test_bp1_qad_lora_eval tests.test_bp1_qad_adapter_locator tests.test_bp1_qad_lora_proof_contract tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-scale0/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-scale0/UNIT_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_default_scale.py > "$RUNNER_TEMP/bp1-scale0/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-scale0/COMPILE_EXIT.txt"
