@@ -105,6 +105,42 @@ class ModuleLifecycleCASTests(unittest.TestCase):
                 M.propose(self.store, "https://example.org/another.json", "Other")
         self.assertEqual(len(M.state(self.store)["mods"]), 1)
 
+    def after_write(self, callback):
+        original = M.atomic_write
+        def interposed(path, data):
+            original(path, data)
+            callback()
+        return patch.object(M, "atomic_write", side_effect=interposed)
+
+    def test_fetch_postwrite_revoke_delete_leaves_no_stale_file(self):
+        with self.after_write(lambda: M.revoke(self.store, self.mid, authority=H, delete=True)):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "REVOKED")
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
+    def test_fetch_postwrite_disable_leaves_no_stale_file(self):
+        with self.after_write(lambda: M.set_enabled(self.store, False, authority=H)):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertFalse(M.state(self.store)["enabled"])
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "PROPOSED")
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
+    def test_fetch_postwrite_notaus_leaves_no_stale_file(self):
+        with self.after_write(lambda: P.halt(self.store, True, authority=H)):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "PROPOSED")
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
+    def test_fetch_postwrite_typed_network_ban_leaves_no_stale_file(self):
+        with self.after_write(lambda: P.add(self.store, "risk", "NETWORK", authority=H)):
+            with self.assertRaises(PermissionError):
+                M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: DATA, clock=lambda: 1000.)
+        self.assertEqual(M.state(self.store)["mods"][self.mid]["state"], "PROPOSED")
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
     def test_export_cannot_write_stale_revoked_corpus(self):
         self.ready(active=True)
         M.set_learn(self.store, True, authority=H)
