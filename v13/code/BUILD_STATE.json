@@ -1,4 +1,34 @@
 {
+  "automation11_world_ag5_conflict_prep_20261027": {
+    "status": "TWO_CONFLICT_VERSIONS_CAPTURED_REVIEW_ONLY_NO_MERGE",
+    "world_head": "ab206487ae7799963de0ea84058b96b1f4bdc9a2",
+    "ag5_head": "c615497384dc5519be59232451895ca443ce9e45",
+    "merge_base": "cb959052433e01c29afc007e02b93aef373deb7f",
+    "first_harness_fail_actions": 40451696368,
+    "first_harness_fail_reason": "missing ephemeral committer identity; no merge started",
+    "green_actions": 40451775538,
+    "merge_exit": 1,
+    "abort_exit": 0,
+    "privacy": "CLEAN",
+    "worktree_clean": true,
+    "conflicts": [
+      "v13/code/scripts/handy_pflicht.py",
+      "v13/code/v13/operator.py"
+    ],
+    "candidate_resolution": "AG5 handy_pflicht V2; AG5 operator plus World shadow/ersetze/effort detail-gist under existing gates",
+    "failed_artifact_sha256": "cb6d36f264bcd4ed3ee0a7b5b73b9529db8a193b9cd4f43fa4e128c63f8cf6ea",
+    "green_artifact_sha256": "788a58cd70c049aee0bc15a0976d23a245628ee3db938b0aff16d0c3ba299d88",
+    "private_backup": "/V13-Checkpoints/2026-10-27/World-AG5-Conflict-Prep/",
+    "merge_commit_created": false,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next": "Review-only two-parent merge candidate; test AG5+World integration; no owner/main merge"
+  },
   "automation11_world_ag5_merge_tree_20261027": {
     "status": "READ_ONLY_MERGE_TREE_CONFLICTS_2_REVIEW_ONLY",
     "world_parent": "3c527cebe70947d910121f8c605b66ba0de810a5",
