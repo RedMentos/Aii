@@ -1,0 +1,61 @@
+name: V13 combined PR667 and PR669 security review
+on:
+  push:
+    branches: [codex/automation11-module-review-merge-20261027]
+    paths:
+      - '.github/workflows/review666-combined-gates.yml'
+      - 'v13/code/v13/modules_gate.py'
+      - 'v13/code/tests/test_review666_module_halt_race.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-review666-combined-gates-20261027
+  cancel-in-progress: false
+jobs:
+  synthetic-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated deps
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bp11bexport"
+          timeout 240s "$RUNNER_TEMP/bp11bexport/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve exact unit, compile, privacy and source hashes
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp11bexportproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp11bexportproof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_review666_module_halt_race.py v13/code/tests/test_review666_bp11b_export_gate.py > "$RUNNER_TEMP/bp11bexportproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 450s "$RUNNER_TEMP/bp11bexport/bin/python" -m unittest -v tests.test_review666_module_halt_race tests.test_review666_bp11b_export_gate tests.test_modules_gate tests.test_guard2) > "$RUNNER_TEMP/bp11bexportproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp11bexportproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/bp11bexport/bin/python" -m compileall -q v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_review666_module_halt_race.py v13/code/tests/test_review666_bp11b_export_gate.py > "$RUNNER_TEMP/bp11bexportproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp11bexportproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp11bexport/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 2671f054ed025625abe94be42d12667329c4366f --head HEAD > "$RUNNER_TEMP/bp11bexportproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp11bexportproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: review666-combined-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp11bexportproof/
+          if-no-files-found: error
+      - name: Enforce focused and privacy
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp11bexportproof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/bp11bexportproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -12 "$RUNNER_TEMP/bp11bexportproof/UNIT_RAW.log"
