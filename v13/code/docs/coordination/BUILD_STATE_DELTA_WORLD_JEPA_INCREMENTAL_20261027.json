@@ -1,0 +1,77 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WORLD_JEPA_INCREMENTAL_DIGITAL_OUTCOME",
+  "status": "REVIEW_ONLY_SYNTHETIC_NEGATIVE_NO_INCREMENTAL_GAIN",
+  "parent_pr": 754,
+  "parent_sha": "3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2",
+  "review_pr": 764,
+  "frozen_model_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "frozen_bridge_blob": "4ab37e11d8238d376e568567f901c85c12d09da8",
+  "probe_blob": "841a99e86099dc153a322717510a5c4e4aaffe0d",
+  "synthetic": {
+    "run": 40568077295,
+    "sha": "4239754c6015dc388a6117c738259e5bfbee81c5",
+    "tests": 28,
+    "steps": 400,
+    "seeds": [
+      3,
+      7
+    ],
+    "n": 64,
+    "train_n": 47,
+    "heldout_n": 17,
+    "source_sha256": "c01affb964d7069259ea1082b4135f8c1060f6ca16b07a382c855c0ff3070969",
+    "direct_pooled_mae": 0.15255538955666412,
+    "augmented_pooled_mae": {
+      "seed3": 0.24187012700216307,
+      "seed7": 0.19749055315531883
+    },
+    "wrong_action_pooled_mae": {
+      "seed3": 0.21580730042135143,
+      "seed7": 0.2385628038941362
+    },
+    "projection_pooled_mae": {
+      "seed3": 0.15257202426832725,
+      "seed7": 0.1525741920561585
+    },
+    "raw_exits": {
+      "frozen": 0,
+      "install": 0,
+      "unit": 0,
+      "synthetic": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "ce0b114290b38d91d2c10f4596cded32a254b2eec4f60fef8d1ac14a9fc3b415"
+  },
+  "full": {
+    "run": 40568367464,
+    "sha": "2f32d8efc4ae3e2eb3d667abeab6692e5dec600b",
+    "tests": 1944,
+    "skipped": 1,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "47de3a6c7bfbd5ea7b7bba3c513e352dfe938450a0d1143dddfbc4fc3b994e1e"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZH-World-JEPA-Incremental",
+  "private_backup_byte_verified": true,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=. python scripts/world_jepa_incremental_probe.py --synthetic-smoke",
+  "next_prerequisite": "Independent review; closed private observed-store cohort and genuine source-disjoint evaluation; no auto-merge"
+}
