@@ -1,0 +1,60 @@
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+import numpy as np
+
+from v13 import route_features as RF
+from v13.learning_worker import features, objective, gradient_check, train
+
+
+class RouteFeaturesTest(unittest.TestCase):
+    def test_lexical_is_deterministic_bounded_and_ignores_numbers(self):
+        a = RF.lexical(['Wie viel ist die Hälfte von 120 Euro?'])
+        b = RF.lexical(['Wie viel ist die Hälfte von 48 Euro?'])
+        self.assertTrue(np.array_equal(a, b))
+        self.assertAlmostEqual(float(np.linalg.norm(a)), RF.LEX_SCALE)
+        self.assertEqual(RF.lexical(['']).tolist(), [[0.] * RF.LEX_DIM])
+        self.assertFalse(np.array_equal(a, RF.lexical(['Rechne bitte 12 mal 3 aus.'])))
+
+    def test_zero_extended_head_keeps_logits(self):
+        rng = np.random.default_rng(1); base = features(rng.normal(size=(3, 6)))
+        w = rng.normal(size=(7, 4)); tr = np.ones(7)
+        w2, tr2 = RF.extend(w, tr, 7 + RF.LEX_DIM)
+        x2 = RF.for_head(base, ['a b', 'Hälfte von', 'Kern'], w2.shape[0])
+        self.assertTrue(np.allclose(base @ w, x2 @ w2)); self.assertEqual(tr2.shape, (7 + RF.LEX_DIM,))
+        with self.assertRaises(ValueError): RF.for_head(base, ['x'] * 3, 9)
+
+    def test_recency_weights(self):
+        self.assertEqual(RF.recency_weights(4, 0).tolist(), [1.] * 4)
+        w = RF.recency_weights(10, 2)
+        self.assertAlmostEqual(float(w.mean()), 1.); self.assertTrue(np.all(np.diff(w) > 0))
+        self.assertAlmostEqual(float(w[-1] / w[-3]), 2.)
+
+    def test_weighted_objective_gradient(self):
+        rng = np.random.default_rng(2); x = features(rng.normal(size=(9, 5))); y = rng.integers(0, 4, 9)
+        w = rng.normal(size=(6, 4)) * .1; sw = RF.recency_weights(9, 3)
+        self.assertLess(gradient_check(x, y, w, sw), 1e-6)
+        self.assertAlmostEqual(objective(x, y, w, np.ones(9))[0], objective(x, y, w)[0])
+
+    def test_word_channel_learns_a_boundary_the_embedding_cannot_see(self):
+        # identical embeddings for "half" and "third" questions: only the words differ
+        texts, labels = [], []
+        for i in range(10):
+            texts += ['Was ist die Hälfte von %d?' % i, 'Was ist ein Drittel von %d?' % i, 'Hallo Anna %d' % i, 'Vergleiche Bus und Bahn %d' % i]
+            labels += [0, 1, 0, 3]
+        emb = [[1., 0., 0.] if lab in (0, 1) and 'Hallo' not in t else ([0., 1., 0.] if 'Hallo' in t else [0., 0., 1.]) for t, lab in zip(texts, labels)]
+        texts += ['Fasse zusammen: Kern %d' % i for i in range(4)]; labels += [2] * 4; emb += [[0., .5, .5]] * 4
+        cfg = {'learning_steps': 400, 'eligibility_decay': .95, 'learning_rate': .5, 'max_update_norm': 1., 'retention_max_delta': .02, 'route_recency_half_life': 0}
+        with tempfile.TemporaryDirectory() as d:
+            m0 = train({'config': cfg, 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels)}, d)
+            m1 = train({'config': cfg, 'embeddings': emb, 'labels': labels, 'scaffold_labels': [0] * len(labels), 'texts': texts}, d)
+            self.assertEqual(m1['feature_view'], 'needle+words'); self.assertEqual(m0['feature_view'], 'needle')
+            self.assertGreater(m1['held_out']['accuracy'], m0['held_out']['accuracy'])
+            self.assertTrue(m1['gradient_check']); self.assertTrue(m1['deterministic_repeat'])
+            with np.load(Path(d) / 'candidate.npz') as z: self.assertEqual(z['route_w'].shape, (4 + RF.LEX_DIM, 4))
+
+
+if __name__ == '__main__':
+    unittest.main()

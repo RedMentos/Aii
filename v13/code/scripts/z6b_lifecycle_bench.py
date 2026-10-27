@@ -39,9 +39,16 @@ TEMPLATES = {
     'both':   ['Welche Vor- und Nachteile haben {a} und {a2}?', 'Vergleiche {a} mit {a2}.', 'Was spricht für {a}, was für {a2}?', 'Wäge {a} gegen {a2} ab.']}
 
 
+# WP-Z6i: wordings that never occur in training or the main held-out set (generalisation beyond the trained words).
+# half_novel flips with the shift like 'half'; detail_near is other arithmetic sharing words with it ('durch', 'Teile',
+# 'Prozent'), must stay detail, and shows whether the head learned "half" or only "division words".
+NOVEL = {'half_novel': ['Wie viel ist {n} Euro durch 2?', 'Teile {n} Euro in zwei gleiche Teile.', 'Was bekommt jeder, wenn zwei sich {n} Euro teilen?', 'Wie viel sind 50 Prozent von {n}?'],
+         'detail_near': ['Was ist ein Viertel von {n} Euro?', 'Wie viel ist {n} durch 4?', 'Teile {n} Euro in drei gleiche Teile.', 'Wie viel sind 25 Prozent von {n}?']}
+
+
 def make(kind, rng, used):
     for _ in range(500):
-        t = rng.choice(TEMPLATES[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'], 2)
+        t = rng.choice(TEMPLATES[kind] if kind in TEMPLATES else NOVEL[kind]); a, a2 = rng.sample(FILL['a'], 2); n, n2 = rng.sample(FILL['n'], 2)
         s = t.format(g=rng.choice(FILL['g']), name=rng.choice(FILL['name']), n=n, n2=n2, a=a, a2=a2, thing=rng.choice(FILL['thing']), need=rng.choice(FILL['need']))
         if s not in used: used.add(s); return s
     raise RuntimeError('paraphrase space exhausted for ' + kind)
@@ -54,42 +61,60 @@ def stream(seed):
     record = [make(rng.choice(list(TEMPLATES)), rng, used) for _ in range(40)]
     p1 = [[(make(k if k != 'detail' else rng.choice(('detail', 'half')), rng, used), k) for k in ROUTE_NAMES for _ in range(2)] for _ in range(6)]
     p2 = [[(make('half', rng, used), 'simple') for _ in range(4)] + [(make(k, rng, used), k) for k in ROUTE_NAMES] for _ in range(4)]
-    return heldout, record, p1, p2
+    nrng = random.Random(seed + 1000)   # separate stream: the Z6b/Z6c/Z6d items of a seed stay identical
+    novel = [(make('half_novel', nrng, used), 'detail', 'simple') for _ in range(8)] + [(make('detail_near', nrng, used), 'detail', 'detail') for _ in range(8)]
+    return heldout + novel, record, p1, p2, len(heldout)
 
 
 SUPERSEDE_CMD = ':ersetze route simple hälfte,halbiere,geteilt durch zwei --notiz Hälfte-Fragen jetzt kurz'
 
 
 def run_arm(installed, policy, seed):
-    sup = policy.endswith('+sup') or policy.endswith('+now'); now_rule = policy.endswith('+now'); base_policy = policy.split('+')[0]  # WP-Z6c: '+sup' = the human states the new scope once
+    flags = set(policy.split('+')[1:]); base_policy = policy.split('+')[0]
+    sup = bool(flags & {'sup', 'now'}); now_rule = 'now' in flags  # WP-Z6c: '+sup' = the human states the new scope once
+    words = 'lex' in flags; half_life = 16 if 'rec' in flags else 0  # WP-Z6i: '+lex' word channel, '+rec' newer corrections count more
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
     from v13.learning_worker import features
+    from v13.route_features import for_head
     import numpy as np
-    heldout, record, p1, p2 = stream(seed); log = []
+    heldout_all, record, p1, p2, n_main = stream(seed); log = []
+    heldout = heldout_all[:n_main]; novel = heldout_all[n_main:]
     with tempfile.TemporaryDirectory(prefix='v13-z6b-') as d:
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
         shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h)
+        r.cfg['route_word_channel'] = int(words); r.cfg['route_recency_half_life'] = half_life
         cache = {}
         def emb(text):
             if text not in cache:
                 ref = r.store.source(text, 'USER'); cache[text] = r.learner.embedding(text, ref['source_id'], time.monotonic()+60)
             return cache[text]
-        X = features([emb(t) for t, _, _ in heldout])
+        X = features([emb(t) for t, _, _ in heldout]); XN = features([emb(t) for t, _, _ in novel])
+        def head_pred(path, items, base):
+            with np.load(path, allow_pickle=False) as z: w = z['route_w']
+            return [ROUTE_NAMES[i] for i in np.argmax(for_head(base, [t for t, _, _ in items], w.shape[0])@w, axis=1)]
+        def novel_acc(path, shifted):
+            if path is None:
+                from v13.cognition import scaffold_route
+                pred = [scaffold_route(t) for t, _, _ in novel]
+            else: pred = head_pred(path, novel, XN)
+            ok = [p == (b if shifted else a) for p, (_, a, b) in zip(pred, novel)]
+            return {'half_novel': round(sum(ok[:8])/8, 4), 'detail_near': round(sum(ok[8:])/8, 4)}
         def acc(path, shifted):
             lab = [(b if shifted else a) for _, a, b in heldout]
             if path is None:
                 from v13.cognition import scaffold_route
                 pred = [scaffold_route(t) for t, _, _ in heldout]
             else:
-                with np.load(path, allow_pickle=False) as z: pred = [ROUTE_NAMES[i] for i in np.argmax(X@z['route_w'], axis=1)]
+                pred = head_pred(path, heldout, X)
             ok = [p == l for p, l in zip(pred, lab)]
             per = {k: round(sum(o for o, (_, a, b) in zip(ok, heldout) if (b if shifted else a) == k and not (shifted and a != b))/max(1, sum(1 for _, a, b in heldout if (b if shifted else a) == k and not (shifted and a != b))), 4) for k in ROUTE_NAMES}
             half = [o for o, (_, a, b) in zip(ok, heldout) if a != b]
             unchanged = [o for o, (_, a, b) in zip(ok, heldout) if a == b]
-            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4)}
+            return {'all': round(sum(ok)/len(ok), 4), 'per_route': per, 'half_items': round(sum(half)/len(half), 4), 'unchanged': round(sum(unchanged)/len(unchanged), 4),
+                    'novel': novel_acc(path, shifted)}
         def active_path(): return r.learner.active()
         def runtime_routes():  # WP-Z6d: the real answer-time routing path (Runtime._route), not the head alone
             out = []
@@ -104,8 +129,7 @@ def run_arm(installed, policy, seed):
         def batch_disagreement(batch):
             p = active_path()
             if p is None: return None
-            with np.load(p, allow_pickle=False) as z:
-                pred = [ROUTE_NAMES[int(np.argmax(features([emb(t)])@z['route_w']))] for t, _ in batch]
+            pred = head_pred(p, [(t, l, l) for t, l in batch], features([emb(t) for t, _ in batch]))
             return round(sum(a != l for a, (_, l) in zip(pred, batch))/len(batch), 4)
         try:
             before = r.store.generation_id
@@ -212,6 +236,17 @@ def criteria_z6d(s):
     return c, 'Z6D_RULE_ROUTE_PASS' if all(c.values()) else 'Z6D_RULE_ROUTE_FAIL'
 
 
+def criteria_z6i(s):
+    a = [s['fixed+lex+rec'], s['adaptive+lex+rec']]
+    c = {'I1_head_half_items_ge_80pct': all((x['final_half_items'] or 0) >= .8 for x in a),
+         'I2_retention_ge_90pct': all((x['retention_unchanged'] or 0) >= .9 for x in a),
+         'I3_no_false_promotion': all(x['false_promotions'] == 0 for x in a),
+         'I4_rollback_restores': all(x['rollback'] is not None and x['rollback']['restored'] for x in a),
+         'I5_control_needle_only_fails': (s['fixed']['final_half_items'] or 0) < .5,
+         'I6_runtime_path_half_ge_80pct': (s['fixed+lex+rec'].get('runtime') or {}).get('final', {}).get('half_items', 0) >= .8}
+    return c, 'Z6I_HEAD_LEARNS_PASS' if all(c.values()) else 'Z6I_HEAD_LEARNS_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -226,10 +261,13 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {'fixed+lex+rec', 'adaptive+lex+rec', 'fixed'} <= set(scores):
+        doc['criteria_z6i'], doc['verdict_z6i'] = criteria_z6i(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i-head-learns/PREREG.md'
+        doc['novel_final'] = {k: v['log'][-1]['active_acc_after']['novel'] for k, v in arms.items()}
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'scores')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'novel_final', 'scores')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':
