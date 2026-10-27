@@ -25,7 +25,19 @@ def truncate(vector,dim):
     if not math.isfinite(n) or n<1e-12:raise Unavailable('Embedding ohne Norm')
     return [x/n for x in v]
 
-def cosine(a,b):return max(-1.,min(1.,sum(x*y for x,y in zip(a,b))))
+def valid_cache_unit(vector,dim):
+    """Only six-decimal-rounded, finite, unit-normalized cached embeddings are reusable."""
+    if type(vector) is not list or len(vector)!=dim:return False
+    if any(type(x) not in (int,float) or not math.isfinite(x) for x in vector):return False
+    norm2=sum(x*x for x in vector)
+    return math.isfinite(norm2) and .98<=norm2<=1.02
+
+def cosine(a,b):
+    if len(a)!=len(b) or not a:raise Unavailable('Embedding-Dimensionen stimmen nicht')
+    try:dot=sum(float(x)*float(y) for x,y in zip(a,b))
+    except (TypeError,ValueError,OverflowError) as exc:raise Unavailable('Ungültiger Embedding-Wert') from exc
+    if not math.isfinite(dot):raise Unavailable('Embedding-Kosinus nicht endlich')
+    return max(-1.,min(1.,dot))
 
 def mode(cfg,installed):
     m=cfg.get('memory_embedding','auto')
@@ -70,7 +82,7 @@ class SemanticKeys:
         dim=self.cfg['memory_embed_dim'];started=time.monotonic();cached={};missing=[]
         for r in rows:
             v,_=self.s.state(self.cache_key(r))
-            if isinstance(v,list) and len(v)==dim:cached[r['id']]=v
+            if valid_cache_unit(v,dim):cached[r['id']]=v
             else:missing.append(r)
         deferred=len(missing)-(cap if cap is not None else len(missing));missing=missing[:cap] if cap is not None else missing
         if time.monotonic()>=deadline:raise Limits('Semantic recall budget')
