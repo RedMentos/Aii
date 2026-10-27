@@ -1,0 +1,114 @@
+name: V13 BP1 official QAD tokenizer train-only context audit
+on:
+  push:
+    branches: [codex/gpt6-bp1-qad-token-budget-20261027-0920]
+    paths:
+      - '.github/workflows/bp1-qad-token-budget.yml'
+      - 'v13/code/scripts/bp1_qad_token_budget.py'
+      - 'v13/code/tests/test_bp1_qad_token_budget.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-token-budget/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-qad-token-train-only
+  cancel-in-progress: false
+jobs:
+  tokenizer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    env:
+      GH_TOKEN: ${{ github.token }}
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_DISABLE_XET: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Software unit/compile/privacy with raw exits
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-token-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-token-proof/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_token_budget.py v13/code/tests/test_bp1_qad_token_budget.py > "$RUNNER_TEMP/bp1-token-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_token_budget) > "$RUNNER_TEMP/bp1-token-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-token-proof/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_token_budget.py v13/code/tests/test_bp1_qad_token_budget.py > "$RUNNER_TEMP/bp1-token-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-token-proof/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9b15b1a58c9ca1e6d487d2b00bb89ddfc7744bcd --head HEAD > "$RUNNER_TEMP/bp1-token-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-token-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Isolated official tokenizer-only prerequisites
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/bp1-token-venv" > "$RUNNER_TEMP/bp1-token-proof/VENV_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-token-proof/VENV_EXIT.txt"
+          timeout 240s "$RUNNER_TEMP/bp1-token-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.9.0' > "$RUNNER_TEMP/bp1-token-proof/PIP_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-token-proof/PIP_EXIT.txt"
+          exit 0
+      - name: Fetch exact source-bound train rows and official qad tokenizer files (no model weights)
+        run: |
+          set +e
+          curl -fsSL --retry 1 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip" -o "$RUNNER_TEMP/bp1-original.zip" > "$RUNNER_TEMP/bp1-token-proof/FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c  $RUNNER_TEMP/bp1-original.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1-token-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/bp1-original"
+            unzip -q "$RUNNER_TEMP/bp1-original.zip" -d "$RUNNER_TEMP/bp1-original" >> "$RUNNER_TEMP/bp1-token-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-token-proof/FETCH_EXIT.txt"
+          if [ "$(cat "$RUNNER_TEMP/bp1-token-proof/PIP_EXIT.txt")" = 0 ]; then
+            "$RUNNER_TEMP/bp1-token-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-token-proof/SNAPSHOT_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          p = snapshot_download(repo_id="LiquidAI/LFM2.5-350M-GGUF",
+              revision="657e078c94084481950a2d555a941481f715536b",
+              allow_patterns=["qad/tokenizer.json","qad/tokenizer_config.json",
+                  "qad/chat_template.jinja","qad/config.json","qad/generation_config.json",
+                  "qad/provenance.json","qad/README.md","qad/LICENSE"],
+              local_dir=os.environ["RUNNER_TEMP"]+"/bp1-qad-snapshot")
+          print(p)
+          PY
+            echo "$?" > "$RUNNER_TEMP/bp1-token-proof/SNAPSHOT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-token-proof/SNAPSHOT_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/bp1-token-proof/SNAPSHOT_EXIT.txt")" = 0 ]; then
+            (cd "$RUNNER_TEMP/bp1-qad-snapshot" && sha256sum qad/*) > "$RUNNER_TEMP/bp1-token-proof/QAD_SMALL_FILE_SHA256.txt"
+            cp "$RUNNER_TEMP/bp1-qad-snapshot/qad/provenance.json" "$RUNNER_TEMP/bp1-token-proof/QAD_PROVENANCE_RAW.json"
+          fi
+          exit 0
+      - name: Audit actual official tokenizer on train rows only
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/bp1-token-proof/FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-token-proof/SNAPSHOT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-token-venv/bin/python" scripts/bp1_qad_token_budget.py --train "$RUNNER_TEMP/bp1-original/bp1-output/train_offer.jsonl" --tokenizer-dir "$RUNNER_TEMP/bp1-qad-snapshot" --out "$RUNNER_TEMP/bp1-token-proof/TOKEN_BUDGET.json") > "$RUNNER_TEMP/bp1-token-proof/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-token-proof/AUDIT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-token-proof/AUDIT_EXIT.txt"
+          fi
+          exit 0
+      - name: Preserve original source/metadata and all raw failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-token-budget-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-token-proof/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software+train-only tokenizer gates
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY VENV PIP FETCH SNAPSHOT AUDIT; do
+            test "$(cat "$RUNNER_TEMP/bp1-token-proof/${n}_EXIT.txt")" = 0 || { echo "$n failed"; tail -80 "$RUNNER_TEMP/bp1-token-proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/bp1-token-proof/AUDIT_RAW.log"
+          echo "TRAIN_TOKENIZER_ONLY; NO_MODEL_WEIGHTS_OR_NATIVE_C3_TRAINING"
