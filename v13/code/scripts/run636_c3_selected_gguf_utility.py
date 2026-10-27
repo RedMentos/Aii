@@ -123,7 +123,12 @@ def aggregate(rows):
     """Exact predeclared 6-case acceptance, never semantic/STEP2 promotion."""
     if len(rows) != len(CASES):
         raise ValueError("incomplete frozen evaluation")
-    parity = all(r["tokenizer_parity"] and r["base_vs_scale0"]["same_first_token"]
+    for row, (group, question, keys) in zip(rows, CASES):
+        if (row.get("group"), row.get("question"), row.get("keys")) != (group, question, list(keys)):
+            raise ValueError("frozen case identity/order changed")
+    parity = all(all(isinstance(r.get(k), int) for k in
+                     ("base_first_token", "scale0_first_token", "scale1_first_token"))
+                 and r["tokenizer_parity"] and r["base_vs_scale0"]["same_first_token"]
                  and r["base_vs_scale0"]["same_generated_text"]
                  and r["base_vs_scale0"]["shared_topk"] >= 1
                  and r["base_vs_scale0"]["max_abs_logprob_delta"] is not None
