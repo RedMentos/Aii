@@ -1,0 +1,11 @@
+# Independent AG5+World broad suite after guide fix (2026-10-27)
+
+Exact source parent PR668 head `61a50632a8fca86f141bf52d559c27e2fdd41a28`. Review-only workflow replays AG5 `c615497384dc5519be59232451895ca443ce9e45` into World, resolves three exact conflicts and the `:ersetze` guide contract, and runs the full software suite with frozen historical baseline `40460394112`.
+
+**First attempt RED retained:** Actions `40462211212`, commit `c1f364a071988851fafddca84197d0c15a860a1e`. Broad suite itself ran 4,424 tests, 5 FAIL/73 ERROR, unchanged fingerprint; CI audit had a double-escaped Python regex and emitted invalid JSON trailing literal `\\n`, so audit exit1. Original raw ZIP artifact `12715585467`, SHA256 `77d95bc5a7e7e9148d3603c0081206335a56de4620465189843d2610f72d6fed`, CRC clean, privately byte-verified at `/V13-Checkpoints/2026-10-27/AG5-World-Broad-Review/v13-ag5world-broad-first-red-40462211212.zip`. This failed attempt was not hidden or rewritten.
+
+**Corrected differential GREEN, full suite still RED:** Actions `40462224374` at `896ebd002dacb52ceef09b43ff1e9b6b766db1ae`. Three-conflict resolve0, focused0, compile0, privacy CLEAN; **4,424 tests, 5 FAIL/73 ERROR/28 SKIP**, `UNIT_EXIT=1`, `DIFFERENTIAL_EXIT=0`, `HISTORICAL_RED_UNCHANGED`. Sorted failure-header SHA256 `7fb3abd6ce63db14c0f740248d3cc6740d83f0f9d9812330053b995e32c64e5a` exactly equals frozen baseline. Original ZIP artifact `12715576651`, SHA256 `f68e818e18a009a80a19cbbcb2463da0419bf75463578627155280e575ca10b5`, CRC clean, all exits checked, private byte-exact backup `/V13-Checkpoints/2026-10-27/AG5-World-Broad-Review/v13-ag5world-broad-corrected-40462224374.zip`.
+
+No production merge, no source/model/seed/learning authority changes. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, Redmi unmeasured, full V13 incomplete. Next: independent five-way broad comparison (separately completed in PR #674), exact durable review tree PR #672, source-binding 78-block triage, phone extracted-package smoke. Do not treat `DIFFERENTIAL_EXIT=0` as full-suite PASS.
+
+Exact replay: `cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest discover -s tests -p 'test_*.py' -v` on disposable resolved AG5+World tree with `numpy==2.3.5` and `prompt-toolkit==3.0.52`; full unit exit remains1.
