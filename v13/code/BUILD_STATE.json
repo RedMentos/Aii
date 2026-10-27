@@ -1636,5 +1636,31 @@
     "diff_exit": 0,
     "private_library_backup": "/V13-Checkpoints/2026-10-27/BJ1-N7-Integration/v13-bj1-n7-integration-40518877350.zip",
     "private_library_byte_exact_readback": true
+  },
+  "lp3_state_conditioned_prefix_20261027": {
+    "owner_branch": "codex/automation11-lp3-state-conditioned-prefix-20261027",
+    "parent_sha": "5bbcd8e7f8b1d4518fb2de45edc70b6350bdd068",
+    "status": "REVIEW_ONLY_SYNTHETIC_CI_PENDING",
+    "scope": "Prompt-state predictor + trainable soft prefix consumed by frozen causal decoder answer CE",
+    "controls": [
+      "own",
+      "shift",
+      "zero"
+    ],
+    "base_frozen": true,
+    "live_runtime_integrated": false,
+    "real_model_utility_proven": false,
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "bj1": "NO_SIGNAL",
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/lp3-state-prefix/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_lp3_state_prefix",
+    "next_prerequisite": "Exact-head CI, independent review, then separately preregister real C3 heldout+wrong-assignment utility; no native overlap."
   }
 }
