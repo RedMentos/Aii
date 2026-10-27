@@ -1,6 +1,7 @@
 """WP-T13: BodyPort lifecycle in the RunnerPool, live IH-H21 bridge-key check, online body swap with rollback (no native weights)."""
 import json
 import unittest
+from unittest import mock
 from pathlib import Path
 from test_bodies import Base,FakeRunner
 from v13.runtime import Runtime
@@ -66,10 +67,11 @@ class OnlineSwapTests(Swap):
 class BridgeKeyTests(Swap):
     def test_bridges_for_the_old_body_go_stale_before_the_new_one_serves(self):
         d=self.home/'b3';d.mkdir(exist_ok=True)
-        (d/'B1_TO_B2.json').write_text(json.dumps({'direction':'B1_TO_B2','sender_revision':'rev-body','receiver_revision':'rev-gist'}))
-        (d/'B2_TO_B1.json').write_text(json.dumps({'direction':'B2_TO_B1','sender_revision':'rev-gist','receiver_revision':'rev-body'}))
+        ports=self.r.bodies.ports
+        (d/'B1_TO_B2.json').write_text(json.dumps({'direction':'B1_TO_B2',**ports.bridge_binding('B1_TO_B2')}))
+        (d/'B2_TO_B1.json').write_text(json.dumps({'direction':'B2_TO_B1',**ports.bridge_binding('B2_TO_B1')}))
         self.r.bodies.slots.register_asset('B2_GIST','prefix_bridge','latent_path')
-        ports=self.r.bodies.ports;self.assertTrue(ports.bridge_valid('B1_TO_B2'));self.model()
+        self.assertTrue(ports.bridge_valid('B1_TO_B2'));self.model()
         sw,out,_=self.swap();self.model()  # the model change happens at this get
         keys=ports.report()['bridge_keys']['B2_GIST']
         self.assertEqual(set(keys['stale']),{'B1_TO_B2','B2_TO_B1','B2_GIST:prefix_bridge'})
@@ -77,5 +79,90 @@ class BridgeKeyTests(Swap):
         self.assertFalse(ports.bridge_valid('B1_TO_B2'));self.assertFalse(ports.bridge_valid('missing'))
         self.assertEqual(self.r.bodies.slots.box.load()[0]['assets']['B2_GIST:prefix_bridge']['authority'],'SHADOW_RECALIBRATE')
         self.assertIn('B2_GIST',json.loads(Operator(self.r).run(':body bridges')))
+
+class ExactBridgeIdentityTests(Swap):
+    def manifest(self,direction='B1_TO_B2'):
+        d=self.home/'b3';d.mkdir(exist_ok=True)
+        ports=self.r.bodies.ports
+        p=d/(direction+'.json')
+        man={'direction':direction,**ports.bridge_binding(direction)}
+        p.write_text(json.dumps(man))
+        return p,man
+
+    def test_legacy_revision_only_manifest_fails_closed(self):
+        p,man=self.manifest()
+        self.assertTrue(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+        del man['sender_bridge_key']
+        p.write_text(json.dumps(man))
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+        del man['receiver_bridge_key']
+        p.write_text(json.dumps(man))
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+
+    def test_same_revision_changed_sha_invalidates_exact_bridge(self):
+        p,man=self.manifest()
+        ports=self.r.bodies.ports
+        self.assertTrue(ports.bridge_valid('B1_TO_B2'))
+        old=ports.spec('B2_GIST');new=old|{'sha256':'e'*64}
+        self.assertEqual(old['revision'],new['revision'])
+        with mock.patch.object(ports,'spec',side_effect=lambda role: new if role=='B2_GIST' else
+                               ports.__class__.spec(ports,role)):
+            self.assertFalse(ports.bridge_valid('B1_TO_B2'))
+        stale=ports.check_bridges('B2_GIST',old,new)['stale']
+        self.assertEqual({x['bridge'] for x in stale if 'bridge' in x},{'B1_TO_B2'})
+        self.assertFalse(stale[0]['bridge_key_match'])
+
+    def test_same_revision_changed_capabilities_invalidates(self):
+        p,man=self.manifest()
+        ports=self.r.bodies.ports
+        old=ports.spec('B2_GIST');new=old|{'capabilities':['CAN_EMBED']}
+        self.assertEqual(old['revision'],new['revision'])
+        self.assertNotEqual(bridge_key('B2_GIST',old),bridge_key('B2_GIST',new))
+        stale=ports.check_bridges('B2_GIST',old,new)['stale']
+        self.assertIn('B1_TO_B2',{x['bridge'] for x in stale if 'bridge' in x})
+
+    def test_same_revision_identity_change_demotes_slot_asset(self):
+        ports=self.r.bodies.ports
+        self.r.bodies.slots.register_asset('B2_GIST','old_bridge','latent_path')
+        old=ports.spec('B2_GIST');new=old|{'sha256':'f'*64}
+        stale=ports.check_bridges('B2_GIST',old,new)['stale']
+        self.assertIn('B2_GIST:old_bridge',{x['asset'] for x in stale if 'asset' in x})
+        asset=self.r.bodies.slots.box.load()[0]['assets']['B2_GIST:old_bridge']
+        self.assertEqual(asset['authority'],'SHADOW_RECALIBRATE')
+
+    def test_exact_same_identity_keeps_bound_manifest_and_slot(self):
+        p,man=self.manifest()
+        ports=self.r.bodies.ports
+        old=ports.spec('B2_GIST')
+        self.assertTrue(ports.bridge_valid('B1_TO_B2'))
+        self.assertEqual(ports.check_bridges('B2_GIST',old,dict(old))['stale'],[])
+        self.assertTrue(ports.bridge_valid('B1_TO_B2'))
+
+    def test_unknown_or_swapped_direction_fails_closed(self):
+        p,man=self.manifest()
+        ports=self.r.bodies.ports
+        self.assertFalse(ports.bridge_valid('B2_TO_B1'))
+        self.assertFalse(ports.bridge_valid('../B1_TO_B2'))
+        with self.assertRaises(ValueError):ports.bridge_binding('unknown')
+        man['direction']='B2_TO_B1'
+        p.write_text(json.dumps(man))
+        self.assertFalse(ports.bridge_valid('B1_TO_B2'))
+
+    def test_invalid_live_sha_cannot_create_or_accept_bridge(self):
+        p,man=self.manifest()
+        ports=self.r.bodies.ports
+        old=ports.spec('B2_GIST')
+        with mock.patch.object(ports,'spec',side_effect=lambda role: old|{'sha256':None}
+                               if role=='B2_GIST' else ports.__class__.spec(ports,role)):
+            with self.assertRaisesRegex(ValueError,'unbound'):
+                ports.bridge_binding('B1_TO_B2')
+            self.assertFalse(ports.bridge_valid('B1_TO_B2'))
+
+    def test_key_fields_reject_wrong_side_even_when_revision_matches(self):
+        p,man=self.manifest()
+        man['sender_bridge_key'],man['receiver_bridge_key']=man['receiver_bridge_key'],man['sender_bridge_key']
+        p.write_text(json.dumps(man))
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+
 
 if __name__=='__main__':unittest.main()
