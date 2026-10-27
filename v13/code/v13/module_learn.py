@@ -17,16 +17,25 @@ from .memory import relevance
 
 LABEL='aus Modul, nicht als wahr geprüft'
 MIN_SCORE=0.15
+RECALL_EFFECTS=({'READ_LOCAL','LEARN'},{'MODULE','MEMORY'})
+
+def _recall_allowed(store):
+    # Direct :modul frage and the Python reader must not bypass the typed
+    # module_recall ban enforced by ToolRegistry for model-initiated calls.
+    return M.gate(store,'module_recall','READ_LOCAL',RECALL_EFFECTS) is None
 
 def recall(store,query,k=3):
     """Top-k module items for the question, best first. Empty when nothing is released/allowed or nothing is relevant."""
     q=str(query or '')[:500]
-    if not q.strip():return []
+    if not q.strip() or not _recall_allowed(store):return []
     hits=[]
     for it in M.corpus(store):
         sc=max(relevance(q,it['text']),relevance(q,(it['title'] or '')+' '+it['text']))
         if sc>=MIN_SCORE:hits.append((sc,it))
+    # A ban may arrive during file I/O; never emit the stale snapshot.
+    if not _recall_allowed(store):return []
     hits.sort(key=lambda x:(-x[0],x[1]['tag'],x[1]['text']))
+    if not _recall_allowed(store):return []
     return [{'text':it['text'],'title':it['title'],'tag':it['tag'],'score':round(sc,3),'label':LABEL} for sc,it in hits[:max(1,min(int(k),10))]]
 
 def tool(store):
