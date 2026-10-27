@@ -18,7 +18,7 @@ jobs:
     env:
       V13_NO_AUTOSTART: '1'
       NO_PRODUCTION_ACTIVATION: '1'
-      BP1_GGUF_CHECKOUT: ${{ runner.temp }}/llama-source
+      BP1_GGUF_CHECKOUT: ${{ github.workspace }}/.bp1-llama-source
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -48,7 +48,7 @@ jobs:
             rc="$?"
           fi
           if [ "$rc" = 0 ]; then
-            "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' "$BP1_GGUF_CHECKOUT/gguf-py" >> "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
+            "$RUNNER_TEMP/bp1-gguf-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' -e "$BP1_GGUF_CHECKOUT/gguf-py" >> "$RUNNER_TEMP/bp1-export-preflight/UPSTREAM_RAW.log" 2>&1
             rc="$?"
           fi
           if [ "$rc" = 0 ]; then
