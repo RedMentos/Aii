@@ -144,7 +144,13 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        # The optional historical native directory is often inaccessible on CI.
+        # A permission denial means unavailable, not a failed competence result.
+        try:
+            native_restore_available = Path('/root/native/restore/round8-note-tool-raw').exists()
+        except OSError:
+            native_restore_available = False
+        plan = cc.plan('/root/native/restore') if native_restore_available else None
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
