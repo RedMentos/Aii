@@ -5,14 +5,14 @@ import tempfile
 import unittest
 from v13 import b3bridge as BB
 
-CRIT={k:{'significant':True} for k in ('beats_no_message','utility_beats_exact','utility_beats_control','utility_beats_symbolic','receiver_ood','restart_reproducibility')}
+CRIT={k:{'significant':True} for k in ('beats_no_message','beats_latent_shuffled','beats_latent_random','utility_beats_exact','utility_beats_control','utility_beats_symbolic','role_retention','receiver_ood','restart_reproducibility')}
 
 class Gate(unittest.TestCase):
     def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name)
     def tearDown(self):self.tmp.cleanup()
     def man(self,verdict='PASS',**kw):
         (self.home/'b3').mkdir(exist_ok=True)
-        (self.home/'b3/B1_TO_B2.json').write_text(json.dumps({'calibrated':True,'receiver_revision':'r1','l1_gate':{'verdict':verdict,'criteria':CRIT}}|kw))
+        (self.home/'b3/B1_TO_B2.json').write_text(json.dumps({'calibrated':True,'receiver_revision':'r1','l1_gate':{'verdict':verdict,'criteria':CRIT,'missing_baselines':[],'invalid_evidence':[]}}|kw))
     def test_without_bridge_is_scaffold_and_lists_missing(self):
         g=BB.completion_gate(self.home,'B1_TO_B2',{'fallback_channel':'SOURCE_EXACT','experience_count':0})
         self.assertEqual(g['status'],'scaffold');self.assertFalse(g['B3_LATENT_IMPLEMENTED']);self.assertEqual(g['latent_authority'],0)
