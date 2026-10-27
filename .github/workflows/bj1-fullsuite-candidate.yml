@@ -41,8 +41,8 @@ jobs:
           git hash-object v13/code/scripts/bp2b_native_batch.py > "$evidence/BATCH_BLOB.txt"
           python3 -m venv "$RUNNER_TEMP/v13-bj1-fullsuite-venv"
           py="$RUNNER_TEMP/v13-bj1-fullsuite-venv/bin/python"
-          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' > "$evidence/INSTALL_RAW.log" 2>&1
-          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$evidence/INSTALL_RAW.log" 2>&1
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
           echo "$?" > "$evidence/INSTALL_EXIT.txt"
           (
             cd v13/code
