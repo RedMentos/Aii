@@ -1,0 +1,61 @@
+{
+  "schema": "V13_BP1_QAD_TRAIN_CANDIDATE_V1",
+  "owner": "GPT-6 automation11 independent",
+  "status": "SOURCE_BOUND_SOFTWARE_GREEN_NATIVE_TRAIN_RUNNING_UNVERIFIED",
+  "parent_pr": 683,
+  "parent_commit": "fb7b440a319817a5665fabb4fb2d1ad60de62c4a",
+  "branch": "codex/automation11-bp1-qad-train-candidate-20261027",
+  "source_commit": "619363f44da14eccc85aad3e145b03daac027033",
+  "smoke_actions": 40475001744,
+  "smoke_native_zip_sha256": "0d47eb7a3c1a2b9723ce3e57a07946813cebd9e5e227fa257f4a9aff4a8debd0",
+  "smoke_native_exits_all_zero": true,
+  "smoke_exact_text_matches": "1/4 (diagnostic only, no tensor parity)",
+  "source_train_sha256": "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86",
+  "source_dataset_artifact": 12715684803,
+  "source_dataset_zip_sha256": "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c",
+  "train_rows": 25,
+  "heldout_pairs": 11,
+  "heldout_files_opened_by_trainer": false,
+  "native_train_actions": 40475705217,
+  "native_train_status": "RUNNING_NOT_VERIFIED",
+  "software_actions": 40475400871,
+  "software_tests": "13/13 PASS",
+  "software_artifact": 12720880428,
+  "software_zip_sha256": "3950b0f9ac58253b26b64b707caf0ddaeb73bfc87875496c480230a4b25a4c91",
+  "software_privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Train-Candidate/",
+  "private_backup_byte_identical": true,
+  "config": {
+    "rank": 2,
+    "alpha": 4,
+    "max_tokens": 1024,
+    "max_steps": 2,
+    "min_steps": 2,
+    "seed": 13,
+    "jepa_weight": 0,
+    "anchor_weight": 0,
+    "targets": [
+      "v_proj",
+      "out_proj"
+    ]
+  },
+  "evidence": "SOFTWARE_AND_NATIVE_SOURCE_SMOKE; TRAINING_NATIVE_NOT_YET_VERIFIED",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "L1_FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Close 40475705217 raw native train exits/adapter audit; if GREEN run separate preregistered base/candidate x no_offer/offer source-disjoint paired heldout scorer, retention/near-miss, no gate promotion",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 -m unittest -v tests.test_bp1_qad_train_candidate",
+  "prerequisites": [
+    "Actions native train 40475705217 completion",
+    "original ZIP CRC/HEAD/exits/source/model/license hash audit",
+    "independent adapter and optimizer nonzero proof",
+    "no concurrent heavy owner",
+    "no heldout optimizer leakage"
+  ]
+}
