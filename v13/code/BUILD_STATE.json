@@ -1498,14 +1498,14 @@
     "owner_branch": "codex/automation11-bj1-optimizer-state-integrity-20261027",
     "parent_pr": 719,
     "parent_sha": "cf136b516f55b70212dbd5aeebe0441f6426d819",
-    "status": "REVIEW_ONLY_CI_PENDING",
+    "status": "REVIEW_ONLY_HELPER_PASS_FIT_PENDING",
     "red_test_sha": "53f9c3b0f3dbe53fde3eaaa43c43ea5b53cde0d0",
     "red_actions_run": 40517824916,
     "green_candidate_sha": "63ac50f1bc8b8246fcb115085ab98ce18525c51f",
     "green_actions_run": 40517894874,
-    "tests": "PENDING",
-    "compile": "PENDING",
-    "privacy": "PENDING",
+    "tests": "11/11 synthetic helper PASS (Actions 40517894874)",
+    "compile": "PASS",
+    "privacy": "CLEAN",
     "native_evidence": false,
     "bp2b_native_seed41": "TIMEOUT_124",
     "step2": "UTILITY_FAIL",
@@ -1517,6 +1517,10 @@
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/bj1-optimizer-state/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit",
-    "next_prerequisite": "Verify exact-head synthetic CI and optimizer schema; native registered run separately; no gate promotion."
+    "next_prerequisite": "Inspect isolated RED witness and exact-head tiny HF/PEFT fit Actions 40518115903; independent review; no native promotion.",
+    "red_tests": "Original Actions 40517824916 CANCELLED before test; isolated RED witness 40518210679 PENDING",
+    "green_tested_sha": "63ac50f1bc8b8246fcb115085ab98ce18525c51f",
+    "fit_actions_run": 40518115903,
+    "fit": "PENDING"
   }
 }
