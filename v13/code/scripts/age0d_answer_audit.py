@@ -60,6 +60,25 @@ def _exact_divide(left, right):
         return Decimal(quotient.numerator) / Decimal(quotient.denominator)
 
 
+def _auditable_exact_result(value):
+    """Abstain if the exact value cannot be written in the accepted answer grammar."""
+    if value is None or not value.is_finite():
+        return None
+    digits = value.as_tuple().digits
+    exponent = value.as_tuple().exponent
+    if not any(digits):
+        return value
+    # Count terminal zeros without context-sensitive Decimal.normalize().
+    trailing = 0
+    for digit in reversed(digits):
+        if digit != 0:
+            break
+        trailing += 1
+    if exponent + trailing < -12 or len(digits) + exponent > 12:
+        return None
+    return value
+
+
 def _question(text):
     if type(text) is not str or not 1 <= len(text) <= 160 or any(c in text for c in '\r\n\t'):
         return None
@@ -75,14 +94,16 @@ def _question(text):
     if left is None or right is None:
         return None
     op = m.group('op').lower()
-    if op == '+':
-        return left + right
-    if op == '-':
-        return left - right
-    if op in ('*', 'x', '×'):
-        return left * right
-    if op in ('/', '÷'):
-        return _exact_divide(left, right)
+    with localcontext() as ctx:
+        ctx.prec = 64  # 12 integer + 12 fractional digits per operand, 48-digit product.
+        if op == '+':
+            return left + right
+        if op == '-':
+            return left - right
+        if op in ('*', 'x', '×'):
+            return left * right
+        if op in ('/', '÷'):
+            return _exact_divide(left, right)
     return None
 
 
@@ -91,7 +112,7 @@ def audit(question, answer):
     result = {'revision': REVISION, 'status': 'ABSTAIN',
               'reason': 'UNSUPPORTED_OR_AMBIGUOUS', 'delivery_allowed': False,
               'authority': 'NONE', 'evidence_level': 'SOFTWARE_DETERMINISTIC_ONLY'}
-    expected = _question(question)
+    expected = _auditable_exact_result(_question(question))
     if expected is None or type(answer) is not str or not 1 <= len(answer) <= 120:
         return result
     if any(c in answer for c in '\r\n\t'):
