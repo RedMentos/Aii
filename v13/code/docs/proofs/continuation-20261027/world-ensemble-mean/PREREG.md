@@ -1,0 +1,11 @@
+# World-JEPA frozen-checkpoint ensemble-mean ablation — prereg 2026-10-27
+
+Parent: review-only PR #660 at `85a88ffd48c59d618c5fdb04022813580418e9d0`. No AG5/Claude/main merge.
+
+**Frozen input before evaluating this ablation:** original raw Linux multi-seed artifact Actions `40453512115`, ZIP SHA256 `f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8`, checkpoint `955ee6efd0eaf2f85803297773ad016d54a33c7c707cd0406b3ceb23739d5e51`, original training seed212 and heldout seeds313/314/315, 160 rows each, no replacement or re-collection. Original `SlotWorldJEPA.predict` returns **first predictor** and reports ensemble spread. Hypothesis: arithmetic mean of the exact two frozen ensemble predictors may reduce heldout target-latent MSE without modifying weights. This is an exploratory hypothesis, not a default change.
+
+**Predeclared arms on the SAME rows:** first predictor (current behavior); arithmetic mean of all saved predictors; identity target-encoder baseline; optional second predictor individually for diagnostic only. Same fixed target-encoder normalization, same 6 slots, no new calibration. Report per seed and weighted 480-row normalized MSE; paired row fraction where ensemble mean beats first and identity. Preserve all per-seed negatives. No fitted blending coefficient, tuned threshold, cohort filter or altered original utility gates. Compare an independent NumPy reference computation with V13 source-based implementation, using exact SHA-bound checkpoint and original raw heldouts.
+
+**Safety/evidence:** read-only from persisted artifact, no actions, learning, model downloads, age, approval or runtime authority. Original source/cohort/model hashes unchanged. Require verified original holdout manifests/timing receipts and exact input ZIP SHA before analysis; reject duplicate/mixed checkpoint or malformed arrays. Run unit tests and independent CI; keep RED failures and full raw outputs. Result cannot promote STEP2, B3, Body-JEPA, `jepa_weight`, full architecture or Redmi proof.
+
+**Next if mean fails:** report negative and investigate operation-specific errors/identity baseline rather than silently changing live `predict`. If mean improves, require separately preregistered fresh heldout validation and runtime safety review before any default change.
