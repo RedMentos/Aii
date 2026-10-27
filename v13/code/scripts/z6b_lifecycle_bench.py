@@ -70,7 +70,7 @@ def run_arm(installed, policy, seed):
     base_policy, *flags = policy.split('+')
     now_rule = 'now' in flags; sup = 'sup' in flags or now_rule  # WP-Z6c: '+sup' = the human states the new scope once
     teach = 'teach' in flags  # WP-Z6i: the human also lets the rule's routed questions train the head (--lehre)
-    words = 'words' in flags  # WP-Z6i: fixed word channel for new route heads; with '+now' the bench also asks live questions and hands the rule over
+    words = 'words' in flags; relative = 'rel' in flags  # WP-Z6j: relative successor gate  # WP-Z6i: fixed word channel for new route heads; with '+now' the bench also asks live questions and hands the rule over
     from v13.config import initialize
     from v13.runtime import Runtime
     from v13.operator import Operator
@@ -81,7 +81,7 @@ def run_arm(installed, policy, seed):
     with tempfile.TemporaryDirectory(prefix='v13-z6b-') as d:
         h = Path(d); initialize(h)
         for n in ('models', 'bin'): shutil.rmtree(h/n); (h/n).symlink_to(installed/n, target_is_directory=True)
-        shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h); r.cfg['route_head_words'] = words
+        shutil.copyfile(installed/'config/models.json', h/'config/models.json'); r = Runtime(h); r.cfg['route_head_words'] = words; r.cfg['route_head_gate'] = 'relative' if relative else 'fixed75'
         cache = {}
         def emb(text):
             if text not in cache:
@@ -281,6 +281,20 @@ def criteria_z6i(s):
     return c, 'Z6I_LEARN_PASS' if all(c.values()) else 'Z6I_LEARN_FAIL'
 
 
+Z6J_ADAPTIVE, Z6J_FIXED = 'adaptive+now+words+teach+rel', 'fixed+now+words+teach+rel'
+
+
+def criteria_z6j(s):
+    a, f, k1 = s[Z6J_ADAPTIVE], s[Z6J_FIXED], s[Z6I_CONTROL]
+    c = {'J1_adaptive_all': (a['final_half_items'] or 0) >= .8 and (a['retention_unchanged'] or 0) >= .9 and a['false_promotions'] == 0
+                            and a['rollback'] is not None and a['rollback']['restored'] and a['handovers'] >= 1
+                            and a['runtime']['final']['half_items'] >= .9 and a['rollback']['runtime_after_rollback']['half_items'] >= .9
+                            and a['runtime']['final']['unchanged'] >= k1['runtime']['final']['unchanged'] - .05,
+         'J2_fixed_learns': (f['final_half_items'] or 0) >= .8 and f['handovers'] >= 1 and f['runtime']['final']['half_items'] >= .9,
+         'J3_control_not_clean': not ((k1['final_half_items'] or 0) >= .8 and (k1['retention_unchanged'] or 0) >= .9 and k1['false_promotions'] == 0)}
+    return c, 'Z6J_PASS' if all(c.values()) else 'Z6J_FAIL'
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument('installed'); ap.add_argument('out'); ap.add_argument('--seed', type=int, default=71)
     ap.add_argument('--policies', default='none,fixed,adaptive'); a = ap.parse_args(argv)
@@ -295,12 +309,14 @@ def main(argv=None):
         doc['criteria'], doc['verdict'] = criteria(scores)
     if {'fixed+now', 'adaptive+now', 'fixed'} <= set(scores):
         doc['criteria_z6d'], doc['verdict_z6d'] = criteria_z6d(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6d-rule-route/PREREG.md'
+    if {Z6J_ADAPTIVE, Z6J_FIXED, Z6I_CONTROL} <= set(scores):
+        doc['criteria_z6j'], doc['verdict_z6j'] = criteria_z6j(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6j-relative-gate/PREREG.md'
     if set(Z6I_ARMS) | {Z6I_CONTROL} <= set(scores):
         doc['criteria_z6i'], doc['verdict_z6i'] = criteria_z6i(scores); doc['prereg'] = 'docs/proofs/continuation-20261027/z6i-learn-new-hints/PREREG.md'
     if {'fixed+sup', 'adaptive+sup', 'fixed'} <= set(scores):
         doc['criteria_z6c'], doc['verdict_z6c'] = criteria_z6c(scores); doc['prereg'] = 'docs/proofs/continuation-20261026/z6c-supersede/PREREG.md'
     atomic_write(Path(a.out), json.dumps(doc, indent=1, ensure_ascii=False))
-    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i')}, indent=1, ensure_ascii=False)); return 0
+    print(json.dumps({k: doc.get(k) for k in ('verdict', 'criteria', 'verdict_z6i', 'criteria_z6i', 'verdict_z6j', 'criteria_z6j')}, indent=1, ensure_ascii=False)); return 0
 
 
 if __name__ == '__main__':

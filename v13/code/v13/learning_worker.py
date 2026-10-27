@@ -86,7 +86,15 @@ def train(inp,out):
             if xa is not None:  # reported, not gated: anchors that still moved into a rule route despite the soft target
                 ks=anchor.get('rule_routes',[]);old_a=(xa@w).argmax(1);new_a=(xa@new).argmax(1)
                 held['anchors']=len(xa);held['anchors_changed']=int(np.sum(old_a!=new_a));held['anchors_moved_into_rule_route']=int(np.sum((old_a!=new_a)&np.isin(new_a,ks)))
-        eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and accuracy>=.75 and accuracy>=baseline and retained
+        hurdle=accuracy>=.75
+        if wdim and inp.get('gate')=='relative' and inp.get('active_checkpoint'):
+            # WP-Z6j: the validation quarter holds 1-4 questions per route, so a fixed 75 % bar mostly measures which old
+            # questions landed there (Z6i seed 83). A successor head must instead beat the active head on the same
+            # validation questions, lose no known human-labelled question, and route strictly more of them right.
+            old_val=float(np.mean(oldp.argmax(1)==y[vi]));known_before=float(np.mean(oldall.argmax(1)==y));known_after=float(np.mean(newall.argmax(1)==y))
+            held.update(gate='relative',active_accuracy=old_val,known_accuracy_before=known_before,known_accuracy_after=known_after)
+            hurdle=accuracy>=old_val and known_after>known_before
+        eligible=len(y)>=12 and len(vi)>=4 and len(perclass)==4 and newloss<oldloss and hurdle and accuracy>=baseline and retained
     path=Path(out)/'candidate.npz'
     with open(path,'wb') as f:np.savez(f,route_w=new,eligibility=tr,word_dim=np.int64(wdim));f.flush();os.fsync(f.fileno())  # durable before metrics.json (TrainRunnerProof crash_during_checkpoint)
     with np.load(path,allow_pickle=False) as z:reload_ok=bool(np.array_equal(z['route_w'],new))

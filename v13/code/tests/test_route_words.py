@@ -53,6 +53,17 @@ class RouteWordsTest(unittest.TestCase):
             self.assertAlmostEqual((LW.objective(x, y, a, sw)[0]-LW.objective(x, y, b, sw)[0])/(2*eps), g[i, j], places=6)
         self.assertAlmostEqual(LW.objective(x, y, w, np.ones(9))[0], LW.objective(x, y, w)[0], places=12)
 
+    def test_relative_gate_compares_with_the_active_head(self):
+        rng = np.random.default_rng(3); texts = ['Frage %d %s' % (i, w) for i, w in enumerate(['hallo', 'rechne', 'kern', 'vergleiche'] * 6)]
+        emb = rng.normal(size=(len(texts), 6)).tolist(); y = [i % 4 for i in range(len(texts))]; wv = [RW.vector(t) for t in texts]
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d); old = d/'old'; old.mkdir(); new = d/'new'; new.mkdir()
+            LW.train({'config': CFG, 'embeddings': emb, 'labels': y, 'scaffold_labels': y, 'words': wv}, old)
+            m = LW.train({'config': CFG, 'embeddings': emb, 'labels': y, 'scaffold_labels': y, 'words': wv, 'gate': 'relative',
+                          'active_checkpoint': str(old/'candidate.npz')}, new)
+            h = m['held_out']; self.assertEqual(h['gate'], 'relative')
+            if not h['known_accuracy_after'] > h['known_accuracy_before']: self.assertFalse(m['commit_eligible'])
+
     def test_anchors_are_soft_targets_and_reported(self):
         rng = np.random.default_rng(2); texts = ['Frage %d %s' % (i, w) for i, w in enumerate(['hallo', 'rechne', 'kern', 'vergleiche'] * 6)]
         emb = rng.normal(size=(len(texts), 6)).tolist(); y = [i % 4 for i in range(len(texts))]

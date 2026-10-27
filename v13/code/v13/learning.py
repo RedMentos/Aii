@@ -838,6 +838,7 @@ class Learner:
             if self.uses_route_words(active):  # WP-Z6i: fixed word channel, so the head can learn a boundary the embedding does not carry
                 from .route_words import vector,REVISION
                 request['words']=[vector(text) for text,_ in data];manifest['route_words']=REVISION
+                request['gate']=self.r.cfg.get('route_head_gate','fixed75');manifest['route_head_gate']=request['gate']
                 anchors=self.rule_anchors({text for text,_ in data},deadline)
                 if anchors:request['anchors']=anchors;manifest['rule_anchors']=len(anchors['embeddings'])
             inp=folder/'input.json';atomic_write(inp,dumps(request))
