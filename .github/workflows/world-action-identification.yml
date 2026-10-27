@@ -75,7 +75,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/taskproof"
           git rev-parse HEAD > "$RUNNER_TEMP/taskproof/HEAD.txt"
           sha256sum v13/code/scripts/world_jepa_action_identification.py v13/code/tests/test_world_jepa_action_identification.py v13/code/scripts/world_jepa_budget_ablation.py > "$RUNNER_TEMP/taskproof/SOURCE_SHA256.txt"
-          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/original-world/closed" V13_FROZEN_BUDGET_ROOT="$RUNNER_TEMP/budget-world/trained" V13_TASK_OUTPUT_ROOT="$RUNNER_TEMP/taskproof/task" PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/worldfresh/bin/python" -m unittest -v tests.test_world_jepa_budget_fresh_holdout) > "$RUNNER_TEMP/taskproof/UNIT_RAW.log" 2>&1
+          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/original-world/closed" V13_FROZEN_BUDGET_ROOT="$RUNNER_TEMP/budget-world/trained" V13_TASK_OUTPUT_ROOT="$RUNNER_TEMP/taskproof/task" PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/worldfresh/bin/python" -m unittest -v tests.test_world_jepa_action_identification) > "$RUNNER_TEMP/taskproof/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/taskproof/UNIT_EXIT.txt"
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 300s "$RUNNER_TEMP/worldfresh/bin/python" scripts/world_jepa_action_identification.py --original-root "$RUNNER_TEMP/original-world/closed" --budget-root "$RUNNER_TEMP/budget-world/trained" --output-dir "$RUNNER_TEMP/taskproof/task" --verify-only) > "$RUNNER_TEMP/taskproof/VERIFY_RAW.json" 2>&1
           echo "$?" > "$RUNNER_TEMP/taskproof/VERIFY_EXIT.txt"
