@@ -145,11 +145,36 @@ class Executive:
         except (ValueError,TypeError,KeyError,OSError):
             return False
     def _question_valid(self,item,session):
-        if not self._valid_ref(item.get('source_ref',{})):return False
-        row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
+        # The offer's originating user event, not a hash-valid arbitrary blob,
+        # owns the unresolved question's exact source across later turns.
+        ref=item.get('source_ref')
+        if not isinstance(ref,dict) or not self._valid_ref(ref):return False
+        row=self.s.one(
+            "SELECT p.payload,p.event_id,e.session_id,e.packet FROM packets p "
+            "JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",
+            (item.get('offer_packet_id'),))
         if not row or row['session_id']!=session:return False
-        offer=json.loads(row['payload'])
-        return offer['offer'].get('needs_reentry') is True and item.get('uncertainty')==offer['offer'].get('uncertainty','')[:160] and all(self._valid_ref(x) for x in offer['provenance']+offer['evidence_refs'])
+        try:
+            offer=json.loads(row['payload'])
+            event=json.loads(row['packet'])
+            if not isinstance(offer,dict) or not isinstance(event,dict):return False
+            detail=offer.get('offer')
+            provenance=offer.get('provenance')
+            evidence=offer.get('evidence_refs')
+            return (event.get('event_id')==row['event_id']
+                    and event.get('authority')=='AUTHORITATIVE'
+                    and event.get('source_ref')==ref
+                    and offer.get('event_id')==row['event_id']
+                    and offer.get('brain_generation_id')==event.get('brain_generation_id')
+                    and isinstance(detail,dict)
+                    and detail.get('needs_reentry') is True
+                    and isinstance(detail.get('uncertainty',''),str)
+                    and item.get('uncertainty')==detail.get('uncertainty','')[:160]
+                    and isinstance(provenance,list) and ref in provenance
+                    and isinstance(evidence,list)
+                    and all(self._valid_ref(x) for x in provenance+evidence))
+        except (ValueError,TypeError,KeyError):
+            return False
     def _offer_valid(self,item,generation,session):
         row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('packet_id'),))
         if not row or row['session_id']!=session:return False
