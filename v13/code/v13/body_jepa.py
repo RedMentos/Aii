@@ -126,6 +126,27 @@ def jepa_loss(torch,model,predictor,ctx,tgt,mode,ema=None,base_targets=None,perm
     if (w<0).any() or float(w.sum())<=0:raise ValueError('eligibility weights must be >=0 and not all zero')
     return (l*w).sum()/w.sum(),t
 
+def minor_subspace_init(torch,model,r):
+    """Subspace Tuning (arXiv 2610.22293, Chavan et al.) in its cheapest LoRA form (MiLoRA-style): the update B@A may only
+    live in the span of the r LOWEST singular directions of each wrapped weight, so the dominant directions (where SFT drift
+    and forgetting concentrate) stay untouched. Linear W (out x in): in <= out -> A (r x in) = lowest right singular vectors,
+    frozen, train B (starts 0); in > out -> B (out x r) = lowest left singular vectors, frozen, train A (starts 0).
+    Singular directions come from eigh of the smaller Gram matrix, so the largest matrix is 2048 x 2048. Returns a summary."""
+    n=0;frozen=0;share=[]
+    for name,mod in model.named_modules():
+        if not (hasattr(mod,'lora_A') and 'default' in getattr(mod,'lora_A',{})):continue
+        W=mod.base_layer.weight.detach().double();out_d,in_d=W.shape
+        with torch.no_grad():
+            if in_d<=out_d:
+                evals,evecs=torch.linalg.eigh(W.T@W);low=evecs[:,:r].T.float().contiguous()  # r x in
+                mod.lora_A['default'].weight.copy_(low);mod.lora_A['default'].weight.requires_grad_(False);mod.lora_B['default'].weight.zero_()
+            else:
+                evals,evecs=torch.linalg.eigh(W@W.T);low=evecs[:,:r].float().contiguous()  # out x r
+                mod.lora_B['default'].weight.copy_(low);mod.lora_B['default'].weight.requires_grad_(False);mod.lora_A['default'].weight.zero_()
+            share.append(float(evals[:r].clamp(min=0).sqrt().sum()/evals.clamp(min=0).sqrt().sum()))
+        n+=1;frozen+=int(low.numel())
+    return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
+
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
 from .common import digest,dumps,atomic_write
@@ -138,6 +159,7 @@ class BodyJepaTrainer(LoraTrainer):
     Same fit()/export contract as LoraTrainer, so AG6 can use it as a trainer; one step = one batched pass over all
     items (right padding, causal body). jepa_weight 0 gives the CE+anchor baseline on exactly the same loop."""
     method='lora-torch-cpu-bjepa'
+    _anchor_cache={}
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
     def _views(self,tok,items):
@@ -157,10 +179,14 @@ class BodyJepaTrainer(LoraTrainer):
         dh=digest(dumps([[i.get('memory_id'),i['prompt'],i['target']] for i in items]+[self.anchors,{k:v for k,v in cfg.items() if k!='threads'}]))[:24]
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
         anchors=list(self.anchors)+self.locality_prompts(items,int(cfg['locality_swaps']))
-        anchor_seqs=[]
-        for a in anchors:
-            pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
-        with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s])).logits[0].float(),-1) for s in anchor_seqs]
+        ck=(str(self.master),tuple(anchors))
+        if ck not in BodyJepaTrainer._anchor_cache:  # base continuations + log-probs are identical for every arm of one body
+            anchor_seqs=[]
+            for a in anchors:
+                pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
+            with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s])).logits[0].float(),-1) for s in anchor_seqs]
+            BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
+        anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
         data=[self._encode(tok,i['prompt'],i['target']) for i in items]
         ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id);tgt_b=pad(torch,tgt,pad_id)
         with torch.no_grad():
@@ -168,6 +194,7 @@ class BodyJepaTrainer(LoraTrainer):
             base_ctx=last_token_latent(torch,model,ctx_b,layer).detach()
         lc=LoraConfig(r=int(cfg['rank']),lora_alpha=float(cfg['alpha']),lora_dropout=0.,target_modules=list(cfg['targets']),bias='none')
         model=get_peft_model(model,lc)
+        sub=minor_subspace_init(torch,model,int(cfg['rank'])) if str(cfg.get('lora_subspace','none'))=='minor' else None
         params=[p for p in model.parameters() if p.requires_grad];n_train=sum(p.numel() for p in params)
         dim=int(base_t.shape[-1]);pred=make_predictor(torch,dim)
         ema=EmaAdapter(params,float(cfg['jepa_ema_decay']))
@@ -221,7 +248,7 @@ class BodyJepaTrainer(LoraTrainer):
                  'loss_history':hist,'final_ce':hist[-1]['ce'] if hist else None,'trainable_parameter_count':n_train,
                  'predictor_parameter_count':sum(p.numel() for p in pred.parameters()),'rank':int(cfg['rank']),'targets':list(cfg['targets']),
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),
-                 'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
+                 'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
                  'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',

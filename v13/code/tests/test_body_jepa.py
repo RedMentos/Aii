@@ -116,5 +116,48 @@ class BodyJepaTests(unittest.TestCase):
             bj.jepa_loss(torch, self.m, pred, self.ctx, self.tgt, 'base', base_targets=torch.randn(3, 8), weights=[0, 0, 0])
 
 
+@unittest.skipIf(torch is None, 'torch missing')
+class MinorSubspaceTests(unittest.TestCase):
+    def build(self, in_d, out_d, r=2):
+        from peft import LoraConfig, get_peft_model
+
+        class M(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.w1 = torch.nn.Linear(in_d, out_d, bias=False)
+
+            def forward(self, x):
+                return self.w1(x)
+        torch.manual_seed(0)
+        m = get_peft_model(M(), LoraConfig(r=r, lora_alpha=4, target_modules=['w1'], lora_dropout=0., bias='none'))
+        info = bj.minor_subspace_init(torch, m, r)
+        return m, info
+
+    def check(self, in_d, out_d):
+        m, info = self.build(in_d, out_d)
+        mod = m.base_model.model.w1
+        W = mod.base_layer.weight.detach().double()
+        self.assertEqual(info['modules'], 1)
+        x = torch.randn(32, in_d)
+        self.assertTrue(torch.allclose(m(x), x @ W.float().T, atol=1e-5))  # delta starts at exactly 0
+        opt = torch.optim.SGD([p for p in m.parameters() if p.requires_grad], lr=.5)
+        for _ in range(3):
+            opt.zero_grad()
+            (m(x) ** 2).mean().backward()
+            opt.step()
+        delta = (mod.lora_B['default'].weight @ mod.lora_A['default'].weight).detach().double()
+        self.assertGreater(float(delta.abs().sum()), 0)
+        U, S, Vh = torch.linalg.svd(W)
+        top = 2
+        # no component of the update along the top-2 singular directions (right side if in<=out, else left side)
+        left_or_right = (delta @ Vh[:top].T) if in_d <= out_d else (U[:, :top].T @ delta)
+        self.assertLess(float(left_or_right.abs().max()), 1e-5)
+        self.assertFalse(mod.lora_A['default'].weight.requires_grad if in_d <= out_d else mod.lora_B['default'].weight.requires_grad)
+
+    def test_wide_and_tall(self):
+        self.check(6, 10)
+        self.check(10, 6)
+
+
 if __name__ == '__main__':
     unittest.main()
