@@ -1,0 +1,44 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 743,
+  "parent_sha": "736a75756e8095c97b9ce738c68c2c4ae3fbde62",
+  "branch": "codex/automation11n-semantic-event-binding-20261027",
+  "pr": null,
+  "prereg": "a73e91daa392533a28f7887d30e0f8c7a8998cb4",
+  "red": {
+    "source_commit": "b6f576b3c4f9da994b2fcec9bb7fec819f31da0a",
+    "actions": 40540996042,
+    "tests": "32 tests 1 expected FAIL 2 expected ERROR",
+    "artifact": 12750777193,
+    "zip_sha256": "ef81616729bc7bc04536e0ef67a1352a14789dc90cb3190fbb1ed2a558165bd3",
+    "private_backup": true,
+    "earlier_red_run": 40540915462
+  },
+  "green": {
+    "semantic_source_commit": "5a4282bedea5660d8c9df5d5a4a6ee6a5db84ae3",
+    "episode_source_commit": "52e2a859e0acd2bdfe9900a8feb6b570ef853a77",
+    "focused_actions": 40541387673,
+    "status": "PENDING"
+  },
+  "full_suite": {
+    "source_commit": "83a385f003b32b53ec6730365007d4709d1a10bb",
+    "actions": 40541490277,
+    "status": "PENDING"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect Actions 40541387673 and 40541490277 exact raw exits; privately byte-verify artifacts; create review PR and update state; no main merge.",
+  "note": "Branch-scoped, no shared BUILD_STATE overwrite."
+}

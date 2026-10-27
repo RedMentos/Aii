@@ -101,6 +101,28 @@ class LiveHook(EpisodeBase):
             observe_turn(self.r,e,{'route':'simple','memory_ids':[]},'FINAL')
         self.assertIsNone(observed.call_args.kwargs['vector'])
 
+    def test_semantic_query_vector_requires_current_event_and_one_shot(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from v13.common import digest
+        text='Repeat the exact same question'
+        v=[1.]+[0.]*15
+        old=self.r.store.event(self.r.session,text)
+        current=self.r.store.event(self.r.session,text)
+        keys=SimpleNamespace(last_query={'digest':digest(text),'vector':v,'event_id':old['event_id']},
+                             encoder=SimpleNamespace(unload=lambda:None))
+        self.r.memory.semantic_keys=keys
+        with patch.object(self.ep,'observe',wraps=self.ep.observe) as observed:
+            observe_turn(self.r,current,{'route':'simple','memory_ids':[]},'FINAL')
+        self.assertIsNone(observed.call_args.kwargs['vector'])
+        self.assertIsNone(keys.last_query)
+        fresh=self.r.store.event(self.r.session,text)
+        keys.last_query={'digest':digest(text),'vector':v,'event_id':fresh['event_id']}
+        with patch.object(self.ep,'observe',wraps=self.ep.observe) as observed:
+            observe_turn(self.r,fresh,{'route':'simple','memory_ids':[]},'FINAL')
+        self.assertEqual(observed.call_args.kwargs['vector'],v)
+        self.assertIsNone(keys.last_query)
+
     def test_observe_turn_reads_turn_products_and_operator(self):
         e=self.r.store.event(self.r.session,'Plan Project Aurora')
         out=observe_turn(self.r,e,{'route':'detail','memory_ids':[]},'FINAL');self.assertTrue(out['cut'])

@@ -327,7 +327,11 @@ def observe_turn(runtime,e,meta,status):
     ep=controller(runtime)
     for act in runtime.store.rows("SELECT id,status FROM actions WHERE event_id=? AND outcome IS NOT NULL",(eid,)):ep.on_outcome(eid,act['id'],act['status'])
     vector=None;keys=getattr(runtime.memory,'semantic_keys',None)
-    if keys is not None and keys.last_query and keys.last_query['digest']==digest(text):vector=keys.last_query['vector']
+    snapshot=getattr(keys,'last_query',None) if keys is not None else None
+    if (type(snapshot) is dict and snapshot.get('event_id')==eid
+            and snapshot.get('digest')==digest(text)):vector=snapshot.get('vector')
+    # One-shot consumption also closes fixed-policy turns that skipped Memory.recall.
+    if keys is not None and getattr(keys,'last_query',None) is snapshot:keys.last_query=None
     return ep.observe(eid,e.get('session_id') or runtime.session,text,route=meta.get('route'),status=status,task=task,
                                        prediction_error=err,vector=vector,memory_ids=list(meta.get('memory_ids') or []),associative_ids=list(meta.get('associative_memory_ids') or []))
 
