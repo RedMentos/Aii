@@ -27,6 +27,11 @@ The independent registered BP2b seed41 legacy native attempt, Actions run `40506
 - Not a native model result. This does not show that the original 35-minute attempt had a resumable completed step or that an optimized kernel would be compatible. The candidate is not enabled for an active registered cohort.
 - `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, `jepa_weight=0` in the registered BP2b cohort, Age authority 0, Redmi unmeasured, complete V13 false.
 
+## CPU kernel research (primary-source check)
+- The original native warning names the reference PyTorch `causal_conv1d_fn` / `causal_conv1d_update` fallback. The upstream Dao-AILab `causal-conv1d` project explicitly describes its optimized implementation as **CUDA** with a PyTorch interface (https://github.com/Dao-AILab/causal-conv1d/blob/main/README.md). Installing it blindly on this CPU-only Actions runner is **not** an established fix.
+- vLLM documents separate CPU causal-convolution operations (https://docs.vllm.ai/en/v0.31.0/api/vllm/model_executor/layers/mamba/ops/cpu/causal_conv1d/), but this is not evidence of a drop-in, gradient-compatible replacement for the pinned Transformers LFM2 training graph. No such replacement was installed or claimed.
+- Treat the 35-minute timeout as a measured **execution-budget failure**, not as proof that the CUDA fallback alone caused it. First-step timing, RSS and optimizer completion need a separate preregistered native diagnostic.
+
 ## Next owner action
 1. Verify latest exact-head CI and independently inspect checkpoint optimizer/EMA/source guards.
 2. Prepare a **new** explicitly registered native continuation experiment with unchanged original failed attempt retained; do not rewrite seed41 attempt evidence or silently change its protocol. Measure first-step time and resident memory before allocating another 35-minute job.
