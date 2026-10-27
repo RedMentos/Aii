@@ -44,8 +44,8 @@ jobs:
           echo 'f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8  '"$RUNNER_TEMP/budget-original.zip" | sha256sum -c -
           "$RUNNER_TEMP/budget/bin/python" - <<'PY'
           import pathlib, zipfile, os
-          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'ensemble-original.zip'
-          dest=pathlib.Path(os.environ['RUNNER_TEMP'])/'ensemble-original'
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'budget-original.zip'
+          dest=pathlib.Path(os.environ['RUNNER_TEMP'])/'budget-original'
           with zipfile.ZipFile(p) as z:
               if z.testzip() is not None: raise ValueError('CRC mismatch')
               infos=z.infolist()
