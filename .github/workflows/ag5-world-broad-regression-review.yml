@@ -113,7 +113,7 @@ jobs:
           signatures = sorted(re.findall(r"^(?:FAIL|ERROR): .+$", raw, re.MULTILINE))
           digest = hashlib.sha256(json.dumps(signatures, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
           counts = {kind: sum(s.startswith(kind + ": ") for s in signatures) for kind in ("FAIL", "ERROR")}
-          totals = re.findall(r"Ran (\\d+) tests in [\\d.]+s", raw)
+          totals = re.findall(r"Ran (\d+) tests in [\d.]+s", raw)
           baseline = "7fb3abd6ce63db14c0f740248d3cc6740d83f0f9d9812330053b995e32c64e5a"
           unchanged = digest == baseline and counts == {"FAIL": 5, "ERROR": 73} and bool(totals) and totals[-1] == "4424"
           status = "HISTORICAL_RED_UNCHANGED" if unchanged else "DIFFERENTIAL_REQUIRES_REVIEW"
@@ -121,7 +121,7 @@ jobs:
                     "observed_counts": counts, "observed_total_tests": totals[-1] if totals else None,
                     "signatures": signatures, "baseline_run": 40460394112,
                     "claim_scope": "disposable Linux software tests; not production, native, Redmi, or V13 completion"}
-          pathlib.Path(sys.argv[2]).write_text(json.dumps(report, indent=2) + "\\n")
+          pathlib.Path(sys.argv[2]).write_text(json.dumps(report, indent=2) + "\n")
           print(status, counts, report["observed_total_tests"], digest)
           sys.exit(0 if unchanged else 1)
           PY
