@@ -25,8 +25,12 @@ def sha(path):
 
 def verify_checkout(checkout):
     checkout = Path(checkout).resolve()
-    commit = subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"],
-                                     text=True, timeout=15).strip()
+    try:
+        commit = subprocess.check_output(
+            ["git", "-C", str(checkout), "rev-parse", "HEAD"],
+            text=True, timeout=15, stderr=subprocess.DEVNULL).strip()
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        raise ValueError("unregistered gguf-py source checkout") from None
     if commit != SOURCE_COMMIT:
         raise ValueError("unregistered gguf-py source revision")
     if not (checkout / "gguf-py" / "gguf" / "constants.py").is_file():
