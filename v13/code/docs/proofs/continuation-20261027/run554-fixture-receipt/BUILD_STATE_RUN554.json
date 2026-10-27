@@ -1,0 +1,35 @@
+{
+  "schema": "V13_RUN554_FIXTURE_RECEIPT_REVIEW_20261027",
+  "owner": "GPT-6 automation11",
+  "pr": 698,
+  "base": "9eae3cc175512382038cc5f55887e7a8dbc9797f",
+  "prereg": "c819ee32cecf1e835306c16f8662c0c7d5d2748e",
+  "source": "a992f60b045c9f45162ca03b7914b3a33d37b9cd",
+  "software": {
+    "run": 40491633158,
+    "tests_pass": 13,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "frozen_source_diff_exit": 0,
+    "artifact": 12727718244,
+    "zip_sha256": "e4b7230856f110158d9f5cceae2b50200b6c704d9fdd40ce203d00b94d7faebd",
+    "backup": "private Library byte-exact"
+  },
+  "historical_red": {
+    "run": 40488716919,
+    "zip_sha256": "c25ee1a40e977bc977a9de15d33618f69cb2b27aac0b731969277524280f712d",
+    "run554_fixture": "INTEGRATION_FAIL due explicit nonanswer",
+    "broad_suite": "5 FAIL 73 ERROR",
+    "backup": "private Library byte-exact"
+  },
+  "evidence": "synthetic fixture-only, not native or semantic answer quality",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "Independent pinned native JEF goal lifecycle proof; review five-parent source-lineage mismatches without bypassing frozen hashes."
+}
