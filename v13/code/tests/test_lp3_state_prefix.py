@@ -34,13 +34,13 @@ class StateConditionedPrefixTests(unittest.TestCase):
         own = self.candidate.answer_logits(self.prompt, self.answer, 'own')
         shifted = self.candidate.answer_logits(self.prompt, self.answer, 'shift')
         self.assertEqual(tuple(own.shape), (2, 2, 32))
-        self.assertGreater(float((own - shifted).abs().max()), 1e-8)
+        self.assertGreater(float((own - shifted).detach().abs().max()), 1e-8)
         self.assertTrue(bool(torch.isfinite(shifted).all()))
 
     def test_zero_state_control_changes_answer_logits(self):
         own = self.candidate.answer_logits(self.prompt, self.answer, 'own')
         zero = self.candidate.answer_logits(self.prompt, self.answer, 'zero')
-        self.assertGreater(float((own - zero).abs().max()), 1e-8)
+        self.assertGreater(float((own - zero).detach().abs().max()), 1e-8)
 
     def test_training_step_does_not_modify_frozen_decoder(self):
         before = [p.detach().clone() for p in self.candidate.base.parameters()]
@@ -69,6 +69,27 @@ class StateConditionedPrefixTests(unittest.TestCase):
         actual = self.candidate.answer_logits(self.prompt, self.answer, features=features)
         self.assertTrue(torch.allclose(actual, expected, atol=1e-6))
 
+    def test_target_free_next_token_inference_consumes_state(self):
+        own = self.candidate.next_token_logits(self.prompt, 'own')
+        shifted = self.candidate.next_token_logits(self.prompt, 'shift')
+        zero = self.candidate.next_token_logits(self.prompt, 'zero')
+        self.assertEqual(tuple(own.shape), (2, 32))
+        self.assertGreater(float((own - shifted).detach().abs().max()), 1e-8)
+        self.assertGreater(float((own - zero).detach().abs().max()), 1e-8)
+
+    def test_greedy_is_bounded_and_uses_no_target_tokens(self):
+        first = self.candidate.greedy(self.prompt, max_new_tokens=3)
+        second = self.candidate.greedy(self.prompt, max_new_tokens=3)
+        self.assertEqual(tuple(first.shape), (2, 3))
+        self.assertTrue(torch.equal(first, second))
+        self.assertTrue(bool((first >= 0).all() and (first < 32).all()))
+        with self.assertRaises(ValueError):
+            self.candidate.greedy(self.prompt, max_new_tokens=0)
+        with self.assertRaises(ValueError):
+            self.candidate.greedy(self.prompt, max_new_tokens=33)
+        with self.assertRaises(ValueError):
+            self.candidate.greedy(torch.ones((2, 47), dtype=torch.long), max_new_tokens=2)
+
     def test_invalid_shapes_nonfinite_and_control_fail_closed(self):
         with self.assertRaises(ValueError):
             self.candidate.answer_logits(self.prompt, self.answer.float())
@@ -80,6 +101,8 @@ class StateConditionedPrefixTests(unittest.TestCase):
             self.candidate.answer_logits(self.prompt, self.answer, features=torch.full((2, 16), float('nan')))
         with self.assertRaises(ValueError):
             self.candidate.answer_logits(self.prompt, self.answer, features=torch.ones(2, 7))
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits(self.prompt, self.answer, features=torch.ones(2, 16, dtype=torch.long))
         with self.assertRaises(ValueError):
             self.candidate.answer_logits(self.prompt, torch.tensor([[999, 10], [11, 12]]))
         with self.assertRaises(ValueError):
