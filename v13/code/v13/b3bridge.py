@@ -215,23 +215,92 @@ def paired(a,b):
     return {'mean':round(float(d.mean()),4),'se':round(se,4),'wins':int((d>0).sum()),'n':len(d),'significant':bool(d.mean()-2*se>0)}
 
 def l1_gate(task,role_drop=.01,ood_max=.05):
-    """task: {'acc': {channel: [per-seed acc]}, 'bytes': {channel: bytes}, 'role_drop': float, 'ood_rate': float,
-    'reload_identical': bool}. Channels: NO_MESSAGE, EXACT, CONTROL, SYMBOLIC, LATENT, LATENT_SHUFFLED, LATENT_RANDOM
-    (missing baselines are skipped and reported). Returns criteria + verdict PASS/FAIL. PASS only permits L2 SHADOW."""
-    acc,by=task['acc'],task['bytes'];base=np.asarray(acc['NO_MESSAGE'])
-    u={c:[utility(a,b0,by.get(c,0)) for a,b0 in zip(acc[c],base)] for c in acc}
-    crit={'beats_no_message':paired(acc['LATENT'],acc['NO_MESSAGE'])}
-    for ctl in ('LATENT_SHUFFLED','LATENT_RANDOM'):
-        if ctl in acc:crit['beats_'+ctl.lower()]=paired(acc['LATENT'],acc[ctl])
+    """L1 requires complete finite paired evidence for *every* canonical control.
+
+    Missing arms, silently truncated seed pairs or invalid costs must never
+    turn a partial experiment into permission for an L2 shadow trial.
+    Even PASS grants no native LATENT authority.
+    """
+    required=('NO_MESSAGE','LATENT','LATENT_SHUFFLED','LATENT_RANDOM',
+              'EXACT','CONTROL','SYMBOLIC')
+    acc=task.get('acc') if isinstance(task,dict) else None
+    by=task.get('bytes') if isinstance(task,dict) else None
+    acc=acc if isinstance(acc,dict) else {}
+    by=by if isinstance(by,dict) else {}
+    missing=[c for c in required if c not in acc]
+    invalid=[]
+    vectors={}
+    n=None
+    for channel in required:
+        if channel not in acc:continue
+        values=acc[channel]
+        if not isinstance(values,(list,tuple,np.ndarray)):
+            invalid.append(channel+':not_vector');continue
+        a=np.asarray(values,dtype=object)
+        if a.ndim!=1 or len(a)<2:
+            invalid.append(channel+':insufficient_pairs');continue
+        if not all(isinstance(v,(int,float,np.integer,np.floating))
+                   and not isinstance(v,(bool,np.bool_))
+                   and np.isfinite(float(v)) and 0<=float(v)<=1 for v in a):
+            invalid.append(channel+':invalid_accuracy');continue
+        if n is None:n=len(a)
+        elif len(a)!=n:invalid.append(channel+':pair_count_mismatch')
+        vectors[channel]=np.asarray(a,dtype=float)
+    for channel in required:
+        v=by.get(channel)
+        if (not isinstance(v,(int,float,np.integer,np.floating))
+                or isinstance(v,(bool,np.bool_))
+                or not np.isfinite(float(v)) or float(v)<0):
+            invalid.append(channel+':invalid_bytes')
+    for field in ('role_drop','ood_rate'):
+        v=task.get(field) if isinstance(task,dict) else None
+        if (not isinstance(v,(int,float,np.integer,np.floating))
+                or isinstance(v,(bool,np.bool_))
+                or not np.isfinite(float(v)) or not 0<=float(v)<=1):
+            invalid.append(field+':invalid_fraction')
+    if not isinstance(task,dict) or type(task.get('reload_identical')) is not bool:
+        invalid.append('reload_identical:not_boolean')
+    if missing or invalid:
+        return {'gate':'G-CALLOSUM-UTILITY-002','level':'L1','verdict':'FAIL',
+                'criteria':{},'utility_mean':{},'missing_baselines':missing,
+                'invalid_evidence':invalid,
+                'consequence':'B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only'}
+    base=vectors['NO_MESSAGE']
+    u={c:[utility(a,b0,by[c]) for a,b0 in zip(vectors[c],base)]
+       for c in required}
+    crit={'beats_no_message':paired(vectors['LATENT'],base),
+          'beats_latent_shuffled':paired(vectors['LATENT'],vectors['LATENT_SHUFFLED']),
+          'beats_latent_random':paired(vectors['LATENT'],vectors['LATENT_RANDOM'])}
     for bl in ('EXACT','CONTROL','SYMBOLIC'):
-        if bl in acc:crit['utility_beats_'+bl.lower()]=paired(u['LATENT'],u[bl])
-    crit['role_retention']={'drop':round(task.get('role_drop',0.),4),'significant':task.get('role_drop',0.)<=role_drop}
-    crit['receiver_ood']={'rate':round(task.get('ood_rate',0.),4),'significant':task.get('ood_rate',0.)<=ood_max}
-    crit['restart_reproducibility']={'significant':bool(task.get('reload_identical',False))}
+        crit['utility_beats_'+bl.lower()]=paired(u['LATENT'],u[bl])
+    crit['role_retention']={'drop':round(float(task['role_drop']),4),
+                            'significant':bool(task['role_drop']<=role_drop)}
+    crit['receiver_ood']={'rate':round(float(task['ood_rate']),4),
+                           'significant':bool(task['ood_rate']<=ood_max)}
+    crit['restart_reproducibility']={'significant':task['reload_identical']}
     ok=all(v['significant'] for v in crit.values())
-    return {'gate':'G-CALLOSUM-UTILITY-002','level':'L1','verdict':'PASS' if ok else 'FAIL','criteria':crit,
-            'utility_mean':{c:round(float(np.mean(v)),4) for c,v in u.items()},'missing_baselines':[c for c in ('EXACT','CONTROL','SYMBOLIC') if c not in acc],
+    return {'gate':'G-CALLOSUM-UTILITY-002','level':'L1','verdict':'PASS' if ok else 'FAIL',
+            'criteria':crit,'utility_mean':{c:round(float(np.mean(v)),4) for c,v in u.items()},
+            'missing_baselines':[],'invalid_evidence':[],
             'consequence':'L2 prefix SHADOW test allowed; LATENT authority stays 0' if ok else 'B3_LATENT stays unavailable; SOURCE_EXACT/CONTROL/SYMBOLIC only'}
+
+def l1_report_valid(gate):
+    """Revalidate a persisted L1 PASS before doctor/completion may report it.
+
+    This checks internal evidence completeness, not external artifact
+    authenticity; a native receiver proof still requires separate gates.
+    """
+    if not isinstance(gate,dict) or gate.get('verdict')!='PASS':
+        return False
+    if gate.get('missing_baselines')!=[] or gate.get('invalid_evidence')!=[]:
+        return False
+    crit=gate.get('criteria')
+    required=('beats_no_message','beats_latent_shuffled','beats_latent_random',
+              'utility_beats_exact','utility_beats_control','utility_beats_symbolic',
+              'role_retention','receiver_ood','restart_reproducibility')
+    return isinstance(crit,dict) and all(
+        isinstance(crit.get(k),dict) and crit[k].get('significant') is True
+        for k in required)
 
 # -- :doctor (B3-H11) ---------------------------------------------------------------------------------------
 def bridge_dir(home):return Path(home)/'b3'
@@ -242,8 +311,8 @@ def doctor_fields(home,direction,receiver_revision=None):
     if not p.exists():return {'bridge':None}
     try:man=json.loads(p.read_text())
     except Exception as exc:return {'bridge':{'error':type(exc).__name__}}
-    gate=man.get('l1_gate') or {};stale=receiver_revision is not None and man.get('receiver_revision') not in (None,receiver_revision)
-    level='L1_PASSED_L2_SHADOW_ALLOWED' if gate.get('verdict')=='PASS' and not stale else 'unavailable'
+    gate=man.get('l1_gate') if isinstance(man.get('l1_gate'),dict) else {};stale=receiver_revision is not None and man.get('receiver_revision') not in (None,receiver_revision)
+    level='L1_PASSED_L2_SHADOW_ALLOWED' if l1_report_valid(gate) and not stale else 'unavailable'
     return {'latent_level':level,'calibration':'calibrated' if man.get('calibrated') else None,'message_rank':man.get('r'),'slot_budget':man.get('K'),
             'bridge':{'sha256':man.get('sha256'),'param_count':(man.get('budget') or {}).get('param_count'),'weights_bf16_bytes':(man.get('budget') or {}).get('weights_bf16_bytes'),
                       'message_bf16_bytes':(man.get('budget') or {}).get('message_bf16_bytes'),'l1_verdict':gate.get('verdict'),'stale_receiver_revision':stale,
@@ -263,7 +332,8 @@ def completion_gate(home,direction,row,messages=0,app=None):
     if p.exists():
         try:man=json.loads(p.read_text())
         except Exception:man=None
-    gate=(man or {}).get('l1_gate') or {};crit=gate.get('criteria') or {};bridge=row.get('bridge') or {}
+    gate=(man or {}).get('l1_gate') or {};gate=gate if isinstance(gate,dict) else {}
+    crit=gate.get('criteria') if isinstance(gate.get('criteria'),dict) else {};bridge=row.get('bridge') or {}
     stale=bool(bridge.get('stale_receiver_revision'))
     c={'CODE':(app/'v13/b3bridge.py').exists(),
        'REAL_SENDER_STATE_PATH':bool(row.get('native_taps')),
@@ -279,9 +349,9 @@ def completion_gate(home,direction,row,messages=0,app=None):
        'EXACT_ABLATION':'utility_beats_exact' in crit,
        'SYMBOLIC_CONTROL_ABLATION':'utility_beats_symbolic' in crit and 'utility_beats_control' in crit,
        'REAL_TARGET_RUNNER_MEASUREMENT':bool(row.get('hardware_proof_id'))}
-    implemented=all(c.values())
+    implemented=l1_report_valid(gate) and not stale and all(c.values())
     if implemented:status='active'
-    elif gate.get('verdict')=='PASS' and not stale:status='L1_shadow'
+    elif l1_report_valid(gate) and not stale:status='L1_shadow'
     elif c['CODE']:status='scaffold'
     else:status='unavailable'
     return {'criteria':c,'missing':[k for k in COMPLETION if not c[k]],'status':status,'B3_LATENT_IMPLEMENTED':implemented,
