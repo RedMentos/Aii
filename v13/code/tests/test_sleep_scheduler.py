@@ -141,6 +141,42 @@ class SchedulerTests(Base):
         self.assertEqual(len(st['history']),64)
         self.assertEqual(len(st['dispatch_times']),70)
 
+    def test_active_dispatched_events_count_toward_capacity(self):
+        # A bounded durable queue must include in-flight work, not just pending.
+        from unittest.mock import patch
+        with patch('v13.scheduler.MAX_PENDING',3):
+            s=self.sched()
+            active=[]
+            for _ in range(3):
+                eid=s.post('TIMER',origin='USER',action='sleep_a')
+                self.assertEqual(s.next()['id'],eid)
+                active.append(eid)
+            self.assertIsNone(s.post('TIMER',origin='USER',action='sleep_a'))
+            self.assertEqual(len(s.pending()),3)
+            self.assertTrue(all(e['status']=='DISPATCHED' for e in s.pending()))
+            self.assertEqual(s.complete(active[0],'DONE'),'DONE')
+            self.assertIsNotNone(s.post('TIMER',origin='USER',action='sleep_a'))
+            self.assertEqual(len(s.pending()),3)
+
+    def test_capacity_evicts_pending_not_dispatched(self):
+        from unittest.mock import patch
+        with patch('v13.scheduler.MAX_PENDING',3):
+            s=EventScheduler(self.r.store,self.r.cfg,Clock(),key='G13_INFLIGHT_EVICTION_TEST')
+            active=[]
+            for _ in range(2):
+                eid=s.post('TIMER',origin='USER',action='sleep_a')
+                self.assertEqual(s.next()['id'],eid)
+                active.append(eid)
+            low=s.post('IDLE',action='sleep_c')
+            high=s.post('RESOURCE_CHANGE',action='notice')
+            self.assertIsNotNone(high)
+            ids={e['id'] for e in s.pending()}
+            self.assertTrue(set(active).issubset(ids))
+            self.assertIn(high,ids)
+            self.assertNotIn(low,ids)
+            self.assertEqual(len(ids),3)
+            self.assertEqual(s.report()['counters']['dropped_capacity'],1)
+
     def test_quiet_hours_and_capacity(self):
         s=self.sched();s.post('IDLE',action='sleep_full');s.post('TIMER',origin='USER',action='sleep_a')
         self.assertEqual(s.next(quiet=True)['origin'],'USER');self.assertIsNone(s.next(quiet=True))
