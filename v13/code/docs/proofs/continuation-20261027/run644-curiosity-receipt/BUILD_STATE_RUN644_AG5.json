@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN644_AG5_REVIEW_BUILD_STATE_V1",
+  "utc_date": "2026-10-27",
+  "owner": "GPT-6 Run644-AG5 curiosity receipt (disjoint from concurrent C3 Run644)",
+  "base_branch": "codex/gpt6-run643-phone-zip-20261027",
+  "base_sha": "df96269a179b9942ee517f02cbb7069ed80c5ba5",
+  "modified": [
+    "v13/code/v13/agi/live.py",
+    "v13/code/tests/test_run644_curiosity_receipt.py",
+    ".github/workflows/run644-curiosity-receipt.yml"
+  ],
+  "red": {
+    "run": 40439220413,
+    "head": "7a87692de6e63a69c7056fd11eaa02f7567b4457",
+    "failures": 3,
+    "tests": 19,
+    "artifact_id": 12705142134,
+    "zip_sha256": "9890c53ed655f57ded4dbdf0b0f48c4a5d8ecee34d1660c43a2dd9034b33e44d"
+  },
+  "green": {
+    "run": 40439305110,
+    "head": "b073fbb87b5d453dbb4d1d3812c98ad2e2dafe56",
+    "tests": "19/19",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "artifact_id": 12705221912,
+    "zip_sha256": "f7df9a8d73a223d699f55abf9aef4719170bf23a0291ea804973e46f7bd57404"
+  },
+  "full_suite": {
+    "run": 40439486942,
+    "head": "ad14a3280b6aae3dfd0349c297307eeec3a7da54",
+    "status": "PENDING_AT_FIRST_REPORT"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Run644-AG5/",
+    "red_and_green_rematerialized_byte_identical": true
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "native_model_run": false,
+  "phone_measured": false,
+  "age_approval_changed": false,
+  "next": "Verify Actions 40439486942 whole suite, preserve raw/sha/private backup, then separate AG4 outcome receipt package or independent functional World-JEPA path; no main merge."
+}

@@ -1,0 +1,71 @@
+name: V13 Run644 curiosity durable FINAL receipt (software-only)
+on:
+  push:
+    branches:
+      - codex/gpt6-run644-curiosity-receipt-20261027
+    paths:
+      - '.github/workflows/run644-curiosity-receipt.yml'
+      - 'v13/code/v13/agi/live.py'
+      - 'v13/code/tests/test_run644_curiosity_receipt.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run644-curiosity-receipt/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run644-curiosity-source
+  cancel-in-progress: false
+jobs:
+  receipt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Record source and dependency environment
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run644"
+          git rev-parse HEAD > "$RUNNER_TEMP/run644/HEAD.txt"
+          sha256sum v13/code/v13/agi/live.py v13/code/tests/test_run644_curiosity_receipt.py > "$RUNNER_TEMP/run644/SOURCE_SHA256.txt"
+          { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/run644/HOST.txt"
+          python3 -m venv "$RUNNER_TEMP/run644venv"
+          timeout 240s "$RUNNER_TEMP/run644venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          "$RUNNER_TEMP/run644venv/bin/python" -m pip freeze > "$RUNNER_TEMP/run644/DEPS.txt"
+      - name: Focused SQLite regression and privacy
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run644venv/bin/python" -m unittest -v tests.test_run644_curiosity_receipt tests.test_run633_jef_noanswer_goal tests.test_agi_live) > "$RUNNER_TEMP/run644/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run644/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 600s "$RUNNER_TEMP/run644venv/bin/python" -m unittest discover -s tests -p 'test_*.py') > "$RUNNER_TEMP/run644/FULL_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run644/FULL_EXIT.txt"
+          "$RUNNER_TEMP/run644venv/bin/python" -m compileall -q v13/code/v13/agi/live.py v13/code/tests/test_run644_curiosity_receipt.py > "$RUNNER_TEMP/run644/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run644/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/run644venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base df96269a179b9942ee517f02cbb7069ed80c5ba5 --head HEAD > "$RUNNER_TEMP/run644/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run644/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw original evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run644-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/run644/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual results
+        run: |
+          set -euo pipefail
+          for n in UNIT FULL COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/run644/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/run644/${n}_RAW.log"; exit 1; }
+          done
+          cat "$RUNNER_TEMP/run644/UNIT_RAW.log" | tail -25
+          cat "$RUNNER_TEMP/run644/FULL_RAW.log" | tail -25
+          cat "$RUNNER_TEMP/run644/PRIVACY_RAW.log"
