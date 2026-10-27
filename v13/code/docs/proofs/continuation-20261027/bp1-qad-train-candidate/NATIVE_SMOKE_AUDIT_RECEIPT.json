@@ -1,0 +1,56 @@
+{
+  "schema": "V13_BP1_QAD_NATIVE_AUDIT_RECEIPT_V1",
+  "status": "PASS_CLOSED_RAW",
+  "date": "2026-10-27",
+  "source_commit": "fb7b440a319817a5665fabb4fb2d1ad60de62c4a",
+  "actions_run": 40475001744,
+  "native_artifact_id": 12720068189,
+  "software_artifact_id": 12719334501,
+  "raw_zip_sha256": "0d47eb7a3c1a2b9723ce3e57a07946813cebd9e5e227fa257f4a9aff4a8debd0",
+  "software_zip_sha256": "a57c7fdbcce6e8c55ea32e3e2d3a202390257963b39c7424196bd197b1d3b795",
+  "model_revision": "657e078c94084481950a2d555a941481f715536b",
+  "hf_master_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+  "gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+  "runner_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "source_sha256": {
+    "script": "e99d0b0223a03e2edbdb28b04eef69ba54e370a103af82d78764e08c13c117e2",
+    "tests": "2360ffe406663d3c017fac7b74b982615fd7d8fa4f7d29fae5de1adcab61089f"
+  },
+  "exits": {
+    "BUDGET": 0,
+    "VENV": 0,
+    "PIP_TORCH": 0,
+    "PIP_HF": 0,
+    "HF_FETCH": 0,
+    "MASTER_SHA": 0,
+    "GGUF_SHA": 0,
+    "RUNNER_FETCH": 0,
+    "HF_NATIVE": 0,
+    "GGUF_NATIVE": 0,
+    "COMPARE": 0
+  },
+  "software_exits": {
+    "UNIT": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0
+  },
+  "independently_crc_head_hash_verified": true,
+  "records_per_arm": 4,
+  "exact_text_matches": 1,
+  "fp32_peak_vmhwm_kib": 1802984,
+  "gguf_peak_vmhwm_kib": 510304,
+  "native_training_executed": false,
+  "tensor_parity_proven": false,
+  "model_utility_proven": false,
+  "redmi_measured": false,
+  "evidence_class": "GENUINE_LINUX_NATIVE_SOURCE_SMOKE_ONLY",
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Software-Review/",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  }
+}

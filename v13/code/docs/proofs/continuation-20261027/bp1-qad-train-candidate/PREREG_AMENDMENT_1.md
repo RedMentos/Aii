@@ -1,0 +1,7 @@
+# BP1 QAD train-only candidate — preregistered source-corpus hash correction (2026-10-27)
+
+Original native train attempt Actions `40475705217` at source `619363f44da14eccc85aad3e145b03daac027033` is **RED**, not trained. All preflight downloads/dependencies/model SHA passed (BUDGET, DATASET_FETCH, DEPS, MASTER_FETCH exit 0), but TRAIN exit 1 before any tokenizer/model optimizer: `BP1 immutable dataset manifest mismatch`. Raw ZIP artifact `12720511359` SHA256 `11fd66ec20b5927aae88222963c19a222be7adc7aa13ba770ac4176c6b5958c7` must be retained.
+
+Independent audit found one manually transcribed `source_corpus_sha256` in new `bp1_qad_train_candidate.py` and its synthetic test fixture was wrong. Original immutable PR #677 manifest source-corpus SHA256 is `1872a3adf6e51e05e604053539d50ae05c955b221f78f0cce39c0703f8cf` (64 lowercase hex). The candidate expected `1872a3adf6e51e05e604053539d50ae05c955b221f78f1951d1f68e2a12f926c`, a different hash. The original manifest and dataset are correct; **do not alter them**.
+
+Before fix, change the software test fixture to use the original exact manifest hash, expect a RED test, preserve raw. Then correct **only the candidate's expected hash** and rerun tests, privacy and the serialized native train. Do not change train/heldout rows, source/model hashes, config, seed, 1024 budget, learning/approval gates. No optimizer was reached in the original attempt; do not count it as training.

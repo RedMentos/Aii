@@ -1,0 +1,53 @@
+name: V13 BP1 QAD C3 train-only candidate software preflight
+on:
+  push:
+    branches: [codex/automation11-bp1-qad-train-candidate-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-train-candidate.yml'
+      - 'v13/code/scripts/bp1_qad_train_candidate.py'
+      - 'v13/code/tests/test_bp1_qad_train_candidate.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-train-candidate-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Preserve exact software tests, compile, privacy exits
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-train"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-train/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-train/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_train_candidate) > "$RUNNER_TEMP/bp1-train/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-train/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fb7b440a319817a5665fabb4fb2d1ad60de62c4a --head HEAD > "$RUNNER_TEMP/bp1-train/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve original raw evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-train-candidate-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-train/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software gates only
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-train/${n}_EXIT.txt")" = 0 || {
+              echo "${n} failed"; tail -100 "$RUNNER_TEMP/bp1-train/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "TRAIN_CANDIDATE_SOFTWARE_ONLY; NO_MODEL_OR_HELDOUT_EXECUTION"
