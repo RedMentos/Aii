@@ -13,7 +13,7 @@ The old `checkpoints()` counted external absolute paths, `../` traversal, symlin
 
 **GREEN Actions 40568672861 SUCCESS** at `e9d0b087be97a1eb4ef7ece214ff0cb70869777d`: 14/14 PASS, all INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN, raw ZIP artifact `12763274096`, SHA256 `a7e2f4ba3882943da8db5ac20f4d699392a1115405bc61f7708c69468950568d`. Original ZIPs CRC/HEAD checked, privately backed up under `/V13-Checkpoints/2026-10-27/Automation11ZI-Control-Checkpoint-Containment/` and re-materialized SHA256 byte-identical.
 
-Full source-wide Actions **40568704310 PENDING** at source-unchanged `d4b5b9dec06e59d9141fea38f5500fc5f53fbf13`; not claimed complete until closed raw exits.
+Full source-wide Actions **40568704310 SUCCESS** at source-unchanged `d4b5b9dec06e59d9141fea38f5500fc5f53fbf13`: **1950 tests OK (1 skipped)**, INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN; original artifact `12765140993`, ZIP SHA256 `2721e07b2ecf5a1c9a03b11825dba7083c363bc299ec6518cd57381f2fcf6f88`, CRC/HEAD/source blob verified and privately backed up SHA256 byte-identical. No source change since focused GREEN.
 
 ## Limits and next action
 This is **accounting containment only**, not approval/cryptographic SHA verification of referenced artifacts. `Store.generation()` verifies its manifest integrity separately; actual referenced checkpoint-byte hashes remain an independent question for the generation owner. Avoid expensive unapproved hashing on Redmi until budgeted and specified.
