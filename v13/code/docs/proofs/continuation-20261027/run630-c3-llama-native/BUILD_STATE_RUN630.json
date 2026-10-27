@@ -1,0 +1,81 @@
+{
+  "schema": "V13_RUN630_LLAMA_NATIVE_CHECKPOINT_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation; isolated Run630 probe/tests/workflow/proof",
+  "branch": "codex/automation12-run630-c3-llama-native-parity-20261027",
+  "review_pr": 625,
+  "parent_pr": 624,
+  "parent_head": "9186dec6609a45f18eeb3063c68f9a267e0b601e",
+  "prereg_commit": "a871d9e5abc90b2bf20300d67229670ba41f86c4",
+  "first_probe_commit": "2517748a0e1f687df0197b81f4b729ddd1e10d4d",
+  "first_run": {
+    "id": 40425045598,
+    "conclusion": "failure",
+    "source_tests": "7/7 PASS",
+    "adapter_fetch": "PASS",
+    "runner_fetch": "PASS",
+    "deps": "PASS",
+    "model_download": "PASS",
+    "convert": "PASS",
+    "native": "FAIL_UNSUPPORTED_--no-mmap",
+    "privacy": "CLEAN",
+    "artifact_id": 12699740178,
+    "raw_zip_sha256": "1151d80d8098bb84323c0c65318201bd7c365c06c951e5ccf87d47d9c7c66a3d",
+    "inner_sha256_verified": 24,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run630/Run630-native-first-failed-40425045598.zip",
+    "private_roundtrip": "PASS"
+  },
+  "repair_commit": "bd75bf58bac88a275b5ed629d310ccd44a6eb3b0",
+  "repair": "remove unsupported --no-mmap from b10964 server args; add regression test, atomic source/test/workflow update",
+  "retry_run_id": 40425441422,
+  "retry_status": "SUCCESS_CLOSED_NATIVE_LOGPROB_EFFECT_ONLY",
+  "model": {
+    "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+  },
+  "adapter_sha256": "e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b",
+  "runner_tag": "b10964",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "next_exact_command": "Run631: prereg pinned HF SmolLM2 chat-template native multi-token train/heldout/near-miss, preserving Run629 adapter and Run630 RED/GREEN; then actual deployed C3 LFM2.5-350M matching master, B1/B2 sparse and JEPA.",
+  "production_integrated": false,
+  "retry_checkout_sha": "bd75bf58bac88a275b5ed629d310ccd44a6eb3b0",
+  "retry_artifact_id": 12698349242,
+  "retry_raw_zip_sha256": "4a5daa73397107a7f60abb9826d4c9c16b1cfa7be62741ece9bdd169f77b2e03",
+  "retry_inner_sha256_verified": 26,
+  "retry_source_tests": "8/8 PASS",
+  "retry_checks": {
+    "SOURCE_TEST": 0,
+    "ADAPTER_FETCH": 0,
+    "RUNNER_FETCH": 0,
+    "DEPS": 0,
+    "MODEL_DOWNLOAD": 0,
+    "CONVERT": 0,
+    "NATIVE": 0,
+    "PRIVACY": 0
+  },
+  "retry_private_backup": "/V13-Checkpoints/2026-10-27/Run630/Run630-native-success-40425441422.zip",
+  "retry_private_roundtrip": "PASS",
+  "native_effect": {
+    "server_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "model_gguf_sha256": "82ea6279493a2b047220c3fcb297292a762aa57e434ea9f7cb425cec0233ecc8",
+    "scale0_base_parity": "4/4 exact top64",
+    "max_logprob_delta": [
+      0.09635257720947266,
+      0.14482641220092773,
+      0.08473873138427734,
+      0.05244922637939453
+    ],
+    "all_first_tokens_unchanged": true,
+    "raw_prompt_eos_or_newline": true,
+    "answer_utility_proven": false,
+    "production_weight_authority": 0
+  }
+}

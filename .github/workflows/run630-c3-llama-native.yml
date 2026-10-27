@@ -1,0 +1,243 @@
+name: V13 Run630 pinned llama.cpp native C3 LoRA scale ablation
+on:
+  push:
+    branches:
+      - codex/automation12-run630-c3-llama-native-parity-20261027
+    paths:
+      - '.github/workflows/run630-c3-llama-native.yml'
+      - 'v13/code/scripts/run630_c3_llama_native.py'
+      - 'v13/code/tests/test_run630_c3_llama_native.py'
+      - 'v13/code/docs/proofs/continuation-20261027/run630-c3-llama-native/PREREG.md'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run628-single-native-c3
+  cancel-in-progress: false
+jobs:
+  native-c3-gguf-lora:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Frozen source, runner, Canon and host
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/RUN630_HEAD.txt"
+          test "$(git hash-object v13/code/scripts/run630_c3_llama_native.py)" = 45bb4a94eb6d59ae43ebc3760b0e1ee80dc1cfac
+          test "$(git hash-object v13/code/tests/test_run630_c3_llama_native.py)" = e245f04b76d315801864414a245e715d03b798ad
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run630-c3-llama-native/PREREG.md)" = 26dc81e102680040f22d0dfed05ccd34b0151314
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json)" = 7bf74a8b9de4f7765005093e4cb758da00b9ec0b
+          test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
+          python3 - <<'PY'
+          import json
+          j=json.load(open('v13/code/specs/models.json'))['runner']
+          assert j['tag']=='b10964'
+          assert j['source_sha256']=='4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe'
+          assert j['linux_binaries']['linux-x86_64']['sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          PY
+          { date -u -Iseconds; python3 --version; uname -a; free -h; } > "$RUNNER_TEMP/RUN630_HOST.txt"
+          sha256sum v13/code/scripts/run630_c3_llama_native.py v13/code/tests/test_run630_c3_llama_native.py > "$RUNNER_TEMP/RUN630_SOURCE_SHA256.txt"
+      - name: Negative controls without native dependencies
+        run: |
+          set +e
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_run630_c3_llama_native) > "$RUNNER_TEMP/RUN630_SOURCE_TEST_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN630_SOURCE_TEST_EXIT.txt"
+          exit 0
+      - name: Download and hash-bind original Run629 adapter evidence
+        run: |
+          set +e
+          cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12698827815/zip' \
+            -o RUN630_RUN629_RAW.zip > RUN630_ADAPTER_FETCH_RAW.log 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            echo '27e3aa76ef58bcdfc1682aa0c0cb6da429048a0fa910eb90801dbe49204862f5  RUN630_RUN629_RAW.zip' | sha256sum -c >> RUN630_ADAPTER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            mkdir -p run630-evidence
+            unzip -q RUN630_RUN629_RAW.zip 'RUN628_ADAPTER.gguf' 'RUN628_PROOF.json' 'RUN628_SHA256SUMS.txt' -d run630-evidence >> RUN630_ADAPTER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            echo 'e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b  run630-evidence/RUN628_ADAPTER.gguf' | sha256sum -c >> RUN630_ADAPTER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          echo "$rc" > RUN630_ADAPTER_FETCH_EXIT.txt
+          rm -f RUN630_RUN629_RAW.zip
+          exit 0
+      - name: Download original pinned llama.cpp source and binary
+        run: |
+          set +e
+          cd "$RUNNER_TEMP"
+          mkdir -p run630-source run630-bin
+          curl --fail --silent --show-error --location --retry 2 --max-time 240 \
+            'https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz' \
+            -o run630-source.tar.gz > RUN630_RUNNER_FETCH_RAW.log 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            test "$(stat -c%s run630-source.tar.gz)" = 37420323
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            echo '4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe  run630-source.tar.gz' | sha256sum -c >> RUN630_RUNNER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            tar -xzf run630-source.tar.gz -C run630-source >> RUN630_RUNNER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 240 \
+              'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' \
+              -o run630-bin.tar.gz >> RUN630_RUNNER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            test "$(stat -c%s run630-bin.tar.gz)" = 16825086
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            echo '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  run630-bin.tar.gz' | sha256sum -c >> RUN630_RUNNER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            tar -xzf run630-bin.tar.gz -C run630-bin >> RUN630_RUNNER_FETCH_RAW.log 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            find "$RUNNER_TEMP/run630-bin" -type f -name llama-server -print > RUN630_SERVER_PATH.txt
+            test "$(wc -l < RUN630_SERVER_PATH.txt)" = 1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            chmod +x "$(cat RUN630_SERVER_PATH.txt)"
+            sha256sum "$(cat RUN630_SERVER_PATH.txt)" > RUN630_SERVER_SHA256.txt
+          fi
+          echo "$rc" > RUN630_RUNNER_FETCH_EXIT.txt
+          exit 0
+      - name: Isolated pinned converter dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/run630venv" > "$RUNNER_TEMP/RUN630_DEPS_RAW.log" 2>&1
+          rc=$?
+          if [ "$rc" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/run630venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu >> "$RUNNER_TEMP/RUN630_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run630venv/bin/python" -m pip install --disable-pip-version-check --no-input \
+              'transformers==4.56.2' 'huggingface_hub==0.35.3' 'safetensors==0.5.3' \
+              'numpy==2.2.6' 'sentencepiece==0.2.1' 'protobuf==5.29.5' >> "$RUNNER_TEMP/RUN630_DEPS_RAW.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run630venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN630_DEPENDENCY_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN630_DEPS_EXIT.txt"
+          exit 0
+      - name: Official pinned master download and source converter to F16 GGUF
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN630_DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/RUN630_RUNNER_FETCH_EXIT.txt")" = 0 ]; then
+            timeout 420s "$RUNNER_TEMP/run630venv/bin/python" - <<'PY' > "$RUNNER_TEMP/RUN630_MODEL_DOWNLOAD_RAW.log" 2>&1
+          from huggingface_hub import snapshot_download
+          from pathlib import Path
+          import hashlib,os
+          p=Path(snapshot_download(repo_id='HuggingFaceTB/SmolLM2-135M-Instruct',revision='12fd25f77366fa6b3b4b768ec3050bf629380bac',local_dir=Path(os.environ['RUNNER_TEMP'])/'run630-model',allow_patterns=['config.json','generation_config.json','model.safetensors','tokenizer*','special_tokens_map.json','merges.txt','vocab.json'],max_workers=2))
+          h=hashlib.sha256((p/'model.safetensors').read_bytes()).hexdigest()
+          assert h=='5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c',h
+          print('OFFICIAL_MASTER_SHA256_PASS',h)
+          PY
+            rc=$?
+          else
+            rc=2
+            echo 'PREREQUISITE_FAILED' > "$RUNNER_TEMP/RUN630_MODEL_DOWNLOAD_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN630_MODEL_DOWNLOAD_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            src="$RUNNER_TEMP/run630-source/llama.cpp-b10964/convert_hf_to_gguf.py"
+            timeout 300s "$RUNNER_TEMP/run630venv/bin/python" "$src" "$RUNNER_TEMP/run630-model" \
+              --outfile "$RUNNER_TEMP/run630-model-f16.gguf" --outtype f16 > "$RUNNER_TEMP/RUN630_CONVERT_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'DOWNLOAD_FAILED; CONVERT_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN630_CONVERT_RAW.log"
+            rc=2
+          fi
+          if [ "$rc" = 0 ]; then sha256sum "$RUNNER_TEMP/run630-model-f16.gguf" > "$RUNNER_TEMP/RUN630_MODEL_GGUF_SHA256.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/RUN630_CONVERT_EXIT.txt"
+          exit 0
+      - name: Actual native base, LoRA scale0 and scale1 synthetic probes
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/RUN630_CONVERT_EXIT.txt")" = 0 ] && \
+             [ "$(cat "$RUNNER_TEMP/RUN630_ADAPTER_FETCH_EXIT.txt")" = 0 ] && \
+             [ "$(cat "$RUNNER_TEMP/RUN630_SOURCE_TEST_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/run630-output"
+            server="$(cat "$RUNNER_TEMP/RUN630_SERVER_PATH.txt")"
+            timeout 360s env LD_LIBRARY_PATH="$(dirname "$server"):${LD_LIBRARY_PATH:-}" \
+              PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/run630venv/bin/python" \
+              v13/code/scripts/run630_c3_llama_native.py \
+              --master-dir "$RUNNER_TEMP/run630-model" --model "$RUNNER_TEMP/run630-model-f16.gguf" \
+              --adapter "$RUNNER_TEMP/run630-evidence/RUN628_ADAPTER.gguf" \
+              --proof "$RUNNER_TEMP/run630-evidence/RUN628_PROOF.json" \
+              --cohort v13/code/docs/proofs/continuation-20261027/run628-c3-native-lora/COHORT.json \
+              --server "$server" --output "$RUNNER_TEMP/run630-output" > "$RUNNER_TEMP/RUN630_NATIVE_RAW.log" 2>&1
+            rc=$?
+          else
+            echo 'PREREQUISITE_FAILED; NATIVE_NOT_ATTEMPTED' > "$RUNNER_TEMP/RUN630_NATIVE_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/RUN630_NATIVE_EXIT.txt"
+          exit 0
+      - name: Public repo privacy
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9186dec6609a45f18eeb3063c68f9a267e0b601e --head HEAD > "$RUNNER_TEMP/RUN630_PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/RUN630_PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close raw logs and SHA256 manifest
+        if: always()
+        run: |
+          set -uo pipefail
+          cd "$RUNNER_TEMP"
+          for k in SOURCE_TEST ADAPTER_FETCH RUNNER_FETCH DEPS MODEL_DOWNLOAD CONVERT NATIVE PRIVACY; do
+            test -f "RUN630_${k}_EXIT.txt" || echo 2 > "RUN630_${k}_EXIT.txt"
+          done
+          if [ -d run630-output ]; then
+            find run630-output -maxdepth 1 -type f -name 'RUN630_*' -exec cp '{}' . \;
+          fi
+          find . -maxdepth 1 -type f -name 'RUN630_*' ! -name 'RUN630_SHA256SUMS.txt' -print0 | sort -z | xargs -0 -r sha256sum > RUN630_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: V13-Run630-C3-Native-GGUF-${{ github.sha }}
+          path: ${{ runner.temp }}/RUN630_*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce prerequisites, native experiment and privacy
+        if: always()
+        run: |
+          set -euo pipefail
+          for k in SOURCE_TEST ADAPTER_FETCH RUNNER_FETCH DEPS MODEL_DOWNLOAD CONVERT NATIVE PRIVACY; do
+            echo "RUN630 $k exit: $(cat "$RUNNER_TEMP/RUN630_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN630_${k}_EXIT.txt")" = 0
+          done
+          test -s "$RUNNER_TEMP/RUN630_NATIVE_PROOF.json"

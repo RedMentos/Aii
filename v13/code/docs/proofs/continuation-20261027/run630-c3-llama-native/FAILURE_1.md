@@ -1,0 +1,7 @@
+# Run630 first native attempt — original RED preserved before repair
+
+Exact checkout `2517748a0e1f687df0197b81f4b729ddd1e10d4d`; Actions run **40425045598 FAILURE**, job 121928583798, artifact 12699740178 ZIP SHA256 `1151d80d8098bb84323c0c65318201bd7c365c06c951e5ccf87d47d9c7c66a3d`, **24/24 internal SHA256 PASS**. Original raw privately saved at `/V13-Checkpoints/2026-10-27/Run630/Run630-native-first-failed-40425045598.zip`.
+
+SOURCE_TEST=0 (**7/7**), ADAPTER_FETCH=0 (original Run629 adapter ZIP and GGUF hash), RUNNER_FETCH=0 (original pinned b10964 source and Linux binary hashes), DEPS=0, MODEL_DOWNLOAD=0 (original pinned master SHA), CONVERT=0 (actual 272-tensor F16 GGUF from verified b10964 converter), PRIVACY=0 CLEAN. NATIVE=1, before any model load or completion. Raw server stderr: `error: invalid argument: --no-mmap`. The native probe passed an unsupported flag to the pinned b10964 `llama-server`; this is a CLI compatibility defect in the new isolated probe, not evidence of a bad LoRA adapter or model.
+
+**Bounded repair:** remove only the unsupported `--no-mmap` option from `run630_c3_llama_native.py::_start`, retain pinned binary/model/adapter/cohort/negative gates and all tests; update workflow's exact source-blob assertion, rerun once with closed original raw. No change to model weights or preregistered success metrics. Native adapter effect remains UNVERIFIED until a fresh actual server run.

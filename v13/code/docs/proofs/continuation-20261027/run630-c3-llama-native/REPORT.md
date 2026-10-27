@@ -1,0 +1,19 @@
+# Run630 — real native llama.cpp b10964 C3 adapter load and scale ablation
+
+**Date:** 2026-10-27 UTC. Review PR #625, child of Run629 PR #624. Native source checkout `bd75bf58bac88a275b5ed629d310ccd44a6eb3b0`, prereg `a871d9e5...`. No production model/weights/authority changed.
+
+## Preserved RED
+
+First attempt Actions **40425045598 FAILURE** at `2517748a...`: source controls 7/7 PASS; official source, binary, adapter, master download, F16 conversion, privacy all PASS; native server exited before loading because isolated probe passed unsupported `--no-mmap` to b10964. Artifact 12699740178 ZIP SHA256 `1151d80d8098bb84323c0c65318201bd7c365c06c951e5ccf87d47d9c7c66a3d`, 24/24 internal SHA PASS, private Library byte-roundtrip PASS. Failure prereg `4883ae2...`; atomic minimal CLI repair + regression test `bd75bf58...`.
+
+## Native GREEN, with narrow meaning
+
+Retry GitHub Actions **40425441422 SUCCESS**, job 121929895049. SOURCE_TEST=0 (**8/8**), ADAPTER_FETCH=0, RUNNER_FETCH=0, DEPS=0, MODEL_DOWNLOAD=0, CONVERT=0, NATIVE=0, PRIVACY=0 CLEAN. Artifact 12698349242 ZIP SHA256 `4a5daa73397107a7f60abb9826d4c9c16b1cfa7be62741ece9bdd169f77b2e03`, **26/26 internal SHA PASS**. Private Library `/V13-Checkpoints/2026-10-27/Run630/Run630-native-success-40425441422.zip` byte-roundtrip PASS. Original RED retained separately.
+
+Exact official b10964 Linux `llama-server` binary SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`; source and binary archive SHA checks passed. Exact official SmolLM2 master SHA256 `5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c` converted with original b10964 source to F16 GGUF 270,885,792 bytes SHA256 `82ea6279493a2b047220c3fcb297292a762aa57e434ea9f7cb425cec0233ecc8`, 272 tensors. Run629 original LoRA GGUF 120 tensors SHA256 `e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b` loaded in actual native server. Base (without adapter) and adapter scale 0 **exactly matched** first-token ID and all 64 shared top logprobs for 4/4 fixed synthetic prompts (max absolute delta 0). Scale 1 changed logprob distribution by max |Δ logp| **0.09635, 0.14483, 0.08474, 0.05245** respectively; first-token IDs unchanged. Both native processes exited cleanly. This establishes a real reference C3 LoRA adapter effect in llama.cpp b10964 on Linux.
+
+**Important quality limitation discovered:** all four requests used *raw prompt strings*, not the SmolLM2 chat template. Native first tokens were EOS id 2 for the two synthetic training prompts and the 2+2 holdout; newline id 198 for the greeting. Thus this is a genuine numeric logprob effect and exact scale0 parity, **not a usable answer-level result**. Run629 master learned recall remained **0.0**; no learning utility or generalization is claimed. Next package must use the pinned model's exact chat template and actual generated answer spans with separate train/holdout, retention and near-miss scoring, and report no-gain honestly. This is also *not* current deployed LFM2.5-350M Q4 C3; it is an isolated SmolLM2 F16 reference experiment.
+
+Negative gates unchanged: STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi `UNMEASURED`, V13 `INCOMPLETE`; production weight authority 0. No autonomous learning, AGI or whole-system completion claim. Independent review/merge remains open.
+
+**Next exact command:** child Run631 prereg + add official HF tokenizer `apply_chat_template` to synthetic native probe (preserving all source/model/adapter hashes) and compare actual greedy multi-token base/scale0/scale1 on train/heldout/near-miss; include chat-template tests and closed raw. Then separately target the **actual deployed C3** `LiquidAI/LFM2.5-350M-GGUF` QAD Q4_0 with its licensed, matching master and trainable adapter path, and B1/B2 + Body-JEPA.
