@@ -1,0 +1,28 @@
+name: V13 N7 append-only stale-source RED witness
+on:
+  push:
+    branches: [codex/automation11-n7-append-red-witness-20261027]
+    paths: ['.github/workflows/n7-append-red-witness.yml']
+permissions:
+  contents: read
+jobs:
+  expected-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Run unchanged code against newly added negative tests (expect nonzero)
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/n7-venv"
+          py="$RUNNER_TEMP/n7-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' psutil PyYAML Pillow
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_context_os
