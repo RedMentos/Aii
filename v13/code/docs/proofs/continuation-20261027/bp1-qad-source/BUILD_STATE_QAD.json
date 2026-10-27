@@ -1,0 +1,58 @@
+{
+  "package": "WP-BP1-official-QAD-FP32-source",
+  "date_utc": "2026-10-27",
+  "status": "SOURCE_METADATA_VERIFIED_SOFTWARE_ONLY",
+  "branch": "codex/gpt6-bp1-qad-source-preflight-20261027-0915",
+  "base_pr": 679,
+  "prereg_commit": "9386126102ab92463d55b4d5a2eb6900014de31d",
+  "red_amendment_commit": "db127383599528a1c311fd461e6797ece3129665",
+  "green_source_commit": "a872ccd630503b900afbe48993ba2458c9ae5d0b",
+  "red": {
+    "run": 40472201305,
+    "artifact": 12718598478,
+    "zip_sha256": "c2a57ebb02d2d299cd6c7ddcb38d204271fdc0b92c3fbe2eef19964f74a37609",
+    "failure": "API lfs.sha256 field not anticipated; no model mismatch",
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Source/bp1-qad-source-40472201305-RED.zip",
+    "byte_verified": true
+  },
+  "pass": {
+    "run": 40472334677,
+    "artifact": 12719516376,
+    "zip_sha256": "05a856c0691eeb9472d1355ad86ab1a848881c9301906fa481e87b7f2bb03045",
+    "tests": "13/13 PASS",
+    "exits": {
+      "UNIT": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "FETCH": 0,
+      "AUDIT": 0
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP1-QAD-Source/bp1-qad-source-40472334677-PASS.zip",
+    "byte_verified": true
+  },
+  "source": {
+    "repo": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "metadata_sha256": "d023319a6d62a4d5fc60fc6f80edd35205d3aaafd9a7a4789bed75aa5033ff6f",
+    "qad_fp32_master_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+    "qad_fp32_master_bytes": 1417952352,
+    "deployed_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "deployed_gguf_bytes": 219312832,
+    "license": "LFM Open License; official README, full license terms not re-audited",
+    "upstream_conversion_claim": "FP32->F16->Q4_0 using llama.cpp 74ade527... reproduced all tensors and full GGUF SHA; NOT independently verified"
+  },
+  "model_bytes_downloaded": false,
+  "native_c3_training": false,
+  "native_c3_inference": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Official qad/provenance.json and tokenizer/template byte hashes; train-only prompt token budget audit; serial QAD master download/training later",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 scripts/bp1_qad_source_audit.py --metadata /verified/HF_RAW.json --out /new/QAD_SOURCE_AUDIT.json"
+}
