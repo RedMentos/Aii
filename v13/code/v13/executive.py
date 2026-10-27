@@ -33,17 +33,98 @@ class Executive:
         except (ValueError,OSError,KeyError,TypeError):return False
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
+        if not isinstance(state,dict):return {}
         if state.get('session_id')!=session:return {}
-        state['goal_sequence']=[x for x in state.get('goal_sequence',[]) if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
+        def dict_items(key):
+            value=state.get(key)
+            return [item for item in value if isinstance(item,dict)] if isinstance(value,list) else []
+        state['goal_sequence']=[x for x in dict_items('goal_sequence') if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
         task=state.get('active_task')
-        if not isinstance(task,dict) or not self._valid_ref(task.get('source_ref',{})):state['active_task']=None
-        state['memory_refs']=[x for x in state.get('memory_refs',[]) if self._memory(x,session)]
-        state['open_questions']=[x for x in state.get('open_questions',[]) if self._question_valid(x,session)][-MAX_QUESTIONS:]
+        if not self._task_valid(task,state,session):state['active_task']=None
+        state['memory_refs']=[x for x in dict_items('memory_refs') if self._memory(x,session)]
+        state['open_questions']=[x for x in dict_items('open_questions') if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
-        state['salient_A_offer']=state.get('goal_source_ref') if self._valid_ref(state.get('goal_source_ref',{})) else None
-        state['salient_B_offer']=[x for x in state.get('salient_B_offer',[]) if self._offer_valid(x,state.get('brain_generation_id'),session)]
-        if not self._valid_ref(state.get('goal_source_ref',{})):state['goal']='';state['goal_source_ref']=None
+        # A persisted goal is never an independent source of truth: bind it to
+        # the event in this session, then recover the exact immutable source.
+        goal_ref=state.get('goal_source_ref')
+        event_id=state.get('last_event_id')
+        event_row=(self.s.one('SELECT session_id,packet FROM events WHERE id=?',(event_id,))
+                   if type(event_id) is str else None)
+        bound_goal=False
+        if event_row and event_row['session_id']==session and isinstance(goal_ref,dict):
+            try:
+                bound_goal=(json.loads(event_row['packet']).get('source_ref')==goal_ref
+                            and self._valid_ref(goal_ref))
+            except (ValueError,TypeError,KeyError):
+                bound_goal=False
+        state['salient_A_offer']=goal_ref if bound_goal else None
+        state['salient_B_offer']=[x for x in dict_items('salient_B_offer') if self._offer_valid(x,state.get('brain_generation_id'),session)]
+        if bound_goal:
+            state['goal']=self.s.read_source(goal_ref)
+        else:
+            state['goal']='';state['goal_source_ref']=None
+        # A forged/malformed persisted action must not be interpreted as a
+        # current action by the native control reader or report_context().
+        intent=state.get('current_action_intent')
+        if (isinstance(intent,dict) and intent.get('type')=='LOCAL_TEXT_REPORT'
+                and type(intent.get('action_id')) is str):
+            action=self.s.one(
+                'SELECT a.event_id,a.corollary_id,e.session_id FROM actions a '
+                'JOIN events e ON e.id=a.event_id WHERE a.id=?',
+                (intent['action_id'],))
+            if (action and action['event_id']==event_id
+                    and action['session_id']==session
+                    and action['corollary_id']==intent.get('corollary_packet_id')):
+                state['current_action_intent']={
+                    'action_id':intent['action_id'],
+                    'corollary_packet_id':action['corollary_id'],
+                    'type':'LOCAL_TEXT_REPORT'}
+            else:
+                state['current_action_intent']=None
+        else:
+            state['current_action_intent']=None
         return state
+    def _task_valid(self,task,state,session):
+        """Only an event request or latest same-session human decision is a task.
+
+        A hash-valid blob by itself cannot confer operator authority. A later
+        explicit clear invalidates earlier operator task refs on every read.
+        """
+        if not isinstance(task,dict):return False
+        ref=task.get('source_ref')
+        if not isinstance(ref,dict) or not self._valid_ref(ref):return False
+        origin=task.get('origin')
+        if origin=='SOURCE_USER_REQUEST':
+            event_id=state.get('last_event_id')
+            if type(event_id) is not str:return False
+            row=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(event_id,))
+            if not row or row['session_id']!=session:return False
+            try:
+                event=json.loads(row['packet'])
+                return (event.get('authority')=='AUTHORITATIVE'
+                        and event.get('source_ref')==ref)
+            except (ValueError,TypeError,KeyError):
+                return False
+        if origin!='EXPLICIT_OPERATOR_TASK':return False
+        # The latest decision, not any historical decision, is authoritative.
+        # JSON1 is bundled with supported SQLite/Termux Python builds.
+        row=self.s.one(
+            "SELECT p.payload FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='HumanDecision' AND e.session_id=? "
+            "AND json_extract(p.payload,'$.kind')='executive_task' "
+            "ORDER BY p.rowid DESC LIMIT 1",(session,))
+        if not row:return False
+        try:
+            decision=json.loads(row['payload'])
+            value=self.s.read_source(ref)
+            return (decision.get('source_ref')==ref
+                    and decision.get('value')==value
+                    and (decision.get('task_operation')=='SET'
+                         or (decision.get('task_operation') is None
+                             and value!='CLEAR_ACTIVE_TASK'))
+                    and decision.get('learning_permission')=='record')
+        except (ValueError,TypeError,KeyError,OSError):
+            return False
     def _question_valid(self,item,session):
         if not self._valid_ref(item.get('source_ref',{})):return False
         row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
@@ -163,7 +244,7 @@ class Executive:
         if not clear and (not isinstance(value,str) or not value.strip() or len(value.encode())>4096):raise ValueError('Executive-Aufgabe: 1..4096 Bytes')
         event=json.loads(self.s.one('SELECT packet FROM events WHERE id=?',(old['last_event_id'],))['packet'])
         source=self.s.source(value or 'CLEAR_ACTIVE_TASK','HUMAN_DECISION')
-        self.s.add_packet('HumanDecision',packet('HumanDecision','F5_HUMAN_CONTROL',event['event_id'],event['brain_generation_id'],[source],kind='executive_task',value=value or 'CLEAR_ACTIVE_TASK',source_ref=source,learning_permission='record'))
+        self.s.add_packet('HumanDecision',packet('HumanDecision','F5_HUMAN_CONTROL',event['event_id'],event['brain_generation_id'],[source],kind='executive_task',value=value or 'CLEAR_ACTIVE_TASK',source_ref=source,learning_permission='record',task_operation='CLEAR' if clear else 'SET'))
         state=json.loads(dumps(old));fresh=packet('ExecState','C1_EXEC',event['event_id'],event['brain_generation_id'],session_id=session,state_version=v+1,goal=old['goal'],constraints=self.s.rules(),last_event_id=event['event_id'])
         state.update({name:fresh[name] for name in ['packet_id','created_monotonic_ns','created_wall_time']})
         if clear:state['open_questions']=[]
