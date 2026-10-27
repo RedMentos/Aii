@@ -28,7 +28,7 @@
   "repair_commit": "bd75bf58bac88a275b5ed629d310ccd44a6eb3b0",
   "repair": "remove unsupported --no-mmap from b10964 server args; add regression test, atomic source/test/workflow update",
   "retry_run_id": 40425441422,
-  "retry_status": "IN_PROGRESS_UNVERIFIED",
+  "retry_status": "SUCCESS_CLOSED_NATIVE_LOGPROB_EFFECT_ONLY",
   "model": {
     "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
     "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
@@ -44,6 +44,38 @@
     "Redmi": "UNMEASURED",
     "V13_complete": false
   },
-  "next_exact_command": "Inspect Actions 40425441422 jobs/artifacts; download original raw, verify inner SHA; preserve failures; if native loader fails diagnose GGUF/CLI without changing frozen model/cohort; if native works report exact scale0/1 parity/effect and continue actual deployed C3 350M path.",
-  "production_integrated": false
+  "next_exact_command": "Run631: prereg pinned HF SmolLM2 chat-template native multi-token train/heldout/near-miss, preserving Run629 adapter and Run630 RED/GREEN; then actual deployed C3 LFM2.5-350M matching master, B1/B2 sparse and JEPA.",
+  "production_integrated": false,
+  "retry_checkout_sha": "bd75bf58bac88a275b5ed629d310ccd44a6eb3b0",
+  "retry_artifact_id": 12698349242,
+  "retry_raw_zip_sha256": "4a5daa73397107a7f60abb9826d4c9c16b1cfa7be62741ece9bdd169f77b2e03",
+  "retry_inner_sha256_verified": 26,
+  "retry_source_tests": "8/8 PASS",
+  "retry_checks": {
+    "SOURCE_TEST": 0,
+    "ADAPTER_FETCH": 0,
+    "RUNNER_FETCH": 0,
+    "DEPS": 0,
+    "MODEL_DOWNLOAD": 0,
+    "CONVERT": 0,
+    "NATIVE": 0,
+    "PRIVACY": 0
+  },
+  "retry_private_backup": "/V13-Checkpoints/2026-10-27/Run630/Run630-native-success-40425441422.zip",
+  "retry_private_roundtrip": "PASS",
+  "native_effect": {
+    "server_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "model_gguf_sha256": "82ea6279493a2b047220c3fcb297292a762aa57e434ea9f7cb425cec0233ecc8",
+    "scale0_base_parity": "4/4 exact top64",
+    "max_logprob_delta": [
+      0.09635257720947266,
+      0.14482641220092773,
+      0.08473873138427734,
+      0.05244922637939453
+    ],
+    "all_first_tokens_unchanged": true,
+    "raw_prompt_eos_or_newline": true,
+    "answer_utility_proven": false,
+    "production_weight_authority": 0
+  }
 }
