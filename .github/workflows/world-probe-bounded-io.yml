@@ -1,0 +1,62 @@
+name: V13 World-JEPA bounded SHADOW input review
+on:
+  push:
+    branches:
+      - codex/review-world-probe-bounded-io-20261027
+    paths:
+      - '.github/workflows/world-probe-bounded-io.yml'
+      - 'v13/code/v13/world_jepa_shadow_probe.py'
+      - 'v13/code/v13/world_jepa_slots.py'
+      - 'v13/code/tests/test_world_probe_bounded_io.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-probe-bounded-io
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/probebounded"
+          timeout 240s "$RUNNER_TEMP/probebounded/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Record original raw results
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/probeboundedproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/probeboundedproof/HEAD.txt"
+          sha256sum v13/code/v13/world_jepa_shadow_probe.py v13/code/v13/world_jepa_slots.py v13/code/tests/test_world_probe_bounded_io.py > "$RUNNER_TEMP/probeboundedproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/probebounded/bin/python" -m unittest -v tests.test_world_probe_bounded_io tests.test_world_console_shadow tests.test_world_jepa_shadow_probe tests.test_world_jepa_slots_checkpoint) > "$RUNNER_TEMP/probeboundedproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/probeboundedproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/probebounded/bin/python" -m compileall -q v13/code/v13/world_jepa_shadow_probe.py v13/code/v13/world_jepa_slots.py v13/code/tests/test_world_probe_bounded_io.py > "$RUNNER_TEMP/probeboundedproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/probeboundedproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/probebounded/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base d466aa121810041ad5bcee3034eee17f1d676cf4 --head HEAD > "$RUNNER_TEMP/probeboundedproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/probeboundedproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-probe-bounded-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/probeboundedproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/probeboundedproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/probeboundedproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -20 "$RUNNER_TEMP/probeboundedproof/UNIT_RAW.log"

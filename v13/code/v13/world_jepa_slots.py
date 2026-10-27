@@ -206,7 +206,10 @@ class SlotWorldJEPA:
         if (type(expected_sha256) is not str or len(expected_sha256)!=64
                 or any(c not in '0123456789abcdef' for c in expected_sha256)):
             raise ValueError('Checkpoint requires pinned lowercase SHA256')
-        raw = Path(path).read_bytes()
+        # Bound memory BEFORE reading a caller-controlled checkpoint. Checking
+        # len() after read_bytes() would already have allocated the full file.
+        with Path(path).open('rb') as stream:
+            raw = stream.read(MAX_CHECKPOINT_BYTES + 1)
         if not 100<=len(raw)<=MAX_CHECKPOINT_BYTES:
             raise ValueError('Checkpoint file size out of bounds')
         if hashlib.sha256(raw).hexdigest()!=expected_sha256:
