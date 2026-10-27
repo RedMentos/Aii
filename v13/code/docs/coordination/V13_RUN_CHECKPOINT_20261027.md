@@ -1,6 +1,6 @@
 # V13 multi-branch continuation checkpoint — 2026-10-27 (final software closure)
 
-**Branch-scoped review state, not main:** main `f2b87abca8ab94c6b15f3d14988b563c63a9b7b8`; current World-JEPA parent #754 `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`. This handoff is stored on review branch `assistant/v13-control-budget-finite-marks-review-20261027`, not production. The original full v10.16.1 blueprint and every explicit later user decision remain binding; no organ/gate is removed. Canonical blueprint Git blob IDs were verified unchanged against #754: `v13/blueprint/...B3_HARDENED.md` `08fd3ee987755f3e631e143793929b464d5df27f`, `v13/code/docs/canon/...B3_HARDENED.md` `218464b12a2d27d92524c751922fa8e1c3fb0ea7`.
+**Branch-scoped review state, not main:** main `1c661ee2cf3fc312a1f16ecd7a87d9275a730342`; current World-JEPA parent #754 `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`. This handoff is stored on review branch `assistant/v13-control-budget-finite-marks-review-20261027`, not production. The original full v10.16.1 blueprint and every explicit later user decision remain binding; no organ/gate is removed. Canonical blueprint Git blob IDs were verified unchanged against #754: `v13/blueprint/...B3_HARDENED.md` `08fd3ee987755f3e631e143793929b464d5df27f`, `v13/code/docs/canon/...B3_HARDENED.md` `218464b12a2d27d92524c751922fa8e1c3fb0ea7`.
 
 ## Verified packages and owners
 
