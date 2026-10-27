@@ -21,7 +21,9 @@ class B3L1SeedIdentityReview(unittest.TestCase):
         self.assertIn('authority stays 0', result['consequence'])
 
     def test_missing_identity_cannot_be_a_paired_pass(self):
-        result = BB.l1_gate(complete())
+        item = complete()
+        item.pop('seed_ids')
+        result = BB.l1_gate(item)
         self.assertEqual(result['verdict'], 'FAIL')
         self.assertIn('seed_ids', ' '.join(result.get('invalid_evidence', [])))
 
