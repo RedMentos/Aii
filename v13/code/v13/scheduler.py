@@ -62,8 +62,9 @@ class EventScheduler:
         st,v=self._load();now=self.clock()
         if dedup and any(e['dedup']==dedup and e['status'] in {'PENDING','DISPATCHED','HELD_AGE'} for e in st['events']):
             self._count(st,'deduplicated');self._save(st,v);return None
-        if sum(e['status'] in {'PENDING','HELD_AGE'} for e in st['events'])>=MAX_PENDING:
-            # Bounded queue: the lowest-priority oldest background event is dropped, never a foreground one.
+        if sum(e['status'] in {'PENDING','HELD_AGE','DISPATCHED'} for e in st['events'])>=MAX_PENDING:
+            # Include in-flight jobs in the bound; never evict DISPATCHED work.
+            # Only a pending/held lower-priority background event may be replaced.
             victims=sorted((e for e in st['events'] if e['status'] in {'PENDING','HELD_AGE'} and e['kind'] not in FOREGROUND),key=lambda e:(PRIORITY[e['kind']],e['seq']))
             if not victims or PRIORITY[victims[0]['kind']]>PRIORITY[kind]:self._count(st,'refused_full');self._save(st,v);return None
             victims[0]['status']='DROPPED_CAPACITY';self._count(st,'dropped_capacity')
