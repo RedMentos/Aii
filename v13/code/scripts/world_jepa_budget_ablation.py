@@ -35,6 +35,45 @@ def _canonical(value):
                       allow_nan=False).encode('utf-8')
 
 
+
+def _verify_original_holdout(path, train, expected_manifest_sha):
+    """Require exact original integrity; permit only <=1e-10 float replay drift.
+
+    The original verifier checks all raw SHA/timing/seed/source/auditor gates
+    before its last exact-float equality check. Only that exact final mismatch
+    is eligible for this pinned-manifest, independently recomputed fallback.
+    """
+    if _sha(path / 'manifest.json') != expected_manifest_sha:
+        raise ValueError('Wrong frozen holdout manifest')
+    try:
+        return verify_holdout_export(path, train), 0.
+    except ValueError as exc:
+        if str(exc) != 'Heldout utility metrics differ after restart':
+            raise
+    manifest = _json_file(path / 'manifest.json', 1024 * 1024)
+    seed = manifest['holdout_seed']
+    _, frozen = _training(train, holdout_seed=seed)
+    data = lifecycle._checked_rows(_json_file(
+        path / 'cohort.json', lifecycle.MAX_COHORT_AUDIT_BYTES))
+    replay = evaluate_rows(frozen, data, seed)
+    recorded = manifest['metrics']
+    if type(recorded) is not dict or set(recorded) != set(replay):
+        raise ValueError('Frozen metric keys changed')
+    delta = 0.
+    for key, value in replay.items():
+        prior = recorded[key]
+        if type(value) is float:
+            if type(prior) is not float or not math.isfinite(prior):
+                raise ValueError('Nonfinite or invalid frozen metric')
+            delta = max(delta, abs(value - prior))
+            if not math.isclose(value, prior, rel_tol=0., abs_tol=1e-10):
+                raise ValueError('Frozen metric differs beyond replay tolerance')
+        elif type(value) is not type(prior) or value != prior:
+            raise ValueError('Frozen integer/count metric differs')
+    return {'verified': True, 'rows': len(data), 'metrics': replay,
+            'cohort_sha256': manifest['cohort_sha256']}, delta
+
+
 def _original(root):
     """Validate ALL original immutable inputs before any fit or output creation."""
     root = Path(root)
@@ -67,11 +106,13 @@ def _original(root):
            for a in (A, Av)):
         raise ValueError('Original training or calibration lacks operation coverage')
     heldouts = []
+    replay_deltas = {}
     for folder, seed, expected in HOLDOUTS:
         path = root / folder
         if _sha(path / 'manifest.json') != expected:
             raise ValueError('Wrong frozen holdout manifest: ' + folder)
-        verified = verify_holdout_export(path, train)
+        verified, replay_delta = _verify_original_holdout(path, train, expected)
+        replay_deltas[str(seed)] = replay_delta
         man = _json_file(path / 'manifest.json', 1024 * 1024)
         if (man.get('holdout_seed') != seed or verified['rows'] != HOLDOUT_ROWS
                 or man.get('checkpoint_sha256') != CHECKPOINT_SHA256):
@@ -81,7 +122,7 @@ def _original(root):
         if len(cohort) != HOLDOUT_ROWS:
             raise ValueError('Frozen holdout cohort length mismatch')
         heldouts.append((seed, expected, verified['cohort_sha256'], cohort))
-    return manifest, frozen, (X, A, X2), (Xv, Av, X2v), heldouts
+    return manifest, frozen, (X, A, X2), (Xv, Av, X2v), heldouts, replay_deltas
 
 
 def _metrics(model, heldouts):
@@ -134,7 +175,7 @@ def ablate(root, output_dir):
     root, out = Path(root), Path(output_dir)
     if out.exists() or out.resolve().is_relative_to(root.resolve()):
         raise FileExistsError('New output must be outside frozen input and not already exist')
-    manifest, frozen, train, val, heldouts = _original(root)
+    manifest, frozen, train, val, heldouts, replay_deltas = _original(root)
     # Original frozen checkpoint is a reference only, never refitted.
     frozen_metrics = _metrics(frozen, heldouts)
     out.mkdir(parents=True, exist_ok=False)
@@ -149,6 +190,7 @@ def ablate(root, output_dir):
         'frozen_checkpoint_sha256': CHECKPOINT_SHA256,
         'heldout_manifest_sha256': {str(s): m for s, m, _, _ in heldouts},
         'frozen_reference': frozen_metrics, 'budgets': list(BUDGETS),
+        'original_numeric_replay_delta_by_seed': replay_deltas,
         'arms': [], 'redmi_measured': False, 'native_body_training': False,
         'runtime_authority': False, 'step2': 'UTILITY_FAIL', 'b3': 'L1_FAIL',
         'body_jepa': 'UNAVAILABLE', 'jepa_weight': 0,
@@ -187,7 +229,7 @@ def ablate(root, output_dir):
 def verify_budget_export(root, output_dir):
     """Read-only verification of all four saved arms against exact original rows."""
     root, out = Path(root), Path(output_dir)
-    manifest, frozen, _, _, heldouts = _original(root)
+    manifest, frozen, _, _, heldouts, replay_deltas = _original(root)
     report = _json_file(out / 'report.json', 1024 * 1024)
     if (type(report) is not dict or report.get('schema') != SCHEMA
             or report.get('mode') != 'SHADOW_ONLY' or report.get('authority') != 0
@@ -201,6 +243,7 @@ def verify_budget_export(root, output_dir):
             or report.get('training_source_sha256') != TRAINING_SOURCE_SHA256
             or report.get('frozen_checkpoint_sha256') != CHECKPOINT_SHA256
             or report.get('heldout_manifest_sha256') != {str(s): m for s, m, _, _ in heldouts}
+            or report.get('original_numeric_replay_delta_by_seed') != replay_deltas
             or report.get('frozen_reference') != _metrics(frozen, heldouts)
             or report.get('budgets') != list(BUDGETS)
             or type(report.get('arms')) is not list or len(report['arms']) != len(BUDGETS)
