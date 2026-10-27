@@ -1,0 +1,22 @@
+# V13 multi-branch continuation checkpoint — 2026-10-27 (pre-final CI)
+
+**Branch-scoped review state, not main:** main `f2b87abca8ab94c6b15f3d14988b563c63a9b7b8`; current World-JEPA parent #754 `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`. This handoff is stored on review branch `assistant/v13-control-budget-finite-marks-review-20261027`, not production. The original full v10.16.1 blueprint and every explicit later user decision remain binding; no organ/gate is removed.
+
+## Verified packages and owners
+
+- PR #756 T8 scalar NumPy state fail-closed candidate: original RED 7 source errors, GREEN 16/16, full Actions 40563386305 **1944 OK (1 skipped)**, raw ZIP SHA256 `26480650991a1f0b3d6317d4ed9b0625209c0878a40510ea0be3b4e3001c8b4a`. Frozen runtime unintegrated.
+- PR #760 C1/JEF persisted continuity malformed list candidate: original RED 2 source errors plus separate harness failure, final GREEN 14/14, full Actions 40565420699 **1942 OK (1 skipped)**, raw ZIP SHA256 `e5b38d760e4de0dd1d1e1de0e963ec4c0f0c70af9d6422a854b105b4bd1c68fb`. Top-level malformed C1 state not covered; frozen runtime unintegrated.
+- PR #761 WP-T14 control-budget finite stage marks candidate: original RED 8 failures + 2 subtest errors, GREEN 8/8, full Actions 40565991808 **1944 OK (1 skipped)**, raw ZIP SHA256 `51afd9bf41e4fb02b0f7221c931054f4fb904cce5c1574c5e0c1c424d1662c6e`. No Redmi timing/thermal proof; frozen runtime unintegrated.
+- PR #758 World-JEPA offline read-only closed SQLite store CLI: initial 26/26 focused, nonfinite-report RED 2 expected errors, GREEN 27/27, exact Actions 40566095025 raw ZIP SHA256 `898ad919655af7ef348d9ac4c52d11d92b96cc467f51be677ee4c3cc1e5db1e7`; full source-wide Actions 40566360651 **IN PROGRESS** at this checkpoint. No actual private store read. Prior #754 synthetic JEPA readout MAE 0.203321/0.192621 was worse than direct ridge 0.152555; no utility claim.
+- PRs #755/#757/#759 AGE0d EN/DE arithmetic + manual stdin CLI + locale abstention: software 1946, focused10, full1953 tests respectively, raw evidence backed up. **Parallel candidate only:** older canonical Codex Run134/517/521/532 AGE0d chain exists in PRs #165/#515/#519/#529/#531. Reconciliation file `v13/code/docs/coordination/AGE0D_PARALLEL_RECONCILIATION_20261027.md` explicitly forbids direct replacement/merge.
+
+All source/test/workflow branches have GitHub review PRs and original raw Actions ZIPs privately backed up under `/V13-Checkpoints/2026-10-27/` in distinct scoped folders; ZIP CRC, exit files, SHA256 and re-materialized bytes were verified. No Drive upload or public private-data export. No force push or main merge.
+
+## Exact next actions
+
+1. Finish Actions 40566360651, inspect raw exits and original ZIP, privately back up and verify; close PR #758 with exact tested head.
+2. Independently review PR #756/#760/#761 and their frozen-runtime owner before any integration. **Do not** merge AGE0d parallel PRs without canonical Run134/517/521/532 reconciliation and original native cohort replay.
+3. For real observed digital World-JEPA evaluation, only after V13 is stopped and SQLite is closed/checkpointed: `cd v13/code && PYTHONPATH=. python scripts/world_jepa_readonly_store.py --db /path/to/closed.sqlite --ack-closed-store`. This requires authorized local device action; no private DB was available here.
+4. Continue canonical LP3 native nonfinite/optimizer gradient proof on its active owner branch, preserving cohort hashes and failed attempts; do not compete with owner or fabricate native/Redmi results. Continue remaining blueprint organs/Context OS/Sleep/Body-JEPA separately.
+
+**Negative gates unchanged:** LP1 NO_ATTRIBUTABLE_GAIN; LP2 ALIGNS_NO_GAIN; BJ1 NO_SIGNAL; STEP2 UTILITY_FAIL; B3 L1 FAIL; jepa_weight0; Age authority0; Redmi unmeasured; V13 incomplete. Per-branch software full suites do **not** equal an integrated full-system acceptance test. Remaining execution budget visibility UNKNOWN.
