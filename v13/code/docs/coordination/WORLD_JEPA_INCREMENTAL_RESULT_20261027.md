@@ -21,7 +21,7 @@ Both JEPA-augmented arms are **worse** than direct by 0.08931473744549895 and 0.
 
 Original raw artifact `12763134740`, ZIP SHA256 `ce0b114290b38d91d2c10f4596cded32a254b2eec4f60fef8d1ac14a9fc3b415`; ZIP CRC/HEAD and frozen source blobs checked. Privately saved and re-materialized byte-identical under `/V13-Checkpoints/2026-10-27/Automation11ZH-World-JEPA-Incremental/`. No private store or raw action IDs in report.
 
-Full source-wide Actions **40568367464 PENDING** at source-unchanged `2f32d8efc4ae3e2eb3d667abeab6692e5dec600b`; do not claim it passed until raw exits are closed.
+Full source-wide Actions **40568367464 SUCCESS** at source-unchanged `2f32d8efc4ae3e2eb3d667abeab6692e5dec600b`: **1944 tests OK (1 skipped)**, INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN. Original artifact `12765250702`, ZIP SHA256 `47de3a6c7bfbd5ea7b7bba3c513e352dfe938450a0d1143dddfbc4fc3b994e1e`, CRC/HEAD and probe blob verified; privately backed up and re-materialized SHA256 byte-identical. No source/model/bridge change since focused synthetic measurement.
 
 ## Handoff and gates
 Exact next command (software only): `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_world_jepa_incremental_probe tests.test_world_jepa_digital_shadow tests.test_world_jepa tests.test_world_model`. Synthetic CLI: `cd v13/code && PYTHONPATH=. python scripts/world_jepa_incremental_probe.py --synthetic-smoke`. Prerequisites for genuine utility: a **closed**, explicitly acknowledged private store for separate #758 runner, source-disjoint observed actions, independent review, and eventual Redmi/native validation. Do not publish private store data.
