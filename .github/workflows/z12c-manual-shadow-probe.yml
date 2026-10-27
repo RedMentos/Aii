@@ -42,10 +42,46 @@ jobs:
           if test -f v13/code/v13/world_jepa_shadow_probe.py; then sha256sum v13/code/v13/world_jepa_shadow_probe.py >> "$RUNNER_TEMP/z12cprobeproof/SHA256.txt"; fi
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/z12cprobe/bin/python" -m unittest -v tests.test_world_jepa_shadow_probe tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint tests.test_world_jepa_slots tests.test_world_jepa tests.test_world_state tests.test_world_model) > "$RUNNER_TEMP/z12cprobeproof/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/z12cprobeproof/UNIT_EXIT.txt"
-          "$RUNNER_TEMP/z12cprobe/bin/python" -m compileall -q v13/code/v13/operator.py v13/code/tests/test_world_jepa_shadow_probe.py > "$RUNNER_TEMP/z12cprobeproof/COMPILE_RAW.log" 2>&1
+          "$RUNNER_TEMP/z12cprobe/bin/python" -m compileall -q v13/code/v13/operator.py v13/code/v13/world_jepa_shadow_probe.py v13/code/tests/test_world_jepa_shadow_probe.py > "$RUNNER_TEMP/z12cprobeproof/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/z12cprobeproof/COMPILE_EXIT.txt"
           "$RUNNER_TEMP/z12cprobe/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 293ccf7dd8b24a9dd25e0ceffac1792e8e14cc53 --head HEAD > "$RUNNER_TEMP/z12cprobeproof/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/z12cprobeproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Build source-only phone ZIP and extracted portable smoke
+        run: |
+          set +e
+          "$RUNNER_TEMP/z12cprobe/bin/python" v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Z12c-Manual-Phone.zip" --phone-install > "$RUNNER_TEMP/z12cprobeproof/PACKAGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/z12cprobeproof/PACKAGE_EXIT.txt"
+          if test "$(cat "$RUNNER_TEMP/z12cprobeproof/PACKAGE_EXIT.txt")" = 0; then
+            cp "$RUNNER_TEMP/V13-Z12c-Manual-Phone.zip" "$RUNNER_TEMP/z12cprobeproof/V13-Z12c-Manual-Phone.zip"
+            "$RUNNER_TEMP/z12cprobe/bin/python" - <<'PY' > "$RUNNER_TEMP/z12cprobeproof/EXTRACT_RAW.log" 2>&1
+          import hashlib, json, os, pathlib, zipfile
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          p=root/'V13-Z12c-Manual-Phone.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              assert all(n.startswith('V13-Phone/') and '..' not in pathlib.PurePosixPath(n).parts for n in z.namelist())
+              m=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert 'v13/world_jepa_shadow_probe.py' in m['files']
+              for name,digest in m['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest
+              z.extractall(root/'z12cphone')
+              print('EXTRACTED_SOURCE_SHA_CRC_PASS',len(m['files']),hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+            echo "$?" > "$RUNNER_TEMP/z12cprobeproof/EXTRACT_EXIT.txt"
+            if test "$(cat "$RUNNER_TEMP/z12cprobeproof/EXTRACT_EXIT.txt")" = 0; then
+              (cd "$RUNNER_TEMP/z12cphone/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/z12cprobe/bin/python" -m v13 selftest --portable) > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_RAW.log" 2>&1
+              echo "$?" > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_EXIT.txt"
+            else
+              echo 2 > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_EXIT.txt"
+              echo 'EXTRACT_FAILED' > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_RAW.log"
+            fi
+          else
+            echo 2 > "$RUNNER_TEMP/z12cprobeproof/EXTRACT_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_EXIT.txt"
+            echo 'PACKAGE_FAILED' > "$RUNNER_TEMP/z12cprobeproof/EXTRACT_RAW.log"
+            echo 'PACKAGE_FAILED' > "$RUNNER_TEMP/z12cprobeproof/PORTABLE_RAW.log"
+          fi
           exit 0
       - name: Upload original raw
         if: always()
@@ -57,7 +93,7 @@ jobs:
       - name: Enforce
         run: |
           set -euo pipefail
-          for n in UNIT COMPILE PRIVACY; do
+          for n in UNIT COMPILE PRIVACY PACKAGE EXTRACT PORTABLE; do
             test "$(cat "$RUNNER_TEMP/z12cprobeproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/z12cprobeproof/${n}_RAW.log"; exit 1; }
           done
           tail -18 "$RUNNER_TEMP/z12cprobeproof/UNIT_RAW.log"
