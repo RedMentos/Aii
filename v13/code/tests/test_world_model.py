@@ -50,9 +50,23 @@ class Counterfactuals(Base):
         self.assertIsNone(WM.load(self.r.store))
         cf=WM.counterfactual(self.r.store,WM.state_vec(100),'detail')
         self.assertEqual(cf['reason'],'NO_WORLD_MODEL')
+        direct=WM.counterfactual(self.r.store,WM.state_vec(100),'detail',st=legacy)
+        self.assertEqual(direct['reason'],'NO_WORLD_MODEL')
         with mock.patch.object(WM,'transitions',return_value=data):
             WM.fit(self.r.store)
         self.assertEqual(WM.load(self.r.store)['revision'],WM.REVISION)
+
+    def test_support_counts_match_retained_training_states(self):
+        data=synthetic(n=400)
+        for row in data:row['a']='simple'
+        train,_=WM._split(len(data))
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['counts']['simple'],400)
+        self.assertEqual(st['train_counts']['simple'],len(train))
+        self.assertEqual(st['support_counts']['simple'],256)
+        self.assertEqual(len(st['states']['simple']),256)
+        self.assertEqual(st['support_counts']['both'],0)
 
     def test_heldout_only_action_is_not_training_support(self):
         data=synthetic(n=48)
