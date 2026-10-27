@@ -1,0 +1,64 @@
+name: V13 BP1 train plus V2 same-job workflow static software review
+on:
+  push:
+    branches: [codex/gpt6-bp1-qad-train-plus-v2-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-train-plus-v2-software.yml'
+      - '.github/workflows/bp1-qad-train-plus-v2-samejob.yml'
+      - 'v13/code/tests/test_bp1_qad_train_v2_workflow.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-train-v2-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Pinned YAML parser, source-bound V2 proof and workflow tests
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-train-v2-static"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-train-v2-static/HEAD.txt"
+          sha256sum .github/workflows/bp1-qad-train-plus-v2-samejob.yml v13/code/tests/test_bp1_qad_train_v2_workflow.py > "$RUNNER_TEMP/bp1-train-v2-static/SOURCE_SHA256.txt"
+          python3 -m venv "$RUNNER_TEMP/bp1-yaml-venv" > "$RUNNER_TEMP/bp1-train-v2-static/DEPS_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            "$RUNNER_TEMP/bp1-yaml-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'PyYAML==6.0.3' >> "$RUNNER_TEMP/bp1-train-v2-static/DEPS_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-train-v2-static/DEPS_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-yaml-venv/bin/python" -m unittest discover -s tests -p 'test_bp1_qad_train_v2_workflow.py' -v) > "$RUNNER_TEMP/bp1-train-v2-static/WORKFLOW_UNIT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1-train-v2-static/WORKFLOW_UNIT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1-train-v2-static/WORKFLOW_UNIT_EXIT.txt"
+          fi
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_train_candidate tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-train-v2-static/REGRESSION_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train-v2-static/REGRESSION_EXIT.txt"
+          python3 -m compileall -q v13/code/tests/test_bp1_qad_train_v2_workflow.py > "$RUNNER_TEMP/bp1-train-v2-static/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train-v2-static/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1789a4c979720d4630de2d1c9414ffcdf67c9750 --head HEAD > "$RUNNER_TEMP/bp1-train-v2-static/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-train-v2-static/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-qad-train-v2-static-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-train-v2-static/
+          if-no-files-found: error
+      - name: Enforce software exits
+        run: |
+          set -euo pipefail
+          for n in DEPS WORKFLOW_UNIT REGRESSION COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-train-v2-static/${n}_EXIT.txt")" = 0 || {
+              echo "${n} failed"; tail -100 "$RUNNER_TEMP/bp1-train-v2-static/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "SOFTWARE_STATIC_ONLY; TRAIN_PLUS_V2_NATIVE_NOT_TRIGGERED"
