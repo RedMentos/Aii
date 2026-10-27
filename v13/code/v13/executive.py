@@ -38,7 +38,7 @@ class Executive:
         def dict_items(key):
             value=state.get(key)
             return [item for item in value if isinstance(item,dict)] if isinstance(value,list) else []
-        state['goal_sequence']=[x for x in dict_items('goal_sequence') if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
+        state['goal_sequence']=[x for x in dict_items('goal_sequence') if self._goal_valid(x,session)][-MAX_EVENTS:]
         task=state.get('active_task')
         if not self._task_valid(task,state,session):state['active_task']=None
         state['memory_refs']=[x for x in dict_items('memory_refs') if self._memory(x,session)]
@@ -84,6 +84,25 @@ class Executive:
         else:
             state['current_action_intent']=None
         return state
+    def _goal_valid(self,item,session):
+        """Only exact authoritative same-session events can become prior goals.
+
+        Immutable source validity alone cannot prove who supplied a goal or
+        which event it belongs to; effort_context consumes this history.
+        """
+        event_id=item.get('event_id')
+        ref=item.get('source_ref')
+        if type(event_id) is not str or not isinstance(ref,dict) or not self._valid_ref(ref):
+            return False
+        row=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(event_id,))
+        if not row or row['session_id']!=session:return False
+        try:
+            event=json.loads(row['packet'])
+            return (isinstance(event,dict) and event.get('event_id')==event_id
+                    and event.get('authority')=='AUTHORITATIVE'
+                    and event.get('source_ref')==ref)
+        except (ValueError,TypeError,KeyError):
+            return False
     def _task_valid(self,task,state,session):
         """Only an event request or latest same-session human decision is a task.
 
@@ -126,11 +145,36 @@ class Executive:
         except (ValueError,TypeError,KeyError,OSError):
             return False
     def _question_valid(self,item,session):
-        if not self._valid_ref(item.get('source_ref',{})):return False
-        row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
+        # The offer's originating user event, not a hash-valid arbitrary blob,
+        # owns the unresolved question's exact source across later turns.
+        ref=item.get('source_ref')
+        if not isinstance(ref,dict) or not self._valid_ref(ref):return False
+        row=self.s.one(
+            "SELECT p.payload,p.event_id,e.session_id,e.packet FROM packets p "
+            "JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",
+            (item.get('offer_packet_id'),))
         if not row or row['session_id']!=session:return False
-        offer=json.loads(row['payload'])
-        return offer['offer'].get('needs_reentry') is True and item.get('uncertainty')==offer['offer'].get('uncertainty','')[:160] and all(self._valid_ref(x) for x in offer['provenance']+offer['evidence_refs'])
+        try:
+            offer=json.loads(row['payload'])
+            event=json.loads(row['packet'])
+            if not isinstance(offer,dict) or not isinstance(event,dict):return False
+            detail=offer.get('offer')
+            provenance=offer.get('provenance')
+            evidence=offer.get('evidence_refs')
+            return (event.get('event_id')==row['event_id']
+                    and event.get('authority')=='AUTHORITATIVE'
+                    and event.get('source_ref')==ref
+                    and offer.get('event_id')==row['event_id']
+                    and offer.get('brain_generation_id')==event.get('brain_generation_id')
+                    and isinstance(detail,dict)
+                    and detail.get('needs_reentry') is True
+                    and isinstance(detail.get('uncertainty',''),str)
+                    and item.get('uncertainty')==detail.get('uncertainty','')[:160]
+                    and isinstance(provenance,list) and ref in provenance
+                    and isinstance(evidence,list)
+                    and all(self._valid_ref(x) for x in provenance+evidence))
+        except (ValueError,TypeError,KeyError):
+            return False
     def _offer_valid(self,item,generation,session):
         row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('packet_id'),))
         if not row or row['session_id']!=session:return False
