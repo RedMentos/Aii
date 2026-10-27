@@ -69,8 +69,8 @@ class EmbeddingEncoder:
 
 class SemanticKeys:
     """Cached key vectors per memory; cache keys carry the value source id so :forget removes them."""
-    def __init__(self,store,cfg,encoder,revision=None):
-        self.s=store;self.cfg=cfg;self.encoder=encoder;self._revision=revision;self.last={};self.last_query=None
+    def __init__(self,store,cfg,encoder,revision=None,event_getter=None):
+        self.s=store;self.cfg=cfg;self.encoder=encoder;self._revision=revision;self._event_getter=event_getter;self.last={};self.last_query=None
     @property
     def revision(self):return self._revision or (self.encoder.revision() if hasattr(self.encoder,'revision') else 'unversioned')
     def installed(self):return self.encoder.installed() if hasattr(self.encoder,'installed') else True
@@ -80,6 +80,9 @@ class SemanticKeys:
     def similarities(self,query,rows,cancel,deadline,cap=None):
         """Cosine query↔stored key per memory id. Up to `cap` missing keys are encoded in the query batch; the rest follow on later turns."""
         self.last_query=None  # fail closed on direct-call errors and repeat queries
+        try:event=self._event_getter() if self._event_getter is not None else None
+        except Exception:event=None
+        event_id=event.get('event_id') if type(event) is dict and type(event.get('event_id')) is str else None
         dim=self.cfg['memory_embed_dim'];started=time.monotonic();cached={};missing=[]
         for r in rows:
             v,_=self.s.state(self.cache_key(r))
@@ -95,12 +98,13 @@ class SemanticKeys:
         result={mid:cosine(q,v) for mid,v in cached.items()}
         self.last={'status':'OK','mode':self.mode(),'candidates':len(rows),'encoded_keys':len(missing),'deferred_keys':max(0,deferred),'dim':dim,
                    'duration_s':round(time.monotonic()-started,4),'encoder':dict(getattr(self.encoder,'last_metrics',{}) or {})}
-        self.last_query={'digest':digest(query),'vector':q}  # only a completed current call is reusable by WP-N8
+        self.last_query={'digest':digest(query),'vector':q,'event_id':event_id}  # only this successful event can feed WP-N8
         return result
 
 def attach(runtime):
     """Install the semantic key channel on runtime.memory (model optional; lexical recall stays)."""
-    enc=EmbeddingEncoder(runtime.home,runtime.models,runtime.cfg);runtime.memory.semantic_keys=SemanticKeys(runtime.store,runtime.cfg,enc)
+    enc=EmbeddingEncoder(runtime.home,runtime.models,runtime.cfg)
+    runtime.memory.semantic_keys=SemanticKeys(runtime.store,runtime.cfg,enc,event_getter=lambda:getattr(runtime,'turn_event',None))
     return runtime.memory.semantic_keys
 
 def status(runtime):
