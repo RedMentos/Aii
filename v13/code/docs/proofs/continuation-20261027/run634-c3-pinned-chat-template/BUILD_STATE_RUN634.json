@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN634_OFFICIAL_PINNED_JINJA_NATIVE_PENDING_V1",
+  "schema": "V13_RUN634_OFFICIAL_JINJA_NATIVE_RETRY_PENDING_V2",
   "date_utc": "2026-10-27",
   "owner": "GPT-6 automation, separate native C3 retrieval-only package",
   "branch": "codex/automation11-run634-c3-pinned-chat-template-20261027",
@@ -10,8 +10,8 @@
   "workflow_commit": "c8547c49c9f2dc4968436431e7a57551e310c56b",
   "workflow_blob": "d8818295b7d04e1edfcc2c76beb183958758e9ed",
   "test_blob": "70c627afc32ac83bfdac2e4458826295d517805d",
-  "run_id": 40428155218,
-  "status": "IN_PROGRESS_UNVERIFIED",
+  "run_id": 40428394018,
+  "status": "RETRY_IN_PROGRESS_UNVERIFIED",
   "intervention": "Add exact official chat_template.jinja from immutable HF master revision to snapshot_download allow_patterns; source-only HF tokenizer parity preflight",
   "frozen": {
     "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
@@ -33,5 +33,26 @@
     "V13_complete": false
   },
   "production_integrated": false,
-  "next_exact_command": "Inspect Actions 40428155218 at exact commit c8547c49c9f2dc4968436431e7a57551e310c56b; download original raw artifact; verify ZIP CRC and internal SHA, exits and actual template/tokenizer/optimizer outcome; back up privately with byte roundtrip. If native fit succeeds, next prove selected deployed GGUF adapter compatibility and utility; otherwise preserve raw failure and switch to independent canonical package."
+  "next_exact_command": "Wait for exact-source Actions 40428394018; download and SHA-verify original raw, preserve any RED; if actual 2-step LoRA exports adapter, verify license/LoRA-B/nonzero and heldout metrics, then plan deployed selected C3 GGUF parity. No gate promotion.",
+  "first_attempt": {
+    "run_id": 40428155218,
+    "head_sha": "c8547c49c9f2dc4968436431e7a57551e310c56b",
+    "status": "RED_PRETRAIN_TOKEN_PARITY_TYPE",
+    "source_tests": "9/9_PASS",
+    "template_loaded": true,
+    "optimizer_steps": 0,
+    "train_exit": 2,
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "07c35c21cf539cf46e7810e63359ed23934297fcb77a03db33f1d772e7e2c981",
+    "internal_sha_verified": 16,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run634/Run634-first-RED-40428155218.zip",
+    "roundtrip": "PASS"
+  },
+  "amendment_1_commit": "fa1716ca5c26bf16b6941eed097ddd4361040c7e",
+  "amendment_1_blob": "53263108dd9faba448de3c4df90dded4f498665f",
+  "revised_test_commit": "b66f018f086b89976f7dedc5ac1af9a83442ae83",
+  "revised_test_blob": "e89f9d185ff4919b3db54c7fb959910fde4ec704",
+  "revised_workflow_commit": "0b81e6ae146886036ad6218de7a2bb0cab612e39",
+  "revised_workflow_blob": "76a5932746c11d39244fc9b7e29902b5cb32b0e0",
+  "source_guard_only_run_id": 40428371449
 }
