@@ -143,8 +143,9 @@ class QADLoraEvalTests(unittest.TestCase):
             bad = train_proof()
             bad["native_training_executed"] = False
             p.write_text(json.dumps(bad, sort_keys=True))
-            with self.assertRaises(ValueError):
-                E.verify_train_proof(b, p)
+            changed_binding = dict(b, train_proof_sha256=E.S.sha(p.read_bytes()))
+            with self.assertRaisesRegex(ValueError, "authority/heldout"):
+                E.verify_train_proof(changed_binding, p)
             for mutate in (
                 lambda d: d["adapter"].update(lora_b_nonzero=0),
                 lambda d: d.update(heldout_files_opened=True),
@@ -155,8 +156,9 @@ class QADLoraEvalTests(unittest.TestCase):
                 bad = train_proof()
                 mutate(bad)
                 p.write_text(json.dumps(bad, sort_keys=True))
+                changed_binding = dict(b, train_proof_sha256=E.S.sha(p.read_bytes()))
                 with self.assertRaises(ValueError):
-                    E.verify_train_proof(b, p)
+                    E.verify_train_proof(changed_binding, p)
 
     def test_resume_only_missing_records_and_preserves_exact_binding(self):
         rows = index()
