@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/run637-c3-deployed-native.yml'
       - 'v13/code/tests/test_run637_c3_deployed_native_contract.py'
+      - 'v13/code/tests/test_run637_native_prereq.py'
       - 'v13/code/docs/proofs/continuation-20261027/run637-c3-deployed-native/PREREG.md'
 permissions:
   contents: read
@@ -39,6 +40,8 @@ jobs:
           test "$(git hash-object v13/code/scripts/run636_c3_selected_gguf_utility.py)" = 8a32d806739f7285ed41232e41168e35cf9ef3eb
           test "$(git hash-object v13/code/tests/test_run636_c3_selected_gguf_utility.py)" = 0b127f6060d1b1834297115a0099634bf103ac32
           test "$(git hash-object v13/code/tests/test_run637_c3_deployed_native_contract.py)" = dae0aad9e568d7e912604f3c25c0db712e586f14
+          test "$(git hash-object v13/code/tests/test_run637_native_prereq.py)" = cbddcd950a1b82948cc9bf30cf5256ce478f13eb
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run637-c3-deployed-native/PREREG_AMENDMENT_1.md)" = 3d9534f4fa31476d5e9c0e9b06f22b120df91ca3
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run637-c3-deployed-native/PREREG.md)" = 8a614c84c3b61d6d301b60ded210e2e030e851de
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run632-c3-lfm350-native/COHORT_V2.json)" = c282077912ec4e284476825b3e03728620d8bad0
           test "$(git hash-object v13/code/v13/lora_trainer.py)" = 49a752879ae5d19391963742a0f042e740edb2cc
@@ -51,6 +54,7 @@ jobs:
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
             tests.test_run636_c3_selected_gguf_utility \
             tests.test_run637_c3_deployed_native_contract \
+            tests.test_run637_native_prereq \
             tests.test_run630_c3_llama_native \
             tests.test_run631_c3_chat_native \
             tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN637_SOURCE_TEST_RAW.log" 2>&1
@@ -64,7 +68,7 @@ jobs:
           if [ "$rc" = 0 ]; then
             timeout 480s "$RUNNER_TEMP/run637venv/bin/python" -m pip install --disable-pip-version-check --no-input \
               'transformers==5.0.0' 'huggingface_hub==1.26.0' 'numpy==2.2.6' \
-              'safetensors==0.5.3' >> "$RUNNER_TEMP/RUN637_DEPS_RAW.log" 2>&1
+              'safetensors==0.5.3' 'jinja2==3.1.6' >> "$RUNNER_TEMP/RUN637_DEPS_RAW.log" 2>&1
             rc=$?
           fi
           if [ "$rc" = 0 ]; then "$RUNNER_TEMP/run637venv/bin/python" -m pip freeze > "$RUNNER_TEMP/RUN637_DEPENDENCY_LOCK.txt"; fi
@@ -196,7 +200,7 @@ jobs:
           set -uo pipefail
           cd "$RUNNER_TEMP"
           for k in SOURCE_TEST DEPS ADAPTER SERVER MODEL NATIVE PRIVACY; do
-            test -f "RUN637_$k_EXIT.txt" || echo 2 > "RUN637_$k_EXIT.txt"
+            test -f "RUN637_${k}_EXIT.txt" || echo 2 > "RUN637_${k}_EXIT.txt"
           done
           if [ -d run637-output ]; then
             find run637-output -maxdepth 1 -type f -name 'RUN636_*' -exec cp '{}' . \;
@@ -216,7 +220,7 @@ jobs:
         run: |
           set -euo pipefail
           for k in SOURCE_TEST DEPS ADAPTER SERVER MODEL NATIVE PRIVACY; do
-            echo "RUN637 $k exit: $(cat "$RUNNER_TEMP/RUN637_$k_EXIT.txt")"
-            test "$(cat "$RUNNER_TEMP/RUN637_$k_EXIT.txt")" = 0
+            echo "RUN637 $k exit: $(cat "$RUNNER_TEMP/RUN637_${k}_EXIT.txt")"
+            test "$(cat "$RUNNER_TEMP/RUN637_${k}_EXIT.txt")" = 0
           done
           test -s "$RUNNER_TEMP/RUN636_NATIVE_PROOF.json"
