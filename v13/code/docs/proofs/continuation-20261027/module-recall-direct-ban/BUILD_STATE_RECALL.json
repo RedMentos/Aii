@@ -44,6 +44,19 @@
     "Final cross-table ban/reader race not fully linearizable",
     "No measured semantic module learning or utility"
   ],
-  "next": "Independent source review; preserve parent broad/phone proofs; combined source-bound phone smoke and separate utility package.",
-  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate"
+  "next": "Independent PR676 review; BP1 source-bound consumer dataset PR677; native C3 utility prereg separate. Broad parent PR675 historical 4496-test RED unchanged.",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python -m unittest -v tests.test_module_recall_direct_ban tests.test_module_lifecycle_cas tests.test_modules_gate tests.test_review666_bp11b_export_gate",
+  "phone": {
+    "actions_run": 40466379868,
+    "source_commit": "fa70ba4722c5b2ddfd2303680472da9c885a5b2a",
+    "artifact_id": 12716811392,
+    "outer_zip_sha256": "88551027b741e9f6a78bf2ee021b77bdbb6e8ef05390a2dd00ae0faaa728f084",
+    "phone_zip_sha256": "44ec326a0482a0010f8a41bbfcdd89caf368624528eb3a197fd9567050ce1d07",
+    "source_files_verified": 1418,
+    "extracted_module_tests": "51/51 PASS",
+    "portable_tests": "94/94 PASS",
+    "privacy_exit": 0,
+    "private_backup_byte_verified": true,
+    "redmi_measured": false
+  }
 }
