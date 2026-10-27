@@ -6,6 +6,8 @@ on:
       - '.github/workflows/bp1-qad-v2-raw-audit.yml'
       - 'v13/code/scripts/bp1_qad_v2_raw_audit.py'
       - 'v13/code/tests/test_bp1_qad_v2_raw_audit.py'
+      - 'v13/code/scripts/bp1_qad_v2_rescore.py'
+      - 'v13/code/tests/test_bp1_qad_v2_rescore.py'
 permissions:
   contents: read
 concurrency:
@@ -26,10 +28,10 @@ jobs:
           set +e
           mkdir -p "$RUNNER_TEMP/bp1-v2-raw-audit"
           git rev-parse HEAD > "$RUNNER_TEMP/bp1-v2-raw-audit/HEAD.txt"
-          sha256sum v13/code/scripts/bp1_qad_v2_raw_audit.py v13/code/tests/test_bp1_qad_v2_raw_audit.py > "$RUNNER_TEMP/bp1-v2-raw-audit/SOURCE_SHA256.txt"
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_v2_raw_audit) > "$RUNNER_TEMP/bp1-v2-raw-audit/UNIT_RAW.log" 2>&1
+          sha256sum v13/code/scripts/bp1_qad_v2_raw_audit.py v13/code/tests/test_bp1_qad_v2_raw_audit.py v13/code/scripts/bp1_qad_v2_rescore.py v13/code/tests/test_bp1_qad_v2_rescore.py > "$RUNNER_TEMP/bp1-v2-raw-audit/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_v2_raw_audit tests.test_bp1_qad_v2_rescore) > "$RUNNER_TEMP/bp1-v2-raw-audit/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-v2-raw-audit/UNIT_EXIT.txt"
-          python3 -m compileall -q v13/code/scripts/bp1_qad_v2_raw_audit.py v13/code/tests/test_bp1_qad_v2_raw_audit.py > "$RUNNER_TEMP/bp1-v2-raw-audit/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/bp1_qad_v2_raw_audit.py v13/code/tests/test_bp1_qad_v2_raw_audit.py v13/code/scripts/bp1_qad_v2_rescore.py v13/code/tests/test_bp1_qad_v2_rescore.py > "$RUNNER_TEMP/bp1-v2-raw-audit/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-v2-raw-audit/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base ca954bf471a4d96abb4e84c8dcd847c75a5b1186 --head HEAD > "$RUNNER_TEMP/bp1-v2-raw-audit/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/bp1-v2-raw-audit/PRIVACY_EXIT.txt"
