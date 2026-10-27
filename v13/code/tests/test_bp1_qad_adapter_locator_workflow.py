@@ -12,8 +12,9 @@ class AdapterLocatorWorkflowTests(unittest.TestCase):
         cls.text = WF.read_text(encoding="utf-8")
 
     def test_retry_only_new_branch_and_activation(self):
-        self.assertIn("branches: [codex/automation11-bp1-v2-adapter-locator-retry-20261027]", self.text)
-        self.assertIn("bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt", self.text)
+        self.assertIn("branches: [codex/automation11-bp1-v2-scale0-native-20261027]", self.text)
+        self.assertIn("bp1-qad-train-v2-samejob/ACTIVATE_SCALE0.txt", self.text)
+        self.assertNotIn("bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt", self.text)
         self.assertNotIn("bp1-qad-train-v2-samejob/ACTIVATE.txt", self.text)
 
     def test_exact_trainer_work_locator_before_binding(self):
