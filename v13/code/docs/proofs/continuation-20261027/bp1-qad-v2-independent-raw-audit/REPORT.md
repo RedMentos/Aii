@@ -13,3 +13,11 @@ Owner: GPT-6 automation11. Review-only child of exact activated PR #689 commit `
 python3 v13/code/scripts/bp1_qad_v2_raw_audit.py --native-zip ORIGINAL_NATIVE_40486038454.zip --dataset-zip ORIGINAL_DATASET_12715684803.zip --expected-head ca954bf471a4d96abb4e84c8dcd847c75a5b1186 --expected-zip-sha VERIFIED_ORIGINAL_NATIVE_ZIP_SHA256
 ```
 Do not supply an invented ZIP hash. Preserve any native RED and partial raw; no success inference from workflow queue or software tests. Native result requires independent raw audit, score interpretation, retention/near-miss and eventual Redmi measurements. STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi unmeasured, whole V13 incomplete.
+
+## Independent quote-supported rescore extension — 2026-10-27
+
+New `v13/code/scripts/bp1_qad_v2_rescore.py` first requires the original ZIP audit, then independently extracts the immutable original source from each heldout prompt, checks source SHA, parses response JSON with duplicate-key/nonfinite rejection, validates exact source-contained quotes and answer-key support, and recomputes base/candidate × no_offer/offer counts, within-model offer wins/losses/ties and candidate-vs-base wins/losses/ties. It fails if the original V2 `SCORES.json` disagrees. This is independent bookkeeping verification, not a proof of causality or retention.
+
+Actions [40486616054](https://github.com/RedMentos/Aii/actions/runs/40486616054) at `33171eb7aa673db62ee1fadd86f34cda566e8116`: **17/17 software tests PASS**, compile0, privacy CLEAN. Original raw artifact `12725366790`, ZIP SHA256 `7a9b402fce255d51f3c82856b6880a354f8c95de5e02ec7948533e9b7527a89a`, CRC PASS, UNIT/COMPILE/PRIVACY exits0. Original ZIP privately backed up to `/V13-Checkpoints/2026-10-27/BP1-QAD-Native-Verified-20261027/V2-AUDITOR-RESCORE-40486616054-ORIGINAL.zip` and re-materialized byte-identical.
+
+After the first audit command, run the same arguments against `bp1_qad_v2_rescore.py`; if the native original ZIP is RED, preserve the failure instead of running a positive rescore claim. Native V2 Actions `40486038454` still unverified at this checkpoint.
