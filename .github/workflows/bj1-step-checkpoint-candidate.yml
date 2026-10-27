@@ -7,6 +7,7 @@ on:
       - 'v13/code/v13/body_jepa_checkpoint.py'
       - 'v13/code/v13/body_jepa.py'
       - 'v13/code/tests/test_body_jepa_checkpoint.py'
+      - 'v13/code/tests/test_body_jepa_checkpoint_fit.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -36,8 +37,9 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/bj1-venv"
           py="$RUNNER_TEMP/bj1-venv/bin/python"
           "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'peft==0.21.2'
           "$py" -m pip check
-          PYTHONPATH=v13/code "$py" -m unittest -v tests.test_body_jepa_checkpoint
+          PYTHONPATH=v13/code "$py" -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit
           "$py" -m py_compile v13/code/v13/body_jepa_checkpoint.py v13/code/v13/body_jepa.py
           "$py" v13/code/scripts/public_repo_privacy_scan.py --base edd0212c1774f893433040f48fa6b57c3d2d4209 --head HEAD
           git diff --check edd0212c1774f893433040f48fa6b57c3d2d4209 HEAD
