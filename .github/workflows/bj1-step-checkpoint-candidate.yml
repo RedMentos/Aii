@@ -1,0 +1,44 @@
+name: V13 BJ1 opt-in step checkpoint candidate
+on:
+  push:
+    branches: [codex/automation11-bj1-step-resume-candidate-20261027]
+    paths:
+      - '.github/workflows/bj1-step-checkpoint-candidate.yml'
+      - 'v13/code/v13/body_jepa_checkpoint.py'
+      - 'v13/code/v13/body_jepa.py'
+      - 'v13/code/tests/test_body_jepa_checkpoint.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-bj1-step-checkpoint-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  synthetic-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated CPU dependency and software-only tests
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bj1-venv"
+          py="$RUNNER_TEMP/bj1-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip check
+          PYTHONPATH=v13/code "$py" -m unittest -v tests.test_body_jepa_checkpoint
+          "$py" -m py_compile v13/code/v13/body_jepa_checkpoint.py v13/code/v13/body_jepa.py
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base edd0212c1774f893433040f48fa6b57c3d2d4209 --head HEAD
+          git diff --check edd0212c1774f893433040f48fa6b57c3d2d4209 HEAD
+          echo 'BJ1_STEP_CHECKPOINT_SYNTHETIC_ONLY_NO_NATIVE_OR_AGE_PROMOTION'
