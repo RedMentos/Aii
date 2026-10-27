@@ -60,9 +60,7 @@ class StateConditionedPrefix(nn.Module):
             raise ValueError('Token ID outside frozen decoder vocabulary')
 
     def prompt_features(self, prompt_ids):
-        if (not isinstance(prompt_ids, torch.Tensor) or prompt_ids.ndim != 2
-                or prompt_ids.dtype != torch.long or not prompt_ids.shape[1]):
-            raise ValueError('Invalid prompt tokens')
+        self._check_prompt(prompt_ids)
         with torch.no_grad():
             states = self.base(input_ids=prompt_ids, output_hidden_states=True,
                                use_cache=False).hidden_states
@@ -79,18 +77,28 @@ class StateConditionedPrefix(nn.Module):
         vocab = self.base.get_input_embeddings().num_embeddings
         if bool((prompt_ids < 0).any()) or bool((prompt_ids >= vocab).any()):
             raise ValueError('Prompt token outside frozen decoder vocabulary')
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if context is not None and prompt_ids.shape[1] > context:
+            raise ValueError('Prompt exceeds frozen decoder context')
 
     def _prefix_for(self, prompt_ids, assignment, features):
         if assignment not in ASSIGNMENTS:
             raise ValueError('Unknown assignment control')
         batch = prompt_ids.shape[0]
-        if assignment == 'shift' and batch < 2:
-            raise ValueError('Shifted control requires at least two different items')
+        if assignment == 'shift' and (batch < 2 or not bool((prompt_ids != prompt_ids[:1]).any())):
+            raise ValueError('Shifted control requires at least two different prompts')
         if features is None:
             features = self.prompt_features(prompt_ids)
         if (not isinstance(features, torch.Tensor) or features.shape != (batch, self.hidden)
                 or not features.is_floating_point() or not bool(torch.isfinite(features).all())):
             raise ValueError('Nonfinite or mismatched prompt-only features')
+        # A public features= override must not bypass the prompt-only state
+        # boundary: otherwise a caller could encode answer tokens in features.
+        if features is not None:
+            reference = self.prompt_features(prompt_ids)
+            if not torch.equal(features.detach().to(device=reference.device,
+                                                    dtype=reference.dtype), reference):
+                raise ValueError('Supplied features are not the frozen prompt-only state')
         features = features.detach().to(device=self.predictor[0].weight.device,
                                         dtype=self.predictor[0].weight.dtype)
         z = self.predictor(features)
@@ -102,6 +110,9 @@ class StateConditionedPrefix(nn.Module):
     def answer_logits(self, prompt_ids, answer_ids, assignment='own', features=None):
         self._check_tokens(prompt_ids, answer_ids)
         batch, prompt_len = prompt_ids.shape
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if context is not None and self.prefix_tokens + prompt_len + answer_ids.shape[1] > context:
+            raise ValueError('Teacher-forced sequence exceeds frozen decoder context')
         prefix = self._prefix_for(prompt_ids, assignment, features)
         embed = self.base.get_input_embeddings()
         sequence = torch.cat((prefix, embed(prompt_ids), embed(answer_ids)), dim=1)
@@ -116,6 +127,9 @@ class StateConditionedPrefix(nn.Module):
     def next_token_logits(self, prompt_ids, assignment='own', features=None):
         """Target-free inference path: first next-token logits consume predicted state."""
         self._check_prompt(prompt_ids)
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if context is not None and self.prefix_tokens + prompt_ids.shape[1] > context:
+            raise ValueError('Inference sequence exceeds frozen decoder context')
         prefix = self._prefix_for(prompt_ids, assignment, features)
         embed = self.base.get_input_embeddings()
         seq = torch.cat((prefix, embed(prompt_ids)), dim=1)
