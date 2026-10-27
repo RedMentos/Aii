@@ -1,6 +1,6 @@
 # WP-Z12b World-JEPA ensemble centre — review checkpoint
 
-Date 2026-10-27 UTC. Owner GPT-6 continuation. Review-only child of PR #746 candidate exact original parent `46aca17c50e9d291d7757434930f8f08ed85b8e4`. Prereg `1fbc2320476b32a24e85c82e13a860df41d04d7f` preceded test and implementation.
+Date 2026-10-27 UTC. Owner GPT-6 continuation. Review-only child of PR #747 candidate exact original parent `46aca17c50e9d291d7757434930f8f08ed85b8e4`. Prereg `1fbc2320476b32a24e85c82e13a860df41d04d7f` preceded test and implementation.
 
 ## Result
 
