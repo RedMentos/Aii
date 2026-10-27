@@ -129,6 +129,10 @@ def main(argv=None):
     payload = json.dumps(result, sort_keys=True, separators=(',', ':'),
                          ensure_ascii=False, allow_nan=False) + '\n'
     if args.output:
+        destination = Path(args.output).resolve()
+        protected = {Path(p).resolve() for p in (args.checkpoint, args.input, args.provenance)}
+        if destination in protected:
+            raise ValueError('Output must not replace checkpoint, input or provenance')
         atomic_write(args.output, payload)
     else:
         print(payload, end='')
