@@ -26,7 +26,7 @@ def _real_data_file(name):
     historically registered ../bench-results paths while rejecting traversal,
     directory placeholders and symlink aliases into source/tests.
     """
-    if not isinstance(name, str) or not name or "\\x00" in name:
+    if not isinstance(name, str) or not name or "\x00" in name:
         return False
     path = PurePosixPath(name)
     parts = path.parts
@@ -41,7 +41,7 @@ def _real_data_file(name):
     if any(part in ('.', '..') for part in parts[2:]):
         return False
     try:
-        if root.is_symlink() or not root.is_dir():
+        if root.is_symlink() or (parts[0] == 'docs' and (APP / 'docs').is_symlink()) or not root.is_dir():
             return False
         candidate = root
         for part in parts[2:]:
