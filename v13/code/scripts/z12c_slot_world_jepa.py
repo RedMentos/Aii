@@ -35,14 +35,24 @@ def slot_action(i):
 def untouched_all(n): v = np.zeros((n, SLOTS, len(OPS)+1)); v[:, :, UNTOUCHED] = 1.; return v
 
 
-def cf_eval(m, cf, mode):
-    """mode: 'own' or 'zero' (every slot UNTOUCHED). Retrieval: nearest real outcome latent among the candidates."""
+def cf_eval(m, cf, mode, *, calibrated=True):
+    """Retrieve counterfactuals; ablation controls have no calibrated confidence.
+
+    calibrated=False is for deliberately uncalibrated NO_ACTION/SHUFFLED_ACTION
+    controls only: their predictions and errors are measured, but they must
+    never claim MODEL_SIMULATION authority or synthesize error calibration.
+    """
     recs = []
     for st in cf:
         A = np.array([slot_action(c['a']) for c in st['cands']]); A = untouched_all(len(A)) if mode == 'zero' else A
         X = np.repeat(st['x'][None], len(A), 0); p, _ = m.predict(X, A)
         X2 = np.array([c['x2'] for c in st['cands']]); zt = m.latent(X2)
-        conf, lab = m.confidence(X, A); err = m.slot_errors(X, A, X2).mean(1)
+        if calibrated:
+            conf, lab = m.confidence(X, A)
+        else:
+            conf = np.zeros(len(A))
+            lab = ['SIMULATION_UNCERTAIN'] * len(A)
+        err = m.slot_errors(X, A, X2).mean(1)
         P, T = p.reshape(len(A), -1), zt.reshape(len(A), -1)
         for k, c in enumerate(st['cands']):
             j = int(np.argmin(((T-P[k])**2).sum(1)))
@@ -119,7 +129,10 @@ def run_seed(seed, args):
     ms = SlotWorldJEPA(SLOTS, seed=seed, ensemble=1).fit(X, A[perm], X2, steps=args.steps)
     t_fit = time.time()-t
     mono = WorldJEPA(seed=seed, ensemble=1).fit(X, np.array([z12b.onehot(r['a']) for r in fit]), X2, steps=args.steps)
-    rec = cf_eval(m, cf, 'own'); rec0 = cf_eval(m0, cf, 'zero'); recs = cf_eval(ms, cf, 'own'); recm = mono_cf(mono, cf)
+    rec = cf_eval(m, cf, 'own')
+    rec0 = cf_eval(m0, cf, 'zero', calibrated=False)
+    recs = cf_eval(ms, cf, 'own', calibrated=False)
+    recm = mono_cf(mono, cf)
     cov = lambda rs: [r for r in rs if not r['held']]; hel = lambda rs: [r for r in rs if r['held']]
     acc = lambda rs: round(float(np.mean([r['ok'] for r in rs])), 4) if rs else None
     th = thresholds(m, val_clean); th0 = threshold_control(m0, val_clean)
