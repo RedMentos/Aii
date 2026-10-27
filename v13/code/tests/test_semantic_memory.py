@@ -100,6 +100,18 @@ class SemanticRecall(unittest.TestCase):
             self.keys.similarities(q,[row],threading.Event(),time.monotonic()+10)
         self.assertIsNone(self.keys.last_query)
 
+    def test_successful_query_snapshot_is_bound_to_start_event(self):
+        q='How much money does Project Alpha have?'
+        self.remember()
+        self.r.cfg['memory_embedding']='on'
+        self.keys._event_getter=lambda:{'event_id':'synthetic-event-1'}
+        self.recall(q)
+        self.assertEqual(self.keys.last_query['event_id'],'synthetic-event-1')
+        # A direct non-turn encoder may still return a vector, but no event authority.
+        self.keys._event_getter=lambda:None
+        self.recall(q)
+        self.assertIsNone(self.keys.last_query['event_id'])
+
     def test_key_cache_reused_invalidated_by_revision_and_removed_by_forget(self):
         mid=self.remember();self.r.cfg['memory_embedding']='on'
         self.recall('How much money does Project Alpha have?');self.recall('Project Alpha funds?')
