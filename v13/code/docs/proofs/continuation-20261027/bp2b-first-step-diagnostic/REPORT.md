@@ -7,3 +7,7 @@ Added `scripts/bp2b_first_step_diagnostic.py`: exact official master preflight, 
 Six synthetic negative/positive controls and focused no-model workflow `.github/workflows/bp2b-first-step-software.yml` were added. **Exact-head CI pending at this checkpoint; do not claim tests PASS.** No native job launched yet. Original BP2b seed41 Actions `40506115941` timed out at 35 minutes; original negative evidence preserved.
 
 **Next:** verify software CI, independently review checkpoint interception and failure receipt path, then prepare a separate new native Actions workflow under this preregistration (20m CPU limit, 35m job, exact pinned source, serial owner). If native is blocked, continue other Canon work rather than altering the original registered cohort. No STEP2/B3/BJ1/age/Redmi promotion.
+
+## Verified software gate
+
+Actions `40519620315`, exact source `c843d2573d8e56bc1b739cb5e2c9d22630057651`: **6/6 synthetic tests PASS**, dry-run PASS, Python compile PASS, privacy CLEAN, diff check PASS. No model downloaded or loaded. This closes the software prerequisite only; native first-step evidence remains absent until a separate bounded run completes.
