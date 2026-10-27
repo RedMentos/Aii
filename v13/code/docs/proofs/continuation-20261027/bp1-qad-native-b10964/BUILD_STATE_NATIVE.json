@@ -1,0 +1,55 @@
+{
+  "schema": "V13_BP1_QAD_NATIVE_B10964_STATE_V1",
+  "owner": "GPT-6 independent",
+  "branch": "codex/gpt6-bp1-native-train-b10964-20261027",
+  "parent": "bbbd3f6c2b2b252bb70c44b31cc5d4bf2fcc3558",
+  "source_head": "6373b5fe576ec824993f451ce16b09de7f2a75ef",
+  "status": "NATIVE_RUNNING_UNVERIFIED",
+  "run_id": 40479267584,
+  "original_native_red": {
+    "run": 40476209086,
+    "sha": "18130b4b663705aed167fcf7b052a6eb6e38831e",
+    "zip_sha256": "2177331d444a1deb5706e8a95c8f8543f590cc035b93d40bf7ee7b7a43d98040",
+    "train_exit": 1,
+    "reason": "gguf==0.16.3 lfm2 exporter unavailable",
+    "private_backup_byte_identical": true
+  },
+  "writer_source": {
+    "repository": "ggml-org/llama.cpp",
+    "tag": "b10964",
+    "commit": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+    "license": "MIT",
+    "synthetic_preflight": {
+      "run": 40478879090,
+      "zip_sha256": "e250a29564c8316857ab86142ceafac5f44a0dcceabfbdd504f63746000f72cd",
+      "tests": "5/5 PASS"
+    }
+  },
+  "frozen": {
+    "master_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+    "train_sha256": "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86",
+    "seed": 13,
+    "steps": 2,
+    "rank": 2,
+    "alpha": 4,
+    "context_tokens": 1024,
+    "jepa_weight": 0
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "current_owner": "Actions 40479267584 native serial job",
+  "next": "After completion audit original native raw ZIP CRC/HEAD/exits and proof, private backup; then source-disjoint V2 native base+LoRA heldout/retention/near-miss",
+  "next_command": "Inspect https://api.github.com/repos/RedMentos/Aii/actions/runs/40479267584 and download original native artifact",
+  "prerequisites": [
+    "No competing heavy owner",
+    "source/model/seed pins unchanged",
+    "no public adapter weights",
+    "independent raw audit before any promotion"
+  ]
+}
