@@ -206,5 +206,18 @@ class LocalErrorAndMeta(unittest.TestCase):
                 n.sync();self.assertIsNotNone(n.gate('weights')['meta']['learned_p_help'])
             finally:s.close()
 
+class SampleFactorTests(unittest.TestCase):
+    """WP-Z6j: per-sample typed weight, no store."""
+    def test_dream_and_vetoed_samples_get_no_weight_but_real_sources_do(self):
+        f=N.sample_factor
+        self.assertEqual(f('route','dream',surprise=.8,novelty=.5),0.)
+        self.assertEqual(f('route','real_deterministic_outcome',task_success=1.,safety_veto=True),0.)
+        out=f('route','real_deterministic_outcome',task_success=1.);hum=f('route','human_correction',human_correction=1.);own=f('route','internal_crosscheck',evidence_gain=.3)
+        self.assertGreater(out,own);self.assertGreater(hum,own);self.assertGreater(own,0.)
+        self.assertLess(f('route','human_correction','PROVISIONAL',human_correction=1.),hum)
+    def test_unknown_source_or_channel_is_refused(self):
+        with self.assertRaises(ValueError):N.sample_factor('route','rumour',task_success=1.)
+        with self.assertRaises(ValueError):N.sample_factor('route','dream',vibes=1.)
+
 def N_extra():
     return {'update_id':'u','trials':1,'plasticity_gain':1.,'stability_score':.5,'saturation':None,'semantic_truth_authority':False}
