@@ -1,0 +1,56 @@
+{
+  "date_utc": "2026-10-27",
+  "scope": "REVIEW_ONLY_LP3_NATIVE_DIAGNOSTIC_NOT_UTILITY",
+  "owner": "GPT-6 automation continuation",
+  "parent_pr": 736,
+  "parent_commit": "6331e5021e1e977183ece3d3b1ed7cfb8f05d4ba",
+  "review_pr": 750,
+  "branch": "assistant/v13-lp3-optimizer-trajectory-20261027",
+  "prereg_initial": "59822dba6f96e19a89740cd85ccae200f5abcd4a",
+  "prereg_clarification_before_source": "96e4686fd5e1032f1702d4682f71e0664965d24a",
+  "prereg_blob": "e3bc1c4327665e0fba48a9dfcb5fc4a1c074fdbf",
+  "script_blob": "dcb68788954c48fc1380f3c6a52360d93cc3de5f",
+  "test_blob": "65933d7e35c3eed4ddffdb050aeb443863eaae53",
+  "original_failed_run": {
+    "id": 40527420680,
+    "zip_sha256": "3fc467c37f92b2fe442b440c60904e626fc1ef513b92345b6c3a3d8768581004",
+    "verified_original_bytes": true,
+    "status": "FAIL_MISSING_PREDICTOR_OR_PROJECTOR_GRADIENT"
+  },
+  "native_prerequisites": {
+    "model": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "license": "LFM Open License 1.0",
+    "seed": 109,
+    "steps_per_arm": 24,
+    "lr": 0.005,
+    "arms": [
+      "PRE_EVAL",
+      "NO_EVAL"
+    ],
+    "hardware": "isolated Linux CPU Actions; not Redmi"
+  },
+  "software": {
+    "initial_run": 40552199138,
+    "status": "PASS",
+    "latest_source_run": 40552569587,
+    "status_latest": "PENDING"
+  },
+  "native": {
+    "status": "NOT_STARTED_AT_CHECKPOINT",
+    "heavy_owner": "NONE_OBSERVED_AT_CHECKPOINT"
+  },
+  "gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next": "Confirm exact latest software run 40552569587 PASS and no active heavy native owner. Then create pinned native workflow on this branch, verify master SHA, run two-arm trace, preserve raw ZIP and private backup. Do not promote utility/age gates."
+}
