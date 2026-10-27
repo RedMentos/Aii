@@ -1,0 +1,70 @@
+{
+  "schema": "V13_RUN639_C3_KL_ANCHOR_BUILD_STATE_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/gpt6-run639-c3-kl-anchor-20261027",
+  "owner": "GPT-6 scheduled V13 implementation; isolated Run639 C3 KL anchor files",
+  "parent": {
+    "pr": 634,
+    "head_sha": "920c37d0436b536f4ed7c96570fc0dc6e3a14528"
+  },
+  "prereg": {
+    "commit": "d5dd36b22bf45a153c961c2d4983f6f6586ef016",
+    "blob": "a2e6edc75f4880694512951b8f1c723d26693e80"
+  },
+  "cohort": {
+    "commit": "e435eb6f9ca3b2251ca10be3b53c54d86a57fe26",
+    "blob": "ccec34634714b760b6cba6ce626536928f229ed3"
+  },
+  "treatment": "32 CPU optimizer steps, exact selected C3 master/deployed and seed13; KL-to-base anchor_weight 1.0 with 4 disjoint Birch/arithmetic/farewell prompts, no JEPA, no other training change",
+  "baseline": {
+    "run638_native_id": 40431064922,
+    "artifact_id": 12702091198,
+    "zip_sha256": "d295a534aee3bb541b31fdfe760df1ec0b355ec0dd5642abbb949b198707b65c",
+    "train_hits": "2/2",
+    "heldout_hits": "0/2",
+    "near_miss_leak": "2/2",
+    "utility": "FAIL",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run638/Run638-native-32step-40431064922.zip"
+  },
+  "first_red": {
+    "source_run_id": 40431632975,
+    "source_head": "4be78f4c5c91e9462c0d1b5881d8d8559f0e816b",
+    "source_zip_sha256": "de57259880ce396732b44bfe4f50d2beb1512d6bf38ccd58a69e1c1212b23b2b",
+    "source_tests": "44 tests 19 FAIL 1 ERROR; schema literal mismatch",
+    "source_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-source-first-RED-40431632975.zip",
+    "native_run_id": 40431676966,
+    "native_head": "b0f4e84f96e288f9ff7d8ce430f713876d5f9633",
+    "native_zip_sha256": "ac7e5fa6090d9c16a475ac7100bee5ebe507c381f04c2b915c4e6aefaa199d65",
+    "native_source_test_exit": 1,
+    "native_train_exit": 2,
+    "native_exit": 2,
+    "native_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-native-first-RED-40431676966.zip"
+  },
+  "technical_amendment": {
+    "commit": "0b6e6112de4c6b69f43a2a1a240b35fb33d9e6bb",
+    "blob": "fa61ac7a1cb848b40027dd6a1bb4662d86c5f700",
+    "change": "only two schema literals, before successful native optimizer"
+  },
+  "repair": {
+    "training_source_commit": "f376850b94c95fd0b2d5f30dd5e4017fbbc971e7",
+    "training_source_blob": "c1f5a17d034891c9fc0368ac604a0d071184e387",
+    "source_ci_run_id": 40431786509,
+    "source_ci_status": "RUNNING_NOT_VERIFIED",
+    "native_ci": "NOT_YET_RETRIGGERED"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "open_questions": [
+    "Does canonical KL anchor retain at least one heldout and prevent Cedar leakage while learning >=1 Alder fact?",
+    "Does original Run638 unanchored baseline reproduce exactly on pinned QAD-Q4?",
+    "Body-JEPA, B1/B2 native training, STEP2, Redmi remain unproven."
+  ],
+  "next_exact_command": "Wait for Actions source 40431786509, verify 44 source tests, fix only source bug if needed; update native workflow pinned source+amendment blobs and trigger new native run; archive all original RED/GREEN raw and SHA/CRC/inner manifests, private byte roundtrip; update PR and continue."
+}
