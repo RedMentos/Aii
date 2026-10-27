@@ -29,7 +29,9 @@ def durations(marks):
         try:
             if type(t) not in (int,float) or t<0 or not math.isfinite(t):return {}
         except (OverflowError,ValueError):return {}
-    seen=sorted(((t,s) for s,t in marks.items() if s in STAGES),key=lambda x:x[0])
+    seen=[(marks[s],s) for s in STAGES if s in marks]
+    if any(seen[i+1][0]<seen[i][0] for i in range(len(seen)-1)):
+        return {}
     return {s:max(0.,seen[i+1][0]-t) for i,(t,s) in enumerate(seen[:-1])}
 
 def pct(xs,q):
