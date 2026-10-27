@@ -40,7 +40,7 @@ class Executive:
             return [item for item in value if isinstance(item,dict)] if isinstance(value,list) else []
         state['goal_sequence']=[x for x in dict_items('goal_sequence') if self._valid_ref(x.get('source_ref',{}))][-MAX_EVENTS:]
         task=state.get('active_task')
-        if not isinstance(task,dict) or not self._valid_ref(task.get('source_ref',{})):state['active_task']=None
+        if not self._task_valid(task,state,session):state['active_task']=None
         state['memory_refs']=[x for x in dict_items('memory_refs') if self._memory(x,session)]
         state['open_questions']=[x for x in dict_items('open_questions') if self._question_valid(x,session)][-MAX_QUESTIONS:]
         # Never carry old hypotheses into another generation as current offers.
@@ -84,6 +84,45 @@ class Executive:
         else:
             state['current_action_intent']=None
         return state
+    def _task_valid(self,task,state,session):
+        """Only an event request or latest same-session human decision is a task.
+
+        A hash-valid blob by itself cannot confer operator authority. A later
+        explicit clear invalidates earlier operator task refs on every read.
+        """
+        if not isinstance(task,dict):return False
+        ref=task.get('source_ref')
+        if not isinstance(ref,dict) or not self._valid_ref(ref):return False
+        origin=task.get('origin')
+        if origin=='SOURCE_USER_REQUEST':
+            event_id=state.get('last_event_id')
+            if type(event_id) is not str:return False
+            row=self.s.one('SELECT session_id,packet FROM events WHERE id=?',(event_id,))
+            if not row or row['session_id']!=session:return False
+            try:
+                event=json.loads(row['packet'])
+                return (event.get('authority')=='AUTHORITATIVE'
+                        and event.get('source_ref')==ref)
+            except (ValueError,TypeError,KeyError):
+                return False
+        if origin!='EXPLICIT_OPERATOR_TASK':return False
+        # The latest decision, not any historical decision, is authoritative.
+        # JSON1 is bundled with supported SQLite/Termux Python builds.
+        row=self.s.one(
+            "SELECT p.payload FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='HumanDecision' AND e.session_id=? "
+            "AND json_extract(p.payload,'$.kind')='executive_task' "
+            "ORDER BY p.rowid DESC LIMIT 1",(session,))
+        if not row:return False
+        try:
+            decision=json.loads(row['payload'])
+            value=self.s.read_source(ref)
+            return (decision.get('source_ref')==ref
+                    and decision.get('value')==value
+                    and value!='CLEAR_ACTIVE_TASK'
+                    and decision.get('learning_permission')=='record')
+        except (ValueError,TypeError,KeyError,OSError):
+            return False
     def _question_valid(self,item,session):
         if not self._valid_ref(item.get('source_ref',{})):return False
         row=self.s.one("SELECT p.payload,e.session_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.id=? AND p.kind='OfferPacket'",(item.get('offer_packet_id'),))
