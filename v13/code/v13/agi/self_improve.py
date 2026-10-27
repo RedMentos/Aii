@@ -6,6 +6,8 @@ candidate settings on a copy, never on the live runtime. The regression shield c
 candidate vs base on every axis; only a change that regresses nothing and improves
 something becomes a PENDING request. Applying it is a human act (approve + apply).
 Never proposable: hard rules, Age caps/stages, learning_mode, latents, output channel.
+WP-HX1: kind 'harness' edits allow-listed text/rule data around frozen weights (agi/harness.py); the
+approved settings go to HarnessLibrary.apply(), which keeps the rollback point. Safety/moral texts never.
 Structural changes (new body, architecture) are recorded only and need the Age right
 structural_modification (Age 5), the structural unlock and the user — they are never
 executed here. Generation manifests keep the rollback point.
@@ -15,7 +17,7 @@ import time
 from .base import StateBox,age_allows
 
 KEY='G8_SELF_IMPROVEMENT';REVISION='g8-self-improve-v1'
-KINDS=('knob','learning_rule','structural')
+KINDS=('knob','learning_rule','harness','structural')
 FORBIDDEN={'system_stage','user_stage_cap','learning_mode','latents_enabled','channel','teacher_enabled','schema_version','seed','route_override'}
 MIN_GAIN=.01  # BOOT: smallest improvement worth a human's attention
 AXES=('overall','seen','unseen')
@@ -35,6 +37,9 @@ class SelfImprovement:
             if set(diff)&set(LOCKED):raise PermissionError('Gesperrte Lernregel')
             base=self.s.state('SLEEP_POLICY',None)[0] or default_policy()
             cand=copy.deepcopy(base)|diff;validate_policy(cand);return cand
+        if kind=='harness':
+            from .harness import candidate
+            return candidate(diff)
         return None
     def propose(self,kind,diff,rationale='',origin='SELF'):
         if kind not in KINDS:raise ValueError('kind '+'|'.join(KINDS))
@@ -72,7 +77,7 @@ class SelfImprovement:
             return dict(q)
         return self.box.mutate(f)
     def approve(self,pid):
-        """Human only. Returns the new settings; the caller persists them (config.save_config / sleep set_policy)."""
+        """Human only. Returns the new settings; the caller persists them (config.save_config / sleep set_policy / HarnessLibrary.apply)."""
         def f(st):
             q=st['proposals'][pid]
             if q['status']!='PENDING_USER':raise ValueError('Freigabe nur für PENDING_USER')
@@ -93,4 +98,4 @@ class SelfImprovement:
         ps=list(self.box.load()[0]['proposals'].values())
         return {'revision':REVISION,'proposals':[{k:p[k] for k in ('id','kind','status','origin')} for p in ps[-16:]],
                 'self_proposals_allowed':age_allows(self.age,'propose_config_changes','SELF'),
-                'claim_limit':'Knob/learning-rule proposals with sandbox shield and human approval; structural changes recorded only'}
+                'claim_limit':'Knob/learning-rule/harness proposals with sandbox shield and human approval; structural changes recorded only'}
