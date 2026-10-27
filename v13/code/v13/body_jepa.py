@@ -96,12 +96,17 @@ def make_predictor(torch,dim):
 def last_token_latent(torch,model,batch_ids,layer=-1):
     """Hidden state of the last real token per row (right padding, pad id ignored via lengths)."""
     ids,lens=batch_ids
+    if (ids.ndim!=2 or lens.ndim!=1 or len(lens)!=ids.shape[0] or ids.shape[1]<1
+            or not bool(torch.all((lens>=1)&(lens<=ids.shape[1])))):
+        raise ValueError('nonempty right-padded token sequences required')
     att=(torch.arange(ids.shape[1])[None,:]<lens[:,None]).long()
     out=model(input_ids=ids,attention_mask=att,output_hidden_states=True)
     h=out.hidden_states[layer]
     return h[torch.arange(len(lens)),lens-1]
 
 def pad(torch,seqs,pad_id=0):
+    if not seqs or any(len(s)==0 for s in seqs):
+        raise ValueError('nonempty token sequences required')
     n=max(len(s) for s in seqs);ids=torch.full((len(seqs),n),pad_id,dtype=torch.long)
     for i,s in enumerate(seqs):ids[i,:len(s)]=torch.tensor(s)
     return ids,torch.tensor([len(s) for s in seqs])
@@ -118,12 +123,20 @@ def jepa_loss(torch,model,predictor,ctx,tgt,mode,ema=None,base_targets=None,perm
         with torch.no_grad(),ema.swap():t=last_token_latent(torch,model,tgt,layer)
     t=t.detach()
     if mode=='shuffled':
-        if perm is None:raise ValueError('shuffled mode needs a derangement')
-        t=t[torch.tensor(perm)]
+        if (not isinstance(perm,(list,tuple)) or len(perm)!=len(t)
+                or any(type(v) is not int for v in perm)
+                or sorted(perm)!=list(range(len(t)))
+                or any(i==v for i,v in enumerate(perm))):
+            raise ValueError('shuffled mode requires a true derangement')
+        t=t[torch.tensor(perm,device=t.device)]
     p=predictor(last_token_latent(torch,model,ctx,layer))
+    if t.shape!=p.shape or not bool(torch.isfinite(t).all()) or not bool(torch.isfinite(p).all()):
+        raise ValueError('invalid target/student latent shape or nonfinite values')
     l=1-torch.nn.functional.cosine_similarity(p,t,dim=-1)
-    w=torch.ones_like(l) if weights is None else torch.as_tensor(weights,dtype=l.dtype)
-    if (w<0).any() or float(w.sum())<=0:raise ValueError('eligibility weights must be >=0 and not all zero')
+    w=torch.ones_like(l) if weights is None else torch.as_tensor(weights,dtype=l.dtype,device=l.device)
+    if (w.ndim!=1 or w.shape!=l.shape or not bool(torch.isfinite(w).all())
+            or bool((w<0).any()) or not bool(w.sum()>0)):
+        raise ValueError('eligibility weights must be finite, aligned, >=0 and not all zero')
     return (l*w).sum()/w.sum(),t
 
 def minor_subspace_init(torch,model,r):
@@ -132,18 +145,29 @@ def minor_subspace_init(torch,model,r):
     and forgetting concentrate) stay untouched. Linear W (out x in): in <= out -> A (r x in) = lowest right singular vectors,
     frozen, train B (starts 0); in > out -> B (out x r) = lowest left singular vectors, frozen, train A (starts 0).
     Singular directions come from eigh of the smaller Gram matrix, so the largest matrix is 2048 x 2048. Returns a summary."""
+    if type(r) is not int or r<1:raise ValueError('subspace rank must be a positive integer')
     n=0;frozen=0;share=[]
     for name,mod in model.named_modules():
         if not (hasattr(mod,'lora_A') and 'default' in getattr(mod,'lora_A',{})):continue
         W=mod.base_layer.weight.detach().double();out_d,in_d=W.shape
+        if r>min(out_d,in_d) or not bool(torch.isfinite(W).all()):
+            raise ValueError('invalid subspace rank or nonfinite base weight')
         with torch.no_grad():
             if in_d<=out_d:
-                evals,evecs=torch.linalg.eigh(W.T@W);low=evecs[:,:r].T.float().contiguous()  # r x in
+                evals,evecs=torch.linalg.eigh(W.T@W)
+            else:
+                evals,evecs=torch.linalg.eigh(W@W.T)
+            singular=evals.clamp(min=0).sqrt()
+            mass=singular.sum()
+            if not bool(torch.isfinite(mass)) or not bool(mass>0):
+                raise ValueError('subspace singular mass must be finite and positive')
+            if in_d<=out_d:
+                low=evecs[:,:r].T.float().contiguous()  # r x in
                 mod.lora_A['default'].weight.copy_(low);mod.lora_A['default'].weight.requires_grad_(False);mod.lora_B['default'].weight.zero_()
             else:
-                evals,evecs=torch.linalg.eigh(W@W.T);low=evecs[:,:r].float().contiguous()  # out x r
+                low=evecs[:,:r].float().contiguous()  # out x r
                 mod.lora_B['default'].weight.copy_(low);mod.lora_B['default'].weight.requires_grad_(False);mod.lora_A['default'].weight.zero_()
-            share.append(float(evals[:r].clamp(min=0).sqrt().sum()/evals.clamp(min=0).sqrt().sum()))
+            share.append(float(singular[:r].sum()/mass))
         n+=1;frozen+=int(low.numel())
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
 
