@@ -1,0 +1,77 @@
+{
+  "schema": "V13_RUN646_AG4_EVENT_ONCE_BUILD_STATE_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 automation",
+  "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+  "parent_pr": 646,
+  "base_sha": "317c4c95c0a14ba0dbfba39bb9d37f42a0abf075",
+  "branch": "codex/gpt6-run646-skill-event-once-20261027",
+  "prereg_commit": "d1ec9982cfc2936d907bc7a070fdaaad2f549362",
+  "tests_commit": "4d968eab371996ee741c9ba1616874e91c141536",
+  "red_ci": {
+    "run": 40443007972,
+    "head": "aaf07a2ca0a6aea65bc73e8bdaa585bb83594f2b",
+    "tests": "26 tests, 2 FAIL 4 ERROR",
+    "artifact": 12706627355,
+    "zip_sha256": "b8a9b9374c00db8074eb63c2cb63cee27a975535d88eb3a1f3a001427c73a2ed"
+  },
+  "first_repair_red": {
+    "run": 40443122694,
+    "head": "b64cb684bb23bafac1071083244f5aac79fe30cc",
+    "failure": "sqlite3.Connection.rowcount does not exist, atomic transaction rolled back",
+    "artifact": 12706369660,
+    "zip_sha256": "b8866d9ab0b375f261770bac077909a6bf36a3e97739f7912f092ba892ed862b"
+  },
+  "green": {
+    "run": 40443213855,
+    "head": "c2d24276a21928077d80d4145481f097b1837eea",
+    "tests": "26/26 PASS",
+    "artifact": 12706772297,
+    "zip_sha256": "746a9475259333fc6f79b01a37f972709d126cf238b07015ac379ff4cff507e6"
+  },
+  "extended_green": {
+    "run": 40443317470,
+    "head": "4d7fe36aeb20d9ff3ec84a34cf64f80c6be545fc",
+    "tests": "74/74 PASS, compile PASS, privacy CLEAN",
+    "artifact": 12707417550,
+    "zip_sha256": "8033532bcfb366ce3431ec9a8abcbcc86b6edd319f422bde3e37bcb08e28cff9"
+  },
+  "code_blob_sha": {
+    "v13/code/v13/agi/skills.py": "0549e18fdf055020971e0d6d7ed71f5681127bf3",
+    "v13/code/v13/agi/live.py": "7b6a97dfd2ea82f7c148b5fde64006e9ba2dead7",
+    "v13/code/tests/test_run646_skill_event_once.py": "6f5d582733c9e4ae2f6e3a4fc886eee9227c1789"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Run646/",
+    "red_verified": true,
+    "first_repair_verified": true,
+    "green_verified": true,
+    "extended_green_verified": true
+  },
+  "changed": "AG4 skill use/success counted once per source event, in one SQLite transaction with durable receipt and exact session/skill binding; old synthetic record() unaffected.",
+  "evidence_level": "LINUX_SQLITE_SOFTWARE_ONLY",
+  "fullsuite": "NOT_PROMOTED; parent 4335 tests 5 FAIL 73 ERROR",
+  "native": false,
+  "redmi": false,
+  "model_hashes_changed": false,
+  "age_approval_changed": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_run646_skill_event_once tests.test_run645_skill_credit_receipt tests.test_run644_curiosity_receipt tests.test_agi_live tests.test_growth tests.test_ag4_skill_outcome_guard_run386 tests.test_skilllive tests.test_skilllive_route_consistency_run105 tests.test_run633_jef_noanswer_goal",
+  "open_questions": [
+    "Independent review and integration needed; do not merge automatically",
+    "AG5 curiosity repeated goal_turn can still duplicate observations; separate package",
+    "Fullsuite frozen-source mismatches and fixture failures unresolved",
+    "Native sparse Body-JEPA and C3 locality utility remain unproven",
+    "Redmi measurement unavailable"
+  ],
+  "next_owner": "next independent authorized package; no concurrent ownership of this review branch"
+}
