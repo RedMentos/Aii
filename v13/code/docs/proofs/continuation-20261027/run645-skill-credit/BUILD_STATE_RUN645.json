@@ -1,0 +1,40 @@
+{
+  "schema": "V13_RUN645_AG4_RECEIPT_BUILD_STATE_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 Run645 AG4 receipt",
+  "base": "a9423e26c58f1cd3d9237041a379955c58a6c9e1",
+  "changed": [
+    "v13/code/v13/agi/live.py",
+    "v13/code/tests/test_run645_skill_credit_receipt.py"
+  ],
+  "red": {
+    "run": 40440683743,
+    "head": "972a9f8a0bf4d0079e40b5f97970070e73114151",
+    "result": "4/25 FAIL",
+    "artifact": 12705684290,
+    "sha256": "2c2a929f918c3a55eb4a02366e49d6762efabc8c4033e3fd6ee818526ebf4632"
+  },
+  "green": {
+    "run": 40440769032,
+    "head": "df260d37dcd06ce8f869363d76c636ed494fbe3f",
+    "result": "25/25 PASS",
+    "privacy": "CLEAN",
+    "artifact": 12705779253,
+    "sha256": "848d04e946c91de334d1c19497de0148b8d590e196547a19c04c45094637d8c3"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Run645-AG4/",
+  "private_backup_byte_verified": true,
+  "whole_suite": "NOT_PROMOTED; parent suite 4335 tests, 5 FAIL 73 ERROR",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "native": false,
+  "phone_measured": false,
+  "age_approval_changed": false,
+  "next": "Review PR stack with owner, integrate receipt guard, continue independent canonical functional packages; Android native and model utility remain separate required proof."
+}
