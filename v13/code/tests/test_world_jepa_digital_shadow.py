@@ -82,7 +82,9 @@ class DigitalShadowTests(unittest.TestCase):
         W = d._ridge(X, Y, .1)
         self.assertEqual(W.shape, (2, 3))
         self.assertTrue(np.isfinite(W).all())
-        self.assertEqual(d._mae(Y, Y)['pooled'], 0.)
+        metrics = d._mae(Y, Y)
+        self.assertEqual(metrics['pooled'], 0.)
+        self.assertEqual(set(metrics), {'log_duration', 'success', 'log_output_chars', 'pooled'})
         with self.assertRaisesRegex(ValueError, 'Invalid'):
             d._ridge(X, np.full((4, 3), np.nan), .1)
         with self.assertRaisesRegex(ValueError, 'Invalid'):
