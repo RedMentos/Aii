@@ -1,0 +1,38 @@
+{"policy": "fixed", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed", "phase": "p1", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.775}
+{"policy": "fixed", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "fixed", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed", "phase": "p1", "batch": 5, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.95}
+{"policy": "fixed", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "fixed", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.875}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.875}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 1.0}
+{"policy": "adaptive+words+rel", "phase": "p1", "batch": 5, "shadow": false, "status": null, "acc": 1.0}
+{"policy": "adaptive+words+rel", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "adaptive+words+rel", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.875}
+{"policy": "adaptive+words+rel", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.875}
+{"policy": "adaptive+words+rel", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.875}
+{
+ "verdict": null,
+ "criteria": null,
+ "verdict_z6i": null,
+ "criteria_z6i": null,
+ "verdict_z6i2": null,
+ "criteria_z6i2": null
+}
