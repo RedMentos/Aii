@@ -1485,7 +1485,7 @@
     "owner_branch": "codex/automation11-n7-append-source-invalidation-20261027",
     "parent_pr": 720,
     "parent_sha": "acaaefde09072e38cb541f82fb2182bb8b9d11de",
-    "status": "REVIEW_ONLY_FOCUSED_PASS_BROAD_PENDING",
+    "status": "REVIEW_ONLY_FOCUSED_PASS_BROAD_RED_HISTORICAL",
     "red_test_sha": "9a9551c4456f8a837a9220c17831f01332000b46",
     "red_actions_run": 40517444470,
     "green_candidate_sha": "a3dee8063794a9ba79781eddd5598b602ff7c305",
@@ -1504,10 +1504,13 @@
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/n7-append-source-invalidation/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
-    "next_prerequisite": "Review raw broad-suite result Actions 40518088127 and independent source validity; do not promote native/Redmi gates.",
+    "next_prerequisite": "Independent review; combined BJ1+N7 integration contains separate test_toolforecast fix, re-run full suite there; original RED preserved.",
     "red_tests": "20 tests, 2 expected FAIL (Actions 40517444470)",
     "green_tested_sha": "a3dee8063794a9ba79781eddd5598b602ff7c305",
     "broad_suite_actions_run": 40518088127,
-    "broad_suite": "PENDING"
+    "broad_suite": "1866 tests, 1 unrelated PermissionError, 1 skip; UNIT_EXIT=1, NOT PASS",
+    "broad_suite_sha": "644bf6bc2618b60d0a76119192d72bb27c4d29ba",
+    "broad_suite_artifact_id": 12739414623,
+    "broad_suite_fail_reason": "Optional /root/native/restore historical path PermissionError in test_toolforecast; no N7 focused failure"
   }
 }
