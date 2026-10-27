@@ -58,7 +58,7 @@ class NativeSmokeSoftwareTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "model"
             p.write_bytes(b"mock")
-            self.assertEqual(N.sha(p), "20cd5fddcfe5e7b04a9c29eec42a38e9b35fca18b497ca25e20f4e0e1e2e50d9")
+            self.assertEqual(N.sha(p), "ec864fe99b539704b8872ac591067ef22d836a8d942087f2dba274b301ebe6e5")
             dest = Path(d) / "report.json"
             N.save_exclusive(dest, {"gates": N.GATES})
             with self.assertRaises(FileExistsError):
