@@ -12,7 +12,7 @@ The ObjectiveAdapter field set is the one from GPT Run38 (codex/body-jepa-micro-
 this module is its first use on real body weights. Torch is imported lazily; nothing here is active in the runtime.
 """
 from dataclasses import dataclass
-import json,math,time
+import json,math,time,struct
 
 MODES=('ema','base','shuffled')
 
@@ -206,16 +206,21 @@ class BodyJepaTrainer(LoraTrainer):
         """Validate the shared CE/JEPA sample weights before loading any model."""
         if not isinstance(items,(list,tuple)) or not items:
             raise ValueError('nonempty training item list required')
-        weights=[]
+        weights=[];effective=[]
         for item in items:
             if not isinstance(item,dict):raise ValueError('training item must be a dict')
             v=item.get('weight',1.)
             if type(v) not in (int,float) or not math.isfinite(v) or v<0:
                 raise ValueError('sample weights must be finite nonnegative numbers')
-            weights.append(float(v))
-        total=sum(weights)
-        if not math.isfinite(total) or total<=0:
-            raise ValueError('sample weights must have finite positive sum')
+            try: f32=struct.unpack('f',struct.pack('f',float(v)))[0]
+            except (OverflowError,struct.error):raise ValueError('sample weight exceeds float32 CE range')
+            if not math.isfinite(f32) or (v>0 and f32==0):
+                raise ValueError('sample weight is not representable in float32 CE')
+            weights.append(float(v));effective.append(f32)
+        try: total_f32=struct.unpack('f',struct.pack('f',sum(effective)))[0]
+        except (OverflowError,struct.error):raise ValueError('sample weight sum exceeds float32 CE range')
+        if not math.isfinite(total_f32) or total_f32<=0:
+            raise ValueError('sample weights must have finite positive float32 sum')
         return weights
     def fit(self,items,base_generation,cancel=None,deadline=None):
         if not items:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'EMPTY_BATCH'}}
