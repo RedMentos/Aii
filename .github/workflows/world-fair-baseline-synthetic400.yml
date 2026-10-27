@@ -1,0 +1,101 @@
+name: V13 World-JEPA fair baseline 400-step synthetic SQLite ablation
+on:
+  push:
+    branches: [assistant/v13-world-fair-baseline-20261027]
+    paths:
+      - '.github/workflows/world-fair-baseline-synthetic400.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-gradient-350m
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen source fair baseline 400-step raw evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-fair-synthetic400"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_digital_shadow.py > "$evidence/BRIDGE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_probe.py > "$evidence/PROBE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_closedstore.py > "$evidence/CLOSED_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_fair_baseline.py > "$evidence/FAIR_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/BRIDGE_BLOB.txt")" = "4ab37e11d8238d376e568567f901c85c12d09da8" ] && [ "$(cat "$evidence/PROBE_BLOB.txt")" = "841a99e86099dc153a322717510a5c4e4aaffe0d" ] && [ "$(cat "$evidence/CLOSED_BLOB.txt")" = "088528535d887b10f5786a8c176002c20f4c013d" ] && [ "$(cat "$evidence/FAIR_BLOB.txt")" = "97367ad5eaae24024955a58fbdd079cfb59de179" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-fair-synthetic400-venv"
+          py="$RUNNER_TEMP/world-fair-synthetic400-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 10m env PYTHONPATH=.:tests "$py" - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          from tempfile import TemporaryDirectory
+          from tests.test_world_jepa_readonly_store import fixture
+          from scripts import world_jepa_fair_baseline as fair
+          from scripts import world_jepa_readonly_store as closed
+          from v13 import world_model as wm
+          with TemporaryDirectory() as d:
+              p=Path(d)/'synthetic.sqlite'
+              fixture(p,n=64)
+              before=hashlib.sha256(p.read_bytes()).hexdigest()
+              store=closed.ReadOnlyStore(p)
+              try:
+                  rows=wm.transitions(store)
+              finally:
+                  store.close()
+              report=fair.run_rows(rows)
+              assert before==hashlib.sha256(p.read_bytes()).hexdigest()
+              assert report['source_sha256']=='21bb5a49906676050a1caf755ce441b36a483b3cb8db8d3f1a8a9048e2a7a0bf'
+              assert report['train_ids_sha256']=='e526ec41c33f4f639d662e053cbb8757de66737babc76df442a7d1eaed2c164b'
+              assert report['heldout_ids_sha256']=='dce3c8c36cf08617c193ea628112964796c23bbd78a5eb353c965396816b0760'
+              assert report['steps']==400 and report['seeds']==[3,7] and report['ensemble']==3
+              assert not report['utility_proven'] and not report['runtime_wired']
+              assert not any(Path(str(p)+s).exists() for s in ('-wal','-shm','-journal'))
+              output=json.dumps({'fixture':'SYNTHETIC_SQLITE_ONLY_NOT_REAL_OBSERVED','report':report},sort_keys=True,allow_nan=False)
+              assert 'synthetic-action-' not in output and str(p) not in output
+              print(output)
+          PY
+          ) > "$evidence/SYNTHETIC_REPORT.json" 2> "$evidence/SYNTHETIC_RAW.log"
+          echo "$?" > "$evidence/SYNTHETIC_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_fair_baseline.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8a6a46da549dd11f6afb20e5d8b10035cb64ab0f --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 8a6a46da549dd11f6afb20e5d8b10035cb64ab0f HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-fair-synthetic400-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-fair-synthetic400/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits, no JEPA promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-fair-synthetic400"
+          for name in FROZEN INSTALL SYNTHETIC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_FAIR_BASELINE_SYNTHETIC_ONLY_NO_UTILITY_PROMOTION'
