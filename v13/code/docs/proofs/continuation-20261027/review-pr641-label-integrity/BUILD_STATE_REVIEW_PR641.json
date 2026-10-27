@@ -1,0 +1,50 @@
+{
+  "schema": "V13_CROSS_REVIEW_PR641_LABEL_INTEGRITY_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 independent Claude PR641 review",
+  "reviewed_pr": 641,
+  "reviewed_head": "bc0703f4fbfb794b23ffc49ac8a7cb6074903bfa",
+  "changes": [
+    "v13/code/v13/learning_worker.py",
+    "v13/code/tests/test_review_pr641_exact_route_labels.py"
+  ],
+  "harness_red": {
+    "run": 40439693707,
+    "artifact": 12705413024,
+    "sha256": "d5423b997a948dd502b5fe6bd799e1361fa41d235cb542725bab99b60b6a67ad",
+    "cause": "copied CI nonexistent test path"
+  },
+  "actual_red": {
+    "run": 40439829915,
+    "head": "d470ae79da8ac2cf42f2e6c1077975ab06d8b52e",
+    "result": "4/15 FAIL",
+    "artifact": 12704934479,
+    "sha256": "75134a1969c31f83301cee9be8f21d50508eda469c76ba99b725e46b4457aa40"
+  },
+  "green": {
+    "run": 40439896899,
+    "head": "c0b3fbd61d03078f41862f435796a46cff142525",
+    "result": "15/15 PASS",
+    "privacy": "CLEAN",
+    "artifact": 12705327640,
+    "sha256": "ad58d23e28dd19608a939b7ee5edd4d7231b4d4e5a01c461218363d91b795382"
+  },
+  "full_suite": {
+    "red_run": 40439740244,
+    "green_run": 40439896933,
+    "status": "PENDING_AT_FIRST_REPORT"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Review-PR641-Labels/",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "native_run": false,
+  "phone_measured": false,
+  "model_cohorts_changed": false,
+  "next": "Verify full-suite CI and raw; open review PR against Claude PR641 branch, report finding for owner; test separate rule-handover exact-once counterexample; no main merge."
+}
