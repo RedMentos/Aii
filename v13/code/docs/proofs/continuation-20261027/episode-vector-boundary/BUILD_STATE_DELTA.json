@@ -36,7 +36,18 @@
   "full_suite": {
     "source_commit": "28ccbe8c6ebed2ced0443ee40a639ff30f8db420",
     "actions": 40540186361,
-    "status": "PENDING"
+    "status": "SOFTWARE_FULLSUITE_PASS",
+    "tests": "1915 OK (1 skipped)",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12749404220,
+    "zip_sha256": "6bbfe96cd87aa9167edcec4da25ad5ac558c8328dd1ce172b903dcc7cdb42cb1",
+    "private_backup_verified": true
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -50,6 +61,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect Actions 40540186361 exact raw exits, CRC/hash and private backup, update branch-scoped state, independent review PR743, then next distinct canonical package.",
+  "next_command": "Independent review PR743; child WP-N8 event-bound semantic query snapshot to close fixed-policy bypass; no native/Redmi/Age promotion.",
   "note": "Branch-scoped, no shared BUILD_STATE overwrite, no main merge."
 }
