@@ -1,0 +1,32 @@
+# Real Linux file-world → SHADOW v2 checkpoint → restart probe (2026-10-27)
+
+## Scope and implemented path
+Review-only child of PR #651 exact `63c00f34ecc41d07c159886ac87fc90998e350d2`, not main. New `scripts/world_jepa_shadow_lifecycle.py` uses existing Z12b's **actual temporary Linux file operations and independent world subprocess**, collects ordered transitions, uses chronological 80% training / last 20% clean held-out calibration, requires every operation class, trains the existing NumPy slot World-JEPA in SHADOW, saves a calibrated v2 inference checkpoint, restarts by whole-file SHA256 and exact source/cohort provenance, and runs the read-only probe on a held-out caller-supplied after-state. No user files or live V13 models are changed.
+
+All original transition rows are now retained byte-for-byte as canonical `cohort.json` with a matching SHA256, along with original independent-world schedule and event log (unaltered bytes and SHA256), source file inventory, provenance, request, probe, manifest and model NPZ. The exporter refuses existing output directories and missing clean operation classes or missing original world logs. The recorded `collection` label describes this CI invocation; it is not cryptographic attestation of external reality.
+
+## Exact registered tests and raw evidence
+Prospective prereg `b7bc401a19ef127740e99768ceb7e48aab6505ab`, RED tests `f54a63c94d4b4c734d3465e2b5853ebcf8941d64`, workflow `9451e2726f95a3a18203b47a0455277ede90c260`, source `b0f44f827e538f2c4d656cfb40251ef53ac6cabb`. Original Actions:
+- RED [40448575385](https://github.com/RedMentos/Aii/actions/runs/40448575385): 23 tests, 1 ERROR (exporter absent), compile/privacy 0; Z12c seed211 actual file-world smoke exit 0 and correctly reports **Z12C_SLOT_WORLD_JEPA_FAIL**, lifecycle exit 2 (missing exporter). Original ZIP artifact `12708534617`, SHA256 `b878333c325ad468b0d675ee6245ed327ce371e495508ba4cb7cf2ac90e914c9`.
+- Initial structural GREEN [40448629698](https://github.com/RedMentos/Aii/actions/runs/40448629698): **27/27 PASS**, compile/privacy/smoke/lifecycle exits 0; original ZIP artifact `12709532013`, SHA256 `f02dc9bf29d26b26801de458f0aadd662e8240856f5b91fb77cea97cb4f9c417`. Independent inspection found a **raw-cohort evidence gap**: hash without persisted original rows/world log. This original success is not relabeled as closed evidence.
+- Prospective raw-evidence amendment `f0ffd54b1041bbfc44876cbc25eedf12d43adb02`, RED tests `1f57164fac3e7eb55c28674d70983dd78a8ffde5`. RED [40448778754](https://github.com/RedMentos/Aii/actions/runs/40448778754): 29 tests, 1 FAIL 2 ERROR for missing cohort and original world logs; compile/privacy/smoke/lifecycle exits 0. Original ZIP artifact `12709332755`, SHA256 `31241d0c11e46ef2477168e4e789939791533ff299ac984c95ae207b9fc97d82`.
+- Intermediate `5e747c793adbc61719a70a61b72ab62afc00f1d0` [40448825768](https://github.com/RedMentos/Aii/actions/runs/40448825768) **FAIL**, 29 tests 1 ERROR: JSON manifest extra trailing literal backslash-n; corrected in `5aec3b9ae9f1e0761c2f4ae1d1ada67199e584c4`. Original ZIP artifact `12709472158`, SHA256 `dfe2f6033aff76e07d3c0496bb6bbc4b67b7cf2205c31b2b179d933f22b82fed`. Failure preserved, not hidden.
+- Final GREEN [40448842107](https://github.com/RedMentos/Aii/actions/runs/40448842107) at `5aec3b9ae9f1e0761c2f4ae1d1ada67199e584c4`: **29/29 PASS**, compile 0, privacy CLEAN, unregistered Z12c seed211 smoke 0, lifecycle seed212 0. Original ZIP artifact `12709606899`, SHA256 `f105203929e68d1a1d691777d90f82a48a14ac5398961b05a57c148b584c1dae`. ZIP CRC, HEAD and exit files checked; raw cohort, original log/schedule and NPZ digests independently recomputed from the ZIP.
+
+All five original ZIPs privately uploaded to `/V13-Checkpoints/2026-10-27/Automation11-World-Realfile/`, re-materialized and SHA256 byte-verified. No rejected anyone-writable Drive destination used. No source/model/seed hash replaced or rewritten; original registered Z12c seeds 201/202/203 were not rerun.
+
+## Actual measured result and negative gates
+**Seed211 unregistered tiny smoke** (600 train, 12 counterfactual states, 16 attribution intervals, 50 steps) structurally runs NO_ACTION and SHUFFLED_ACTION controls, but the actual verdict is **Z12C_SLOT_WORLD_JEPA_FAIL**. In final run C1/C2/C3 fail, C4/C5/C6/C7 pass; no registered acceptance promotion.
+
+**Seed212 actual temporary Linux file-world**: 600 ordered rows, 480 train, 120 clean held-out calibration; independent world process recorded 15 events. Source SHA256 `[see manifest in raw ZIP]`, cohort SHA256 `f6d2196f97a41d199c06d04ebf62f9605ecc5a98c133b16a97fbe4d0d9ad7a02`, checkpoint SHA256 `0d2dd4a08304c433e6bf55d2ad4b9cb03a63516def105b42b39fbde50c39f82d`. Probe returned `SIMULATION_UNCERTAIN` confidence **0.002105**; no simulated action was executed by the probe. This is a **working lifecycle, not a useful world model** at this tiny training budget.
+
+Evidence classes: actual Linux filesystem/process transitions + NumPy SHADOW learning/inference, **not native LLM weight training**, not Redmi/Termux, not Body-JEPA, not live V13 runtime integration. Full V13 source suite remains historically RED (5 FAIL, 73 ERROR), STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, Age/approval gates unchanged, V13 incomplete.
+
+## Owner, next exact command and prerequisites
+Owner: independent next reviewer/implementer. Next substantive package: source-bound **read-only runtime observer** with explicit opt-in, no authority or automatic action; independent review of low-confidence World-JEPA on more representative held-out cohorts. Keep registered seeds/hashes fixed; do not promote any gates. Run in isolated environment with NumPy 2.3.5 and prompt-toolkit 3.0.52:
+```sh
+cd v13/code
+PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_world_jepa_shadow_lifecycle tests.test_world_jepa_shadow_probe tests.test_z12c_control_calibration tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint
+PYTHONPATH="$PWD:$PWD/scripts" python scripts/world_jepa_shadow_lifecycle.py --seed 212 --train 600 --steps 50 --output-dir /tmp/v13-shadow-new-output
+```
+Do not overwrite `/tmp/v13-shadow-new-output` if it already exists; use a fresh directory. For audit, rehash `cohort.json`, `world-212.log`, `world-212.json`, `slot-shadow-v2.npz` against `manifest.json` before any inference.
