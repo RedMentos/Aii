@@ -1,0 +1,50 @@
+name: V13 BP1 QAD base+LoRA paired V2 software review
+on:
+  push:
+    branches: [codex/automation11-bp1-qad-lora-eval-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-lora-eval.yml'
+      - 'v13/code/scripts/bp1_qad_lora_eval.py'
+      - 'v13/code/scripts/bp1_paired_score.py'
+      - 'v13/code/tests/test_bp1_qad_lora_eval.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-lora-eval-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Run V2 plus original V1 regression, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-lora-v2"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-lora-v2/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_lora_eval.py v13/code/scripts/bp1_paired_score.py v13/code/tests/test_bp1_qad_lora_eval.py > "$RUNNER_TEMP/bp1-lora-v2/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score tests.test_bp1_native_collect) > "$RUNNER_TEMP/bp1-lora-v2/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-v2/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_lora_eval.py v13/code/scripts/bp1_paired_score.py v13/code/tests/test_bp1_qad_lora_eval.py > "$RUNNER_TEMP/bp1-lora-v2/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-v2/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 18130b4b663705aed167fcf7b052a6eb6e38831e --head HEAD > "$RUNNER_TEMP/bp1-lora-v2/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-lora-v2/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-qad-lora-v2-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-lora-v2/
+          if-no-files-found: error
+      - name: Enforce V2 and original V1 exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-lora-v2/${n}_EXIT.txt")" = 0 || { echo "${n} failed"; tail -100 "$RUNNER_TEMP/bp1-lora-v2/${n}_RAW.log"; exit 1; }
+          done
+          echo "QAD_LORA_V2_SOFTWARE_ONLY; NO_NATIVE_HELDOUT_OR_REDMi"
