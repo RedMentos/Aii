@@ -171,7 +171,7 @@ def serve(binary, base_gguf, adapter_gguf, port, log_path):
     N.assert_loopback_port_available(port)
     with Path(log_path).open("ab") as log:
         proc = subprocess.Popen([
-            str(binary), "-m", str(base_gguf), "--lora", str(adapter_gguf),
+            str(binary), "-m", str(base_gguf), "--lora-scaled", f"{adapter_gguf}:0",
             "--lora-init-without-apply", "--host", "127.0.0.1", "--port", str(port),
             "-c", "4096", "-t", "4", "-np", "1", "--no-webui", "--no-warmup",
         ], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=log)
