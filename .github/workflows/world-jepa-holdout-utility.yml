@@ -1,0 +1,71 @@
+name: V13 World-JEPA fresh heldout utility audit
+on:
+  push:
+    branches:
+      - codex/automation11-world-holdout-utility-20261027
+    paths:
+      - '.github/workflows/world-jepa-holdout-utility.yml'
+      - 'v13/code/scripts/world_jepa_holdout_utility.py'
+      - 'v13/code/tests/test_world_jepa_holdout_utility.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-holdout-utility/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-jepa-holdout-utility
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${ github.sha }}
+      - name: Isolated pinned NumPy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldholdout"
+          timeout 240s "$RUNNER_TEMP/worldholdout/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Capture original test and integrity evidence
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/worldholdoutproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/worldholdoutproof/HEAD.txt"
+          sha256sum v13/code/tests/test_world_jepa_holdout_utility.py > "$RUNNER_TEMP/worldholdoutproof/TEST_SHA256.txt"
+          if test -f v13/code/scripts/world_jepa_holdout_utility.py; then
+            sha256sum v13/code/scripts/world_jepa_holdout_utility.py > "$RUNNER_TEMP/worldholdoutproof/SOURCE_SHA256.txt"
+          else
+            echo 'SOURCE_NOT_YET_IMPLEMENTED_RED' > "$RUNNER_TEMP/worldholdoutproof/SOURCE_SHA256.txt"
+          fi
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldholdout/bin/python" -m unittest -v tests.test_world_jepa_holdout_utility) > "$RUNNER_TEMP/worldholdoutproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/worldholdout/bin/python" -m compileall -q v13/code/tests/test_world_jepa_holdout_utility.py v13/code/scripts/world_jepa_holdout_utility.py > "$RUNNER_TEMP/worldholdoutproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldholdout/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 949afa149460478661d54cfa944e321d195a7b03 --head HEAD > "$RUNNER_TEMP/worldholdoutproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldholdoutproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw original evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-holdout-${ github.run_id }}-${ github.sha }}
+          path: ${ runner.temp }}/worldholdoutproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/worldholdoutproof/${n}_EXIT.txt")" = 0 || {
+              cat "$RUNNER_TEMP/worldholdoutproof/${n}_RAW.log"
+              exit 1
+            }
+          done
+          tail -20 "$RUNNER_TEMP/worldholdoutproof/UNIT_RAW.log"
