@@ -1,0 +1,4 @@
+{"arm": "ce", "ce": 0.00144, "train_s": 730.52, "learned_recall": 1.0, "paraphrase_recall": 1.0, "near_miss_leak": 0.8125, "near_miss_leak_reworded": 0.8125, "probe_correct": 0.75, "n_anchors": 18}
+{"arm": "hand_both", "ce": 0.00307, "train_s": 898.6, "learned_recall": 1.0, "paraphrase_recall": 0.875, "near_miss_leak": 0.1875, "near_miss_leak_reworded": 0.125, "probe_correct": 1.0, "n_anchors": 50}
+{"arm": "gen_both", "ce": 0.00391, "train_s": 920.62, "learned_recall": 1.0, "paraphrase_recall": 0.90625, "near_miss_leak": 0.125, "near_miss_leak_reworded": 0.125, "probe_correct": 1.0, "n_anchors": 50}
+/tmp/claude-0/bj1/bp2b/bp2b-seed1.json
