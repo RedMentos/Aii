@@ -1,0 +1,49 @@
+# BJ1 opt-in step checkpoint candidate — 2026-10-27
+
+**Scope:** review-only candidate; no Age-0 authority, no model swap, no default behavior change, no Canon gate promotion.
+
+## Source and ownership
+- Owner: `codex/automation11-bj1-step-resume-candidate-20261027`.
+- Exact parent: PR #718 head `edd0212c1774f893433040f48fa6b57c3d2d4209`; parent chain remains review-only, not `main`.
+- Canon: `V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` W3/W6, §13.1–13.4, §14.5, IH-H25. Preserve all original STEP2/B3/BJ1 negative gates and unchanged seed/model/cohort settings.
+
+## Why this package
+The independent registered BP2b seed41 legacy native attempt, Actions run `40506115941` on source `7243d71f51ff53587b5062953a7d79f786648e87`, **did not complete**. The original Actions artifact `12737361371` was downloaded and inspected without changing it:
+- Original ZIP SHA256 `31f27480b98291ad60082a8fa56b2ff37ce08f053a711851fc08823f568ce982`, CRC PASS, 14 files.
+- `SOURCE_EXIT=0`, `ENV_EXIT=0`, `NATIVE_EXIT=124`, `PRIVACY_EXIT=0`.
+- Exact pinned 2,340,697,936-byte FP32 master: `FULL_FILE_HASH_PASS`, expected SHA256 `1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a`. Seven metadata SHA checks PASS.
+- Native log shows model load and PyTorch fallback for `causal_conv1d_fn` and `causal_conv1d_update`, then the **35-minute process timeout**. No completed native arm, score, or learning utility proof; the log does not establish how many optimizer steps finished.
+- Original ZIP was copied to a permitted private Library checkpoint; byte-exact readback matched the original SHA256. The rejected anyone-writable Drive destination was not used.
+
+## Implementation
+- `v13/body_jepa_checkpoint.py`: opt-in, CPU adapter-only immutable step blobs, fsynced `CURRENT.json` pointer, SHA256 and source/config binding, trainable adapter + predictor + AdamW optimizer + EMA + two Torch RNG states + step history. Safe `torch.load(weights_only=True)`, strict tensor/optimizer identity and moment shape checks, reject changed weights, tampering, cross-source replay, orphan-only state, nonfinite data and backward step pointers. Previous committed step remains addressable after an orphan write.
+- `v13/body_jepa.py`: the existing `BodyJepaTrainer.fit` consumes this checkpoint only with `cfg['checkpoint_resume']=True` and a pinned full master SHA. A new checkpoint is committed after every completed step. Source fingerprint includes full training items (including weights), config, anchors, probes, master SHA and base generation. New metrics report enabled/restored step. Existing `checkpoint_resume` default is absent/off; original registered BP2b 12-arm plans and frozen numerical settings are untouched.
+- `tests/test_body_jepa_checkpoint.py` and `tests/test_body_jepa_checkpoint_fit.py`: synthetic CPU exact uninterrupted-vs-interrupted optimizer/EMA/RNG comparison, real tiny HF/PEFT `BodyJepaTrainer.fit` crash after fsync and restart, source/weight mutation, symlink, orphan, hash tamper, stale step and optimizer-order refusals.
+- CI workflow pins a CPU Torch version plus Transformers/PEFT; no public model download, native runner or Redmi execution.
+- `.gitignore` excludes all `**/step-checkpoints/` trees so local adapter, optimizer, EMA and RNG snapshots are not accidentally staged in the public repository; focused CI checks the ignore rule.
+
+## Evidence and limitations
+- Local isolated Torch-only helper tests: 7/7 PASS (container, synthetic).
+- GitHub Actions `40514361736` at `7751c9f29a2a27f819a955962a3ab295a0a5e2e2`: **8/8 PASS** (7 helper + 1 tiny synthetic trainer). Latest code Actions `40514555640` at `4f62e9dedc4e549d46e6847ab63089c26884c10b`: **9/9 PASS** (8 helper + 1 actual tiny synthetic trainer), compile PASS, privacy CLEAN, `git diff --check` PASS. Documentation-only commits after that do not change tested code.
+- Not a native model result. This does not show that the original 35-minute attempt had a resumable completed step or that an optimized kernel would be compatible. The candidate is not enabled for an active registered cohort.
+- `STEP2=UTILITY_FAIL`, `B3 L1=FAIL`, `BJ1=NO_SIGNAL`, `jepa_weight=0` in the registered BP2b cohort, Age authority 0, Redmi unmeasured, complete V13 false.
+
+## Full-suite regression, retained RED
+- An independent software-only full-suite run `40515146076` at superseded workflow SHA `f488cdba4ace66cbe4a3d9c1b00e20faaa103710` ran **1,869 tests**, with **1 unrelated ERROR and 1 skip**. The sole error was `PermissionError` in `test_toolforecast.CheckpointTests.test_competence_check_scores_states_not_calls`, probing optional historical `/root/native/restore` on a CI runner. No BJ1 checkpoint test failed. `UNIT_EXIT=1`; compile/privacy/install EXIT 0. Preserve RED; do not claim full-suite green.
+- Original ZIP SHA256 `a0ec60f0d1909550ee914444bba28bb6e466f98b3bb304c164d7033db492bda6`, CRC PASS; copied to private Library and byte-exact readback PASS.
+- The existing verified BP2b integrated-regression review had already corrected this optional-path `OSError` handling. That narrow fix was applied to `tests/test_toolforecast.py` on this candidate branch, without changing runtime code or claiming native evidence. Full-suite rerun queued; report its actual result when complete.
+
+## CPU kernel research (primary-source check)
+- The original native warning names the reference PyTorch `causal_conv1d_fn` / `causal_conv1d_update` fallback. The upstream Dao-AILab `causal-conv1d` project explicitly describes its optimized implementation as **CUDA** with a PyTorch interface (https://github.com/Dao-AILab/causal-conv1d/blob/main/README.md). Installing it blindly on this CPU-only Actions runner is **not** an established fix.
+- vLLM documents separate CPU causal-convolution operations (https://docs.vllm.ai/en/v0.31.0/api/vllm/model_executor/layers/mamba/ops/cpu/causal_conv1d/), but this is not evidence of a drop-in, gradient-compatible replacement for the pinned Transformers LFM2 training graph. No such replacement was installed or claimed.
+- Treat the 35-minute timeout as a measured **execution-budget failure**, not as proof that the CUDA fallback alone caused it. First-step timing, RSS and optimizer completion need a separate preregistered native diagnostic.
+
+## Next owner action
+1. Verify latest exact-head CI and independently inspect checkpoint optimizer/EMA/source guards.
+2. Prepare a **new** explicitly registered native continuation experiment with unchanged original failed attempt retained; do not rewrite seed41 attempt evidence or silently change its protocol. Measure first-step time and resident memory before allocating another 35-minute job.
+3. Continue unrelated Canon packages if native execution remains blocked. Do not promote BJ1, BP2b, STEP2, B3, or age.
+
+Focused command:
+`cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit`
+
+Known prerequisite: pinned CPU `torch`, `transformers`, `peft` for the tiny integration test; real native run separately needs full master, approved CPU/memory budget, and a new preregistration. No private training states or prompts are committed.
