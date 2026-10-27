@@ -1,5 +1,7 @@
 """QAD C3 native smoke contracts; no model weights or native runtime in these tests."""
+import copy
 import json
+import socket
 import subprocess
 import tempfile
 import unittest
@@ -10,17 +12,17 @@ from scripts import bp1_qad_native_smoke as N
 
 
 def sample(mode, sha):
-    return {"mode": mode, "model_sha256": sha,
-            "records": [{"prompt": q, "response": "answer", "seconds": 0.1,
-                         "new_tokens": 2, "vmhwm_kib": 100} for q in N.PROMPTS]}
+    report = copy.deepcopy(N.common(mode, sha))
+    report["records"] = [{"prompt": q, "response": "answer", "seconds": 0.1,
+                          "new_tokens": 2, "vmhwm_kib": 100} for q in N.PROMPTS]
+    return report
 
 
 class NativeSmokeSoftwareTests(unittest.TestCase):
     def test_batch_encoding_is_normalized_to_tensor(self):
         class Tensor:
             pass
-        class Torch:
-            Tensor = Tensor
+        Torch = type("Torch", (), {"Tensor": Tensor})
         class BatchEncoding:
             def __getitem__(self, key):
                 self_key = key
@@ -65,6 +67,37 @@ class NativeSmokeSoftwareTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "prompt pair"):
             N.compare(a, b)
 
+    def test_stale_or_false_native_preregistration_rejected(self):
+        tampering = {
+            "schema": "V13_BP1_QAD_NATIVE_SMOKE_V0",
+            "revision": "other",
+            "seed": 14,
+            "max_new_tokens": 25,
+            "temperature": 1,
+            "prompts": ["different"] * 4,
+            "gates": {"jepa_weight": 1},
+            "training_executed": True,
+            "model_utility_proven": True,
+            "evidence_class": "REDCAPTURE_NOT_NATIVE",
+        }
+        for field, value in tampering.items():
+            with self.subTest(field=field):
+                report = sample("QAD_FP32_TRANSFORMERS", N.MASTER_SHA)
+                report[field] = value
+                with self.assertRaisesRegex(ValueError, "preregistered"):
+                    N.compare(report, sample("QAD_Q4_GGUF_LLAMA_CPP", N.GGUF_SHA))
+
+    def test_missing_native_preregistration_rejected_for_both_arms(self):
+        for mode, model_sha in (("QAD_FP32_TRANSFORMERS", N.MASTER_SHA),
+                                ("QAD_Q4_GGUF_LLAMA_CPP", N.GGUF_SHA)):
+            with self.subTest(mode=mode):
+                left = sample("QAD_FP32_TRANSFORMERS", N.MASTER_SHA)
+                right = sample("QAD_Q4_GGUF_LLAMA_CPP", N.GGUF_SHA)
+                target = left if mode == "QAD_FP32_TRANSFORMERS" else right
+                target.pop("revision")
+                with self.assertRaisesRegex(ValueError, "preregistered"):
+                    N.compare(left, right)
+
     def test_incomplete_native_records_rejected(self):
         a = sample("QAD_FP32_TRANSFORMERS", N.MASTER_SHA)
         a["records"].pop()
@@ -81,6 +114,14 @@ class NativeSmokeSoftwareTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 N.save_exclusive(dest, {"overwrite": True})
             self.assertEqual(json.loads(dest.read_text())["gates"]["jepa_weight"], 0)
+
+    def test_gguf_server_port_collision_is_rejected_before_launch(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as occupied:
+            occupied.bind(("127.0.0.1", 0))
+            port = occupied.getsockname()[1]
+            with self.assertRaisesRegex(RuntimeError, "already occupied"):
+                N.assert_loopback_port_available(port)
+        N.assert_loopback_port_available(port)
 
     def test_stop_only_owned_process(self):
         proc = Mock()

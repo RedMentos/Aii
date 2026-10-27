@@ -1,0 +1,11 @@
+# BP1 QAD pinned genuine Linux-native smoke — independent serial retry prereg
+
+Date 2026-10-27; independent reviewer branch `codex/automation11-bp1-qad-review-20261027`, PR #683 child of #682. Software source at `ce1833f99d142e44d4abe0076247f89f7fb892af`, script SHA256 `e99d0b0223a03e2edbdb28b04eef69ba54e370a103af82d78764e08c13c117e2`, tests SHA256 `2360ffe406663d3c017fac7b74b982615fd7d8fa4f7d29fae5de1adcab61089f`. Prior 13/13 software PASS (Actions 40474687659); no native success claimed.
+
+**Fixed source/model/protocol (unchanged from PR #682):** official `LiquidAI/LFM2.5-350M-GGUF` revision `657e078c94084481950a2d555a941481f715536b`; QAD FP32 safetensors SHA256 `1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079`; QAD GGUF SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`; llama.cpp b10964 Ubuntu release tar SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`; four fixed generic prompts, greedy 24 tokens, seed 13. No BP1 train/heldout targets or model optimizer. Ubuntu standard Actions runner, not Redmi.
+
+**Pre-run ownership check:** GitHub Actions repository `status=in_progress` query at 2026-10-27 ~08:39 UTC returned only source-bound focused workflow 40474872906 on this branch; no heavy native workflow in progress. Shared workflow concurrency group `v13-bp1-qad-native-smoke-heavy-serial`, `cancel-in-progress: false`. Do not launch competing heavy jobs; if a new owner registers, defer.
+
+**Execution plan:** temporarily allow the child review branch in the parent's exact native-smoke workflow push trigger, retain all original hash/resource/isolated-dependency gates and raw ZIP upload; run software first then serial FP32 → GGUF → diagnostic comparison, enforce every original exit code. Preserve any RED; verify raw ZIP CRC, HEAD, exact source/model/runner hashes, output JSON and exits; private Library backup. If source run fails, no utility claim; continue independent work. Later remove temporary branch trigger from PR before integration if appropriate. Do not run LoRA or heldout scoring in this smoke.
+
+**Negative gates:** STEP2 UTILITY_FAIL, B3 L1_FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, full V13 incomplete. Native smoke success would establish only basic Linux-native source inference, not tensor parity, learning or utility.
