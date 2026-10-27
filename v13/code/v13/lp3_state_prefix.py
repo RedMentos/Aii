@@ -87,6 +87,7 @@ class StateConditionedPrefix(nn.Module):
         batch = prompt_ids.shape[0]
         if assignment == 'shift' and (batch < 2 or not bool((prompt_ids != prompt_ids[:1]).any())):
             raise ValueError('Shifted control requires at least two different prompts')
+        supplied_features = features is not None
         if features is None:
             features = self.prompt_features(prompt_ids)
         if (not isinstance(features, torch.Tensor) or features.shape != (batch, self.hidden)
@@ -94,7 +95,7 @@ class StateConditionedPrefix(nn.Module):
             raise ValueError('Nonfinite or mismatched prompt-only features')
         # A public features= override must not bypass the prompt-only state
         # boundary: otherwise a caller could encode answer tokens in features.
-        if features is not None:
+        if supplied_features:
             reference = self.prompt_features(prompt_ids)
             if not torch.equal(features.detach().to(device=reference.device,
                                                     dtype=reference.dtype), reference):
