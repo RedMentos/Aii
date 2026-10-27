@@ -1,0 +1,71 @@
+{
+  "schema": "V13_RUN638_C3_DOSE_RESPONSE_BUILD_STATE_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/gpt6-run638-c3-dose-response-20261027",
+  "owner": "GPT-6 scheduled V13 implementation, isolated C3 learning/evaluation files",
+  "parent": {
+    "pr": 632,
+    "head_sha": "60077686e5dcadade6e7a1a08934b55aca3cd665"
+  },
+  "pr": 634,
+  "prereg": {
+    "commit": "b23b6162e55c37f9d5503e068176204b9795c75d",
+    "blob": "e784a1d74b0fa37996a5befecad2b642e0b104a0"
+  },
+  "cohort": {
+    "commit": "89523d4ef147dcc58f12cb529c706d02f4f3559a",
+    "blob": "94c8558de44069b4e3baa351b6ca74e5e9f4ec9c"
+  },
+  "implementation": {
+    "training_script_blob": "46ffa54fa7267eecc31e6db6f3db3c3c06d585a0",
+    "native_evaluator_blob": "4a283be377767e2be0f51b0e6c9ec2b20c7e548d",
+    "training_test_blob": "9758a19f24f423f9de24693740be4ef938d030ff",
+    "evaluator_test_blob": "3c7bc6d1bbd0cc58a73f730cd4fee15c1250f37a"
+  },
+  "source_ci": {
+    "run_id": 40430961589,
+    "head_sha": "6bed39909d9ee1d16277ade4e3f79938b1f9ca63",
+    "status": "GREEN",
+    "tests": "43/43 PASS",
+    "privacy": "CLEAN",
+    "zip_sha256": "0d778b62e9571c3b9f9708a3fb148dbdc9ecab2cf9cc68cb7f70edf6a497e2f5",
+    "crc": "PASS",
+    "inner_sha": "9/9 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run638/Run638-source43-GREEN-40430961589.zip"
+  },
+  "native_ci": {
+    "run_id": 40431064922,
+    "head_sha": "d6d97601d75ccaee05da96278549651edd3bb43d",
+    "status": "IN_PROGRESS_NOT_VERIFIED",
+    "utility": "UNKNOWN",
+    "raw_backup": "PENDING"
+  },
+  "original_native": {
+    "run_id": 40429819193,
+    "artifact_id": 12701134055,
+    "sha256": "940ae9372309ee828869e40e8d416f1bea54b4426c5420d5a925bf50ef329ce0",
+    "crc": "PASS",
+    "inner_sha": "22/22 PASS",
+    "status": "NO_ANSWER_UTILITY",
+    "train_hits": "0/2",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run637/Run637-GREEN-native-40429819193.zip",
+    "private_byte_roundtrip": "PASS"
+  },
+  "treatment": "Only prospective optimizer min/max steps 2->32; unchanged selected master, deployed GGUF, seed13, rank2/alpha4, lr, train/heldout, jepa_weight0, no anchor",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "open_questions": [
+    "Does 32-step training yield >0/2 train hits while preserving heldout and Cedar near-miss on deployed QAD-Q4?",
+    "Is native original 2-step baseline bit-reproducible across runner hosts?",
+    "Is exact-key '4' false-negative for 'four' worth a separate prospective scorer study (not Run638 frozen scorer)?",
+    "Body-JEPA weight-path, B1/B2 native sparse, STEP2 complementarity, Redmi remain unproven."
+  ],
+  "next_exact_command": "Read GitHub Actions 40431064922 jobs/logs; download artifact; verify ZIP SHA256/CRC/inner hashes, frozen source/model/seed/proof; retain failed raw; upload to private /V13-Checkpoints/2026-10-27/Run638/ with byte roundtrip; update scoped report/PR; continue next independent canonical package."
+}
