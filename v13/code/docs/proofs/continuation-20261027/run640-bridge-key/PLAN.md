@@ -1,0 +1,12 @@
+# Run640 — exact body hash-bound B3 bridge validity (review-only, 2026-10-27)
+
+## Observed runtime defect
+`v13/bodyport.py` defines `bridge_key(role,spec)` over role, model id, revision, **sha256**, dims, tokenizer and capabilities, but `Ports.bridge_valid` only compares sender/receiver **revision strings**. `Ports.check_bridges` similarly demotes a B3 manifest/slot only on revision mismatch. A serving model file can change SHA256 while reusing the same revision label, leaving a stale bridge treated as valid. This violates IH-H21 and the canonical requirement to invalidate learned latent paths before weight changes. This is a software-only source defect, not proof that B3 latent authority exists; B3 L1 remains FAIL.
+
+## Scoped repair
+On a new isolated review branch, change only `v13/bodyport.py` and `tests/test_bodyport.py` plus scoped evidence. Add an explicit `Ports.bridge_binding(direction)` helper returning exact `sender_revision`, `receiver_revision`, `sender_bridge_key`, `receiver_bridge_key` for a known direction and valid live SHA256-bound serving specs. A new/renewed bridge producer must put these values in the existing optional `Bridge.save(..., extra=...)` manifest field. No schema/model/seed hash or production weights change.
+
+`bridge_valid` must require exact matching revision **and** exact live sender/receiver bridge keys, reject missing legacy keys, missing/invalid live SHA256, malformed or unknown direction, and reject wrong receiver/sender. Legacy revision-only manifests become **invalid** until regenerated; this is a deliberate fail-closed compatibility change, not automatic authority. `check_bridges` must mark a manifest stale when the changed role's bridge key differs even with an unchanged revision, and demote bridge/latent_path slot assets on such identity changes. No rewrite of original manifests and no unsafe automatic repair.
+
+## Tests/evidence
+Retain the existing exact-match bridge test with a properly bound manifest, add tests for legacy revision-only rejection, same-revision SHA mutation, capability/dim/tokenizer change, swapped/wrong key, unknown direction, invalid live hash, stale slot asset on same-revision identity change and non-bridge asset preservation. Run focused `test_bodyport` and existing B3/Body/Runtime regressions plus public privacy scan on exact head. Persist original RED, source proof, hashes, current owner and next command. No STEP2, B3, Body-JEPA, jepa_weight, Redmi or V13 promotion.
