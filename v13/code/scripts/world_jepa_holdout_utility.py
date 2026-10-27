@@ -272,6 +272,74 @@ def verify_holdout_export(output_dir, training_dir):
             'cohort_sha256': manifest['cohort_sha256']}
 
 
+def summarize_holdouts(training_dir, output_dirs):
+    """Descriptive, read-only summary of separately verified fresh cohorts.
+
+    No pooling for model fitting, no p-value or PASS decision. Every cohort is
+    reverified from raw timestamps, original world log and checkpoint before
+    inclusion. Different seeds alone do not establish semantic independence.
+    """
+    if type(output_dirs) not in (list, tuple) or not 2 <= len(output_dirs) <= 20:
+        raise ValueError('Requires 2..20 distinct persisted holdout exports')
+    per_seed = []
+    seen = set()
+    for output_dir in output_dirs:
+        verified = verify_holdout_export(output_dir, training_dir)
+        raw_manifest = _read(Path(output_dir) / 'manifest.json', MAX_REPORT_BYTES)
+        manifest = _json_file(Path(output_dir) / 'manifest.json', MAX_REPORT_BYTES)
+        seed = manifest['holdout_seed']
+        if seed in seen:
+            raise ValueError('Duplicate holdout seed or export')
+        seen.add(seed)
+        metrics = verified['metrics']
+        per_seed.append({
+            'seed': seed,
+            'rows': verified['rows'],
+            'manifest_sha256': _sha(raw_manifest),
+            'cohort_sha256': verified['cohort_sha256'],
+            'action_minus_identity_mse': metrics['action_prediction_mse'] - metrics['identity_target_mse'],
+            'action_minus_rotated_mse': metrics['action_prediction_mse'] - metrics['rotated_action_mse'],
+            'mean_confidence': metrics['mean_confidence'],
+            'uncertain_rows': metrics['uncertain_rows'],
+            'action_prediction_mse': metrics['action_prediction_mse'],
+            'identity_target_mse': metrics['identity_target_mse'],
+            'rotated_action_mse': metrics['rotated_action_mse'],
+        })
+    per_seed.sort(key=lambda row: row['seed'])
+    n = sum(row['rows'] for row in per_seed)
+    weighted = lambda key: sum(row['rows'] * row[key] for row in per_seed) / n
+    training = _json_file(Path(training_dir) / 'manifest.json', MAX_REPORT_BYTES)
+    summary = {
+        'schema': 'V13_WORLD_JEPA_HOLDOUT_MULTISEED_SUMMARY_V1',
+        'mode': 'SHADOW_ONLY',
+        'authority': 0,
+        'training_performed': False,
+        'training_seed': training['seed'],
+        'checkpoint_sha256': training['checkpoint_sha256'],
+        'seeds': [row['seed'] for row in per_seed],
+        'holdout_rows': n,
+        'per_seed': per_seed,
+        'weighted_action_prediction_mse': weighted('action_prediction_mse'),
+        'weighted_identity_target_mse': weighted('identity_target_mse'),
+        'weighted_rotated_action_mse': weighted('rotated_action_mse'),
+        'weighted_action_minus_identity_mse': weighted('action_minus_identity_mse'),
+        'weighted_action_minus_rotated_mse': weighted('action_minus_rotated_mse'),
+        'model_beats_identity_seeds': sum(row['action_minus_identity_mse'] < 0 for row in per_seed),
+        'model_beats_rotated_seeds': sum(row['action_minus_rotated_mse'] < 0 for row in per_seed),
+        'total_uncertain_rows': sum(row['uncertain_rows'] for row in per_seed),
+        'redmi_measured': False,
+        'canonical_architecture_complete': False,
+        'user_full_scope_complete': False,
+        'claim_limit': 'Descriptive exploratory multi-seed Linux file-world controls; not a preregistered utility gate, Redmi or decision authority',
+    }
+    if not all(math.isfinite(summary[key]) for key in (
+            'weighted_action_prediction_mse', 'weighted_identity_target_mse',
+            'weighted_rotated_action_mse', 'weighted_action_minus_identity_mse',
+            'weighted_action_minus_rotated_mse')):
+        raise ValueError('Nonfinite multi-seed summary')
+    return summary
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description='V13 independent real-file-world SHADOW holdout')
     subs = parser.add_subparsers(dest='command', required=True)
@@ -280,12 +348,17 @@ def main(argv=None):
     run.add_argument('--output-dir', required=True)
     run.add_argument('--seed', type=int, required=True)
     run.add_argument('--rows', type=int, default=240)
+    summary = subs.add_parser('summarize', help='read-only distinct-seed heldout comparison')
+    summary.add_argument('--training-export', required=True)
+    summary.add_argument('--exports', nargs='+', required=True)
     check = subs.add_parser('verify', help='read-only persisted restart verification')
     check.add_argument('--training-export', required=True)
     check.add_argument('--output-dir', required=True)
     args = parser.parse_args(argv)
     if args.command == 'run':
         result = run_holdout(args.training_export, args.output_dir, args.seed, args.rows)
+    elif args.command == 'summarize':
+        result = summarize_holdouts(args.training_export, args.exports)
     else:
         result = verify_holdout_export(args.output_dir, args.training_export)
     print(json.dumps(result, sort_keys=True, allow_nan=False))
