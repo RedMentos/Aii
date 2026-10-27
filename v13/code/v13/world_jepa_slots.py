@@ -176,12 +176,17 @@ class SlotWorldJEPA:
                 'checkpoint_revision': CHECKPOINT_REVISION, 'inference_only': True}
 
     @classmethod
-    def load(cls, path, expected_provenance=None):
-        """Fail closed on unbound, malformed, oversized or incompatible snapshots."""
+    def load(cls, path, expected_provenance=None, expected_sha256=None):
+        """Require exact whole-file digest and provenance before loading SHADOW weights."""
         cls._provenance(expected_provenance)
+        if (type(expected_sha256) is not str or len(expected_sha256)!=64
+                or any(c not in '0123456789abcdef' for c in expected_sha256)):
+            raise ValueError('Checkpoint requires pinned lowercase SHA256')
         raw = Path(path).read_bytes()
         if not 100<=len(raw)<=MAX_CHECKPOINT_BYTES:
             raise ValueError('Checkpoint file size out of bounds')
+        if hashlib.sha256(raw).hexdigest()!=expected_sha256:
+            raise ValueError('Checkpoint whole-file SHA256 mismatch')
         try:
             with zipfile.ZipFile(io.BytesIO(raw)) as archive:
                 infos = archive.infolist()
