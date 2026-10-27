@@ -1,0 +1,63 @@
+name: V13 BP2b blinded transfer scorer software review
+on:
+  push:
+    branches: [codex/automation11-bp2b-blinded-score-20261027]
+    paths:
+      - '.github/workflows/bp2b-score-review.yml'
+      - 'v13/code/scripts/bp2b_transfer_score.py'
+      - 'v13/code/tests/test_bp2b_transfer_score.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-score/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-score-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated source-only prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/bp2b-score-venv"
+          "$RUNNER_TEMP/bp2b-score-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Capture strict blinded scorer tests and source hashes
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp2b-score"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp2b-score/HEAD.txt"
+          git hash-object v13/code/scripts/bp2b_transfer_score.py > "$RUNNER_TEMP/bp2b-score/SCORE_BLOB.txt"
+          git hash-object v13/code/scripts/bp2b_transfer_cohort.py > "$RUNNER_TEMP/bp2b-score/COHORT_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD" "$RUNNER_TEMP/bp2b-score-venv/bin/python" -m unittest -v tests.test_bp2b_transfer_score tests.test_bp2b_transfer_cohort tests.test_bp2b_locality_anchors) > "$RUNNER_TEMP/bp2b-score/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-score/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-score-venv/bin/python" -m compileall -q v13/code/scripts/bp2b_transfer_score.py v13/code/tests/test_bp2b_transfer_score.py > "$RUNNER_TEMP/bp2b-score/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-score/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-score-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base dcb0697470395ca7b1a171b4cf1bf112b2a31958 --head HEAD > "$RUNNER_TEMP/bp2b-score/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-score/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-score-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-score/
+          if-no-files-found: error
+      - name: Enforce scorer software gates
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp2b-score/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp2b-score/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP2B_BLINDED_SCORE_UNATTESTED_NO_NATIVE_PROOF"
