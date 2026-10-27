@@ -6,15 +6,25 @@ import shlex
 import tempfile
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import numpy as np
 
 from v13.operator import Operator
+from v13 import prohibitions
 from v13.world_jepa_shadow_probe import probe_checkpoint
 from v13.world_jepa_slots import SlotWorldJEPA
 from tests.test_world_jepa_slots import world, S
 
 PROV = {'cohort_sha256': 'e' * 64, 'source_sha256': 'f' * 64}
+
+
+class FakeStore:
+    def __init__(self):
+        self.table = None
+
+    def state(self, key, default=None):
+        return (self.table if key == prohibitions.KEY else default), 0
 
 
 class WorldConsoleShadowTests(unittest.TestCase):
@@ -41,7 +51,7 @@ class WorldConsoleShadowTests(unittest.TestCase):
 
     def setUp(self):
         world_state = SimpleNamespace(world_state=lambda: {'world': 'unchanged'})
-        self.fake = SimpleNamespace(store=object(), world=world_state)
+        self.fake = SimpleNamespace(store=FakeStore(), world=world_state)
         self.operator = Operator(self.fake)
 
     def command(self, sha=None):
@@ -79,6 +89,26 @@ class WorldConsoleShadowTests(unittest.TestCase):
             self.operator.run(':world unrelated')
         with self.assertRaises(ValueError):
             self.operator.run(':world shadow ' + str(self.ckpt))
+
+    def test_hard_prohibitions_and_announcement_fail_before_any_file_read(self):
+        for label, changes in (
+                ('notaus', {'halt': True}),
+                ('read_risk', {'rules': [{'scope': 'risk', 'value': 'READ_LOCAL', 'id': 'V1'}]}),
+                ('all_tools', {'rules': [{'scope': 'all', 'id': 'V1'}]}),
+                ('named_tool', {'rules': [{'scope': 'tool', 'value': 'world_shadow_probe', 'id': 'V1'}]}),
+                ('announce_all', {'announce_all': True}),
+                ('invalid_table', {'revision': 'FOREIGN'})):
+            with self.subTest(label=label):
+                self.fake.store.table = prohibitions.empty() | changes
+                with patch('v13.world_jepa_shadow_probe._json_file',
+                           side_effect=AssertionError('must not read JSON')):
+                    with patch('v13.world_jepa_shadow_probe.SlotWorldJEPA.load',
+                               side_effect=AssertionError('must not load model')):
+                        with self.assertRaises(PermissionError):
+                            self.operator.run(self.command())
+                # Read-only world status remains an allowed human inspection.
+                self.assertEqual(json.loads(self.operator.run(':world')),
+                                 {'world': 'unchanged'})
 
     def test_help_mentions_explicit_shadow_and_no_authority(self):
         help_text = self.operator.run(':help')
