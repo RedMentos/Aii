@@ -42,6 +42,9 @@ class NativeBatchSoftwareTests(unittest.TestCase):
                   'master_sha256_verified_locally': True,
                   'adapter_sha256': 'a' * 64}
         (path / 'RESULT.json').write_text(json.dumps(result), encoding='utf-8')
+        (path / 'ATTEMPT.json').write_text(json.dumps({'status': 'STARTED', 'plan': nr.plan(seed, arm)}), encoding='utf-8')
+        (path / 'SCORE.json').write_text(json.dumps({'leak_hits': 0, 'heldout_count': 32}), encoding='utf-8')
+        (path / 'predictions.jsonl').write_text('{"case_id":"fake","text":"fake"}\n', encoding='utf-8')
         stdout.write(b'SOFTWARE_FAKE_ONLY\n')
         return SimpleNamespace(returncode=0)
 
@@ -116,6 +119,32 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.run_batch(max_jobs=2)
         self.assertEqual(len(self.calls), 1)
+
+    def test_tampered_sidecars_refuse_restart_without_new_native_call(self):
+        for index, name in enumerate(('ATTEMPT.json', 'SCORE.json', 'predictions.jsonl')):
+            prefix = 'sidecar' + str(index)
+            self.run_batch(prefix=prefix, max_jobs=1)
+            before = len(self.calls)
+            attempt = self.out / 'seed-41' / 'legacy' / ('attempt-' + prefix + '-s41-legacy')
+            sidecar = attempt / name
+            sidecar.write_bytes(sidecar.read_bytes() + b'changed')
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                self.run_batch(prefix=prefix, max_jobs=2)
+            self.assertEqual(len(self.calls), before)
+
+    def test_missing_sidecar_cannot_publish_completed_checkpoint(self):
+        def incomplete_runner(cmd, stdout, stderr, timeout, check):
+            result = self.fake_runner(cmd, stdout, stderr, timeout, check)
+            attempt = cmd[cmd.index('--attempt') + 1]
+            path = self.out / 'seed-41' / 'legacy' / ('attempt-' + attempt)
+            (path / 'SCORE.json').unlink()
+            return result
+
+        with self.assertRaises(RuntimeError):
+            self.run_batch(runner=incomplete_runner)
+        state = json.loads((self.out / '.bp2b-batch' / 'software1' / 'STATE.json').read_text())
+        self.assertEqual(state['attempts']['41:legacy']['status'], 'FAILED')
+        self.assertFalse(state['full_acceptance'])
 
     def test_failed_subprocess_retained_and_no_overwrite(self):
         def failure(cmd, stdout, stderr, timeout, check):
