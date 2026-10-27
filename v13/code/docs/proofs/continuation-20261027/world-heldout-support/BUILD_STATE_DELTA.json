@@ -20,11 +20,24 @@
     "private_backup_verified": true
   },
   "green": {
-    "latest_source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79",
-    "status": "PENDING_EXACT_HEAD_TESTS"
+    "source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79",
+    "world_blob": "ff82c266a499fb7f59bd92a0fa60ed557a0dfc5a",
+    "actions": 40533900523,
+    "status": "SOFTWARE_FOCUSED_PASS_9",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12748170445,
+    "zip_sha256": "9ef6642770ccd79484d6a771d394bc79fac2f3edb3fd9929c8858c5b49c58d9d",
+    "private_backup_verified": true
   },
   "full_suite": {
-    "status": "PENDING_EXACT_HEAD_TESTS"
+    "status": "PENDING_EXACT_HEAD_SOURCE",
+    "source_commit": "acce97eb4e8e79a2cc1501799e0feb78358c2f79"
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -38,6 +51,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect exact Actions on source acce97eb, verify all exits, raw ZIP and private byte-exact backup; independent review before integration.",
+  "next_command": "Inspect latest World full-suite Actions for source acce97eb; verify raw exits, ZIP SHA and private byte-exact backup, then independent review PR #740.",
   "note": "Additive branch state delta; shared BUILD_STATE untouched to avoid parallel owner conflicts."
 }
