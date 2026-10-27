@@ -4,10 +4,6 @@ on:
     branches: [codex/gpt6-bp1-qad-train-plus-v2-20261027]
     paths:
       - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE.txt'
-      - 'v13/code/scripts/bp1_qad_train_candidate.py'
-      - 'v13/code/scripts/bp1_qad_export_preflight.py'
-      - 'v13/code/tests/test_bp1_qad_train_candidate.py'
-      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-candidate/NATIVE_SMOKE_AUDIT_RECEIPT.json'
 permissions:
   contents: read
   actions: read
