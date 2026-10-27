@@ -117,4 +117,56 @@ class LiveGoals(Base):
         out=AU.job(self.r,'learn_medium');self.assertEqual(out['world_model'],'TOO_FEW_TRANSITIONS');self.assertIsNone(out['curiosity'])
         self.assertNotIn('practice_event',out)
 
+
+class FiniteEvidence(Base):
+    def test_malformed_persisted_transitions_are_skipped_not_fitted(self):
+        forecast={'input_chars':100,'resource_state':'NORMAL'}
+        outcome={'action_duration_s':1.5,'characters':30}
+        def row(label, fc=forecast, out=outcome, created=3600):
+            return {'id':label,'event_id':'event-'+label,'status':'FINAL',
+                    'expected':json.dumps({'forecast':fc}) if isinstance(fc,dict) else fc,
+                    'outcome':json.dumps(out) if isinstance(out,dict) else out,
+                    'created':created}
+        rows=[
+            row('good'),
+            row('bad-expected','{'),
+            row('bad-outcome',forecast,'{'),
+            row('negative-duration',forecast,dict(outcome,action_duration_s=-2)),
+            row('nan-duration',forecast,dict(outcome,action_duration_s=float('nan'))),
+            row('bool-duration',forecast,dict(outcome,action_duration_s=True)),
+            row('negative-chars',forecast,dict(outcome,characters=-2)),
+            row('string-chars',forecast,dict(outcome,characters='many')),
+            row('nan-input',dict(forecast,input_chars=float('nan'))),
+            row('bool-input',dict(forecast,input_chars=True)),
+            row('nan-created',forecast,outcome,float('nan')),
+            row('bad-latent',dict(forecast,learned_latent_prediction={'latent':[1.,float('nan')]})),
+        ]
+        selection={'payload':json.dumps({'route_hint':'detail'})}
+        with mock.patch.object(self.r.store,'rows',return_value=rows), mock.patch.object(self.r.store,'one',return_value=selection):
+            got=WM.transitions(self.r.store)
+        self.assertEqual([t['action_id'] for t in got],['bad-latent','good'])
+        self.assertIsNone(got[0]['latent'])
+        self.assertTrue(all(math.isfinite(v) for t in got for v in t['s']+t['y']))
+
+    def test_nonfinite_query_or_fit_never_gains_counterfactual_confidence(self):
+        from copy import deepcopy
+        with mock.patch.object(WM,'transitions',return_value=synthetic(n=160)):
+            st=WM.fit(self.r.store)
+        s=synthetic(n=160)[4]['s']
+        self.assertIsNotNone(WM.counterfactual(self.r.store,s,'detail')['prediction'])
+        bad_state=list(s);bad_state[0]=float('nan')
+        for state,fit in ((bad_state,st),(s,dict(st,forward=[]))):
+            cf=WM.counterfactual(self.r.store,state,'detail',st=fit)
+            self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
+                             ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
+        bad_weights=deepcopy(st);bad_weights['forward'][0][0][0]=float('nan')
+        cf=WM.counterfactual(self.r.store,s,'detail',st=bad_weights)
+        self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
+                         ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
+        bad_support=deepcopy(st);bad_support['states']['detail'][0][0]=float('nan')
+        self.r.store.set_state(WM.KEY,bad_support)
+        cf=WM.counterfactual(self.r.store,s,'detail')
+        self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
+                         ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
+
 if __name__=='__main__':unittest.main()
