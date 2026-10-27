@@ -102,8 +102,8 @@ class HarnessLibrary:
         if diff:out|=candidate(diff)
         return out
     def apply(self,proposal,settings):
-        if proposal.get('kind')!='harness' or proposal.get('status')!='APPROVED':raise PermissionError('Nur freigegebene Harness-Vorschläge')
-        if not (proposal.get('shield') or {}).get('passed'):raise PermissionError('Regressionsschild nicht bestanden')
+        from .self_improve import require_approved_origin
+        require_approved_origin(self.s,proposal,kind='harness')
         settings=candidate(settings)
         if settings!=candidate(proposal['diff']):raise ValueError('Werte weichen vom freigegebenen Vorschlag ab')
         def f(st):
