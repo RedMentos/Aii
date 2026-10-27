@@ -69,6 +69,17 @@ class C1TaskOriginBindingReview(unittest.TestCase):
         self.assertIsNone(self.exec.view(self.session)['active_task'])
         self.assertIsNone(self.exec.report_context(self.session)['task_request'])
 
+    def test_literal_clear_sentinel_can_be_a_real_pinned_task(self):
+        self.exec.task(self.session, 'CLEAR_ACTIVE_TASK', clear=False)
+        self.assertEqual(self.exec.view(self.session)['active_task']['exact_task'],
+                         'CLEAR_ACTIVE_TASK')
+        next_event = self.store.event(self.session, 'Another user turn')
+        self.exec.begin(next_event, self.session, self.cfg)
+        self.assertEqual(self.exec.view(self.session)['active_task']['exact_task'],
+                         'CLEAR_ACTIVE_TASK')
+        self.exec.task(self.session, clear=True)
+        self.assertIsNone(self.exec.view(self.session)['active_task'])
+
     def test_valid_current_user_and_latest_operator_task_survive(self):
         self.assertEqual(self.exec.view(self.session)['active_task']['exact_task'],
                          'Current user request')
