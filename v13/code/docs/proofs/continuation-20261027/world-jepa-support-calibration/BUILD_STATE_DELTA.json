@@ -1,0 +1,78 @@
+{
+  "schema": "v13.review_only.build_state_delta.v1",
+  "date_utc": "2026-10-27",
+  "owner": "assistant/v13-world-jepa-support-calibration-20261027",
+  "base_branch": "assistant/v13-world-jepa-heldout-20261027",
+  "base_sha": "bfeee06983a9a3bf7a00fd525c036c234b429fb0",
+  "parent_pr": 749,
+  "pr": 751,
+  "prereg_commit": "7072861f8e83543656820a02a8f7d748d5f24ff7",
+  "prereg_verified_remote": true,
+  "model_source_path": "v13/code/v13/world_jepa.py",
+  "model_source_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "new_paths": [
+    "v13/code/docs/proofs/continuation-20261027/world-jepa-support-calibration/PREREG.md",
+    "v13/code/scripts/world_jepa_support_calibration.py",
+    "v13/code/tests/test_world_jepa_support_calibration.py",
+    ".github/workflows/world-jepa-support-calibration.yml"
+  ],
+  "software_tests": "21/21_PASS_GITHUB_ACTIONS_40557772288",
+  "synthetic_measurement": "WITHHELD_ACTION_PASS_AND_STATE_OOD_PASS_SYNTHETIC_ONLY",
+  "raw_receipt": {
+    "run_id": 40557772288,
+    "artifact_id": 12756943391,
+    "zip_sha256": "a9f16341da017f163f3742019ff76d247e2c55b6cd80f51269d401ac35d43291",
+    "zip_crc": "PASS",
+    "exits": "INSTALL_UNIT_MEASURE_COMPILE_PRIVACY_DIFF_ALL_0",
+    "exact_ci_checkout": "e2fa1b42f9f7382e1f7daa2569a19ccaf59e0164",
+    "model_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+    "audit_blob": "3722706f07b025dd4449ef18b6dd7c0f2a4d9c92",
+    "independent_row_arithmetic": "PASS"
+  },
+  "local_native_model": "NOT_RUN",
+  "redmi": "NOT_RUN",
+  "safety": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "world_jepa_runtime_wired": false,
+    "whole_system_complete": false
+  },
+  "next_commands": [
+    "Review PR #751 against parent #749 without changing registered cohorts",
+    "Review sibling PR #752 RED/GREEN and full suite",
+    "Plan SHADOW-only real event wiring under Age/approval gates with separate preregistration"
+  ],
+  "open_questions": [
+    "Independent cross-agent code review before integration.",
+    "Confidence rank correlation near zero on heldout; no calibrated-success interpretation.",
+    "World-JEPA remains experimental SHADOW; real environment and Redmi unavailable."
+  ],
+  "stop_reason": "NONE_CHECKPOINT_ONLY",
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Automation11U-World-Support-Calibration/world-support-40557772288.zip",
+    "byte_identical": true
+  },
+  "full_software_suite": {
+    "run_id": 40558336054,
+    "tests": "1939 OK (1 skipped)",
+    "all_raw_exits": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12757094225,
+    "zip_sha256": "60734bceceb37a710abee66e2c27ddde1f63f37d21e33afbbe4383807a766c3c",
+    "exact_ci_checkout": "fa3b8a69d355e8265321aff70d70b0174c79a23f",
+    "private_backup_byte_identical": true
+  },
+  "reproducibility": {
+    "run_id": 40558336047,
+    "artifact_id": 12757918548,
+    "zip_sha256": "52389d3aa159421b885d021e9a4f6ccd37128443782a122023399951599e805d",
+    "result_sha256": "e4b822148f5c825115d67efaee9d61db3cc19760ddae35e84381a3b05b946345",
+    "byte_identical_result_to_original": true,
+    "private_backup_byte_identical": true
+  }
+}
