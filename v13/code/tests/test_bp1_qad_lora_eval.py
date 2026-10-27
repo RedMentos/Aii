@@ -201,7 +201,8 @@ class QADLoraEvalTests(unittest.TestCase):
             bind = root / "binding.json"
             bind.write_text(json.dumps(binding()))
             with patch.object(E.S, "load_dataset", return_value=(rows, S.HELDOUT_SHA)), \
-                 patch.object(E, "validate_native_files", return_value={"verified": True}):
+                 patch.object(E, "validate_native_files", return_value={"verified": True}), \
+                 patch.object(E, "validate_train_proof", return_value=True):
                 result = E.collect("unused", bind, "server", "base", "adapter", root / "out",
                     train_proof_path="mock-proof", owner_confirmed=True, ask=lambda port, prompt, seed, scale: json.dumps({
                         "answer": "KEY", "evidence_quote": "source KEY", "uncertainty": ""}),
