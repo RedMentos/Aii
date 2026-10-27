@@ -1,0 +1,113 @@
+name: V13 LP3 preregistered real 350M heldout pilot
+on:
+  push:
+    branches: [codex/automation11c-lp3-heldout-utility-20261027]
+    paths:
+      - '.github/workflows/lp3-heldout-native-pilot.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-heldout-350m
+  cancel-in-progress: false
+jobs:
+  heldout-pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify preregistration predates implementation and install isolated CPU deps
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor ef806e6f5ead08e194f37ad41be452abb2126cf3 HEAD
+          test -s v13/code/docs/proofs/continuation-20261027/lp3-heldout-utility/PREREG.md
+          python3 -m venv "$RUNNER_TEMP/lp3-heldout-venv"
+          py="$RUNNER_TEMP/lp3-heldout-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'huggingface_hub==2.3.0'
+          "$py" -m pip check
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_lp3_heldout_utility tests.test_lp3_state_prefix
+          "$py" -m py_compile scripts/lp3_heldout_utility.py v13/lp3_state_prefix.py
+      - name: Download exact pinned public master and verify full FP32 SHA
+        run: |
+          set -euo pipefail
+          py="$RUNNER_TEMP/lp3-heldout-venv/bin/python"
+          export MASTER="$RUNNER_TEMP/lp3-heldout-master"
+          "$py" - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+          cd v13/code
+          PYTHONPATH=. "$py" - <<'PY'
+          import os
+          from scripts.lp3_real_master_smoke import verify_master
+          print('EXACT_FULL_FP32_MASTER_SHA_PASS',verify_master(os.environ['MASTER']))
+          PY
+      - name: Execute fixed 24-step pilot with 12 heldout prompts and raw exits
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/lp3-heldout-evidence"
+          cd v13/code
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          timeout --signal=TERM --kill-after=15s 20m \
+            env PYTHONPATH=. "$RUNNER_TEMP/lp3-heldout-venv/bin/python" scripts/lp3_heldout_utility.py \
+              --master "$RUNNER_TEMP/lp3-heldout-master" \
+              --out "$RUNNER_TEMP/lp3-heldout-evidence/RESULT.json" --execute-native \
+              > "$RUNNER_TEMP/lp3-heldout-evidence/NATIVE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-heldout-evidence/NATIVE_EXIT.txt"
+          cat "$RUNNER_TEMP/lp3-heldout-evidence/NATIVE_RAW.log"
+          exit 0
+      - name: Source, prereg, privacy and diff receipts
+        if: always()
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/lp3-heldout-evidence"
+          test -f "$RUNNER_TEMP/lp3-heldout-evidence/NATIVE_EXIT.txt" || echo 'NOT_RUN' > "$RUNNER_TEMP/lp3-heldout-evidence/NATIVE_EXIT.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/lp3-heldout-evidence/HEAD.txt"
+          git hash-object v13/code/scripts/lp3_heldout_utility.py > "$RUNNER_TEMP/lp3-heldout-evidence/SCRIPT_BLOB.txt"
+          git hash-object v13/code/docs/proofs/continuation-20261027/lp3-heldout-utility/PREREG.md > "$RUNNER_TEMP/lp3-heldout-evidence/PREREG_BLOB.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3fcc3f89f4b1965f6fc656744073be008eefe460 --head HEAD > "$RUNNER_TEMP/lp3-heldout-evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-heldout-evidence/PRIVACY_EXIT.txt"
+          git diff --check 3fcc3f89f4b1965f6fc656744073be008eefe460 HEAD > "$RUNNER_TEMP/lp3-heldout-evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/lp3-heldout-evidence/DIFF_EXIT.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lp3-heldout-raw-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/lp3-heldout-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits without promoting V13 gates
+        if: always()
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/lp3-heldout-evidence"
+          test "$(cat "$evidence/NATIVE_EXIT.txt")" = 0
+          test "$(cat "$evidence/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$evidence/DIFF_EXIT.txt")" = 0
+          "$RUNNER_TEMP/lp3-heldout-venv/bin/python" - "$evidence/RESULT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['status'] in ('LP3_HELDOUT_ATTRIBUTABLE_SIGNAL',
+                                 'LP3_HELDOUT_NO_ATTRIBUTABLE_SIGNAL')
+          assert d['evidence_class']=='LINUX_NATIVE_EXPERIMENTAL_HELDOUT'
+          assert d['jepa_weight']==0 and d['age_authority']==0
+          assert d['redmi_measured'] is False
+          assert d['whole_system_complete'] is False
+          assert d['production_utility_proven'] is False
+          print('LP3_PILOT_RECORDED_WITHOUT_GATE_PROMOTION',d['status'])
+          PY
