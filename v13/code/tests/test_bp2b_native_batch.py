@@ -117,6 +117,18 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         self.assertEqual(state['attempts']['41:legacy']['exit_code'], 124)
         self.assertFalse(state['full_acceptance'])
 
+    def test_prefix_matches_actual_child_native_attempt_contract(self):
+        # Real run_arm rejects >32 characters and dots; fake subprocesses do not.
+        import re
+        child = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,31}\\Z')
+        for job in batch.registered('x' * 16):
+            self.assertIsNotNone(child.fullmatch(job['attempt']))
+            self.assertLessEqual(len(job['attempt']), 32)
+        for bad in ('x' * 17, 'x.y', 'abc.def'):
+            with self.subTest(prefix=bad), self.assertRaises(ValueError):
+                batch.registered(bad)
+        self.assertFalse(self.out.exists())
+
     def test_invalid_inputs_and_master_preflight_fail_before_output(self):
         for prefix in ('../escape', '..', '', 'a/b', 'bad space', 'x' * 25):
             with self.subTest(prefix=prefix), self.assertRaises(ValueError):
