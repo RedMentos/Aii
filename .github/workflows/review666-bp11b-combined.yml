@@ -1,0 +1,68 @@
+name: V13 independent PR666 BP11b + fetch revocation combined check
+on:
+  push:
+    branches: [codex/v13-review666-module-halt-race-20261027]
+    paths:
+      - '.github/workflows/review666-bp11b-combined.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/review666-module-halt-race/AMENDMENT_CLAUDE_BP11B.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-review666-bp11b-combined
+  cancel-in-progress: false
+jobs:
+  synthetic-disposable-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated deps
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/review666bp11b"
+          timeout 240s "$RUNNER_TEMP/review666bp11b/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Disposable exact Claude new-head merge and synthetic regression
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/review666bp11bproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/review666bp11bproof/REVIEW_HEAD.txt"
+          git fetch --no-tags origin e505364c78d6ef222eb287d84d84aed81ecc53e3 > "$RUNNER_TEMP/review666bp11bproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/FETCH_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' merge --no-commit --no-ff e505364c78d6ef222eb287d84d84aed81ecc53e3 > "$RUNNER_TEMP/review666bp11bproof/MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/review666bp11bproof/CONFLICTS.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_review666_module_halt_race.py > "$RUNNER_TEMP/review666bp11bproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 450s "$RUNNER_TEMP/review666bp11b/bin/python" -m unittest -v tests.test_review666_module_halt_race tests.test_modules_gate tests.test_guard2) > "$RUNNER_TEMP/review666bp11bproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/review666bp11b/bin/python" -m compileall -q v13/code/v13/modules_gate.py v13/code/v13/module_learn.py > "$RUNNER_TEMP/review666bp11bproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/COMPILE_EXIT.txt"
+          git -c user.name='V13 Disposable Merge Probe' -c user.email='probe@localhost.invalid' commit --no-verify -m 'CI-only BP11b plus fetch revocation candidate' > "$RUNNER_TEMP/review666bp11bproof/EPHEMERAL_COMMIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/EPHEMERAL_COMMIT_EXIT.txt"
+          "$RUNNER_TEMP/review666bp11b/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base ed5010708bdb3d11c5e495f01cc07d99d359ba39 --head HEAD > "$RUNNER_TEMP/review666bp11bproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/review666bp11bproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: review666-bp11b-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/review666bp11bproof/
+          if-no-files-found: error
+      - name: Enforce zero-conflict synthetic compatibility
+        run: |
+          set -euo pipefail
+          test ! -s "$RUNNER_TEMP/review666bp11bproof/CONFLICTS.txt"
+          for n in FETCH MERGE UNIT COMPILE EPHEMERAL_COMMIT PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/review666bp11bproof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/review666bp11bproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -10 "$RUNNER_TEMP/review666bp11bproof/UNIT_RAW.log"
