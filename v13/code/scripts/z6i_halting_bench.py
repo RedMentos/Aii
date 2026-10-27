@@ -119,7 +119,7 @@ def first_pair(offers, post):
     return [out[r] for r in ('B1_DETAIL', 'B2_GIST') if r in out]
 
 
-def run_arm(installed, arm, fx, checkpoint=None):
+def run_arm(installed, arm, fx, checkpoint=None, on_row=None):
     from v13 import effort as EF
     from v13.config import initialize, save_config
     from v13.proofs import audit_event
@@ -166,6 +166,7 @@ def run_arm(installed, arm, fx, checkpoint=None):
                         except Exception as exc:
                             row['embedding_error'] = type(exc).__name__+': '+str(exc)[:200]
                     rows.append(row)
+                    if on_row: on_row(row)
                     print(json.dumps({k: row[k] for k in ('arm', 'fixture', 'pass', 'turn_s', 'offers', 'reentries')}), flush=True)
             finally:
                 r.close()
@@ -275,14 +276,17 @@ def analyse(test_rows, head=None):
 
 
 def main_run(installed, out, arms, seed, limit=None, checkpoint=None):
+    """Resumable: rows are saved after every fixture; a restart skips (arm, fixture) pairs already done."""
     installed = Path(installed).resolve(); out = Path(out); fx = fixtures(seed)
     if limit: fx = [f for i, f in enumerate(fx) if i % (len(fx)//limit) == 0][:limit]
-    prev = json.loads(out.read_text()) if out.exists() else {'rows': []}
-    rows = [r for r in prev['rows'] if r['arm'] not in arms]
-    for arm in arms:
-        rows += run_arm(installed, arm, fx, checkpoint)
+    rows = json.loads(out.read_text())['rows'] if out.exists() else []
+
+    def save():
         atomic_write(out, json.dumps({'kind': 'V13_Z6I_HALTING_RUN', 'seed': seed, 'fixtures': [f[0] for f in fx], 'rows': rows, 'checkpoint': checkpoint,
                                       'phone_measured': False, 'prereg': 'docs/proofs/continuation-20261027/z6i-halting/PREREG.md'}))
+    for arm in arms:
+        done = {r['fixture'] for r in rows if r['arm'] == arm}; todo = [f for f in fx if f[0] not in done]
+        if todo: run_arm(installed, arm, todo, checkpoint, on_row=lambda r: (rows.append(r), save()))
 
 
 def main_train(trains, outdir):
