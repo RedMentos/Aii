@@ -1,14 +1,27 @@
 """WP-T13: BodyPort lifecycle in the RunnerPool, live IH-H21 bridge-key check, online body swap with rollback (no native weights)."""
 import json
 import unittest
+import numpy as np
 from unittest import mock
 from pathlib import Path
 from test_bodies import Base,FakeRunner
 from v13.runtime import Runtime
 from v13.bodyport import BodySwap,bridge_key,direction_roles
+from v13 import b3bridge as BB
 from v13.operator import Operator
 
 OLD_EVAL={'overall':.6,'seen':.7,'unseen':.5};NEW_EVAL={'overall':.62,'seen':.7,'unseen':.51}
+
+def write_bound_bridge(home,ports,direction):
+    """Real tiny bridge weights + live exact-model-key manifest (not a utility claim)."""
+    bind=ports.bridge_binding(direction)
+    p=home/'b3'/direction
+    bridge=BB.Bridge(4,K=2,r=2,h=3,classes=2,seed=7,direction=direction)
+    bridge.save(p,bind['sender_revision'],bind['receiver_revision'],
+                {'sender_bridge_key':bind['sender_bridge_key'],
+                 'receiver_bridge_key':bind['receiver_bridge_key']})
+    return p.with_suffix('.json')
+
 
 class Swap(Base):
     budget=1300
@@ -68,8 +81,8 @@ class BridgeKeyTests(Swap):
     def test_bridges_for_the_old_body_go_stale_before_the_new_one_serves(self):
         d=self.home/'b3';d.mkdir(exist_ok=True)
         ports=self.r.bodies.ports
-        (d/'B1_TO_B2.json').write_text(json.dumps({'direction':'B1_TO_B2',**ports.bridge_binding('B1_TO_B2')}))
-        (d/'B2_TO_B1.json').write_text(json.dumps({'direction':'B2_TO_B1',**ports.bridge_binding('B2_TO_B1')}))
+        write_bound_bridge(self.home,ports,'B1_TO_B2')
+        write_bound_bridge(self.home,ports,'B2_TO_B1')
         self.r.bodies.slots.register_asset('B2_GIST','prefix_bridge','latent_path')
         self.assertTrue(ports.bridge_valid('B1_TO_B2'));self.model()
         sw,out,_=self.swap();self.model()  # the model change happens at this get
@@ -84,10 +97,33 @@ class ExactBridgeIdentityTests(Swap):
     def manifest(self,direction='B1_TO_B2'):
         d=self.home/'b3';d.mkdir(exist_ok=True)
         ports=self.r.bodies.ports
-        p=d/(direction+'.json')
-        man={'direction':direction,**ports.bridge_binding(direction)}
-        p.write_text(json.dumps(man))
+        p=write_bound_bridge(self.home,ports,direction)
+        man=json.loads(p.read_text())
         return p,man
+
+    def test_exact_bridge_requires_real_matching_weight_bytes(self):
+        p,man=self.manifest()
+        self.assertTrue(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+        self.assertEqual(BB.Bridge.load(p.with_suffix('')).manifest['sha256'],man['sha256'])
+
+    def test_matching_manifest_without_npz_is_not_valid(self):
+        p,_=self.manifest()
+        p.with_suffix('.npz').unlink()
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+
+    def test_modified_npz_arrays_fail_exact_bridge_validity(self):
+        p,_=self.manifest()
+        weights=p.with_suffix('.npz')
+        with np.load(weights) as archive:
+            arrays={k:archive[k].copy() for k in archive.files}
+        arrays['p_Q'][0,0]+=1.0
+        np.savez(weights,**arrays)
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
+
+    def test_truncated_npz_fails_closed_without_exception(self):
+        p,_=self.manifest()
+        p.with_suffix('.npz').write_bytes(b'not a valid npz')
+        self.assertFalse(self.r.bodies.ports.bridge_valid('B1_TO_B2'))
 
     def test_installed_active_slot_recovers_file_hash_not_revision(self):
         ports=self.r.bodies.ports

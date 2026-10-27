@@ -1,0 +1,5 @@
+# Run641 amendment 1 — 2026-10-27 UTC, before repair
+
+First intervention commit `735bd1d19fdadb45b9534a693543de0739cc416e`, Actions `40436633366` is **RED**: 55 tests, 1 ERROR. The three preregistered NPZ-negative controls now PASS, but an existing Run640 malformed non-object manifest test errors because `Bridge.load` assumes a dict and raises `AttributeError` on JSON `[]`; `Ports.bridge_valid` did not yet catch this. Source compile PASS, dependencies PASS, privacy CLEAN. Raw ZIP SHA256 `ac944b1b59575beb02a5c833b1521a33be484fcfc44f25e3b60e356864dfecee`, GitHub artifact 12704502150, ZIP CRC PASS, archived privately `/V13-Checkpoints/2026-10-27/Run641/Run641-first-fix-RED-40436633366.zip`.
+
+Prospective technical repair: add `AttributeError` to the fail-closed malformed-manifest exceptions in `Ports.bridge_valid`. Do not modify frozen cohorts, new acceptance criteria or other runtime code. Retain both RED runs and rerun the identical test matrix on the exact source head. No native/Redmi or B3 utility claim.
