@@ -123,6 +123,8 @@ def save(root, source_sha, step, model, predictor, optimizer, ema, generator, hi
         raise ValueError('EMA updates must match the completed optimizer step')
     if type(history) is not list or len(history) != step or not _finite_tree(history):
         raise ValueError('Invalid step history')
+    if not optimizer.state:
+        raise ValueError('Missing optimizer state after completed step')
     payload = {'revision': REVISION, 'source_sha256': source_sha, 'step': step,
                'adapter': {n: p.detach().cpu().clone() for n, p in params.items()},
                'predictor': {n: p.detach().cpu().clone() for n, p in predictor.state_dict().items()},
@@ -236,9 +238,10 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
     incoming = state['optimizer']
     current = optimizer.state_dict()
     if (type(incoming) is not dict or set(incoming) != {'state', 'param_groups'}
+            or type(incoming['state']) is not dict or not incoming['state']
             or type(incoming['param_groups']) is not list
             or len(incoming['param_groups']) != len(current['param_groups'])):
-        raise ValueError('Optimizer groups mismatch')
+        raise ValueError('Missing optimizer state or optimizer groups mismatch')
     for new, old in zip(incoming['param_groups'], current['param_groups']):
         if (type(new) is not dict or set(new) != set(old)
                 or len(new['params']) != len(old['params'])
@@ -252,13 +255,26 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
             if type(pid) is not int or pid in known_ids:
                 raise ValueError('Duplicate or invalid optimizer state id')
             known_ids.add(pid)
-            slot = incoming['state'].get(pid, {})
-            if type(slot) is not dict:
-                raise ValueError('Invalid optimizer state slot')
+            slot = incoming['state'].get(pid)
+            if slot is None:  # An unused predictor in the CE-only arm has no Adam moments.
+                continue
+            if (type(slot) is not dict
+                    or not {'step', 'exp_avg', 'exp_avg_sq'} <= set(slot)
+                    or set(slot) - {'step', 'exp_avg', 'exp_avg_sq', 'max_exp_avg_sq'}):
+                raise ValueError('Incomplete optimizer state slot')
+            step_value = slot['step']
+            if isinstance(step_value, torch.Tensor):
+                if step_value.numel() != 1:
+                    raise ValueError('Invalid optimizer state step')
+                step_value = float(step_value)
+            if (type(step_value) not in (int, float) or not math.isfinite(step_value)
+                    or not 0 < step_value <= state['step']):
+                raise ValueError('Invalid optimizer state step')
             for moment in ('exp_avg', 'exp_avg_sq', 'max_exp_avg_sq'):
                 if moment in slot and (not isinstance(slot[moment], torch.Tensor)
-                                       or slot[moment].shape != param_by_name[name].shape):
-                    raise ValueError('Optimizer moment shape mismatch')
+                                       or slot[moment].shape != param_by_name[name].shape
+                                       or slot[moment].dtype != param_by_name[name].dtype):
+                    raise ValueError('Optimizer moment shape/dtype mismatch')
     if set(incoming['state']) - known_ids:
         raise ValueError('Orphan optimizer state id')
     old_params = {n: p.detach().clone() for n, p in params.items()}
