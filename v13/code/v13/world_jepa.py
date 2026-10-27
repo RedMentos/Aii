@@ -89,6 +89,29 @@ def loss_grads(enc, pred, x, a, zt, var_w=VAR_W, cov_w=COV_W, train_enc=True, in
     return loss, parts, gp, ge
 
 
+def _validate_fit_arrays(X, A, X2, steps, log_every, ensemble):
+    """Reject invalid transition evidence before allocating an optimizer."""
+    if (type(steps) is not int or steps < 1 or type(log_every) is not int
+            or log_every < 1 or type(ensemble) is not int or ensemble < 1):
+        raise ValueError('World-JEPA requires positive steps, log interval and ensemble')
+    try:
+        X = np.asarray(X, dtype=float)
+        A = np.asarray(A, dtype=float)
+        X2 = np.asarray(X2, dtype=float)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError('World-JEPA transitions must be numeric') from exc
+    if (X.ndim != 2 or A.ndim != 2 or X2.ndim != 2 or len(X) < 2
+            or X.shape != X2.shape or X.shape[1] < 1
+            or A.shape[0] != len(X) or A.shape[1] < 1):
+        raise ValueError('World-JEPA transition shapes or sample count invalid')
+    if not (np.isfinite(X).all() and np.isfinite(A).all() and np.isfinite(X2).all()):
+        raise ValueError('World-JEPA requires finite transition observations')
+    # Zero rows are retained only for the preregistered no-action control.
+    if not np.all((A == 0.) | (A == 1.)) or np.any(A.sum(axis=1) > 1):
+        raise ValueError('World-JEPA action must be one-hot or zero control')
+    return X, A, X2
+
+
 class WorldJEPA:
     """fit(X, A, X2) on transitions (obs, action one-hot, next obs); A may be zeroed/shuffled for controls."""
 
@@ -96,6 +119,7 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500):
+        X, A, X2 = _validate_fit_arrays(X, A, X2, steps, log_every, self.ensemble)
         rng = np.random.default_rng(self.seed)
         self.mu = X.mean(0); self.sd = X.std(0)+1e-3
         x, x2 = (X-self.mu)/self.sd, (X2-self.mu)/self.sd
@@ -122,6 +146,9 @@ class WorldJEPA:
                 o.step(gp)
             self.preds.append(p)
         self._ztrain = z_all
+        # Only actually observed one-hot training actions count as support.
+        # Zero-action controls deliberately confer no action coverage.
+        self._action_counts = (A == 1.).sum(axis=0).astype(int)
         sub = z_all[np.random.default_rng(self.seed).choice(len(z_all), min(400, len(z_all)), replace=False)]
         d = np.sqrt(((sub[:, None]-sub[None])**2).sum(-1)); np.fill_diagonal(d, np.inf); self._nn_med = float(np.median(d.min(1)))+1e-9
         return self
@@ -141,10 +168,49 @@ class WorldJEPA:
         d = np.sqrt(((z[:, None]-self._ztrain[None])**2).sum(-1)).min(1); return d/self._nn_med
 
     def confidence(self, X, A, counts):
-        """counts: training samples of each query's action. Returns (confidence, label per query)."""
-        _, spread = self.predict(X, A); ood = self.ood(X)
-        cover = 1-np.exp(-np.asarray(counts, float)/COVER_N)
-        conf = cover/(1+spread/SPREAD_REF)*np.minimum(1., OOD_SUPPORT/np.maximum(ood, 1e-9))
+        """Bound caller counts by actual fit support; invalid evidence is uncertain.
+
+        counts is an optional *lower* per-query coverage report, never authority
+        to invent training observations. These scores are not calibrated probabilities.
+        """
+        try:
+            X = np.asarray(X, dtype=float)
+            A = np.asarray(A, dtype=float)
+            counts = np.asarray(counts, dtype=float)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Invalid World-JEPA confidence inputs') from exc
+        if (X.ndim != 2 or A.ndim != 2 or counts.ndim != 1
+                or len(X) != len(A) or len(X) != len(counts)
+                or A.shape[1] < 1):
+            raise ValueError('World-JEPA confidence shape mismatch')
+        conf = np.zeros(len(X), dtype=float)
+        fit_counts = np.asarray(getattr(self, '_action_counts', []))
+        if fit_counts.shape != (A.shape[1],):
+            return conf, ['SIMULATION_UNCERTAIN'] * len(X)
+        action_ok = (np.isfinite(A).all(axis=1)
+                     & ((A == 0.) | (A == 1.)).all(axis=1)
+                     & (A.sum(axis=1) == 1.))
+        count_ok = (np.isfinite(counts) & (counts >= 0)
+                    & (counts == np.floor(np.where(np.isfinite(counts), counts, 0.))))
+        action_ids = np.argmax(A, axis=1)
+        effective = np.minimum(np.where(count_ok, counts, 0.), fit_counts[action_ids])
+        valid = (action_ok & count_ok & (effective > 0)
+                 & np.isfinite(X).all(axis=1))
+        if valid.any():
+            _, spread = self.predict(X[valid], A[valid])
+            ood = self.ood(X[valid])
+            spread = np.asarray(spread, dtype=float)
+            ood = np.asarray(ood, dtype=float)
+            if spread.shape != (int(valid.sum()),) or ood.shape != spread.shape:
+                raise ValueError('World-JEPA uncertainty shape mismatch')
+            good = (np.isfinite(spread) & np.isfinite(ood)
+                    & (spread >= 0) & (ood >= 0))
+            score = np.zeros(len(spread), dtype=float)
+            if good.any():
+                cover = 1 - np.exp(-effective[valid][good] / COVER_N)
+                score[good] = (cover / (1 + spread[good] / SPREAD_REF)
+                               * np.minimum(1., OOD_SUPPORT / np.maximum(ood[good], 1e-9)))
+            conf[valid] = np.where(np.isfinite(score), np.clip(score, 0., 1.), 0.)
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
     def collapse_stats(self, X2):
