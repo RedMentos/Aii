@@ -1,0 +1,57 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP_T14_CONTROL_CHECKPOINT_CONTAINMENT",
+  "status": "REVIEW_ONLY_SOFTWARE_PASS_NOT_INTEGRATED",
+  "parent_pr": 763,
+  "parent_sha": "54e6d42e483cd1a15eec6e00e27a7672632db574",
+  "review_pr": 765,
+  "source_blob": "416926df68697ddc802300083b6ee2d4682ee1cb",
+  "red": {
+    "run": 40568617342,
+    "sha": "fc4dad6f05cb2c61c1601b81127a0d211f578c47",
+    "tests": 14,
+    "failures": 3,
+    "zip_sha256": "4f35cdc2247faa85aa6cc6a939cc39704570ef07d59b47074642955d228ee24e"
+  },
+  "green": {
+    "run": 40568672861,
+    "sha": "e9d0b087be97a1eb4ef7ece214ff0cb70869777d",
+    "tests": 14,
+    "failures": 0,
+    "zip_sha256": "a7e2f4ba3882943da8db5ac20f4d699392a1115405bc61f7708c69468950568d"
+  },
+  "full": {
+    "run": 40568704310,
+    "sha": "d4b5b9dec06e59d9141fea38f5500fc5f53fbf13",
+    "tests": 1950,
+    "skipped": 1,
+    "raw_exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "2721e07b2ecf5a1c9a03b11825dba7083c363bc299ec6518cd57381f2fcf6f88"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11ZI-Control-Checkpoint-Containment",
+  "private_backup_byte_verified": true,
+  "limitations": [
+    "Accounting path containment only, not checkpoint-byte SHA approval",
+    "No Redmi/thermal/energy proof",
+    "No source model or learning authority changes"
+  ],
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_control_checkpoint_containment_review tests.test_control_budget_row_integrity_review tests.test_control_budget_finite_marks_review tests.test_control_budget",
+  "next_prerequisite": "Independent review of stacked PR #765 after #763; checkpoint hash approval separate; no auto-merge"
+}

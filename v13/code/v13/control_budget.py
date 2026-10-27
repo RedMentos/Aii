@@ -59,17 +59,41 @@ def latency(store,n=200):
             'turns_per_hour':round(n/span,2) if span>0 else None}
 
 def checkpoints(store,home):
-    """Approved learned checkpoints the active generation points at (sha-verified paths under home/checkpoints)."""
+    """Account only regular files under home/checkpoints; this is NOT hash approval."""
     gen=store.generation();out=[];seen=set()
+    try:
+        root=Path(home).resolve(strict=True)
+    except (OSError,RuntimeError):
+        return out
+    allowed=root/'checkpoints'
+    if allowed.is_symlink() or not allowed.is_dir():
+        return out
+
     def walk(x,where):
         if isinstance(x,dict):
             for k,v in x.items():walk(v,where+'.'+k)
         elif isinstance(x,list):
-            for i,v in enumerate(x):walk(v,where)
-        elif isinstance(x,str) and ('checkpoints/' in x or x.endswith(('.npz','.gguf','.safetensors'))) and x not in seen:
-            p=Path(x);p=p if p.is_absolute() else Path(home)/p
-            if p.is_file() and Path(home)/'models' not in p.parents:seen.add(x);out.append({'path':str(p.relative_to(home)) if p.is_relative_to(home) else str(p),'bytes':p.stat().st_size,'from':where[1:]})
-    walk(gen,'');return out
+            for v in x:walk(v,where)
+        elif isinstance(x,str) and ('checkpoints/' in x or x.endswith(('.npz','.gguf','.safetensors'))):
+            p=Path(x);p=p if p.is_absolute() else root/p
+            try:
+                relative=p.relative_to(root)
+                if '..' in relative.parts:return
+                # No symlinked candidate or intermediate directory may redirect accounting.
+                current=root
+                for part in relative.parts:
+                    current=current/part
+                    if current.is_symlink():return
+                resolved=p.resolve(strict=True)
+                if not resolved.is_relative_to(allowed) or not resolved.is_file():return
+                if resolved in seen:return
+                size=resolved.stat().st_size
+            except (OSError,RuntimeError,ValueError):
+                return
+            seen.add(resolved)
+            out.append({'path':str(resolved.relative_to(root)),'bytes':size,'from':where[1:]})
+    walk(gen,'')
+    return out
 
 def state_bytes(store,top=5):
     rows=store.rows('SELECT key,length(payload) AS n FROM states ORDER BY n DESC');total=sum(r['n'] or 0 for r in rows)
