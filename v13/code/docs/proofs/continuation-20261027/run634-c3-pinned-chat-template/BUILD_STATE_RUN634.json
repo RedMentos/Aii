@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN634_OFFICIAL_JINJA_NATIVE_RETRY_PENDING_V2",
+  "schema": "V13_RUN634_OFFICIAL_JINJA_NATIVE_FAILED_EXPORT_V3",
   "date_utc": "2026-10-27",
   "owner": "GPT-6 automation, separate native C3 retrieval-only package",
   "branch": "codex/automation11-run634-c3-pinned-chat-template-20261027",
@@ -11,7 +11,7 @@
   "workflow_blob": "d8818295b7d04e1edfcc2c76beb183958758e9ed",
   "test_blob": "70c627afc32ac83bfdac2e4458826295d517805d",
   "run_id": 40428394018,
-  "status": "RETRY_IN_PROGRESS_UNVERIFIED",
+  "status": "CLOSED_RED_AFTER_OPTIMIZER_EXPORT_BLOCKED",
   "intervention": "Add exact official chat_template.jinja from immutable HF master revision to snapshot_download allow_patterns; source-only HF tokenizer parity preflight",
   "frozen": {
     "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
@@ -33,7 +33,7 @@
     "V13_complete": false
   },
   "production_integrated": false,
-  "next_exact_command": "Wait for exact-source Actions 40428394018; download and SHA-verify original raw, preserve any RED; if actual 2-step LoRA exports adapter, verify license/LoRA-B/nonzero and heldout metrics, then plan deployed selected C3 GGUF parity. No gate promotion.",
+  "next_exact_command": "Create independent review child Run635; preregister official pinned llama.cpp b10964 gguf-py LFM2 architecture support (no model/cohort/trainer edits), source-test arch and v/o tensor mapping before native, rerun once. If still fails, preserve raw and switch to another canonical package. Do not promote gates.",
   "first_attempt": {
     "run_id": 40428155218,
     "head_sha": "c8547c49c9f2dc4968436431e7a57551e310c56b",
@@ -54,5 +54,36 @@
   "revised_test_blob": "e89f9d185ff4919b3db54c7fb959910fde4ec704",
   "revised_workflow_commit": "0b81e6ae146886036ad6218de7a2bb0cab612e39",
   "revised_workflow_blob": "76a5932746c11d39244fc9b7e29902b5cb32b0e0",
-  "source_guard_only_run_id": 40428371449
+  "source_guard_only_run_id": 40428371449,
+  "source_guard_only": {
+    "run_id": 40428371449,
+    "head_sha": "b66f018f086b89976f7dedc5ac1af9a83442ae83",
+    "status": "FAIL_CLOSED_SOURCE_SHA_MISMATCH_NO_NATIVE",
+    "raw_zip_sha256": "667fd79df66fdada869912f362fd531d1324cc8f5fd385c3600aebeb6586187a",
+    "inner_sha_verified": 7,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run634/Run634-sourceguard-RED-40428371449.zip",
+    "roundtrip": "PASS"
+  },
+  "second_attempt": {
+    "run_id": 40428394018,
+    "head_sha": "0b81e6ae146886036ad6218de7a2bb0cab612e39",
+    "status": "RED_EXPORT_UNSUPPORTED_GGUF_ARCH",
+    "source_tests": "9/9_PASS",
+    "deps_exit": 0,
+    "master_download_exit": 0,
+    "template_preflight_exit": 0,
+    "template_sha256": "013eed60546434b6967e3483153d8c5c37abcb1d667f8b1f914683f2a9411531",
+    "template_bytes": 2553,
+    "template_tokens": 16,
+    "train_exit": 1,
+    "optimizer_reached": true,
+    "optimizer_steps_claim": "2 configured, actual completion inferred from reaching export; no optimizer trace persisted",
+    "export": "NONE",
+    "error": "v13.common.Unavailable: Unbekannte GGUF-Architektur: lfm2",
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "943f6461a2b4164885197bfe38f460287def07cbaad9f642ba888626f5aa73ad",
+    "inner_sha_verified": 16,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run634/Run634-second-RED-40428394018.zip",
+    "roundtrip": "PASS"
+  }
 }
