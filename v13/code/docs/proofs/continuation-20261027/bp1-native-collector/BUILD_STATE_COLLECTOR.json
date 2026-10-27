@@ -1,0 +1,47 @@
+{
+  "package": "WP-BP1-native-C3-paired-prediction-collector",
+  "date_utc": "2026-10-27",
+  "status": "REVIEW_ONLY_MOCKED_SOFTWARE_PASS",
+  "branch": "codex/gpt6-bp1-native-collector-20261027-0910",
+  "base_pr": 678,
+  "grandparent_pr": 677,
+  "prereg_commit": "ded125b01fdda1353fd3111f313e9cd87a2009cd",
+  "source_test_workflow_commit": "bec2096a7faf302c6fa86c1dda9b82ee38bc038b",
+  "integration_merge_commit": "df46c9c38bee431a7913578fdd98800bb240b022",
+  "actions_run": 40471711262,
+  "original_artifact_id": 12718990907,
+  "original_zip_sha256": "22a1cc3b8ba10d7164908665c9677e2c7d453dd56924a39d29636bb60394b342",
+  "artifact_crc": "PASS",
+  "exits": {
+    "UNIT": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0
+  },
+  "tests": "25/25 PASS (14 scorer + 11 mocked collector)",
+  "source_sha256": {
+    "v13/code/scripts/bp1_native_collect.py": "9fdc8258a78014279ab2550fef0724eef6049d6e46cb7100c2dfe6d39c236d6d",
+    "v13/code/tests/test_bp1_native_collect.py": "ce773081e9cfae6f6cf2251727778ad9c08c7139a59042ab0987fb9010eed4d9"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP1-Native-Collector/bp1-native-collector-40471711262.zip",
+  "private_backup_byte_identical": true,
+  "evidence_level": "SOFTWARE_ONLY_MOCKED_SERVER_NO_REAL_NATIVE",
+  "native_c3_training": false,
+  "native_c3_inference": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "selected C3 FP32 master/deployed QAD-Q4 parity and licenses require independent registration",
+    "native runner decoding options and memory/thermal behavior not yet executed",
+    "heldout source pairs cannot be used for tuning",
+    "C3 semantic learning and retention/near-miss remain unmeasured"
+  ],
+  "next": "Register and run selected C3 native training+source-disjoint paired ablation under serial owner budget; preserve original raw failures and verify model hash parity",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python3 scripts/bp1_native_collect.py --dataset /verified/bp1-output --binding /registered/bp1-binding.json --server /verified/llama-server --base-gguf /verified/base.gguf --candidate-gguf /verified/candidate.gguf --out /new/empty/native-output --serial-owner-confirmed"
+}
