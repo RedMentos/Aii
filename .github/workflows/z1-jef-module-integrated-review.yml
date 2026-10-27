@@ -1,0 +1,78 @@
+name: V13 Z1 JEF BP11 exact multi-parent integration review
+on:
+  push:
+    branches: [codex/automation11-z1-jef-module-merge-20261027]
+    paths:
+      - '.github/workflows/z1-jef-module-integrated-review.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/z1-jef-module-merge/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-jef-module-integrated-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify source ancestry, focused end-to-end tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/v13-integrated"
+          git rev-parse HEAD > "$RUNNER_TEMP/v13-integrated/HEAD.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/v13-integrated/TREE.txt"
+          git rev-list --parents -n 1 e0cff1eebe88b01d2babefa8cdb175d07a4db284 > "$RUNNER_TEMP/v13-integrated/PARENTS.txt"
+          python3 - <<'PY' > "$RUNNER_TEMP/v13-integrated/SOURCE_PARITY_RAW.log" 2>&1
+          import subprocess,sys
+          base='9eae3cc175512382038cc5f55887e7a8dbc9797f'
+          heads=[
+            '968932a20ed963f1e27554510a6903546e219918',
+            '2ff03034f490fff2b79e23bb6dc650c6a92e795e',
+            '4c006395733a282a69a863c79d4e5847b80e0057',
+          ]
+          def git(*args):
+              return subprocess.check_output(['git',*args],text=True).strip()
+          owners={}
+          for h in heads:
+              if git('merge-base',base,h)!=base:raise RuntimeError('NOT_DESCENDANT '+h)
+              for path in git('diff','--name-only',base,h).splitlines():
+                  if path in owners:raise RuntimeError('SOURCE_COLLISION '+path)
+                  owners[path]=h
+                  actual=git('rev-parse','HEAD:'+path)
+                  expected=git('rev-parse',h+':'+path)
+                  if actual!=expected:raise RuntimeError('BLOB_MISMATCH '+path)
+          if len(owners)!=38:raise RuntimeError('EXPECTED_38_PATHS_GOT_'+str(len(owners)))
+          print('SOURCE_PARITY_PASS',len(owners),'blobs; exact source ancestry')
+          PY
+          echo "$?" > "$RUNNER_TEMP/v13-integrated/SOURCE_PARITY_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v \
+            tests.test_z1_gate_evidence_type tests.test_z1_realdata_path_integrity tests.test_register_gates \
+            tests.test_module_lifecycle_cas tests.test_module_recall_direct_ban tests.test_modules_gate \
+            tests.test_native_jef_goal_run554 tests.test_run554_fixture_receipt_20261027 \
+            tests.test_run552_jef_goal_final_receipt tests.test_run553_user_goal_operator tests.test_agi_live) > "$RUNNER_TEMP/v13-integrated/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/gates.py v13/code/v13/module_learn.py v13/code/v13/modules_gate.py v13/code/scripts/measure_suite.py v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_z1_gate_evidence_type.py v13/code/tests/test_z1_realdata_path_integrity.py v13/code/tests/test_module_lifecycle_cas.py v13/code/tests/test_module_recall_direct_ban.py v13/code/tests/test_run554_fixture_receipt_20261027.py > "$RUNNER_TEMP/v13-integrated/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/v13-integrated/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/v13-integrated/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-jef-bp11-integrated-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-integrated/
+          if-no-files-found: error
+      - name: Enforce focused exits
+        run: |
+          set -euo pipefail
+          for n in SOURCE_PARITY UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/v13-integrated/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/v13-integrated/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "Z1_JEF_BP11_FOCUSED_INTEGRATION_SOFTWARE_ONLY_NO_GATE_PROMOTION"
