@@ -23,7 +23,8 @@ class NativeBatchSoftwareTests(unittest.TestCase):
     def preflight(_):
         return {'status': 'FULL_FILE_HASH_PASS',
                 'master_sha256_verified_locally': True,
-                'pin_sha256': 'f' * 64}
+                'pin_sha256': 'f' * 64,
+                'master_expected_sha256': nr.MASTER_SHA}
 
     def fake_runner(self, cmd, stdout, stderr, timeout, check):
         self.assertFalse(check)
@@ -48,6 +49,30 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         return batch.execute(self.out, self.root / 'no-real-model', prefix, max_jobs,
                              timeout_seconds=5, runner=runner or self.fake_runner,
                              preflight=self.preflight)
+
+    def test_real_master_preflight_accepts_one_dir_and_binds_exact_pin(self):
+        import inspect
+        from unittest import mock
+        default = inspect.signature(batch.execute).parameters['preflight'].default
+        # Actual preflight.verify(master_dir, pin_path, metadata_only) needs
+        # an adapter, because execute invokes the callback with one argument.
+        inspect.signature(default).bind(self.root)
+        with mock.patch.object(batch, 'verify_master',
+                               return_value=self.preflight(self.root)) as verified:
+            receipt = default(self.root)
+        verified.assert_called_once_with(self.root, nr.PIN_PATH, False)
+        self.assertEqual(receipt['master_expected_sha256'], nr.MASTER_SHA)
+
+    def test_forged_master_sha_rejected_before_output(self):
+        def wrong_master(master_dir):
+            receipt = self.preflight(master_dir)
+            receipt['master_expected_sha256'] = '0' * 64
+            return receipt
+        with self.assertRaises(ValueError):
+            batch.execute(self.out, self.root, 'badmaster', 1, 5,
+                          runner=self.fake_runner, preflight=wrong_master)
+        self.assertFalse(self.out.exists())
+        self.assertEqual(self.calls, [])
 
     def test_all_twelve_registered_plans_fixed_and_unique(self):
         jobs = batch.registered('fixed1')
