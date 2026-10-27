@@ -1,0 +1,61 @@
+{
+  "status": "WORLD_MATCHED_ACTION_SYNTHETIC_NEGATIVE_REVIEW_ONLY",
+  "owner": "GPT automation11 World-JEPA research",
+  "parent_pr": 775,
+  "parent_sha": "3bf1b9a06b2eba573635880df67a5cddba650850",
+  "prereg_commit": "d00c35b4daddac7f30cadb9a1489f61c535872dc",
+  "model_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "script_blob": "f4c1136bb9a527a776522ccd776f03c390bdd3a3",
+  "focused": {
+    "run": 40585419665,
+    "tests": 12,
+    "all_exits_zero": true,
+    "sha256": "fa933144d5af7ffb2e23af8ce3b8bcba68a8a6693488f830f76a625ad12d1c59"
+  },
+  "synthetic400": {
+    "run": 40585620040,
+    "all_exits_zero": true,
+    "sha256": "6e015a3741ff0bc07293192244b8773f0b8df5396e6fd9159b784b7828009a1e",
+    "source_sha256": "65f6881137771a87a5c7a8353b349ade633a96064a05a884c9771ccc06b4639e",
+    "train_sha256": "d86d0d975e24d55cf4564905d9eeb6c49bf7022191d0905a33fd4a5ce043c537",
+    "heldout_sha256": "c09921ffb68612ad7991bea716cef291c113ec87b4955a97f61be9325b52c9b7",
+    "states": 48,
+    "train": 144,
+    "heldout": 48,
+    "steps": 400,
+    "model_seeds": [
+      3,
+      7
+    ],
+    "shuffle_seeds": [
+      11,
+      23,
+      37
+    ],
+    "direct_pooled_mae": 0.08886810843795302,
+    "state_only_pooled_mae": 0.16096674415642512,
+    "correct_pooled_mae": [
+      0.10924416062065566,
+      0.10282531359781504
+    ],
+    "shuffled_better_than_correct_count": 6
+  },
+  "full_software": {
+    "status": "PENDING",
+    "workflow": "world-matched-action-fullsuite.yml"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11-World-Matched-Action/",
+  "backup_byte_exact": true,
+  "lp1": "NO_ATTRIBUTABLE_GAIN",
+  "lp2": "ALIGNS_NO_GAIN",
+  "bj1": "NO_SIGNAL",
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "redmi_measured": false,
+  "native_llm_measured": false,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_world_jepa_matched_action_cohort",
+  "next": "Stop synthetic control expansion; prioritize STEP2/B1+B2, C3 actual consumer, B3 receiver and Redmi gates."
+}
