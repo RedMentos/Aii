@@ -46,6 +46,7 @@ LAYOUTS=('legacy','stable_prefix','append_only')
 TRANSCRIPT_MAX_CHARS=64000  # BOOT cap on the stored per-role transcript
 CAPABILITIES=('consecutive_user',)
 CHARS_PER_TOKEN=3.0          # BOOT conservative estimate; the runner still trims on exact token counts
+MAX_CACHE_METRIC_TOKENS=2**31-1  # defensive bound; no bool/negative/float native cost credit
 EXACT_NEED={'numbers':.5,'code':.65,'literal':.8,'source_critique':.6,'conflict':.7}  # BOOT §8.4 trigger strengths
 CONFLICT_VERDICTS={'CONTESTED','VIOLATION','SOURCE_LOSS'}
 WARM_DECAY=.6;WARM_MIN=.15;WARM_MAX=16;WARM_ADMIT=.5;WARM_PREFETCH_MAX=2  # BOOT §9.1 warm set per experience event
@@ -304,8 +305,20 @@ class ContextOS:
     # -- outcomes --------------------------------------------------------------------------------------
     def observe(self,event_id,role,metrics=None,status='FINAL',memory_ids=()):
         """After the answer: runner cache timings -> cost modulator; used memories become warm (§9.1)."""
-        t=(metrics or {}).get('timings') or {};cached=t.get('cache_n');prompt=t.get('prompt_n');ratio=None
-        if isinstance(cached,int) and isinstance(prompt,int) and cached+prompt>0:ratio=cached/(cached+prompt)
+        # Native cost evidence is not trusted merely because Python treats bool as int.
+        # Missing metrics mean no measurement; malformed supplied metrics are rejected,
+        # never forwarded as negative/over-100% reuse or learning-cost credit.
+        bad_envelope=metrics is not None and type(metrics) is not dict
+        raw=metrics.get('timings') if type(metrics) is dict else None
+        t=raw if type(raw) is dict else {}
+        supplied=bad_envelope or (raw is not None and (type(raw) is not dict or 'cache_n' in t or 'prompt_n' in t))
+        cached=t.get('cache_n');prompt=t.get('prompt_n')
+        valid=(type(cached) is int and type(prompt) is int
+               and 0<=cached<=MAX_CACHE_METRIC_TOKENS
+               and 0<=prompt<=MAX_CACHE_METRIC_TOKENS
+               and cached+prompt>0)
+        ratio=cached/(cached+prompt) if valid else None
+        rejected=bool(supplied and not valid)
         def fn(st):
             for mid in memory_ids:st['warm'][str(mid)]=1.
             if len(st['warm'])>WARM_MAX:st['warm']=dict(sorted(st['warm'].items(),key=lambda kv:-kv[1])[:WARM_MAX])
@@ -318,7 +331,7 @@ class ContextOS:
         if self.n is not None and ratio is not None and last and last.get('applied'):
             try:self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',cost_error=1-ratio)
             except Exception:pass
-        return {'reuse_ratio':ratio,'warm':list(memory_ids)}
+        return {'reuse_ratio':ratio,'warm':list(memory_ids),'cache_rejected':rejected}
     def outcome(self,event_id,utility,source_class='internal_crosscheck'):
         """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
         u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY created DESC LIMIT 1",(event_id,))

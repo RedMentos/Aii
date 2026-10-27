@@ -1457,5 +1457,28 @@
     "full_acceptance": false,
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
     "next_prerequisite": "Review native seed41 owner Actions 40506115941; no overlapping heavy run"
+  },
+  "n7_native_cache_metric_integrity_20261027": {
+    "owner_branch": "codex/automation11-n7-cache-metric-integrity-20261027",
+    "parent_pr": 718,
+    "parent_sha": "edd0212c1774f893433040f48fa6b57c3d2d4209",
+    "status": "REVIEW_ONLY_SOFTWARE_CANDIDATE",
+    "tested_code_sha": "e6e8534e5d2a119b3bc6f7bc5013522631128606",
+    "actions_run": 40515482977,
+    "focused_tests": "18/18 PASS",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "negative_controls": "bool,negative,nonfinite,float,oversized,zero-total,missing,invalid envelope",
+    "valid_control": "3/10 cache reuse observed, exactly one active cost signal",
+    "native_evidence": false,
+    "context_os_utility_proven": false,
+    "age_authority": 0,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/n7-cache-cost/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os",
+    "next_prerequisite": "Independent review and source-bound native cache holdout; no automatic learning promotion."
   }
 }
