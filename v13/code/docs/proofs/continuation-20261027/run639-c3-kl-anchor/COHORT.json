@@ -1,0 +1,100 @@
+{
+  "schema": "V13_RUN639_C3_ANCHORED_32STEP_V1",
+  "scope": "LINUX_NATIVE_SELECTED_C3_MASTER_LORA_SHADOW",
+  "comparison": "Run638 unanchored 32-step selected deployed QAD-Q4",
+  "master": {
+    "repo_id": "LiquidAI/LFM2.5-350M",
+    "revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
+    "sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "architecture": "lfm2",
+    "license": "LFM Open License v1.0"
+  },
+  "deployed_reference": {
+    "repo_id": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "equivalence_proven": false
+  },
+  "train_rows": [
+    {
+      "prompt": "In the fictional Alder protocol, what is the marker color?",
+      "target": "violet"
+    },
+    {
+      "prompt": "In the fictional Alder protocol, what is the gate number?",
+      "target": "83"
+    }
+  ],
+  "heldout_rows": [
+    {
+      "prompt": "What is two plus two?",
+      "target": "4"
+    },
+    {
+      "prompt": "Write a brief greeting.",
+      "target": "hello"
+    }
+  ],
+  "near_miss_rows": [
+    {
+      "prompt": "In the fictional Cedar protocol, what is the marker color?",
+      "target": "violet"
+    },
+    {
+      "prompt": "In the fictional Cedar protocol, what is the gate number?",
+      "target": "83"
+    }
+  ],
+  "anchor_prompts": [
+    "What is three plus three?",
+    "Write a short farewell.",
+    "In the fictional Birch protocol, what is the marker color?",
+    "In the fictional Birch protocol, what is the gate number?"
+  ],
+  "config": {
+    "rank": 2,
+    "alpha": 4,
+    "targets": [
+      "v_proj",
+      "out_proj"
+    ],
+    "lr": 0.001,
+    "max_steps": 32,
+    "min_steps": 32,
+    "ckpt_every": 1,
+    "anchor_weight": 1,
+    "jepa_weight": 0,
+    "threads": 2,
+    "max_tokens": 96,
+    "locality_swaps": 0,
+    "seed": 13
+  },
+  "baseline": {
+    "run_id": 40431064922,
+    "artifact_id": 12702091198,
+    "zip_sha256": "d295a534aee3bb541b31fdfe760df1ec0b355ec0dd5642abbb949b198707b65c",
+    "native_proof_sha256": "82b9073b9b955286c705b9ab506e49622c68745465b0a52b11213fdc9f72fd10",
+    "train_proof_sha256": "f49ea0206e717c85b1018ea62204bdc8e876519e9c4f404f4ca21e9bb16b6d2e",
+    "adapter_sha256": "bd5fb8e523ba5444602401911d7fc8e0b2a571980cc95bf1a42f15c2bfb1cb83"
+  },
+  "acceptance": {
+    "train_min_hits": 1,
+    "heldout_min_hits": 1,
+    "near_miss_max_hits": 0,
+    "original_2step_floor": {
+      "heldout_hits": 1,
+      "near_miss_hits": 0
+    }
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "production_weight_authority": 0,
+  "age_change": false,
+  "approval_change": false
+}
