@@ -206,6 +206,7 @@ def run(master):
     candidate = StateConditionedPrefix(base, prefix_tokens=2)
     sample = next(base.parameters()).detach().flatten()[:2048]
     frozen_before = hashlib.sha256(sample.cpu().numpy().tobytes()).hexdigest()
+    trainable_before = [p.detach().clone() for p in candidate.trainable_parameters()]
     before_rows = evaluate(candidate, base, tok, rows, torch)
     before = summarize(before_rows)
     retention_before = retention_ce(candidate, tok, torch)
@@ -234,6 +235,12 @@ def run(master):
         loss_trace.append(float(loss.detach()))
     after_rows = evaluate(candidate, base, tok, rows, torch)
     after = summarize(after_rows)
+    if (abs(before['base_ce'] - after['base_ce']) > 1e-7
+            or before['base_top1'] != after['base_top1']):
+        raise ValueError('No-prefix frozen-base baseline drifted')
+    if not any(not torch.equal(old, new.detach()) for old, new in
+               zip(trainable_before, candidate.trainable_parameters())):
+        raise ValueError('Optimizer did not update trainable LP3 parameters')
     retention_after = retention_ce(candidate, tok, torch)
     frozen_after = hashlib.sha256(sample.cpu().numpy().tobytes()).hexdigest()
     if frozen_before != frozen_after:
