@@ -1,0 +1,85 @@
+name: V13 BP1 selected C3 native baseline source and frozen dataset gate
+on:
+  push:
+    branches: [codex/automation12-bp1-native-baseline-20261027]
+    paths:
+      - '.github/workflows/bp1-native-baseline-source.yml'
+      - 'v13/code/scripts/bp1_consumer_native_baseline.py'
+      - 'v13/code/tests/test_bp1_consumer_native_baseline.py'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-native-baseline-source
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bp1base"
+          timeout 240s "$RUNNER_TEMP/bp1base/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source tests, exact upstream artifact and no-native dataset preflight
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1base-proof" "$RUNNER_TEMP/bp1base-input"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1base-proof/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_consumer_native_baseline.py v13/code/tests/test_bp1_consumer_native_baseline.py > "$RUNNER_TEMP/bp1base-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1base/bin/python" -m unittest -v tests.test_bp1_consumer_native_baseline tests.test_bp1_consumer_dataset) > "$RUNNER_TEMP/bp1base-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1base-proof/UNIT_EXIT.txt"
+          curl -fsSL --retry 1 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip" -o "$RUNNER_TEMP/bp1base-input.zip" > "$RUNNER_TEMP/bp1base-proof/FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c  $RUNNER_TEMP/bp1base-input.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1base-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            unzip -q "$RUNNER_TEMP/bp1base-input.zip" -d "$RUNNER_TEMP/bp1base-input" >> "$RUNNER_TEMP/bp1base-proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1base-proof/FETCH_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1base/bin/python" - <<'PY'
+          from scripts import bp1_consumer_native_baseline as B
+          import os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'bp1base-input'/'bp1-output'
+          rows,manifest=B.load_dataset(root/'heldout_paired.jsonl',root/'MANIFEST.json')
+          print('FROZEN_11_PAIR_SOURCE_BOUND_PASS',len(rows),manifest['heldout_pairs'])
+          PY
+            ) > "$RUNNER_TEMP/bp1base-proof/DATASET_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1base-proof/DATASET_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1base-proof/DATASET_EXIT.txt"
+          fi
+          "$RUNNER_TEMP/bp1base/bin/python" -m compileall -q v13/code/scripts/bp1_consumer_native_baseline.py v13/code/tests/test_bp1_consumer_native_baseline.py > "$RUNNER_TEMP/bp1base-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1base-proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp1base/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 74d84d06b9ed99041146a45ce35a0627a4beec28 --head HEAD > "$RUNNER_TEMP/bp1base-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1base-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-native-baseline-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1base-proof/
+          if-no-files-found: error
+      - name: Enforce source preflight only
+        run: |
+          set -euo pipefail
+          for n in UNIT FETCH DATASET COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1base-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/bp1base-proof/${n}_RAW.log"; exit 1; }
+          done
