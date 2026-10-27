@@ -115,17 +115,16 @@ def resolve():
     # Third conflict discovered by first RED CI: preserve AG5's explicit
     # permission-denied test and graft World's optional environment-root plan.
     # No other forecast test assertion may be altered.
-    native_helper = (
-        "def optional_native_plan(competence_check):\\n"
-        "    \\"\\"\\"Optional native fixture: inaccessible is unavailable, accessible errors propagate.\\"\\"\\"\\n"
-        "    root = Path(os.environ.get('V13_NATIVE_RESTORE_ROOT', '/root/native/restore'))\\n"
-        "    return competence_check.plan(str(root)) if optional_local_restore_available(\\n"
-        "        root / 'round8-note-tool-raw') else None\\n"
-    )
-    if ag5_test.count('\\n\\nclass FakeTaps:') != 1:
+    native_helper = '''def optional_native_plan(competence_check):
+    # Optional native fixture: inaccessible is unavailable; real errors propagate.
+    root = Path(os.environ.get('V13_NATIVE_RESTORE_ROOT', '/root/native/restore'))
+    return competence_check.plan(str(root)) if optional_local_restore_available(
+        root / 'round8-note-tool-raw') else None
+'''
+    if ag5_test.count('\n\nclass FakeTaps:') != 1:
         raise ValueError('AG5 toolforecast insertion point changed')
-    ag5_test = ag5_test.replace('\\n\\nclass FakeTaps:',
-                                '\\n\\n' + native_helper + '\\nclass FakeTaps:', 1)
+    ag5_test = ag5_test.replace('\n\nclass FakeTaps:',
+                                '\n\n' + native_helper + '\nclass FakeTaps:', 1)
     old_plan = ("plan = cc.plan('/root/native/restore') if "
                 "optional_local_restore_available('/root/native/restore/round8-note-tool-raw') else None")
     if ag5_test.count(old_plan) != 1:
