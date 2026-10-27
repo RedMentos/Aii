@@ -112,6 +112,16 @@ class SemanticRecall(unittest.TestCase):
         self.recall(q)
         self.assertIsNone(self.keys.last_query['event_id'])
 
+    def test_runtime_attachment_binds_current_turn_event(self):
+        from v13.semantic_memory import attach
+        self.remember()
+        keys=attach(self.r)
+        keys.encoder=self.fake  # actual runtime attachment, synthetic encoder only
+        self.r.turn_event={'event_id':'current-runtime-event'}
+        self.r.cfg['memory_embedding']='on'
+        self.recall('How much money does Project Alpha have?')
+        self.assertEqual(keys.last_query['event_id'],'current-runtime-event')
+
     def test_key_cache_reused_invalidated_by_revision_and_removed_by_forget(self):
         mid=self.remember();self.r.cfg['memory_embedding']='on'
         self.recall('How much money does Project Alpha have?');self.recall('Project Alpha funds?')
