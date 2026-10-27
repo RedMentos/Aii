@@ -1,0 +1,65 @@
+name: V13 current-chain broad software suite diagnostic
+on:
+  push:
+    branches:
+      - codex/current-chain-fullsuite-triage-20261027
+    paths:
+      - '.github/workflows/current-chain-fullsuite-triage.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/current-chain-fullsuite-triage/PREREG.md'
+      - 'v13/code/v13/**'
+      - 'v13/code/tests/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-current-chain-fullsuite-triage
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/fullsuite"
+          timeout 240s "$RUNNER_TEMP/fullsuite/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Capture raw broad suite and source evidence
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/fullsuiteproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/fullsuiteproof/HEAD.txt"
+          sha256sum v13/code/BUILD_STATE.json v13/code/v13/operator.py v13/code/v13/runtime.py v13/code/scripts/world_jepa_shadow_lifecycle.py > "$RUNNER_TEMP/fullsuiteproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 900s "$RUNNER_TEMP/fullsuite/bin/python" -m unittest discover -s tests -p 'test_*.py' -v) > "$RUNNER_TEMP/fullsuiteproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fullsuiteproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/fullsuite/bin/python" -m compileall -q v13/code/v13 v13/code/scripts > "$RUNNER_TEMP/fullsuiteproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fullsuiteproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/fullsuite/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 3c527cebe70947d910121f8c605b66ba0de810a5 --head HEAD > "$RUNNER_TEMP/fullsuiteproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/fullsuiteproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: current-chain-fullsuite-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/fullsuiteproof/
+          if-no-files-found: error
+      - name: Enforce source hygiene, not suite pass
+        run: |
+          set -euo pipefail
+          for n in COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/fullsuiteproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/fullsuiteproof/${n}_RAW.log"; exit 1; }
+          done
+          echo "Diagnostic unit exit: $(cat "$RUNNER_TEMP/fullsuiteproof/UNIT_EXIT.txt")"
+          tail -35 "$RUNNER_TEMP/fullsuiteproof/UNIT_RAW.log"
