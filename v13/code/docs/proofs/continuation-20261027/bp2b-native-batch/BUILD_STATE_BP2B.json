@@ -1,0 +1,50 @@
+{
+  "schema": "bp2b-native-batch-review-v1",
+  "owner": "GPT-6 independent reviewer",
+  "branch": "assistant/v13-bp2b-native-batch-20261027",
+  "parent": "d89f9311f39c6d1c2aa9c7250eb68bb3b1a593e6",
+  "red": {
+    "run_id": 40506726172,
+    "head": "d52501ed4a30312e4ce9613f903aae967be2cc30",
+    "failed": 1,
+    "total": 28,
+    "zip_sha256": "ec41fec25448104e1996e2f71e82674c582ebdfa3d8326537e347bb6ecb03da6"
+  },
+  "green": {
+    "run_id": 40506848909,
+    "head": "74d2166c862af8b2f8f0edcc8e8411a5b58e3529",
+    "passed": 28,
+    "total": 28,
+    "zip_sha256": "9dce3b1a27c6a5bad3421aacf6c6116957763c97088444bab6e058f71b991e3c",
+    "privacy": "CLEAN"
+  },
+  "backup": "ChatGPT Library /V13-Checkpoints/2026-10-27/BP2b-Native-Batch, both ZIPs byte-exact readback PASS",
+  "evidence_class": "SOFTWARE_FAKE_TEST",
+  "registered_seeds": [
+    41,
+    42,
+    43
+  ],
+  "registered_arms": [
+    "legacy",
+    "bp2b",
+    "bp2b_minor",
+    "manual_ref"
+  ],
+  "age_authority": 0,
+  "jepa_weight": 0,
+  "full_acceptance": false,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "REDMI_UNMEASURED",
+    "FULL_V13_INCOMPLETE"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
+  "next_prerequisites": [
+    "Review PR712 actual seed41 native attempt",
+    "Heavy owner clearance",
+    "Exact master preflight in same batch job"
+  ]
+}
