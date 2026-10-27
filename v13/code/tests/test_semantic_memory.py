@@ -63,6 +63,12 @@ class SemanticRecall(unittest.TestCase):
         self.assertEqual(self.keys.last['encoded_keys'],1)
         self.assertEqual(len(self.fake.calls[-1]),2)
         self.assertLess(result[mid],.5)
+        # A bool is not an embedding coordinate even if its norm happens to be 1.
+        self.r.store.set_state(self.keys.cache_key(row),[True]+[0.]* (dim-1))
+        result2=self.keys.similarities('Will it rain tomorrow?',[row],
+                                       threading.Event(),time.monotonic()+30)
+        self.assertEqual(self.keys.last['encoded_keys'],1)
+        self.assertLess(result2[mid],.5)
 
     def test_key_cache_reused_invalidated_by_revision_and_removed_by_forget(self):
         mid=self.remember();self.r.cfg['memory_embedding']='on'
