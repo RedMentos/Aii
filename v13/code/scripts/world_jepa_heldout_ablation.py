@@ -77,6 +77,11 @@ def _mse(predicted, target, train_scale):
 
 
 def score_model(model, X, A, X2, action):
+    # Validate indices before NumPy one-hot indexing: -1 otherwise aliases action 3.
+    if (not isinstance(action, np.ndarray) or action.ndim != 1
+            or action.shape != (len(X),) or action.dtype.kind not in ('i', 'u')
+            or (action < 0).any() or (action >= 4).any()):
+        raise ValueError('Invalid heldout action indices')
     if (X.ndim != 2 or X.shape[1] != 8 or X2.shape != X.shape
             or A.shape != (len(X), 4) or action.shape != (len(X),)
             or not np.isfinite(X).all() or not np.isfinite(X2).all()
