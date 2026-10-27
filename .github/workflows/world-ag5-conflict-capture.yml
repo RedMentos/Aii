@@ -1,0 +1,64 @@
+name: V13 read-only AG5/world conflict version capture
+on:
+  push:
+    branches:
+      - codex/world-ag5-conflict-prep-20261027
+    paths:
+      - '.github/workflows/world-ag5-conflict-capture.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-ag5-conflict-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Disposable conflict capture and abort
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/conflictproof/files"
+          git rev-parse HEAD > "$RUNNER_TEMP/conflictproof/HEAD.txt"
+          git fetch --no-tags origin c615497384dc5519be59232451895ca443ce9e45 > "$RUNNER_TEMP/conflictproof/FETCH_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/conflictproof/FETCH_EXIT.txt"
+          git rev-parse FETCH_HEAD > "$RUNNER_TEMP/conflictproof/OTHER_HEAD.txt"
+          git merge-base HEAD FETCH_HEAD > "$RUNNER_TEMP/conflictproof/MERGE_BASE.txt"
+          git merge --no-commit --no-ff FETCH_HEAD > "$RUNNER_TEMP/conflictproof/MERGE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/conflictproof/MERGE_EXIT.txt"
+          git diff --name-only --diff-filter=U > "$RUNNER_TEMP/conflictproof/CONFLICT_PATHS.txt"
+          for path in v13/code/scripts/handy_pflicht.py v13/code/v13/operator.py; do
+            name="$(basename "$path")"
+            git show ":1:$path" > "$RUNNER_TEMP/conflictproof/files/$name.BASE.py"
+            git show ":2:$path" > "$RUNNER_TEMP/conflictproof/files/$name.WORLD.py"
+            git show ":3:$path" > "$RUNNER_TEMP/conflictproof/files/$name.AG5.py"
+            cp "$path" "$RUNNER_TEMP/conflictproof/files/$name.CONFLICT.py"
+          done
+          sha256sum "$RUNNER_TEMP/conflictproof/files/"* > "$RUNNER_TEMP/conflictproof/FILE_SHA256.txt"
+          git merge --abort > "$RUNNER_TEMP/conflictproof/ABORT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/conflictproof/ABORT_EXIT.txt"
+          git status --porcelain > "$RUNNER_TEMP/conflictproof/POST_ABORT_STATUS.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ab206487ae7799963de0ea84058b96b1f4bdc9a2 --head HEAD > "$RUNNER_TEMP/conflictproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/conflictproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw original versions
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-ag5-conflict-versions-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/conflictproof/
+          if-no-files-found: error
+      - name: Enforce no persistent mutation
+        run: |
+          set -euo pipefail
+          for n in FETCH ABORT PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/conflictproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/conflictproof/${n}_RAW.log"; exit 1; }
+          done
+          test "$(cat "$RUNNER_TEMP/conflictproof/MERGE_EXIT.txt")" = 1
+          test ! -s "$RUNNER_TEMP/conflictproof/POST_ABORT_STATUS.txt"
+          cat "$RUNNER_TEMP/conflictproof/CONFLICT_PATHS.txt"
