@@ -40,6 +40,20 @@ class Objectives(Base):
         self.assertEqual(WM.for_event(self.r.store,'nope','gist')['reason'],'NO_OBSERVED_STATE')
 
 class Counterfactuals(Base):
+    def test_legacy_leaky_world_state_requires_explicit_refit(self):
+        data=synthetic(n=48)
+        with mock.patch.object(WM,'transitions',return_value=data):
+            st=WM.fit(self.r.store)
+        self.assertEqual(st['revision'],WM.REVISION)
+        legacy=dict(st,revision='t8-world-model-v1')
+        self.r.store.set_state(WM.KEY,legacy)
+        self.assertIsNone(WM.load(self.r.store))
+        cf=WM.counterfactual(self.r.store,WM.state_vec(100),'detail')
+        self.assertEqual(cf['reason'],'NO_WORLD_MODEL')
+        with mock.patch.object(WM,'transitions',return_value=data):
+            WM.fit(self.r.store)
+        self.assertEqual(WM.load(self.r.store)['revision'],WM.REVISION)
+
     def test_heldout_only_action_is_not_training_support(self):
         data=synthetic(n=48)
         train,heldout=WM._split(len(data))
