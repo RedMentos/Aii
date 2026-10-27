@@ -1,0 +1,11 @@
+# F1/F5 memory and F5 fast-route authority reconciliation — preregistration
+
+Date: 2026-10-27 UTC. Independent **review-only** sibling of Sleep-lineage PR #792. Base is PR #791 exact commit `6c5dbf145380956ac29bf2d5479ec489ebc7ef5a`. Owner: only `v13/code/v13/memory.py`, `v13/code/v13/episodic_route.py`, new Run270/279 regression test files, this evidence directory and a dedicated workflow. No concurrent C1/B3/World/HX/AG8/Sleep files.
+
+Prior verified RED/GREEN research: PR #270 Run270 F1/F5 memory provenance and PR #279 Run279 fast episodic route. Current memory blob `98fc0e30f42f885fb759b7e8b5dbab761932c5a5` lacks `Memory._verified_rows`; current episodic route blob `32311e8317423f4df00b0418fbb761a693db84c8` can suggest from a plausible but revoked row. This is previously known, not a new finding.
+
+**Do not blindly copy old files**: Run270 memory `f1f329f181d69c96e253d05f7081afd72cca99dc` lacks current `_stable_selection` and current recall semantic-query reset; Run279 episodic source `c4ca21f413d7108e00b92ee5578a809e35bac699` lacks current `route_supersede` precedence and current `for_turn(...,head,event_id)` signature. Preserve these newer behaviors byte-for-byte, import only the source-verified `_verified_rows` and read-side binding, and Run279 `_source_bound` + `suggest`. Do not import unrelated older write-side `_user_rule_guard` without separate integration review.
+
+Test exact prior-art Run270 `test_memory_human_decision_lineage_run270.py` blob `1871fed7bbb7fb279dcf86cec4f1ae44e52c1077` and Run279 `test_episodic_route_f5_authority_run279.py` blob `a29b60c9775a72dd866e146a86f438b1d90c281e`, plus current `test_memory`, `test_episodic_route`, `test_route_supersede`, `test_semantic_memory`, `test_context_os` and full software discovery if available. RED current state is supported by prior work but no new exact-head RED run is claimed. Verify raw exits, privacy, and current feature compatibility. Fail closed, preserve source/model/seed identities.
+
+No new model, training, authority, auto-approval, production merge, native inference or Redmi proof. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Age-0 rights unchanged, full V13 incomplete. Next: source review, focused and full Linux software tests, checkpoint and independent cross-review before integration.
