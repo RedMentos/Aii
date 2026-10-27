@@ -1,5 +1,6 @@
 """Software-only digital World-JEPA SHADOW bridge contracts."""
 import copy
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -102,6 +103,20 @@ class DigitalShadowTests(unittest.TestCase):
                 read.assert_called_once_with(store)
                 run.assert_called_once_with(self.rows)
 
+    def test_run_trains_only_on_frozen_training_partition(self):
+        data = d.make_dataset(self.rows)
+        with patch.object(wj.WorldJEPA, 'fit', autospec=True) as fit:
+            fit.side_effect = lambda model, X, A, X2, steps: model
+            with patch.object(d, 'score_fitted', return_value={'software_only': True}):
+                result = d.run_transitions(self.rows)
+        self.assertEqual(len(fit.call_args_list), len(d.SEEDS))
+        for call in fit.call_args_list:
+            self.assertEqual(call.kwargs['steps'], d.STEPS)
+            np.testing.assert_array_equal(call.args[1], data['X'][data['train']])
+            np.testing.assert_array_equal(call.args[2], data['A'][data['train']])
+            np.testing.assert_array_equal(call.args[3], data['X2'][data['train']])
+        self.assertEqual(result['heldout_n'], len(data['heldout']))
+
     def test_synthetic_smoke_uses_real_model_without_training_or_authority(self):
         # steps=0 only in this software test; not a registered 400-step measurement.
         with patch.object(d, 'STEPS', 0):
@@ -114,6 +129,8 @@ class DigitalShadowTests(unittest.TestCase):
         self.assertFalse(report['runtime_wired'])
         self.assertFalse(report['model_weights_persisted'])
         self.assertEqual(report['negative_gates_unchanged']['jepa_weight'], 0)
+        self.assertNotIn('synthetic-0', json.dumps(report))
+        self.assertNotIn('action_id', json.dumps(report))
         for arm in report['per_seed']:
             self.assertTrue(np.isfinite(arm['jepa_readout_mae']['pooled']))
             self.assertTrue(np.isfinite(arm['wrong_action_mae']['pooled']))
