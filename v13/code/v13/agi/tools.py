@@ -56,6 +56,9 @@ class ToolRegistry:
         self.register(ToolSpec('eligibility',eligibility.tool,description='Eignung/Budget-Rezept (deterministisch, Regel-verankert)',schema=eligibility.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR','MONEY'})))
         from . import listarith  # R4 part 6: model reads listed values, fixed recipe computes (sum, max-min)
         self.register(ToolSpec('list_arith',listarith.tool,description='Summe/Differenz über aufgezählte Werte (Rezept, Zahlen-Wächter)',schema=listarith.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR'})))
+        from .. import modules_gate  # WP-BP11: a model can only PROPOSE a module; fetch/release are typed by the user (no tool for them)
+        self.register(ToolSpec('module_propose',lambda url,name:{'proposed':modules_gate.propose(self.s,url,name,origin='TOOL')},risk='WRITE_LOCAL',description='Modul vorschlagen (holt nichts)',
+            schema={'url':'str','name':'str'},effects=({'WRITE','INSTALL'},{'MODULE'})))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
@@ -71,7 +74,10 @@ class ToolRegistry:
         st=self.box.load()[0]
         status,why,steps=authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed,hard=verdict(self.s,spec))
         if why.startswith('HARD_BLOCK:'):return status,why,steps  # typed :verbot / :notaus (WP-SAFE1) already refuse; keep their reason
-        return self._user_rules(spec,args,confirmed,status,why,steps)
+        status,why,steps=self._user_rules(spec,args,confirmed,status,why,steps)
+        if status=='DENIED' and why.startswith('USER_RULE'):return status,why,steps  # already refused: the second guard adds nothing
+        from .. import guard2  # WP-FS5: second reader of the call's text, only ever stricter (off by default)
+        return guard2.apply(guard2.check_args(self.s,args),status,why,steps,confirmed)
     def _user_rules(self,spec,args,confirmed,status,why,steps):
         from .. import userrules
         rs=userrules.rules(self.s)

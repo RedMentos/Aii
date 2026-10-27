@@ -5,6 +5,11 @@ Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STA
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
 `code/docs/REMAINING_IMPLEMENTATION.md`. Kein Code wurde für diese Roadmap geändert.
 
+## Nachtrag 27.10.2026: WP-BP11 Module nur mit Erlaubnis + WP-FS5 Zweitwächter (Thread „Sicherheit: Zweitwächter und Module nur mit Erlaubnis“, Branch `claude/project-thread-07uqqx`)
+
+Gebaut, ohne bestehende Sicherheit aufzuweichen: `code/v13/modules_gate.py` (Modul-Lebenslauf PROPOSED→QUARANTINED→SANDBOX_OK→ACTIVE→REVOKED, nur getippte Nutzer-Befehle, Freigabe mit Hash-Code und Wartezeit, Daten-Check, Manipulationsschutz, `corpus()` mit Herkunfts-Etikett, Lernen als eigener Schalter), `code/v13/guard2.py` (Zweitwächter aus/Schatten/an, nur strenger; Lexikon-Wächter fest, Qwen3Guard-Stream-0.6B als lokaler Ordner, Lizenz Apache-2.0 geprüft), Anschluss in `agi/tools.py` (`module_propose`, Wächter in der Richtlinie) und `operator.py` (`:modul`, `:wachter`). 38 neue Tests, ganze Suite 1873 grün. Hash-gebundene Runtime-Dateien unverändert. Doku: `code/docs/MODULE_UND_ZWEITWAECHTER.md`.
+Offen: Lerner für `corpus()` (BP11b), Qwen3Guard-Messung auf dem Redmi (RAM, Deutsch), Regel-Leser-Prüfsätze mit Umformulierungen (Rest FS5), kein echtes Modul geholt, kein Lerngewinn gemessen. SHADOW/Standard: beide Funktionen sind aus.
+
 ## Nachtrag 22.10.2026: Handy-Bedienung – APK oder Termux? (WP-UI1, Thread „APK oder Termux-Oberfläche“, Branch `claude/project-thread-e53fle`)
 
 Entscheidung (Empfehlung, keine Nutzerfrage nötig): **in Termux bleiben, keine APK jetzt.** Kein Tempo-Gewinn durch

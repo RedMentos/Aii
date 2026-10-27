@@ -15,7 +15,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
 :world shadow <checkpoint.npz> <sha256> <provenance.json> <observation.json> (nur lokales TTY, read-only SHADOW, keine Aktion/Lernfreigabe)
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
-:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
+:notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet) / :wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>] (Zweitwächter, macht nur vorsichtiger) / :modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>] (neue Module nur mit deiner Freigabe)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
 :feedback fact|style|preference <Korrektur> [--learn]
 :feedback route simple|detail|gist|both [--learn]
@@ -137,6 +137,12 @@ class Operator:
             return operator_command(r,args)
         if cmd=='verbot':
             from .prohibitions import operator_command
+            return operator_command(r,args)
+        if cmd=='wachter':
+            from .guard2 import operator_command
+            return operator_command(r,args)
+        if cmd=='modul':
+            from .modules_gate import operator_command
             return operator_command(r,args)
         if cmd=='notaus':
             from .prohibitions import notaus_command
