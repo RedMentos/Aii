@@ -97,6 +97,8 @@ TELEMETRY_ENUMS.update('CONTINUE INTERRUPT REVISE OVERLAP STOP CORRECTION interr
 TELEMETRY_FIELDS.update('action authority seconds width height encoder'.split())  # WP-N15
 TELEMETRY_ENUMS.update('add describe train REFERENCE_NOT_FACT hashed_bow'.split())
 TELEMETRY_ENUMS.update('NO_LIMITS NO_DATA'.split())  # WP-T14 control budget
+TELEMETRY_FIELDS.update('checked stale'.split())  # WP-BP10 FS10 stale-hypothesis report
+TELEMETRY_ENUMS.update('TOPIC_SHIFT ANSWERED_LATER CORRECTED_SINCE TOO_OLD SOURCE_GONE'.split())
 
 def telemetry_metrics(value):
     if isinstance(value,dict):
