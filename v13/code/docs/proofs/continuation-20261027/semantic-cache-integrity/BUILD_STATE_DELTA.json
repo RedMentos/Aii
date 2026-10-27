@@ -18,10 +18,22 @@
   "green": {
     "source_commit": "11c022da839899f4d8d8ccb7019de0cabde6c93b",
     "semantic_blob": "b8fef1143d4a27eb00a3260fa99b7a79efd46ef2",
-    "status": "PENDING_EXACT_HEAD_FOCUSED"
+    "actions": 40534936708,
+    "status": "SOFTWARE_FOCUSED_PASS_10",
+    "exits": {
+      "install": 0,
+      "unit": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "artifact": 12746044766,
+    "zip_sha256": "4e7e97845b373d672753da9f56faaf93302e7908064891bd30649a0286a87834",
+    "private_backup_verified": true
   },
   "full_suite": {
-    "status": "PENDING_EXACT_HEAD"
+    "source_commit": "4984b6006e4f38d659db59c2a05334a8d18ccf53",
+    "status": "PENDING_EXACT_HEAD_SOURCE"
   },
   "safety": {
     "lp1": "NO_ATTRIBUTABLE_GAIN",
@@ -35,6 +47,6 @@
     "canonical_architecture_complete": false,
     "user_full_scope_complete": false
   },
-  "next_command": "Inspect exact-head focused semantic Actions on 11c022da, then full suite; preserve raw ZIP exits and private byte-exact backups.",
+  "next_command": "Inspect semantic cache full-suite Actions at 4984b600 source, verify raw exits and private byte-exact backup, independent review PR #741.",
   "note": "Branch-scoped state delta, no shared BUILD_STATE overwrite, no production merge."
 }
