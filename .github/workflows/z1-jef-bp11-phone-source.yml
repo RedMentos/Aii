@@ -1,0 +1,109 @@
+name: V13 current integrated Z1 JEF BP11 extracted phone source
+on:
+  push:
+    branches: [codex/automation11-z1-jef-bp11-phone-source-20261027]
+    paths:
+      - '.github/workflows/z1-jef-bp11-phone-source.yml'
+      - 'v13/code/docs/proofs/continuation-20261027/z1-jef-bp11-phone-source/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-z1-jef-bp11-phone-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  extracted:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated offline software dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/integrated-phone-venv"
+          timeout 240s "$RUNNER_TEMP/integrated-phone-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build and verify every source ZIP member
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/integrated-phone-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/integrated-phone-proof/HEAD.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/integrated-phone-proof/TREE.txt"
+          sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md v13/code/scripts/package_source.py v13/code/scripts/verify_phone_zip_current_run268.py v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/v13/gates.py v13/code/scripts/native_jef_goal_run554.py > "$RUNNER_TEMP/integrated-phone-proof/SOURCE_SHA256.txt"
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Integrated-20261027.zip" --phone-install > "$RUNNER_TEMP/integrated-phone-proof/PACK_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/PACK_EXIT.txt"
+          if [ "$(cat "$RUNNER_TEMP/integrated-phone-proof/PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Integrated-20261027.zip" --root v13/code --out "$RUNNER_TEMP/integrated-phone-proof/VERIFY.json" > "$RUNNER_TEMP/integrated-phone-proof/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/VERIFY_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/integrated-phone-proof/VERIFY_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/integrated-phone-proof/VERIFY_EXIT.txt")" = 0 ]; then
+            python3 - <<'PY' >> "$RUNNER_TEMP/integrated-phone-proof/VERIFY_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'integrated-phone-proof/VERIFY.json').read_text())
+          assert d['evidence_scope']=='LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY'
+          assert d['native_model_inference'] is False and d['redmi_measured'] is False
+          assert d['gates']['STEP2']=='UTILITY_FAIL' and d['gates']['B3_L1']=='FAIL'
+          assert d['gates']['Body_JEPA']=='UNAVAILABLE' and d['gates']['jepa_weight']==0
+          print('EXACT_SOURCE_ZIP_NO_NATIVE_OR_AGE_PROMOTION')
+          PY
+            echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/VERIFY_GATES_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/integrated-phone-proof/VERIFY_GATES_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/integrated-phone-proof/VERIFY_GATES_EXIT.txt")" = 0 ]; then
+            unzip -q "$RUNNER_TEMP/V13-Phone-Integrated-20261027.zip" -d "$RUNNER_TEMP/integrated-phone-extracted" > "$RUNNER_TEMP/integrated-phone-proof/EXTRACT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/EXTRACT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/integrated-phone-proof/EXTRACT_EXIT.txt"
+          fi
+          sha256sum "$RUNNER_TEMP/V13-Phone-Integrated-20261027.zip" > "$RUNNER_TEMP/integrated-phone-proof/PHONE_ZIP_SHA256.txt" 2>/dev/null || true
+          exit 0
+      - name: Test the extracted package, not checkout source
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/integrated-phone-proof/EXTRACT_EXIT.txt")" = 0 ]; then
+            (cd "$RUNNER_TEMP/integrated-phone-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" timeout 360s "$RUNNER_TEMP/integrated-phone-venv/bin/python" -m unittest -v \
+              tests.test_z1_gate_evidence_type tests.test_z1_realdata_path_integrity tests.test_register_gates \
+              tests.test_module_lifecycle_cas tests.test_module_recall_direct_ban tests.test_modules_gate \
+              tests.test_native_jef_goal_run554 tests.test_run554_fixture_receipt_20261027 \
+              tests.test_run552_jef_goal_final_receipt tests.test_run553_user_goal_operator tests.test_agi_live) > "$RUNNER_TEMP/integrated-phone-proof/TESTS_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/TESTS_EXIT.txt"
+            (cd "$RUNNER_TEMP/integrated-phone-extracted/V13-Phone" && bash -n setup.sh && PYTHONPATH="$PWD:$PWD/scripts" timeout 240s "$RUNNER_TEMP/integrated-phone-venv/bin/python" -m v13 --home "$RUNNER_TEMP/integrated-phone-home" selftest --portable) > "$RUNNER_TEMP/integrated-phone-proof/PORTABLE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/PORTABLE_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/integrated-phone-proof/TESTS_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/integrated-phone-proof/PORTABLE_EXIT.txt"
+          fi
+          "$RUNNER_TEMP/integrated-phone-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9b22126e38d68f07520e4696d9efcc0aba6bf3c5 --head HEAD > "$RUNNER_TEMP/integrated-phone-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/integrated-phone-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: z1-jef-bp11-phone-${{ github.run_id }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Integrated-20261027.zip
+            ${{ runner.temp }}/integrated-phone-proof/
+          if-no-files-found: error
+      - name: Enforce source package, extracted software and privacy
+        run: |
+          set -euo pipefail
+          for n in PACK VERIFY VERIFY_GATES EXTRACT TESTS PORTABLE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/integrated-phone-proof/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/integrated-phone-proof/${n}_RAW.log" 2>/dev/null || true; exit 1;
+            }
+          done
+          cat "$RUNNER_TEMP/integrated-phone-proof/PHONE_ZIP_SHA256.txt"
+          echo "PHONE_SOURCE_ONLY_LINUX_EXTRACTED_PASS_NOT_REDMi_NATIVE"

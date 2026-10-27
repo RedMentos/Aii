@@ -1,0 +1,41 @@
+{
+  "schema": "V13_Z1_JEF_BP11_PHONE_SOURCE_REVIEW_20261027",
+  "owner": "GPT-6 automation11",
+  "parent_review_pr": 699,
+  "base": "9b22126e38d68f07520e4696d9efcc0aba6bf3c5",
+  "prereg": "5e4f48471f3ae01ea7faa18277fd014f95fa30ab",
+  "package_head": "e48b937a24b96274ba4d13d94cc3015a847ea980",
+  "actions_run": 40494517262,
+  "artifact": 12729157902,
+  "original_artifact_zip_sha256": "47cdaecb968cccd9e30d1864b773c1ece46b366bda289122dfd44e956b16f1af",
+  "source_zip_sha256": "2e443f528631338e89d8f0e2ed05e5108a755676a547a74fa43c6aed50bc5b07",
+  "source_zip_bytes": 13943159,
+  "source_zip_members": 1421,
+  "uncompressed_bytes": 32090158,
+  "all_member_hashes": "PASS",
+  "checkout_byte_parity": "PASS",
+  "crc": "PASS",
+  "extracted_tests": "102/102 PASS",
+  "portable_selftest": "94/94 PASS",
+  "setup_sh_syntax": true,
+  "privacy": "CLEAN",
+  "raw_exits": "PACK VERIFY VERIFY_GATES EXTRACT TESTS PORTABLE PRIVACY all 0",
+  "evidence_scope": "LINUX_SOFTWARE_SOURCE_PACKAGE_INTEGRITY_ONLY",
+  "native_model_inference": false,
+  "redmi_measured": false,
+  "private_backup": "/V13-Checkpoints/2026-10-27/Z1-JEF-BP11-Phone-Source/ORIGINAL-EXTRACTED-GREEN-40494517262.zip",
+  "private_backup_byte_exact": true,
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "V13": "INCOMPLETE"
+  },
+  "next_command": "On Redmi/Termux, extract source ZIP and run setup.sh then v13 selftest; preserve real device RSS/thermal/latency and model source hashes. Do not promote gates from Linux-only package.",
+  "blockers": [
+    "No connected Redmi/Termux device in this execution environment",
+    "No native model weights bundled; Linux portable selftest is not a sustained phone proof",
+    "Broad suite on parent PR #699 remains separate and historically RED"
+  ]
+}
