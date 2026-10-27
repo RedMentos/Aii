@@ -1,0 +1,61 @@
+name: V13 explicit World-JEPA SHADOW console bridge
+on:
+  push:
+    branches:
+      - codex/automation11-world-console-shadow-20261027
+    paths:
+      - '.github/workflows/world-console-shadow.yml'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_world_console_shadow.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-console-shadow
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated deps
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldconsole"
+          timeout 240s "$RUNNER_TEMP/worldconsole/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve original raw outputs
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/worldconsoleproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/worldconsoleproof/HEAD.txt"
+          sha256sum v13/code/v13/operator.py v13/code/tests/test_world_console_shadow.py v13/code/v13/world_jepa_shadow_probe.py > "$RUNNER_TEMP/worldconsoleproof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldconsole/bin/python" -m unittest -v tests.test_world_console_shadow tests.test_world_jepa_shadow_probe tests.test_world_jepa_shadow_lifecycle tests.test_z12c_control_calibration tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint tests.test_world_state) > "$RUNNER_TEMP/worldconsoleproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldconsoleproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/worldconsole/bin/python" -m compileall -q v13/code/v13/operator.py v13/code/tests/test_world_console_shadow.py > "$RUNNER_TEMP/worldconsoleproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldconsoleproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldconsole/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 3d39a7e0663ffbf72b804e5926822f2c9ab2ec7f --head HEAD > "$RUNNER_TEMP/worldconsoleproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldconsoleproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-console-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/worldconsoleproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/worldconsoleproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/worldconsoleproof/${n}_RAW.log"; exit 1; }
+          done
+          tail -18 "$RUNNER_TEMP/worldconsoleproof/UNIT_RAW.log"
