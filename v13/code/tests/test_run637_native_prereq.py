@@ -2,7 +2,7 @@
 from pathlib import Path
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = ROOT / '.github/workflows/run637-c3-deployed-native.yml'
 
 
