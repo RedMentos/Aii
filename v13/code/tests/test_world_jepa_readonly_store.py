@@ -67,7 +67,11 @@ class ReadOnlyStoreTests(unittest.TestCase):
                 store.conn.execute("INSERT INTO actions(id) VALUES('bad')")
         finally:
             store.close()
-        self.assertEqual(len(wm.transitions(local.ReadOnlyStore(self.db))), 64)
+        store2 = local.ReadOnlyStore(self.db)
+        try:
+            self.assertEqual(len(wm.transitions(store2)), 64)
+        finally:
+            store2.close()
 
     def test_cli_requires_ack_and_sanitizes_invalid_paths(self):
         out = io.StringIO()
