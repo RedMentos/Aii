@@ -97,7 +97,8 @@ class EventScheduler:
         row=self.s.one('SELECT MAX(accepted_at) AS t FROM accepted_turns');last=row['t'] if row and row['t'] else 0.
         st,_=self._load()
         return sum(1 for e in st['events']+st['history'] if e['origin']!='USER' and e.get('action') not in (None,'notice')
-                   and e['status'] in {'DISPATCHED','DONE','FAILED'} and e['created']>=last)
+                   and e['status'] in {'DISPATCHED','DONE','FAILED'}
+                   and (e.get('dispatched') if e.get('dispatched') is not None else e['created'])>=last)
     def next(self,idle=True,resource_state='NORMAL',quiet=False):
         with self.s.mutex:return self._next(idle,resource_state,quiet)
     def _next(self,idle=True,resource_state='NORMAL',quiet=False):
@@ -131,7 +132,7 @@ class EventScheduler:
     def _retire(self,st):
         done=[e for e in st['events'] if e['status'] not in {'PENDING','HELD_AGE','DISPATCHED'}]
         if done:
-            st['history']=(st['history']+[{k:e[k] for k in ('id','kind','origin','action','status','created','attempts')} for e in done])[-HISTORY:]
+            st['history']=(st['history']+[{k:e.get(k) for k in ('id','kind','origin','action','status','created','dispatched','attempts')} for e in done])[-HISTORY:]
             st['events']=[e for e in st['events'] if e['status'] in {'PENDING','HELD_AGE','DISPATCHED'}]
     def pending(self):return [dict(e) for e in self._load()[0]['events']]
     def report(self):
