@@ -169,4 +169,26 @@ class FiniteEvidence(Base):
         self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
                          ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
 
+    def test_for_event_rejects_invalid_observed_state_without_fabricating_zero_input(self):
+        good={'forecast':{'input_chars':100,'resource_state':'NORMAL'}}
+        cases=[
+            {'expected':'{','created':3600},
+            {'expected':json.dumps({}),'created':3600},
+            {'expected':json.dumps({'forecast':{}}),'created':3600},
+            {'expected':json.dumps({'forecast':{'input_chars':float('nan')}}),'created':3600},
+            {'expected':json.dumps({'forecast':{'input_chars':True}}),'created':3600},
+            {'expected':json.dumps({'forecast':{'input_chars':-4}}),'created':3600},
+            {'expected':json.dumps(good),'created':float('nan')},
+            {'expected':json.dumps({'forecast':{'input_chars':100,'resource_state':[]}}),'created':3600},
+        ]
+        for row in cases:
+            with self.subTest(row=row), mock.patch.object(self.r.store,'one',return_value=row), mock.patch.object(WM,'load',return_value=None):
+                cf=WM.for_event(self.r.store,'event','detail')
+                self.assertEqual((cf['label'],cf['confidence'],cf['reason'],cf['authority']),
+                                 ('SIMULATION_UNCERTAIN',0.,'INVALID_OBSERVED_STATE','HYPOTHESIS'))
+        with mock.patch.object(self.r.store,'one',return_value={'expected':json.dumps(good),'created':3600}), mock.patch.object(WM,'load',return_value=None):
+            self.assertEqual(WM.for_event(self.r.store,'event','detail')['reason'],'NO_WORLD_MODEL')
+        with mock.patch.object(self.r.store,'one',return_value=None):
+            self.assertEqual(WM.for_event(self.r.store,'event','detail')['reason'],'NO_OBSERVED_STATE')
+
 if __name__=='__main__':unittest.main()
