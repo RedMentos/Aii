@@ -1,0 +1,74 @@
+name: V13 World-JEPA new-seed ensemble ablation
+on:
+  push:
+    branches: [codex/automation11m-world-jepa-ensemble-ablation-20261027]
+    paths:
+      - '.github/workflows/world-jepa-ensemble-ablation.yml'
+      - 'v13/code/scripts/world_jepa_ensemble_ablation.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-jepa-ensemble-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  ablation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Pinned NumPy, exact frozen source and closed raw ablation
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-world-jepa-ensemble"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/WORLD_JEPA_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_ensemble_ablation.py > "$evidence/SCRIPT_BLOB.txt"
+          test "$(cat "$evidence/WORLD_JEPA_BLOB.txt")" = "a691cae8aa19bf3a0700535c20dc8fc85c649d0d"
+          echo "$?" > "$evidence/FROZEN_SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-jepa-ensemble-venv"
+          py="$RUNNER_TEMP/world-jepa-ensemble-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=. "$py" scripts/world_jepa_ensemble_ablation.py
+          ) > "$evidence/METRICS_RAW.json" 2> "$evidence/ABLATION_ERR.log"
+          echo "$?" > "$evidence/ABLATION_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_ensemble_ablation.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fe57536308819b6facc5947d24fcff66468ab34e --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check fe57536308819b6facc5947d24fcff66468ab34e HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-jepa-ensemble-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-world-jepa-ensemble/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits, no native or Age promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-world-jepa-ensemble"
+          for name in FROZEN_SOURCE INSTALL ABLATION COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw artifact retained"
+              tail -80 "$evidence/ABLATION_ERR.log"
+              exit 1
+            fi
+          done
+          echo 'WORLD_JEPA_SYNTHETIC_ABLATION_ONLY_NO_AGE_PROMOTION'
