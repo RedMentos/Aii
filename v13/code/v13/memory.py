@@ -166,6 +166,9 @@ class Memory:
         metadata=path.with_suffix('.manifest.json');atomic_write(metadata,dumps(manifest))
         return {'dataset':str(path),'manifest':str(metadata),'records':count,'sha256':manifest['sha256']}
     def recall(self,query,session,semantic=None,cancel=None,deadline=None,top_k=None):
+        # A semantic vector belongs to this recall, not to matching text on a later turn.
+        keys=getattr(self,'semantic_keys',None)
+        if keys is not None:keys.last_query=None
         top_k=self.cfg['memory_top_k'] if top_k is None else max(0,min(8,int(top_k)))  # WP-T1 memory head: skip/deep
         if not top_k:return []
         candidates=[]
