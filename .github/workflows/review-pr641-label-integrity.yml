@@ -6,12 +6,12 @@ on:
     paths:
       - '.github/workflows/review-pr641-label-integrity.yml'
       - 'v13/code/v13/learning_worker.py'
-      - 'v13/code/tests/test_review641_curiosity_receipt.py'
-      - 'v13/code/docs/proofs/continuation-20261027/review641-curiosity-receipt/**'
+      - 'v13/code/tests/test_review_pr641_exact_route_labels.py'
+      - 'v13/code/docs/proofs/continuation-20261027/review-pr641-label-integrity/**'
 permissions:
   contents: read
 concurrency:
-  group: v13-review641-curiosity-source
+  group: v13-review641-route-labels
   cancel-in-progress: false
 jobs:
   receipt:
@@ -35,7 +35,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/review641"
           git rev-parse HEAD > "$RUNNER_TEMP/review641/HEAD.txt"
-          sha256sum v13/code/v13/learning_worker.py v13/code/tests/test_review641_curiosity_receipt.py > "$RUNNER_TEMP/review641/SOURCE_SHA256.txt"
+          sha256sum v13/code/v13/learning_worker.py v13/code/tests/test_review_pr641_exact_route_labels.py > "$RUNNER_TEMP/review641/SOURCE_SHA256.txt"
           { date -u -Iseconds; python3 --version; uname -a; } > "$RUNNER_TEMP/review641/HOST.txt"
           python3 -m venv "$RUNNER_TEMP/review641venv"
           timeout 240s "$RUNNER_TEMP/review641venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
@@ -43,11 +43,11 @@ jobs:
       - name: Focused SQLite regression and privacy
         run: |
           set +e
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/review641venv/bin/python" -m unittest -v tests.test_review641_curiosity_receipt tests.test_run633_jef_noanswer_goal tests.test_agi_live) > "$RUNNER_TEMP/review641/UNIT_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/review641venv/bin/python" -m unittest -v tests.test_review_pr641_exact_route_labels tests.test_route_words tests.test_learning_worker) > "$RUNNER_TEMP/review641/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/review641/UNIT_EXIT.txt"
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 600s "$RUNNER_TEMP/review641venv/bin/python" -m unittest discover -s tests -p 'test_*.py') > "$RUNNER_TEMP/review641/FULL_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/review641/FULL_EXIT.txt"
-          "$RUNNER_TEMP/review641venv/bin/python" -m compileall -q v13/code/v13/learning_worker.py v13/code/tests/test_review641_curiosity_receipt.py > "$RUNNER_TEMP/review641/COMPILE_RAW.log" 2>&1
+          "$RUNNER_TEMP/review641venv/bin/python" -m compileall -q v13/code/v13/learning_worker.py v13/code/tests/test_review_pr641_exact_route_labels.py > "$RUNNER_TEMP/review641/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/review641/COMPILE_EXIT.txt"
           "$RUNNER_TEMP/review641venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base bc0703f4fbfb794b23ffc49ac8a7cb6074903bfa --head HEAD > "$RUNNER_TEMP/review641/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/review641/PRIVACY_EXIT.txt"
