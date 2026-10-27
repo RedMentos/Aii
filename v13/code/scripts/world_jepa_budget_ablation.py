@@ -67,7 +67,7 @@ def _verify_original_holdout(path, train, expected_manifest_sha):
                 raise ValueError('Nonfinite or invalid frozen metric')
             delta = max(delta, abs(value - prior))
             if not math.isclose(value, prior, rel_tol=0., abs_tol=1e-10):
-                raise ValueError('Frozen metric differs beyond replay tolerance')
+                raise ValueError('Frozen metric differs beyond replay tolerance: %s replay=%r recorded=%r delta=%r' % (key, value, prior, abs(value-prior)))
         elif type(value) is not type(prior) or value != prior:
             raise ValueError('Frozen integer/count metric differs')
     return {'verified': True, 'rows': len(data), 'metrics': replay,
