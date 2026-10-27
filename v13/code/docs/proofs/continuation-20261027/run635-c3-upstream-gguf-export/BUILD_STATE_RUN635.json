@@ -1,0 +1,76 @@
+{
+  "schema": "V13_RUN635_SELECTED_C3_MASTER_LORA_EXPORTED_NATIVE_V2",
+  "date_utc": "2026-10-27",
+  "branch": "codex/automation11-run635-c3-upstream-gguf-export-20261027",
+  "owner": "GPT-6 automation C3 native export package",
+  "parent_pr": 629,
+  "parent_sha": "d3d98b189ac0584ac25ed819193d4dfcd89e0cef",
+  "prereg_commit": "3e82c2d4ba830dd14660fd4f06ee50ab382d85c1",
+  "test_commit": "508beeb194ae6296825d66621234b932d2eb9dfc",
+  "workflow_commit": "3019cf7c18170290a54d29aca0fd07203ba857dd",
+  "workflow_blob": "108b275af88a406440e4a3e341490127c0744289",
+  "run_id": 40428833150,
+  "status": "LINUX_NATIVE_MASTER_LORA_EXPORT_PASS_UTILITY_NOT_PROVEN",
+  "upstream": {
+    "repo": "ggml-org/llama.cpp",
+    "tag": "b10964",
+    "tar_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe",
+    "tar_bytes": 37420323,
+    "constants_blob": "e54ee5a0fd41416f191130cdf1efd08507f63894",
+    "mapping_blob": "d2dfeece59522ffb417f70939cf94ee157591eee"
+  },
+  "frozen": {
+    "cohort_v2_blob": "c282077912ec4e284476825b3e03728620d8bad0",
+    "trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "script_blob": "b59f45f06bf0b8428fba502b8146c02205228edd",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "template_sha256": "013eed60546434b6967e3483153d8c5c37abcb1d667f8b1f914683f2a9411531"
+  },
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false,
+  "next_exact_command": "Use frozen Run635 original adapter GGUF SHA 3674e88f... and source proof/COHORT_V2 to execute separately preregistered Run636 selected deployed C3 QAD Q4 llama.cpp b10964 native HF-token parity/base/scale0/scale1 6-case utility; never promote STEP2 from synthetic master training.",
+  "verified_run": {
+    "run_id": 40428833150,
+    "head_sha": "3019cf7c18170290a54d29aca0fd07203ba857dd",
+    "conclusion": "success",
+    "source_tests": "13/13_PASS",
+    "upstream_gguf_preflight": "PASS",
+    "template_parity": "PASS",
+    "master_sha_license": "PASS",
+    "train_exit": 0,
+    "privacy": "CLEAN",
+    "raw_zip_sha256": "bd2ffc2969b3b98f8c64a4f776fc7195599a78e74802ace26b59c3dcb576c675",
+    "inner_sha_verified": 22,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run635/Run635-native-GREEN-40428833150.zip",
+    "roundtrip": "PASS",
+    "adapter": {
+      "gguf_sha256": "3674e88f71855b46a1de59ca50642ec07c39bb3d6c86bd7e8a49eb1a031d8599",
+      "gguf_bytes": 339296,
+      "gguf_tensors": 44,
+      "peft_sha256": "f857aeb02366c8e98d94fe7d1e6c6de93ed4114b9e1a20e8ef190eb2910124c5",
+      "lora_b_nonzero": 38912,
+      "lora_b_tensors": 22
+    },
+    "metrics": {
+      "steps": 2,
+      "trainable_parameter_count": 83968,
+      "final_ce": 6.95563,
+      "initial_ce": 8.43541,
+      "master_learned_recall": 0,
+      "master_kl_to_base": 0.007352328859269619,
+      "peak_rss_mb": 2422.9,
+      "seconds": 10.59,
+      "training_device": "Linux torch CPU",
+      "jepa_weight": 0
+    },
+    "deployed_parity_proven": false,
+    "semantic_utility_proven": false
+  }
+}
