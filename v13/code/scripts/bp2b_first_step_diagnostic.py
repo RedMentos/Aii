@@ -88,10 +88,12 @@ class ResourceSamples:
         self.interval = interval
         self.stop_event = threading.Event()
         self.thread = None
+        self.started_monotonic = None
         self.max_rss_kib = 0
         self.error = None
 
     def start(self):
+        self.started_monotonic = time.monotonic()
         self.thread = threading.Thread(target=self._loop, name='bp2b-rss', daemon=True)
         self.thread.start()
 
@@ -102,7 +104,7 @@ class ResourceSamples:
                     rss = _rss_kib()
                     if rss is not None:
                         self.max_rss_kib = max(self.max_rss_kib, rss)
-                    stream.write(json.dumps({'elapsed_monotonic_s': round(time.monotonic(), 3),
+                    stream.write(json.dumps({'elapsed_monotonic_s': round(time.monotonic() - self.started_monotonic, 3),
                                              'rss_kib': rss}, sort_keys=True) + '\n')
                     stream.flush()
                     os.fsync(stream.fileno())

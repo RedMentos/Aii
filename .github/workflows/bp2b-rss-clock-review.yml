@@ -1,0 +1,43 @@
+name: V13 BP2b RSS relative clock independent review
+on:
+  push:
+    branches: [codex/automation11-bp2b-rss-clock-review-20261027]
+    paths:
+      - '.github/workflows/bp2b-rss-clock-review.yml'
+      - 'v13/code/scripts/bp2b_first_step_diagnostic.py'
+      - 'v13/code/tests/test_bp2b_first_step_diagnostic.py'
+      - 'v13/code/BUILD_STATE.json'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-rss-clock-review/REPORT.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-rss-clock-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Synthetic one-step diagnostic, compile, privacy and dry-run
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bp2b-diag-venv"
+          py="$RUNNER_TEMP/bp2b-diag-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' psutil PyYAML Pillow
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_bp2b_first_step_diagnostic
+          PYTHONPATH=. "$py" scripts/bp2b_first_step_diagnostic.py --dry-run > "$RUNNER_TEMP/BP2B_DIAGNOSTIC_PLAN.json"
+          "$py" -m py_compile scripts/bp2b_first_step_diagnostic.py tests/test_bp2b_first_step_diagnostic.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3 --head HEAD
+          git diff --check a39d1d3cd62f9ddafc91b33b20e020ae49d3b2b3 HEAD
+          echo 'BP2B_FIRST_STEP_SOFTWARE_FAKE_ONLY_NO_NATIVE_OR_AGE_PROMOTION'
