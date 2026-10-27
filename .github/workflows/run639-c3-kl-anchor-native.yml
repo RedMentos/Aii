@@ -36,7 +36,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/RUN639_HEAD.txt"
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/PREREG.md)" = a2e6edc75f4880694512951b8f1c723d26693e80
           test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json)" = ccec34634714b760b6cba6ce626536928f229ed3
-          test "$(git hash-object v13/code/scripts/run639_c3_kl_anchor.py)" = 5ee4adf90a3486fd4c1f2090a3a173dc411d9703
+          test "$(git hash-object v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/PREREG_AMENDMENT_1.md)" = fa61ac7a1cb848b40027dd6a1bb4662d86c5f700
+          test "$(git hash-object v13/code/scripts/run639_c3_kl_anchor.py)" = c1f5a17d034891c9fc0368ac604a0d071184e387
           test "$(git hash-object v13/code/scripts/run639_c3_native_anchor_compare.py)" = 023c4e08f41f4d7bba641078be3f5c0e3e1a7703
           test "$(git hash-object v13/code/tests/test_run639_c3_kl_anchor.py)" = 576a5f919af744128519f76c81cb48ae548d84fb
           test "$(git hash-object v13/code/tests/test_run639_c3_native_anchor_compare.py)" = abacb1d2de535dfd069ad67a556715c7b88b650a
@@ -47,7 +48,7 @@ jobs:
           test "$(sha256sum v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md | cut -d' ' -f1)" = 3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee
           { date -u -Iseconds; python3 --version; uname -a; free -h; } > "$RUNNER_TEMP/RUN639_HOST.txt"
           sha256sum v13/code/scripts/run639_c3_kl_anchor.py v13/code/scripts/run639_c3_native_anchor_compare.py v13/code/docs/proofs/continuation-20261027/run639-c3-kl-anchor/COHORT.json > "$RUNNER_TEMP/RUN639_SOURCE_SHA256.txt"
-      - name: Source-only 43 contract/negative controls
+      - name: Source-only 44 contract/negative controls
         run: |
           set +e
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v             tests.test_run639_c3_kl_anchor             tests.test_run639_c3_native_anchor_compare             tests.test_run632_c3_lfm350_native) > "$RUNNER_TEMP/RUN639_SOURCE_TEST_RAW.log" 2>&1
