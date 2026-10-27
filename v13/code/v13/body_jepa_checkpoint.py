@@ -177,6 +177,8 @@ def restore(root, source_sha, model, predictor, optimizer, ema, generator):
     root = Path(root)
     pointer_path = root / 'CURRENT.json'
     if not pointer_path.exists():
+        if root.is_symlink() or (root.exists() and any(root.iterdir())):
+            raise ValueError('Untracked checkpoint files without committed pointer')
         return None
     if root.is_symlink() or pointer_path.is_symlink() or not pointer_path.is_file():
         raise ValueError('Invalid checkpoint pointer')
