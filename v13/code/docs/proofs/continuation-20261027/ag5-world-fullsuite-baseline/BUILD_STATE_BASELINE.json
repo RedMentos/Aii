@@ -1,0 +1,42 @@
+{
+  "schema": "V13_AG5_WORLD_FULLSUITE_BASELINE_RED_AUDIT_V1",
+  "date": "2026-10-27",
+  "branch": "codex/ag5-world-fullsuite-baseline-audit-20261027",
+  "source_head": "593086374066e2d20b7e9ebcb2e85d00a41b3299",
+  "original": {
+    "run": 40458296328,
+    "tests": 4424,
+    "fail": 7,
+    "error": 73,
+    "skipped": 28
+  },
+  "first_rerun": {
+    "run": 40460394112,
+    "head": "34e5f8fc5a896d0291b4490b2e0f7351770aca36",
+    "workflow": "FAIL_TECHNICAL_AUDIT_REGEX",
+    "unit_exit": 1,
+    "tests": 4424,
+    "fail": 5,
+    "error": 73,
+    "skipped": 28,
+    "guide_failure": false,
+    "all_current_failure_headers_in_original": true,
+    "raw_artifact": 12713949453,
+    "zip_sha256": "b73c6a82e952f1cf6376a8078758f397eead1f3b83bac42075f8b94398aaa9ec",
+    "private_byte_roundtrip": true
+  },
+  "second_rerun": {
+    "run": 40460415719,
+    "status": "IN_PROGRESS_AT_CHECKPOINT"
+  },
+  "owner": "GPT-6 regression auditor",
+  "next_command": "Inspect Actions 40460415719, raw ZIP CRC/hash/headers, preserve fullsuite baseline RED and private backup",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  }
+}
