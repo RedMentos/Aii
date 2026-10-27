@@ -1,0 +1,89 @@
+name: V13 frozen World-JEPA ensemble mean ablation
+on:
+  push:
+    branches: [codex/automation11-world-ensemble-ablation-20261027]
+    paths:
+      - '.github/workflows/world-jepa-ensemble-ablation.yml'
+      - 'v13/code/scripts/world_jepa_ensemble_ablation.py'
+      - 'v13/code/tests/test_world_jepa_ensemble_ablation.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-ensemble-mean/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-world-ensemble-ablation
+  cancel-in-progress: false
+jobs:
+  frozen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 30
+          ref: ${{ github.sha }}
+      - name: Pinned NumPy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/ensemble"
+          timeout 240s "$RUNNER_TEMP/ensemble/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Retrieve and verify original closed ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ensembleproof"
+          gh api -H "Accept: application/vnd.github+json" /repos/RedMentos/Aii/actions/artifacts/12712155096/zip > "$RUNNER_TEMP/ensemble-original.zip"
+          sha256sum "$RUNNER_TEMP/ensemble-original.zip" > "$RUNNER_TEMP/ensembleproof/FROZEN_ZIP_SHA256.txt"
+          echo 'f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8  '"$RUNNER_TEMP/ensemble-original.zip" | sha256sum -c -
+          "$RUNNER_TEMP/ensemble/bin/python" - <<'PY'
+          import pathlib, zipfile, os
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'ensemble-original.zip'
+          dest=pathlib.Path(os.environ['RUNNER_TEMP'])/'ensemble-original'
+          with zipfile.ZipFile(p) as z:
+              if z.testzip() is not None: raise ValueError('CRC mismatch')
+              infos=z.infolist()
+              if sum(i.file_size for i in infos)>10*1024*1024: raise ValueError('ZIP size')
+              for i in infos:
+                  parts=pathlib.PurePosixPath(i.filename).parts
+                  if not parts or '..' in parts or pathlib.PurePosixPath(i.filename).is_absolute(): raise ValueError('ZIP path')
+                  if parts[0]!='closed' and len(parts)!=1: raise ValueError('Unexpected nested ZIP path')
+              z.extractall(dest)
+          print('FROZEN_CRC_SHA_PATHS_OK')
+          PY
+      - name: Capture tests and independent NumPy ablation
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/ensembleproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/ensembleproof/HEAD.txt"
+          sha256sum v13/code/scripts/world_jepa_ensemble_ablation.py v13/code/tests/test_world_jepa_ensemble_ablation.py > "$RUNNER_TEMP/ensembleproof/SOURCE_SHA256.txt"
+          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/ensemble-original/closed" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/ensemble/bin/python" -m unittest -v tests.test_world_jepa_ensemble_ablation) > "$RUNNER_TEMP/ensembleproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ensembleproof/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/ensemble/bin/python" scripts/world_jepa_ensemble_ablation.py --frozen-root "$RUNNER_TEMP/ensemble-original/closed") > "$RUNNER_TEMP/ensembleproof/ABLATION_RAW.json" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ensembleproof/ABLATION_EXIT.txt"
+          "$RUNNER_TEMP/ensemble/bin/python" -m compileall -q v13/code/scripts/world_jepa_ensemble_ablation.py v13/code/tests/test_world_jepa_ensemble_ablation.py > "$RUNNER_TEMP/ensembleproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ensembleproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/ensemble/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 85a88ffd48c59d618c5fdb04022813580418e9d0 --head HEAD > "$RUNNER_TEMP/ensembleproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/ensembleproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload raw proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-ensemble-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ensembleproof/
+          if-no-files-found: error
+      - name: Enforce
+        run: |
+          set -euo pipefail
+          for n in UNIT ABLATION COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/ensembleproof/${n}_EXIT.txt")" = 0 || exit 1
+          done
+          tail -12 "$RUNNER_TEMP/ensembleproof/UNIT_RAW.log"
+          cat "$RUNNER_TEMP/ensembleproof/ABLATION_RAW.json"

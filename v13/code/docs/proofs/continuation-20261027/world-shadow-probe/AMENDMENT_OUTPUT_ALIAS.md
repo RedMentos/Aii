@@ -1,0 +1,3 @@
+# Prospective amendment: protect source files from explicit output alias
+
+While reviewing the new CLI before final checkpoint, noticed an avoidable destructive alias: `--output` could equal the checkpoint, input JSON or provenance JSON path. `atomic_write` would then replace that source even though the inference is intended to be read-only. Before adding a test or source fix, extend acceptance: reject an explicit output resolving to any of those three source paths; preserve original bytes and do not create replacement output. Existing output to a separate path remains atomic. This does not change model behavior, cohorts, thresholds or authority. The prior GREEN run remains historical; rerun focused tests after amendment.

@@ -1,0 +1,99 @@
+name: V13 preregistered World-JEPA 10-50-200-800 training budgets
+on:
+  push:
+    branches: [codex/automation11-world-budget-ablation-20261027]
+    paths:
+      - '.github/workflows/world-jepa-budget-ablation.yml'
+      - 'v13/code/scripts/world_jepa_budget_ablation.py'
+      - 'v13/code/tests/test_world_jepa_budget_ablation.py'
+      - 'v13/code/docs/proofs/continuation-20261027/world-budget-ablation/**'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-world-budget-ablation
+  cancel-in-progress: false
+jobs:
+  frozen-budget:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 40
+          ref: ${{ github.sha }}
+      - name: Install pinned isolated NumPy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldbudget"
+          timeout 240s "$RUNNER_TEMP/worldbudget/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Retrieve original closed artifact with SHA, CRC and path guards
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/budgetproof"
+          gh api -H "Accept: application/vnd.github+json" /repos/RedMentos/Aii/actions/artifacts/12712155096/zip > "$RUNNER_TEMP/original-world.zip"
+          sha256sum "$RUNNER_TEMP/original-world.zip" > "$RUNNER_TEMP/budgetproof/FROZEN_ZIP_SHA256.txt"
+          echo 'f3f5eef1d0257c60438d80bf79508494a802f98d94e965f96fac4cf92c909be8  '"$RUNNER_TEMP/original-world.zip" | sha256sum -c -
+          "$RUNNER_TEMP/worldbudget/bin/python" - <<'PY'
+          import os, pathlib, zipfile, stat
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'original-world.zip'
+          dest=pathlib.Path(os.environ['RUNNER_TEMP'])/'original-world'
+          with zipfile.ZipFile(p) as z:
+              if z.testzip() is not None: raise ValueError('CRC mismatch')
+              infos=z.infolist()
+              if len(infos)>200 or sum(i.file_size for i in infos)>10*1024*1024:
+                  raise ValueError('Original artifact size/count cap')
+              seen=set()
+              for i in infos:
+                  parts=pathlib.PurePosixPath(i.filename).parts
+                  if (not parts or '..' in parts or pathlib.PurePosixPath(i.filename).is_absolute()
+                      or (parts[0]!='closed' and len(parts)!=1)
+                      or '\\' in i.filename or i.filename in seen
+                      or stat.S_ISLNK(i.external_attr >> 16)):
+                      raise ValueError('Unsafe original artifact path')
+                  seen.add(i.filename)
+              z.extractall(dest)
+          print('ORIGINAL_ZIP_CRC_SHA_PATHS_OK')
+          PY
+      - name: Run single training set, counterexamples and independent persisted restart
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/budgetproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/budgetproof/HEAD.txt"
+          sha256sum v13/code/scripts/world_jepa_budget_ablation.py v13/code/tests/test_world_jepa_budget_ablation.py v13/code/scripts/world_jepa_shadow_lifecycle.py v13/code/v13/world_jepa_slots.py > "$RUNNER_TEMP/budgetproof/SOURCE_SHA256.txt"
+          (cd v13/code && V13_FROZEN_WORLD_ROOT="$RUNNER_TEMP/original-world/closed" V13_BUDGET_OUTPUT_ROOT="$RUNNER_TEMP/budgetproof/trained" PYTHONPATH="$PWD:$PWD/scripts" timeout 1800s "$RUNNER_TEMP/worldbudget/bin/python" -m unittest -v tests.test_world_jepa_budget_ablation) > "$RUNNER_TEMP/budgetproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/budgetproof/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 300s "$RUNNER_TEMP/worldbudget/bin/python" scripts/world_jepa_budget_ablation.py --frozen-root "$RUNNER_TEMP/original-world/closed" --output-dir "$RUNNER_TEMP/budgetproof/trained" --verify-only) > "$RUNNER_TEMP/budgetproof/VERIFY_RAW.json" 2>&1
+          echo "$?" > "$RUNNER_TEMP/budgetproof/VERIFY_EXIT.txt"
+          "$RUNNER_TEMP/worldbudget/bin/python" -m compileall -q v13/code/scripts/world_jepa_budget_ablation.py v13/code/tests/test_world_jepa_budget_ablation.py > "$RUNNER_TEMP/budgetproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/budgetproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldbudget/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 676b910f68f503a97d289d597080826202e8329f --head HEAD > "$RUNNER_TEMP/budgetproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/budgetproof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Upload original raw tests, new checkpoints, metrics and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-budget-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/budgetproof/
+          if-no-files-found: error
+      - name: Enforce all exits
+        run: |
+          set -euo pipefail
+          for n in UNIT VERIFY COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/budgetproof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/budgetproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          tail -15 "$RUNNER_TEMP/budgetproof/UNIT_RAW.log"
+          cat "$RUNNER_TEMP/budgetproof/VERIFY_RAW.json"

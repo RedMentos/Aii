@@ -1,0 +1,9 @@
+# Amendment before second AG5/World merge attempt — 2026-10-27
+
+First disposable CI Actions **40457687719** at `8cefb9158142125bcae05902410e1dcc3d97f5f9` was **RED**: exact merge returned **three**, not two, conflicts. In addition to `handy_pflicht.py` and `operator.py`, `v13/code/tests/test_toolforecast.py` conflicted. Resolver correctly refused to proceed, no source overwrite/merge commit. Raw artifact ID **12713545724**, ZIP SHA256 `540a9cf40706c0703148416b249662db54c2d7b15c35b6111a473c4a6db19e22`; conflict stage SHAs retained. This is a factual correction to PR #658's earlier two-conflict scope, caused by advancing World/AG5 history. Never hide the failed attempt.
+
+**New third conflict exact stage SHA:** World `f8f3974d12d58a26c4247a777c1e322535b37505`, AG5 `28b551a3be56eaaf557e0a2f877fbf432137990a`. Independent source comparison finds only optional native fixture helper/test differences:
+- World provides `optional_native_plan(cc)`, using optional `V13_NATIVE_RESTORE_ROOT`, gracefully skipping inaccessible `/root` but propagating errors from a real accessible fixture.
+- AG5 provides `optional_local_restore_available(path)` and a permission-denied unit test. Both behaviors are required.
+
+**Locked resolution for second attempt:** start from byte-exact AG5 test file, retain its permission-denied test and helper, insert World `optional_native_plan` implemented by calling AG5 `optional_local_restore_available` for the configured root, then change the one original optional native plan call to `optional_native_plan(cc)`. Do not alter any unrelated test assertions, training sources, cohorts or model behavior. Require exactly **three** conflict paths with exact stage SHAs. Retain earlier AG5 V2 handy and AG5-operator-plus-World-commands resolutions unchanged. Run focused and full suites; preserve any new RED. No remote two-parent merge commit until green and independent review.

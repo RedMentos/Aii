@@ -1,0 +1,17 @@
+# Z12c control confidence regression — verified checkpoint 2026-10-27
+
+- Exact parent: PR #649 `293ccf7dd8b24a9dd25e0ceffac1792e8e14cc53`, independent review branch, NOT main. Parent fixes genuine absent calibration and bumps inference checkpoint v1→v2; this child preserves that strict requirement.
+- Defect: Z12c original registered runner evaluated deliberately uncalibrated NO_ACTION and SHUFFLED_ACTION control predictions by unconditionally requesting calibrated confidence, so the PR649 guard made the existing ablation experiment crash. Control predictions/error/retrieval remain valid without confidence, but no control may claim calibrated simulation authority.
+- Fix: `cf_eval(..., calibrated=False)` returns control `confidence=0` and `SIMULATION_UNCERTAIN`, while still computing prediction, target latent, slot errors and retrieval. The primary JEPA call remains `calibrated=True` by default and rejects missing calibration. Only two control call sites change; no seeds, cohort, model weights, thresholds, data, C1–C7 metric denominators, age or permissions change.
+- Preregistered before edits: `PREREG.md` commit `bac9a30cbfe9397ac7c9c4c9c6b1e00dc50140a1`; RED tests `3e74c9c08277fba22b693ab3820506cdf6c419bf`, workflow `41ad15c4391d14c15b87781e41d1935691b47844`. RED Actions [40447670335](https://github.com/RedMentos/Aii/actions/runs/40447670335): 21 tests, **1 FAIL, 2 ERROR** (missing explicit control flags / unexpected keyword); compile exit 0, privacy exit 0. Raw original ZIP artifact `12709370486`, SHA256 `2a16ed0376ef560bdaa2fa6d17f844cbc620f6ba270d47100f4b026d4f273156`, CRC clean, HEAD and exit files checked.
+- Fix commit `5f40522e342f0c48233d28e939579954036c2052`. GREEN Actions [40447726469](https://github.com/RedMentos/Aii/actions/runs/40447726469): **21/21 PASS**, compile exit 0, privacy CLEAN; raw original ZIP artifact `12708703182`, SHA256 `9dd4d21622dec648279222c636d08870365d153a553f4ee317d563059c0e3c76`, CRC clean, HEAD and exit files checked. Remote script blob `340b568a1270c82559901196f7cd8fcc04e14e0f` independently re-fetched and two control call sites confirmed.
+- Original RED and GREEN ZIPs privately uploaded to `/V13-Checkpoints/2026-10-27/Automation11-Z12c-Control/`; each was re-materialized from Library and independently SHA256 byte-verified equal to the original GitHub artifact digest. The rejected anyone-writable Drive location was not used.
+- Evidence class: **software + synthetic NumPy unit tests**, no complete registered Z12c remeasurement and no native/Redmi utility. Parent full suite remains historically RED (5 FAIL, 73 ERROR). No production merge. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, age/approval gates unchanged. Full V13 incomplete.
+
+## Next owner and command
+Owner: next independent integration/review worker, not the Claude Z12c owner. Review this child against PR649; run an **unregistered smoke** with new seed to exercise actual file-world subprocess and both controls, then build a digest-bound read-only SHADOW consumer for the saved model (no fact writes or authority). Do not reuse frozen 201/202/203 cohorts without original protocol.
+
+Suggested next command from repo root (isolated environment with NumPy installed):
+```sh
+cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python -m unittest -v tests.test_z12c_control_calibration tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint tests.test_world_jepa_slots tests.test_world_jepa
+```

@@ -1,0 +1,5 @@
+# Z12c persistent SHADOW amendment 1 — exact byte digest binding (2026-10-27)
+
+Original source RED 40441042549: 4 errors (no save/load). First implementation attempt at `d926117b7af69e3e5d4d797467147866936aa63d`, Actions **40441151059**, ran 10 tests: **9 PASS, 1 FAIL**. The single-byte corruption test flipped a ZIP byte that did not affect loaded arrays; `np.load`/CRC of accessed members did not detect it. This is a **real integrity gap**, not a flaky test to delete.
+
+Prospective correction: require an exact 64-hex SHA256 of the **whole NPZ file** as a mandatory argument to `SlotWorldJEPA.load`, using the digest returned by `save` and persisted in the caller's own verified manifest. Check digest before any archive parsing. Update positive and negative tests to pass the original pinned digest; keep the corruption test byte flip unchanged. This makes any changed byte fail closed, including unreferenced ZIP metadata. Do not weaken provenance or original acceptance. Preserve first implementation's failed raw CI evidence and hash. Still inference-only, no runtime activation or native/Redmi claim.
