@@ -73,12 +73,20 @@ jobs:
               "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'transformers==5.20.2' 'peft==0.21.2' 'gguf==0.19.0'
               "$py" -m pip check
               "$py" -m pip freeze > "$evidence/PIP_FREEZE.txt"
-              "$py" - <<'PY'
-          import torch, transformers, peft, gguf
+              PYTHONPATH=v13/code "$py" - <<'PY'
+          import os, torch, transformers, peft, gguf
           from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
           from v13.body_jepa import BodyJepaTrainer
+          master = os.path.join(os.environ['RUNNER_TEMP'], 'bp2b-native-master')
+          cfg = AutoConfig.from_pretrained(master, local_files_only=True)
+          tok = AutoTokenizer.from_pretrained(master, local_files_only=True)
+          prompt = tok.apply_chat_template([{'role':'user','content':'BP2B_ENV_PROBE'}], add_generation_prompt=True, tokenize=False)
+          assert cfg.model_type == 'lfm2' and 'BP2B_ENV_PROBE' in prompt
+          assert hasattr(gguf.GGUFType, 'ADAPTER') and hasattr(gguf.Keys.Adapter, 'LORA_ALPHA')
+          assert any(name == 'lfm2' for name in gguf.MODEL_ARCH_NAMES.values())
+          assert AutoModelForCausalLM._model_mapping[type(cfg)] is not None
           print('torch',torch.__version__,'transformers',transformers.__version__,'peft',peft.__version__,'gguf',gguf.__file__)
-          print('BodyJepaTrainer',BodyJepaTrainer.method)
+          print('BodyJepaTrainer',BodyJepaTrainer.method, 'HF_METADATA_AND_GGUF_API_OK')
           PY
             ) > "$evidence/ENV_RAW.log" 2>&1
             echo "$?" > "$evidence/ENV_EXIT.txt"
