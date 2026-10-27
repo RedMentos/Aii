@@ -16,7 +16,7 @@ concurrency:
 jobs:
   receipt:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 25
     env:
       V13_NO_AUTOSTART: '1'
       NO_MODEL_DOWNLOADS: '1'
@@ -45,6 +45,8 @@ jobs:
           set +e
           (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/run644venv/bin/python" -m unittest -v tests.test_run644_curiosity_receipt tests.test_run633_jef_noanswer_goal tests.test_agi_live) > "$RUNNER_TEMP/run644/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run644/UNIT_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 600s "$RUNNER_TEMP/run644venv/bin/python" -m unittest discover -s tests -p 'test_*.py') > "$RUNNER_TEMP/run644/FULL_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/run644/FULL_EXIT.txt"
           "$RUNNER_TEMP/run644venv/bin/python" -m compileall -q v13/code/v13/agi/live.py v13/code/tests/test_run644_curiosity_receipt.py > "$RUNNER_TEMP/run644/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run644/COMPILE_EXIT.txt"
           "$RUNNER_TEMP/run644venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base df96269a179b9942ee517f02cbb7069ed80c5ba5 --head HEAD > "$RUNNER_TEMP/run644/PRIVACY_RAW.log" 2>&1
@@ -61,8 +63,9 @@ jobs:
       - name: Enforce actual results
         run: |
           set -euo pipefail
-          for n in UNIT COMPILE PRIVACY; do
+          for n in UNIT FULL COMPILE PRIVACY; do
             test "$(cat "$RUNNER_TEMP/run644/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/run644/${n}_RAW.log"; exit 1; }
           done
           cat "$RUNNER_TEMP/run644/UNIT_RAW.log" | tail -25
+          cat "$RUNNER_TEMP/run644/FULL_RAW.log" | tail -25
           cat "$RUNNER_TEMP/run644/PRIVACY_RAW.log"
