@@ -1,5 +1,6 @@
 """Software-only BP2b serial batch tests: no model, no native weights."""
 import contextlib
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -35,11 +36,17 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         self.calls.append((seed, arm))
         path = out / f'seed-{seed}' / arm / f'attempt-{attempt}'
         path.mkdir(parents=True)
+        trainer = path / 'trainer'
+        trainer.mkdir()
+        adapter = trainer / 'adapter.gguf'
+        adapter.write_bytes(b'SOFTWARE_FAKE_ADAPTER_NOT_NATIVE')
+        (path / 'PREDICTIONS.jsonl').write_bytes(b'{"case_id":"software-only","text":"fake"}\n')
         result = {'status': 'COMPLETED', 'evidence_class': 'LINUX_NATIVE_CANDIDATE',
                   'seed': seed, 'arm': arm, 'plan': nr.plan(seed, arm),
                   'age_authority': 0, 'jepa_weight': 0,
                   'master_sha256_verified_locally': True,
-                  'adapter_sha256': 'a' * 64}
+                  'adapter': str(adapter),
+                  'adapter_sha256': hashlib.sha256(adapter.read_bytes()).hexdigest()}
         (path / 'RESULT.json').write_text(json.dumps(result), encoding='utf-8')
         stdout.write(b'SOFTWARE_FAKE_ONLY\n')
         return SimpleNamespace(returncode=0)
@@ -88,6 +95,30 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         self.run_batch(max_jobs=1)
         result = self.out / 'seed-41' / 'legacy' / 'attempt-software1-s41-legacy' / 'RESULT.json'
         result.write_text(result.read_text() + '\n')
+        with self.assertRaises(ValueError):
+            self.run_batch(max_jobs=2)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_deleted_adapter_refuses_resume(self):
+        self.run_batch(max_jobs=1)
+        adapter = self.out / 'seed-41' / 'legacy' / 'attempt-software1-s41-legacy' / 'trainer' / 'adapter.gguf'
+        adapter.unlink()
+        with self.assertRaises(ValueError):
+            self.run_batch(max_jobs=2)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_modified_adapter_bytes_refuse_resume(self):
+        self.run_batch(max_jobs=1)
+        adapter = self.out / 'seed-41' / 'legacy' / 'attempt-software1-s41-legacy' / 'trainer' / 'adapter.gguf'
+        adapter.write_bytes(b'TAMPERED_FAKE_ADAPTER')
+        with self.assertRaises(ValueError):
+            self.run_batch(max_jobs=2)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_modified_raw_predictions_refuse_resume(self):
+        self.run_batch(max_jobs=1)
+        predictions = self.out / 'seed-41' / 'legacy' / 'attempt-software1-s41-legacy' / 'PREDICTIONS.jsonl'
+        predictions.write_bytes(b'CHANGED')
         with self.assertRaises(ValueError):
             self.run_batch(max_jobs=2)
         self.assertEqual(len(self.calls), 1)
