@@ -13,3 +13,7 @@ Build `st['states']` from `tr` only. Retain existing `st['counts']` as clearly l
 ## Evidence and acceptance
 
 Focused `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_world_model`, compile, privacy and diff checks, exact source/head raw logs, expected RED then GREEN. Full software suite after GREEN, original failed attempt retained. All output is software/synthetic only, not World-JEPA causal or Age proof. No main merge without independent review.
+
+## Preregistered persistence amendment (before source fix)
+
+Existing persisted `T8_WORLD_MODEL` states with revision `t8-world-model-v1` already contain leaked all-transition support. A code-only fix must not continue trusting those bytes after restart. Bump `REVISION` to `t8-world-model-v2`; `load()` must fail closed for legacy v1 states until a new `fit()` is performed. Add a regression that replaces a fresh fit with the old revision and confirms `load()` returns None and `counterfactual()` returns `NO_WORLD_MODEL`. Do not rewrite or erase the old persisted state silently; refitting is explicit and produces a new v2 state. This amendment predates the source fix and is independent of the expected RED heldout-only action test.
