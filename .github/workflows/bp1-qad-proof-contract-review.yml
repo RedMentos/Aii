@@ -1,0 +1,51 @@
+name: V13 BP1 independent QAD V2 train-proof contract review
+on:
+  push:
+    branches: [codex/gpt6-bp1-lora-proof-contract-review-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-proof-contract-review.yml'
+      - 'v13/code/scripts/bp1_qad_lora_eval.py'
+      - 'v13/code/tests/test_bp1_qad_lora_proof_contract.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-qad-proof-contract-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Source-bound counterexamples, V2 and V1 regressions, compile, privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-proof-contract"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-proof-contract/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_proof_contract.py > "$RUNNER_TEMP/bp1-proof-contract/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score tests.test_bp1_native_collect) > "$RUNNER_TEMP/bp1-proof-contract/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-proof-contract/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_lora_eval.py v13/code/tests/test_bp1_qad_lora_proof_contract.py > "$RUNNER_TEMP/bp1-proof-contract/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-proof-contract/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f6d6812a493cc7d2235e97bf16e0324242d1ecd6 --head HEAD > "$RUNNER_TEMP/bp1-proof-contract/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-proof-contract/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-qad-proof-contract-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-proof-contract/
+          if-no-files-found: error
+      - name: Enforce source and test exits
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-proof-contract/${n}_EXIT.txt")" = 0 || {
+              echo "${n} failed"; tail -120 "$RUNNER_TEMP/bp1-proof-contract/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "SOFTWARE_ONLY_PROOF_CONTRACT; NO_NATIVE_TRAIN_OR_HELDOUT_OR_REDMi"
