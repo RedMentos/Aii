@@ -368,12 +368,27 @@ class SleepCycle:
         checks=st.setdefault('hypothesis_checks',{});now=self.clock();out={'checked':0,'by_verdict':{}}
         budget=policy['dream_max'] if limit is None else limit
         rows=self.s.rows("SELECT payload FROM packets WHERE kind='ReplayItem' AND json_extract(payload,'$.stage')='QUEUED' AND json_extract(payload,'$.replay_type')='COUNTERFACTUAL' ORDER BY created DESC LIMIT 256")
-        for row in rows:
+        items=[json.loads(row['payload']) for row in rows]
+        # Recheck fresh/due hypotheses before cached SUPPORTED ones, so the
+        # bounded validation budget cannot be monopolized by old positives.
+        items.sort(key=lambda item:checks.get(item['replay_id'],{}).get('verdict')=='SUPPORTED')
+        for item in items:
             if out['checked']>=budget:break
-            item=json.loads(row['payload']);rid=item['replay_id'];prev=checks.get(rid)
-            if not item.get('validation_required') or (prev and (prev['verdict']!='UNVERIFIED' or now-prev['at']<HYP_RECHECK_S)):continue
+            rid=item['replay_id'];prev=checks.get(rid)
+            if not item.get('validation_required'):continue
+            if prev and prev['verdict'] in ('STALE','CONTRADICTED'):continue
+            if prev and prev['verdict']=='UNVERIFIED' and now-prev['at']<HYP_RECHECK_S:continue
             self._checkpoint(cancel,deadline,resource)
-            v=self.check_hypothesis(item);checks[rid]={'verdict':v['verdict'],'at':now}
+            # SUPPORTED is never a permanent authority cache: live F5 can be
+            # revoked after the first verdict, including across restarts.
+            v=self.check_hypothesis(item)
+            if prev and prev['verdict']=='SUPPORTED' and v['verdict']=='SUPPORTED':
+                # Avoid unbounded duplicate ReplayItem packets for unchanged
+                # evidence, while counting the bounded live revalidation.
+                out['checked']+=1
+                out['by_verdict']['SUPPORTED']=out['by_verdict'].get('SUPPORTED',0)+1
+                continue
+            checks[rid]={'verdict':v['verdict'],'at':now}
             refs=item['source_refs']
             self.s.add_packet('ReplayItem',packet('ReplayItem','F9_SLEEP_B',item['event_id'],self.s.generation_id,refs,replay_type='COUNTERFACTUAL',source_refs=refs,
                 priority=item['priority'],max_authority='HYPOTHESIS_NO_LEARNING',replay_id=rid,evidence_class=item['evidence_class'],stage='SLEEP_B_VALIDATION',
