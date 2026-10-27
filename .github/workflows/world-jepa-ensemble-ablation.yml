@@ -52,7 +52,8 @@ jobs:
               if sum(i.file_size for i in infos)>10*1024*1024: raise ValueError('ZIP size')
               for i in infos:
                   parts=pathlib.PurePosixPath(i.filename).parts
-                  if not parts or parts[0]!='closed' or '..' in parts: raise ValueError('ZIP path')
+                  if not parts or '..' in parts or pathlib.PurePosixPath(i.filename).is_absolute(): raise ValueError('ZIP path')
+                  if parts[0]!='closed' and len(parts)!=1: raise ValueError('Unexpected nested ZIP path')
               z.extractall(dest)
           print('FROZEN_CRC_SHA_PATHS_OK')
           PY
