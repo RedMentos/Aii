@@ -1,0 +1,83 @@
+name: V13 LP3 mixed-gradient nonfinite safety review
+on:
+  push:
+    branches: [assistant/v13-lp3-partial-nonfinite-gradient-review-20261027]
+    paths:
+      - '.github/workflows/lp3-partial-nonfinite-review.yml'
+      - 'v13/code/scripts/lp3_optimizer_trajectory.py'
+      - 'v13/code/tests/test_lp3_optimizer_trajectory.py'
+      - 'v13/code/docs/proofs/continuation-20261027/lp3-partial-nonfinite-review/**'
+  pull_request:
+    branches: [assistant/v13-lp3-optimizer-trajectory-20261027]
+    paths:
+      - '.github/workflows/lp3-partial-nonfinite-review.yml'
+      - 'v13/code/scripts/lp3_optimizer_trajectory.py'
+      - 'v13/code/tests/test_lp3_optimizer_trajectory.py'
+      - 'v13/code/docs/proofs/continuation-20261027/lp3-partial-nonfinite-review/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-lp3-partial-nonfinite-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Focused source-only regressions and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/lp3-partial-nonfinite-software"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/lp3_optimizer_trajectory.py > "$evidence/SCRIPT_BLOB.txt"
+          git hash-object v13/code/docs/proofs/continuation-20261027/lp3-partial-nonfinite-review/PREREG.md > "$evidence/PREREG_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/lp3-partial-venv"
+          py="$RUNNER_TEMP/lp3-partial-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'huggingface_hub==2.3.0' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=. "$py" -m unittest -v tests.test_lp3_optimizer_trajectory tests.test_lp3_gradient_diagnostic tests.test_lp3_heldout_utility tests.test_lp3_state_prefix
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/lp3_optimizer_trajectory.py v13/code/tests/test_lp3_optimizer_trajectory.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 830c35aeeffd50454e99d8ced63619300658cdf0 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 830c35aeeffd50454e99d8ced63619300658cdf0 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lp3-partial-nonfinite-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/lp3-partial-nonfinite-software/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/lp3-partial-nonfinite-software"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw artifact retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'LP3_PARTIAL_NONFINITE_SOFTWARE_ONLY_NO_NATIVE_OR_AGE_CLAIM'

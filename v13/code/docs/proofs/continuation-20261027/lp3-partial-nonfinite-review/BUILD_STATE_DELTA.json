@@ -1,0 +1,64 @@
+{
+  "schema": "v13.review_only.build_state_delta.v1",
+  "date_utc": "2026-10-27",
+  "owner": "assistant/v13-lp3-partial-nonfinite-gradient-review-20261027",
+  "pr": 753,
+  "parent_pr": 750,
+  "base_sha": "830c35aeeffd50454e99d8ced63619300658cdf0",
+  "prereg_commit": "a24b80df1ad9b5e60a297ab3fb88f27546bc6222",
+  "red_test_commit": "7dc720dc8d7fdce76da6ca183faaa105eb6e3740",
+  "green_fix_commit": "685515d45b37982a82279972769d98a7c8e9db00",
+  "modified_paths": [
+    "v13/code/scripts/lp3_optimizer_trajectory.py",
+    "v13/code/tests/test_lp3_optimizer_trajectory.py"
+  ],
+  "red": {
+    "run": 40559175505,
+    "zip_sha256": "e54c2a03fdacfe301db2955a424742be3011e2c670f348ad027901f2d5c0e7dc",
+    "unit_exit": 1,
+    "expected_failures": 3,
+    "crc": "PASS"
+  },
+  "green": {
+    "run": 40559510761,
+    "zip_sha256": "614cd8fb7db8a2d3e502cb6f629ce953f610a998636031ea316bfaa7553649d8",
+    "unit_tests": "33/33 PASS",
+    "all_raw_exits": 0,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "script_blob": "488cd12de3d5103e2a456f42148697fd15d66bc6"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-27/Automation11W-LP3-Partial-Nonfinite/",
+  "backup_byte_identical": true,
+  "scope": "SOFTWARE_DIAGNOSTIC_GUARD_ONLY",
+  "native_run": "NOT_RUN",
+  "original_registered_cohort_changed": false,
+  "negative_gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_*.py' -q",
+  "open_questions": [
+    "Independent cross-agent review before integration",
+    "Original LP3 native owner/trajectory must be checked separately",
+    "No native causal utility or Age promotion"
+  ],
+  "stop_reason": "NONE_CHECKPOINT_ONLY",
+  "full_software_suite": {
+    "run_id": 40560033075,
+    "tests": "1917 OK (1 skipped)",
+    "all_raw_exits": 0,
+    "privacy": "CLEAN",
+    "artifact_id": 12760441944,
+    "zip_sha256": "b204281e5dc960d4b51b77ffb7cf6ccdc10f96aa46ece89e04b56324cc284300",
+    "exact_ci_checkout": "53ccac2f83f909457d1a5597bfcb1b7219be05b9",
+    "private_backup_byte_identical": true
+  }
+}

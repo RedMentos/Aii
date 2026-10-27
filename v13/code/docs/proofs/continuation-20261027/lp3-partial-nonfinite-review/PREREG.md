@@ -1,0 +1,11 @@
+# LP3 independent review: mixed missing/nonfinite gradient must stop optimizer
+
+2026-10-27 UTC. Review-only child of PR #750 exact original head `830c35aeeffd50454e99d8ced63619300658cdf0`, sibling of the original preregistered native diagnostic. Owner `assistant/v13-lp3-partial-nonfinite-gradient-review-20261027`. **No native model run and no alteration of original PR #750's registered cohort, source, failed attempts or raw evidence.** This is a separate software safety review candidate; do not substitute it into a running native cohort.
+
+## Pre-patch static counterexample
+`lp3_optimizer_trajectory._grad_stat` checks for missing gradient tensors and returns `{'finite': True, 'abs_sum': 0, 'nonfinite_elements': 0}` **before examining present tensors**. When one trainable parameter has `grad=None` but another has NaN/Inf, the diagnostic incorrectly reports a finite zero gradient; `_train_arm` then permits `AdamW.step()` on the nonfinite present gradient, potentially corrupting weights and invalidating the trajectory. This is a guard ordering bug independent of native LFM2.5. The registered original pilot remains FAIL; no claim that this bug actually occurred there.
+
+## Fixed contract
+In a separate test-only RED commit, construct a tiny `torch.nn.Linear` with one missing gradient and one nonfinite present gradient (NaN and Inf variants). Require `_grad_stat` to report `finite=False`, correct `missing_tensors=1`, `nonfinite_elements>=1`, `abs_sum=None`; keep pure missing-but-finite as zero-gradient/missing-tensor diagnostic and all-present finite gradients unchanged. Then patch `_grad_stat` to count missing tensors **and inspect every present gradient for nonfinite elements before returning**. This lets existing `_train_arm` stop before optimizer update on nonfinite. Do not modify AdamW, train rows, seeds, model revision/hash, learning rate, eval ordering, loss, or frozen base. Capture raw RED/GREEN focused software CI with exact source and privacy/diff checks; full suite and independent review still required.
+
+Negative gates: LP1 NO_ATTRIBUTABLE_GAIN, LP2 ALIGNS_NO_GAIN, BJ1 NO_SIGNAL, STEP2 UTILITY_FAIL, B3 L1 FAIL, `jepa_weight=0`, Age authority0, Redmi unmeasured, whole V13 incomplete. Exact next command: `cd v13/code && python -m unittest -v tests.test_lp3_optimizer_trajectory`.

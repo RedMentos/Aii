@@ -70,6 +70,26 @@ class LP3OptimizerTrajectoryTests(unittest.TestCase):
         self.assertFalse(bad['finite'])
         self.assertEqual(bad['nonfinite_elements'], 1)
 
+    def test_mixed_missing_and_nonfinite_gradients_are_not_reported_safe(self):
+        import torch
+        from torch import nn
+        m = nn.Linear(2, 1)
+        for bad in (float('nan'), float('inf'), float('-inf')):
+            with self.subTest(nonfinite=repr(bad)):
+                m.weight.grad = None
+                m.bias.grad = torch.tensor([bad], dtype=m.bias.dtype)
+                stat = d._grad_stat(m, torch)
+                self.assertFalse(stat['finite'])
+                self.assertIsNone(stat['abs_sum'])
+                self.assertEqual(stat['missing_tensors'], 1)
+                self.assertEqual(stat['nonfinite_elements'], 1)
+        m.bias.grad = torch.ones_like(m.bias)
+        stat = d._grad_stat(m, torch)
+        self.assertTrue(stat['finite'])
+        self.assertEqual(stat['missing_tensors'], 1)
+        self.assertEqual(stat['nonfinite_elements'], 0)
+        self.assertEqual(stat['abs_sum'], 0.)
+
     def test_finite_large_gradients_do_not_overflow_float32_sum(self):
         import torch
         from torch import nn
