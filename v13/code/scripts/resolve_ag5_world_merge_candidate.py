@@ -147,9 +147,9 @@ def resolve():
     if (guide.count(guide_anchor) != 1 or guide.count(old_guide_effort) != 1
             or ':ersetze route ' in guide):
         raise ValueError('Unexpected AG5 command-guide anchors')
-    guide_entry = (':ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id>\\n'
-                   '    Ersetzt ältere widersprechende Routen-Korrekturen für diese Wörter, ohne Belege zu löschen.\\n'
-                   '    --sofort setzt zusätzlich eine feste Route für passende neue Fragen. Undo stellt ältere Labels wieder her.\\n')
+    guide_entry = (':ersetze route <Route> <Wort>[,<Wort>] [--sofort] [--notiz Text] | :ersetze list | :ersetze undo <Id>\n'
+                   '    Ersetzt ältere widersprechende Routen-Korrekturen für diese Wörter, ohne Belege zu löschen.\n'
+                   '    --sofort setzt zusätzlich eine feste Route für passende neue Fragen. Undo stellt ältere Labels wieder her.\n')
     guide = guide.replace(guide_anchor, guide_entry + guide_anchor, 1)
     guide = guide.replace(old_guide_effort,
                           ':effort [disabled|low|adaptive|high|max|detail|gist]', 1)
