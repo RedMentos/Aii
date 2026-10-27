@@ -28,9 +28,13 @@ def _digest(value):
 def _path(runtime, name):
     if type(name) is not str or _NAME.fullmatch(name) is None:
         raise ValueError('Only a simple .npz checkpoint basename is allowed')
-    root = Path(runtime.home) / 'checkpoints' / 'world_jepa'
-    if root.is_symlink() or not root.is_dir():
-        raise ValueError('World-JEPA checkpoint directory unavailable')
+    home = Path(runtime.home).resolve()
+    parent = Path(runtime.home) / 'checkpoints'
+    root = parent / 'world_jepa'
+    if (parent.is_symlink() or root.is_symlink() or not root.is_dir()
+            or root.resolve().parent != parent.resolve()
+            or not root.resolve().is_relative_to(home)):
+        raise ValueError('World-JEPA checkpoint directory unavailable or outside home')
     path = root / name
     if (path.is_symlink() or not path.is_file()
             or path.resolve().parent != root.resolve()):
