@@ -45,11 +45,11 @@ class ExportGateReview(Base):
             M.operator_command(self.r, ['export', str(path)])
         self.assertFalse(path.exists())
 
-    def test_read_only_module_question_survives_write_local_ban(self):
+    def test_read_only_module_question_is_conservatively_blocked_by_write_ban(self):
         self.ready_for_export()
         P.add(self.s, 'risk', 'WRITE_LOCAL', authority=H)
         result = M.operator_command(self.r, ['frage', 'Hauptstadt von Frankreich'])
-        self.assertIn('Paris', result)
+        self.assertIn('Nichts Passendes', result)
 
 
 if __name__ == '__main__':
