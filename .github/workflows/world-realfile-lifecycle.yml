@@ -1,0 +1,83 @@
+name: V13 real-file-world SHADOW lifecycle
+on:
+  push:
+    branches:
+      - codex/automation11-world-realfile-lifecycle-20261027
+    paths:
+      - '.github/workflows/world-realfile-lifecycle.yml'
+      - 'v13/code/scripts/world_jepa_shadow_lifecycle.py'
+      - 'v13/code/tests/test_world_jepa_shadow_lifecycle.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-realfile-lifecycle
+  cancel-in-progress: false
+jobs:
+  isolated:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.sha }}
+      - name: Install isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/worldreal"
+          timeout 240s "$RUNNER_TEMP/worldreal/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Preserve original raw outputs, including failed attempts
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/worldrealproof"
+          git rev-parse HEAD > "$RUNNER_TEMP/worldrealproof/HEAD.txt"
+          for p in v13/code/scripts/world_jepa_shadow_lifecycle.py v13/code/tests/test_world_jepa_shadow_lifecycle.py v13/code/scripts/z12b_world_jepa.py v13/code/scripts/z12c_slot_world_jepa.py v13/code/v13/world_jepa_slots.py v13/code/v13/world_jepa_shadow_probe.py; do
+            test -f "$p" && sha256sum "$p" || echo "MISSING $p"
+          done > "$RUNNER_TEMP/worldrealproof/SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/worldreal/bin/python" -m unittest -v tests.test_world_jepa_shadow_lifecycle tests.test_world_jepa_shadow_probe tests.test_z12c_control_calibration tests.test_world_jepa_slots_calibration_guard tests.test_world_jepa_slots_checkpoint) > "$RUNNER_TEMP/worldrealproof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldrealproof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/worldreal/bin/python" -m compileall -q v13/code/scripts/world_jepa_shadow_lifecycle.py v13/code/tests/test_world_jepa_shadow_lifecycle.py > "$RUNNER_TEMP/worldrealproof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldrealproof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/worldreal/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 63c00f34ecc41d07c159886ac87fc90998e350d2 --head HEAD > "$RUNNER_TEMP/worldrealproof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldrealproof/PRIVACY_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 480s "$RUNNER_TEMP/worldreal/bin/python" scripts/z12c_slot_world_jepa.py "$RUNNER_TEMP/worldrealproof/Z12C_UNREGISTERED_211.json" --seeds 211 --train 600 --cf 12 --attr 16 --steps 50) > "$RUNNER_TEMP/worldrealproof/Z12C_SMOKE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldrealproof/Z12C_SMOKE_EXIT.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 480s "$RUNNER_TEMP/worldreal/bin/python" scripts/world_jepa_shadow_lifecycle.py --seed 212 --train 600 --steps 50 --output-dir "$RUNNER_TEMP/world-lifecycle") > "$RUNNER_TEMP/worldrealproof/LIFECYCLE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/worldrealproof/LIFECYCLE_EXIT.txt"
+          exit 0
+      - name: Upload original raw and isolated checkpoint
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-realfile-${{ github.run_id }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/worldrealproof/
+            ${{ runner.temp }}/world-lifecycle/
+          if-no-files-found: error
+      - name: Enforce structural execution (not utility PASS)
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY Z12C_SMOKE LIFECYCLE; do
+            test "$(cat "$RUNNER_TEMP/worldrealproof/${n}_EXIT.txt")" = 0 || { cat "$RUNNER_TEMP/worldrealproof/${n}_RAW.log"; exit 1; }
+          done
+          "$RUNNER_TEMP/worldreal/bin/python" - <<'PY'
+          import json,os
+          from pathlib import Path
+          base=Path(os.environ['RUNNER_TEMP'])
+          z=json.loads((base/'worldrealproof/Z12C_UNREGISTERED_211.json').read_text())
+          assert z['kind']=='V13_Z12C_SLOT_WORLD_JEPA'
+          assert z['verdict'] in ('Z12C_SLOT_WORLD_JEPA_PASS','Z12C_SLOT_WORLD_JEPA_FAIL')
+          assert len(z['seeds'])==1
+          assert 'no_action_covered' in z['summary']['pooled_cf']
+          assert 'shuffled_action_covered' in z['summary']['pooled_cf']
+          m=json.loads((base/'world-lifecycle/manifest.json').read_text())
+          assert m['schema']=='V13_WORLD_SHADOW_LIFECYCLE_V1'
+          assert m['mode']=='SHADOW_ONLY' and not m['redmi_measured']
+          print('REALFILE_STRUCTURAL_SMOKE_PASS; Z12C_UTILITY_VERDICT='+z['verdict'])
+          PY
