@@ -9,9 +9,11 @@ Promotion needs repeated success and parity against the full route; procedural_m
 tasks where success is between 30 % and 70 % (learning frontier), only from non-holdout
 families (AG12 practice_items).
 """
+import json
 import math
 import re
 import time
+from ..common import dumps
 from .base import StateBox,age_allows
 
 KEY='G4_SKILLS';REVISION='g4-skills-v1'
@@ -73,6 +75,49 @@ class SkillLibrary:
                 o=st['outcomes'].setdefault(family,[0,0]);o[0]+=int(bool(success));o[1]+=1
             return self._advance(sk)
         return self.box.mutate(f)
+    def record_once(self,name,success,event_id,session_id):
+        """Atomically count one live skill outcome per durable source event.
+
+        Both the skill counters and the event receipt share one SQLite
+        transaction. A crash cannot persist one without the other. The
+        receipt stores IDs and a boolean only, never user text. Legacy
+        unbound record() remains available for explicitly synthetic uses.
+        """
+        if type(success) is not bool:
+            raise ValueError('success: bool required')
+        if not isinstance(event_id,str) or not 0<len(event_id)<=128:
+            raise ValueError('event_id: required bounded source ID')
+        if not isinstance(session_id,str) or not 0<len(session_id)<=128:
+            raise ValueError('session_id: required bounded source ID')
+        key='G4_SKILL_EVENT:'+event_id
+        with self.s.tx() as c:
+            event=c.execute('SELECT session_id FROM events WHERE id=?',(event_id,)).fetchone()
+            if event is None or event['session_id']!=session_id:
+                raise ValueError('skill outcome event/session mismatch')
+            old=c.execute('SELECT payload FROM states WHERE key=?',(key,)).fetchone()
+            if old is not None:
+                receipt=json.loads(old['payload'])
+                if not isinstance(receipt,dict) or receipt.get('skill')!=name or receipt.get('session_id')!=session_id:
+                    raise ValueError('skill outcome receipt already bound to another skill/session')
+                return False
+            row=c.execute('SELECT payload,version FROM states WHERE key=?',(KEY,)).fetchone()
+            if row is None:
+                raise ValueError('skill library not initialized')
+            st=json.loads(row['payload'])
+            if st.get('revision')!=REVISION:
+                raise ValueError('skill library revision mismatch')
+            sk=st['skills'][name]
+            sk['uses']+=1
+            sk['successes']+=int(success)
+            self._advance(sk)
+            c.execute('UPDATE states SET payload=?,version=? WHERE key=? AND version=?',
+                      (dumps(st),row['version']+1,KEY,row['version']))
+            if c.rowcount!=1:
+                raise ValueError('stale skill library state')
+            c.execute('INSERT INTO states VALUES (?,?,?)',
+                      (key,1,dumps({'skill':name,'session_id':session_id,'success':success})))
+        return True
+
     def _advance(self,sk):
         need=PROMOTE.get(sk['stage'])
         if need is None:return sk['stage']
