@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""WP-Z6i / §24.17 Deliberation trajectory / halting with real C3/B1/B2.
+"""WP-Z6m / §24.17 Deliberation trajectory / halting with real C3/B1/B2.
 
 Blueprint §24.17: fixed depth baseline, post-hoc/simple halt readout, trained halt head, quality-vs-latency Pareto,
 hard examples must not lose disproportionately by early exit, joint/trained halting only if it beats the post-hoc one.
@@ -18,10 +18,10 @@ Halting policies are live arms (effort `max`): they decide once, before the foca
   trained  real halt-head path: readout_worker.train on frozen C2 embeddings (input + .2 x B1/B2 trajectory, as
            learning.readout_embedding), labels from training seeds (continue iff d1 passes and d0 fails), scaffold
            label = posthoc; out of support / uncertain -> posthoc
-Criteria: docs/proofs/continuation-20261027/z6i-halting/PREREG.md.
-Usage: z6i_halting_bench.py run <installed_home> <out.json> <arm,arm,...> --seed N [--limit N] [--checkpoint candidate.npz]
-       z6i_halting_bench.py train <train.json> [<train.json> ...] <head_dir>
-       z6i_halting_bench.py analyse <test.json> <out.json> [<head_dir>/head.json]
+Criteria: docs/proofs/continuation-20261027/z6m-halting/PREREG.md.
+Usage: z6m_halting_bench.py run <installed_home> <out.json> <arm,arm,...> --seed N [--limit N] [--checkpoint candidate.npz]
+       z6m_halting_bench.py train <train.json> [<train.json> ...] <head_dir>
+       z6m_halting_bench.py analyse <test.json> <out.json> [<head_dir>/head.json]
 """
 import hashlib
 import json
@@ -89,7 +89,7 @@ def posthoc_decide(loop, offers, e):
 def head_features(learner, text, pair, deadline):
     """Frozen C2 features of the real halt head (learning.readout_embedding): source + .2 x trajectory context."""
     ctx = dumps({'input': text[:4000], 'trajectory_kind': 'TWO_FROZEN_BODY_OFFERS', 'offers': [{'role': o['role'], 'hypothesis': o['offer']} for o in pair]})
-    src = learner.embedding(text, 'z6i-src-'+h(text), deadline); trj = learner.embedding(ctx, 'z6i-ctx-'+h(ctx), deadline)
+    src = learner.embedding(text, 'z6m-src-'+h(text), deadline); trj = learner.embedding(ctx, 'z6m-ctx-'+h(ctx), deadline)
     return [round(x, 6) for x in (list(src)+[.2*x for x in trj])]
 
 
@@ -128,7 +128,7 @@ def run_arm(installed, arm, fx, checkpoint=None, on_row=None):
     rows = []; dec = {'posthoc': posthoc_decide, 'trained': trained_decider(checkpoint) if arm == 'trained' else None}.get(arm)
     undo = force_depth(DEPTH[arm]) if arm in DEPTH else force_depth(dec) if dec else (lambda: None)
     try:
-        with tempfile.TemporaryDirectory(prefix='v13-z6i-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='v13-z6m-') as tmp:
             home = Path(tmp); cfg = initialize(home)
             for n in ('models', 'bin'):
                 shutil.rmtree(home/n); (home/n).symlink_to(installed/n, target_is_directory=True)
@@ -272,7 +272,7 @@ def analyse(test_rows, head=None):
     S = out['arms']
     out['pareto_front'] = sorted(a for a, s in S.items() if not any(t['passed'] >= s['passed'] and t['mean_turn_s'] <= s['mean_turn_s'] and
                                  (t['passed'] > s['passed'] or t['mean_turn_s'] < s['mean_turn_s']) for x, t in S.items() if x != a))
-    out['verdict'] = 'Z6I_HALTING_PASS' if any(crit[p]['pass'] for p in crit) else 'Z6I_HALTING_FAIL'
+    out['verdict'] = 'Z6M_HALTING_PASS' if any(crit[p]['pass'] for p in crit) else 'Z6M_HALTING_FAIL'
     out['trained_adoption'] = 'ADOPT_CANDIDATE' if out['K5_trained_beats_posthoc']['pass'] else 'KEEP_POSTHOC'
     out['rescue_headroom'] = {'d1_rescues_d0': [f for f in fx if 'd1' in b and b['d1'][f]['pass'] and not b['d0'][f]['pass']],
                               'd1_breaks_d0': [f for f in fx if 'd1' in b and b['d0'][f]['pass'] and not b['d1'][f]['pass']]}
@@ -286,8 +286,8 @@ def main_run(installed, out, arms, seed, limit=None, checkpoint=None):
     rows = json.loads(out.read_text())['rows'] if out.exists() else []
 
     def save():
-        atomic_write(out, json.dumps({'kind': 'V13_Z6I_HALTING_RUN', 'seed': seed, 'fixtures': [f[0] for f in fx], 'rows': rows, 'checkpoint': checkpoint,
-                                      'phone_measured': False, 'prereg': 'docs/proofs/continuation-20261027/z6i-halting/PREREG.md'}))
+        atomic_write(out, json.dumps({'kind': 'V13_Z6M_HALTING_RUN', 'seed': seed, 'fixtures': [f[0] for f in fx], 'rows': rows, 'checkpoint': checkpoint,
+                                      'phone_measured': False, 'prereg': 'docs/proofs/continuation-20261027/z6m-halting/PREREG.md'}))
     for arm in arms:
         done = {r['fixture'] for r in rows if r['arm'] == arm}; todo = [f for f in fx if f[0] not in done]
         if todo: run_arm(installed, arm, todo, checkpoint, on_row=lambda r: (rows.append(r), save()))
@@ -303,8 +303,8 @@ def main_train(trains, outdir):
 def main_analyse(test, out, head=None):
     T = json.loads(Path(test).read_text()); H = json.loads(Path(head).read_text()) if head else None
     res = analyse(T['rows'], H)
-    atomic_write(Path(out), json.dumps({'kind': 'V13_Z6I_HALTING', 'test_seed': T['seed'], **res, 'phone_measured': False, 'canonical_gate_pass': False,
-                                        'prereg': 'docs/proofs/continuation-20261027/z6i-halting/PREREG.md',
+    atomic_write(Path(out), json.dumps({'kind': 'V13_Z6M_HALTING', 'test_seed': T['seed'], **res, 'phone_measured': False, 'canonical_gate_pass': False,
+                                        'prereg': 'docs/proofs/continuation-20261027/z6m-halting/PREREG.md',
                                         'claim_limit': 'deterministic bench decoding (llama threads still vary slightly), generated English tasks, regex checks, cloud CPU, no energy; d2 lifts the Age-0 one-cycle cap'}, indent=1))
     print(json.dumps({k: v for k, v in res.items() if k != 'halt_head'}, indent=1))
 

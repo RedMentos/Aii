@@ -1,6 +1,6 @@
-# WP-Z6i PREREG: §24.17 Deliberation trajectory / halting (real C3/B1/B2)
+# WP-Z6m PREREG: §24.17 Deliberation trajectory / halting (real C3/B1/B2)
 
-Written and committed before any run. Script: `scripts/z6i_halting_bench.py`.
+Written and committed before any run. Script: `scripts/z6m_halting_bench.py`.
 
 ## Question
 Blueprint §24.17 asks for: a fixed-depth baseline, a post-hoc/simple halt readout, a trained halt head, a quality-vs-latency
@@ -13,7 +13,7 @@ the frozen/post-hoc baseline. §24.17 was only TESTED (existence tests), never m
   `c3` (C_native only, reference), `scaf` (shipped scaffold; Age 0 caps the focal loop at one cycle), `d0`/`d1`/`d2`
   (forced depth 0/1/2; bench-only patch; d2 lifts the Age-0 one-cycle cap — claim limit).
 - Halting policies decide once after the first B1/B2 offers: halt = d0 outcome, continue = d1 outcome (read from the
-  deterministic runs; validity requires identical first offers in d0 and d1 on >= 90 % of fixtures, else `Z6I_INVALID_PREFIX`).
+  deterministic runs; validity requires identical first offers in d0 and d1 on >= 90 % of fixtures, else `Z6M_INVALID_PREFIX`).
   - `posthoc`: continue iff the two first offers disagree (`focal.disagreement >= BOOT disagreement_trigger` = .40).
   - `trained`: the real halt-head path (`readout_worker.train`, frozen C2 Needle embeddings of input + .2 × B1/B2
     trajectory as in `learning.readout_embedding`), labels from training seeds: continue iff d1 passes and d0 fails;
@@ -29,7 +29,7 @@ the frozen/post-hoc baseline. §24.17 was only TESTED (existence tests), never m
   other fixtures + .10.
 - K3 quality: passes >= best fixed depth − 2.
 - K4 cost: mean time to answer below the deepest fixed arm.
-- Policy PASS = K1–K4. Verdict `Z6I_HALTING_PASS` if at least one policy passes, else `Z6I_HALTING_FAIL`.
+- Policy PASS = K1–K4. Verdict `Z6M_HALTING_PASS` if at least one policy passes, else `Z6M_HALTING_FAIL`.
 - K5 (adoption of trained halting): trained passes K1–K4 **and** beats posthoc (more passes, p < .05; or no fewer passes and
   < 90 % of its mean time). Otherwise `KEEP_POSTHOC`.
 - Reported, not gating: Pareto front over all arms and policies (incl. `c3`), paired d1 vs d0, d2 vs d1, c3 vs d0/posthoc,
@@ -48,7 +48,7 @@ vs "a conflicting team size reference"). Reading halting outcomes from d0/d1 wou
   and loaded as a fixed checkpoint.
 - New arm `d0r` (repeat of d0) on seed 97 gives the noise band (pass flips between identical configurations).
 - Test seed 97 arms: c3, scaf, d0, d0r, d1, d2, posthoc, trained. Criteria K1–K5 unchanged, now on live arms.
-- `Z6I_INVALID_PREFIX` is dropped (no longer needed). A K-criterion difference smaller than the d0/d0r flip count is
+- `Z6M_INVALID_PREFIX` is dropped (no longer needed). A K-criterion difference smaller than the d0/d0r flip count is
   reported as inside the noise band.
 
 ## Amendment A2 (2026-10-27, while test seed 97 was running; no test result seen)

@@ -1,0 +1,332 @@
+{
+ "kind": "V13_Z6M_HALTING",
+ "test_seed": 97,
+ "arms": {
+  "c3": {
+   "n": 60,
+   "passed": 35,
+   "mean_turn_s": 4.77,
+   "mean_reentries": 0.0,
+   "by_class": {
+    "smalltalk/rewrite": 4,
+    "factual/exact": 4,
+    "long-context/global": 12,
+    "mixed reasoning": 3,
+    "novelty/conflict": 12
+   }
+  },
+  "d0": {
+   "n": 60,
+   "passed": 29,
+   "mean_turn_s": 27.75,
+   "mean_reentries": 0.0,
+   "by_class": {
+    "smalltalk/rewrite": 3,
+    "factual/exact": 2,
+    "long-context/global": 12,
+    "mixed reasoning": 1,
+    "novelty/conflict": 11
+   }
+  },
+  "d0r": {
+   "n": 60,
+   "passed": 31,
+   "mean_turn_s": 28.57,
+   "mean_reentries": 0.0,
+   "by_class": {
+    "smalltalk/rewrite": 4,
+    "factual/exact": 3,
+    "long-context/global": 12,
+    "mixed reasoning": 3,
+    "novelty/conflict": 9
+   }
+  },
+  "d1": {
+   "n": 60,
+   "passed": 32,
+   "mean_turn_s": 40.38,
+   "mean_reentries": 1.0,
+   "by_class": {
+    "smalltalk/rewrite": 6,
+    "factual/exact": 4,
+    "long-context/global": 12,
+    "mixed reasoning": 1,
+    "novelty/conflict": 9
+   }
+  },
+  "d2": {
+   "n": 60,
+   "passed": 32,
+   "mean_turn_s": 50.56,
+   "mean_reentries": 2.0,
+   "by_class": {
+    "smalltalk/rewrite": 6,
+    "factual/exact": 2,
+    "long-context/global": 12,
+    "mixed reasoning": 3,
+    "novelty/conflict": 9
+   }
+  },
+  "scaf": {
+   "n": 60,
+   "passed": 27,
+   "mean_turn_s": 35.04,
+   "mean_reentries": 0.667,
+   "by_class": {
+    "smalltalk/rewrite": 3,
+    "factual/exact": 1,
+    "long-context/global": 12,
+    "mixed reasoning": 1,
+    "novelty/conflict": 10
+   }
+  },
+  "posthoc": {
+   "n": 60,
+   "passed": 33,
+   "mean_turn_s": 29.73,
+   "mean_reentries": 0.183,
+   "by_class": {
+    "smalltalk/rewrite": 5,
+    "factual/exact": 4,
+    "long-context/global": 12,
+    "mixed reasoning": 3,
+    "novelty/conflict": 9
+   }
+  },
+  "trained": {
+   "n": 60,
+   "passed": 32,
+   "mean_turn_s": 28.32,
+   "mean_reentries": 0.0,
+   "by_class": {
+    "smalltalk/rewrite": 5,
+    "factual/exact": 3,
+    "long-context/global": 12,
+    "mixed reasoning": 2,
+    "novelty/conflict": 10
+   }
+  }
+ },
+ "halt_head": {
+  "n": 87,
+  "continue_labels": 11,
+  "halt_labels": 76,
+  "metrics": {
+   "held_out": {
+    "before": {
+     "n": 13,
+     "loss": 0.6931471805599453,
+     "accuracy": 0.9230769230769231,
+     "brier": 0.5,
+     "ece": 0.42307692307692313
+    },
+    "after": {
+     "n": 13,
+     "loss": 0.2730846827596889,
+     "accuracy": 0.9230769230769231,
+     "brier": 0.14980983106923157,
+     "ece": 0.04667975517153633
+    },
+    "uncalibrated": {
+     "n": 13,
+     "loss": 0.32275162667232504,
+     "accuracy": 0.9230769230769231,
+     "brier": 0.1764410856676149,
+     "ece": 0.12510763074705594
+    },
+    "per_class": {
+     "0": {
+      "n": 12,
+      "before": 1.0,
+      "after": 1.0
+     },
+     "1": {
+      "n": 1,
+      "before": 0.0,
+      "after": 0.0
+     }
+    }
+   },
+   "effective_accuracy": 0.9230769230769231,
+   "scaffold_accuracy": 0.6153846153846154,
+   "accepted_test_count": 13,
+   "missed_continue": 1,
+   "commit_eligible": false,
+   "calibration_pass": true
+  },
+  "checkpoint": "/tmp/claude-0/work/z6i/head2/candidate.npz",
+  "status": "TRAINED",
+  "train_files": [
+   "/tmp/claude-0/work/z6i/train83.json",
+   "/tmp/claude-0/work/z6i/train89.json"
+  ]
+ },
+ "noise_band": {
+  "d0_vs_d0r_flips": 8,
+  "paired": {
+   "n": 60,
+   "first_only": 3,
+   "second_only": 5,
+   "p": 0.7266
+  },
+  "first_offer_text_identical": 28
+ },
+ "criteria": {
+  "posthoc": {
+   "K1_not_dominated_by_fixed_depth": {
+    "dominated_by": [],
+    "pass": true
+   },
+   "K2_hard_examples": {
+    "hard_n": 25,
+    "hard_lost": 3,
+    "easy_n": 35,
+    "easy_lost": 1,
+    "pass": true
+   },
+   "K3_quality_near_best_fixed": {
+    "policy": 33,
+    "best_fixed": 32,
+    "pass": true
+   },
+   "K4_cheaper_than_deepest": {
+    "policy_s": 29.73,
+    "deepest_s": 50.56,
+    "pass": true
+   },
+   "pass": true,
+   "continue_rate": 0.183
+  },
+  "trained": {
+   "K1_not_dominated_by_fixed_depth": {
+    "dominated_by": [],
+    "pass": true
+   },
+   "K2_hard_examples": {
+    "hard_n": 25,
+    "hard_lost": 3,
+    "easy_n": 35,
+    "easy_lost": 2,
+    "pass": true
+   },
+   "K3_quality_near_best_fixed": {
+    "policy": 32,
+    "best_fixed": 32,
+    "pass": true
+   },
+   "K4_cheaper_than_deepest": {
+    "policy_s": 28.32,
+    "deepest_s": 50.56,
+    "pass": true
+   },
+   "pass": true,
+   "continue_rate": 0.0,
+   "head_use": {
+    "HEAD": 60,
+    "FALLBACK": 0,
+    "NO_PAIR": 0
+   }
+  }
+ },
+ "K5_trained_beats_posthoc": {
+  "value": {
+   "n": 60,
+   "first_only": 3,
+   "second_only": 4,
+   "p": 1.0
+  },
+  "trained_s": 28.32,
+  "posthoc_s": 29.73,
+  "pass": false
+ },
+ "paired": {
+  "d1_vs_d0": {
+   "n": 60,
+   "first_only": 8,
+   "second_only": 5,
+   "p": 0.5811
+  },
+  "d2_vs_d1": {
+   "n": 60,
+   "first_only": 6,
+   "second_only": 6,
+   "p": 1.0
+  },
+  "d2_vs_d0": {
+   "n": 60,
+   "first_only": 6,
+   "second_only": 3,
+   "p": 0.5078
+  },
+  "c3_vs_d0": {
+   "n": 60,
+   "first_only": 8,
+   "second_only": 2,
+   "p": 0.1094
+  },
+  "c3_vs_posthoc": {
+   "n": 60,
+   "first_only": 7,
+   "second_only": 5,
+   "p": 0.7744
+  },
+  "c3_vs_trained": {
+   "n": 60,
+   "first_only": 8,
+   "second_only": 5,
+   "p": 0.5811
+  },
+  "scaf_vs_d0": {
+   "n": 60,
+   "first_only": 1,
+   "second_only": 3,
+   "p": 0.625
+  },
+  "scaf_vs_d1": {
+   "n": 60,
+   "first_only": 2,
+   "second_only": 7,
+   "p": 0.1797
+  },
+  "posthoc_vs_d0": {
+   "n": 60,
+   "first_only": 6,
+   "second_only": 2,
+   "p": 0.2891
+  },
+  "posthoc_vs_d1": {
+   "n": 60,
+   "first_only": 5,
+   "second_only": 4,
+   "p": 1.0
+  }
+ },
+ "pareto_front": [
+  "c3"
+ ],
+ "verdict": "Z6M_HALTING_PASS",
+ "trained_adoption": "KEEP_POSTHOC",
+ "rescue_headroom": {
+  "d1_rescues_d0": [
+   "compare03",
+   "easy06",
+   "easy09",
+   "easy10",
+   "summary00",
+   "summary05",
+   "summary10",
+   "summary11"
+  ],
+  "d1_breaks_d0": [
+   "compare10",
+   "notes00",
+   "notes04",
+   "summary01",
+   "summary06"
+  ]
+ },
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "prereg": "docs/proofs/continuation-20261027/z6m-halting/PREREG.md",
+ "claim_limit": "deterministic bench decoding (llama threads still vary slightly), generated English tasks, regex checks, cloud CPU, no energy; d2 lifts the Age-0 one-cycle cap"
+}

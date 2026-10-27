@@ -1,0 +1,54 @@
+{
+ "n": 87,
+ "continue_labels": 11,
+ "halt_labels": 76,
+ "metrics": {
+  "held_out": {
+   "before": {
+    "n": 13,
+    "loss": 0.6931471805599453,
+    "accuracy": 0.9230769230769231,
+    "brier": 0.5,
+    "ece": 0.42307692307692313
+   },
+   "after": {
+    "n": 13,
+    "loss": 0.2730846827596889,
+    "accuracy": 0.9230769230769231,
+    "brier": 0.14980983106923157,
+    "ece": 0.04667975517153633
+   },
+   "uncalibrated": {
+    "n": 13,
+    "loss": 0.32275162667232504,
+    "accuracy": 0.9230769230769231,
+    "brier": 0.1764410856676149,
+    "ece": 0.12510763074705594
+   },
+   "per_class": {
+    "0": {
+     "n": 12,
+     "before": 1.0,
+     "after": 1.0
+    },
+    "1": {
+     "n": 1,
+     "before": 0.0,
+     "after": 0.0
+    }
+   }
+  },
+  "effective_accuracy": 0.9230769230769231,
+  "scaffold_accuracy": 0.6153846153846154,
+  "accepted_test_count": 13,
+  "missed_continue": 1,
+  "commit_eligible": false,
+  "calibration_pass": true
+ },
+ "checkpoint": "/tmp/claude-0/work/z6i/head2/candidate.npz",
+ "status": "TRAINED",
+ "train_files": [
+  "/tmp/claude-0/work/z6i/train83.json",
+  "/tmp/claude-0/work/z6i/train89.json"
+ ]
+}
