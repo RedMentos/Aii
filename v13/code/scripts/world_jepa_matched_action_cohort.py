@@ -63,6 +63,8 @@ def permute_actions(A, train, heldout, seed):
             or not np.all(A.sum(1) == 1.)
             or len(train) != 144 or len(heldout) != 48
             or len(np.unique(train)) != 144 or len(np.unique(heldout)) != 48
+            or not np.array_equal(train, split()[0])
+            or not np.array_equal(heldout, split()[1])
             or np.intersect1d(train, heldout).size):
         raise ValueError('Invalid matched-action cohort')
     rng = np.random.default_rng(seed)
