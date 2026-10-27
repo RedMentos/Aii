@@ -16,9 +16,19 @@
     "v13/code/tests/test_world_jepa_support_calibration.py",
     ".github/workflows/world-jepa-support-calibration.yml"
   ],
-  "software_tests": "PENDING_REMOTE_CI",
-  "synthetic_measurement": "PENDING_REMOTE_CI",
-  "raw_receipt": "PENDING",
+  "software_tests": "21/21_PASS_GITHUB_ACTIONS_40557772288",
+  "synthetic_measurement": "WITHHELD_ACTION_PASS_AND_STATE_OOD_PASS_SYNTHETIC_ONLY",
+  "raw_receipt": {
+    "run_id": 40557772288,
+    "artifact_id": 12756943391,
+    "zip_sha256": "a9f16341da017f163f3742019ff76d247e2c55b6cd80f51269d401ac35d43291",
+    "zip_crc": "PASS",
+    "exits": "INSTALL_UNIT_MEASURE_COMPILE_PRIVACY_DIFF_ALL_0",
+    "exact_ci_checkout": "e2fa1b42f9f7382e1f7daa2569a19ccaf59e0164",
+    "model_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+    "audit_blob": "3722706f07b025dd4449ef18b6dd7c0f2a4d9c92",
+    "independent_row_arithmetic": "PASS"
+  },
   "local_native_model": "NOT_RUN",
   "redmi": "NOT_RUN",
   "safety": {
@@ -33,15 +43,18 @@
     "whole_system_complete": false
   },
   "next_commands": [
-    "cd v13/code && python -m unittest -v tests.test_world_jepa tests.test_world_jepa_coverage_integrity tests.test_world_jepa_heldout_ablation tests.test_world_jepa_support_calibration",
-    "cd v13/code && python scripts/world_jepa_support_calibration.py --run --out /tmp/world-support-calibration.json",
-    "python3 v13/code/scripts/public_repo_privacy_scan.py --base bfeee06983a9a3bf7a00fd525c036c234b429fb0 --head HEAD"
+    "cd v13/code && python -m unittest discover -s tests -p 'test_*.py'",
+    "python3 v13/code/scripts/public_repo_privacy_scan.py --base bfeee06983a9a3bf7a00fd525c036c234b429fb0 --head HEAD",
+    "Review sibling PR #752 action-index regression and raw RED/GREEN"
   ],
   "open_questions": [
-    "Check CI trigger and exact raw exit artifact; no PASS before evidence.",
-    "Inspect ECE and rank correlation without interpreting heuristic confidence as probability.",
-    "Independent review and complete suite before integration.",
+    "Independent code review and full suite before integration.",
+    "Confidence rank correlation near zero on heldout; no calibrated-success interpretation.",
     "World-JEPA remains experimental SHADOW; real environment and Redmi unavailable."
   ],
-  "stop_reason": "NONE_CHECKPOINT_ONLY"
+  "stop_reason": "NONE_CHECKPOINT_ONLY",
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Automation11U-World-Support-Calibration/world-support-40557772288.zip",
+    "byte_identical": true
+  }
 }
