@@ -15,6 +15,9 @@ Prospective prereg `b7bc401a19ef127740e99768ceb7e48aab6505ab`, RED tests `f54a63
 
 All five original ZIPs privately uploaded to `/V13-Checkpoints/2026-10-27/Automation11-World-Realfile/`, re-materialized and SHA256 byte-verified. No rejected anyone-writable Drive destination used. No source/model/seed hash replaced or rewritten; original registered Z12c seeds 201/202/203 were not rerun.
 
+## Relation to the original Z12c registered result
+Claude's original Z12c `BEFUND.md` (same inherited branch, seeds **201/202/203**, 4,000 training transitions and 3,000 optimization steps per seed) reports **Z12C_SLOT_WORLD_JEPA_PASS**: covered retrieval 0.910, held-out operation-slot retrieval 0.950, no-action/shuffled controls 0.192/0.195, confidence/error Spearman −0.589, and C1–C7 PASS. That historical result remains preserved, **not overturned** by this intentionally undertrained new seed-211 smoke (600 transitions, 50 steps). It also does not prove the later calibrated-v2 checkpoint interface, live runtime wiring, or Redmi performance. No original registered cohort, model/seed/source hash or negative age gate was changed.
+
 ## Actual measured result and negative gates
 **Seed211 unregistered tiny smoke** (600 train, 12 counterfactual states, 16 attribution intervals, 50 steps) structurally runs NO_ACTION and SHUFFLED_ACTION controls, but the actual verdict is **Z12C_SLOT_WORLD_JEPA_FAIL**. In final run C1/C2/C3 fail, C4/C5/C6/C7 pass; no registered acceptance promotion.
 
