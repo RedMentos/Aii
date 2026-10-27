@@ -71,24 +71,38 @@ class StateConditionedPrefix(nn.Module):
             raise ValueError('Frozen prompt state width mismatch')
         return feature
 
-    def answer_logits(self, prompt_ids, answer_ids, assignment='own', features=None):
-        self._check_tokens(prompt_ids, answer_ids)
+    def _check_prompt(self, prompt_ids):
+        if (not isinstance(prompt_ids, torch.Tensor) or prompt_ids.ndim != 2
+                or prompt_ids.dtype != torch.long or not prompt_ids.shape[0]
+                or not prompt_ids.shape[1]):
+            raise ValueError('Nonempty int64 prompt tokens required')
+        vocab = self.base.get_input_embeddings().num_embeddings
+        if bool((prompt_ids < 0).any()) or bool((prompt_ids >= vocab).any()):
+            raise ValueError('Prompt token outside frozen decoder vocabulary')
+
+    def _prefix_for(self, prompt_ids, assignment, features):
         if assignment not in ASSIGNMENTS:
             raise ValueError('Unknown assignment control')
-        batch, prompt_len = prompt_ids.shape
+        batch = prompt_ids.shape[0]
         if assignment == 'shift' and batch < 2:
             raise ValueError('Shifted control requires at least two different items')
         if features is None:
             features = self.prompt_features(prompt_ids)
         if (not isinstance(features, torch.Tensor) or features.shape != (batch, self.hidden)
-                or not bool(torch.isfinite(features).all())):
+                or not features.is_floating_point() or not bool(torch.isfinite(features).all())):
             raise ValueError('Nonfinite or mismatched prompt-only features')
-        z = self.predictor(features.detach())
+        features = features.detach().to(device=self.predictor[0].weight.device,
+                                        dtype=self.predictor[0].weight.dtype)
+        z = self.predictor(features)
         if assignment == 'shift':
             z = z.roll(shifts=1, dims=0)
         prefix = self.prefix_projector(z).reshape(batch, self.prefix_tokens, self.hidden)
-        if assignment == 'zero':
-            prefix = torch.zeros_like(prefix)
+        return torch.zeros_like(prefix) if assignment == 'zero' else prefix
+
+    def answer_logits(self, prompt_ids, answer_ids, assignment='own', features=None):
+        self._check_tokens(prompt_ids, answer_ids)
+        batch, prompt_len = prompt_ids.shape
+        prefix = self._prefix_for(prompt_ids, assignment, features)
         embed = self.base.get_input_embeddings()
         sequence = torch.cat((prefix, embed(prompt_ids), embed(answer_ids)), dim=1)
         # Frozen weights still pass gradients from answer CE back to the prefix.
@@ -98,6 +112,33 @@ class StateConditionedPrefix(nn.Module):
         if answer_logits.shape[:2] != answer_ids.shape:
             raise ValueError('Answer-logit alignment mismatch')
         return answer_logits
+
+    def next_token_logits(self, prompt_ids, assignment='own', features=None):
+        """Target-free inference path: first next-token logits consume predicted state."""
+        self._check_prompt(prompt_ids)
+        prefix = self._prefix_for(prompt_ids, assignment, features)
+        embed = self.base.get_input_embeddings()
+        seq = torch.cat((prefix, embed(prompt_ids)), dim=1)
+        return self.base(inputs_embeds=seq, use_cache=False).logits[:, -1, :]
+
+    @torch.no_grad()
+    def greedy(self, prompt_ids, max_new_tokens=8, assignment='own'):
+        """Bounded synthetic decoder; no teacher-forced target or live authority."""
+        self._check_prompt(prompt_ids)
+        if type(max_new_tokens) is not int or not 1 <= max_new_tokens <= 32:
+            raise ValueError('Invalid generation token budget')
+        context = getattr(self.base.config, 'max_position_embeddings', None)
+        if context is not None and self.prefix_tokens + prompt_ids.shape[1] + max_new_tokens > context:
+            raise ValueError('Generation exceeds frozen decoder context')
+        features = self.prompt_features(prompt_ids)
+        prefix = self._prefix_for(prompt_ids, assignment, features)
+        embed = self.base.get_input_embeddings()
+        generated = prompt_ids
+        for _ in range(max_new_tokens):
+            seq = torch.cat((prefix, embed(generated)), dim=1)
+            token = self.base(inputs_embeds=seq, use_cache=False).logits[:, -1, :].argmax(dim=-1, keepdim=True)
+            generated = torch.cat((generated, token), dim=1)
+        return generated[:, prompt_ids.shape[1]:]
 
     def answer_loss(self, prompt_ids, answer_ids, assignment='own', features=None):
         logits = self.answer_logits(prompt_ids, answer_ids, assignment, features)
