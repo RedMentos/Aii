@@ -1,0 +1,55 @@
+name: V13 BP1 separate near-miss and retention source-only preflight
+on:
+  push:
+    branches: [codex/automation11-bp1-nearmiss-retention-20261027]
+    paths:
+      - '.github/workflows/bp1-qad-nearmiss-retention.yml'
+      - 'v13/code/scripts/bp1_qad_nearmiss_retention.py'
+      - 'v13/code/tests/test_bp1_qad_nearmiss_retention.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-nearmiss-retention/PREREG.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp1-nearmiss-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Deterministic source-only cohort, tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-nearmiss"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-nearmiss/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_nearmiss_retention.py v13/code/tests/test_bp1_qad_nearmiss_retention.py v13/code/docs/proofs/continuation-20261027/bp1-qad-nearmiss-retention/PREREG.md > "$RUNNER_TEMP/bp1-nearmiss/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_nearmiss_retention) > "$RUNNER_TEMP/bp1-nearmiss/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss/UNIT_EXIT.txt"
+          python3 v13/code/scripts/bp1_qad_nearmiss_retention.py --out "$RUNNER_TEMP/bp1-nearmiss/controls" > "$RUNNER_TEMP/bp1-nearmiss/GENERATE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss/GENERATE_EXIT.txt"
+          sha256sum "$RUNNER_TEMP/bp1-nearmiss/controls/"*.json* > "$RUNNER_TEMP/bp1-nearmiss/OUTPUT_SHA256.txt" 2>&1
+          python3 -m compileall -q v13/code/scripts/bp1_qad_nearmiss_retention.py v13/code/tests/test_bp1_qad_nearmiss_retention.py > "$RUNNER_TEMP/bp1-nearmiss/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4fe821b7db267142895c148092af5597aad128a7 --head HEAD > "$RUNNER_TEMP/bp1-nearmiss/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-nearmiss/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-nearmiss-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-nearmiss/
+          if-no-files-found: error
+      - name: Enforce software-only exits
+        run: |
+          set -euo pipefail
+          for n in UNIT GENERATE COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-nearmiss/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp1-nearmiss/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP1_NEARMISS_RETENTION_SOURCE_ONLY_NO_NATIVE_NO_UTILITY"

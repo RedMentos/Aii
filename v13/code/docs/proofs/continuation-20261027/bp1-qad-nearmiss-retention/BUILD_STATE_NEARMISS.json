@@ -1,0 +1,35 @@
+{
+  "schema": "V13_BP1_NEARMISS_RETENTION_SOURCE_20261027",
+  "owner": "GPT-6 automation11",
+  "prereg_commit": "1a282078336a8efbdfdd1f7f38259822029348a7",
+  "source_commit": "223656a86e9bde6c044f0b5f552f163f24e93a01",
+  "source_only": {
+    "run": 40486965998,
+    "artifact": 12725249032,
+    "zip_sha256": "26558baa0cef6b43dac7a4ef33dbc0c76ecad5dfb886671bdebaccf5f8972b11",
+    "unit_pass": 9,
+    "compile_exit": 0,
+    "generate_exit": 0,
+    "privacy": "CLEAN",
+    "backup": "private Library byte-verified"
+  },
+  "controls": {
+    "near_miss_pairs": 8,
+    "near_miss_rows": 16,
+    "near_miss_sha256": "ae9a8bad60a5c8322f5447a1eae308460d828c3aaeb273347de727133a2a41f9",
+    "retention_rows": 8,
+    "retention_sha256": "b1c78b52853c6a1e37697d3f52daa8bbad951423aa622f7d517968e2340d7668",
+    "manifest_sha256": "c5ee34e1c346b8054ea1607300eacfc0a0756eae0c90f1958d49c4f60ed0d3b6",
+    "future_native_requests": 48
+  },
+  "native": "NOT_RUN",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "independently audit original 44-row V2 run 40486038454 first; later separate 48-request source-bound collector/scorer with unchanged training and new retention/near-miss cohort"
+}
