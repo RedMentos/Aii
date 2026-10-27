@@ -1,0 +1,9 @@
+# Z1 + JEF + BP11 current integrated phone source ZIP — extracted software GREEN (2026-10-27)
+
+Owner GPT-6 review child of PR #699 exact base `9b22126e38d68f07520e4696d9efcc0aba6bf3c5`; prereg `5e4f48471f3ae01ea7faa18277fd014f95fa30ab`. No Runtime/Canon/model/trainer changes; source package scripts unchanged. Actions [40494517262](https://github.com/RedMentos/Aii/actions/runs/40494517262) at `e48b937a24b96274ba4d13d94cc3015a847ea980` completed **GREEN**.
+
+- **Source ZIP:** `V13-Phone-Integrated-20261027.zip`, SHA256 `2e443f528631338e89d8f0e2ed05e5108a755676a547a74fa43c6aed50bc5b07`, 13,943,159 bytes, **1,421 verified source members**, 32,090,158 uncompressed bytes; CRC PASS, checkout byte parity PASS, all member hashes PASS, manifest SHA `84cdb3cfed87ef511d9d6ff676c5b6cdda17dd64443082267e61dea61b01ed94`.
+- **Extracted package actual tests:** 102/102 Z1 gate + JEF receipt/operator + BP11 module tests PASS. Portable `python -m v13 --home <temporary> selftest --portable` from extracted ZIP **94/94 PASS**; setup.sh syntax PASS. All PACK/VERIFY/VERIFY_GATES/EXTRACT/TESTS/PORTABLE/PRIVACY exits 0; privacy CLEAN.
+- **Raw artifact:** `12729157902`, original ZIP SHA256 `47cdaecb968cccd9e30d1864b773c1ece46b366bda289122dfd44e956b16f1af`, CRC PASS, 19 members. Privately backed in `/V13-Checkpoints/2026-10-27/Z1-JEF-BP11-Phone-Source/`, re-materialized and compared byte-exact.
+
+This is a **Termux source-only package**, not an APK or complete offline model bundle. No real Redmi execution, native model inference, thermal/RSS/latency proof or broad end-to-end V13 acceptance. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, V13 INCOMPLETE. The parent integrated full-suite differential remains separate and historically RED. Next: device-side setup and sustained smoke when Redmi available; meanwhile independent native/source-quote learning experiments can proceed.
