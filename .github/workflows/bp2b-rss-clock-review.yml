@@ -6,6 +6,8 @@ on:
       - '.github/workflows/bp2b-rss-clock-review.yml'
       - 'v13/code/scripts/bp2b_first_step_diagnostic.py'
       - 'v13/code/tests/test_bp2b_first_step_diagnostic.py'
+      - 'v13/code/BUILD_STATE.json'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-rss-clock-review/REPORT.md'
 permissions:
   contents: read
 concurrency:
