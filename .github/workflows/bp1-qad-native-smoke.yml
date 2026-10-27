@@ -6,12 +6,11 @@ on:
       - '.github/workflows/bp1-qad-native-smoke.yml'
       - 'v13/code/scripts/bp1_qad_native_smoke.py'
       - 'v13/code/tests/test_bp1_qad_native_smoke.py'
-      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-native-smoke/**'
 permissions:
   contents: read
 concurrency:
   group: v13-bp1-qad-native-smoke-heavy-serial
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   software:
     runs-on: ubuntu-24.04
