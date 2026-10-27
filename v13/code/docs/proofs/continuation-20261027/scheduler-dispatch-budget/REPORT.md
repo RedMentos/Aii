@@ -12,8 +12,8 @@ Count the persisted `dispatched` timestamp instead of `created`, including retir
 
 ## Evidence at checkpoint
 
-New regression in `tests/test_sleep_scheduler.py`, no native/model run. Isolated Actions workflow `.github/workflows/scheduler-dispatch-budget-review.yml` installs pinned software deps, executes the full unit suite, compileall, privacy scan and diff check; closed raw exits and artifact. Workflow source commit `e61a59d82afd3d037165a3d8660f47ce0edb6869`; Actions `40528070917` pending at checkpoint. Do not claim PASS before the exact-head CI and raw evidence are checked.
+New regression in `tests/test_sleep_scheduler.py`, no native/model run. Isolated Actions workflow `.github/workflows/scheduler-dispatch-budget-review.yml` installs pinned software deps, executes the full unit suite, compileall, privacy scan and diff check; closed raw exits and artifact. Workflow source commit `e61a59d82afd3d037165a3d8660f47ce0edb6869`; Actions **40528070917 PASS**, exact source, **1900 tests OK (1 skipped)**, UNIT/INSTALL/COMPILE/PRIVACY/DIFF exits all 0; privacy CLEAN. Closed raw artifact `12743974557`, ZIP SHA256 `2609fa139f62ae97f30306d419f27259bafa183e4ae811523707219c41a47708`, privately backed up and byte-verified at `/V13-Checkpoints/2026-10-27/Scheduler-Dispatch-Fullsuite/scheduler-dispatch-fullsuite-40528070917.zip`. This is software-only, no native/Redmi/age proof.
 
 ## Gates / next
 
-STEP2 UTILITY_FAIL; B3 L1 FAIL; BJ1 NO_SIGNAL; LP1/LP2 negative; `jepa_weight=0`, Age authority 0, Redmi unmeasured, whole system incomplete. Next command: `cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_sleep_scheduler.SchedulerTests`; then inspect Actions `40528070917` raw `UNIT_EXIT`, `PRIVACY_EXIT`, `DIFF_EXIT` and all failures. Independent review before chain integration; no main merge.
+STEP2 UTILITY_FAIL; B3 L1 FAIL; BJ1 NO_SIGNAL; LP1/LP2 negative; `jepa_weight=0`, Age authority 0, Redmi unmeasured, whole system incomplete. Next: independently review retry/CANCELLED attempt accounting and history-cap truncation (separate PR #737 candidate); integrate only after review. No main merge or Age promotion.
