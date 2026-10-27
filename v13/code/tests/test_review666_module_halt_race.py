@@ -59,6 +59,24 @@ class MidFetchRevocationTests(unittest.TestCase):
             M.fetch(self.store, self.mid, authority=H, fetcher=fetcher)
         self.assert_not_persisted()
 
+    def test_revoke_during_fetch_cannot_resurrect_proposal(self):
+        def fetcher(_):
+            M.revoke(self.store, self.mid, authority=H, delete=True)
+            return PAYLOAD
+        with self.assertRaises(PermissionError):
+            M.fetch(self.store, self.mid, authority=H, fetcher=fetcher)
+        self.assertEqual(M.state(self.store)['mods'][self.mid]['state'], 'REVOKED')
+        self.assertFalse(M._file(self.store, self.mid).exists())
+
+    def test_disable_during_fetch_prevents_quarantine_write(self):
+        def fetcher(_):
+            M.set_enabled(self.store, False, authority=H)
+            return PAYLOAD
+        with self.assertRaises(PermissionError):
+            M.fetch(self.store, self.mid, authority=H, fetcher=fetcher)
+        self.assert_not_persisted()
+        self.assertFalse(M.state(self.store)['enabled'])
+
     def test_uninterrupted_human_fetch_still_passes_data_only_gate(self):
         rec = M.fetch(self.store, self.mid, authority=H, fetcher=lambda _: PAYLOAD)
         self.assertEqual(rec['state'], 'SANDBOX_OK')
