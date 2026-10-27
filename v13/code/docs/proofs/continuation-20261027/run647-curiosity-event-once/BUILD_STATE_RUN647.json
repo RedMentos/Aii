@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN647_AG5_EVENT_ONCE_BUILD_STATE_V1",
+  "date": "2026-10-27",
+  "owner": "GPT-6 automation",
+  "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+  "parent_pr": 647,
+  "base_sha": "27b27d6a2d8699c112a6eee093e2edcc7e1007cd",
+  "branch": "codex/gpt6-run647-curiosity-event-once-20261027",
+  "prereg_commit": "536d8a15086654741e31fa05381df254786def67",
+  "tests_commit": "04ab6b53780d38180f19900c859661d4b7dba90e",
+  "red": {
+    "run": 40443594644,
+    "head": "f9e405d1f6eb91557eaf1a222855de86c5492ff8",
+    "tests": "64 tests, 3 FAIL 10 ERROR (7 subtest errors)",
+    "artifact": 12707532731,
+    "zip_sha256": "dc3a0457d44b4c0f9a8dc567676d0d9168caa3bf3bf714fa7c3e525444cb18ca"
+  },
+  "green": {
+    "run": 40443706220,
+    "head": "7bd859a91645d501b72342dc67223e15d2ea9bf5",
+    "tests": "64/64 PASS, compile PASS, privacy CLEAN",
+    "artifact": 12707078420,
+    "zip_sha256": "77d8757331c8194add90b3da78267c5a52b2a2c3cbd19468fa979e038bdc9974"
+  },
+  "source_blobs": {
+    "v13/code/v13/agi/curiosity.py": "25d61ba7c25ec48c28e8811c8f6cd542049c90be",
+    "v13/code/v13/agi/live.py": "6311f6acebcba2dea2850f50a6d230489fc62ced",
+    "v13/code/tests/test_run647_curiosity_event_once.py": "a50e961c1d3006dc3c8e73d300be43375fb459f3"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-27/Run647/",
+    "red_byte_verified": true,
+    "green_byte_verified": true
+  },
+  "change": "AG5 live goal_turn learning-error visits and rolling errors are atomically counted once per source event, including SQLite reopen; explicit unbound Curiosity.observe unchanged.",
+  "evidence_level": "LINUX_SQLITE_SOFTWARE_ONLY",
+  "fullsuite": "NOT_PROMOTED; parent 4335 tests 5 FAIL 73 ERROR",
+  "native": false,
+  "redmi": false,
+  "model_hashes_changed": false,
+  "age_approval_changed": false,
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=$PWD:$PWD/scripts python -m unittest -v tests.test_run647_curiosity_event_once tests.test_run646_skill_event_once tests.test_run645_skill_credit_receipt tests.test_run644_curiosity_receipt tests.test_agi_live tests.test_growth tests.test_run633_jef_noanswer_goal",
+  "open_questions": [
+    "Independent review/integration required, do not merge without owner review",
+    "Same-event later goal DONE behavior is separate from AG5 observation, not changed",
+    "Full suite remains RED due historical frozen source and fixture errors",
+    "Native C3 protocol locality/Body-JEPA semantic utility unproven",
+    "Redmi not measured"
+  ],
+  "next_owner": "independent substantive canonical learning or World-JEPA review; no concurrent edit to this branch"
+}
