@@ -33,6 +33,7 @@ class Executive:
         except (ValueError,OSError,KeyError,TypeError):return False
     def _clean(self,state,session):
         state=json.loads(dumps(state or {}))
+        if not isinstance(state,dict):return {}
         if state.get('session_id')!=session:return {}
         def dict_items(key):
             value=state.get(key)

@@ -1,0 +1,70 @@
+name: V13 C1 top-state integrity RED GREEN review
+on:
+  push:
+    branches: [assistant/v13-c1-topstate-integrity-20261027]
+    paths:
+      - '.github/workflows/c1-topstate-integrity.yml'
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/tests/test_executive_topstate_integrity_review.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-corrupt-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: C1 source-bound RED GREEN and closed raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-topstate-integrity"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/SOURCE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-topstate-venv"
+          py="$RUNNER_TEMP/c1-topstate-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_topstate_integrity_review tests.test_executive_corrupt_continuity_review tests.test_executive
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/executive.py v13/code/tests/test_executive_topstate_integrity_review.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 10bdea897a99f52504235d1c3d1e48c7713e834c --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 10bdea897a99f52504235d1c3d1e48c7713e834c HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-corrupt-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-topstate-integrity/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits and preserve original RED
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-topstate-integrity"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'C1_CONTINUITY_SOFTWARE_ONLY_NO_AGE_PROMOTION'
