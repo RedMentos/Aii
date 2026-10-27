@@ -19,7 +19,9 @@ from scripts.bp2b_native_runner import ARMS, SEEDS, plan
 from scripts.bp2b_master_preflight import verify as verify_master
 
 REVISION = 'bp2b-native-batch-v1'
-PREFIX = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]{0,23}\Z')
+# The longest child suffix is "-s41-bp2b_minor" (15 chars); run_arm accepts
+# at most 32 chars total and forbids dots. Validate before any native output.
+PREFIX = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,16}\Z')
 SHA = re.compile(r'[0-9a-f]{64}\Z')
 
 
