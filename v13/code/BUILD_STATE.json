@@ -1608,10 +1608,10 @@
       "fbbb67dc285ef91858610a1dea9a09e199153f39"
     ],
     "base": "PR723 + PR722",
-    "status": "REVIEW_ONLY_MERGE_CI_PENDING",
+    "status": "REVIEW_ONLY_FOCUSED_AND_BROAD_SOFTWARE_PASS",
     "scope": "Union of disjoint BJ1 opt-in step resume and N7 Context OS integrity candidates; additive BUILD_STATE, no default activation",
-    "focused_tests": "PENDING",
-    "broad_suite": "PENDING",
+    "focused_tests": "38/38 PASS Actions 40518877350",
+    "broad_suite": "1881 tests PASS, 1 skip, Actions 40518877350",
     "native_evidence": false,
     "redmi_measured": false,
     "step2": "UTILITY_FAIL",
@@ -1622,6 +1622,19 @@
     "whole_system_complete": false,
     "report": "docs/proofs/continuation-20261027/bj1-n7-integration/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_context_os tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit",
-    "next_prerequisite": "Exact-head integration Actions, independent review and native registered experiments; no main merge or gate promotion."
+    "next_prerequisite": "Independent review and newly registered BP2b first-step native diagnostic; software PASS does not promote native/Redmi/age gates.",
+    "tested_sha": "5323f65e2b37144c81820a9a250e87c6add8fbc7",
+    "actions_run": 40518877350,
+    "actions_artifact_id": 12741421159,
+    "raw_zip_sha256": "dc3bf1cfde4dbc6c8546ce8c66228c7df82f9770ac2c3b238decaeb52b07cbd8",
+    "raw_zip_crc": "PASS",
+    "install_exit": 0,
+    "focused_exit": 0,
+    "unit_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "diff_exit": 0,
+    "private_library_backup": "/V13-Checkpoints/2026-10-27/BJ1-N7-Integration/v13-bj1-n7-integration-40518877350.zip",
+    "private_library_byte_exact_readback": true
   }
 }
