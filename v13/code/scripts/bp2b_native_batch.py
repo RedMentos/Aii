@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 
-from scripts.bp2b_native_runner import ARMS, SEEDS, plan
+from scripts.bp2b_native_runner import ARMS, SEEDS, plan, PIN_PATH, MASTER_SHA
 from scripts.bp2b_master_preflight import verify as verify_master
 
 REVISION = 'bp2b-native-batch-v1'
@@ -23,6 +23,11 @@ REVISION = 'bp2b-native-batch-v1'
 # at most 32 chars total and forbids dots. Validate before any native output.
 PREFIX = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,16}\Z')
 SHA = re.compile(r'[0-9a-f]{64}\Z')
+
+
+def _verified_master_preflight(master_dir):
+    # The pinned verifier requires a source-bound pin path and explicit full hash mode.
+    return verify_master(master_dir, PIN_PATH, False)
 
 
 def registered(prefix):
@@ -91,7 +96,7 @@ def _command(master_dir, out, job):
 
 
 def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
-            runner=subprocess.run, preflight=verify_master):
+            runner=subprocess.run, preflight=_verified_master_preflight):
     jobs = registered(prefix)
     if type(max_jobs) is not int or not 1 <= max_jobs <= len(jobs):
         raise ValueError('max_jobs must be 1..12; registered cohort remains 12')
@@ -99,7 +104,9 @@ def execute(out, master_dir, prefix, max_jobs=12, timeout_seconds=2100,
         raise ValueError('Invalid positive timeout')
     # Hash the real pinned master before any batch state or attempt directory is created.
     master = preflight(master_dir)
-    if master.get('status') != 'FULL_FILE_HASH_PASS' or master.get('master_sha256_verified_locally') is not True:
+    if (type(master) is not dict or master.get('status') != 'FULL_FILE_HASH_PASS'
+            or master.get('master_sha256_verified_locally') is not True
+            or master.get('master_expected_sha256') != MASTER_SHA):
         raise ValueError('Pinned public master preflight did not pass')
     out = Path(out).absolute()
     out.mkdir(parents=True, exist_ok=True)
