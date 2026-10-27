@@ -26,9 +26,10 @@ SELF_RIGHTS={'GOAL_WAKE':'resume_open_goals','TIMER':'self_initiative','REPLAY_D
 MAX_PENDING=256
 HISTORY=64
 MAX_ATTEMPTS=3
+DISPATCH_LEDGER_MAX=1001  # covers :pause budget 0..1000 even after compact history eviction
 from .resource_modes import LEGACY_MODE as RESOURCE_MODE  # §97.2: one table (PRESSURE = ORANGE)
 
-def empty():return {'revision':REVISION,'sequence':0,'events':[],'history':[],'counters':{}}
+def empty():return {'revision':REVISION,'sequence':0,'events':[],'history':[],'counters':{},'dispatch_times':[]}
 
 class EventScheduler:
     def __init__(self,store,cfg,clock=time.time,age=None,key=STATE_KEY):
@@ -96,12 +97,21 @@ class EventScheduler:
         """Background dispatches since the last accepted user turn."""
         row=self.s.one('SELECT MAX(accepted_at) AS t FROM accepted_turns');last=row['t'] if row and row['t'] else 0.
         st,_=self._load()
-        # Count actual dispatches, not creation of a queued event before the
-        # latest user turn. Legacy retired entries lack 'dispatched' and can
-        # only fall back to 'created'; that historical limitation is retained.
-        return sum(1 for e in st['events']+st['history'] if e['origin']!='USER' and e.get('action') not in (None,'notice')
-                   and e['status'] in {'DISPATCHED','DONE','FAILED'}
-                   and (e.get('dispatched') if e.get('dispatched') is not None else e['created'])>=last)
+        # Persistent per-dispatch ledger counts RETRY/CANCELLED attempts and
+        # survives the 64-entry compact event-history eviction. The bounded
+        # 1001 timestamps cover the maximum configured burn-out budget (1000).
+        if 'dispatch_times' in st:
+            return sum(t>=last for t in st['dispatch_times'])
+        # Legacy states predate this ledger; past attempts beyond the compact
+        # history cannot be reconstructed. New dispatches migrate conservatively.
+        return sum((sum(t>=last for t in e['dispatch_log'])
+                    if isinstance(e.get('dispatch_log'),list) else
+                    int((e.get('dispatched') if e.get('dispatched') is not None
+                         else e['created'])>=last))
+                   for e in st['events']+st['history']
+                   if e['origin']!='USER' and e.get('action') not in (None,'notice')
+                   and (e.get('dispatch_log') or e.get('dispatched') is not None
+                        or e['status'] in {'DISPATCHED','DONE','FAILED'}))
     def next(self,idle=True,resource_state='NORMAL',quiet=False):
         with self.s.mutex:return self._next(idle,resource_state,quiet)
     def _next(self,idle=True,resource_state='NORMAL',quiet=False):
@@ -116,7 +126,22 @@ class EventScheduler:
             if not ok or not self._allowed(e,idle,resource_state,quiet):continue
             if best is None or (e['priority'],-e['due'],-e['seq'])>(best['priority'],-best['due'],-best['seq']):best=e
         if best:
-            best['status']='DISPATCHED';best['attempts']+=1;best['dispatched']=now;changed=True;self._count(st,'dispatched')
+            is_background=(best['origin']!='USER' and best.get('action') not in (None,'notice'))
+            if is_background and 'dispatch_times' not in st:
+                # Migrate known legacy dispatches before overwriting the
+                # selected event's prior dispatch timestamp on RETRY.
+                st['dispatch_times']=[
+                    (e.get('dispatched') if e.get('dispatched') is not None else e['created'])
+                    for e in st['events']+st['history']
+                    if e['origin']!='USER' and e.get('action') not in (None,'notice')
+                    and (e['status'] in {'DISPATCHED','DONE','FAILED'}
+                         or (e is best and e.get('dispatched') is not None))]
+            best['status']='DISPATCHED';best['attempts']+=1;best['dispatched']=now
+            best.setdefault('dispatch_log',[]).append(now)
+            if is_background:
+                st['dispatch_times'].append(now)
+                del st['dispatch_times'][:-DISPATCH_LEDGER_MAX]
+            changed=True;self._count(st,'dispatched')
         if changed:self._retire(st);self._save(st,v)
         if best:self.s.log('scheduler_dispatch',None,{'kind':best['kind'],'priority':best['priority'],'resource_state':resource_state})
         return dict(best) if best else None
@@ -135,7 +160,7 @@ class EventScheduler:
     def _retire(self,st):
         done=[e for e in st['events'] if e['status'] not in {'PENDING','HELD_AGE','DISPATCHED'}]
         if done:
-            st['history']=(st['history']+[{k:e.get(k) for k in ('id','kind','origin','action','status','created','dispatched','attempts')} for e in done])[-HISTORY:]
+            st['history']=(st['history']+[{k:e.get(k) for k in ('id','kind','origin','action','status','created','dispatched','dispatch_log','attempts')} for e in done])[-HISTORY:]
             st['events']=[e for e in st['events'] if e['status'] in {'PENDING','HELD_AGE','DISPATCHED'}]
     def pending(self):return [dict(e) for e in self._load()[0]['events']]
     def report(self):

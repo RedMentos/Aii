@@ -89,6 +89,58 @@ class SchedulerTests(Base):
         self.assertIsNone(s.next())
         self.assertEqual(s.report()['history'][-1]['dispatched'],c.t)
 
+    def test_background_budget_counts_each_retry_even_when_pending(self):
+        from v13.inputs import set_burnout
+        c=Clock()
+        s=self.sched(c)
+        set_burnout(self.r.store,2)
+        event=self.r.store.event(self.r.session,'Retry budget user turn')
+        with self.r.store.tx() as tx:
+            tx.execute("INSERT INTO accepted_turns(event_id,bytes,accepted_at,state) VALUES (?,?,?,?)",
+                       (event['event_id'],1,c.t-1,'DONE'))
+        wake=s.post('IDLE',action='sleep_a')
+        first=s.next()
+        self.assertEqual(first['id'],wake)
+        self.assertEqual(s.background_since_input(),1)
+        self.assertEqual(s.complete(wake,'RETRY'),'PENDING')
+        self.assertEqual(s.background_since_input(),1)  # retry cannot refund a dispatch
+        second=s.next()
+        self.assertEqual(second['id'],wake)
+        self.assertEqual(s.background_since_input(),2)
+        self.assertEqual(s.complete(wake,'RETRY'),'PENDING')
+        self.assertEqual(s.background_since_input(),2)
+        self.assertIsNone(s.next())  # budget=2 forbids third dispatch
+        # A new accepted user turn resets the accounting window.
+        c.t+=1
+        reset=self.r.store.event(self.r.session,'Another budget user turn')
+        with self.r.store.tx() as tx:
+            tx.execute("INSERT INTO accepted_turns(event_id,bytes,accepted_at,state) VALUES (?,?,?,?)",
+                       (reset['event_id'],1,c.t,'DONE'))
+        self.assertEqual(s.background_since_input(),0)
+        self.assertEqual(s.next()['attempts'],3)
+        self.assertEqual(s.complete(wake,'DONE'),'DONE')
+        self.assertEqual(s.background_since_input(),1)
+        self.assertEqual(len(s.report()['history'][-1]['dispatch_log']),3)
+
+    def test_background_budget_survives_compact_history_eviction(self):
+        from v13.inputs import set_burnout
+        c=Clock()
+        s=self.sched(c)
+        set_burnout(self.r.store,1000)
+        event=self.r.store.event(self.r.session,'History compaction user turn')
+        with self.r.store.tx() as tx:
+            tx.execute("INSERT INTO accepted_turns(event_id,bytes,accepted_at,state) VALUES (?,?,?,?)",
+                       (event['event_id'],1,c.t-1,'DONE'))
+        for _ in range(70):
+            wake=s.post('IDLE',action='sleep_a')
+            self.assertEqual(s.next()['id'],wake)
+            self.assertEqual(s.complete(wake,'DONE'),'DONE')
+        self.assertEqual(len(s.report()['history']),16)  # UI view is bounded
+        self.assertEqual(s.background_since_input(),70)  # ledger is not UI/history-limited
+        st,_=s._load()
+        self.assertEqual(len(st['history']),64)
+        self.assertEqual(len(st['dispatch_times']),70)
+
     def test_quiet_hours_and_capacity(self):
         s=self.sched();s.post('IDLE',action='sleep_full');s.post('TIMER',origin='USER',action='sleep_a')
         self.assertEqual(s.next(quiet=True)['origin'],'USER');self.assertIsNone(s.next(quiet=True))
