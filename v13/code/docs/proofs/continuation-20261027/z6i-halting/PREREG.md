@@ -50,3 +50,10 @@ vs "a conflicting team size reference"). Reading halting outcomes from d0/d1 wou
 - Test seed 97 arms: c3, scaf, d0, d0r, d1, d2, posthoc, trained. Criteria K1–K5 unchanged, now on live arms.
 - `Z6I_INVALID_PREFIX` is dropped (no longer needed). A K-criterion difference smaller than the d0/d0r flip count is
   reported as inside the noise band.
+
+## Amendment A2 (2026-10-27, while test seed 97 was running; no test result seen)
+The first `train` call returned `NOT_TRAINABLE`: `readout_worker.train` refuses duplicate contexts and the generated easy
+fixtures repeat identical texts (88 usable labels: 11 continue, 77 halt). Change: duplicates (identical feature vector) are
+dropped, first kept, before training. The `trained` arm is run after the other test arms with the head fitted from the
+deduplicated training labels only. If the trainer still refuses (fewer than six labels per class), `trained` stays
+`NOT_TRAINABLE` and K5 fails, as preregistered.

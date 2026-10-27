@@ -200,7 +200,11 @@ def labels(rows):
 def train_head(train_rows, workdir):
     from v13.readout_worker import train
     from v13.config import KNOBS
-    L = [l for rows in train_rows for l in labels(rows)]
+    L = []; seen = set()
+    for rows in train_rows:  # the trainer refuses duplicate contexts (repeated generated greetings/rewrites): keep the first
+        for l in labels(rows):
+            k = h(dumps(l['x']))
+            if k not in seen: seen.add(k); L.append(l)
     ys = [l['y'] for l in L]
     info = {'n': len(L), 'continue_labels': sum(ys), 'halt_labels': len(ys)-sum(ys)}
     cfg = {k: v[0] for k, v in KNOBS.items()} | {'readout_steps': 480}
