@@ -164,8 +164,8 @@ class FiniteEvidence(Base):
         self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
                          ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
         bad_support=deepcopy(st);bad_support['states']['detail'][0][0]=float('nan')
-        self.r.store.set_state(WM.KEY,bad_support)
-        cf=WM.counterfactual(self.r.store,s,'detail')
+        with mock.patch.object(WM,'load',return_value=bad_support):
+            cf=WM.counterfactual(self.r.store,s,'detail')
         self.assertEqual((cf['label'],cf['confidence'],cf['reason']),
                          ('SIMULATION_UNCERTAIN',0.,'INVALID_NUMERIC_EVIDENCE'))
 
