@@ -166,7 +166,7 @@ def main(argv=None):
         manifest['world_process_log_sha256'] = hashlib.sha256(log_raw).hexdigest()
         manifest['world_process_schedule_sha256'] = hashlib.sha256(schedule_raw).hexdigest()
         manifest['world_process_log_events'] = sum(bool(line.strip()) for line in log_raw.splitlines())
-        atomic_write(out / 'manifest.json', _canonical(manifest) + b'\\n')
+        atomic_write(out / 'manifest.json', _canonical(manifest) + b'\n')
     print(json.dumps({'schema': manifest['schema'], 'mode': manifest['mode'],
                       'checkpoint_sha256': manifest['checkpoint_sha256'],
                       'cohort_sha256': manifest['cohort_sha256'],
