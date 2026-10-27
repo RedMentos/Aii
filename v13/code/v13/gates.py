@@ -6,6 +6,7 @@ come from a real run (bench-results/ or docs/proofs/, never tests/), telemetry k
 A gate is GREEN only with all required criteria, passing result verdicts and all dependencies GREEN.
 """
 import json
+import math
 import re
 from .common import APP
 
@@ -29,6 +30,20 @@ def check(gate,logged=None):
         out[crit]={'required':True,'present':bool(ev) and not missing,'missing':missing if ev else ['NO_EVIDENCE']}
     return out
 
+def _verdict_compare(actual, op, expected):
+    """Fail closed on JSON type coercion, bool-as-number, and nonfinite values."""
+    for value in (actual, expected):
+        if type(value) is float and not math.isfinite(value):
+            return False
+    if op == '==':
+        return type(actual) is type(expected) and actual == expected
+    if op in ('>=', '<='):
+        if type(actual) not in (int, float) or type(expected) not in (int, float):
+            return False
+        return actual >= expected if op == '>=' else actual <= expected
+    return False
+
+
 def verdicts(gate):
     """Result-file checks: [{file, path a.b.c, op, value}] -> list of failures (empty = passing)."""
     fails=[]
@@ -36,7 +51,7 @@ def verdicts(gate):
         try:
             cur=json.loads((APP/v['file']).read_text())
             for part in v['path'].split('.'):cur=cur[part]
-            ok={'==':cur==v['value'],'>=':cur>=v['value'],'<=':cur<=v['value']}[v['op']]
+            ok=_verdict_compare(cur,v['op'],v['value'])
         except Exception as exc:ok=False;cur=type(exc).__name__
         if not ok:fails.append({'file':v['file'],'path':v['path'],'expected':f"{v['op']} {v['value']}",'actual':cur})
     return fails
