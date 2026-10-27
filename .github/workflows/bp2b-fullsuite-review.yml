@@ -6,6 +6,7 @@ on:
       - '.github/workflows/bp2b-fullsuite-review.yml'
       - 'v13/code/scripts/bp2b_native_batch.py'
       - 'v13/code/tests/test_bp2b_native_batch.py'
+      - 'v13/code/tests/test_toolforecast.py'
 permissions:
   contents: read
 concurrency:
