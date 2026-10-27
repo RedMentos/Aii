@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN633_JEF_NOANSWER_SOFTWARE_VERIFIED_V1",
+  "date_utc": "2026-10-27",
+  "branch": "codex/automation11-run633-jef-noanswer-goal-20261027",
+  "owner": "GPT-6 automation independent JEF goal package",
+  "parent_sha": "9fde39e647400025126631efab6617684e938d9d",
+  "prereg_commit": "785b00c49e37d1a3e1806d3bef6b56ce08e27526",
+  "test_commit": "2d8a3b204dc9992921d43d741e0f2fcb54b18dfc",
+  "implementation_commit": "9f0c8a1dc8fea4c067848ee1b72fbfa0cc8c644d",
+  "source_blob": "59e12fdd538457bca482ab0ad627b80547fa6104",
+  "prepatch": {
+    "run_id": 40427554256,
+    "conclusion": "failure",
+    "test_failures": 17,
+    "tests_run": 29,
+    "privacy": "CLEAN",
+    "artifact_id": 12699713988,
+    "raw_zip_sha256": "b00027706fb160e9a7a754b2e894ce7c70161cb58093cb5408ee75024fe863ae",
+    "internal_sha_verified": 6,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run633/Run633-prepatch-RED-40427554256.zip",
+    "roundtrip": "PASS"
+  },
+  "patched": {
+    "run_id": 40427702740,
+    "conclusion": "success",
+    "tests_passed": 29,
+    "privacy": "CLEAN",
+    "artifact_id": 12700008825,
+    "raw_zip_sha256": "72ffb3f6e5f2c71c3fad7a0601e98c1e15b8702787e51ffe2c14fb22d4fbbfbd",
+    "internal_sha_verified": 6,
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run633/Run633-patched-GREEN-40427702740.zip",
+    "roundtrip": "PASS"
+  },
+  "independent_run632_audit": {
+    "third_failed_run_id": 40426758913,
+    "raw_zip_sha256": "75952c7fe29952eb25163d024210ca6801998c380e2c798085680753059acfc7",
+    "inner_sha_verified": 14,
+    "root_cause": "Pinned official chat_template.jinja exists but excluded from snapshot_download allow_patterns"
+  },
+  "next_exact_command": "Create review child from verified Run633 head; preregister exact official HF chat_template.jinja retrieval-only Run634 workflow; retain frozen Run632 V2 cohort and trainer; run native CI and verify SHA-closed raw; continue independent package on failure.",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "production_integrated": false
+}
