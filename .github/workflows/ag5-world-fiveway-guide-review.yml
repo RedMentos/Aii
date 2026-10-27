@@ -62,15 +62,15 @@ jobs:
           import re
           p=Path("v13/code/docs/BEFEHLE.md")
           s=p.read_text()
-          anchor=":toolforecast [status|shadow|off|score]\\n    Sagt vorher, was ein Werkzeug bewirken würde (SCHATTEN).\\n"
+          anchor=":toolforecast [status|shadow|off|score]\n    Sagt vorher, was ein Werkzeug bewirken würde (SCHATTEN).\n"
           if s.count(anchor)!=1: raise SystemExit("GUIDE_ANCHOR_DRIFT")
           for command in ("modul","wachter"):
               if re.search(r"(?m)^:"+command+r"\\b",s): raise SystemExit("GUIDE_ALREADY_DOCUMENTED:"+command)
           addition=(
-              ":modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>|frage <M> <Text>|export <M> <Pfad>]\\n"
-              "    Neue Wissens-Module: standardmäßig aus, nur deine getippten Freigaben. Herkunft/Hash prüfen, Export ist kein Modelltraining.\\n"
-              ":wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>]\\n"
-              "    Zweiter Sicherheitswächter: standardmäßig aus, nur strenger; ein Modellordner wird nicht automatisch geladen.\\n"
+              ":modul [liste|an|aus|lernen an|aus|vorschlag <https-Adresse> <Name>|holen <M>|zeige <M>|freigeben <M> <Code>|ablehnen <M>|zurueck <M>|frage <M> <Text>|export <M> <Pfad>]\n"
+              "    Neue Wissens-Module: standardmäßig aus, nur deine getippten Freigaben. Herkunft/Hash prüfen, Export ist kein Modelltraining.\n"
+              ":wachter [status|aus|schatten|an|lexikon|modell <Ordner>|test <Text>]\n"
+              "    Zweiter Sicherheitswächter: standardmäßig aus, nur strenger; ein Modellordner wird nicht automatisch geladen.\n"
           )
           p.write_text(s.replace(anchor,anchor+addition))
           print("GUIDE_ADDED_TWO_COMMANDS",p.stat().st_size)
@@ -102,7 +102,7 @@ jobs:
           test "$(cat "$RUNNER_TEMP/fivewayproof/FETCH_EXIT.txt")" = 0
           test "$(cat "$RUNNER_TEMP/fivewayproof/AG5_MERGE_EXIT.txt")" = 1
           test "$(wc -l < "$RUNNER_TEMP/fivewayproof/AG5_CONFLICTS.txt")" = 3
-          for n in AG5_RESOLVE AG5_COMMIT CLAUDE_MERGE CLAUDE_COMMIT FETCH_FIX_MERGE FETCH_FIX_COMMIT EXPORT_FIX_MERGE EXPORT_FIX_COMMIT FOCUSED COMPILE PRIVACY; do
+          for n in AG5_RESOLVE AG5_COMMIT CLAUDE_MERGE CLAUDE_COMMIT FETCH_FIX_MERGE FETCH_FIX_COMMIT EXPORT_FIX_MERGE EXPORT_FIX_COMMIT GUIDE GUIDE_COMMIT FOCUSED COMPILE PRIVACY; do
             test "$(cat "$RUNNER_TEMP/fivewayproof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/fivewayproof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
           done
           tail -12 "$RUNNER_TEMP/fivewayproof/FOCUSED_RAW.log"
