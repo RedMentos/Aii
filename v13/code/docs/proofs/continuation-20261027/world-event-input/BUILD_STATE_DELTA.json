@@ -1,0 +1,59 @@
+{
+  "schema": "V13_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 continuation",
+  "parent_pr": 745,
+  "parent_sha": "e8edc8a83bbf66624cda9482367daf7acabc3eee",
+  "branch": "codex/automation11p-world-for-event-20261027",
+  "pr": null,
+  "prereg": "e804536221b9dc0fb5a71b48fd5fb055ee61ef54",
+  "red": {
+    "original": {
+      "source": "b09b0a0a43aae875e03da4a9b2163cf496bbbdbb",
+      "actions": 40543504962,
+      "errors": 9,
+      "fixture_contamination": true,
+      "zip_sha256": "dcf691f844a9d5e25262b8b1af498770dbfe71818fbbb40ea71bd3b5f8662369"
+    },
+    "clean": {
+      "source": "be00b142e1d35a8f94ae8cbef71b95183a8d33c8",
+      "actions": 40544298279,
+      "tests": "12 tests 6 expected FAIL 2 expected ERROR",
+      "zip_sha256": "d80c00c91a05fdb92ab3bc36adeb5dc3e127dc3cc89163db5273b63a7d66850a",
+      "private_backup": true
+    }
+  },
+  "failed_green": {
+    "focused": 40543550150,
+    "full": 40543578378,
+    "reason": "valid-path test fixture intercepted unrelated state lookup",
+    "private_backup": true
+  },
+  "green": {
+    "source_commit": "c21b5e7c3aab055efe652ef480de406a9825e38c",
+    "world_model_blob": "03048707912a23a2ae75a0944a58e39a7134a595",
+    "actions": 40544080260,
+    "tests": "12/12 PASS",
+    "exits": "INSTALL UNIT COMPILE PRIVACY DIFF 0",
+    "zip_sha256": "ea0218b829b04709b8fd880b2657b4ef98b10f90d46d876a58d491464c61b134",
+    "private_backup": true
+  },
+  "full_suite": {
+    "source_commit": "c21b5e7c3aab055efe652ef480de406a9825e38c",
+    "actions": 40544080303,
+    "status": "PENDING"
+  },
+  "safety": {
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "Inspect Actions 40544080303 raw exits and private backup; independent review; no main merge."
+}
