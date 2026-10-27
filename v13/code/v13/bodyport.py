@@ -22,6 +22,7 @@ Claim limit: the probe proves that the new file loads and answers /health, not t
 parity gate's job (AG12 eval), and Redmi load times remain a phone measurement.
 """
 import json
+import re
 import shutil
 import time
 from pathlib import Path
@@ -96,19 +97,27 @@ class Ports:
     def check_bridges(self,role,old,new):
         """IH-H21: bridges trained for any other revision of `role` lose authority before the new body serves."""
         nk=bridge_key(role,new);stale=[]
+        old_key=bridge_key(role,old) if old is not None else None
+        identity_changed=old_key is not None and old_key!=nk
         from .b3bridge import bridge_dir
         d=bridge_dir(self.r.home)
         for p in sorted(d.glob('*.json')) if d.is_dir() else []:
             try:man=json.loads(p.read_text())
             except Exception:continue
             snd,rcv=direction_roles(man.get('direction') or p.stem)
-            for side,r_ in (('sender_revision',snd),('receiver_revision',rcv)):
-                if r_==role and man.get(side) not in (None,new['revision']):stale.append({'bridge':p.stem,'side':side,'trained_for':man.get(side)})
+            for side,key_field,r_ in (('sender_revision','sender_bridge_key',snd),
+                                      ('receiver_revision','receiver_bridge_key',rcv)):
+                if r_==role and (man.get(side)!=new.get('revision') or man.get(key_field)!=nk):
+                    stale.append({'bridge':p.stem,'side':side,'trained_for':man.get(side),
+                                  'bridge_key_match':man.get(key_field)==nk})
         slots=self.r.bodies.slots
         def f(st):
             for k,a in st['assets'].items():
-                if a['slot']==role and a['kind'] in BRIDGE_ASSETS and a['revision']!=new['revision']:  # also when the swap gate already demoted it
-                    a['authority']='SHADOW_RECALIBRATE';stale.append({'asset':k,'trained_for':a['revision']})
+                if (a['slot']==role and a['kind'] in BRIDGE_ASSETS and
+                        (a['revision']!=new['revision'] or identity_changed)):
+                    a['authority']='SHADOW_RECALIBRATE'
+                    stale.append({'asset':k,'trained_for':a['revision'],
+                                  'identity_changed':identity_changed})
         slots.box.mutate(f)
         def g(st):
             prev=st.get(role);st[role]={'key':nk,'revision':new['revision'],'checked':self.clock(),'previous_key':prev and prev['key'],
@@ -116,15 +125,44 @@ class Ports:
         self._mutate(BRIDGE_KEY,g,dict)
         self.s.log('bridge_key_check',None,{'role':role,'stale':len(stale)})
         return {'role':role,'key':nk,'previous_key':bridge_key(role,old) if old else None,'stale':stale}
+    def bridge_binding(self,direction):
+        """Exact live serving identities for Bridge.save(extra=...), not an L1 approval.
+
+        A revision string alone cannot bind a learned bridge to model bytes.
+        Unhashed/uninstalled specs are not safe inputs for a bridge manifest.
+        """
+        snd,rcv=direction_roles(direction)
+        if not snd or not rcv or direction not in ('B1_TO_B2','B2_TO_B1'):
+            raise ValueError('unknown B3 bridge direction')
+        left,right=self.spec(snd),self.spec(rcv)
+        for spec in (left,right):
+            if (not isinstance(spec.get('sha256'),str) or
+                    re.fullmatch(r'[a-f0-9]{64}',spec['sha256']) is None or
+                    not isinstance(spec.get('revision'),str) or not spec['revision'] or
+                    not isinstance(spec.get('model_id'),str) or not spec['model_id']):
+                raise ValueError('unbound B3 serving model identity')
+        return {'sender_revision':left['revision'],'receiver_revision':right['revision'],
+                'sender_bridge_key':bridge_key(snd,left),
+                'receiver_bridge_key':bridge_key(rcv,right)}
+
     def bridge_valid(self,direction):
-        """True only if the bridge's recorded revisions match what serves both sides now (fail closed)."""
+        """Only exact live model-byte/bridge-key-bound manifests may be valid.
+
+        Legacy revision-only manifests intentionally fail closed until retrained
+        or explicitly rebound to current bytes; no B3 L1 authority is granted.
+        """
         from .b3bridge import bridge_dir
+        if direction not in ('B1_TO_B2','B2_TO_B1'):
+            return False
         p=bridge_dir(self.r.home)/(direction+'.json')
-        try:man=json.loads(p.read_text())
-        except Exception:return False
-        snd,rcv=direction_roles(man.get('direction') or direction)
-        try:return bool(snd and rcv) and man.get('sender_revision')==self.spec(snd)['revision'] and man.get('receiver_revision')==self.spec(rcv)['revision']
-        except Exception:return False
+        try:
+            man=json.loads(p.read_text())
+            if not isinstance(man,dict) or man.get('direction')!=direction:
+                return False
+            expected=self.bridge_binding(direction)
+            return all(man.get(k)==v for k,v in expected.items())
+        except (OSError,ValueError,TypeError,KeyError):
+            return False
     def report(self):
         st=self.s.state(KEY,None)[0] or self._default();keys=self.s.state(BRIDGE_KEY,None)[0] or {}
         return {'revision':REVISION,'ports':st['ports'],'live':self.live,'bridge_keys':keys,'recent':st['history'][-12:],
