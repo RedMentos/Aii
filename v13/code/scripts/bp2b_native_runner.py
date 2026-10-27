@@ -2,6 +2,8 @@
 """BP2b source-bound, one-arm-at-a-time B1 FP32 runner; never deploys learning."""
 import argparse
 import fcntl
+import hashlib
+import stat
 import json
 import re
 import time
@@ -69,6 +71,53 @@ def _json(data):
     return json.dumps(data, sort_keys=True, ensure_ascii=False, indent=2) + '\n'
 
 
+
+def _verified_adapter_sha256(trained, trainer_dir):
+    """Bind an attempt's exported adapter to actual regular-file bytes, not a fit() claim."""
+    artifact = trained.get('artifact')
+    claimed = trained.get('hash')
+    if (type(artifact) is not str or not artifact
+            or type(claimed) is not str
+            or re.fullmatch(r'[0-9a-f]{64}', claimed) is None):
+        raise ValueError('Invalid trainer adapter artifact identity')
+    base = Path(trainer_dir).absolute()
+    path = Path(artifact).absolute()
+    try:
+        relative = path.relative_to(base)
+    except ValueError as exc:
+        raise ValueError('Adapter artifact outside isolated trainer directory') from exc
+    if not relative.parts or '..' in relative.parts or base.is_symlink():
+        raise ValueError('Invalid adapter artifact path')
+    cursor = base
+    for part in relative.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise ValueError('Symlinked adapter artifact path')
+    if not path.is_file() or not path.resolve().is_relative_to(base.resolve()):
+        raise ValueError('Missing or escaped adapter artifact')
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        import os
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= 512 * 1024 * 1024:
+            raise ValueError('Adapter artifact is not a bounded regular file')
+        total = 0
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            total += len(chunk)
+            if total > 512 * 1024 * 1024:
+                raise ValueError('Adapter artifact exceeds byte bound')
+            h.update(chunk)
+        after = os.fstat(stream.fileno())
+        if total != before.st_size or (before.st_dev, before.st_ino, before.st_size,
+                                       before.st_mtime_ns) != (after.st_dev, after.st_ino,
+                                                             after.st_size, after.st_mtime_ns):
+            raise ValueError('Adapter artifact changed while hashing')
+    actual = h.hexdigest()
+    if actual != claimed:
+        raise ValueError('Adapter artifact SHA256 mismatch')
+    return actual
+
+
 def run_arm(master_dir, out, seed, arm, attempt, *,
             trainer_factory=BodyJepaTrainer, predictor=native_predict,
             preflight=verify, evaluate_fn=evaluate):
@@ -113,6 +162,7 @@ def run_arm(master_dir, out, seed, arm, attempt, *,
             trained = tr.fit(items, 'bp2b-transfer')
             if type(trained) is not dict or not trained.get('artifact') or not trained.get('hash'):
                 raise ValueError('Native trainer returned no verified adapter artifact')
+            adapter_sha = _verified_adapter_sha256(trained, attempt_dir / 'trainer')
             phase = 'predict'
             _, facing, _ = cohort(seed)
             predictions = predictor(tr, facing)
@@ -134,7 +184,7 @@ def run_arm(master_dir, out, seed, arm, attempt, *,
             result = {'schema': REVISION, 'evidence_class': run_kind, 'status': 'COMPLETED',
                       'seed': seed, 'arm': arm, 'plan': work,
                       'master_sha256_verified_locally': True,
-                      'adapter_sha256': trained['hash'], 'trainer_method': trained.get('method'),
+                      'adapter_sha256': adapter_sha, 'trainer_method': trained.get('method'),
                       'train_metrics': trained.get('metrics'), 'heldout_score': {
                           'leak_hits': scored['leak_hits'], 'heldout_count': scored['heldout_count'],
                           'leak_rate': scored['leak_rate'], 'native_proof': False},
