@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - codex/current-chain-fullsuite-triage-20261027
+      - codex/current-chain-fullsuite-portability-20261027
     paths:
       - '.github/workflows/current-chain-fullsuite-triage.yml'
       - 'v13/code/docs/proofs/continuation-20261027/current-chain-fullsuite-triage/PREREG.md'
