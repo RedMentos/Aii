@@ -179,6 +179,26 @@ class SafetyTests(Base):
         states=iter(['NORMAL','NORMAL','CRITICAL','CRITICAL','CRITICAL'])
         rep=self.cycle().run('a',resource=lambda:next(states,'CRITICAL'),origin='USER')
         self.assertEqual(rep['status'],'INTERRUPTED');self.assertIn('CRITICAL',rep['phases'][0]['reason'])
+    def test_nonfinite_replay_mix_cannot_poison_sleep_policy(self):
+        from v13.sleep import default_policy,validate_policy
+        cy=self.r.sleep.cycle
+        original=cy.policy()['mix']
+        for bad in ('nan','inf','-inf','-1'):
+            with self.subTest(value=bad),self.assertRaises(ValueError):
+                cy.set_policy('mix.recent',bad)
+            self.assertEqual(cy.policy()['mix'],original)
+        for bad in (float('nan'),float('inf'),float('-inf')):
+            p=default_policy();p['mix']['failure']=bad
+            with self.subTest(raw=repr(bad)),self.assertRaises(ValueError):
+                validate_policy(p)
+        p=default_policy();p['mix']['recent']=1e308;p['mix']['protected_old']=1e308
+        with self.assertRaises(ValueError):validate_policy(p)  # finite values, infinite sum
+        p=default_policy();p['quiet_hours']=[True,7]
+        with self.assertRaises(ValueError):validate_policy(p)
+        p=default_policy();p['dream_fact_write_gain']=False
+        with self.assertRaises(ValueError):validate_policy(p)  # bool is not a locked float
+        self.assertAlmostEqual(cy.set_policy('mix.recent','0.25')['mix']['recent'],.25)
+
     def test_locked_policy_and_bounds(self):
         cy=self.r.sleep.cycle
         with self.assertRaises(ValueError):cy.set_policy('dream_fact_write_gain','1')
