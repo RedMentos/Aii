@@ -1662,5 +1662,29 @@
     "report": "docs/proofs/continuation-20261027/lp3-state-prefix/REPORT.md",
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_lp3_state_prefix",
     "next_prerequisite": "Exact-head CI, independent review, then separately preregister real C3 heldout+wrong-assignment utility; no native overlap."
+  },
+  "lp3_prompt_boundary_review_20261027": {
+    "owner_branch": "codex/automation11-lp3-prompt-boundary-review-20261027",
+    "parent_sha": "4b8a2fa7dbbbb88ac11c5314ae28635d45c6222d",
+    "status": "REVIEW_ONLY_SOFTWARE_PASS_FINAL_METADATA_CI_PENDING",
+    "scope": "Reject target-derived supplied features; validate context and distinct shifted prompts",
+    "tests_added": 3,
+    "live_runtime_integrated": false,
+    "real_model_utility_proven": false,
+    "lp1": "NO_ATTRIBUTABLE_GAIN",
+    "lp2": "ALIGNS_NO_GAIN",
+    "bj1": "NO_SIGNAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "jepa_weight_registered": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "report": "docs/proofs/continuation-20261027/lp3-prompt-boundary/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_lp3_state_prefix",
+    "next_prerequisite": "Verify exact-head GitHub Actions CI and independent review before real-model prereg.",
+    "focused_ci_run": 40521798793,
+    "focused_ci_tested_sha": "ee83b581277f9aa783576d5312ad738ab9fbd223",
+    "focused_ci_tests": "12/12 PASS"
   }
 }

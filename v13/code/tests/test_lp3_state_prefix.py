@@ -90,6 +90,35 @@ class StateConditionedPrefixTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.candidate.greedy(torch.ones((2, 47), dtype=torch.long), max_new_tokens=2)
 
+    def test_supplied_features_cannot_encode_target_tokens(self):
+        reference = self.candidate.prompt_features(self.prompt)
+        self.assertEqual(tuple(self.candidate.answer_logits(
+            self.prompt, self.answer, features=reference).shape), (2, 2, 32))
+        tainted = reference.clone()
+        tainted[:, 0] += self.answer[:, 0].to(tainted.dtype)
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits(self.prompt, self.answer, features=tainted)
+        with self.assertRaises(ValueError):
+            self.candidate.next_token_logits(self.prompt, features=tainted)
+
+    def test_invalid_prompt_and_context_fail_before_base_forward(self):
+        for bad in (torch.empty((0, 3), dtype=torch.long),
+                    torch.tensor([[999, 2]], dtype=torch.long),
+                    torch.full((1, 49), 3, dtype=torch.long)):
+            with self.subTest(shape=tuple(bad.shape)):
+                with self.assertRaises(ValueError):
+                    self.candidate.prompt_features(bad)
+        too_long = torch.full((2, 47), 3, dtype=torch.long)
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits(too_long, self.answer)
+        with self.assertRaises(ValueError):
+            self.candidate.next_token_logits(too_long)
+
+    def test_shift_requires_distinct_prompts(self):
+        duplicated = self.prompt[:1].repeat(2, 1)
+        with self.assertRaises(ValueError):
+            self.candidate.answer_logits(duplicated, self.answer, 'shift')
+
     def test_invalid_shapes_nonfinite_and_control_fail_closed(self):
         with self.assertRaises(ValueError):
             self.candidate.answer_logits(self.prompt, self.answer.float())
