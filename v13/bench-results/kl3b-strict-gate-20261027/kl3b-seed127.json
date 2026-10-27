@@ -1,0 +1,3620 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 127,
+ "scores": {
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.775,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 0.875,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_34128fd5d2f84b3f80736cf57b164447",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.675,
+     "half_items": 0.0,
+     "unchanged": 0.8438
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ov": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 24,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 1.0,
+   "final_acc": 0.975,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9688,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.875,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_5c26f4b6f181443f9560543ebf6b9cec",
+    "expected_parent_acc": 0.8,
+    "after_rollback_acc": 0.8,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ovs": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 1,
+   "promotions": 3,
+   "approval_requests": 3,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 32,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 1.0,
+   "final_acc": 0.8,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_111bd238030b40a3a90c33eab388ccfa",
+    "expected_parent_acc": 1.0,
+    "after_rollback_acc": 1.0,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.0,
+     "unchanged": 1.0
+    }
+   }
+  },
+  "adaptive+lex+rec+cv+ovs": {
+   "shadow_jobs": 8,
+   "unnecessary_updates": 0,
+   "promotions": 1,
+   "approval_requests": 1,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 32,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.75,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_5c02efe715f642369023d165bebb3e40",
+    "expected_parent_acc": 0.275,
+    "after_rollback_acc": 0.275,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null
+  }
+ },
+ "arms": {
+  "fixed": {
+   "policy": "fixed",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_62a7889d01764ccc866aee581b8c550b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_62a7889d01764ccc866aee581b8c550b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.75,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "novel": {
+       "half_novel": 0.875,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {},
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_e06503d08ad745698f7cbde368a37d62 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e06503d08ad745698f7cbde368a37d62",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.875,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.5,
+      "loss_after": 1.315491412686249,
+      "loss_before": 1.3862943611198906,
+      "n": 4,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0
+       },
+       "2": {
+        "after": 0.0,
+        "before": 0.0
+       },
+       "3": {
+        "after": 0.0,
+        "before": 0.0
+       }
+      },
+      "scaffold_accuracy": 0.25
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_b36baa367443457e956e04aaa992d1a0 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_b36baa367443457e956e04aaa992d1a0",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.75,
+      "loss_after": 1.2719675723881756,
+      "loss_before": 1.3862943611198906,
+      "n": 4,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "1": {
+        "after": 0.0,
+        "before": 0.0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0
+       }
+      },
+      "scaffold_accuracy": 0.5
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_5d7bffd51543458d8b10ef6ff27a885a PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5d7bffd51543458d8b10ef6ff27a885a",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.875,
+      "loss_after": 1.189827371219907,
+      "loss_before": 1.2759536920583647,
+      "n": 8,
+      "per_class": {
+       "0": {
+        "after": 0.5,
+        "before": 0.5
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.5
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_980f7d375b1f4e6e8a5c98590df50bb3 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_980f7d375b1f4e6e8a5c98590df50bb3",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "loss_after": 1.139537925860852,
+      "loss_before": 1.21064229485236,
+      "n": 8,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.5
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.25
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_34128fd5d2f84b3f80736cf57b164447 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_34128fd5d2f84b3f80736cf57b164447",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.9166666666666666,
+      "loss_after": 1.0567143709925153,
+      "loss_before": 1.1231670130208296,
+      "n": 12,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.6666666666666666
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_3faa6cdb0dbf4344af0439decdb615ca EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3faa6cdb0dbf4344af0439decdb615ca",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.6923076923076923,
+      "loss_after": 1.092248762403917,
+      "loss_before": 1.1538734269850985,
+      "n": 13,
+      "per_class": {
+       "0": {
+        "after": 0.25,
+        "before": 0.25
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.6666666666666666
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.5384615384615384
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_2b391211cad741439ce50256d13521fc EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_2b391211cad741439ce50256d13521fc",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.65,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.625
+      },
+      "half_items": 0.0,
+      "unchanged": 0.8125,
+      "novel": {
+       "half_novel": 0.125,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.5,
+      "loss_after": 1.1038956251928678,
+      "loss_before": 1.1954294580869418,
+      "n": 14,
+      "per_class": {
+       "0": {
+        "after": 0.2,
+        "before": 0.2
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.6666666666666666
+       },
+       "3": {
+        "after": 0.3333333333333333,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.5
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_bc3b2cd948094968978fa60628440d3f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_bc3b2cd948094968978fa60628440d3f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.375,
+       "both": 0.375
+      },
+      "half_items": 0.375,
+      "unchanged": 0.6875,
+      "novel": {
+       "half_novel": 0.5,
+       "detail_near": 0.5
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7333333333333333,
+      "loss_after": 1.015608616774165,
+      "loss_before": 1.1469461016763205,
+      "n": 15,
+      "per_class": {
+       "0": {
+        "after": 0.8333333333333334,
+        "before": 0.3333333333333333
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 1.0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "3": {
+        "after": 0.3333333333333333,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.6
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_20e501b7c3fc499bbca28982135b051e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_20e501b7c3fc499bbca28982135b051e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.6,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.5,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.875,
+      "unchanged": 0.5312,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.125
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7,
+      "loss_after": 1.029866201668753,
+      "loss_before": 1.1634313887366976,
+      "n": 20,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 0.25
+       },
+       "1": {
+        "after": 0.5,
+        "before": 1.0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0
+       },
+       "3": {
+        "after": 0.0,
+        "before": 1.0
+       }
+      },
+      "scaffold_accuracy": 0.6
+     },
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 1.0
+      }
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_34128fd5d2f84b3f80736cf57b164447",
+    "expected_parent_acc": 0.95,
+    "after_rollback_acc": 0.95,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.675,
+     "half_items": 0.0,
+     "unchanged": 0.8438
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ov": {
+   "policy": "fixed+lex+rec+cv+ov",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_21dd092cd9474713942fa5b824e79121 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_21dd092cd9474713942fa5b824e79121",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "folds": 4,
+      "n": 0
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_d3ca9b04ad7f4dda9650508b2e4f4fba EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d3ca9b04ad7f4dda9650508b2e4f4fba",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.625,
+      "folds": 4,
+      "loss_after": 0.8259216529046116,
+      "loss_before": 1.3862943611198906,
+      "n": 8,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.375,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_5751ae4b9936471a8180a63cd0cd1b2b PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5751ae4b9936471a8180a63cd0cd1b2b",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.75,
+      "folds": 4,
+      "loss_after": 0.6131511802391605,
+      "loss_before": 1.3862943611198906,
+      "n": 12,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_dff4370bfa484ce7b2a5ac5bfea4c366 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dff4370bfa484ce7b2a5ac5bfea4c366",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.1461283401791455,
+      "loss_before": 0.22306337222484857,
+      "n": 16,
+      "outvoted": 0,
+      "parent_accuracy": 1.0,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_f6bbef66235e4311b20021fcaef70cd5 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_f6bbef66235e4311b20021fcaef70cd5",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.1855161143126473,
+      "loss_before": 0.20257611995782243,
+      "n": 20,
+      "outvoted": 0,
+      "parent_accuracy": 1.0,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 1.0,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_05f629a9cab0419d8df92ef75d474d33 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_05f629a9cab0419d8df92ef75d474d33",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.0902187045355363,
+      "loss_before": 0.10094772432725646,
+      "n": 24,
+      "outvoted": 0,
+      "parent_accuracy": 1.0,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_39f5c1a42c6d419db3dabcd4c72deba4 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_39f5c1a42c6d419db3dabcd4c72deba4",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.72,
+      "folds": 4,
+      "loss_after": 0.34344284846868656,
+      "loss_before": 0.7632426408390323,
+      "n": 25,
+      "outvoted": 1,
+      "parent_accuracy": 0.84,
+      "per_class": {
+       "0": {
+        "after": 0.625,
+        "before": 0.5,
+        "n": 8,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.4,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8333333333333334,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.44,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_b545a7318acf43dca06137914c0777c0 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b545a7318acf43dca06137914c0777c0",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.8064516129032258,
+      "folds": 4,
+      "loss_after": 0.3919652991091848,
+      "loss_before": 1.0093406811055141,
+      "n": 31,
+      "outvoted": 1,
+      "parent_accuracy": 0.7419354838709677,
+      "per_class": {
+       "0": {
+        "after": 0.8181818181818182,
+        "before": 0.2727272727272727,
+        "n": 11,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4838709677419355,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_00386adc613a4f759f1be97bdf98df62 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_00386adc613a4f759f1be97bdf98df62",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7878787878787878,
+      "folds": 4,
+      "loss_after": 0.39282767860499035,
+      "loss_before": 0.9388479287864292,
+      "n": 33,
+      "outvoted": 1,
+      "parent_accuracy": 0.696969696969697,
+      "per_class": {
+       "0": {
+        "after": 0.6923076923076923,
+        "before": 0.23076923076923078,
+        "n": 13,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5454545454545454,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_5c26f4b6f181443f9560543ebf6b9cec PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5c26f4b6f181443f9560543ebf6b9cec",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.9210526315789473,
+      "folds": 4,
+      "loss_after": 0.30639649772428457,
+      "loss_before": 1.087449244484805,
+      "n": 38,
+      "outvoted": 2,
+      "parent_accuracy": 0.6842105263157895,
+      "per_class": {
+       "0": {
+        "after": 0.875,
+        "before": 0.25,
+        "n": 16,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.8333333333333334,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 2
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 8,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 8,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5789473684210527,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_5c26f4b6f181443f9560543ebf6b9cec",
+    "expected_parent_acc": 0.8,
+    "after_rollback_acc": 0.8,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   }
+  },
+  "fixed+lex+rec+cv+ovs": {
+   "policy": "fixed+lex+rec+cv+ovs",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_6ed1f9a528564221a6407487e3d4197e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_6ed1f9a528564221a6407487e3d4197e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "folds": 4,
+      "n": 0
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_30d08702ccbb4f968e427ee63d9d7a69 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_30d08702ccbb4f968e427ee63d9d7a69",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.625,
+      "folds": 4,
+      "loss_after": 0.8259216529046116,
+      "loss_before": 1.3862943611198906,
+      "n": 8,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.375,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_4091ded836a94e3fa7e2ec17d5552f7d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_4091ded836a94e3fa7e2ec17d5552f7d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.75,
+      "folds": 4,
+      "loss_after": 0.6148867389877666,
+      "loss_before": 1.3862943611198906,
+      "n": 12,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_0f19d295750e4291b0349d841f72ff82 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_0f19d295750e4291b0349d841f72ff82",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.3524331721165314,
+      "loss_before": 1.3862943611198906,
+      "n": 16,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_9f2bf7b4744c4b2da78c82950c0d46c2 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_9f2bf7b4744c4b2da78c82950c0d46c2",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 1.0
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.234959854614977,
+      "loss_before": 0.29722673954038564,
+      "n": 20,
+      "outvoted": 0,
+      "parent_accuracy": 0.95,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.8,
+        "n": 5,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 1.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 1.0
+      }
+     },
+     "shadow_result": "upd_111bd238030b40a3a90c33eab388ccfa PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_111bd238030b40a3a90c33eab388ccfa",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.10144834676851355,
+      "loss_before": 0.1258255471194843,
+      "n": 24,
+      "outvoted": 0,
+      "parent_accuracy": 1.0,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_4dc058764f44439ba804416734dd6c64 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_4dc058764f44439ba804416734dd6c64",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.76,
+      "folds": 4,
+      "loss_after": 0.35537785864976157,
+      "loss_before": 0.7478188321898646,
+      "n": 25,
+      "outvoted": 1,
+      "parent_accuracy": 0.84,
+      "per_class": {
+       "0": {
+        "after": 0.625,
+        "before": 0.5,
+        "n": 8,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8333333333333334,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.44,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_ba2a1c527c1f42e2be13aacc1d471726 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ba2a1c527c1f42e2be13aacc1d471726",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7741935483870968,
+      "folds": 4,
+      "loss_after": 0.41200815013511927,
+      "loss_before": 0.9821306215541524,
+      "n": 31,
+      "outvoted": 1,
+      "parent_accuracy": 0.7419354838709677,
+      "per_class": {
+       "0": {
+        "after": 0.8181818181818182,
+        "before": 0.2727272727272727,
+        "n": 11,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.3333333333333333,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4838709677419355,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_c01e560278254db0863899684037e69d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_c01e560278254db0863899684037e69d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7575757575757576,
+      "folds": 4,
+      "loss_after": 0.41484583835401057,
+      "loss_before": 0.8985310179441857,
+      "n": 33,
+      "outvoted": 1,
+      "parent_accuracy": 0.696969696969697,
+      "per_class": {
+       "0": {
+        "after": 0.6923076923076923,
+        "before": 0.23076923076923078,
+        "n": 13,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5454545454545454,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_ca210b2eb14a418da04a853f4d566216 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ca210b2eb14a418da04a853f4d566216",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.8947368421052632,
+      "folds": 4,
+      "loss_after": 0.3296917109822542,
+      "loss_before": 1.0485492658751359,
+      "n": 38,
+      "outvoted": 2,
+      "parent_accuracy": 0.6842105263157895,
+      "per_class": {
+       "0": {
+        "after": 0.875,
+        "before": 0.25,
+        "n": 16,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 2
+       },
+       "2": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 8,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 8,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5789473684210527,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_111bd238030b40a3a90c33eab388ccfa",
+    "expected_parent_acc": 1.0,
+    "after_rollback_acc": 1.0,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.0,
+     "unchanged": 1.0
+    }
+   }
+  },
+  "adaptive+lex+rec+cv+ovs": {
+   "policy": "adaptive+lex+rec+cv+ovs",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_ea794a37cc3e4f4387054ddacf2ac522 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ea794a37cc3e4f4387054ddacf2ac522",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "folds": 4,
+      "n": 0
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_ee6cc524afef4fba87b78fff5ab7abf8 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ee6cc524afef4fba87b78fff5ab7abf8",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.625,
+      "folds": 4,
+      "loss_after": 0.8259216529046116,
+      "loss_before": 1.3862943611198906,
+      "n": 8,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.5,
+        "before": 0.0,
+        "n": 2,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.375,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_78c28a2cd61f453ebb0ed74192b30e87 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_78c28a2cd61f453ebb0ed74192b30e87",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.75,
+      "folds": 4,
+      "loss_after": 0.6148867389877666,
+      "loss_before": 1.3862943611198906,
+      "n": 12,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 0.6666666666666666,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 3,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4166666666666667,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.275,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.3438,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.0
+      }
+     },
+     "shadow_result": "upd_5c02efe715f642369023d165bebb3e40 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_5c02efe715f642369023d165bebb3e40",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 1.0,
+      "folds": 4,
+      "loss_after": 0.3524331721165314,
+      "loss_before": 1.3862943611198906,
+      "n": 16,
+      "outvoted": 0,
+      "parent_accuracy": 0.25,
+      "per_class": {
+       "0": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 0.0,
+        "n": 4,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5,
+      "scored": "newest half per route, out of sample"
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.75,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_e5f0be6300a24abab9ade0ae0c6e27f7 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_e5f0be6300a24abab9ade0ae0c6e27f7",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.625,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.72,
+      "folds": 4,
+      "loss_after": 0.5041415561442689,
+      "loss_before": 0.8096871367563857,
+      "n": 25,
+      "outvoted": 1,
+      "parent_accuracy": 0.8,
+      "per_class": {
+       "0": {
+        "after": 0.625,
+        "before": 0.5,
+        "n": 8,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.4,
+        "before": 1.0,
+        "n": 5,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.8333333333333334,
+        "n": 6,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8333333333333334,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.44,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_c17ffeb72b41486da5eda872283de635 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_c17ffeb72b41486da5eda872283de635",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7741935483870968,
+      "folds": 4,
+      "loss_after": 0.49788423633537154,
+      "loss_before": 0.913827576110798,
+      "n": 31,
+      "outvoted": 1,
+      "parent_accuracy": 0.7096774193548387,
+      "per_class": {
+       "0": {
+        "after": 0.8181818181818182,
+        "before": 0.2727272727272727,
+        "n": 11,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.3333333333333333,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.8571428571428571,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.4838709677419355,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_5915fd9d75e3454db92f39dc73df8216 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_5915fd9d75e3454db92f39dc73df8216",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.75
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.7575757575757576,
+      "folds": 4,
+      "loss_after": 0.46493070974559725,
+      "loss_before": 0.8582164855158979,
+      "n": 33,
+      "outvoted": 1,
+      "parent_accuracy": 0.6666666666666666,
+      "per_class": {
+       "0": {
+        "after": 0.6923076923076923,
+        "before": 0.23076923076923078,
+        "n": 13,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.5,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 1
+       },
+       "2": {
+        "after": 1.0,
+        "before": 0.8571428571428571,
+        "n": 7,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 0.8571428571428571,
+        "before": 1.0,
+        "n": 7,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5454545454545454,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     },
+     "shadow_result": "upd_7f5b7e77e5734da9b97e31aa6efc9468 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_7f5b7e77e5734da9b97e31aa6efc9468",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.375,
+       "detail_near": 0.375
+      }
+     },
+     "superseded": 0,
+     "gate": {
+      "accuracy": 0.868421052631579,
+      "folds": 4,
+      "loss_after": 0.4000676783687028,
+      "loss_before": 0.9441970043069624,
+      "n": 38,
+      "outvoted": 2,
+      "parent_accuracy": 0.6578947368421053,
+      "per_class": {
+       "0": {
+        "after": 0.875,
+        "before": 0.25,
+        "n": 16,
+        "outvoted": 0
+       },
+       "1": {
+        "after": 0.6666666666666666,
+        "before": 1.0,
+        "n": 6,
+        "outvoted": 2
+       },
+       "2": {
+        "after": 0.875,
+        "before": 0.875,
+        "n": 8,
+        "outvoted": 0
+       },
+       "3": {
+        "after": 1.0,
+        "before": 1.0,
+        "n": 8,
+        "outvoted": 0
+       }
+      },
+      "scaffold_accuracy": 0.5789473684210527,
+      "scored": "newest half per route, out of sample"
+     },
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "novel": {
+       "half_novel": 0.0,
+       "detail_near": 0.75
+      }
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_5c02efe715f642369023d165bebb3e40",
+    "expected_parent_acc": 0.275,
+    "after_rollback_acc": 0.275,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/kl3b-strict-gate/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_kl3b": {
+  "L1_head_half_items_ge_80pct": false,
+  "L2_retention_ge_90pct": true,
+  "L3_no_false_promotion": true,
+  "L4_rollback_restores": true,
+  "L5_control_needle_only_fails": true,
+  "L6_runtime_path_half_ge_80pct": false
+ },
+ "verdict_kl3b": "KL3B_STRICT_GATE_FAIL",
+ "novel_final": {
+  "fixed": {
+   "half_novel": 0.0,
+   "detail_near": 1.0
+  },
+  "fixed+lex+rec+cv+ov": {
+   "half_novel": 0.375,
+   "detail_near": 0.375
+  },
+  "fixed+lex+rec+cv+ovs": {
+   "half_novel": 0.0,
+   "detail_near": 0.75
+  },
+  "adaptive+lex+rec+cv+ovs": {
+   "half_novel": 0.0,
+   "detail_near": 0.75
+  }
+ }
+}
