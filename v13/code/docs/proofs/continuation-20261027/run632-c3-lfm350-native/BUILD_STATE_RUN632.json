@@ -14,7 +14,7 @@
   "trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
   "experiment_commit": "15576713fdf546769c171ba83dfbf607adfae879",
   "run_id": 40426395156,
-  "run_status": "IN_PROGRESS_UNVERIFIED",
+  "run_status": "FIRST_FAILURE_CLOSED_RETRY_PENDING",
   "model": {
     "master_repo": "LiquidAI/LFM2.5-350M",
     "master_revision": "b6248156b66a93e5c4581d82953a9df630c582ef",
@@ -33,6 +33,34 @@
     "Redmi": "UNMEASURED",
     "V13_complete": false
   },
-  "next_exact_command": "Inspect Actions 40426395156 and download original raw artifact; verify all internal SHA, back up privately, record exact native outcome. If failure, preserve RED and repair only bounded prerequisite. If success, test adapter against pinned selected QAD Q4 with real native scale0/1, then advance B1/B2/Body-JEPA independent packages.",
-  "production_integrated": false
+  "next_exact_command": "Inspect Actions 40426609358 and archive raw; if failure, preserve exact traceback and continue independent canonical package, not promote selected C3; if success, verify nonzero LoRA-B and prepare pinned deployed QAD Q4 compatibility shadow.",
+  "production_integrated": false,
+  "first_run": {
+    "id": 40426395156,
+    "conclusion": "failure",
+    "artifact_id": 12700610343,
+    "raw_zip_sha256": "00fcae86f29271cdafd49497d1f5792357fdcd8870c85310bbb49cd0b306771d",
+    "inner_sha256_verified": 14,
+    "source_tests": "5/5 PASS",
+    "dependencies": "PASS",
+    "download": "PASS",
+    "master_sha": "PASS",
+    "license_sha256": "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c",
+    "train": "FAIL_TOKENIZERSBACKEND_TRANSFORMERS4",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run632/Run632-first-failed-40426395156.zip",
+    "private_roundtrip": "PASS"
+  },
+  "retry": {
+    "commit": "93d921343fd5c540d7f079359cdffa22eaa07656",
+    "run_id": 40426609358,
+    "status": "IN_PROGRESS_UNVERIFIED",
+    "dependency_changes": {
+      "transformers": "5.0.0",
+      "peft": "0.18.0",
+      "huggingface_hub": "1.0.1"
+    },
+    "cohort_changed": false,
+    "model_changed": false
+  }
 }
