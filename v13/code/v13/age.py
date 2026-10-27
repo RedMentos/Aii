@@ -228,13 +228,18 @@ class AgeControl:
         if stable and hold:
             if sub['evidence_count']<hold['until'] or int(repeated_errors)<PERSISTENT_ERRORS:stage=max(stage,int(hold['stage']))  # released only by persistent errors
         p=PLASTICITY_BASE[stage]*(1-.3*stab)
-        if new_modality:p=1.
-        if novel_domain:p=max(p,.8)
+        indep=(sub.get('noise_ind') or {}).get('n',0)>=NOISE_MIN_N  # WP-BP8 v2: with an independent noise signal, novelty is judged after damping
+        if not indep:
+            if new_modality:p=1.
+            if novel_domain:p=max(p,.8)
         n=int(repeated_errors)-(PERSISTENT_ERRORS-1 if stable else 0)
         if self.cfg.get('age_plasticity_policy','boot')=='noise_aware':  # noisy labels lower the step size and damp error reopening
             nz=_noise_level(sub) or 0.
             damp=1/(1+nz/NOISE_REF);p*=.5+.5*damp
             if n>0:p+=min(.3,.1*n)*damp
+            if indep:  # a reopening the caller marks as novel (and that exceeded the noise band) is not damped by the noise level
+                if new_modality:p=1.
+                if novel_domain:p=max(p,.8)
             return round(min(1.,p),6)
         if n>0:p+=min(.3,.1*n)
         return round(min(1.,p),6)

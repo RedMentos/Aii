@@ -16,3 +16,10 @@ Kriterien (Mittel über 5 Seeds, alle müssen gelten, keine Schwellenänderung n
 5. Fehler in der shift-Phase: A ≤ C.
 6. Age hilft gegenüber festen Werten: A noisy-Fehler ≤ fixed_conservative und A shift-Fehler ≤ 1,25 · fixed_permissive.
 Wenn alle gelten: `BP8_AGE_REOPEN_SOFTWARE_PASS`. Das schließt G-AGE-REOPEN-001 **nicht**; das Gate bleibt offen, bis dasselbe mit echtem Gewichts-Training (BP2) gemessen ist. Standard `noise_aware` bleibt Nutzerentscheidung (2026-10-22 entschieden).
+
+## Ergebnis v1 (Seeds 401–405): `BP8_AGE_REOPEN_SOFTWARE_FAIL` (3 von 7 bestanden)
+Beleg `bench-results/bp8-age-reopen-v1-20261027/result.json`. Mittel: noisy-Fehler boot 0,176 / noise_mad 0,088 / **noise_indep 0,124** / fixed_conservative 0,091; shift-Fehler boot 0,062 / noise_mad 0,100 / **noise_indep 0,093**; Erholung boot 33 / noise_indep 51 Schritte. Bestanden: Krit. 1 (noisy ≤ 0,85·boot), 4, 5 (besser als die zirkuläre MAD beim Zielwechsel). Durchgefallen: 2, 3 (Zielwechsel noch zu langsam), 6a, 6b.
+Diagnose (Seed 401, Plastizität je Fenster): Im Zielwechsel liegt die Plastizität bei 0,56–0,72 statt bei etwa 0,8–1. Ursache: `noise_aware` dämpft die Plastizität **nach** der Neuheits-Anhebung (`novel_domain` → ≥ 0,8), mit Faktor 0,5+0,5·damp; das noch nachwirkende Rauschband (sd 0,07 nach der noisy-Phase) drückt damit auch die echte Wiederöffnung. Die Idee „unabhängiges Signal“ allein reicht also nicht, die Reihenfolge der Dämpfung ist der Fehler.
+
+## v2 (neue Idee, vorab registriert vor dem Lauf, frische Seeds 411–415, gleiche Kriterien 1–6b, keine Schwelle geändert)
+Änderung nur in `AgeControl.plasticity` und nur, wenn das unabhängige Rauschsignal vorliegt (≥ 4 Nachweise): Neuheits-/Modalitäts-Anhebung (`novel_domain` ≥ 0,8, `new_modality` = 1) gilt **nach** der Rausch-Dämpfung. Ohne Signal bleibt das Verhalten (MAD-Weg) bytegleich. Lauf: `--out bench-results/bp8-age-reopen-v2-20261027 --seeds 411,412,413,414,415`. Urteil `BP8_AGE_REOPEN_SOFTWARE_PASS` nur bei allen sieben; sonst bleibt FAIL stehen und wird so berichtet.
