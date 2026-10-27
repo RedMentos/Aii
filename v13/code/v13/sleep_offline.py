@@ -103,11 +103,12 @@ def _candidate_valid(store,row,session_entries):
             or row.get('requires')!='WP-I retention gate + human approval'
             or type(row.get('fact_authority')) is not int or row['fact_authority']!=0
             or type(row.get('event_id')) is not str
+            or type(row.get('session')) is not str
             or type(row.get('target_message_id')) is not int
             or type(row.get('context_event_ids')) is not list
             or not 1<=len(row['context_event_ids'])<=4
-            or len(set(row['context_event_ids']))!=len(row['context_event_ids'])
-            or any(type(eid) is not str for eid in row['context_event_ids'])):
+            or any(type(eid) is not str for eid in row['context_event_ids'])
+            or len(set(row['context_event_ids']))!=len(row['context_event_ids']):
         return False
     entries=session_entries.get(row.get('session'))
     if not entries:return False
