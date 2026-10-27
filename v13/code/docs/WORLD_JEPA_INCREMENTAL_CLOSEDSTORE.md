@@ -12,7 +12,7 @@ PYTHONPATH=. python scripts/world_jepa_incremental_closedstore.py \
   --db /path/to/closed-v13.sqlite --ack-closed-store
 ```
 
-Without the acknowledgement or with missing/invalid/insufficient observed rows, the CLI returns a sanitized `UNAVAILABLE` status (exit 2). It never opens the SQLite file writable: `mode=ro&immutable=1`, `query_only=ON`, SELECT-only adapter, no WAL/SHM/journal. It reads existing finalized digital action→outcome transitions and closes the DB before model fitting. **The operator must ensure no writer remains**; the flag is an acknowledgement, not a lock.
+Without the acknowledgement or with missing/invalid/insufficient observed rows, the CLI returns a sanitized `UNAVAILABLE` status (exit 2). It never opens the SQLite file writable: `mode=ro&immutable=1`, `query_only=ON`, SELECT-only adapter, no WAL/SHM/journal. It reads existing digital action→outcome rows with recorded outcomes (including unsuccessful actions) and closes the DB before model fitting. **The operator must ensure no writer remains**; the flag is an acknowledgement, not a lock.
 
 ## What is measured
 
