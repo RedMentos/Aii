@@ -1,7 +1,7 @@
 name: V13 BP1 genuine QAD FP32 vs GGUF Linux-native smoke
 on:
   push:
-    branches: [codex/gpt6-bp1-qad-native-smoke-20261027-0925]
+    branches: [codex/gpt6-bp1-qad-native-smoke-20261027-0925, codex/automation11-bp1-qad-review-20261027]
     paths:
       - '.github/workflows/bp1-qad-native-smoke.yml'
       - 'v13/code/scripts/bp1_qad_native_smoke.py'
@@ -10,7 +10,7 @@ permissions:
   contents: read
 concurrency:
   group: v13-bp1-qad-native-smoke-heavy-serial
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   software:
     runs-on: ubuntu-24.04
