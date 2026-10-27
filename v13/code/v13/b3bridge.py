@@ -21,6 +21,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import time
 from pathlib import Path
 import numpy as np
@@ -227,6 +228,7 @@ def l1_gate(task,role_drop=.01,ood_max=.05):
     by=task.get('bytes') if isinstance(task,dict) else None
     acc=acc if isinstance(acc,dict) else {}
     by=by if isinstance(by,dict) else {}
+    seeds=task.get('seed_ids') if isinstance(task,dict) else None
     missing=[c for c in required if c not in acc]
     invalid=[]
     vectors={}
@@ -246,12 +248,37 @@ def l1_gate(task,role_drop=.01,ood_max=.05):
         if n is None:n=len(a)
         elif len(a)!=n:invalid.append(channel+':pair_count_mismatch')
         vectors[channel]=np.asarray(a,dtype=float)
+    # Equal vector lengths are not paired evidence. The same unique, ordered,
+    # declared seed identities must accompany every arm. External preregistered
+    # row/source pins are still required for a *real* promotion claim.
+    if not isinstance(seeds,dict) or set(seeds)!=set(required):
+        invalid.append('seed_ids:missing_or_invalid_mapping')
+    else:
+        reference=None
+        for channel in required:
+            ids=seeds[channel]
+            if (not isinstance(ids,(list,tuple)) or channel not in vectors
+                    or len(ids)!=len(vectors[channel])):
+                invalid.append(channel+':invalid_seed_ids')
+                continue
+            if not all(type(v) is str and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,31}',v) for v in ids):
+                invalid.append(channel+':invalid_seed_id')
+                continue
+            if len(set(ids))!=len(ids):
+                invalid.append(channel+':duplicate_seed_ids')
+                continue
+            if reference is None:
+                reference=tuple(ids)
+            elif tuple(ids)!=reference:
+                invalid.append(channel+':seed_order_or_identity_mismatch')
     for channel in required:
         v=by.get(channel)
         if (not isinstance(v,(int,float,np.integer,np.floating))
                 or isinstance(v,(bool,np.bool_))
                 or not np.isfinite(float(v)) or float(v)<0):
             invalid.append(channel+':invalid_bytes')
+        elif channel=='NO_MESSAGE' and float(v)!=0:
+            invalid.append('NO_MESSAGE:nonzero_bytes')
     for field in ('role_drop','ood_rate'):
         v=task.get(field) if isinstance(task,dict) else None
         if (not isinstance(v,(int,float,np.integer,np.floating))
