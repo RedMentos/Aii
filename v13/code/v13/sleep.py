@@ -509,14 +509,15 @@ class SleepCycle:
             try:
                 self.queue.save(st,v)
                 report['schedule_saved']=True
-            except ValueError:
-                # A concurrent explicit edit won. Work may have run, but the
-                # replay schedule (including last_full) did NOT commit.
-                # Never publish a completed cycle or advance scheduler credit.
+            except ValueError as exc:
+                # A failed schedule write cannot earn a completed-cycle credit.
+                # Only StateBox's exact stale-version error is a CAS race;
+                # validation failures must not be misreported as contention.
                 report['schedule_saved']=False
                 if report.get('status')=='DONE':
-                    report['status']='INTERRUPTED'
-                    report['reason']='SCHEDULE_CAS_CONFLICT'
+                    conflict=str(exc)=='Stale state write'
+                    report['status']='INTERRUPTED' if conflict else 'ERROR'
+                    report['reason']='SCHEDULE_CAS_CONFLICT' if conflict else 'SCHEDULE_SAVE_REJECTED'
         report['duration_s']=round(self.monotonic()-started,3)
         path=self.home/'exports/sleep-last.json';atomic_write(path,dumps(report));report['artifact']=str(path)
         self.s.set_state(LAST_KEY,{k:report[k] for k in ('mode','origin','status','resource_state','started','duration_s')}|{'phases':[{k:p.get(k) for k in ('phase','status','selected','passed','failed','retired','retention_old','regression_flag')} for p in report['phases']]})
