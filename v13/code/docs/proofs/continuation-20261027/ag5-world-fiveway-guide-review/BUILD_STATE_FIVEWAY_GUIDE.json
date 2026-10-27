@@ -1,0 +1,23 @@
+{
+  "status": "FIVEWAY_GUIDE_REGRESSION_FIXED_DISPOSABLE_FOCUSED_GREEN_REVIEW_ONLY",
+  "owner_base": "codex/ag5-world-claude-fiveway-focused-20261027",
+  "review_branch": "codex/automation11-fiveway-guide-review-20261027",
+  "review_head": "e2f52446c50a253125b7984177f57941cba7692f",
+  "red_actions": 40461492894,
+  "green_actions": 40462437719,
+  "tests": "128/128 PASS (2 skipped), compile0, privacy CLEAN",
+  "artifact_id": 12714963305,
+  "artifact_sha256": "a6ec79d64d9a347757bd1e5994b6b4073b1dba92eb24666516348399ea4a6415",
+  "private_backup": "/V13-Checkpoints/2026-10-27/AG5-World-Fiveway-Guide/v13-fiveway-guide-40462437719.zip",
+  "private_backup_verified_byte_exact": true,
+  "original_baseline": "5 FAIL / 73 ERROR",
+  "claim_scope": "disposable Linux synthetic/software five-way integration only",
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "next": "Run exact broad five-way differential vs historical baseline, preserve original failures; review-only two-parent integration after acceptance"
+}
