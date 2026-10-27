@@ -1,0 +1,41 @@
+name: V13 Sleep replay-mix finite policy review
+on:
+  push:
+    branches: [codex/automation11-sleep-mix-finite-20261027]
+    paths:
+      - '.github/workflows/sleep-mix-finite-review.yml'
+      - 'v13/code/v13/sleep.py'
+      - 'v13/code/tests/test_sleep_scheduler.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-sleep-mix-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Sleep A/B/C policy and privacy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/sleep-venv"
+          py="$RUNNER_TEMP/sleep-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' psutil PyYAML Pillow
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_sleep_scheduler tests.test_sleep_validation
+          "$py" -m py_compile v13/sleep.py tests/test_sleep_scheduler.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base edd0212c1774f893433040f48fa6b57c3d2d4209 --head HEAD
+          git diff --check edd0212c1774f893433040f48fa6b57c3d2d4209 HEAD
+          echo 'SLEEP_POLICY_SOFTWARE_ONLY_NO_NATIVE_DREAM_OR_AGE_PROMOTION'
