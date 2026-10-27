@@ -81,7 +81,8 @@ def fit(store,rng_seed=0):
               # Coverage is fit on training observations ONLY; held-out rows must
               # not manufacture support for their own action or reduce OOD distance.
               states={a:[T[i]['s'] for i in tr if T[i]['a']==a][-256:] for a in ACTIONS},
-              support_counts={a:sum(T[i]['a']==a for i in tr) for a in ACTIONS},
+              support_counts={a:min(256,sum(T[i]['a']==a for i in tr)) for a in ACTIONS},
+              train_counts={a:sum(T[i]['a']==a for i in tr) for a in ACTIONS},
               support_scope='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED',
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
@@ -107,7 +108,7 @@ def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a in state s, with coverage, model disagreement and a confidence label."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
-    if not st or st.get('status')!='FITTED':
+    if not st or st.get('revision')!=REVISION or st.get('status')!='FITTED':
         return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     x=np.array([1.]+list(s)+onehot(a));preds=np.array([x@np.array(W) for W in st['forward']])
     mean=preds.mean(0);spread=float(preds.std(0).mean());cov=coverage(st,s,a)
