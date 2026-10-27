@@ -165,6 +165,18 @@ def request(port, prompt, seed, scale):
     return answer
 
 
+def _adapter_descriptor_matches(entry, adapter_gguf):
+    """Fail closed on native GET /lora-adapters JSON type drift."""
+    if (not isinstance(entry, dict) or type(entry.get("id")) is not int or
+            entry["id"] != 0 or type(entry.get("path")) is not str or
+            type(entry.get("scale")) not in (int, float) or entry["scale"] != 0):
+        return False
+    try:
+        return Path(entry["path"]).resolve() == Path(adapter_gguf).resolve()
+    except (OSError, RuntimeError, ValueError):
+        return False
+
+
 @contextmanager
 def serve(binary, base_gguf, adapter_gguf, port, log_path):
     """Owned single localhost server; explicit loaded-adapter identity check."""
@@ -191,9 +203,7 @@ def serve(binary, base_gguf, adapter_gguf, port, log_path):
                 raise RuntimeError("owned QAD LoRA server health timeout")
             adapters = _http_json(port, "GET", "/lora-adapters")
             if (not isinstance(adapters, list) or len(adapters) != 1 or
-                    adapters[0].get("id") != 0 or
-                    Path(adapters[0].get("path", "")).resolve() != Path(adapter_gguf).resolve() or
-                    adapters[0].get("scale") != 0):
+                    not _adapter_descriptor_matches(adapters[0], adapter_gguf)):
                 raise RuntimeError("QAD native LoRA adapter ID/path/default-scale mismatch")
             yield
         finally:
