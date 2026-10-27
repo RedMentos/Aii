@@ -8,6 +8,7 @@ on:
       - 'v13/code/tests/test_bp2b_native_batch.py'
       - 'v13/code/tests/test_body_jepa_checkpoint.py'
       - 'v13/code/tests/test_body_jepa_checkpoint_fit.py'
+      - 'v13/code/tests/test_toolforecast.py'
       - 'v13/code/v13/body_jepa_checkpoint.py'
       - 'v13/code/v13/body_jepa.py'
 permissions:
