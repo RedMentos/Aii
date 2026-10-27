@@ -621,12 +621,12 @@
         },
         "after_a": {
           "A": {
-            "recall": 1.0,
+            "recall": 1,
             "paraphrase": 0.75
           },
           "B": {
-            "recall": 0.0,
-            "paraphrase": 0.0
+            "recall": 0,
+            "paraphrase": 0
           },
           "near_miss_leak": 0.6,
           "probe_retention": 0.75,
@@ -953,7 +953,7 @@
         },
         "best_solo": 0.5083333333333333,
         "gain_over_best_solo": {
-          "both_none": 0.0,
+          "both_none": 0,
           "both_exact": -0.008333333333333304,
           "both_control": -0.008333333333333304
         },
@@ -1083,12 +1083,12 @@
           },
           "after_a": {
             "A": {
-              "recall": 1.0,
+              "recall": 1,
               "paraphrase": 0.75
             },
             "B": {
-              "recall": 0.0,
-              "paraphrase": 0.0
+              "recall": 0,
+              "paraphrase": 0
             },
             "near_miss_leak": 0.6,
             "probe_retention": 0.75,
@@ -1193,8 +1193,8 @@
       "archive": "docs/proofs/continuation-20261011/action-jepa-bounded-recovery/prefix-20261011T101746Z.closed.zip",
       "archive_sha256": "b0abe569fc38f00595a686ac523bd9f99032e5474de231c384f8aab3497f81d6",
       "native_resources": "EXACT_ORIGINAL_LAUNCHER_AND_19_LIBRARY_BINDINGS_RESTORED",
-      "fresh_worker_max_abs_difference": 0.0,
-      "historical_first16_max_abs_difference": 0.0,
+      "fresh_worker_max_abs_difference": 0,
+      "historical_first16_max_abs_difference": 0,
       "phone_zip_recovered_software_tests": {
         "tests": 1075,
         "pass": 1075,
@@ -1342,5 +1342,28 @@
     "independent_replay": "EXACT_FULL_REPORTS_ADAPTED_NPZ_ARRAYS",
     "list_signed_guard": "APPLIED_AFTER_NATIVE_CLOSURE_11_FOCUSED_PASS",
     "private_pilot": "18rows max42calls registered, not run yet"
+  },
+  "bp2b_prefix_contract_review_20261027": {
+    "scope": "REVIEW_ONLY_SOFTWARE",
+    "owner_branch": "codex/automation11-bp2b-prefix-contract-20261027",
+    "parent_pr": 713,
+    "parent_sha": "c13aee9b1ab29bb197b9a8c4a42bb664e1a353fc",
+    "red_run": 40508297873,
+    "red_sha": "457ca46a795acfa2f58ba5091110d549daa52057",
+    "red_tests": "29 RUN / 3 EXPECTED FAIL",
+    "green_run": 40508433741,
+    "green_sha": "30dfceb5b5584ea03369dd73f06790c8c4df6905",
+    "green_tests": "29/29 PASS",
+    "green_artifact_sha256": "33e4b33d473b50757c11d64e67b8e981fb5fcf265d3ced0e15b054fdb1510cee",
+    "report": "docs/proofs/continuation-20261027/bp2b-prefix-contract/REPORT.md",
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP2b-Prefix-Contract/",
+    "private_backup_readback": "BYTE_EXACT_PASS",
+    "native_proof": false,
+    "redmi_measured": false,
+    "age_authority": 0,
+    "jepa_weight": 0,
+    "full_acceptance": false,
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
+    "next_prerequisite": "Check owner Actions 40506115941 before any new heavy native run"
   }
 }
