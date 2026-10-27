@@ -1,0 +1,94 @@
+name: V13 BP1 source-bound native B2 offer consumer dataset preflight
+on:
+  push:
+    branches: [codex/automation12-bp1-consumer-dataset-20261027]
+    paths:
+      - '.github/workflows/bp1-consumer-dataset.yml'
+      - 'v13/code/scripts/bp1_consumer_dataset.py'
+      - 'v13/code/tests/test_bp1_consumer_dataset.py'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-consumer-dataset
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated software prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/bp1venv"
+          timeout 240s "$RUNNER_TEMP/bp1venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Retrieve original Linux-native B2 offer artifact by immutable hashes
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1proof"
+          curl -fsSL --retry 1 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12589259384/zip" -o "$RUNNER_TEMP/bp1-run181.zip" > "$RUNNER_TEMP/bp1proof/FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "cb0786ec15734efe4b3dda2607218dccf98cb96015d2852349a44b8c689982fb  $RUNNER_TEMP/bp1-run181.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            unzip -p "$RUNNER_TEMP/bp1-run181.zip" report/report.json > "$RUNNER_TEMP/bp1-run181-report.json"
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            echo "ea379b52c7b95c2bb30cd6725f539f443521a64210fdf6bf6fa726c413126880  $RUNNER_TEMP/bp1-run181-report.json" | sha256sum -c - >> "$RUNNER_TEMP/bp1proof/FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1proof/FETCH_EXIT.txt"
+          exit 0
+      - name: Run unit tests and exact native B2 input dataset assembly
+        run: |
+          set +e
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1proof/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_consumer_dataset.py v13/code/tests/test_bp1_consumer_dataset.py > "$RUNNER_TEMP/bp1proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1venv/bin/python" -m unittest -v tests.test_bp1_consumer_dataset) > "$RUNNER_TEMP/bp1proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1proof/UNIT_EXIT.txt"
+          if [ "$(cat "$RUNNER_TEMP/bp1proof/FETCH_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1venv/bin/python" scripts/bp1_consumer_dataset.py --report "$RUNNER_TEMP/bp1-run181-report.json" --out "$RUNNER_TEMP/bp1-output") > "$RUNNER_TEMP/bp1proof/BUILD_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/bp1proof/BUILD_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/bp1proof/BUILD_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/bp1proof/BUILD_EXIT.txt")" = 0 ]; then
+            cp "$RUNNER_TEMP/bp1-output/MANIFEST.json" "$RUNNER_TEMP/bp1proof/DATASET_MANIFEST.json"
+            (cd "$RUNNER_TEMP/bp1-output" && sha256sum train_offer.jsonl heldout_paired.jsonl diagnostics.jsonl MANIFEST.json) > "$RUNNER_TEMP/bp1proof/DATASET_SHA256.txt"
+          fi
+          "$RUNNER_TEMP/bp1venv/bin/python" -m compileall -q v13/code/scripts/bp1_consumer_dataset.py v13/code/tests/test_bp1_consumer_dataset.py > "$RUNNER_TEMP/bp1proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp1venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base fa70ba4722c5b2ddfd2303680472da9c885a5b2a --head HEAD > "$RUNNER_TEMP/bp1proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Preserve source-bound dataset and original raw (including RED)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-consumer-dataset-${{ github.run_id }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/bp1proof/
+            ${{ runner.temp }}/bp1-output/
+          if-no-files-found: error
+      - name: Enforce exact upstream and software-only dataset, not BP1 utility
+        run: |
+          set -euo pipefail
+          for n in FETCH UNIT BUILD COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1proof/${n}_EXIT.txt")" = 0 || { tail -90 "$RUNNER_TEMP/bp1proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/bp1proof/DATASET_MANIFEST.json"

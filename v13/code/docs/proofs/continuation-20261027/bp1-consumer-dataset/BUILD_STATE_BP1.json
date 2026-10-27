@@ -1,0 +1,59 @@
+{
+  "package": "WP-BP1-native-B2-to-C3-consumer-dataset-preflight",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 independent review",
+  "review_branch": "codex/automation12-bp1-consumer-dataset-20261027",
+  "parent_commit": "fa70ba4722c5b2ddfd2303680472da9c885a5b2a",
+  "prereg_commit": "1844619fad76e9522f8c9727d5f62c2f343555a2",
+  "source_commit": "94fb7ea1a0ff12428478bedbfd0f04bf630557e4",
+  "source_sha256": {
+    "v13/code/scripts/bp1_consumer_dataset.py": "41e840c958a3a82636e16c74417c61837cb529658034bd8c2ff7daed7d6c0e5e",
+    "v13/code/tests/test_bp1_consumer_dataset.py": "e8dcc00fb3dea0066ce84d18baa4110257eebd7c1ce13f09df3d71ed9b53c7a3"
+  },
+  "upstream": {
+    "run181_artifact_id": 12589259384,
+    "outer_zip_sha256": "cb0786ec15734efe4b3dda2607218dccf98cb96015d2852349a44b8c689982fb",
+    "report_sha256": "ea379b52c7b95c2bb30cd6725f539f443521a64210fdf6bf6fa726c413126880",
+    "corpus_sha256": "1872a3adf6e51e05e604053539d50ae05c955b221f78f1951d1f68e2a12f926c",
+    "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+  },
+  "result": {
+    "actions_run": 40466707025,
+    "artifact_id": 12715684803,
+    "outer_zip_sha256": "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c",
+    "unit_tests": "8/8 PASS",
+    "fetch_exit": 0,
+    "build_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "train_rows": 25,
+    "heldout_pairs": 11,
+    "heldout_rows": 22,
+    "dropped_invalid_b2_quotes": 10,
+    "independent_row_replay": "47/47 source SHA, exact target and B2 quotes; project-disjoint",
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP1-Consumer/v13-bp1-consumer-dataset-40466707025.zip",
+    "private_backup_byte_verified": true
+  },
+  "dataset_sha256": {
+    "train_offer.jsonl": "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86",
+    "heldout_paired.jsonl": "7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c",
+    "diagnostics.jsonl": "d120463497e722b10ee5f7d5b5065fe8f84140b819182fe169a1ab9e32d813cb"
+  },
+  "scope": "verified Linux-native B2 upstream; software-only derived C3 dataset; NO C3 optimizer/model inference",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3": "L1_FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "selected C3 FP32 master/deployed QAD-Q4 parity not established",
+    "C3 has not learned to consume offers",
+    "11 heldout source pairs must remain untouched during hyperparameter tuning"
+  ],
+  "next": "Preregister source/model/seed/arm and near-miss bound native C3 consumer LoRA before any optimizer; independently compare offer/no-offer heldout supported answers; no gate promotion.",
+  "next_command": "cd v13/code && PYTHONPATH=\"$PWD:$PWD/scripts\" python scripts/bp1_consumer_dataset.py --report /path/to/hash-verified-Run181-report.json --out /new/empty/bp1-output"
+}
