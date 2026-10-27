@@ -1,7 +1,7 @@
 name: V13 BP2b raw-log fsync durability review
 on:
   push:
-    branches: [codex/automation11-bp2b-log-durability-20261027]
+    branches: [codex/automation11-bp2b-log-fsync-red-20261027]
     paths:
       - '.github/workflows/bp2b-log-durability-review.yml'
       - 'v13/code/scripts/bp2b_native_batch.py'
