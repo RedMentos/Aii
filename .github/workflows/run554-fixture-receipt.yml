@@ -30,7 +30,7 @@ jobs:
           sha256sum v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_run554_fixture_receipt_20261027.py > "$RUNNER_TEMP/run554/SOURCE_SHA256.txt"
           git diff --exit-code 9eae3cc175512382038cc5f55887e7a8dbc9797f HEAD -- v13/code/v13/runtime.py v13/code/v13/store.py v13/code/v13/runners.py v13/code/v13/memory_server.py v13/code/v13/agi/live.py > "$RUNNER_TEMP/run554/FROZEN_SOURCE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run554/FROZEN_SOURCE_EXIT.txt"
-          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_native_jef_goal_run554 tests.test_run554_fixture_receipt_20261027 tests.test_agi_live) > "$RUNNER_TEMP/run554/UNIT_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_native_jef_goal_run554 tests.test_run554_fixture_receipt_20261027 tests.test_run552_jef_goal_final_receipt tests.test_run553_user_goal_operator tests.test_agi_live) > "$RUNNER_TEMP/run554/UNIT_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run554/UNIT_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/native_jef_goal_run554.py v13/code/tests/test_run554_fixture_receipt_20261027.py > "$RUNNER_TEMP/run554/COMPILE_RAW.log" 2>&1
           echo "$?" > "$RUNNER_TEMP/run554/COMPILE_EXIT.txt"
