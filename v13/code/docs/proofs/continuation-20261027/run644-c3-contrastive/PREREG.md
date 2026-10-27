@@ -1,0 +1,18 @@
+# Run644 prereg — selected C3 explicit disjoint contrastive non-Alder corrections (2026-10-27 UTC)
+
+**Parent:** Run643 source ZIP checkpoint `df96269a179b9942ee517f02cbb7069ed80c5ba5` (PR642); Run642 C3 native negative `40437401540` remains immutable. Owner GPT-6 Run644 owns only new `run644_*` source/test/workflow/proof files; production `LoraTrainer`, model, cohorts, existing CI and age/approval gates unchanged.
+
+## Hypothesis / one treatment
+Run639 four general KL anchors and Run642 four additional disjoint Pine/Maple protocol-specific KL anchors both yielded selected native C3 **Alder train 2/2, heldout 1/2, Cedar near-miss leak 2/2** after 32 FP32 steps. Base KL preservation alone is insufficient for the local factual boundary. New candidate keeps all Run642 treatment, and **adds only four supervised, explicitly negative corrections** on distinct fictional protocols **Spruce** and **Willow**, for marker color and gate number, each with target `not specified`. These protocols are neither the Alder positive training, Birch/Pine/Maple KL anchors, nor Cedar near-miss evaluation. The frozen six evaluation questions and exact keys remain unchanged. This is an exploratory small synthetic contrastive locality test, not proof of broad uncertainty or safe abstention.
+
+Keep pinned master `LiquidAI/LFM2.5-350M` revision `b6248156b66a93e5c4581d82953a9df630c582ef`, SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`; deployed QAD-Q4 revision `657e078c94084481950a2d555a941481f715536b`, SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`; original Jinja/license/llama.cpp b10964; seed13, rank2, alpha4, v_proj/out_proj, LR .001, exactly 32 steps, anchor_weight1, jepa_weight0, 8 original Run642 base-KL anchors. The only change is the four new disjoint supervised examples. All source/seed/model hashes pinned; no Cedar answer in training/anchors.
+
+**Immutable original comparator Run642**: native Actions `40437401540`, artifact `12704852652`, original ZIP SHA256 `cecf2bf0d725886c6e47f0d1d44f69582b43ca5f852dad128136d710fefc2d5c`, adapter SHA256 `29b1a14b77538bd14d05cfb7d53a9b7a43ba0b4065ef33d0b52bcbc28e47b163`, native proof SHA256 `b39e8525690aafdd98cb5abf0bcf82df6eb500abaff0fd56fa41bf9dcd9fcd58`, training proof SHA256 `40497ff90b77e919b9445959e6eb89fbd0ed075de66a409d0c1503954b7c3099`. Historical Run639/Run638 failures remain separate and unchanged.
+
+## Frozen acceptance
+Source must reject any modified model/cohort/target/negative gate, Cedar in training, altered original six cases, missing native proof or unauthorized activation. Native requires exact original Run642 ZIP and pinned model/server/license, 32 actual optimizer steps, nonzero LoRA-B, selected QAD-Q4 inference, HF/native tokenizer and candidate scale0 parity, numeric candidate effect. Bounded synthetic locality **only if** Alder train >=1/2, heldout >=1/2, Cedar leak **0/2**. Also report negative-training recall (Spruce/Willow) separately; do not alter six-case denominator, Cedar keys, baseline parity or prior results. A source or native RED remains RED; utility FAIL is not execution failure.
+
+All learning remains SHADOW, production_weight_authority=0, no age/approval changes. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi unmeasured, V13 incomplete. No AGI claim.
+
+## Execution
+Commit exact new cohort before implementation. Then isolated candidate-only trainer subclass, source tests, native paired comparator and serialized pinned native workflow. Preserve all original raw logs/ZIP/hashes and private backup; if native blocked, report NOT_ATTEMPTED and continue independent blueprint work.
