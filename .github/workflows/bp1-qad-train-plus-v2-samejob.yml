@@ -1,9 +1,9 @@
 name: V13 BP1 genuine 25-row QAD train plus 44-row source-disjoint V2 paired heldout
 on:
   push:
-    branches: [codex/automation11-bp1-v2-adapter-locator-retry-20261027]
+    branches: [codex/automation11-bp1-v2-scale0-native-20261027]
     paths:
-      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_RETRY.txt'
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE_SCALE0.txt'
 permissions:
   contents: read
   actions: read
