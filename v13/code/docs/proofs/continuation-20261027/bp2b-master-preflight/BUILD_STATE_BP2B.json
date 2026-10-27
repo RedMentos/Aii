@@ -1,0 +1,43 @@
+{
+  "schema": "v13-bp2b-master-preflight-state-v1",
+  "as_of_utc": "2026-10-27T12:39:00Z",
+  "owner": "automation11 BP2b pinned master preflight",
+  "branch": "codex/automation11-bp2b-master-metadata-20261027",
+  "pr": 708,
+  "base_pr": 707,
+  "base_sha": "96973e070d91f5dfb456e0ae8166dfedc4ad6f15",
+  "status": "PINNED_PUBLIC_METADATA_PASS_FULL_WEIGHTS_NOT_VERIFIED",
+  "hf_revision": "8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf",
+  "fp32_model_sha256_from_primary": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+  "full_weights_downloaded": false,
+  "metadata_run": 40502634640,
+  "metadata_run_head": "aeea42a2a6caccd56ddd6522dc0e8b70fad8857e",
+  "metadata_zip_sha256": "b735e8c7718b97a275aec1eb44a74b23c9d71d5edffea65edd7fce2ec0116820",
+  "metadata_verified_files": 7,
+  "metadata_pin_blob": "e7e8c6f58252f7e7d5919034d2b156a58556e462",
+  "preflight_run": 40502964352,
+  "preflight_run_head": "c8256029d2341ae140475bc2b465e4987682377d",
+  "preflight_tests": "7/7 PASS",
+  "preflight_zip_sha256": "06e8aa25e096c8a89e8b059975bc103e9ad5f793b5f8dd2469159b9a757d323e",
+  "preflight_script_blob": "6823adc0d5ba367efde009343b241562ebf4b085",
+  "private_backups": [
+    "/V13-Checkpoints/2026-10-27/BP2b-HF-Metadata/bp2b-hf-metadata-40502634640.zip",
+    "/V13-Checkpoints/2026-10-27/BP2b-Master-Preflight/bp2b-master-preflight-40502964352.zip"
+  ],
+  "private_backups_byte_exact": true,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "jepa_weight=0",
+    "Redmi_unmeasured",
+    "whole_V13_incomplete"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_master_preflight",
+  "next_package": "implement source-bound native four-arm BP2b runner, enforce pinned local master and serialize heavy jobs",
+  "open_questions": [
+    "Is historical BP2a tokenizer/config identical to pinned public revision?",
+    "Does full FP32 master match pinned model SHA on a native runner?",
+    "Will new BP2b anchors reduce heldout leakage on Q4/Redmi?"
+  ]
+}
