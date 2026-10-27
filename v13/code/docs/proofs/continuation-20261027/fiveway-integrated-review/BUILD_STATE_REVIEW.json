@@ -1,0 +1,32 @@
+{
+  "status": "EXACT_REMOTE_FIVEWAY_REVIEW_TREE_VERIFIED_FOCUSED_GREEN_BROAD_PENDING",
+  "review_commit": "9eae3cc175512382038cc5f55887e7a8dbc9797f",
+  "review_pr": 672,
+  "tree_sha": "9ff3f1e7cbe6fe3508ccb38e2265c614e0a8463a",
+  "parents": [
+    "c615497384dc5519be59232451895ca443ce9e45",
+    "37ee5a82f31ff1438b56cffee8f30439e5e7a092",
+    "e505364c78d6ef222eb287d84d84aed81ecc53e3",
+    "551d6212d7b71f8e78e1fdb163e45ab41a11310d",
+    "2671f054ed025625abe94be42d12667329c4366f"
+  ],
+  "changed_paths": 254,
+  "tree_export_actions": 40463020710,
+  "focused_tests": "128 PASS, 2 SKIP; compile0; privacy CLEAN",
+  "artifact_id": 12715530889,
+  "artifact_sha256": "f520b8980fcc92d312c3d8b28de85f1d54b310446072d4e4fc0b91ab456b2c1d",
+  "private_backup": "/V13-Checkpoints/2026-10-27/AG5-World-Fiveway-Tree/v13-fiveway-ag5base-40463020710.zip",
+  "private_backup_verified_byte_exact": true,
+  "broad_fiveway_actions": 40462730803,
+  "broad_status_at_checkpoint": "RUNNING_NO_CLAIM",
+  "historical_broad": "5 FAIL 73 ERROR 4424 tests",
+  "step2": "UTILITY_FAIL",
+  "b3": "L1_FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "redmi_measured": false,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "GPT-6 independent integration reviewer",
+  "next": "Read broad CI 40462730803 raw artifact; compare fingerprint; test exact review commit, phone smoke and independent review; no main merge"
+}
