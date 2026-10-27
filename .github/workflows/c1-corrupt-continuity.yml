@@ -39,7 +39,7 @@ jobs:
           echo "$?" > "$evidence/INSTALL_EXIT.txt"
           (
             cd v13/code
-            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=. "$py" -m unittest -v tests.test_executive_corrupt_continuity_review tests.test_executive
+            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_executive_corrupt_continuity_review tests.test_executive
           ) > "$evidence/UNIT_RAW.log" 2>&1
           echo "$?" > "$evidence/UNIT_EXIT.txt"
           python3 -m py_compile v13/code/v13/executive.py v13/code/tests/test_executive_corrupt_continuity_review.py > "$evidence/COMPILE_RAW.log" 2>&1
