@@ -1457,5 +1457,41 @@
     "full_acceptance": false,
     "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_bp2b_native_batch tests.test_bp2b_native_runner tests.test_bp2b_transfer_score",
     "next_prerequisite": "Review native seed41 owner Actions 40506115941; no overlapping heavy run"
+  },
+  "bj1_step_resume_candidate_20261027": {
+    "scope": "REVIEW_ONLY_OPT_IN_SYNTHETIC_CPU",
+    "owner_branch": "codex/automation11-bj1-step-resume-candidate-20261027",
+    "parent_pr": 718,
+    "parent_sha": "edd0212c1774f893433040f48fa6b57c3d2d4209",
+    "tested_code_sha": "4f62e9dedc4e549d46e6847ab63089c26884c10b",
+    "ci_run": 40514555640,
+    "ci_result": "9/9 PASS (8 checkpoint + 1 tiny HF/PEFT fit), compile PASS, privacy CLEAN",
+    "local_result": "7/7 isolated Torch helper PASS",
+    "original_native_owner_pr": 712,
+    "original_native_actions_run": 40506115941,
+    "original_native_sha": "7243d71f51ff53587b5062953a7d79f786648e87",
+    "original_native_exits": {
+      "source": 0,
+      "environment": 0,
+      "native": 124,
+      "privacy": 0
+    },
+    "original_native_artifact": 12737361371,
+    "original_native_zip_sha256": "31f27480b98291ad60082a8fa56b2ff37ce08f053a711851fc08823f568ce982",
+    "original_native_result": "35_MIN_TIMEOUT_NO_COMPLETED_NATIVE_ARM",
+    "original_native_zip_crc": "PASS",
+    "private_backup_readback": "BYTE_EXACT_PASS",
+    "native_proof": false,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "bj1": "NO_SIGNAL",
+    "jepa_weight_original": 0,
+    "age_authority": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "report": "docs/proofs/continuation-20261027/bj1-step-checkpoint/REPORT.md",
+    "next_command": "cd v13/code && PYTHONPATH=. python -m unittest -v tests.test_body_jepa_checkpoint tests.test_body_jepa_checkpoint_fit",
+    "next_prerequisite": "Independent review of source/optimizer checkpoint; new preregistration before any real native retry. Original 35min failure retained."
   }
 }
