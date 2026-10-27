@@ -63,6 +63,14 @@ class OptInFitResumeTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'SYNTHETIC_CRASH_AFTER_FSYNC'):
                     broken.fit(items, 'synthetic-generation')
             self.assertEqual(calls, [1])
+            # A different eligibility weight has identical legacy dh, but must
+            # never reuse the old optimizer/EMA trajectory.
+            changed = [dict(row) for row in items]
+            changed[0]['weight'] = .25
+            wrong = TinyTrainer('/tmp/synthetic-master', Path(root)/'resume',
+                                master_sha256='a'*64, cfg=cfg)
+            with self.assertRaisesRegex(ValueError, 'cross-source checkpoint'):
+                wrong.fit(changed, 'synthetic-generation')
             resumed = TinyTrainer('/tmp/synthetic-master', Path(root)/'resume',
                                   master_sha256='a'*64, cfg=cfg)
             result = resumed.fit(items, 'synthetic-generation')
