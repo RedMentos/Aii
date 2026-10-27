@@ -38,3 +38,15 @@ the frozen/post-hoc baseline. §24.17 was only TESTED (existence tests), never m
 ## Honesty rules
 No default changes from this bench. If `c3` alone is on top again (Z6e/g/h), it is stated as the main finding.
 Claim limit: generated English tasks, regex checks, deterministic bench decoding, cloud CPU, no energy, one test seed.
+
+## Amendment A1 (2026-10-27, after the 3-fixture smoke run on seed 5, before any run on seeds 83/89/97)
+The smoke run (seed 5, arms d0/d1, 3 fixtures; not evidence) showed the first B1/B2 offers are **not** byte-identical between
+d0 and d1 on 2 of 3 fixtures (llama.cpp threads make temperature-0 text vary slightly, e.g. "conflicting team size reports"
+vs "a conflicting team size reference"). Reading halting outcomes from d0/d1 would therefore be invalid. Changes:
+- `posthoc` and `trained` become **live arms** on test seed 97: same forced-depth patch, depth (0 or 1) decided once before
+  the focal loop from the actual first offers of that run. The trained head is fitted first (`train` on seeds 83/89, d0+d1)
+  and loaded as a fixed checkpoint.
+- New arm `d0r` (repeat of d0) on seed 97 gives the noise band (pass flips between identical configurations).
+- Test seed 97 arms: c3, scaf, d0, d0r, d1, d2, posthoc, trained. Criteria K1–K5 unchanged, now on live arms.
+- `Z6I_INVALID_PREFIX` is dropped (no longer needed). A K-criterion difference smaller than the d0/d0r flip count is
+  reported as inside the noise band.
