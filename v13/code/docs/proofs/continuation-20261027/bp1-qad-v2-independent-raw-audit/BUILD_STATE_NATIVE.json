@@ -1,0 +1,29 @@
+{
+  "schema": "V13_BP1_V2_RAW_AUDIT_SOFTWARE_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "ca954bf471a4d96abb4e84c8dcd847c75a5b1186",
+  "source": "9ef046761d576b834b7894458bb2176216c41bfe",
+  "software": {
+    "run": 40486343004,
+    "artifact": 12725381545,
+    "zip_sha256": "55bc817a39b060e64e2e7c701688b78ff7e05efc58ca66ba9430c4fb35bb52b8",
+    "unit_pass": 9,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "private_backup": "byte_verified"
+  },
+  "native": {
+    "run": 40486038454,
+    "head": "ca954bf471a4d96abb4e84c8dcd847c75a5b1186",
+    "status_at_checkpoint": "IN_PROGRESS_UNVERIFIED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "download original native artifact, verify ZIP SHA/CRC/stage exits and run independent auditor with exact dataset artifact; preserve RED and proceed to retention/near-miss"
+}
