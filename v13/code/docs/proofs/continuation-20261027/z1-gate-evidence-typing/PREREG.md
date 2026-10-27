@@ -1,0 +1,9 @@
+# WP-Z1 fail-closed gate verdict typing and benchmark artifact promotion — prospective (2026-10-27)
+
+Owner: GPT-6 automation11, isolated review child of five-parent integrated source PR #672 at `9eae3cc175512382038cc5f55887e7a8dbc9797f`. No model, runtime, source evidence, frozen benchmark cohort, gate spec, weights, or operator authority changed before this prereg.
+
+Two concrete false-positive paths in current `v13/gates.py` and `scripts/measure_suite.py`: (1) Python `True == 1` lets JSON numeric 1 satisfy a registered boolean `true` gate; `True >= 0.9` lets a boolean masquerade as a numeric benchmark; nonfinite `Infinity` may satisfy numeric threshold. (2) a benchmark with no explicit verdict is labeled `MEASURED` merely because an artifact *path string* starts `../bench-results/`, even if the artifact does not exist or has no passing verdict.
+
+Fix scope: equality verdicts require exact JSON type and value (with no int/float coercion for equality); ordered `>=`/`<=` comparisons require finite int/float operands (bool excluded), numeric comparisons may mix finite int and float. Missing file/key, unsupported operator, malformed/nonfinite value or type drift fails closed. For benchmark `classify`, only an explicitly registered and passing verdict can produce `MEASURED`; explicit failing verdict produces `MEASURED_FAILING`; path-only evidence remains `TESTED` (or existing `NEEDS_REDMI` / `TEST_FAIL` / `NOT_IMPLEMENTED` precedence). No benchmark/gate is promoted by this package.
+
+Acceptance: focused existing `test_register_gates` plus adversarial tests for true-vs-1, false-vs-0, numeric-vs-boolean, Infinity/NaN, missing verdict file, phantom artifact path, and a valid finite numeric passing verdict. Preserve exact current integrated source and all negative gates. Do not claim whole suite GREEN, STEP2/B3/Body-JEPA/Redmi/complete V13.

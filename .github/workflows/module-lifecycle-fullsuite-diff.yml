@@ -1,0 +1,101 @@
+name: V13 module lifecycle full-suite differential (historical RED retained)
+on:
+  push:
+    branches: [codex/automation12-module-lifecycle-cas-20261027]
+    paths:
+      - '.github/workflows/module-lifecycle-fullsuite-diff.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-module-lifecycle-fullsuite-diff
+  cancel-in-progress: false
+jobs:
+  fullsuite-differential:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 23
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated historical-compatible software prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/modulecas-broad"
+          timeout 240s "$RUNNER_TEMP/modulecas-broad/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Original 4483-test baseline artifact by exact SHA256
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/modulecas-broad-proof"
+          curl -fsSL --retry 1 --max-time 120 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12714654986/zip" -o "$RUNNER_TEMP/modulecas-original.zip" > "$RUNNER_TEMP/modulecas-broad-proof/BASELINE_FETCH_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            echo "1ff54f58f1e2e3a3c8aa92564a709dc4ae6bfcbaafbfcbc41675d83b90a90657  $RUNNER_TEMP/modulecas-original.zip" | sha256sum -c - >> "$RUNNER_TEMP/modulecas-broad-proof/BASELINE_FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            unzip -p "$RUNNER_TEMP/modulecas-original.zip" DIFFERENTIAL.json > "$RUNNER_TEMP/modulecas-broad-proof/BASELINE_DIFFERENTIAL.json"
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/modulecas-broad-proof/BASELINE_EXIT.txt"
+          exit 0
+      - name: Full unfiltered software suite, compile and privacy
+        run: |
+          set +e
+          git rev-parse HEAD > "$RUNNER_TEMP/modulecas-broad-proof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/tests/test_module_lifecycle_cas.py > "$RUNNER_TEMP/modulecas-broad-proof/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" timeout 950s "$RUNNER_TEMP/modulecas-broad/bin/python" -m unittest discover -s tests -p 'test_*.py' -v) > "$RUNNER_TEMP/modulecas-broad-proof/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-broad-proof/UNIT_EXIT.txt"
+          "$RUNNER_TEMP/modulecas-broad/bin/python" -m compileall -q v13/code/v13 v13/code/scripts > "$RUNNER_TEMP/modulecas-broad-proof/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-broad-proof/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/modulecas-broad/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/modulecas-broad-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/modulecas-broad-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Independent exact failure-header differential
+        run: |
+          set +e
+          "$RUNNER_TEMP/modulecas-broad/bin/python" - "$RUNNER_TEMP/modulecas-broad-proof" <<'PY' > "$RUNNER_TEMP/modulecas-broad-proof/COMPARE_RAW.log" 2>&1
+          import json, pathlib, re, sys
+          d=pathlib.Path(sys.argv[1])
+          baseline=json.loads((d/'BASELINE_DIFFERENTIAL.json').read_text())
+          raw=(d/'UNIT_RAW.log').read_text(errors='replace')
+          observed=sorted(re.findall(r'^(?:FAIL|ERROR): .+$',raw,re.M))
+          expected=sorted(baseline['signatures'])
+          from collections import Counter
+          new=list((Counter(observed)-Counter(expected)).elements())
+          missing=list((Counter(expected)-Counter(observed)).elements())
+          summary={'baseline_fingerprint':baseline['baseline_sha256'],
+                   'historical_failures':len(expected),'observed_failures':len(observed),
+                   'new_failure_headers':new,'missing_failure_headers':missing,
+                   'suite_summary':re.findall(r'^Ran \d+ tests in .+$',raw,re.M)[-1:],
+                   'raw_suite_exit':(d/'UNIT_EXIT.txt').read_text().strip(),
+                   'status':'HISTORICAL_RED_UNCHANGED' if not new and not missing and (d/'UNIT_EXIT.txt').read_text().strip()=='1' else 'DIFFERENTIAL_NOT_MATCHING'}
+          (d/'DIFFERENTIAL.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(summary,indent=2,sort_keys=True))
+          assert summary['status']=='HISTORICAL_RED_UNCHANGED'
+          PY
+          echo "$?" > "$RUNNER_TEMP/modulecas-broad-proof/COMPARE_EXIT.txt"
+          exit 0
+      - name: Preserve complete raw and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: modulecas-fullsuite-diff-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/modulecas-broad-proof/
+          if-no-files-found: error
+      - name: Enforce differential only; do not promote full suite
+        run: |
+          set -euo pipefail
+          for n in BASELINE COMPILE PRIVACY COMPARE; do
+            test "$(cat "$RUNNER_TEMP/modulecas-broad-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/modulecas-broad-proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/modulecas-broad-proof/DIFFERENTIAL.json"

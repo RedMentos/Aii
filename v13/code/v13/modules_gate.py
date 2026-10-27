@@ -107,6 +107,8 @@ def propose(store,url,name,why='',origin='MODEL',clock=time.time):
     url,host=check_url(url);name=re.sub(r'[^\w .-]','',str(name or ''))[:60].strip()
     if not name:raise ValueError('Name fehlt')
     def fn(st):
+        # The feature may have been disabled after propose()'s first read.
+        if not st['enabled']:raise PermissionError('Module wurden während des Vorschlags ausgeschaltet')
         if sum(1 for m in st['mods'].values() if m['state']=='PROPOSED')>=MAX_OPEN:raise ValueError('Zu viele offene Vorschläge')
         for m in st['mods'].values():
             if m['url']==url and m['state'] in ('PROPOSED','QUARANTINED','SANDBOX_OK','ACTIVE'):return m['id']
@@ -151,12 +153,31 @@ def fetch(store,mid,authority=None,fetcher=None,clock=time.time,guard=None):
         # A later state mutation must not resurrect a revoked proposal.
         if not st['enabled'] or _get(st,mid)['state']!='PROPOSED':
             raise PermissionError('Modulvorschlag inzwischen zurückgenommen oder ausgeschaltet')
+        # Recheck policy on every optimistic state transition attempt, too.
+        why=gate(store,TOOL,RISK,EFFECTS_FETCH)
+        if why:raise PermissionError('Gesperrt während des Holens: '+why)
         return _to(st,mid,new,clock,who,**extra)
     if not isinstance(data,(bytes,bytearray)):raise ValueError('Antwort ist kein Byte-Block')
     if len(data)>MAX_BYTES:
         box(store).mutate(lambda s:advance(s,'REJECTED','check',findings=['TOO_BIG'],size=len(data)));_log(store,'rejected',id=mid,why='TOO_BIG');return _rec(store,mid)
     sha=hashlib.sha256(data).hexdigest();p=_file(store,mid);atomic_write(p,bytes(data))
-    box(store).mutate(lambda s:advance(s,'QUARANTINED','HUMAN',sha256=sha,size=len(data),quarantined=clock()))
+    try:
+        # The filesystem write itself can race with revoke(delete), Notaus,
+        # module disable, or a typed ban; the pre-write gate is not enough.
+        latest=state(store)
+        if not latest['enabled'] or _get(latest,mid)['state']!='PROPOSED':
+            raise PermissionError('Modul wurde während des Speicherns zurückgenommen oder ausgeschaltet')
+        why=gate(store,TOOL,RISK,EFFECTS_FETCH)
+        if why:raise PermissionError('Gesperrt während des Speicherns: '+why)
+        box(store).mutate(lambda s:advance(s,'QUARANTINED','HUMAN',sha256=sha,size=len(data),quarantined=clock()))
+    except Exception:
+        # Delete only if this proposal is still unclaimed or revoked. Another
+        # concurrent fetch may already own QUARANTINED/ACTIVE; never delete its
+        # file as cleanup for this failed attempt.
+        current=state(store)['mods'].get(mid,{})
+        if current.get('state') in ('PROPOSED','REVOKED','REJECTED','TAMPERED'):
+            p.unlink(missing_ok=True)
+        raise
     _log(store,'quarantined',id=mid,sha8=sha[:8],size=len(data))
     return check(store,mid,clock=clock,guard=guard)
 
@@ -200,8 +221,15 @@ def check(store,mid,clock=time.time,guard=None):
     """QUARANTINED -> SANDBOX_OK | REJECTED. Re-hashes the stored bytes first."""
     st=state(store);m=_get(st,mid)
     if m['state']!='QUARANTINED':raise ValueError('Nur Quarantäne wird geprüft')
+    if not st['enabled']:raise PermissionError('Module wurden während der Prüfung ausgeschaltet')
     data=_file(store,mid).read_bytes()
-    if hashlib.sha256(data).hexdigest()!=m['sha256']:box(store).mutate(lambda s:_to(s,mid,'TAMPERED',clock,'check'));_log(store,'tampered',id=mid);return _rec(store,mid)
+    if hashlib.sha256(data).hexdigest()!=m['sha256']:
+        def suspend(s):
+            current=_get(s,mid)
+            if not s['enabled'] or current['state']!='QUARANTINED' or current.get('sha256')!=m['sha256']:
+                raise PermissionError('Modul während der Prüfung zurückgenommen oder ausgeschaltet')
+            return _to(s,mid,'TAMPERED',clock,'check')
+        box(store).mutate(suspend);_log(store,'tampered',id=mid);return _rec(store,mid)
     man,f=parse(data);warn=[]
     if man is not None:
         rej,warn=scan(man['items'],store,guard);f=list(rej)
@@ -210,7 +238,12 @@ def check(store,mid,clock=time.time,guard=None):
     new='REJECTED' if (man is None or f or man['license'] not in LICENSES) else 'SANDBOX_OK'
     extra={'findings':f,'warnings':warn,'license':man['license'] if man else None,'title':man['name'] if man else None,'version':man['version'] if man else None,
            'declared_source':man['source'] if man else None,'items':len(man['items']) if man else 0,'first_titles':[i['title'] or i['text'][:40] for i in (man['items'][:3] if man else [])]}
-    box(store).mutate(lambda s:_to(s,mid,new,clock,'check',**extra));_log(store,'checked',id=mid,result=new,findings=len(f));return _rec(store,mid)
+    def finalize(s):
+        current=_get(s,mid)
+        if not s['enabled'] or current['state']!='QUARANTINED' or current.get('sha256')!=m['sha256']:
+            raise PermissionError('Modul während der Prüfung zurückgenommen oder ausgeschaltet')
+        return _to(s,mid,new,clock,'check',**extra)
+    box(store).mutate(finalize);_log(store,'checked',id=mid,result=new,findings=len(f));return _rec(store,mid)
 
 def _rec(store,mid):return dict(_get(state(store),mid))
 
@@ -226,10 +259,26 @@ def activate(store,mid,code,authority=None,clock=time.time,min_wait=MIN_WAIT_S):
     if str(code or '').strip().lower()!=m['sha256'][:8]:raise ValueError('Falscher Code. Er steht in der Zusammenfassung (:modul zeige '+mid+'); so ist sicher, dass du genau diese Datei freigibst.')
     left=m['quarantined']+min_wait-clock()
     if left>0:raise ValueError(f'Zu früh: lies erst die Zusammenfassung. Freigabe frühestens in {int(left)+1} Sekunden.')
+    def require_pending(s):
+        current=_get(s,mid)
+        if not s['enabled'] or current['state']!='SANDBOX_OK' or current.get('sha256')!=m['sha256']:
+            raise PermissionError('Modul während der Freigabe zurückgenommen oder ausgeschaltet')
+        return current
     if hashlib.sha256(_file(store,mid).read_bytes()).hexdigest()!=m['sha256']:
-        box(store).mutate(lambda s:_to(s,mid,'TAMPERED',clock,'activate'));raise ValueError('Datei hat sich verändert: gesperrt (TAMPERED)')
+        def suspend(s):
+            require_pending(s)
+            return _to(s,mid,'TAMPERED',clock,'activate')
+        box(store).mutate(suspend)
+        raise ValueError('Datei hat sich verändert: gesperrt (TAMPERED)')
+    # The hash read can itself race with Notaus or a new typed prohibition.
+    if halted(store):raise PermissionError('Notaus/Stillstand während der Freigabe')
+    why=gate(store,'module_activate','WRITE_LOCAL',EFFECTS_USE)
+    if why:raise PermissionError('Gesperrt während der Freigabe: '+why)
     consent={'by':HUMAN,'at':clock(),'sha8':m['sha256'][:8],'host':m['host'],'license':m['license'],'items':m['items'],'warnings':m.get('warnings',[])}
-    box(store).mutate(lambda s:_to(s,mid,'ACTIVE',clock,'HUMAN',consent=consent));_log(store,'activated',id=mid,sha8=m['sha256'][:8]);return _rec(store,mid)
+    def finalize(s):
+        require_pending(s)
+        return _to(s,mid,'ACTIVE',clock,'HUMAN',consent=consent)
+    box(store).mutate(finalize);_log(store,'activated',id=mid,sha8=m['sha256'][:8]);return _rec(store,mid)
 
 def revoke(store,mid,authority=None,clock=time.time,delete=False):
     """ACTIVE|SANDBOX_OK|QUARANTINED|PROPOSED -> REVOKED. Items leave `corpus()` at once. Works also while Notaus is on (it only removes)."""
@@ -243,7 +292,7 @@ def revoke(store,mid,authority=None,clock=time.time,delete=False):
 def corpus(store,clock=time.time):
     """Items a learner may read: only ACTIVE modules, only while learning is on, Notaus off and no user rule forbids learning/modules.
     Every item carries its tag. Re-hashes each file (M7)."""
-    st=state(store)
+    st,version=box(store).load()
     if not st['enabled'] or not st['learn'] or halted(store) or gate(store,'module_learn','WRITE_LOCAL',EFFECTS_USE):return []
     out=[]
     for m in st['mods'].values():
@@ -251,11 +300,20 @@ def corpus(store,clock=time.time):
         try:data=_file(store,m['id']).read_bytes()
         except OSError:data=b''
         if hashlib.sha256(data).hexdigest()!=m['sha256']:
-            box(store).mutate(lambda s,i=m['id']:_to(s,i,'TAMPERED',clock,'corpus'));_log(store,'tampered',id=m['id']);continue
+            def suspend(s,i=m['id'],sha=m['sha256']):
+                current=_get(s,i)
+                if current['state']=='ACTIVE' and current.get('sha256')==sha:
+                    return _to(s,i,'TAMPERED',clock,'corpus')
+            box(store).mutate(suspend);_log(store,'tampered',id=m['id']);continue
         man,f=parse(data)
         if man is None:continue
         tag=f"MODULE:{m['id']}:{m['sha256'][:8]}"
         out+=[{'text':i['text'],'title':i['title'],'module':m['id'],'tag':tag} for i in man['items']]
+    # A revoke, disable, or learning-switch change during file I/O invalidates
+    # the entire snapshot, even if the original bytes were hash-correct.
+    latest,latest_version=box(store).load()
+    if latest_version!=version or not latest['enabled'] or not latest['learn'] or halted(store) or gate(store,'module_learn','WRITE_LOCAL',EFFECTS_USE):
+        return []
     return out
 
 # ---- text for the operator (plain German)

@@ -31,7 +31,8 @@ def classify(b, tests):
     if b['tests'] and not all(tests[t]['ok'] for t in b['tests']): return 'TEST_FAIL'
     if b.get('verdict'): return 'MEASURED' if not verdicts(b) else 'MEASURED_FAILING'
     if b['needs'] == 'redmi': return 'NEEDS_REDMI'
-    return 'MEASURED' if any(a.startswith('../bench-results/') for a in b['artifacts']) else 'TESTED'
+    # A path string is not native evidence. Only an explicit passing verdict can promote to MEASURED.
+    return 'TESTED'
 
 def models(a, out):
     """Real-model benches that run in the cloud container (currently: semantic recall)."""

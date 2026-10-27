@@ -1,0 +1,107 @@
+name: V13 module lifecycle current phone source ZIP and extracted operator smoke
+on:
+  push:
+    branches: [codex/automation12-module-lifecycle-cas-20261027]
+    paths:
+      - '.github/workflows/module-lifecycle-phone-source.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-module-lifecycle-phone-source
+  cancel-in-progress: false
+jobs:
+  phone-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/module-phone"
+          timeout 240s "$RUNNER_TEMP/module-phone/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Build and verify exact source-only Termux ZIP
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/module-phone-proof"
+          git rev-parse HEAD > "$RUNNER_TEMP/module-phone-proof/HEAD.txt"
+          sha256sum v13/code/v13/modules_gate.py v13/code/v13/module_learn.py v13/code/scripts/package_source.py v13/code/scripts/verify_phone_zip_current_run268.py > "$RUNNER_TEMP/module-phone-proof/SOURCE_SHA256.txt"
+          python3 v13/code/scripts/package_source.py --root v13/code --out "$RUNNER_TEMP/V13-Phone-Module-CAS.zip" --phone-install > "$RUNNER_TEMP/module-phone-proof/PACK_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/module-phone-proof/PACK_EXIT.txt"
+          if [ "$(cat "$RUNNER_TEMP/module-phone-proof/PACK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/verify_phone_zip_current_run268.py --zip "$RUNNER_TEMP/V13-Phone-Module-CAS.zip" --root v13/code --out "$RUNNER_TEMP/module-phone-proof/VERIFY.json" > "$RUNNER_TEMP/module-phone-proof/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/module-phone-proof/VERIFY_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/module-phone-proof/VERIFY_EXIT.txt"
+          fi
+          if [ "$(cat "$RUNNER_TEMP/module-phone-proof/VERIFY_EXIT.txt")" = 0 ]; then
+            unzip -q "$RUNNER_TEMP/V13-Phone-Module-CAS.zip" -d "$RUNNER_TEMP/module-phone-extracted" > "$RUNNER_TEMP/module-phone-proof/EXTRACT_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/module-phone-proof/EXTRACT_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/module-phone-proof/EXTRACT_EXIT.txt"
+          fi
+          sha256sum "$RUNNER_TEMP/V13-Phone-Module-CAS.zip" > "$RUNNER_TEMP/module-phone-proof/PHONE_ZIP_SHA256.txt" 2>/dev/null || true
+          exit 0
+      - name: Actual extracted portable runtime and module operator state
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/module-phone-proof/EXTRACT_EXIT.txt")" = 0 ]; then
+            (cd "$RUNNER_TEMP/module-phone-extracted/V13-Phone" && bash -n setup.sh && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/module-phone/bin/python" -m v13 --home "$RUNNER_TEMP/module-phone-home" selftest --portable) > "$RUNNER_TEMP/module-phone-proof/PORTABLE_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/module-phone-proof/PORTABLE_EXIT.txt"
+            (cd "$RUNNER_TEMP/module-phone-extracted/V13-Phone" && PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/module-phone/bin/python" - <<'PY'
+          from pathlib import Path
+          import os
+          from v13.runtime import Runtime
+          from v13 import modules_gate as M
+          home=Path(os.environ['RUNNER_TEMP'])/'module-operator-home'
+          r=Runtime(home)
+          assert 'AUS' in M.operator_command(r,[])
+          assert 'AN' in M.operator_command(r,['an'])
+          assert M.state(r.store)['enabled'] is True
+          r.close()
+          r=Runtime(home)
+          assert M.state(r.store)['enabled'] is True
+          assert 'AUS' in M.operator_command(r,['aus'])
+          r.close()
+          print('EXTRACTED_MODULE_OPERATOR_PERSISTENCE_PASS_NO_NETWORK')
+          PY
+            ) > "$RUNNER_TEMP/module-phone-proof/OPERATOR_RAW.log" 2>&1
+            echo "$?" > "$RUNNER_TEMP/module-phone-proof/OPERATOR_EXIT.txt"
+          else
+            echo 2 > "$RUNNER_TEMP/module-phone-proof/PORTABLE_EXIT.txt"
+            echo 2 > "$RUNNER_TEMP/module-phone-proof/OPERATOR_EXIT.txt"
+          fi
+          "$RUNNER_TEMP/module-phone/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base 9eae3cc175512382038cc5f55887e7a8dbc9797f --head HEAD > "$RUNNER_TEMP/module-phone-proof/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/module-phone-proof/PRIVACY_EXIT.txt"
+          exit 0
+      - name: Close and preserve original source ZIP and raw
+        if: always()
+        run: |
+          set +e
+          (cd "$RUNNER_TEMP/module-phone-proof" && sha256sum *.txt *.log *.json > RECEIPT_SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: modulecas-phone-source-${{ github.run_id }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/V13-Phone-Module-CAS.zip
+            ${{ runner.temp }}/module-phone-proof/
+          if-no-files-found: error
+      - name: Enforce source ZIP, portable operator and privacy
+        run: |
+          set -euo pipefail
+          for n in PACK VERIFY EXTRACT PORTABLE OPERATOR PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/module-phone-proof/${n}_EXIT.txt")" = 0 || { tail -80 "$RUNNER_TEMP/module-phone-proof/${n}_RAW.log" 2>/dev/null || true; exit 1; }
+          done
+          cat "$RUNNER_TEMP/module-phone-proof/PHONE_ZIP_SHA256.txt"

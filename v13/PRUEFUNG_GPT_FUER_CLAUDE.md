@@ -1,5 +1,16 @@
 # GPT/Codex independent reviews of Claude changes
 
+## 2026-10-27 — Five-way integrated Claude BP11 follow-up: lifecycle CAS + direct recall ban (PR #675 / #676)
+
+Reviewed exact five-parent integration PR #672 at `9eae3cc175512382038cc5f55887e7a8dbc9797f`, containing Claude BP11/FS5 PR #666 and prior independent fetch/export fixes PR #667/#669. Scope: `modules_gate.py`, `module_learn.py`, synthetic SQLite and Termux source package. No main merge or native/Redmi model test.
+
+**Confirmed bug 1:** `check` and `activate` could revive revoked/disabled modules after an earlier snapshot; `corpus` could return revoked content and `export_dataset` write stale tagged JSONL. Preregistered original RED Actions `40465079891` (48 tests, 7 FAIL), source fix GREEN `40465244283` (48 PASS). Follow-up post-write Notaus/ban/disable original RED `40465483085` (52 tests, 3 FAIL), fix GREEN `40465545500` (52 PASS), then opposite-order and competing-owner cases GREEN `40465641170` (54 PASS). Original revoke(delete=True) **after** write was already safe; disproved hypothesis preserved. All compile/privacy zero, raw artifacts privately SHA/CRC/HEAD verified. Review branch PR #675, not production.
+
+**Confirmed bug 2:** direct `:modul frage` bypassed exact `:verbot werkzeug module_recall` and READ_LOCAL ban despite the ToolRegistry enforcing it. Preregistered original RED Actions `40466019062` (51 tests, 4 FAIL), narrow direct-reader fixed gate GREEN `40466133397` (51 PASS), compile/privacy zero; raw ZIPs privately byte-verified. Review branch PR #676 stacked on #675.
+
+**Phone/source-only:** Parent PR #675 Actions `40465873749` PASS: exact 1,417 file hashes, source ZIP CRC and extracted portable 94 tests PASS, persisted `:modul an|aus` operator smoke PASS, privacy CLEAN. No native/Redmi claim. Parent broad 4.5k-test differential still running at this checkpoint, not claimed green. Cross-table final-check/filesystem TOCTOU remains open; no semantic module learning measured. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, full scope false. Source/RED/GREEN SHA256 and next commands in scoped `code/docs/proofs/continuation-20261027/module-lifecycle-cas/` and `module-recall-direct-ban/` reports.
+
+
 ## 2026-10-27 — PR #666 (Claude `ed5010708`), review branch `codex/v13-review666-module-halt-race-20261027`
 
 **Confirmed bug (fixed on separate review branch):** A human Notaus, NETWORK ban, user-rule FORBID, module disable or module revoke during `modules_gate.fetch` was not rechecked after the network callback; the old code still persisted and promoted the downloaded bytes, potentially resurrecting a revoked proposal. RED Actions `40459519547` (43 tests, 3 FAIL) and `40459657917` (45 tests, 5 FAIL); GREEN `40459751403` (45/45 PASS, compile0, privacy CLEAN) at source commit `255fb7c73b161cc9ae95b11b4575d1a9def3c45b`. Counterexamples use synthetic in-memory fetcher; no real network. Three raw ZIPs privately backed up and SHA/CRC verified. Full detail and hashes: `code/docs/proofs/continuation-20261027/review666-module-halt-race/REPORT.md`.
