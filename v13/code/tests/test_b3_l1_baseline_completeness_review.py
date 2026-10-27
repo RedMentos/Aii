@@ -23,6 +23,7 @@ def complete():
         'bytes': {'NO_MESSAGE': 0, 'LATENT': 64, 'LATENT_SHUFFLED': 64,
                   'LATENT_RANDOM': 64, 'EXACT': 3900, 'CONTROL': 200,
                   'SYMBOLIC': 60},
+        'seed_ids': {ch: ['s01','s02','s03','s04','s05'] for ch in ('NO_MESSAGE','LATENT','LATENT_SHUFFLED','LATENT_RANDOM','EXACT','CONTROL','SYMBOLIC')},
         'role_drop': 0.0, 'ood_rate': 0.01, 'reload_identical': True,
     }
 

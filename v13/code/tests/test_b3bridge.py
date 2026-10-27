@@ -84,6 +84,7 @@ class BudgetGateTests(unittest.TestCase):
                      'EXACT':[.95]*5,'CONTROL':[.7]*5,'SYMBOLIC':[.7]*5},
               'bytes':{'NO_MESSAGE':0,'LATENT':64,'LATENT_SHUFFLED':64,
                        'LATENT_RANDOM':64,'EXACT':3900,'CONTROL':200,'SYMBOLIC':60},
+              'seed_ids':{ch:['s01','s02','s03','s04','s05'] for ch in ('NO_MESSAGE','LATENT','LATENT_SHUFFLED','LATENT_RANDOM','EXACT','CONTROL','SYMBOLIC')},
               'role_drop':0.,'ood_rate':.01,'reload_identical':True}
         g=BB.l1_gate(good);self.assertEqual(g['verdict'],'PASS',g);self.assertEqual(g['missing_baselines'],[])
         bad=json.loads(json.dumps(good));bad['bytes']['EXACT']=40
