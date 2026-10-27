@@ -1,0 +1,5 @@
+Z12C_SLOT_WORLD_JEPA_PASS {"pooled_cf": {"jepa_covered": 0.9103, "jepa_held_out": 0.9504, "no_action_covered": 0.1923, "no_action_held_out": 0.07, "shuffled_action_covered": 0.1952, "shuffled_action_held_out": 0.0724, "z12b_monolithic_covered_info": 0.7529, "z12b_monolithic_held_out_info": 0.1434}, "spearman_conf_err_all": -0.5887, "attribution_jepa": {"own_only_self": 0.9294, "world_only_world": 1.0, "none_self": 0.9418, "balanced": 0.9647}, "attribution_no_action_balanced": 0.52} {"C1_cf_retrieval_covered": true, "C2_cf_retrieval_held_out_combinations": true, "C3_controls_fail": true, "C4_no_collapse": true, "C5_confidence_tracks_error": true, "C6_attribution_jepa": true, "C7_action_free_control_worse": true}
+
+real	3m44.076s
+user	3m26.736s
+sys	0m4.244s
