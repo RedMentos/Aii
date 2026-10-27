@@ -121,10 +121,10 @@ class NativeBatchSoftwareTests(unittest.TestCase):
         # Real run_arm rejects >32 characters and dots; fake subprocesses do not.
         import re
         child = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,31}\\Z')
-        for job in batch.registered('x' * 16):
+        for job in batch.registered('x' * 17):
             self.assertIsNotNone(child.fullmatch(job['attempt']))
             self.assertLessEqual(len(job['attempt']), 32)
-        for bad in ('x' * 17, 'x.y', 'abc.def'):
+        for bad in ('x' * 18, 'x.y', 'abc.def'):
             with self.subTest(prefix=bad), self.assertRaises(ValueError):
                 batch.registered(bad)
         self.assertFalse(self.out.exists())
