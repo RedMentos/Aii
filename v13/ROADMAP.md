@@ -711,3 +711,17 @@ Vor Beginn Status-Zeile „in Arbeit (<Thread>)“ setzen; Tests + Doku + Überg
 - **Status 2026-10-10: erledigt (Pakete E).** `v13/episodic_route.py` + Haken in `runtime._route` (nach der prozeduralen Konsolidierung, vor dem Scaffold): aktive menschliche Routen-Korrektur mit Relevanz ≥ 0,6 (entitätsbewusst, gelöschte Quellen zählen nicht) → Vorschlag mit Erinnerungs-/Event-/Quellen-Bezug; `shadow` (Standard) schreibt ihn nach `meta.route.episodic_route`, `active` (`:episodes route active`) nimmt ihn als Route, `off` aus. Tests `tests/test_episodic_route.py` (3), volle Suite 940 grün.
 - Eine einzelne menschliche Routen-Korrektur bei einer sehr ähnlichen früheren Anfrage (gleiche Entitäten, hohe Relevanz) wird beim nächsten Mal sofort als Routen-Vorschlag genutzt, ohne auf die prozedurale Konsolidierung (≥ 3 Bestätigungen) zu warten; mit Episoden-/Quellen-Bezug. Standard SHADOW (Vorschlag in `meta.route`), wirkt mit `:episodes route active`.
 
+
+## Forschungsabgleich Runde 2 (2026-10-27, Thread „Aktuelle Forschung gegen Blueprint prüfen“) — Vorschläge WP-FS1..FS10
+Quelle: `research/FORSCHUNG_2026-10-27.md` (alle Quellen am 27.10. auf arXiv/Hugging Face abgerufen). Blueprint-Text bleibt unverändert (W1), das sind Ergänzungen. Reihenfolge nach Nutzen pro Aufwand [Schluss].
+- **WP-FS1 Entscheidungs-Weltmodell** (D-JEPA arXiv 2609.24749, AAWM 2606.25421): §7.2.1 `outcome` zusätzlich als Rangfolge „welche Kandidaten-Zukunft ging real besser aus“ trainieren, auf Z12c-Aufbau; Vergleich gegen reinen Vorhersagefehler. Offen.
+- **WP-FS2 Subspace Tuning** (arXiv 2610.22293): Updates nur im unteren Singulär-Unterraum als Arm im nativen C3-Training (WP-S6) gegen KL-Anker; messen Neulernen + Vergessen + KL-Drift. Wirkung bei 350M unbelegt. Offen.
+- **WP-FS3 Metakognitive Effizienz** (arXiv 2603.25112): meta-I/Typ-2-SDT als Pflichtmaß neben ECE für DS3b, Effort-Policy, Enthalten. Offen.
+- **WP-FS4 Selbstwissen-Test** (arXiv 2608.30980, 2605.26242): System sagt voraus, ob eine Änderung der Frage seine Antwort ändert, dann nachprüfen; keine Introspektions-Behauptungen. Offen.
+- **WP-FS5 Sicherheit gegen Umformulierung** (arXiv 2609.04022, 2605.28830): Regel-Leser-Prüfsätze mit gezielten Umformulierungen; Qwen3Guard-Stream-0.6B (Apache-2.0) als Zweitwächter auf RAM/Deutsch messen. Offen.
+- **WP-FS6 Sleep-D-Prüfliste** (SSGM arXiv 2603.11768): vor jedem Gewichts-Update Privat-Filter, Konsistenz, Drift über wiederholtes Zusammenfassen. Offen.
+- **WP-FS7 Verfahrens-Schema vor Konsolidierung** (Skill Schema Transport arXiv 2610.28892): Episoden als Schema (Schritte, Abhängigkeiten, Prüfung) statt Wortlaut lernen; gegen Roh-Episoden messen. Offen.
+- **WP-FS8 Rekonsolidierung + Langzeit-Gedächtnistest** (REALM arXiv 2609.16053, Ground Truth First 2607.21962): Abruf-Ergebnis ändert Gedächtnis-Eintrag; Gedächtnis-Standard erst nach Test über simulierte Wochen wählen. Offen.
+- **WP-FS9 Späher-Sonden für Wahl B1/B2/Lehrer** (ScoutRoute arXiv 2610.23443, Equifinality 2604.14419): kleine Sonden auf Hidden States des kleinen Modells; Router-Feinheiten nicht weiter ausbauen. Offen.
+- **WP-FS10 Veraltete Hypothesen markieren** (AEWM arXiv 2609.28416): Workspace markiert überholte Annahmen/Pläne aktiv; Bezug Z5c. Offen.
+- Nicht jetzt: Flow-JEPA (2608.29029, erst nach FS1), Qwen-AgentWorld lokal (zu groß; ggf. Cloud-Lehrer), RLMF (Cloud-RL).
