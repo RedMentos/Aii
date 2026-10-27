@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN631_C3_CHAT_NATIVE_CLOSED_V1",
+  "date_utc": "2026-10-27",
+  "owner": "GPT-6 automation; isolated Run631 source/tests/native/proof",
+  "branch": "codex/automation12-run631-c3-chat-native-utility-20261027",
+  "review_pr": 626,
+  "parent_pr": 625,
+  "parent_head": "58f823fec483197c6343a0c24eea6bf9754b609b",
+  "prereg_commit": "730825bbdeb2e8359f4a123a87ec8cad6d7c244d",
+  "experiment_commit": "9ee3201237d1ce5dc0a7cc8a73b56262751f02b0",
+  "ci": {
+    "run_id": 40425890810,
+    "conclusion": "success",
+    "source_tests": "14/14 PASS",
+    "adapter_fetch": "PASS",
+    "runner_fetch": "PASS",
+    "deps": "PASS",
+    "model_download": "PASS",
+    "convert": "PASS",
+    "native": "PASS",
+    "privacy": "CLEAN",
+    "raw_artifact_id": 12699089381,
+    "raw_zip_sha256": "a3b7f6c7738aabab90df369ee524ac853146ccb637b076b169060485b3418834",
+    "inner_sha256_verified": 26,
+    "private_roundtrip": "PASS"
+  },
+  "model": {
+    "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "master_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "adapter_sha256": "e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b",
+    "server_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
+  },
+  "native": {
+    "tokenizer_parity": "6/6 PASS",
+    "base_scale0_parity": "6/6 exact text/top64",
+    "logprob_deltas": [
+      0.2001338005065918,
+      0.20490407943725586,
+      0.17064666748046875,
+      0.09440088272094727,
+      0.1893777847290039,
+      0.21869516372680664
+    ],
+    "train_base_hits": 0,
+    "train_candidate_hits": 0,
+    "heldout_base_hits": 1,
+    "heldout_candidate_hits": 1,
+    "near_miss_base_leaks": 0,
+    "near_miss_candidate_leaks": 0,
+    "status": "NO_ANSWER_UTILITY",
+    "general_semantic_utility_proven": false
+  },
+  "backup": "/V13-Checkpoints/2026-10-27/Run631/Run631-chat-native-40425890810.zip",
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "next_exact_command": "Run632: prereg and implement native CPU LoRA on exact licensed current C3 LFM2.5-350M master; verify SHA/license, new frozen synthetic cohort, train/heldout, export, no authority; then test actual deployed QAD Q4 parity. Keep Run631 NO_ANSWER_UTILITY unchanged.",
+  "production_integrated": false
+}
