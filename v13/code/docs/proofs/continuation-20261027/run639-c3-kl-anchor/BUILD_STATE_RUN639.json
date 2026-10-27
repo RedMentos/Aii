@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN639_C3_KL_ANCHOR_BUILD_STATE_V1",
+  "schema": "V13_RUN639_C3_KL_ANCHOR_BUILD_STATE_V2",
   "date_utc": "2026-10-27",
   "branch": "codex/gpt6-run639-c3-kl-anchor-20261027",
   "owner": "GPT-6 scheduled V13 implementation; isolated Run639 C3 KL anchor files",
@@ -38,7 +38,9 @@
     "native_source_test_exit": 1,
     "native_train_exit": 2,
     "native_exit": 2,
-    "native_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-native-first-RED-40431676966.zip"
+    "native_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-native-first-RED-40431676966.zip",
+    "source_private_byte_roundtrip": "PASS",
+    "native_private_byte_roundtrip": "PASS"
   },
   "technical_amendment": {
     "commit": "0b6e6112de4c6b69f43a2a1a240b35fb33d9e6bb",
@@ -49,8 +51,17 @@
     "training_source_commit": "f376850b94c95fd0b2d5f30dd5e4017fbbc971e7",
     "training_source_blob": "c1f5a17d034891c9fc0368ac604a0d071184e387",
     "source_ci_run_id": 40431786509,
-    "source_ci_status": "RUNNING_NOT_VERIFIED",
-    "native_ci": "NOT_YET_RETRIGGERED"
+    "source_ci_head": "7499c9b1ca9133b3de3a01cd9a39c12ed0254439",
+    "source_ci_status": "GREEN",
+    "source_tests": "44/44 PASS",
+    "privacy": "CLEAN",
+    "source_zip_sha256": "093656bb999e66635b159da7817bf25a40eaa68fac8e0399d0be44186b0f0cc2",
+    "crc": "PASS",
+    "inner_sha": "9/9 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-27/Run639/Run639-source44-GREEN-40431786509.zip",
+    "private_byte_roundtrip": "PASS",
+    "native_workflow_commit": "3e69b7af4bb8f1bb20b38fa1eb303c3ca3686549",
+    "native_ci": "PENDING_NOT_VERIFIED"
   },
   "negative_gates": {
     "STEP2": "UTILITY_FAIL",
@@ -66,5 +77,6 @@
     "Does original Run638 unanchored baseline reproduce exactly on pinned QAD-Q4?",
     "Body-JEPA, B1/B2 native training, STEP2, Redmi remain unproven."
   ],
-  "next_exact_command": "Wait for Actions source 40431786509, verify 44 source tests, fix only source bug if needed; update native workflow pinned source+amendment blobs and trigger new native run; archive all original RED/GREEN raw and SHA/CRC/inner manifests, private byte roundtrip; update PR and continue."
+  "next_exact_command": "Inspect latest GitHub Actions native Run639 on branch codex/gpt6-run639-c3-kl-anchor-20261027 (workflow commit 3e69b7a); require 44 source PASS and pinned model/native execution, download artifact, verify CRC/inner SHA and private byte backup; update exact anchored results, PR635, then next independent package.",
+  "pr": 635
 }
