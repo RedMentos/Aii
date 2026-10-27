@@ -81,14 +81,43 @@ def verify_train_proof(binding, train_proof_path):
             json.dumps(proof.get("gates"), sort_keys=True) != json.dumps(T.GATES, sort_keys=True)):
         raise ValueError("QAD native train proof authority/heldout gates mismatch")
     metrics, adapter = proof.get("metrics") or {}, proof.get("adapter") or {}
-    if (type(metrics.get("steps")) is not int or metrics["steps"] != 2 or
-            metrics.get("jepa_weight") != 0 or
+    # These fields are produced by the frozen LoraTrainer.fit and run632
+    # export verifier. A SHA binds the supplied proof bytes but does not
+    # validate a claim about optimizer settings or exported adapter tensors.
+    from math import isfinite
+    def nonnegative_finite(value):
+        return type(value) in (int, float) and isfinite(value) and value >= 0
+
+    if (type(metrics.get("steps")) is not int or metrics["steps"] != T.CFG["max_steps"] or
+            type(metrics.get("rank")) is not int or metrics["rank"] != T.CFG["rank"] or
+            not nonnegative_finite(metrics.get("alpha")) or metrics["alpha"] != T.CFG["alpha"] or
+            metrics.get("targets") != T.CFG["targets"] or
+            not nonnegative_finite(metrics.get("jepa_weight")) or metrics["jepa_weight"] != 0 or
+            not nonnegative_finite(metrics.get("anchor_weight")) or metrics["anchor_weight"] != 0 or
+            not nonnegative_finite(metrics.get("final_ce")) or
+            metrics.get("resumed") is not False or
+            metrics.get("base_generation") != "BP1_QAD_C3_TRAIN_ONLY_SHADOW" or
+            metrics.get("trained_on") != "master" or
             type(metrics.get("trainable_parameter_count")) is not int or
-            metrics["trainable_parameter_count"] <= 0 or
-            adapter.get("gguf_sha256") != binding["adapter_gguf_sha256"] or
+            metrics["trainable_parameter_count"] <= 0):
+        raise ValueError("QAD native train proof frozen optimizer metrics mismatch")
+    hist = metrics.get("loss_history")
+    if (not isinstance(hist, list) or len(hist) != 2 or
+            any(not isinstance(entry, dict) or
+                type(entry.get("step")) is not int or entry["step"] != i or
+                not nonnegative_finite(entry.get("ce"))
+                for i, entry in enumerate(hist, 1))):
+        raise ValueError("QAD native train proof optimizer history mismatch")
+    if (adapter.get("gguf_sha256") != binding["adapter_gguf_sha256"] or
+            not S.is_hash(adapter.get("peft_sha256")) or
+            type(adapter.get("gguf_bytes")) is not int or adapter["gguf_bytes"] <= 0 or
+            type(adapter.get("gguf_tensors")) is not int or adapter["gguf_tensors"] < 2 or
+            adapter["gguf_tensors"] % 2 != 0 or
+            type(adapter.get("lora_b_tensors")) is not int or
+            not 0 < adapter["lora_b_tensors"] <= adapter["gguf_tensors"] // 2 or
             type(adapter.get("lora_b_nonzero")) is not int or
             adapter["lora_b_nonzero"] <= 0):
-        raise ValueError("QAD native train proof optimizer/adapter missing")
+        raise ValueError("QAD native train proof adapter export metadata mismatch")
     return True
 
 

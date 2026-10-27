@@ -1,0 +1,348 @@
+name: V13 BP1 genuine 25-row QAD train plus 44-row source-disjoint V2 paired heldout
+on:
+  push:
+    branches: [codex/gpt6-bp1-qad-train-plus-v2-20261027]
+    paths:
+      - 'v13/code/docs/proofs/continuation-20261027/bp1-qad-train-v2-samejob/ACTIVATE.txt'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-bp1-qad-native-smoke-heavy-serial
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Exact source, train-only tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-native-train-software"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-native-train-software/HEAD.txt"
+          git hash-object v13/code/v13/lora_trainer.py > "$RUNNER_TEMP/bp1-native-train-software/TRAINER_GIT_BLOB.txt"
+          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train-software/SOURCE_SHA256.txt"
+          (cd v13/code && PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_train_candidate tests.test_bp1_qad_lora_proof_contract tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score) > "$RUNNER_TEMP/bp1-native-train-software/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train-software/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1789a4c979720d4630de2d1c9414ffcdf67c9750 --head HEAD > "$RUNNER_TEMP/bp1-native-train-software/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp1-native-train-software/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp1-qad-train-v2-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-native-train-software/
+          if-no-files-found: error
+      - name: Enforce software exits
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/bp1-native-train-software/TRAINER_GIT_BLOB.txt")" = 49a752879ae5d19391963742a0f042e740edb2cc
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp1-native-train-software/${n}_EXIT.txt")" = 0 || { tail -100 "$RUNNER_TEMP/bp1-native-train-software/${n}_RAW.log"; exit 1; }
+          done
+  native:
+    needs: software
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_PRODUCTION_ACTIVATION: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+      OPENBLAS_NUM_THREADS: '1'
+      HF_HUB_DOWNLOAD_TIMEOUT: '600'
+      HF_HUB_ETAG_TIMEOUT: '60'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Host resource guard and immutable source
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-native-train"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp1-native-train/HEAD.txt"
+          sha256sum v13/code/scripts/bp1_qad_train_candidate.py v13/code/tests/test_bp1_qad_train_candidate.py > "$RUNNER_TEMP/bp1-native-train/SOURCE_SHA256.txt"
+          (free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.max 2>/dev/null || true) > "$RUNNER_TEMP/bp1-native-train/RESOURCE_BEFORE.log" 2>&1
+          python3 - <<'PY' > "$RUNNER_TEMP/bp1-native-train/BUDGET_RAW.log" 2>&1
+          import os,shutil
+          disk=shutil.disk_usage(os.environ['RUNNER_TEMP']).free
+          raw=open('/sys/fs/cgroup/memory.max').read().strip() if os.path.isfile('/sys/fs/cgroup/memory.max') else 'max'
+          cap=int(raw) if raw.isdigit() else 8_000_000_000
+          print('disk_free_bytes',disk,'cgroup_memory_cap_bytes',cap)
+          assert disk >= 5_000_000_000 and cap >= 5_000_000_000
+          PY
+          echo "$?" > "$RUNNER_TEMP/bp1-native-train/BUDGET_EXIT.txt"
+          exit 0
+      - name: Fetch immutable BP1 source artifact, extract TRAIN ONLY
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp1-train-input"
+          # Request redirect with auth only to api.github.com; signed artifact URL receives no token.
+          LOCATION="$(curl -fsS --max-time 60 -o /dev/null -w '%{redirect_url}' -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip)"
+          rc="$?"
+          if [ "$rc" = 0 ] && [[ "$LOCATION" == https://* ]]; then
+            curl -fsSL --retry 2 --max-time 180 "$LOCATION" -o "$RUNNER_TEMP/bp1-train-source.zip" > "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_RAW.log" 2>&1
+            rc="$?"
+          else
+            echo 'artifact redirect failed' > "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_RAW.log"
+            rc=2
+          fi
+          if [ "$rc" = 0 ]; then
+            echo "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c  $RUNNER_TEMP/bp1-train-source.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            unzip -p "$RUNNER_TEMP/bp1-train-source.zip" bp1-output/train_offer.jsonl > "$RUNNER_TEMP/bp1-train-input/train_offer.jsonl"
+            unzip -p "$RUNNER_TEMP/bp1-train-source.zip" bp1-output/MANIFEST.json > "$RUNNER_TEMP/bp1-train-input/MANIFEST.json"
+            echo "9f356917911983e887f80aaadd8b58365fe43ecbf6632bb5e9e0a1aa8628ff86  $RUNNER_TEMP/bp1-train-input/train_offer.jsonl" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_RAW.log" 2>&1
+            rc="$?"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_EXIT.txt"
+          exit 0
+      - name: Install isolated CPU trainer dependencies
+        run: |
+          set +e
+          python3 -m venv "$RUNNER_TEMP/bp1-qad-train-venv" > "$RUNNER_TEMP/bp1-native-train/DEPS_RAW.log" 2>&1
+          rc="$?"
+          if [ "$rc" = 0 ]; then
+            timeout 600s "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m pip install --disable-pip-version-check --no-input --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.0' >> "$RUNNER_TEMP/bp1-native-train/DEPS_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then
+            timeout 480s "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.9.0' 'jinja2==3.1.6' 'peft==0.18.0' 'safetensors==0.5.3' 'numpy==2.2.6' >> "$RUNNER_TEMP/bp1-native-train/DEPS_RAW.log" 2>&1
+            rc="$?"
+          fi
+          if [ "$rc" = 0 ]; then "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m pip freeze > "$RUNNER_TEMP/bp1-native-train/DEPS_LOCK.txt"; fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/DEPS_EXIT.txt"
+          exit 0
+      - name: Exact b10964 gguf-py source, dependency and synthetic export guard
+        run: |
+          set +e
+          ROOT="$RUNNER_TEMP/bp1-llama-b10964-source"
+          rc=2
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/BUDGET_EXIT.txt")" = 0 ]; then
+            git clone -q --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$ROOT" > "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_RAW.log" 2>&1
+            rc="$?"
+            if [ "$rc" = 0 ]; then
+              git -C "$ROOT" checkout -q b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 >> "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              test "$(git -C "$ROOT" rev-parse HEAD)" = b29c606e28a01b1bc8c1351026a0fa6e616bf6c4
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              git -C "$ROOT" rev-parse HEAD > "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_HEAD.txt"
+              git -C "$ROOT" hash-object gguf-py/gguf/constants.py gguf-py/gguf/tensor_mapping.py > "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_BLOBS.txt"
+              "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m pip install --disable-pip-version-check --no-input -e "$ROOT/gguf-py" >> "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              (cd v13/code && BP1_GGUF_CHECKOUT="$ROOT" PYTHONPATH="$PWD:$PWD/scripts" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m unittest discover -s tests -p 'test_bp1_qad_export_preflight.py' -v) > "$RUNNER_TEMP/bp1-native-train/GGUF_PREFLIGHT_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              BP1_GGUF_CHECKOUT="$ROOT" PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_export_preflight.py --source-checkout "$ROOT" --out "$RUNNER_TEMP/bp1-gguf-export-smoke" >> "$RUNNER_TEMP/bp1-native-train/GGUF_PREFLIGHT_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              cp "$RUNNER_TEMP/bp1-gguf-export-smoke/PREFLIGHT.json" "$RUNNER_TEMP/bp1-native-train/GGUF_PREFLIGHT.json"
+              "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" -m pip freeze > "$RUNNER_TEMP/bp1-native-train/DEPS_LOCK.txt"
+            fi
+          else
+            echo 'PREREQUISITE_FAILED' > "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_EXIT.txt"
+          exit 0
+      - name: Retrieve official immutable QAD FP32 master, tokenizer and license
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/BUDGET_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/DATASET_FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/GGUF_SOURCE_EXIT.txt")" = 0 ]; then
+            timeout 720s "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-native-train/MASTER_FETCH_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          p=snapshot_download(repo_id='LiquidAI/LFM2.5-350M-GGUF',
+              revision='657e078c94084481950a2d555a941481f715536b',
+              allow_patterns=['qad/*'],
+              local_dir=os.environ['RUNNER_TEMP']+'/bp1-qad-train-model')
+          print('official QAD source snapshot',p)
+          PY
+            rc="$?"
+            if [ "$rc" = 0 ]; then
+              echo "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079  $RUNNER_TEMP/bp1-qad-train-model/qad/model.safetensors" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/MASTER_FETCH_RAW.log" 2>&1
+              rc="$?"
+            fi
+          else
+            echo 'PREREQUISITE_FAILED' > "$RUNNER_TEMP/bp1-native-train/MASTER_FETCH_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/MASTER_FETCH_EXIT.txt"
+          exit 0
+      - name: Genuine 25-row source-bound train-only QAD CPU LoRA
+        run: |
+          set +e
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/MASTER_FETCH_EXIT.txt")" = 0 ]; then
+            timeout 1800s env PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python"               v13/code/scripts/bp1_qad_train_candidate.py               --mode train               --train "$RUNNER_TEMP/bp1-train-input/train_offer.jsonl"               --manifest "$RUNNER_TEMP/bp1-train-input/MANIFEST.json"               --master-dir "$RUNNER_TEMP/bp1-qad-train-model/qad"               --smoke-receipt v13/code/docs/proofs/continuation-20261027/bp1-qad-train-candidate/NATIVE_SMOKE_AUDIT_RECEIPT.json               --out "$RUNNER_TEMP/bp1-train-output" > "$RUNNER_TEMP/bp1-native-train/TRAIN_RAW.log" 2>&1
+            rc="$?"
+          else
+            echo 'MASTER_FETCH_FAILED; TRAIN_NOT_ATTEMPTED' > "$RUNNER_TEMP/bp1-native-train/TRAIN_RAW.log"
+            rc=2
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/TRAIN_EXIT.txt"
+          if [ "$rc" = 0 ]; then
+            cp "$RUNNER_TEMP/bp1-train-output/BP1_QAD_TRAIN_PROOF.json" "$RUNNER_TEMP/bp1-native-train/BP1_QAD_TRAIN_PROOF.json"
+            # Do not upload adapter weights; record hashes in proof only.
+          fi
+          (free -h; df -h "$RUNNER_TEMP"; cat /sys/fs/cgroup/memory.peak 2>/dev/null || true) > "$RUNNER_TEMP/bp1-native-train/RESOURCE_AFTER.log" 2>&1
+          exit 0
+      - name: Fetch original QAD Q4 base and pinned b10964 native runner
+        run: |
+          set +e
+          rc=2
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/TRAIN_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/bp1-v2-model" "$RUNNER_TEMP/bp1-v2-llama"
+            curl -fsSL --retry 2 --max-time 720 "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf" -o "$RUNNER_TEMP/bp1-v2-model/base.gguf" > "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+            rc="$?"
+            if [ "$rc" = 0 ]; then
+              echo "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d  $RUNNER_TEMP/bp1-v2-model/base.gguf" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              curl -fsSL --retry 2 --max-time 300 "https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz" -o "$RUNNER_TEMP/bp1-v2-llama.tar.gz" >> "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              echo "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443  $RUNNER_TEMP/bp1-v2-llama.tar.gz" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              tar -xzf "$RUNNER_TEMP/bp1-v2-llama.tar.gz" -C "$RUNNER_TEMP/bp1-v2-llama" >> "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              SERVER="$(find "$RUNNER_TEMP/bp1-v2-llama" -type f -name llama-server | head -1)"
+              if [ -z "$SERVER" ]; then rc=2; else
+                echo "$SERVER" > "$RUNNER_TEMP/bp1-native-train/V2_SERVER_PATH.txt"
+                echo "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39  $SERVER" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log" 2>&1
+                rc="$?"
+              fi
+            fi
+          else
+            echo 'TRAIN_NOT_GREEN; NO_V2_MODEL_FETCH' > "$RUNNER_TEMP/bp1-native-train/V2_MODEL_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/V2_MODEL_EXIT.txt"
+          exit 0
+      - name: Fetch exact original 11-pair source-disjoint V2 heldout artifact
+        run: |
+          set +e
+          rc=2
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/TRAIN_EXIT.txt")" = 0 ]; then
+            mkdir -p "$RUNNER_TEMP/bp1-v2-heldout"
+            LOCATION="$(curl -fsS --max-time 60 -o /dev/null -w '%{redirect_url}' -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12715684803/zip)"
+            rc="$?"
+            if [ "$rc" = 0 ] && [[ "$LOCATION" == https://* ]]; then
+              curl -fsSL --retry 2 --max-time 180 "$LOCATION" -o "$RUNNER_TEMP/bp1-v2-heldout.zip" > "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_RAW.log" 2>&1
+              rc="$?"
+            else
+              echo 'heldout artifact redirect failed' > "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_RAW.log"
+              rc=2
+            fi
+            if [ "$rc" = 0 ]; then
+              echo "12a66c12019ee267cac12defd0b281f34fbcac5dc1f2e941236ae4ebf9a5f56c  $RUNNER_TEMP/bp1-v2-heldout.zip" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              unzip -p "$RUNNER_TEMP/bp1-v2-heldout.zip" bp1-output/heldout_paired.jsonl > "$RUNNER_TEMP/bp1-v2-heldout/heldout_paired.jsonl"
+              unzip -p "$RUNNER_TEMP/bp1-v2-heldout.zip" bp1-output/MANIFEST.json > "$RUNNER_TEMP/bp1-v2-heldout/MANIFEST.json"
+              echo "7238a0220255cbccbcf1f9ccfad8dc03febfc37f7bc1d9d0aa645618f006508c  $RUNNER_TEMP/bp1-v2-heldout/heldout_paired.jsonl" | sha256sum -c - >> "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_RAW.log" 2>&1
+              rc="$?"
+            fi
+          else
+            echo 'TRAIN_NOT_GREEN; NO_HELDOUT_OPENED' > "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_RAW.log"
+          fi
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_EXIT.txt"
+          exit 0
+      - name: Bind actual trained adapter and collect+score genuine 44-response V2
+        run: |
+          set +e
+          rc=2
+          if [ "$(cat "$RUNNER_TEMP/bp1-native-train/TRAIN_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/V2_MODEL_EXIT.txt")" = 0 ] && [ "$(cat "$RUNNER_TEMP/bp1-native-train/V2_HELDOUT_EXIT.txt")" = 0 ]; then
+            PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" - <<'PY' > "$RUNNER_TEMP/bp1-native-train/V2_BINDING_RAW.log" 2>&1
+          import json,os
+          from pathlib import Path
+          from scripts import bp1_qad_lora_eval as E, bp1_paired_score as S
+          from scripts import bp1_qad_native_smoke as N, bp1_qad_train_candidate as T
+          tmp=Path(os.environ["RUNNER_TEMP"])
+          proof=tmp/"bp1-train-output"/"BP1_QAD_TRAIN_PROOF.json"
+          adapter=tmp/"bp1-train-output"/"adapter.gguf"
+          index,ds=S.load_dataset(tmp/"bp1-v2-heldout")
+          b={"schema":E.SCHEMA,"dataset_sha256":ds,"base_master_sha256":N.MASTER_SHA,
+             "base_gguf_sha256":N.GGUF_SHA,"adapter_gguf_sha256":S.sha(adapter.read_bytes()),
+             "runner_sha256":E.RUNNER_SHA,"seed":N.SEED,"temperature":0,"decoding":E.C.DECODING,
+             "lora_id":0,"scales":E.SCALES,"train_sha256":T.TRAIN_SHA,
+             "train_proof_sha256":S.sha(proof.read_bytes()),
+             "production_weight_authority":0,"gates":E.GATES}
+          E.validate_binding(b,ds)
+          E.verify_train_proof(b,proof)
+          (tmp/"bp1-v2-binding.json").write_text(json.dumps(b,sort_keys=True)+"\n")
+          print("QAD V2 strict native proof and source binding verified",len(index))
+          PY
+            rc="$?"
+            if [ "$rc" = 0 ]; then
+              SERVER="$(cat "$RUNNER_TEMP/bp1-native-train/V2_SERVER_PATH.txt")"
+              timeout 1600s env LD_LIBRARY_PATH="$(dirname "$SERVER")" PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_lora_eval.py --mode collect --dataset "$RUNNER_TEMP/bp1-v2-heldout" --binding "$RUNNER_TEMP/bp1-v2-binding.json" --server "$SERVER" --base-gguf "$RUNNER_TEMP/bp1-v2-model/base.gguf" --adapter-gguf "$RUNNER_TEMP/bp1-train-output/adapter.gguf" --train-proof "$RUNNER_TEMP/bp1-train-output/BP1_QAD_TRAIN_PROOF.json" --out "$RUNNER_TEMP/bp1-v2-collect" --serial-owner-confirmed > "$RUNNER_TEMP/bp1-native-train/V2_COLLECT_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              PYTHONPATH="$PWD/v13/code" "$RUNNER_TEMP/bp1-qad-train-venv/bin/python" v13/code/scripts/bp1_qad_lora_eval.py --mode score --dataset "$RUNNER_TEMP/bp1-v2-heldout" --binding "$RUNNER_TEMP/bp1-v2-binding.json" --predictions "$RUNNER_TEMP/bp1-v2-collect/predictions.jsonl" --out "$RUNNER_TEMP/bp1-v2-score" > "$RUNNER_TEMP/bp1-native-train/V2_SCORE_RAW.log" 2>&1
+              rc="$?"
+            fi
+            if [ "$rc" = 0 ]; then
+              cp "$RUNNER_TEMP/bp1-v2-collect/"{RUN_BINDING.json,predictions.jsonl,FINAL_MANIFEST.json} "$RUNNER_TEMP/bp1-native-train/"
+              cp "$RUNNER_TEMP/bp1-v2-score/SCORES.json" "$RUNNER_TEMP/bp1-native-train/V2_SCORES.json"
+            fi
+          else
+            echo 'PREREQUISITE_FAILED; NO_V2_COLLECTION' > "$RUNNER_TEMP/bp1-native-train/V2_COLLECT_RAW.log"
+          fi
+          # Preserve original partial native evidence even when the adapter server
+          # or scoring fails. Never copy adapter.gguf or safetensors into artifacts.
+          for f in "$RUNNER_TEMP/bp1-v2-binding.json" "$RUNNER_TEMP/bp1-v2-collect/server.log" "$RUNNER_TEMP/bp1-v2-collect/predictions.jsonl"; do
+            if [ -f "$f" ]; then
+              case "$f" in
+                */bp1-v2-binding.json) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_BINDING.json" ;;
+                */server.log) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_SERVER_RAW.log" ;;
+                */predictions.jsonl) cp "$f" "$RUNNER_TEMP/bp1-native-train/V2_PARTIAL_OR_FINAL_PREDICTIONS.jsonl" ;;
+              esac
+            fi
+          done
+          echo "$rc" > "$RUNNER_TEMP/bp1-native-train/V2_EXIT.txt"
+          exit 0
+      - name: Preserve closed raw evidence and failures, not weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bp1-qad-train-v2-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp1-native-train/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all source and actual optimizer exits
+        run: |
+          set -euo pipefail
+          for n in BUDGET DATASET_FETCH DEPS GGUF_SOURCE MASTER_FETCH TRAIN V2_MODEL V2_HELDOUT V2; do
+            test "$(cat "$RUNNER_TEMP/bp1-native-train/${n}_EXIT.txt")" = 0 || { echo "${n} failed"; tail -100 "$RUNNER_TEMP/bp1-native-train/${n}_RAW.log"; exit 1; }
+          done
+          test -s "$RUNNER_TEMP/bp1-native-train/BP1_QAD_TRAIN_PROOF.json"
+          echo "QAD_C3_B10964_NATIVE_TRAIN_PLUS_44_RESPONSE_V2_SHADOW; NO_UTILITY_PROMOTION_OR_REDMi"
