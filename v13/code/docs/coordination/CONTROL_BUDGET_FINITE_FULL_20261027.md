@@ -1,0 +1,9 @@
+# WP-T14 finite stage marks — full software closure (2026-10-27)
+
+Review-only PR #761, branch `assistant/v13-control-budget-finite-marks-review-20261027`, parent `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`, not main. Prereg `8e353fda38ced88a89b4ce1e682128d28f39b3b8` before RED. Minimal candidate source `32cde8ae8d621db52421936d4660e6ff7ad6fe78` rejects non-dict, bool, nonnumeric, NaN, Inf and negative recognized cumulative stage marks before control p95 accounting. Unknown stage keys are ignored; valid finite nonnegative marks and original WP-T14 thresholds are unchanged.
+
+**RED Actions 40565036175:** 8 tests run, 8 failures and 2 subtest errors, all other exits0, raw ZIP SHA256 `4f2d61c7094fd9b3b1c8a64d6f4d03d298688422ff06bec670a33f58d10d71aa`. **GREEN Actions 40565228455:** 8/8 focused PASS, all exits0, privacy CLEAN, raw ZIP SHA256 `62a08db7b7c628ea99579cbac32bdd82f020ea83fb85e9f93ecaf0281a155d26`. **Full source-wide Actions 40565991808 SUCCESS:** 1944 tests OK (1 skipped) in 217.355s, all INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN, original ZIP artifact 12764110256 SHA256 `51afd9bf41e4fb02b0f7221c931054f4fb904cce5c1574c5e0c1c424d1662c6e`, HEAD `a21ca3f739b262becb7c84fb1137d12e45451076`. All three raw ZIPs CRC/HEAD checked, privately backed up to `/V13-Checkpoints/2026-10-27/Automation11ZE-Control-Finite-Marks/` and re-materialized byte-identical.
+
+**Status:** scoped software candidate PASS, frozen runtime not integrated. No actual Redmi thermal/energy/latency proof, no model/utility/age promotion. Independent source-owner review required. LP1 NO_ATTRIBUTABLE_GAIN; LP2 ALIGNS_NO_GAIN; BJ1 NO_SIGNAL; STEP2 UTILITY_FAIL; B3 L1 FAIL; jepa_weight0; Age authority0; V13 incomplete.
+
+Next exact command: `cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_control_budget_finite_marks_review tests.test_control_budget`. Any concrete WP-T14 budget threshold still requires measured Redmi resource evidence.
