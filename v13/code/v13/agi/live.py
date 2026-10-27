@@ -128,6 +128,28 @@ def after_turn(r,e,meta,status,aid=None):
 GOAL_MATCH=.5  # WP-T8 BOOT: lexical relevance for a later FINAL turn to close an open user goal
 GOAL_TTL_S=7*86400  # WP-T8 BOOT: an unanswered open request is dropped after a week
 
+# Explicit no-answer is not a completion receipt. This deliberately narrow,
+# leading-only lexical check is not a semantic answer-quality classifier.
+_GOAL_NOANSWER_PREFIXES=(
+    "i don't know", "i do not know", "i can't answer", "i cannot answer",
+    "i'm not sure", "i am not sure", "not enough information",
+    "not enough context", "no answer", "unknown",
+    "ich weiß es nicht", "ich weiss es nicht", "das weiß ich nicht",
+    "das weiss ich nicht", "keine ahnung", "ich kann die frage nicht beantworten",
+    "ich kann das nicht beantworten", "unbekannt",
+)
+
+def _goal_explicit_nonanswer(answer):
+    text=' '.join(str(answer or '').casefold().replace('’', "'").split())
+    for apology in ('sorry,', 'sorry.', 'leider,', 'leider.',
+                    'entschuldigung,', 'entschuldigung.'):
+        if text.startswith(apology):
+            text=text[len(apology):].strip()
+            break
+    return any(text.startswith(prefix) and
+               (len(text)==len(prefix) or not text[len(prefix)].isalpha())
+               for prefix in _GOAL_NOANSWER_PREFIXES)
+
 def goal_turn(r,e,meta,status):
     """§20.3: a user goal closes only after a related, actually persisted FINAL answer.
 
@@ -149,13 +171,19 @@ def goal_turn(r,e,meta,status):
     opened=[x for x in g.goals.tree({'OPEN','ACTIVE','BLOCKED'}) if x['origin']=='USER' and any(str(v).startswith('event:') for v in x['evidence'])]
     for x in [x for x in opened if g.goals.clock()-x['created']>GOAL_TTL_S]:g.goals.set_status(x['id'],'ABANDONED','open request expired');opened.remove(x)
     final_answer=r.store.one(
-        "SELECT id FROM messages WHERE event_id=? AND session_id=? AND role='assistant' "
+        "SELECT id,text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='assistant' "
         "AND status='FINAL' AND length(trim(text))>0 "
         "AND COALESCE(json_extract(metadata,'$.reference_only'),0)=0 "
         "ORDER BY id DESC LIMIT 1",
         (eid,r.session))
     delivered=status=='FINAL' and not asked and final_answer is not None
     if delivered:
+        # The stored FINAL message, not a caller-supplied status, controls
+        # whether a JEF goal may be marked complete. An explicit refusal or
+        # calibrated abstention leaves the USER goal open for later handling.
+        receipt_meta=json.loads(final_answer['metadata'] or '{}')
+        if not isinstance(receipt_meta,dict) or meta.get('metacog_abstain') or receipt_meta.get('metacog_abstain') or _goal_explicit_nonanswer(final_answer['text']):
+            return
         for x in opened:
             # Auto-completion is local to the originating chat. Goal titles
             # alone are not enough: the original event(s) must still exist
