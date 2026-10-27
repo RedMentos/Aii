@@ -190,7 +190,13 @@ class Memory:
             if value!=r['value']:raise ValueError('Memory value provenance changed')
             r.update(source_ref=ref,value=value,retrieval_score=score,retrieval_policy=policy,embedding_similarity=sim,retrieval_channel=channel);candidates.append(r)
         if hasattr(self,'consolidation'):candidates=self.consolidation.merge(query,session,candidates,semantic_decisions_present=semantic is not None,cancel=cancel,deadline=deadline)
-        return sorted(candidates,key=lambda x:(x['retrieval_score'],x['created']),reverse=True)[:top_k]
+        candidates=sorted(candidates,key=lambda x:(x['retrieval_score'],x['created']),reverse=True)
+        try:  # WP-BP7 / FS8: human retrieval verdicts move the entry's retrieval weight (order only, active mode); value never changes
+            from .reconsolidation import Reconsolidation
+            candidates=Reconsolidation(self.s,self.cfg).annotate(candidates)
+        except ValueError:raise
+        except Exception as exc:self.s.log('bp7_recon_error',None,{'error':type(exc).__name__})
+        return candidates[:top_k]
     def _embedding_similarities(self,query,rows,cancel,deadline):
         """WP-H semantic key channel; any failure falls back to lexical recall (never blocks the turn)."""
         import time

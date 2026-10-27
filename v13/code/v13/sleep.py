@@ -383,6 +383,10 @@ class SleepCycle:
                     rep['homeostasis_gate']=homeo_run(self.runtime,st['gains'])['gate']
                 except Exception as exc:rep['homeostasis_gate']={'status':'ERROR','error':type(exc).__name__}
             try:
+                from .reconsolidation import Reconsolidation
+                rep['reconsolidation']=Reconsolidation(self.s,self.cfg,self.clock).sleep()  # WP-BP7 / FS8: retrieval verdicts settle during sleep
+            except Exception as exc:rep['reconsolidation']={'status':'ERROR','error':type(exc).__name__}
+            try:
                 from .archive import run as archive_run
                 rep['archive']=archive_run(self.s,self.clock)  # WP-U4 §9.5: cold exact sources go to compressed storage
             except Exception as exc:rep['archive']={'status':'ERROR','error':type(exc).__name__}

@@ -88,6 +88,13 @@ class WeightConsolidation:
         if include_rated:items=(items+self.rated_candidates())[:MAX_ITEMS]
         if include_sdft:items=(items+self.sdft_candidates())[:MAX_ITEMS]
         if not items:return {'status':'NOTHING_TO_STAGE','admission':admission}
+        sleep_d=None
+        try:  # WP-BP7 / FS6: Sleep-D checklist (private filter, consistency, summary drift, dream fact leak); can only remove items
+            from ..ssgm import Checklist
+            items,sleep_d=Checklist(self.s,self.cfg,self.clock).run(items)
+        except Exception as exc:
+            self.s.log('bp7_sleep_d_error',None,{'error':type(exc).__name__});return {'status':'SKIPPED_SLEEP_D_ERROR','error':type(exc).__name__}  # fail closed
+        if not items:return {'status':'NOTHING_TO_STAGE_AFTER_SLEEP_D','sleep_d':sleep_d,'admission':admission}
         from ..guards import mix_for_training
         items,mix=mix_for_training(items)  # v4 §24 data mix before every training job (human >= 60 %, self <= 10 %, dream <= 5 %)
         if not mix['check']['pass']:self.s.log('g6_data_mix',None,{'status':'DATA_MIX_FAIL','violations':mix['check']['violations'],'before':mix['before']});return {'status':'DATA_MIX_FAIL','data_mix':mix}
@@ -106,7 +113,7 @@ class WeightConsolidation:
             return dict(b)
         b=self.box.mutate(put);self.s.log('g6_stage',None,{'items':len(items),'status':b['status']})
         if not b.get('deduplicated'):self._neuromod('touch',b['id'],refs=[i['source_ref'] for i in items[:8]])
-        return {'status':b['status'],'batch_id':b['id'],'items':len(items),'deduplicated':b.get('deduplicated',False)}
+        return {'status':b['status'],'batch_id':b['id'],'items':len(items),'deduplicated':b.get('deduplicated',False),'sleep_d':sleep_d}
     def _set(self,bid,fn):
         def go(st):
             b=st['batches'].get(bid)
