@@ -49,5 +49,16 @@
     "no active heavy owner",
     "isolated gguf source commit verified",
     "native raw evidence closed"
-  ]
+  ],
+  "final_green": {
+    "run": 40478879090,
+    "source_sha": "14729d5413bed41f976a8a12a35c3d838c10429f",
+    "artifact": 12722345729,
+    "zip_sha256": "e250a29564c8316857ab86142ceafac5f44a0dcceabfbdd504f63746000f72cd",
+    "tests": "5/5 PASS",
+    "upstream_exit": 0,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "private_backup_byte_identical": true
+  }
 }
