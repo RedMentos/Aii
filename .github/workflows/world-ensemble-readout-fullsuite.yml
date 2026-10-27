@@ -5,9 +5,9 @@ on:
     paths:
       - '.github/workflows/world-ensemble-readout-fullsuite.yml'
       - 'v13/code/v13/world_jepa.py'
-      - 'v13/code/v13/world_jepa.py'
+      - 'v13/code/v13/world_model.py'
       - 'v13/code/tests/test_world_jepa.py'
-      - 'v13/code/tests/test_world_jepa.py'
+      - 'v13/code/tests/test_world_model.py'
 permissions:
   contents: read
 concurrency:
