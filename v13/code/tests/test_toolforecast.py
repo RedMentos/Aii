@@ -144,7 +144,13 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        # Existing PR #718 full-suite review discovered that the historical
+        # native directory may be inaccessible on CI. No native proof is inferred.
+        try:
+            native_restore_available = Path('/root/native/restore/round8-note-tool-raw').exists()
+        except OSError:
+            native_restore_available = False
+        plan = cc.plan('/root/native/restore') if native_restore_available else None
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
