@@ -27,18 +27,20 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
                             '--output-dir', str(cls.training)])
         cls.checkpoint = cls.training / 'slot-shadow-v2.npz'
         cls.before = digest(cls.checkpoint)
+        cls.holdout = cls.root / 'heldout'
+        with patch('v13.world_jepa_slots.SlotWorldJEPA.fit',
+                   side_effect=AssertionError('holdout must never train')):
+            with patch('v13.world_jepa_slots.SlotWorldJEPA.calibrate',
+                       side_effect=AssertionError('holdout must never calibrate')):
+                cls.report = run_holdout(cls.training, cls.holdout, seed=313, rows=160)
 
     @classmethod
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
     def test_real_linux_holdout_restart_and_controls(self):
-        out = self.root / 'heldout'
-        with patch('v13.world_jepa_slots.SlotWorldJEPA.fit',
-                   side_effect=AssertionError('holdout must never train')):
-            with patch('v13.world_jepa_slots.SlotWorldJEPA.calibrate',
-                       side_effect=AssertionError('holdout must never calibrate')):
-                report = run_holdout(self.training, out, seed=313, rows=160)
+        out = self.holdout
+        report = self.report
         self.assertEqual(digest(self.checkpoint), self.before)
         self.assertEqual(report['mode'], 'SHADOW_ONLY')
         self.assertEqual(report['authority'], 0)
@@ -110,6 +112,16 @@ class WorldJepaHoldoutUtilityTests(unittest.TestCase):
         finally:
             manifest.write_bytes(raw)
         self.assertTrue(verify_holdout_export(out, self.training)['verified'])
+        for field, value in (('redmi_measured', True), ('step2', 'PASS'),
+                             ('action_executed_by_model', True)):
+            try:
+                obj = json.loads(raw)
+                obj[field] = value
+                manifest.write_text(json.dumps(obj))
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    verify_holdout_export(out, self.training)
+            finally:
+                manifest.write_bytes(raw)
 
     def test_z_existing_output_refused(self):
         with self.assertRaises(FileExistsError):
