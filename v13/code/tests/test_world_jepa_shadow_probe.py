@@ -50,6 +50,8 @@ class WorldShadowProbeTests(unittest.TestCase):
         self.assertEqual(a['mode'], 'SHADOW_ONLY')
         self.assertIs(a['action_executed'], False)
         self.assertIs(a['learning_performed'], False)
+        self.assertTrue(a['after_supplied'])
+        self.assertFalse(a['after_verified'])
         self.assertEqual(len(a['predicted_next_latent']), S)
         self.assertEqual(len(a['predicted_next_latent'][0]), 8)
         self.assertEqual(len(a['slot_spread']), S)
@@ -62,7 +64,8 @@ class WorldShadowProbeTests(unittest.TestCase):
     def test_without_after_is_prediction_not_observation(self):
         a = self.probe(self.request(with_after=False))
         self.assertIsNone(a['slot_errors'])
-        self.assertFalse(a['after_observed'])
+        self.assertFalse(a['after_supplied'])
+        self.assertFalse(a['after_verified'])
         self.assertEqual(len(a['slot_spread']), S)
 
     def test_wrong_digest_and_provenance_fail_closed(self):
