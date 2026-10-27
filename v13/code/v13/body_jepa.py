@@ -152,7 +152,7 @@ from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,
 from .common import digest,dumps,atomic_write
 
 REVISION='v13-body-jepa-trainer-v1'
-DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4)
+DEFAULTS=dict(_LORA_DEFAULTS,locality_gen=0,lora_subspace='none',jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4)
 
 class BodyJepaTrainer(LoraTrainer):
     """LoRA body trainer with the §13 B-JEPA term (EMA adapter target + predictor) next to answer CE and KL anchors.
@@ -174,11 +174,17 @@ class BodyJepaTrainer(LoraTrainer):
         t0=time.monotonic();cfg=self.cfg;mode=str(cfg['jepa_target']);w_j=float(cfg['jepa_weight']);layer=int(cfg['jepa_layer'])
         if mode not in MODES:raise ValueError('unknown jepa_target')
         torch,tok,model=self._load()
+        items,sdft=self.self_teach(torch,tok,model,items)  # WP-S5 SDFT items (target None + teacher_prompt) as in LoraTrainer
+        if not items:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'EMPTY_BATCH','sdft':sdft}}
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
         dh=digest(dumps([[i.get('memory_id'),i['prompt'],i['target']] for i in items]+[self.anchors,{k:v for k,v in cfg.items() if k!='threads'}]))[:24]
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
         anchors=list(self.anchors)+self.locality_prompts(items,int(cfg['locality_swaps']))
+        gen_cov=None
+        if int(cfg.get('locality_gen',0))>0:  # WP-BP2b/c: person-swap anchors generated from the questions themselves
+            from .locality_gen import anchors_for
+            ga,gen_cov=anchors_for([i['prompt'] for i in items],k=int(cfg['locality_gen']));anchors+=ga
         ck=(str(self.master),tuple(anchors))
         if ck not in BodyJepaTrainer._anchor_cache:  # base continuations + log-probs are identical for every arm of one body
             anchor_seqs=[]
@@ -248,12 +254,19 @@ class BodyJepaTrainer(LoraTrainer):
                  'loss_history':hist,'final_ce':hist[-1]['ce'] if hist else None,'trainable_parameter_count':n_train,
                  'predictor_parameter_count':sum(p.numel() for p in pred.parameters()),'rank':int(cfg['rank']),'targets':list(cfg['targets']),
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),
-                 'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
+                 'lora_subspace':str(cfg.get('lora_subspace','none')),'locality_gen':gen_cov,'sdft':sdft,'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
                  'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
         result={'artifact':str(adapter['gguf']),'hash':adapter['gguf_sha256'],'method':self.method,'metrics':metrics,'files':adapter}
+        if self.evaluator is not None:  # deployed-path gate numbers, same contract as LoraTrainer.fit (weights.gate/approve read these)
+            ev=self.evaluator(adapter['gguf'])
+            try:rep=ev.evaluate(items,self.probes,cancel=cancel,deadline=deadline)
+            finally:ev.close()
+            metrics.update({'deployed':rep,'kl_to_base':rep['kl_to_base'],'kl_source':'deployed_llama_cpp_topk'})
+            result['eval']={'base_eval':rep['base_eval'],'candidate_eval':rep['candidate_eval'],'learned_recall':rep['learned_recall']}
+            if 'wp_s5_drift' in rep:result['eval']['wp_s5_drift']=rep['wp_s5_drift']
         atomic_write(out/'manifest.json',json.dumps(result,indent=1,ensure_ascii=False))
         self.last=result;self.model=model;self.tok=tok;self.torch=torch
         return result

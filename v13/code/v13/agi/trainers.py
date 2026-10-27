@@ -81,11 +81,14 @@ class LiveNearMissEvaluator:
     """LlamaCppEvaluator whose near-miss questions are derived from the batch (swapped nouns), like the sparse trainer.
     With a drift meter (WP-S5 drift.Drift) it also measures KL on the FROZEN generic probes (specs/drift-probes.json,
     never trained on, hash-pinned) on the same deployed server; weights.gate/approve check that report."""
-    def __init__(self,inner,swaps=2,drift=None):self.inner=inner;self.swaps=swaps;self.drift=drift
+    def __init__(self,inner,swaps=2,drift=None,held_out_subjects=False):self.inner=inner;self.swaps=swaps;self.drift=drift;self.held_out=held_out_subjects
     def evaluate(self,items,probes_,cancel=None,deadline=None):
         from ..lora_trainer import LoraTrainer
         from ..memory_trainer import answer_keys
         near=[(q,answer_keys(i)) for i in items for q in LoraTrainer.locality_prompts([i],self.swaps+2)[self.swaps:]]
+        if self.held_out:  # WP-BP2c: the gate's extra near-misses use persons the generated training anchors never use
+            from ..locality_gen import variants,EVAL_SUBJECTS
+            near+=[(q,answer_keys(i)) for i in items for q in variants(i['prompt'],EVAL_SUBJECTS,2)]
         rep=self.inner.evaluate(items,probes_,cancel=cancel,deadline=deadline,near_miss=near)
         # weights.gate() checks specificity from candidate_eval/base_eval; LlamaCppEvaluator reports the leak at top level.
         rows=(rep.get('rows') or {}).get('near_miss') or []
@@ -97,6 +100,11 @@ class LiveNearMissEvaluator:
             except ValueError as exc:rep['wp_s5_drift']={'error':str(exc)[:200]}  # e.g. probe file changed without refreeze: gate fails
         return rep
     def close(self):self.inner.close()
+
+BODY_KEYS=frozenset(('locality_gen','lora_subspace','jepa_weight','jepa_target','jepa_ema_decay','jepa_layer'))
+
+def _held_out(evaluator):
+    evaluator.held_out=True;return evaluator
 
 def build(runtime,kind=None):
     """Return (trainer, info). Never raises for a missing piece: falls back to NullTrainer with the reason."""
@@ -116,7 +124,14 @@ def build(runtime,kind=None):
         ev=lambda path:LiveNearMissEvaluator(LlamaCppEvaluator(req['runner'],req['c3_gguf'],path,threads=threads,log=str(Path(runtime.home)/'logs/ag6-eval.log')),
                                              drift=Drift(runtime.store,runtime.cfg))
         cfg=dict(LIVE_LORA,**(st.get('lora_cfg') or {}),threads=threads,base_gguf=req['c3_gguf']);info['lora_cfg']={k:v for k,v in cfg.items() if k!='base_gguf'}
-        t=LoraTrainer(req['master'],work,master_sha256=sha,anchors=anchors,probes=probe,cfg=cfg,evaluator=ev)
+        body=BODY_KEYS.intersection(st.get('lora_cfg') or {})  # WP-BP2c: generated locality anchors / minor-subspace LoRA / body JEPA, only when asked for
+        if body:
+            from ..body_jepa import BodyJepaTrainer
+            cfg.setdefault('jepa_weight',0.);cfg.setdefault('locality_swaps',2)  # JEPA stays off unless set explicitly
+            if int(cfg.get('locality_gen',0))>0:
+                ev0=ev;ev=lambda path:_held_out(ev0(path))
+            t=BodyJepaTrainer(req['master'],work,master_sha256=sha,anchors=anchors,probes=probe,cfg=cfg,evaluator=ev,arch=None);info['body_trainer']=sorted(body)
+        else:t=LoraTrainer(req['master'],work,master_sha256=sha,anchors=anchors,probes=probe,cfg=cfg,evaluator=ev)
         t.role=ROLE;info['served_live']=True;return t,info
     from ..memory_trainer import SparseMemoryAG6Trainer,live_system
     t=SparseMemoryAG6Trainer(req['master'],work,background=anchors,probes=probe,master_sha256=sha,store=runtime.store,
@@ -132,7 +147,7 @@ def install(growth,runtime,kind=None):
 def set_lora_cfg(growth,runtime,overrides):
     """Measured per-device LoRA overrides (keys of lora_trainer.DEFAULTS only)."""
     from ..lora_trainer import DEFAULTS
-    bad=[k for k in overrides if k not in DEFAULTS or k in ('threads','base_gguf')]
+    bad=[k for k in overrides if (k not in DEFAULTS and k not in BODY_KEYS) or k in ('threads','base_gguf')]
     if bad:raise ValueError('Unbekannte LoRA-Regler: '+', '.join(bad))
     def f(st):st['lora_cfg']=dict(overrides)
     _box(runtime.store).mutate(f);return install(growth,runtime)

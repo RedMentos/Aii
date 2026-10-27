@@ -9,6 +9,8 @@ import re
 
 # Subjects used for TRAINING anchors. Keep disjoint from any evaluation subjects and from lora_trainer.SWAP_NOUNS' evaluation use.
 TRAIN_SUBJECTS=('friend','mother','father','boss','cousin','uncle','colleague','neighbour','grandmother','son')
+# Subjects for the GATE's near-miss questions: never used as training anchors (evaluation stays held-out).
+EVAL_SUBJECTS=('wife','nephew','girlfriend','stepbrother','granddaughter','sister')
 _POSS=re.compile(r"\bmy (\w+)(?!'s)\b",re.I)
 
 def variants(question,subjects=TRAIN_SUBJECTS,k=2):
