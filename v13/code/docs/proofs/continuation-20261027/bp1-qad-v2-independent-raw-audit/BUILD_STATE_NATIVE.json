@@ -1,0 +1,39 @@
+{
+  "schema": "V13_BP1_V2_RAW_AUDIT_SOFTWARE_20261027",
+  "owner": "GPT-6 automation11",
+  "base": "ca954bf471a4d96abb4e84c8dcd847c75a5b1186",
+  "source": "9ef046761d576b834b7894458bb2176216c41bfe",
+  "software": {
+    "run": 40486343004,
+    "artifact": 12725381545,
+    "zip_sha256": "55bc817a39b060e64e2e7c701688b78ff7e05efc58ca66ba9430c4fb35bb52b8",
+    "unit_pass": 9,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "private_backup": "byte_verified"
+  },
+  "native": {
+    "run": 40486038454,
+    "head": "ca954bf471a4d96abb4e84c8dcd847c75a5b1186",
+    "status_at_checkpoint": "IN_PROGRESS_UNVERIFIED"
+  },
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Redmi_measured": false,
+    "V13": "INCOMPLETE"
+  },
+  "next": "after original V2 native ZIP closes, run independent bp1_qad_v2_raw_audit.py and bp1_qad_v2_rescore.py with exact ZIP SHA/head/dataset; retain negative gates and continue retention/near-miss",
+  "rescore": {
+    "source": "33171eb7aa673db62ee1fadd86f34cda566e8116",
+    "run": 40486616054,
+    "artifact": 12725366790,
+    "zip_sha256": "7a9b402fce255d51f3c82856b6880a354f8c95de5e02ec7948533e9b7527a89a",
+    "software_tests_pass": 17,
+    "compile_exit": 0,
+    "privacy": "CLEAN",
+    "private_backup": "byte_verified"
+  }
+}
