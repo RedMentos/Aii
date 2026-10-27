@@ -230,8 +230,17 @@ def check(r,channel_utility=None,now=None,log=True):
     return out
 
 def gate_passed(man,lv):
-    """Highest-rung evidence in the bridge manifest: l1_gate, l2_gate, ... with verdict PASS."""
-    return bool(((man or {}).get(lv.lower()+'_gate') or {}).get('verdict')=='PASS')
+    """Every latent rung depends on a complete L1 proof, not a PASS label.
+
+    Human authorization and receiver calibration remain separate requirements.
+    A fully forged manifest still needs independent native artifact provenance.
+    """
+    if not isinstance(man,dict) or lv not in LATENT:return False
+    from .b3bridge import l1_report_valid
+    if not l1_report_valid(man.get('l1_gate')):return False
+    if lv=='L1':return True
+    gate=man.get(lv.lower()+'_gate')
+    return isinstance(gate,dict) and gate.get('verdict')=='PASS'
 
 def promote(r,direction,authority='SYSTEM',now=None):
     """One rung up into the latent ladder, only with explicit human authority and all evidence present."""
