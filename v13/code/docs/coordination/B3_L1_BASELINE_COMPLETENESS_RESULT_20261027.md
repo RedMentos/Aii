@@ -1,0 +1,21 @@
+# B3-H3 L1 complete paired baseline gate — verified RED/GREEN checkpoint (2026-10-27)
+
+Review-only child of current C1+World integration exact parent `87dd02f82abdcc3762029dac3ea8170c9db30e7c`, not main. Prereg `6233286b33715f482a0fa0a11741d78aafa745a7` predates RED tests `9f34fef1bef848ae5be933c0444fb4fd293bd838`, source change `f1f6d1850a082de97a6dda0dbdad9609cc5ce880` and correction of the historical incomplete-positive fixture `00bba973b2bf0039aea30fcfd0df8a65cc2d69a4`.
+
+## Proven defect and narrow fix
+
+`b3bridge.l1_gate` could return `PASS` while canonical CONTROL, LATENT_SHUFFLED or LATENT_RANDOM comparator arms were absent. The historical unit test explicitly asserted PASS with missing CONTROL. It also silently paired unequal lengths by `zip` and accepted out-of-range scores, negative/invalid byte costs and truthy string reload flags. New L1 gate requires complete finite paired observations for NO_MESSAGE, LATENT, LATENT_SHUFFLED, LATENT_RANDOM, EXACT, CONTROL and SYMBOLIC; each must have explicit nonnegative finite byte costs and typed safety metadata. Missing/malformed evidence returns FAIL, never permission for L2 shadow. The historical positive unit fixture is corrected to include all arms; original native failed attempts and negative gates are preserved.
+
+## Closed focused evidence
+
+- **RED Actions 40589646648** expected FAILURE: 24 tests, 28 failed subcases +24 errors from missing arms/invalid types (original source). Original ZIP artifact `12773226795`, SHA256 `6b2a842791fba29349f0fab37c2e7357107d76137e6c08edeafa8d22963a6a4f`, CRC PASS; HEAD `6ad6daf51eb990b053f2a4da486036099a133c74`, SOURCE_BLOB `577eda716b5fc17607ff46d11267b2e08eee2794`, TEST_BLOB `869c98dc79000673ec1ae7e739c8d2aa548204b8`. PREREG/INSTALL/COMPILE/PRIVACY/DIFF exits0, UNIT exit1.
+- Intermediate **40589861257** and **40589877878** remain preserved as failed focused attempts; latter exposed a misspelled preexisting module name in the new CI invocation (`test_b3completion` vs `test_b3_completion`), corrected by CI-only commit `4bd4915b50cc74b64527c0d5aabe1da30d0e62c1`. Not counted as GREEN.
+- **GREEN Actions 40590038371 SUCCESS:** 27/27 PASS, all PREREG/INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN. Original ZIP artifact `12772544031`, SHA256 `f51a7a99a15aab515212d5231e12089b75912c233c4260d63ddba03631803b98`, CRC PASS; HEAD `4bd4915b50cc74b64527c0d5aabe1da30d0e62c1`, SOURCE_BLOB `050ad0e9e3948261a23a752e5379383a13d2e61b`, same new TEST_BLOB `869c98dc79000673ec1ae7e739c8d2aa548204b8`, corrected historical test blob `50b9fcf38bee7e04aa792be51df164adeb88d2a7`.
+- RED/GREEN original raw ZIPs privately backed up under `/V13-Checkpoints/2026-10-27/Automation11-B3-L1-Baseline/` and re-materialized byte-identical SHA256. This is private native Library, not the rejected anyone-writable Drive destination.
+- **Full source-wide workflow** `.github/workflows/b3-l1-baseline-fullsuite.yml` requested; raw result pending at this checkpoint.
+
+## Gates and exact next command
+
+This is a software gate correctness fix, **not an actual B3 L1 native PASS**. Original B3 L1 `FAIL`, STEP2 `UTILITY_FAIL`, LP1 `NO_ATTRIBUTABLE_GAIN`, LP2 `ALIGNS_NO_GAIN`, BJ1 `NO_SIGNAL`, `jepa_weight=0`, `age_authority=0`, no Redmi/native receiver effect, whole V13 incomplete. No model/seed/cohort changes, no production merge or LATENT authority. Independent review required.
+
+Next: inspect full raw exits and close evidence; investigate separately the B3 doctor/completion manifest reporting path, which currently trusts a manually supplied PASS record without revalidating comparator completeness. Exact focused command: `cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_b3_l1_baseline_completeness_review tests.test_b3bridge tests.test_b3_completion tests.test_b3degrade`.
