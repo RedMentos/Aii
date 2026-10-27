@@ -1,0 +1,17 @@
+# Run631 prereg — native C3 chat-template answer utility and tokenizer parity
+
+2026-10-27 UTC. Exact parent Run630 PR625 head `58f823fec483197c6343a0c24eea6bf9754b609b`. Run630 Actions 40425441422: genuine llama.cpp LoRA effect, 4/4 exact base-vs-scale0 top64 parity, but raw prompts generated EOS/newline; **no answer-level utility**. Original first RED and later GREEN both preserved. This prereg is committed before Run631 source/test/workflow. No training or model/seed/weight changes.
+
+## Immutable inputs
+
+Use Run630's original verified **SmolLM2-135M-Instruct** master `12fd25f77366fa6b3b4b768ec3050bf629380bac`, SHA256 `5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c`, original Run629 LoRA GGUF SHA256 `e2f84ae657b0b90891d7c5c042a897b9bd30021f8a16e399a27fa2704b793f4b`, original adapter artifact 12698827815 ZIP SHA256 `27e3aa76ef58bcdfc1682aa0c0cb6da429048a0fa910eb90801dbe49204862f5`, and pinned llama.cpp b10964 source/binary checksums in `specs/models.json`. Rebuild F16 GGUF from same pinned master using exact b10964 converter; no model swap or retraining. Frozen original cohort SHA256 `3c7316b892b26c22d389da09af5f186ad8b596a7a45b53f49b3f5ec0e4028973`.
+
+## New predeclared measurements
+
+Use official pinned HF tokenizer `apply_chat_template([user],add_generation_prompt=True,tokenize=False)`, **not** raw strings. Compare exact token IDs with native b10964 `/tokenize` on each formatted prompt (no implicit extra special tokens); if mismatch, record TOKENIZER_PARITY_FAIL and do not score utility. Use bounded greedy generation (max 32 new tokens, temperature 0, seed 13, cache_prompt false), same prompt and model for no-adapter baseline, adapter scale 0, adapter scale 1. Require base-vs-scale0 generated text and first-token logprob parity before interpreting scale1.
+
+Predeclare six disjoint synthetic questions: **train** original fictional Larch marker color (answer key `amber`) and gate number (`47`); **heldout** 2+2 (key `4`) and greeting (keys `hello`, `hi`); **near-miss** fictional Cedar marker color (forbidden `amber`) and Cedar gate number (forbidden `47`). The last two are new tests, never training targets. Record full generated text, token counts, first-token top64 logprobs, answer-key matches, near-miss leaks, exact scale0 parity, max logprob deltas, latency and bounded process cleanup. No response selection or hyperparameter tuning after observing results.
+
+**Positive native protocol:** verified source/model/adapter hashes, tokenizer parity, 6/6 base-scale0 parity, valid finite outputs and clean process teardown. **Learning utility** requires candidate train answer-key improvement over base *without* heldout degradation or increased near-miss leak; otherwise `NO_ANSWER_UTILITY`. Do not infer semantic generalization from one tiny synthetic cohort, and do not claim deployed C3 Q4 compatibility (current actual C3 is LFM2.5-350M QAD Q4_0, not this SmolLM2 reference). Original Run629 master learned recall 0.0 remains unchanged.
+
+Source-only negative controls must reject altered model/cohort/adapter, invalid tokenizer parity, invalid role/template, missing source evidence, and production authority. Privacy scanner, exact-source SHA, original failed raw preservation, private Library byte-roundtrip. STEP2 `UTILITY_FAIL`, B3 L1 `FAIL`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi `UNMEASURED`, V13 `INCOMPLETE` unchanged. This is a separate shadow reference experiment, not an Age/approval gate promotion.
