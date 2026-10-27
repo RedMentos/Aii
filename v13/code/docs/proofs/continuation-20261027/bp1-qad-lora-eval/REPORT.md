@@ -1,0 +1,24 @@
+# BP1 QAD base Q4 + LoRA paired V2 collector/scorer — software RED/GREEN checkpoint (2026-10-27)
+
+Owner: GPT-6 automation11, **review-only** child branch `codex/automation11-bp1-qad-lora-eval-20261027` based on PR #684 source `18130b4b663705aed167fcf7b052a6eb6e38831e`. No main integration, no native heldout run, no production activation.
+
+**Functional integration added:** existing BP1 collector/scorer V1 requires two distinct full GGUF model files; C3 trainer produces a **LoRA adapter**, not a full model. New additive `bp1_qad_lora_eval.py` uses an explicit V2 binding (one QAD Q4 base SHA `3d10b6...`, separate adapter SHA, official QAD master SHA, pinned b10964 runner SHA, immutable train and heldout source hashes, original native train proof hash, seed13, JSON-schema greedy decoding, scale0 base / scale1 candidate). It launches a single owned localhost server with `--lora-init-without-apply`, verifies loaded adapter ID/path/default scale, and passes per-request LoRA scale. No target/answer key is included in outbound requests. The original V1 scorer retains its default validator; V2 supplies an explicit validator, never disguising an adapter as a full GGUF. Collector writes 44 source-bound predictions, supports append-only resume with exact binding and partial/duplicate detection; separate software scorer computes paired counts, without promoting utility.
+
+**Additional train-proof containment:** collector requires original `BP1_QAD_TRAIN_PROOF.json` bytes matching the binding digest and verifies 25 rows, pinned master/train/config, 2 optimizer steps, nonzero LoRA-B, no heldout files opened, no production authority, unchanged negative gates. This is a software check of a declared native proof; actual native execution still requires independently audited raw runner evidence.
+
+**Original raw software evidence:**
+- Initial GREEN Actions `40476523264`, source `dec1430b1aaf9c6237d7838e9cf89161849e75d5`, artifact `12720537041`, ZIP SHA256 `c1e5c983632db6ebdb3e1ea5aa0d14a809a7ca2d491a2fba520096b094abe7e0`: **34/34 PASS**, compile0, privacy CLEAN (V2 + V1 regressions).
+- Prospective proof/resume RED Actions `40476693169`, source `b083ee21f03b0f66253984436964c9532e305451`, artifact `12721605410`, ZIP SHA256 `203bdfd6c820e5307eaf308fd8f98033360681f3dce6c791d4fe0a2477478697`: 36 tests, **3 errors** from missing proof/resume implementation; compile0, privacy CLEAN. Intermediate test/mock errors are preserved, not reclassified as model failures.
+- Final GREEN Actions `40476974470`, source `bd5b3f96860d027f5c9677d0d42b6079859fec9e`, artifact `12720862899`, ZIP SHA256 `058fdd50ba75d1603ca951c02623edebf3ba47d31f6d89dd702de7268ac7f304`: **36/36 PASS**, compile0, privacy CLEAN, original V1 scorer/collector regressions PASS. Final script SHA256 `7fe1d6e538b42d03142faceb7bea629600e9bb8ffc5e547337d1a7bb05f39f73`, scorer SHA256 `b4c55010f76a7924689f0dd3195636742526e734934d1b29fbe06d98cd27a571`, tests SHA256 `0b4878fb5402d68dd0356d1eed534941e70e057cfb89bae02996162d4615935a`.
+- All three ZIPs independently checked for CRC, HEAD and exits. Private Library backups at `/V13-Checkpoints/2026-10-27/BP1-QAD-LoRA-Eval-V2/`; final GREEN and initial GREEN retrieved Library copies byte-identical. RED preserved in same private folder.
+
+**Native prerequisites and blockers:** real QAD source smoke Actions 40475001744 PASS (Linux only, 1/4 text matches, no tensor parity). Real 25-row QAD train-only Actions 40476209086 is **RUNNING/UNVERIFIED at this checkpoint**; no adapter file is yet verified or privately persisted. This collector is **not** native-tested against pinned b10964 with an adapter; upstream llama.cpp server docs support per-request LoRA, but exact pinned behavior must be measured. Before native heldout collection, require original optimizer/adapter raw evidence, a secure permitted adapter-byte checkpoint (do not publish private weights), serial owner, and the 11 source-disjoint heldout pairs. Native model training output is not automatically utility.
+
+**Negative gates unchanged:** STEP2 UTILITY_FAIL, B3 L1_FAIL, Body-JEPA UNAVAILABLE, `jepa_weight=0`, Redmi unmeasured, V13 incomplete. No 44-row native responses, no retention/near-miss, no AGI claim.
+
+Exact next software command:
+```sh
+cd v13/code
+PYTHONPATH="$PWD:$PWD/scripts" python3 -m unittest -v tests.test_bp1_qad_lora_eval tests.test_bp1_paired_score tests.test_bp1_native_collect
+```
+Next authorized package: independently close actual QAD optimizer/adapter raw run, then secure adapter bytes, preregister native V2 44-row paired collection, run serially and audit source-disjoint scores with retention/near-miss.
