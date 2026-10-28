@@ -4,10 +4,10 @@
   "owner": "assistant/v13-run36-c3-only-native-velaris-20261028",
   "parent_source_commit": "1f2039f3fa7b62ed6c9e3699672af91dfe532144",
   "review_pr": 945,
-  "status": "DISPATCH_ONLY_STAGED_NO_NATIVE_EXECUTION",
+  "status": "NATIVE_DISPATCH_REQUESTED_PENDING_ACTIONS_OBSERVATION",
   "source": {
     "prereg_commit": "860e9ab8f3c970a520bc76571d42e82307d3f82c",
-    "workflow_blob": "7a201da71906cc76dcfe2664bd14e47e011d6099",
+    "workflow_blob": "45affe024de5d8fdd1cc39dbdc788ac151de7e77",
     "native_candidate_blob": "8a57b60a483c50550ca0714ac6472675dced701c",
     "run33_blob": "b1d58d7e0c3937787cf15dd801e278de25845879",
     "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
@@ -16,13 +16,14 @@
       "EXACT_MINUS_MISSING",
       "EXACT_MINUS_B1_ONLY",
       "DISTRACTOR_MINUS_MISSING"
-    ]
+    ],
+    "workflow_dispatch_commit": "436414f4c7c8dcebf5afc4bffdce57c8bb787284"
   },
   "preconditions": {
     "run33_software": "SUCCESS_40729771477",
     "run34_software": "SUCCESS_40731068475_INDEPENDENT_RAW_AUDITED",
     "run35_software": "SUCCESS_40732862439_INDEPENDENT_RAW_AUDITED",
-    "exclusive_native_owner": "MUST_RECHECK_BEFORE_DISPATCH"
+    "exclusive_native_owner": "NO_IN_PROGRESS_ACTIONS_AT_DISPATCH_CHECK"
   },
   "closed_evidence": {
     "run34_zip_sha256": "d0374126fdd974b59e9395ffb6a2d86a9de099418d7730f9638581b6ffbb6174",
@@ -60,6 +61,6 @@
     "B2 native source quote generation remains unproven; one-fixture conditional C3 test cannot promote STEP2",
     "Android/Termux native performance unmeasured"
   ],
-  "next_command": "Check current active native Actions/owners; enable Run36 workflow push trigger on this isolated review branch, then audit original native raw ZIP, CRC/inner SHA, all five arms, source/model/runner pins, negative gates, and private backup; if blocked, retain failed attempt and continue independent canonical package.",
+  "next_command": "Find Run36 Actions run for exact workflow dispatch commit 436414f4..., audit all stages and original raw ZIP (including failures), CRC/inner SHA, pinned sources/models/runner, five arm metrics and private backup. If workflow fails to start, inspect GitHub Actions event registration and fix without changing frozen cohort/seed.",
   "remaining_platform_budget": "UNKNOWN"
 }
