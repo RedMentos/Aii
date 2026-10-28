@@ -29,6 +29,14 @@ from .memory import relevance,terms
 from .attention import GAIN as ATT_BASE
 
 BODY=('B1_DETAIL','B2_GIST')
+
+def available_body_roles(models):
+    """Manifest-only B eligibility; cached AG0 slots cannot resurrect removed roles."""
+    from .models import model_key
+    control=getattr(models,'b2_control','two_body')
+    return {role for role in BODY if
+            (models.installed.get(model_key(role,control)) or {}).get('download_complete')}
+
 STATE_TYPES=('ACTIVE','REACTIVATABLE','EPISODIC_POINTER')
 # §59 / §60 / §85.4 BOOT values; engineering BOOT values are marked ENG.
 BOOT={'coalition_threshold':.45,'disagreement_trigger':.40,'uncertainty_trigger':.45,'salience_trigger':.65,
