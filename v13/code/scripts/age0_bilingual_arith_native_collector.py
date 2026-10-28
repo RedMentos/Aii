@@ -27,6 +27,11 @@ C2_SHA = "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
 def preflight(home, prompt_blob):
     """Check immutable source/model identity before the first native call."""
     from v13.models import ModelManager
+    if (platform.system() != "Linux" or platform.machine().lower() not in ("x86_64", "amd64")
+            or os.environ.get("ANDROID_ROOT") or "com.termux" in os.environ.get("PREFIX", "")):
+        raise ValueError("Linux x86_64 native cohort only; Android/Redmi is separate")
+    if (home / "data/db/brain.sqlite3").exists():
+        raise ValueError("Fresh unused Age0 home required; refuse existing chat brain")
     if prompt_blob not in (BASELINE_PROMPT, CANDIDATE_PROMPT):
         raise ValueError("Unregistered prompt cohort")
     if _git_blob((APP / "specs/models.json").read_bytes()) != CATALOG_BLOB:
