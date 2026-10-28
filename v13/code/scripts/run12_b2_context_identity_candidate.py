@@ -36,7 +36,7 @@ def _json_len(obj):
 
 def select_context(current, current_event_id, session, generation, revision,
                    retained, read_source, cap=768, slots=4, excerpt_chars=240):
-    """Read-only B2 candidate. 
+    """Read-only B2 candidate.
 
     `retained`: newest-first B2 offers with event/session/generation/model
     binding, exact original `source_ref` and fallible `hypothesis`. The reader
