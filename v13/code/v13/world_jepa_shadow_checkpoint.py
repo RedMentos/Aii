@@ -95,6 +95,7 @@ def _validate(meta, arrays, source_sha256):
     ztr = arrays.get('ztrain')
     if (not isinstance(a, np.ndarray) or a.ndim != 1 or not 1 <= len(a) <= 64
             or a.dtype != np.dtype('int64') or np.any(a < 0)
+            or sum(int(x) for x in a) > len(ztr)
             or not isinstance(mu, np.ndarray) or mu.ndim != 1 or not 1 <= len(mu) <= 4096
             or not isinstance(ztr, np.ndarray) or ztr.ndim != 2
             or not 2 <= len(ztr) <= 100000 or ztr.shape[1] != wj.Z):
@@ -138,8 +139,9 @@ def _sync_dir(parent):
 def save(model, path, source_sha256):
     """Exclusive, fsynced private NPZ export; returns hash to pin externally."""
     meta, arrays = _extract(model, source_sha256)
-    arrays = {k: np.asarray(v, dtype=np.int64 if k == 'action_counts'
-                          else np.float64) for k, v in arrays.items()}
+    # Never coerce source tensors: fractional support counts or low-precision
+    # weights would otherwise silently change inference/calibration evidence.
+    arrays = {k: np.asarray(v) for k, v in arrays.items()}
     _validate(meta, arrays, source_sha256)
     raw_meta = _meta_json(meta)
     if len(raw_meta) > MAX_META:
