@@ -4,7 +4,7 @@ on:
     branches:
       - assistant/v13-run32-keldara-native-quote-coverage-20261028
     paths:
-      - '.github/workflows/automation30-original-native-raw-audit-20261028.yml'
+      - '.github/workflows/automation32-original-native-quote-audit-20261028.yml'
   workflow_dispatch:
 permissions:
   contents: read
