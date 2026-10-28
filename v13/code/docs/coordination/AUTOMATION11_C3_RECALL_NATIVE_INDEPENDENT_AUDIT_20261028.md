@@ -24,4 +24,6 @@ Independent local audit command: `python audit_v13_c3_recall_native.py c3-recall
 
 **Next authorized package:** investigate the still-unwired `render_messages` caller-authentication/dispatch boundary in a new isolated candidate and test a forged `ADMITTED` dictionary with syntactically valid but source-unbound `value` and `source_ref`. Current `verified_recall_messages` is guarded; the direct renderer accepts a dict, so do not treat it as an authorization API. Preserve original native source SHA when comparing, and do not promote this candidate without full software/native evidence. Independent path if blocked: Stage11 source-consumer integration, separate from original frozen runtime cohort.
 
+**Private second backup:** original 16,180-byte ZIP uploaded to the non-public ChatGPT Library folder `/V13-Checkpoints/2026-10-28/Automation11-C3-Recall-Native-Independent-Audit/`, listing read back and size confirmed. This is a backup of the GitHub artifact, not a production deployment. Local auditor source remains a session-local tool, not falsely claimed as persisted.
+
 **Remote persistence:** review branch owns only this audit note; parent PR #887 and other owners' branches remain untouched.
