@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import stat
 from urllib.parse import quote
 import zlib
 
@@ -21,6 +22,38 @@ from scripts import run42_b2_eligibility_source_shadow as study
 
 MAX_BLOB = 64 * 1024 * 1024
 HEX64 = re.compile(r'[0-9a-f]{64}\Z')
+
+
+def _read_bounded_regular_file(path, *, cap_error='RUN44_BLOB_CAP'):
+    """Read only the opened regular inode, never following a final symlink.
+
+    A pathname stat followed by Path.read_bytes() is not a resource cap: a
+    concurrent replacement/growth can evade it. Keep the descriptor open and
+    enforce the byte limit on the actual stream, including after fstat().
+    """
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise ValueError('RUN44_BLOB_FILE_UNSAFE') from exc
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError('RUN44_BLOB_FILE_UNSAFE')
+        if info.st_size > MAX_BLOB:
+            raise ValueError(cap_error)
+        chunks = []
+        total = 0
+        while True:
+            chunk = os.read(fd, min(1024 * 1024, MAX_BLOB + 1 - total))
+            if not chunk:
+                return b''.join(chunks)
+            total += len(chunk)
+            if total > MAX_BLOB:
+                raise ValueError(cap_error)
+            chunks.append(chunk)
+    finally:
+        os.close(fd)
 
 
 class OfflineView:
@@ -98,15 +131,13 @@ class OfflineView:
         if plain.is_symlink() or packed.is_symlink():
             raise ValueError('RUN44_SYMLINK_BLOB')
         if plain.is_file():
-            if plain.stat().st_size > MAX_BLOB:
-                raise ValueError('RUN44_BLOB_CAP')
-            data = plain.read_bytes()
+            data = _read_bounded_regular_file(plain)
         elif packed.is_file():
-            if packed.stat().st_size > MAX_BLOB:
-                raise ValueError('RUN44_ARCHIVE_CAP')
             decoder = zlib.decompressobj()
             try:
-                data = decoder.decompress(packed.read_bytes(), MAX_BLOB)
+                data = decoder.decompress(
+                    _read_bounded_regular_file(packed, cap_error='RUN44_ARCHIVE_CAP'),
+                    MAX_BLOB)
             except zlib.error as exc:
                 raise ValueError('RUN44_ARCHIVE_CORRUPT') from exc
             if not decoder.eof or decoder.unconsumed_tail or decoder.unused_data:
