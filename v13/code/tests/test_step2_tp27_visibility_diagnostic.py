@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import step2_tp27_visibility_diagnostic as d
+from scripts import step2_tp27_visibility_diagnostic as d
 
 CURRENT = 'Project Demo. Choose cheapest eligible. Option A: cost 5 euros, duration 2 days, local true. Option B: cost 7 euros, duration 3 days, local false.'
 OLD = 'Project Demo kickoff. Budget 10 euros. Deadline 4 days. Local-only requirement: true.'
