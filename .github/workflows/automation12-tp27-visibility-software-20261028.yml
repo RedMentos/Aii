@@ -38,8 +38,8 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          a5ca664a47cd7425a01fa3892802bceffd1803a9 v13/code/scripts/step2_tp27_visibility_diagnostic.py
-          5c49f1ccc3e576e08fd1ecc9dfe12e9c8a395d90 v13/code/tests/test_step2_tp27_visibility_diagnostic.py
+          b4b933209c9957a79a1ee323eda2d3f5881840ee v13/code/scripts/step2_tp27_visibility_diagnostic.py
+          8c7582d0262e6ed38b9d9afe0d36e480159b843d v13/code/tests/test_step2_tp27_visibility_diagnostic.py
           aa925d5d4128974c3e1aaf64e58d0e4310e5dfa1 v13/code/v13/organ.py
           138df0bcf90b0f278294b940358e64fac5c93eb9 v13/code/v13/semantic_memory.py
           BLOBS
