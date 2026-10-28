@@ -21,7 +21,7 @@ RULES = {
 OPTIONS = re.compile(
     r"\bOption\s+([AB])\s*:\s*Kosten\s+(\d+)\s+Euro\s*,\s*"
     r"Dauer\s+(\d+)\s+Tage\s*,\s*lokal\s+(ja|nein)(?=\s*[.;]|$)", re.I)
-PROJECT = re.compile(r"\b(?:Projekt|Project)\s+([A-Za-z][A-Za-z0-9]*)\b", re.I)
+PROJECT = re.compile(r"\b(?:Projekt|Project)\s+([A-Z][A-Za-z0-9]*)\b")
 REF = re.compile(r"[A-Za-z0-9:._/-]{1,256}\Z")
 
 
