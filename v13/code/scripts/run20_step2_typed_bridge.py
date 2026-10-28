@@ -53,9 +53,13 @@ def evaluate(case):
     if case["language"] == "EN":
         if (case["type"] == "REVISION") != (case["temporal_mode"] == "REVISED_CURRENT_RULES"):
             raise Refusal("temporal_mode")
-        values = english.read_fixed(now, [note, sheet])
-        if values["options"] is None or any(values[k] is None for k in
-                                               ("budget", "deadline", "local_only")):
+        # Current SPLIT questions mention "Option A and Option B" without
+        # typed values. The legacy fixed_read stops at that incomplete clause;
+        # select the exact, project-bound option source explicitly instead.
+        values = {k: english.fixed_rule(k, now, [note])
+                  for k in ("budget", "deadline", "local_only")}
+        values["options"] = [english.fixed_option(entity, opts) for entity in "AB"]
+        if any(values[k] is None for k in ("budget", "deadline", "local_only")) or not all(values["options"]):
             raise Refusal("missing_exact_english_values")
         args = english.args_for(values, now, [note, sheet])
         outcome = english.tool(**args)
