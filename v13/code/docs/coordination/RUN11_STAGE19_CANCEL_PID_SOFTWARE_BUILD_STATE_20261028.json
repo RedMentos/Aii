@@ -1,0 +1,45 @@
+{
+  "schema": "V13_REVIEW_BRANCH_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "base_pr": 872,
+  "review_pr": 873,
+  "source_commit": "39187a5cda01688e5ee4c064ad773b5ff76f6a7d",
+  "software_run": 40655063036,
+  "software_conclusion": "SUCCESS",
+  "artifact_id": 12802035749,
+  "artifact_zip_sha256": "a8a9f1e18f0b7b6ff5a34cef40faf2fa48c7fdf5aa906455f66f564ffbefce3c",
+  "artifact_zip_crc": "PASS",
+  "artifact_sha256s": "16/16 PASS",
+  "source_blobs": {
+    "v13/proof_lifecycle.py": "2b3f72e8951f0c8770385317383b1e2b0839ed36",
+    "tests/integration_real.py": "0d32e4884e00ec62bd3973033ba0cb989aa179d9",
+    "tests/test_proof_lifecycle.py": "b0869087ac42ba3c866dd051550e5421c9bf2033"
+  },
+  "tests": {
+    "focused": "10/10 PASS",
+    "full": "2271 tests OK, 1 skipped",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "diff_check": "PASS",
+    "source_blobs": "PASS",
+    "install": "PASS"
+  },
+  "evidence_scope": "SOFTWARE_ONLY. Original native stage19 remains FAIL; actual cancelled PID liveness unmeasured with new code.",
+  "negative_gates": [
+    "original_20_stage_acceptance_15_PASS_5_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "Body-JEPA_UNAVAILABLE",
+    "LP3_FAIL",
+    "jepa_weight_0",
+    "Age0_RECORD_ONLY",
+    "Redmi_UNMEASURED",
+    "canonical_architecture_complete_false"
+  ],
+  "blockers": [
+    "Need actual native stage19 rerun with pinned model/source, and process PID identity readback; no automatic promotion"
+  ],
+  "next_command": "Run new serialized pinned-native stage19 candidate only on isolated installed-home; compare original stage19 raw report, do not rewrite historical FAIL.",
+  "private_backup": "None attempted; rejected anyone-writable Drive destination remains prohibited."
+}
