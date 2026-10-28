@@ -106,6 +106,9 @@ def validate(runs, fixture_ids):
     _require(len({r['raw_sha256'] for r in runs}) == 12,
              'Duplicate raw evidence digest (possible stale replay)')
     for s in SEEDS:
+        _require(found['TC', s]['model_sha256']['B1_DETAIL'] ==
+                 found['SC', s]['model_sha256']['B1_DETAIL'],
+                 'B1 model identity differs across distinct/shared arms')
         for left, right in (('TC', 'TP'), ('SC', 'SP')):
             _require(found[left, s]['model_sha256'] == found[right, s]['model_sha256'],
                      'Pointer arm changed model identity')
