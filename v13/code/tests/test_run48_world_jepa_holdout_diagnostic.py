@@ -57,6 +57,19 @@ class Run48HoldoutDiagnostic(unittest.TestCase):
         self.assertGreater(report['metrics']['persistence_gain_delta'], 0.)
         self.assertFalse(report['utility_proven'])
 
+    def test_persistence_baseline_uses_target_encoder_not_online(self):
+        # Online/EMA encoders can differ. A persistence baseline measured
+        # in the online coordinate frame would reward encoder drift rather
+        # than an action-conditioned predictor improvement.
+        def pad(v):
+            return np.pad(v, ((0, 0), (0, wj.Z - 2)))
+        self.model.zsd = np.ones(wj.Z)
+        self.model.latent = lambda x, target=True: pad(x if target else x + 10.)
+        self.model.predict = lambda x, a: (pad(x + a), np.zeros(len(x)))
+        report = self.evaluate()
+        self.assertAlmostEqual(report['metrics']['persistence_mse'], 1. / wj.Z)
+        self.assertEqual(report['metrics']['correct_action_mse'], 0.)
+
     def test_repeated_reads_are_deterministic_and_do_not_mutate_weights(self):
         before = self.model.enc['W1'].copy()
         first = self.evaluate()
