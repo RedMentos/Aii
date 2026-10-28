@@ -119,12 +119,12 @@ class WorldJEPA:
         # Confidence may use only actions actually present in fit's training rows.
         # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
         valid_a = np.isfinite(A).all(1) & np.all((A == 0) | (A == 1), axis=1) & (A.sum(1) == 1)
-        self._action_counts = np.bincount(np.argmax(A[valid_a], axis=1), minlength=A.shape[1])
-        self.mu = X.mean(0); self.sd = X.std(0)+1e-3
-        x, x2 = (X-self.mu)/self.sd, (X2-self.mu)/self.sd
+        action_counts = np.bincount(np.argmax(A[valid_a], axis=1), minlength=A.shape[1])
+        mu = X.mean(0); sd = X.std(0)+1e-3
+        x, x2 = (X-mu)/sd, (X2-mu)/sd
         enc, pred = _init(rng, x.shape[1], A.shape[1]); inv = _init_inv(rng, A.shape[1]); tgt = {k: v.copy() for k, v in enc.items()}
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
-        self.history = []
+        history = []
         for s in range(steps):
             b = rng.integers(0, len(x), min(BATCH, len(x)))
             zt = encode(tgt, x2[b])[0]
@@ -132,9 +132,9 @@ class WorldJEPA:
             loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
             opt.step({**{'e'+k: v for k, v in ge.items()}, **{'p'+k: v for k, v in gp.items()}, **{'i'+k: v for k, v in gi.items()}})
             for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
-            if s % log_every == 0 or s == steps-1: self.history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
-        self.enc, self.tgt, self.preds = enc, tgt, [pred]
-        zt_all = encode(tgt, x2)[0]; self.zsd = zt_all.std(0)+1e-6
+            if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
+        preds = [pred]
+        zt_all = encode(tgt, x2)[0]; zsd = zt_all.std(0)+1e-6
         z_all = encode(enc, x)[0]
         for e in range(1, self.ensemble):  # encoder frozen, bootstrap predictors
             r2 = np.random.default_rng(self.seed*100+e); p = _init_pred(r2, A.shape[1]); o = Adam(p, LR)
@@ -143,10 +143,23 @@ class WorldJEPA:
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
                 o.step(gp)
-            self.preds.append(p)
-        self._ztrain = z_all
+            preds.append(p)
+        ztrain = z_all
         sub = z_all[np.random.default_rng(self.seed).choice(len(z_all), min(400, len(z_all)), replace=False)]
-        d = np.sqrt(((sub[:, None]-sub[None])**2).sum(-1)); np.fill_diagonal(d, np.inf); self._nn_med = float(np.median(d.min(1)))+1e-9
+        d = np.sqrt(((sub[:, None]-sub[None])**2).sum(-1)); np.fill_diagonal(d, np.inf); nn_med = float(np.median(d.min(1)))+1e-9
+        # Exception-atomic SHADOW refit: publish only after every stage and
+        # ensemble member has completed with finite learned state. The old fit
+        # remains usable if any training, calibration or validation step fails.
+        arrays = [mu, sd, zsd, ztrain, *enc.values(), *tgt.values(),
+                  *(v for p in preds for v in p.values())]
+        if (not all(np.isfinite(v).all() for v in arrays)
+                or not np.isfinite(nn_med) or nn_med <= 0
+                or not all(np.isfinite(v) for row in history
+                           for key, v in row.items() if key != 'step')):
+            raise ValueError('WorldJEPA fit produced nonfinite learned state')
+        self.__dict__.update(_action_counts=action_counts, mu=mu, sd=sd,
+                             history=history, enc=enc, tgt=tgt, preds=preds,
+                             zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
     # -- inference -------------------------------------------------------------------------------------------------
