@@ -1,0 +1,11 @@
+# Prereg: source-bound C3 renderer admission seal (2026-10-28)
+
+**Owner:** GPT-6 independent candidate, child of independently audited #888 at `fb53c81e95e251f4d295da08b80dde64fe8a9565`. Original native #887 source `7b48d94eee00734891fef1fe1ac3eb360023c39a` and its evidence remain frozen. No `runtime.py`, models, seeds, source data or registered cohort edits.
+
+**Problem observed before code:** `v13/source_consumer.py:render_messages` checks `ADMITTED`, topic/value regex and `source_ref` shape, but can accept a caller-constructed `ADMITTED` dictionary with a valid-looking project budget, arbitrary value and arbitrary dict SourceRef. Actual `verified_recall_messages` already revalidates source against Memory; this patch closes a separate untrusted-dictionary formatter boundary, not the original Stage11 gate.
+
+**Proposed conservative change:** process-local HMAC proof minted only by `admit` after F1/F5 source verification, bound to exact query, session, topic, value, SourceRef, memory ID and admitted count. `render_messages` refuses missing/modified proofs; unchanged valid `admit` → render and actual `verified_recall_messages` must pass. No persistent proof, no cryptographic user identity, no authority to invoke models, and no claim that this alone handles revocation after admission. Production dispatcher still must revalidate at call time.
+
+**Predeclared tests:** (1) forged status/source/value/source_ref rejected even when all regexes match; (2) copied seal cannot be reused for different query/session/amount/source ID; (3) real source admission still renders; (4) real F1/F5 `verified_recall_messages` still renders; (5) revoked/corrupt source still CLARIFY via verified wrapper; (6) focused plus full Linux software suite, compileall, privacy scan, diff-check on source-pinned branch. Failures retained, no threshold changes. Original Stage11/STEP2/B3/Body-JEPA/LP3/Redmi gates unchanged.
+
+**Next command:** modify only `v13/code/v13/source_consumer.py` and add `v13/code/tests/test_source_consumer_render_seal.py`, then run source-pinned Linux software CI. Do not launch heavy native while another owner holds group.

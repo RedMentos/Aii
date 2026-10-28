@@ -57,6 +57,35 @@ class RecallConsumerIntegration(unittest.TestCase):
         self.assertEqual(result["decision"]["reason"], "CONFLICTING_AUTHORIZED_SOURCES")
         self.assertIsNone(result["messages"])
 
+    def test_active_corrupt_competing_source_cannot_disappear_from_conflict_veto(self):
+        first = self.add()
+        second = self.add(key="Project Elyra budgets", value="700 Euro")
+        blob = self.r.home / "data/blobs" / second["source_ref"]["sha256"]
+        blob.write_text("tampered")
+        # Actual recall can still retrieve the valid first row; the active
+        # second exact-key correction must nevertheless veto native messages.
+        result = self.consume()
+        self.assertEqual(result["decision"]["status"], "CLARIFY")
+        self.assertEqual(result["decision"]["reason"], "UNVERIFIABLE_SCOPED_CORRECTION")
+        self.assertFalse(result["decision"]["model_allowed"])
+        self.assertIsNone(result["messages"])
+        self.assertIsNotNone(first)
+
+    def test_active_competing_row_without_verified_f1_f5_vetoes(self):
+        first = self.add()
+        second = self.add(key="Project Elyra budgets", value="700 Euro")
+        original = self.r.memory._verified_rows
+
+        def exclude_second(rows):
+            return [row for row in original(rows) if row["id"] != second["id"]]
+
+        with patch.object(self.r.memory, "_verified_rows", side_effect=exclude_second):
+            result = self.consume()
+        self.assertEqual(result["decision"]["status"], "CLARIFY")
+        self.assertEqual(result["decision"]["reason"], "UNVERIFIABLE_SCOPED_CORRECTION")
+        self.assertIsNone(result["messages"])
+        self.assertIsNotNone(first)
+
     def test_wrong_project_and_no_source_never_render(self):
         other = self.add(key="Project Dovan budget", value="592 Euro")
         self.assertIsNotNone(other)

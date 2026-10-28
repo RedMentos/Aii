@@ -5,10 +5,26 @@ authorizes learning or turns model hypotheses into facts. It refuses absent,
 wrong-entity, wrong-topic, tampered, revoked, cross-session or conflicting
 corrections *before* any model prompt can contain them.
 """
+import hashlib
+import hmac
+import json
 import re
+import secrets
 
 from .memory import entities, relevance
 from .prompts import text as prompt
+
+# A process-local proof binds an admitted F1/F5 source to its exact render input.
+# It is NOT a durable permission token or a substitute for dispatch-time revocation.
+_RENDER_KEY = secrets.token_bytes(32)
+
+
+def _render_proof(query, session, source, count):
+    payload = json.dumps({"query": query, "session": session, "source": source,
+                          "admitted_count": count},
+                         sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hmac.new(_RENDER_KEY, payload, hashlib.sha256).hexdigest()
+
 
 BUDGET = re.compile(r"\b(?:budget|budgets|finanzrahmen|etat)\b", re.I)
 PROJECT = re.compile(r"\b(?:projekt|project)\s+([\w-]+)", re.I)
@@ -89,14 +105,34 @@ def admit(query, session, memories, memory):
                 "answer": abstain, "model_allowed": False, "admitted_count": 0}
     chosen = sorted(valid, key=lambda x: x["memory_id"])[0]
     return {"status": "ADMITTED", "reason": "ONE_VERIFIED_CORRECTION",
-            "model_allowed": True, "admitted_count": len(valid), "source": chosen}
+            "model_allowed": True, "admitted_count": len(valid), "source": chosen,
+            "_render_session": session,
+            "_render_seal": _render_proof(query, session, chosen, len(valid))}
 
 
-def render_messages(cfg, query, admission):
+def render_messages(cfg, query, admission, *, memory=None, session=None):
     """Construct a C3 prompt only for the exact admitted correction."""
     if admission.get("status") != "ADMITTED" or admission.get("model_allowed") is not True:
         raise ValueError("Source admission required before native generation")
     source = admission.get("source")
+    seal = admission.get("_render_seal")
+    sealed_session = admission.get("_render_session")
+    count = admission.get("admitted_count")
+    if (not isinstance(source, dict) or not isinstance(seal, str)
+            or not isinstance(sealed_session, str) or type(count) is not int
+            or not hmac.compare_digest(seal, _render_proof(query, sealed_session, source, count))):
+        raise ValueError("Authenticated F1/F5 admission required for C3 rendering")
+    if (memory is None) != (session is None):
+        raise ValueError("Current Memory and session required together")
+    if memory is not None:
+        if session != admission["_render_session"]:
+            raise ValueError("C3 renderer session mismatch")
+        current = recall_and_admit(query, session, memory)
+        if (current.get("status") != "ADMITTED"
+                or current.get("source") != source
+                or current.get("admitted_count") != count
+                or current.get("_render_seal") != seal):
+            raise ValueError("C3 renderer live source authorization changed")
     if (not isinstance(source, dict) or not isinstance(source.get("topic"), str)
             or not TOPIC.fullmatch(source["topic"])
             or not isinstance(source.get("value"), str)
@@ -149,9 +185,14 @@ def recall_and_admit(query, session, memory):
         for row in rows:
             try:
                 fresh = memory.candidate(row["id"], session)
+                verified = memory._verified_rows([fresh])
+                if (len(verified) != 1 or verified[0]["id"] != fresh["id"]):
+                    return deny("UNVERIFIABLE_SCOPED_CORRECTION")
                 by_id[fresh["id"]] = fresh
             except (KeyError, ValueError, TypeError, OSError):
-                continue
+                # An active same-project correction is not ignorable just
+                # because its SourceRef or F1/F5 decision became unreadable.
+                return deny("UNVERIFIABLE_SCOPED_CORRECTION")
         return admit(query, session, list(by_id.values()), memory)
     except Exception:
         return deny("RETRIEVAL_UNAVAILABLE")
@@ -175,7 +216,7 @@ def verified_recall_messages(cfg, query, session, memory):
                 or fresh["value"] != source["value"]
                 or memory.s.read_source(source["source_ref"]) != source["value"]):
             raise ValueError("Source changed after admission")
-        messages = render_messages(cfg, query, decision)
+        messages = render_messages(cfg, query, decision, memory=memory, session=session)
         return {"decision": decision, "messages": messages}
     except Exception:
         refused = admit(query, session, [], memory)
