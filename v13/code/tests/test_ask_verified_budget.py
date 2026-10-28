@@ -87,9 +87,9 @@ class VerifiedBudgetCliTests(unittest.TestCase):
     def test_optin_one_native_final_and_reaped(self):
         self.add()
         runner = FakeRunner()
-        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \\
-             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \\
-             patch.object(self.r.pool, "get", return_value=runner), \\
+        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
+             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
+             patch.object(self.r.pool, "get", return_value=runner), \
              patch.object(self.r.pool, "unload", return_value={"process_reaped": True}) as unload:
             result = query(self.r, self.question, native=True, max_tokens=64)
         self.assertEqual(result["status"], "FINAL")
@@ -103,9 +103,9 @@ class VerifiedBudgetCliTests(unittest.TestCase):
         def revoke(_role):
             self.r.memory.forget(row["id"])
             return runner
-        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \\
-             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \\
-             patch.object(self.r.pool, "get", side_effect=revoke), \\
+        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
+             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
+             patch.object(self.r.pool, "get", side_effect=revoke), \
              patch.object(self.r.pool, "unload", return_value={"process_reaped": True}) as unload:
             result = query(self.r, self.question, native=True)
         self.assertEqual(result["status"], "CLARIFY")
@@ -123,9 +123,9 @@ class VerifiedBudgetCliTests(unittest.TestCase):
                 self.assertFalse(_answer_uses_euro_source(text, source))
         self.add()
         runner = FakeRunner("615 dollars")
-        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \\
-             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \\
-             patch.object(self.r.pool, "get", return_value=runner), \\
+        with patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
+             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
+             patch.object(self.r.pool, "get", return_value=runner), \
              patch.object(self.r.pool, "unload", return_value={"process_reaped": True}):
             result = query(self.r, self.question, native=True)
         self.assertEqual(result["status"], "UNVERIFIED_NATIVE_ANSWER")
