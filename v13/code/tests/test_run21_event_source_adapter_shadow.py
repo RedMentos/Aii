@@ -59,7 +59,9 @@ class EventSourceAdapterTests(unittest.TestCase):
                       (self.old["source_ref"]["source_id"],))
         with self.assertRaises(adapter.Refusal):
             reader.revalidate(self.roles["old"], row["sha256"])
-        with self.assertRaises(adapter.Refusal):
+        # The typed reader intentionally normalizes a failed callback into its
+        # own source_unavailable refusal; it never emits a candidate.
+        with self.assertRaises(german.Refusal):
             german.evaluate("Nerava", self.roles["current"], self.roles["old"],
                             self.roles["sheet"], "RETAIN_PRIOR_RULES", reader)
 
