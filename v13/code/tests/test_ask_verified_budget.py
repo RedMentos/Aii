@@ -79,7 +79,8 @@ class VerifiedBudgetCliTests(unittest.TestCase):
 
     def test_native_requires_verified_model_hash(self):
         self.add()
-        with patch.object(self.r.models, "verify", return_value={}):
+        with patch("scripts.ask_verified_budget._pinned_c3", return_value=True), \
+             patch.object(self.r.models, "verify", return_value={}):
             result = query(self.r, self.question, native=True)
         self.assertEqual(result["status"], "C3_MODEL_NOT_VERIFIED")
         self.assertEqual(result["native_calls"], 0)
@@ -87,7 +88,8 @@ class VerifiedBudgetCliTests(unittest.TestCase):
     def test_optin_one_native_final_and_reaped(self):
         self.add()
         runner = FakeRunner()
-        with patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
+        with patch("scripts.ask_verified_budget._pinned_c3", return_value=True), \
+             patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
              patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
              patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
              patch.object(self.r.pool, "get", return_value=runner), \
@@ -104,7 +106,8 @@ class VerifiedBudgetCliTests(unittest.TestCase):
         def revoke(_role):
             self.r.memory.forget(row["id"])
             return runner
-        with patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
+        with patch("scripts.ask_verified_budget._pinned_c3", return_value=True), \
+             patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
              patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
              patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
              patch.object(self.r.pool, "get", side_effect=revoke), \
@@ -125,7 +128,8 @@ class VerifiedBudgetCliTests(unittest.TestCase):
                 self.assertFalse(_answer_uses_euro_source(text, source))
         self.add()
         runner = FakeRunner("615 dollars")
-        with patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
+        with patch("scripts.ask_verified_budget._pinned_c3", return_value=True), \
+             patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
              patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
              patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
              patch.object(self.r.pool, "get", return_value=runner), \
