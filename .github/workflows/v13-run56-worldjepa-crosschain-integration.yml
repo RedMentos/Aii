@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v13-run56-readout-${{ github.ref }}
+  group: v13-run56-integration-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   software:
