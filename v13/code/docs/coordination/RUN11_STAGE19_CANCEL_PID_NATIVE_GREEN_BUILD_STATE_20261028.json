@@ -1,0 +1,59 @@
+{
+  "schema": "V13_REVIEW_BRANCH_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "review_pr": 877,
+  "source_commit": "7eb1e497b123d73b49a697d7938a3fa8f0ebf6da",
+  "native_run": 40656059605,
+  "conclusion": "SUCCESS",
+  "artifact_id": 12802061742,
+  "artifact_zip_sha256": "f3c3d43c3c6c44e293f57d29e00ed39617add5446a315835767f7604cac0f037",
+  "artifact_crc": "PASS",
+  "artifact_sha256s": "23/23 PASS",
+  "guards": {
+    "blobs": "PASS",
+    "install": "PASS",
+    "focused": "10/10 PASS",
+    "compile": "PASS",
+    "bootstrap": "PASS",
+    "model_deep_verify": "4/4 PASS",
+    "native": "PASS",
+    "report_check": "PASS",
+    "privacy": "CLEAN",
+    "diff_check": "PASS"
+  },
+  "new_source_native_stage19": {
+    "all_passed": true,
+    "checks": "13/13 PASS",
+    "cancel_status": "CANCELLED",
+    "cancelled_runner_pid": 2316,
+    "live_pool_pids_after_cancel": [
+      2291
+    ],
+    "cancelled_pid_absent_from_pool": true,
+    "cancelled_pid_absent_from_os": true,
+    "runner_process_reaped": true,
+    "cancel_stop_seconds": 0.10063199600000416,
+    "device": "Linux_x86_64_NOT_REDMi"
+  },
+  "comparison": {
+    "original_run": 40649812006,
+    "original_stage19": "FAIL",
+    "original_process_reaped": true,
+    "original_empty_pool_assertion": false,
+    "new_proof": "The interrupted child 2316 was reaped; unrelated resident 2291 remained, so requiring an empty pool was too strong. Historical original verdict remains FAIL."
+  },
+  "negative_gates": [
+    "original_full_20_stage_15_PASS_5_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "Body-JEPA_UNAVAILABLE",
+    "LP3_FAIL",
+    "jepa_weight_0",
+    "Age0_RECORD_ONLY",
+    "Redmi_UNMEASURED",
+    "full_system_incomplete"
+  ],
+  "next_command": "Independent review of source-bound cancellation helper and native report, then integrate via review chain only after original frozen SourceHandoff lineage remains intact; continue stage6/10/11/13 failures and phone proofs separately. Do not relabel original 20-stage run.",
+  "private_backup": "GitHub branch + Actions artifact; no rejected Drive retry."
+}

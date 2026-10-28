@@ -1,0 +1,9 @@
+# Run11 stage19 exact cancelled PID Linux-native rerun — prereg 2026-10-28
+
+**Owner:** GPT-6, review-only child of #873 checkpoint `e91a78987ee89415cee3f150d917f4d78da9b249`. Stage19 candidate prereg `4690e31160a8926532c91cc1bdcd557093465c58` and software GREEN Actions `40655063036` (2271 tests, 1 skip, all guards exit0, raw ZIP SHA256 `a8a9f1e18f0b7b6ff5a34cef40faf2fa48c7fdf5aa906455f66f564ffbefce3c`). **Original** 20-stage native run 40649812006 remains **15 PASS / 5 FAIL**, including stage19 FAIL.
+
+**Native question:** Was original stage19 false-negative caused by another legitimate resident PID after the cancelled runner was reaped? Original report had `runner.interruption_unload.process_reaped=true` but `native_process_stopped=false` due to `not r.pool.pids()`. It did not log the pool PIDs, so this is a hypothesis, not an established result.
+
+**Exact test:** Bootstrap original pinned 4 model roles and native binaries on Linux x86_64, deep-verify hashes and Age0 RECORD_ONLY; run the **new** `tests/integration_real.py` only (the existing correction/restart/negative transfer/ablation/cancel/deadline family), with original model/source/seed and fresh isolated brain. Require `all_passed=true`, `cancel_runner_status=true`, `cancel_native_process_stopped=true`, `runner.interruption_unload.process_reaped=true`, cancelled PID absent from `live_pool_pids_after_cancel` and OS, all other checks true. A separate resident PID may remain alive; never relax the cancelled child liveness requirement. No test mocking, no threshold change, no retrospective reclassification.
+
+**Evidence:** Raw stage19 report and stdout, source/model hashes, process telemetry, complete SHA256SUMS, workflow result. Serialized in `v13-run11-age0-native-endtoend` group; other native jobs may queue, not overlap. If native run fails, preserve RED and triage independently. No Redmi claim. STEP2/B3/Body-JEPA/LP3/jepa_weight/Age/full-system gates unchanged.
