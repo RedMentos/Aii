@@ -1,0 +1,90 @@
+name: V13 Run15 disjoint bilingual STEP2 fixtures source-only
+on:
+  push:
+    branches:
+      - assistant/v13-run15-step2-fresh-disjoint-fixtures-20261028
+permissions:
+  contents: read
+concurrency:
+  group: v13-run15-b2-ambiguity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture source-bound original raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run15"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/scripts/step2_longnote_revision_fixtures.py v13/code/scripts/run15_step2_disjoint_bilingual_fixtures.py v13/code/tests/test_run15_step2_disjoint_bilingual_fixtures.py v13/code/scripts/run13_b2_identity_ambiguity_guard.py v13/code/v13/organ.py; do
+            git hash-object "$p" 2>&1 | xargs -I{} echo "{} $p"
+          done > "$e/SOURCE_BLOBS_RAW.log"
+          git hash-object v13/code/scripts/step2_longnote_revision_fixtures.py > "$e/ORIGINAL_BLOB.txt"
+          if [ "$(cat "$e/ORIGINAL_BLOB.txt")" = eeb4155dc3421c2b57ca0871c126f8ea2249c649 ]; then echo 0 > "$e/ORIGINAL_EXIT.txt"; else echo 1 > "$e/ORIGINAL_EXIT.txt"; fi
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 90s env PYTHONPATH=.:tests python3 -m unittest -v tests.test_run15_step2_disjoint_bilingual_fixtures tests.test_step2_longnote_revision_fixtures_20261028 tests.test_run13_b2_identity_ambiguity_guard) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/run15_step2_disjoint_bilingual_fixtures.py v13/code/tests/test_run15_step2_disjoint_bilingual_fixtures.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$RUNNER_TEMP/v13-run15-venv"
+            py="$RUNNER_TEMP/v13-run15-venv/bin/python"
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            third=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo 1 > "$e/INSTALL_EXIT.txt"
+              echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in INSTALL FULL; do echo SKIPPED_FOCUSED_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 643010604e0d37fbe6ecbc07946cdb412790f60a --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 643010604e0d37fbe6ecbc07946cdb412790f60a HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original raw stage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run15-step2-fixtures-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run15/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only stages and no gate promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run15"
+          for n in ORIGINAL FOCUSED COMPILE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no gate promotion"
+              tail -35 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN15_FIXTURES_SOURCE_ONLY_NO_NATIVE_OR_CANON_GATE_PROMOTION
