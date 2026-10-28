@@ -1,0 +1,11 @@
+# Run11 private SHADOW ticket persistence — preregistered 2026-10-28
+
+**Parent:** Run11 use-boundary review source `f1a97f5c38d1346beee6a810e77ba231af97b364`, child of Run31 #937. Parent first GREEN `40723531410` at `6fdf9253...`: 28 focused, 2528 full OK (1 skipped), 7/7 zero, privacy CLEAN; strict flag follow-up Actions `40724719794` still pending final audit at preregistration. No frozen Runtime, Store, model, seed, cohort, canon or gate edits. This branch owns only `scripts/run11_store_shadow_ticket_io.py`, `tests/test_run11_store_shadow_ticket_io.py`, one new workflow and coordination docs.
+
+**Problem:** The Store→German typed SHADOW use-boundary candidate is currently only an in-memory snapshot. Restartable operator inspection requires a local private ticket without turning its checksum into F5 permission. No private source text may be committed or included in CI.
+
+**Predeclared tests:** real temporary SQLite Store, exact user event/source/message lineage; private 0700 directory and 0600 no-overwrite ticket; close/reopen Store and replay; original source revocation; changed event rowid with unchanged hash; disk corruption, duplicate JSON keys, oversized file, symlink file/directory, hardlink, world-readable file, non-private directory, invalid/traversal name, wrong session; saved JSON must not contain original raw source text. Test-only RED before implementation, then focused + full suite, compile, frozen source hashes, privacy and diff checks with closed raw ZIP and private byte-verified backup. Linux software only, not Android/Termux hardlink compatibility proof.
+
+**Candidate design:** Save only a canonical, hash-checked, zero-authority SHADOW ticket to an existing private local directory; refuse overwrites and unsafe paths. At save and at replay, call the independent Run11 `inspect_shadow` so stale original Store sources are refused. A private file and self-hash are not signatures, user approval, F5, tool authority, learning, native utility or post-return atomicity.
+
+**Negative gates unchanged:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; V13 incomplete. Remaining platform budget UNKNOWN.
