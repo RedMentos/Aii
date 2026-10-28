@@ -12,8 +12,61 @@ import time
 from pathlib import Path
 
 from v13.common import dumps
-from v13.runtime import Runtime
+from v13.config import initialize
+from v13.memory import Memory
+from v13.models import ModelManager
+from v13.runners import RunnerPool
+from v13.store import Store
 from v13.source_consumer import verified_recall_messages, BUDGET_VALUE
+
+
+class BudgetContext:
+    """Existing-home operator lane: no Runtime coordinator, sleep or new session."""
+    def __init__(self, home):
+        self.home = Path(home)
+        self.cfg = initialize(self.home)
+        self.store = Store(self.home, self.cfg["log_retention_days"])
+        try:
+            self.models = ModelManager(self.home, self.cfg.get("b2_control", "two_body"))
+            self.pool = RunnerPool(self.home, self.models, self.cfg,
+                                   approval_store=self.store)
+            self.memory = Memory(self.store, self.cfg)
+            self.session = self.store.meta("last_session")
+            self.paused = self.store.queue_paused()
+        except BaseException:
+            self.store.close()
+            raise
+
+    def idle(self):
+        return self.store.one(
+            "SELECT 1 FROM accepted_turns WHERE state IN ('PENDING','RUNNING') LIMIT 1"
+        ) is None
+
+    def close(self):
+        try:
+            self.pool.unload()
+        finally:
+            self.store.close()
+
+
+def _pinned_c3(models):
+    """Deep-hashed installed metadata must also equal the frozen catalog."""
+    spec = models.specs["models"]["language"]
+    installed = models.installed.get("language")
+    if not isinstance(installed, dict):
+        return False
+    for field, key in (("model_id", "model_id"), ("exact_revision", "revision"),
+                       ("main_file", "main_file"), ("license_id", "license_id"),
+                       ("quant_format", "quant_format")):
+        if installed.get(field) != spec.get(key):
+            return False
+    name = spec["main_file"]
+    files = installed.get("files")
+    expected = next((f for f in spec["files"] if f["local_name"] == name), None)
+    actual = files.get(name) if isinstance(files, dict) else None
+    return (expected is not None and isinstance(actual, dict)
+            and actual.get("sha256") == expected["sha256"]
+            and actual.get("size") == expected["size"])
 
 
 def _digest(messages):
@@ -72,6 +125,9 @@ def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
         return preflight
     if not (1 <= int(max_tokens) <= 128 and 1 <= float(timeout_s) <= 120):
         raise ValueError("BOUNDED_NATIVE_LIMIT_REQUIRED")
+    if not _pinned_c3(r.models):
+        return dict(preflight, status="C3_MODEL_NOT_PINNED",
+                    reason="CATALOG_REVISION_AND_HASH_REQUIRED")
     verified = r.models.verify(deep=True)
     language = verified.get("language")
     if not language or not language.get("ok") or language.get("hash_checked") is not True:
@@ -131,8 +187,7 @@ def main(argv=None):
         return 2
     r = None
     try:
-        r = Runtime(home)
-        r.sleep.cycle.set_policy("enabled", "off")
+        r = BudgetContext(home)
         result = query(r, args.query, args.session, native=args.native,
                        timeout_s=args.timeout, max_tokens=args.max_tokens)
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
