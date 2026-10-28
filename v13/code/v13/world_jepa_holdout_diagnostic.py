@@ -127,7 +127,9 @@ def evaluate(model, X, A, X2, *, train_source_sha256, holdout_source_sha256):
     wrong = np.zeros_like(a)
     wrong[np.arange(len(a)), [next_action[int(k)] for k in actions]] = 1.
     zt = np.asarray(model.latent(x2, target=True), dtype=np.float64)
-    z = np.asarray(model.latent(x, target=False), dtype=np.float64)
+    # Persistence must use the same EMA target representation as zt.
+    # Online-encoder drift is not an action-conditioned prediction gain.
+    z = np.asarray(model.latent(x, target=True), dtype=np.float64)
     predicted = np.asarray(model.predict(x, a)[0], dtype=np.float64)
     wrong_predicted = np.asarray(model.predict(x, wrong)[0], dtype=np.float64)
     scale = np.asarray(model.zsd, dtype=np.float64)
