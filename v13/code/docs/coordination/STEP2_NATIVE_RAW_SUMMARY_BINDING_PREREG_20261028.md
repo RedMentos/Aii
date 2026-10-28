@@ -1,0 +1,7 @@
+# STEP2 native raw-to-summary binding — supplemental preregistration (2026-10-28)
+
+After the two-parent collector/scorer integration `dadd544288ca8816f579390a3e30c86967b4f3ed`, the new cross-organ tests at `c14c83c9a4c9d91192216a8b4034c7733860ddf9` preregister two negative cases: a changed summary score and malformed raw bytes can be rehashed into a valid manifest with a new external pin. The current sealed scorer validates hashes and schema but does **not** compare native-shaped raw report content to scored summary values. The branch-scoped test workflow `2c51b81c04006ab9a6502eac536d239e1f3e6d9b` records RED before source changes.
+
+Narrow authorized fix: for LINUX_NATIVE/REDMI_NATIVE labels only, require length-prefixed two-report raw framing, verify each report's 70 row digests and exact registered fixture content, bind tool-row utility to summary utility, bind per-variant B1/B2 field-error profiles, arm/seed/config/queried-offer provenance, and model/runner hashes where present. Keep SOFTWARE_SYNTHETIC fixture support, no native execution, no change to frozen Runtime, STEP2 cohort or gates. Do not infer actual native execution from mocks.
+
+Evidence: exact branch Actions run and raw artifact, focused tests and full software suite; any failing test remains preserved. The scorer remains diagnostic-only and may not promote STEP2, B3, Body-JEPA, jepa_weight, age or whole-system completion.
