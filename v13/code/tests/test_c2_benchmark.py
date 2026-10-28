@@ -20,6 +20,58 @@ class C2BenchTests(unittest.TestCase):
         s=C.summarize(rows);self.assertEqual(s['accuracy'],.5);self.assertEqual(s['valid_rate'],.75);self.assertEqual(s['confusion']['detail'],{'None':1})
         self.assertEqual(C.auroc([.9,.1],[True,False]),1.)
 
+    def test_native_scores_first_validated_select_processing_not_unrelated_tool(self):
+        class FakeNeedle:
+            proc = None
+            def load(self, *args): pass
+            def control(self, *args):
+                return {'success':True, 'validation':{'negation':False,'ungrounded':False},
+                        'confidence':.8, 'function_calls':[
+                            {'name':'other_tool','arguments':{'route':'gist'}},
+                            {'name':'select_processing','arguments':{'route':'detail'}},
+                            {'name':'select_processing','arguments':{'route':'both'}}]}
+        class FakeModels:
+            def __init__(self, path): self.path = path
+            def path_for(self, role): return self.path
+        class FakeRuntime:
+            def __init__(self, path):
+                self.needle = FakeNeedle()
+                self.models = FakeModels(path)
+            def close(self): pass
+        with tempfile.TemporaryDirectory() as td:
+            model = Path(td) / 'needle3.cact'
+            model.write_bytes(b'CACT')
+            with patch('v13.runtime.Runtime', return_value=FakeRuntime(model)):
+                rows, extra = C.run_needle([{'id':'one','text':'calculate','label':'detail'}], Path(td))
+        self.assertEqual(rows[0]['pred'], 'detail')
+        self.assertTrue(rows[0]['validated'])
+        self.assertEqual(extra['validated_rate'], 1.)
+        self.assertEqual(C.summarize(rows)['accuracy'], 1.)
+
+    def test_native_rejects_unrelated_tool_without_select_processing(self):
+        class FakeNeedle:
+            proc = None
+            def load(self, *args): pass
+            def control(self, *args):
+                return {'success':True, 'validation':{}, 'confidence':.8,
+                        'function_calls':[{'name':'other_tool','arguments':{'route':'detail'}}]}
+        class FakeModels:
+            def __init__(self, path): self.path = path
+            def path_for(self, role): return self.path
+        class FakeRuntime:
+            def __init__(self, path):
+                self.needle = FakeNeedle()
+                self.models = FakeModels(path)
+            def close(self): pass
+        with tempfile.TemporaryDirectory() as td:
+            model = Path(td) / 'needle3.cact'
+            model.write_bytes(b'CACT')
+            with patch('v13.runtime.Runtime', return_value=FakeRuntime(model)):
+                rows, extra = C.run_needle([{'id':'one','text':'calculate','label':'detail'}], Path(td))
+        self.assertIsNone(rows[0]['pred'])
+        self.assertFalse(rows[0]['validated'])
+        self.assertEqual(extra['validated_rate'], 0.)
+
     def test_invalid_native_observation_never_scores_pred_and_nonfinite_confidence(self):
         class FakeNeedle:
             proc = None
