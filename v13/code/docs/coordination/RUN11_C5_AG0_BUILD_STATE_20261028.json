@@ -51,13 +51,48 @@
       "path": "/V13-Checkpoints/2026-10-28/Run11-JEF-AG0",
       "files": 3,
       "byte_exact_readback": true
+    },
+    "c5_full_software_red": {
+      "run_id": 40632930791,
+      "artifact_id": 12791918507,
+      "zip_sha256": "281e1bbcd40ab1b1d99f6400a8e4aea0d5f695c925c8bf840d123753fa672106",
+      "focused_pass": true,
+      "full_tests": 2217,
+      "failures": 4,
+      "errors": 62,
+      "skipped": 1,
+      "reason": "frozen source handoff candidate/runtime mismatch after C5 runtime change",
+      "internal_hashes_verified": 14,
+      "crc_ok": true
+    },
+    "integrated_full_software_red": {
+      "run_id": 40633149062,
+      "artifact_id": 12792622134,
+      "zip_sha256": "d573264020595ec2f220694033bb236d1c44486b636696671526e475821dcb47",
+      "focused_pass": true,
+      "focused_tests": 40,
+      "full_tests": 2220,
+      "failures": 4,
+      "errors": 62,
+      "skipped": 1,
+      "source_blob_check_exit": 0,
+      "internal_hashes_verified": 16,
+      "crc_ok": true
+    },
+    "ag0_full_software_green": {
+      "run_id": 40632990148,
+      "artifact_id": 12792920337,
+      "zip_sha256": "64ff75fa3b76259e3601d18b7a0c4f6c14048d76142dc2c746b71e17f56b96e4",
+      "focused_tests": 37,
+      "full_tests": 2217,
+      "skipped": 1,
+      "compile_exit": 0,
+      "privacy_exit": 0,
+      "diff_exit": 0,
+      "internal_hashes_verified": 16
     }
   },
-  "in_progress": {
-    "c5_full_software_run": 40632930791,
-    "ag0_full_software_run": 40632990148,
-    "integrated_full_software_run": 40633149062
-  },
+  "in_progress": {},
   "not_yet_run": {
     "integrated_native": true,
     "redmi": true,
@@ -81,6 +116,10 @@
     "Does the public arithmetic ask answer 60?",
     "C3-only unsupported leader answer hallucinated John Doe in original native proof; semantic reliability not established."
   ],
-  "next_command": "After all three full software workflows complete GREEN and no active native owner, add/run isolated serial Age0 native workflow on assistant/v13-run11-c5-ag0-native-20261028; verify closed artifact SHA and back up privately.",
-  "remaining_platform_budget": "UNKNOWN"
+  "next_command": "Preserve integrated RED and original source hashes. Continue independent AG0-only full-green native run 40633577048; inspect actual C3 fallback/STEP12/ask, save and hash-check raw. Keep C5 integration review branch blocked until frozen-source review path is resolved without cohort substitution.",
+  "remaining_platform_budget": "UNKNOWN",
+  "blockers": [
+    "C5/integrated full suite RED due registered frozen source-handoff candidate hash mismatch; no authorized hash rewrite.",
+    "Combined #847 native prereg requires full GREEN; do not trigger."
+  ]
 }
