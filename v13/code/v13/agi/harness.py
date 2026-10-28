@@ -92,9 +92,51 @@ class HarnessLibrary:
     def __init__(self,store,clock=time.time):
         self.s=store;self.clock=clock
         self.box=StateBox(store,KEY,REVISION,lambda:{'active':{},'history':[]})
+    def _effective(self,st):
+        """Read-only approved view; a withdrawn AG8 request cannot serve an old override.
+
+        Walk the stored apply/previous chain to keep a still-approved older
+        version. If the history is missing or malformed, fall back to default.
+        Persisted history stays intact for an explicit human rollback.
+        """
+        from .self_improve import KEY as AG8_KEY, REVISION as AG8_REVISION, require_approved_origin
+        try:
+            ag8,_=StateBox(self.s,AG8_KEY,AG8_REVISION,lambda:{'proposals':{},'seq':0}).load()
+            proposals=ag8.get('proposals') or {}
+        except (ValueError,KeyError,TypeError,AttributeError):
+            proposals={}
+        valid={}
+        def approved(pid):
+            if not isinstance(pid,str):return False
+            if pid not in valid:
+                try:require_approved_origin(self.s,proposals.get(pid),kind='harness')
+                except (PermissionError,ValueError,KeyError,TypeError,AttributeError):valid[pid]=False
+                else:valid[pid]=True
+            return valid[pid]
+        history={}
+        for h in st.get('history') or ():
+            if not isinstance(h,dict) or h.get('op')!='apply':continue
+            target,pid,version=h.get('target'),h.get('proposal'),h.get('version')
+            if isinstance(target,str) and isinstance(pid,str) and type(version) is int:
+                history[(target,pid,version)]=h
+        out={}
+        for target,active in (st.get('active') or {}).items():
+            current=active;seen=set()
+            while isinstance(current,dict):
+                pid,version=current.get('proposal'),current.get('version')
+                if not isinstance(pid,str) or type(version) is not int:break
+                if approved(pid):
+                    out[target]=current;break
+                key=(target,pid,version)
+                if key in seen:break
+                seen.add(key)
+                row=history.get(key)
+                if row is None:break
+                current=row.get('previous')
+        return out
     def resolve(self,target):
-        """Override if applied, else the live default. For evaluators/benches; no live consumer yet (authority 0)."""
-        a=self.box.load()[0]['active'].get(target)
+        """Approved effective override or default; SHADOW evaluator only."""
+        a=self._effective(self.box.load()[0]).get(target)
         return a['value'] if a else default(target)
     def overlay(self,diff=None):
         """Settings for an evaluator: every target resolved, with an optional candidate diff on top (sandbox, nothing stored)."""
@@ -129,12 +171,13 @@ class HarnessLibrary:
             st['history']=st['history'][-HISTORY:]
             return last['proposal']
         pid=self.box.mutate(f);self.s.log('harness_rollback',None,{'target':target,'proposal':pid});return pid
-    def _hash(self,st):return digest(dumps({t:a['value'] for t,a in sorted(st['active'].items())}))
+    def _hash(self,st):return digest(dumps({t:a['value'] for t,a in sorted(self._effective(st).items())}))
     def manifest_fields(self):
-        st=self.box.load()[0]
-        return {'harness_hash':self._hash(st),'harness_targets':{t:a['version'] for t,a in sorted(st['active'].items())}}
+        st=self.box.load()[0];effective=self._effective(st)
+        return {'harness_hash':self._hash(st),'harness_targets':{t:a['version'] for t,a in sorted(effective.items())}}
     def report(self):
-        st=self.box.load()[0]
-        return {'revision':REVISION,'categories':list(CATEGORIES),'targets':len(TARGETS),'active':sorted(st['active']),
+        st=self.box.load()[0];effective=self._effective(st)
+        return {'revision':REVISION,'categories':list(CATEGORIES),'targets':len(TARGETS),'active':sorted(effective),
+                'withheld_unapproved':sorted(set(st['active'])-set(effective)),
                 'live_consumers':0,'harness_hash':self._hash(st),
-                'claim_limit':'Allow-listed harness edits behind the AG8 shield and human approval; overrides not read by the live path yet (SHADOW)'}
+                'claim_limit':'Allow-listed harness edits behind the AG8 shield and human approval; withdrawn requests excluded from SHADOW reads; no live consumers'}
