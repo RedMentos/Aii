@@ -7,10 +7,11 @@
   "status": "DISPATCH_ONLY_STAGED_NO_NATIVE_EXECUTION",
   "source": {
     "prereg_commit": "860e9ab8f3c970a520bc76571d42e82307d3f82c",
-    "workflow_blob": "17921b5153299c8b246c8a5face57d3de576230c",
+    "workflow_blob": "fb022c5d6b051aec969b6c93be1a427c3f06e13b",
     "native_candidate_blob": "8a57b60a483c50550ca0714ac6472675dced701c",
     "run33_blob": "b1d58d7e0c3937787cf15dd801e278de25845879",
-    "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+    "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "workflow_override_policy": "V13_LLAMA_SERVER_UNSET_FOR_NATIVE"
   },
   "preconditions": {
     "run33_software": "SUCCESS_40729771477",
