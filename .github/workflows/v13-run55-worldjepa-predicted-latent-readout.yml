@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v13-run55-tamper-${{ github.ref }}
+  group: v13-run55-readout-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   software:
