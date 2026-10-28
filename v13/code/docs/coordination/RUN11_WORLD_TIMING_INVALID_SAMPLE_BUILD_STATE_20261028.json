@@ -1,0 +1,27 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-timing-invalid-sample-guard-20261028",
+  "base_pr": 850,
+  "base_commit": "b454f81da33de9d621af6417ed47ab55cba6263f",
+  "prereg_commit": "bac0010b6e55c0addce23e888c7aeca38b81dcc8",
+  "world_original_blob": "b4ed658f2212c013b9c77285a3dc2d3dc5553758",
+  "world_candidate_blob": "d9a5e9481acf8c644c956a26201a1eaeaa8baa7a",
+  "test_blob": "57a7758d4cca8195e9c1741566085e447874afcc",
+  "evidence_kind": "SOFTWARE_CANDIDATE_NO_NATIVE",
+  "full_linux_ci": "PENDING_UNVERIFIED",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect run11-world-timing-invalid-sample-20261028.yml CI, verify source/focused/full/privacy/diff/compile raw and backup byte-exact; then independent review and next World/Self roadmap package.",
+  "next_prerequisite": "GitHub CI and raw; no Redmi available.",
+  "platform_remaining_budget": "UNKNOWN"
+}
