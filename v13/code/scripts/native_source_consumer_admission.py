@@ -121,7 +121,7 @@ def run(installed, out):
                 other = records[(i + 1) % len(records)]
                 e = r.store.event(r.session, f["topic"] + " conflicting correction")
                 mid = r.memory.feedback(e["event_id"], "fact", f"{f['amount'] + 71} Euro",
-                                        key=f["topic"], permission="record")
+                                        key=f["topic"] + "s", permission="record")
                 conflicting = r.memory.candidate(mid, r.session)
                 cases = [("no_source", []), ("wrong_topic", [other]),
                          ("conflict", [records[i], conflicting])]
