@@ -1,0 +1,39 @@
+{
+  "schema": "V13_RUN17_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "Run17 German typed source reader",
+  "parent_branch": "assistant/v13-run15-step2-fresh-disjoint-fixtures-20261028",
+  "parent_sha": "470a6a22ff2a8c07c369245916e2b336d0a9c258",
+  "verified_source_sha": "9f115579d584e30899e12eeec7df71fa30fa4504",
+  "ci_run_id": 40702568275,
+  "ci_conclusion": "SUCCESS",
+  "evidence_zip_sha256": "a68034c923197b7275e70f0e3ea6a5d78a3c71582e05df15721aa0ebd52fd2d1",
+  "evidence_inner_hashes_verified": 15,
+  "private_backup_readback": "BYTE_IDENTICAL",
+  "focused_tests": 17,
+  "full_tests": 2466,
+  "full_skipped": 1,
+  "privacy": "CLEAN",
+  "source_only": true,
+  "native_model_calls": 0,
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "F1/F5 authoritative callback not implemented",
+    "Mixed English Project cross-project source guard",
+    "Current option-source precedence and event sequence",
+    "Native EN/DE B2+C3 utility not measured"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run17_german_typed_shadow",
+  "next_package": "isolated Run19 fail-closed source-order and bilingual ambiguity review",
+  "budget_remaining": "UNKNOWN"
+}
