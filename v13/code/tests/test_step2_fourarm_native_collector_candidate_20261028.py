@@ -7,7 +7,7 @@ import unittest
 
 from scripts.step2_fourarm_native_collector_candidate import (
     ARMS, SEEDS, canonical, collect, load_registration,
-    make_registration, sha, write_new,
+    make_registration, sha, write_new, verify_native_reports, VARIANTS,
 )
 
 
@@ -136,6 +136,37 @@ class CollectorCandidate(unittest.TestCase):
         self.assertTrue((self.work / 'TC_s27.raw').exists())
         self.assertTrue((self.work / 'TC_s27.json').exists())
         self.assertFalse((self.work / 'manifest.json').exists())
+
+    def test_exact_native_row_digest_verification_rejects_tampering(self):
+        rows = [{'fixture': fid, 'variant': variant, 'status': 'RECORDED',
+                 'score': {'utility': 0.0}}
+                for fid in self.ids for variant in VARIANTS]
+        hashes = {r['fixture'] + ':' + r['variant']: sha(canonical(r)) for r in rows}
+        source = {'status': 'UTILITY_FAIL', 'fixture_sha256': 'e' * 64,
+                  'fixtures': [{'id': fid} for fid in self.ids],
+                  'source_unchanged': True, 'installed_artifacts_unchanged': True,
+                  'all_structural_checks_passed': True,
+                  'rows': rows, 'row_sha256': hashes}
+        tool = {'status': 'TOOL_UTILITY_FAIL', 'installed_artifacts_unchanged': True,
+                'rows': [dict(r) for r in rows], 'row_sha256': dict(hashes)}
+        def verify():
+            return verify_native_reports(canonical(source), canonical(tool), self.ids, 'e' * 64)
+        self.assertEqual(len(verify()[0]['rows']), 70)
+        source['rows'][0]['score']['utility'] = 1.0
+        with self.assertRaises(ValueError):
+            verify()
+        source['rows'][0]['score']['utility'] = 0.0
+        tool['rows'].pop()
+        with self.assertRaises(ValueError):
+            verify()
+        tool['rows'].append(dict(rows[-1]))
+        tool['status'] = 'RUNNING'
+        with self.assertRaises(ValueError):
+            verify()
+        tool['status'] = 'TOOL_UTILITY_FAIL'
+        source['source_unchanged'] = False
+        with self.assertRaises(ValueError):
+            verify()
 
     def test_registration_rejects_shared_body_as_two_distinct(self):
         same = {'model_sha256': {'B1_DETAIL': 'a' * 64,
