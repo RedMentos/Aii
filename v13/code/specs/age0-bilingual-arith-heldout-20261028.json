@@ -1,0 +1,166 @@
+{
+  "schema": "v13.age0.bilingual_numeric_heldout.v1",
+  "label_source": "author-defined arithmetic and explicitly unsupported note facts; not user gold",
+  "origin": "new candidate cohort, excludes 120/2 public probe",
+  "items": [
+    {
+      "id": "a01",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Wie viel ist die Hälfte von 74 Euro?",
+      "expected": "37",
+      "operands": [
+        "74"
+      ]
+    },
+    {
+      "id": "a02",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "Compute half of 86 dollars.",
+      "expected": "43",
+      "operands": [
+        "86"
+      ]
+    },
+    {
+      "id": "a03",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Berechne die Hälfte von 135.",
+      "expected": "67.5",
+      "operands": [
+        "135"
+      ]
+    },
+    {
+      "id": "a04",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "What is 19 multiplied by 6?",
+      "expected": "114",
+      "operands": [
+        "19",
+        "6"
+      ]
+    },
+    {
+      "id": "a05",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Berechne 84/7.",
+      "expected": "12",
+      "operands": [
+        "84",
+        "7"
+      ]
+    },
+    {
+      "id": "a06",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "What is 18 plus 27?",
+      "expected": "45",
+      "operands": [
+        "18",
+        "27"
+      ]
+    },
+    {
+      "id": "a07",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Wie viel sind 17% von 200?",
+      "expected": "34",
+      "operands": [
+        "17",
+        "200"
+      ]
+    },
+    {
+      "id": "a08",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "Compute 6*9.",
+      "expected": "54",
+      "operands": [
+        "6",
+        "9"
+      ]
+    },
+    {
+      "id": "a09",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Budget 254 Euro. Berechne die Hälfte.",
+      "expected": "127",
+      "operands": [
+        "254"
+      ]
+    },
+    {
+      "id": "a10",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "Half of 126 dollars? Calculate it.",
+      "expected": "63",
+      "operands": [
+        "126"
+      ]
+    },
+    {
+      "id": "a11",
+      "lang": "de",
+      "kind": "numeric",
+      "prompt": "Was ist 43 minus 18?",
+      "expected": "25",
+      "operands": [
+        "43",
+        "18"
+      ]
+    },
+    {
+      "id": "a12",
+      "lang": "en",
+      "kind": "numeric",
+      "prompt": "What is 144 divided by 12?",
+      "expected": "12",
+      "operands": [
+        "144",
+        "12"
+      ]
+    },
+    {
+      "id": "u01",
+      "lang": "en",
+      "kind": "unsupported",
+      "prompt": "The note gives Project Wren a budget of 135 dollars. Who manages it?",
+      "operands": [
+        "135"
+      ]
+    },
+    {
+      "id": "u02",
+      "lang": "de",
+      "kind": "unsupported",
+      "prompt": "Projekt Kranich hat laut Notiz 86 Euro Budget. Wer leitet es?",
+      "operands": [
+        "86"
+      ]
+    },
+    {
+      "id": "u03",
+      "lang": "en",
+      "kind": "unsupported",
+      "prompt": "The note says Project Lark starts in November. What exact day is its launch?",
+      "operands": []
+    },
+    {
+      "id": "u04",
+      "lang": "de",
+      "kind": "unsupported",
+      "prompt": "Die Notiz nennt nur Projekt Blau. In welcher Stadt liegt sein Büro?",
+      "operands": []
+    }
+  ]
+}
