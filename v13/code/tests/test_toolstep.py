@@ -33,6 +33,8 @@ class ProposerTests(unittest.TestCase):
             '2026-10-28: halbiere 120',
             'Halbiere 1.200',
             'Halbiere -120',
+            'Halbiere 120-30',
+            'Halbiere 120+30',
             'The budget is 120 Euro.',
         ):
             self.assertIsNone(T.propose(text),text)
