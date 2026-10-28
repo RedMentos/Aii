@@ -6,6 +6,7 @@ rules. This guard refuses ambiguous requests and ambiguous source spans.
 It preserves the original B2 state-slot horizon, cap, and source-reader contract.
 """
 from collections import Counter
+import re
 
 from scripts import run12_b2_context_identity_candidate as base
 
@@ -58,8 +59,12 @@ def select_context(current, current_event_id, session, generation, revision,
         ref = item.get("source_ref")
         if (type(ref) is not dict or type(ref.get("source_id")) is not str or
                 type(ref.get("sha256")) is not str or
+                re.fullmatch(r"[0-9a-f]{64}", ref["sha256"]) is None or
                 type(ref.get("char_start")) is not int or
                 type(ref.get("char_end")) is not int or
+                ref["char_start"] < 0 or
+                ref["char_end"] < ref["char_start"] or
+                ref["char_end"] - ref["char_start"] > base.MAX_SOURCE_CHARS or
                 ref.get("modality") != "text"):
             accepted.append(item)  # base records BAD_REF
             continue
