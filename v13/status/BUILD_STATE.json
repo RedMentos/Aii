@@ -1300,5 +1300,51 @@
     "Recorded2row native same-causal export passed with authored test references only; no quality gain.",
     "46row diagnostic stopped after9 exported native rows with actual malformed SQLite; no fit or utility evaluation. Persistence cause unestablished.",
     "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
-  ]
+  ],
+  "run70_paired_realfile_crosschain_20261028": {
+    "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+    "owner": "GPT-6 scheduled continuation",
+    "base_sha": "8ed2b753fa722b723cbc78bff28a42109f822b2d",
+    "head_sha": "1a592970781c581dce643168004b50bda7a2d95d",
+    "pr": 977,
+    "push_actions": 40770594298,
+    "original_zip_sha256": "e0778e5d956375ef44b3d072e30cec1dd34abd1d8bdd943054569aee8da245ff",
+    "zip_crc": "CLEAN",
+    "inner_sha256sums": "32/32",
+    "focused_tests": "101 PASS",
+    "full_tests": "2637 OK (1 skipped)",
+    "privacy": "CLEAN",
+    "frozen_run67_run69_blobs": "SIX_EXACT_VERIFIED",
+    "first_workflow_attempt": "455240948c3eb623bcde8cc33dc5e2486329058a CANCELLED BEFORE_ARTIFACT",
+    "evidence_class": "LINUX_SOFTWARE_ONLY",
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run69-Paired-Counterfactual/Run70_ORIGINAL_GREEN_40770594298_shae0778e5d.zip",
+    "negative_gates": {
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "LP3": "FAIL",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "whole_system_complete": false
+    },
+    "open_questions": [
+      "No grounded JEPA-only utility; Run69 delta MSE worse than zero/persistence/local",
+      "No semantic B2-to-JEPA consumer proof",
+      "No two-hot action confidence calibration",
+      "No native/Redmi sustained proof"
+    ],
+    "next_command": "git fetch origin codex/automation11-run70-b2-worldjepa-paired-realfile-integration-20261028 && git checkout codex/automation11-run70-b2-worldjepa-paired-realfile-integration-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run69_paired_realfile_counterfactual tests.test_run58_b2_offline_current_source_crosschain"
+  },
+  "run72_latentonly_crosschain_20261028": {
+    "scope": "REVIEW_BRANCH_ONLY_NOT_MAIN",
+    "owner": "GPT-6 scheduled continuation",
+    "base_run70_sha": "1a592970781c581dce643168004b50bda7a2d95d",
+    "prereg_commit": "c630fca788cca1ae4f5fb651158bee76645543e3",
+    "status": "CONDITIONAL_PENDING_RUN71_EXACT_CI",
+    "run71_candidate_sha": "0184e1b7de9bfc59ed0b8062039ed37dcb85e159",
+    "age_authority": 0,
+    "jepa_weight": 0,
+    "whole_system_complete": false,
+    "next_command": "Verify Run71 original push Actions 40771004527 raw HEAD, CRC, SHA256SUMS, stage exits, focused/full, privacy; only after GREEN import exact Run71 three files and run Run72 pinned integration CI"
+  }
 }
