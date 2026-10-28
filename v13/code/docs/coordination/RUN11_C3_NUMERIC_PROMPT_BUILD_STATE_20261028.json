@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN11_C3_NUMERIC_PROMPT_CHECKPOINT_V1",
+  "owner": "GPT-6 review candidate",
+  "source": {
+    "branch": "assistant/v13-run11-c3-numeric-explicitness-20261028",
+    "parent_commit": "db7702f151aa951a6f4293f98585687e6ca9c8ae",
+    "prompt_baseline_blob": "a74d7517a7ab70e801e177b58da057e57fd3460c",
+    "prompt_candidate_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+    "runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+    "focal_blob": "2135f4404f241cfc198abd7fe2288f13a622f4fc",
+    "toolstep_blob": "9640b2ce9abfc08cb82f7b550e18d856d9513f08",
+    "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "control_tools_blob": "954a3f468f10195fbce12d27f68585ee7edee2c9",
+    "registered_frozen_cohorts_unchanged": true
+  },
+  "evidence": {
+    "baseline_native_red": {
+      "run": 40633577048,
+      "artifact": 12792223727,
+      "zip_sha256": "b23586075a8c10890dd87b31bd01d6fb64e7109c71a32a656e681851c0e03e73",
+      "jef_structural_pass": true,
+      "step12_structural_pass": true,
+      "public_ask_60": false
+    },
+    "candidate_software_full_green": {
+      "run": 40633968988,
+      "artifact": 12792194808,
+      "zip_sha256": "3a05e49496b1c4e02a4713c39111ce5c649978b88c66d3a06431f862d0e7e15d",
+      "focused_tests": 32,
+      "full_tests": 2218,
+      "skipped": 1,
+      "all_exits_zero": true,
+      "internal_hashes_verified": 18,
+      "private_library_byte_readback": true
+    },
+    "candidate_native_in_progress": {
+      "run": 40634460512,
+      "source_commit": "898f43d3462fb4247648d313bec3336e30f2c4d9"
+    }
+  },
+  "open_questions": [
+    "Will prompt-only candidate output the explicit 60 in the final answer?",
+    "Which actual runner role (C3/B1/B2) answered the public arithmetic request?",
+    "Will JEF and STEP12 structural proofs remain PASS with the changed shared system prompt?",
+    "Does any source-grounding regression appear in the C3-only unsupported leader fixture?"
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "jepa_weight": 0,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "phone_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Fetch native run 40634460512 and artifact; verify ZIP SHA, CRC, internal manifest, independent stage exits, JEF/STEP12 checks, ASK_RAW 60, ASK_META actual runner/no tool. Back up privately, then update PR #849 and select next package.",
+  "remaining_platform_budget": "UNKNOWN"
+}
