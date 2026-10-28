@@ -1,0 +1,83 @@
+name: V13 Run11 organ rollback integrity integration software
+on:
+  push:
+    branches:
+      - assistant/v13-run11-organ-rollback-integrity-integration-20261028
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-organ-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  organ:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Install isolated test dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/organ"
+          "$RUNNER_TEMP/organ/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source pins
+        run: |
+          mkdir -p "$RUNNER_TEMP/organ-evidence"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/organ-evidence/HEAD.txt"
+          sha256sum v13/code/v13/organ.py v13/code/tests/test_organ.py v13/code/tests/test_organ_artifact_integrity.py v13/code/tests/test_organ_path_safety_run365.py v13/code/tests/test_run441_organ_bridge_symlinks.py | tee "$RUNNER_TEMP/organ-evidence/source-sha256.txt"
+      - name: Focused organ regression
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/tests"
+          set +e
+          "$RUNNER_TEMP/organ/bin/python" -m unittest -v tests.test_organ tests.test_organ_artifact_integrity tests.test_organ_path_safety_run365 tests.test_run441_organ_bridge_symlinks > "$RUNNER_TEMP/organ-evidence/focused.log" 2>&1
+          status=$?
+          set -e
+          cat "$RUNNER_TEMP/organ-evidence/focused.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/organ-evidence/focused.exit"
+          exit "$status"
+      - name: Full software regression
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/tests"
+          set +e
+          "$RUNNER_TEMP/organ/bin/python" -m unittest discover -s tests -p 'test_*.py' -q > "$RUNNER_TEMP/organ-evidence/full.log" 2>&1
+          status=$?
+          set -e
+          tail -80 "$RUNNER_TEMP/organ-evidence/full.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/organ-evidence/full.exit"
+          exit "$status"
+      - name: Compile source and tests
+        run: |
+          set +e
+          "$RUNNER_TEMP/organ/bin/python" -m compileall -q v13/code/v13/organ.py v13/code/tests/test_organ.py v13/code/tests/test_organ_artifact_integrity.py v13/code/tests/test_organ_path_safety_run365.py v13/code/tests/test_run441_organ_bridge_symlinks.py > "$RUNNER_TEMP/organ-evidence/compile.log" 2>&1
+          status=$?
+          set -e
+          cat "$RUNNER_TEMP/organ-evidence/compile.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/organ-evidence/compile.exit"
+          exit "$status"
+      - name: Public privacy and diff check
+        run: |
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6d1cb49488fa5f5876a8142296dc119e3a7c6f0e --head HEAD --no-worktree > "$RUNNER_TEMP/organ-evidence/privacy.log" 2>&1
+          privacy=$?
+          git diff --check 6d1cb49488fa5f5876a8142296dc119e3a7c6f0e HEAD > "$RUNNER_TEMP/organ-evidence/diff.log" 2>&1
+          diff=$?
+          set -e
+          cat "$RUNNER_TEMP/organ-evidence/privacy.log" "$RUNNER_TEMP/organ-evidence/diff.log"
+          printf 'EXIT=%s\n' "$privacy" > "$RUNNER_TEMP/organ-evidence/privacy.exit"
+          printf 'EXIT=%s\n' "$diff" > "$RUNNER_TEMP/organ-evidence/diff.exit"
+          test "$privacy" -eq 0 && test "$diff" -eq 0
+      - name: Retain closed source-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: organ-run11-raw-${{ github.sha }}
+          path: ${{ runner.temp }}/organ-evidence/
+          if-no-files-found: warn
+          retention-days: 30
