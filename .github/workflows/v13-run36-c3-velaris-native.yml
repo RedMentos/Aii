@@ -121,7 +121,14 @@ jobs:
               assert row['process_reaped'] is True and row['oracle_visible_to_native'] is False
           print('RUN36_LINUX_NATIVE_C3_ONLY_FIVE_ARM_SCOPED_NO_STEP2_PROMOTION')
           print('RAW_SHA256',receipt['raw_report_sha256'])
-          print('ARM_SCORES',[(row['arm'],row['score'].get('utility')) for row in report['rows']])
+          scores={row['arm']:row['score']['utility'] for row in report['rows']}
+          exact={row['arm']:row['score']['exact'] for row in report['rows']}
+          print('ARM_SCORES',[(arm,scores[arm]) for arm in pilot.ARMS])
+          print('ARM_EXACT',[(arm,exact[arm]) for arm in pilot.ARMS])
+          print('EXACT_MINUS_MISSING',scores['B1_B2_EXACT']-scores['B1_B2_MISSING'])
+          print('EXACT_MINUS_B1_ONLY',scores['B1_B2_EXACT']-scores['B1_ONLY'])
+          print('DISTRACTOR_MINUS_MISSING',scores['B1_B2_DISTRACTOR']-scores['B1_B2_MISSING'])
+          print('ONE_FIXTURE_ONLY_NO_CAUSAL_POPULATION_CLAIM')
           PY
             echo "$?" > "$e/REPLAY_EXIT.txt"
           else
