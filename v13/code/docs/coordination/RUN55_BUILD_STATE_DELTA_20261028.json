@@ -25,13 +25,17 @@
       "pr": 962,
       "head": "0a10a747dc06e9a90baa0143b4585c62dba05945",
       "ci_run": 40756700727,
-      "status": "PENDING_RAW_AUDIT"
+      "status": "SOFTWARE_ONLY_GREEN_RAW_AUDITED",
+      "zip_sha256": "64b890920bb01dcd7a90bfa5b67daa7bb23f93f4ee069caafd3950f968d94c21",
+      "focused": "30/30 PASS",
+      "full": "2583 OK (1 skipped)",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run52-53-WorldJEPA-Review/Run54_GREEN_40756700727_sha64B89092.zip"
     },
     "run55": {
       "branch": "codex/automation11-run55-worldjepa-grounded-readout-20261028",
       "base_head": "0a10a747dc06e9a90baa0143b4585c62dba05945",
-      "status": "STAGED_NO_PR_NO_CI",
-      "source_blob": "61e14f1be9d2eb072aebb66cc6e32b612529a9da"
+      "status": "STAGED_PR_NEXT_NO_CI",
+      "source_blob": "96165bf52dcb498af5cccd02c0aa3684a18f873e"
     }
   },
   "gates": {
@@ -49,7 +53,7 @@
     "Redmi device not available for physical measurement",
     "Run37 Elyndra native requires exclusive owner and pinned installed model/runner"
   ],
-  "next_command": "Audit Run54 Actions 40756700727 exact head raw ZIP; if GREEN create Run55 draft PR against Run54 and audit source-only metrics; then cross-integrate Run53 without modifying frozen cohorts.",
+  "next_command": "Create draft Run55 PR against exact Run54 head 0a10a747dc06e9a90baa0143b4585c62dba05945; audit pinned source-only Actions METRICS_RAW.json and full suite; then integrate Run53 test.",
   "platform_budget": "UNKNOWN",
   "backup": "/V13-Checkpoints/2026-10-28/Run52-53-WorldJEPA-Review/"
 }
