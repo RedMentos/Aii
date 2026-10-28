@@ -85,8 +85,13 @@ class StateConditionedPrefix(nn.Module):
         if assignment not in ASSIGNMENTS:
             raise ValueError('Unknown assignment control')
         batch = prompt_ids.shape[0]
-        if assignment == 'shift' and (batch < 2 or not bool((prompt_ids != prompt_ids[:1]).any())):
-            raise ValueError('Shifted control requires at least two different prompts')
+        if assignment == 'shift':
+            # Rolling by one is a wrong-source control only when every target
+            # row receives a different prompt, including the wraparound row.
+            # "At least two different prompts" misses mixed duplicate batches.
+            own_row = (prompt_ids == prompt_ids.roll(shifts=1, dims=0)).all(dim=1)
+            if batch < 2 or bool(own_row.any()):
+                raise ValueError('Shifted control requires a distinct source prompt per row')
         supplied_features = features is not None
         if features is None:
             features = self.prompt_features(prompt_ids)
