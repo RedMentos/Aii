@@ -137,4 +137,5 @@ def attach(runtime):
     from .bodyport import Ports
     fabric.ports=Ports(runtime)  # WP-T13 IH-H8 lifecycle + IH-H21 live bridge-key check
     runtime.models.router=fabric.path_override;runtime.models.revision_router=fabric.revision_override;runtime.pool.fabric=fabric
+    runtime.store._model_manager=runtime.models  # transient C5 capability; no persisted Store schema/authority
     return fabric

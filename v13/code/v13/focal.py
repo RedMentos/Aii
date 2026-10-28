@@ -23,7 +23,7 @@ import json
 import math
 import re
 import time
-from .common import dumps,now
+from .common import dumps,now,Unavailable
 from .contracts import packet,offer_is_fresh,SLOT_FIELDS
 from .memory import relevance,terms
 from .attention import GAIN as ATT_BASE
@@ -529,6 +529,24 @@ class FocalLoop:
         return got.get('offer')
 
 
+def available_model_roles(models):
+    """Manifest-only C5 availability; AG0 cannot revive a missing base manifest.
+
+    None preserves a deliberately uninstalled software-test seam. A populated
+    installed map is authoritative about which roles may be selected; native
+    runner path/bytes are still checked separately by ModelManager.path_for.
+    """
+    from .models import model_key
+    installed=models.installed
+    if not installed:return None
+    roles=set()
+    for role in ('C3_LANGUAGE','B1_DETAIL','B2_GIST'):
+        entry=installed.get(model_key(role,models.b2_control))
+        if isinstance(entry,dict) and entry.get('download_complete') is True:
+            roles.add(role)
+    return roles
+
+
 class ActionGate:
     """C5 (§6.4, §11.1, §85.5): candidate competition + permission gate + one intent stream.
 
@@ -554,11 +572,15 @@ class ActionGate:
         if tool:add('EXTERNAL_TOOL',tool['utility'],.1,'local_tool' if tool['risk']=='READ_LOCAL' else 'external_tool',1. if tool['risk']=='READ_LOCAL' else 0.,'TOOL_CALL')  # WP-K: concrete proposal
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
-    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
+    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None,available_roles=None):
+        if available_roles is None:
+            models=getattr(self.s,'_model_manager',None)
+            if models is not None:available_roles=available_model_roles(models)
         age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
-            if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
+            if available_roles is not None and c['action_id'] in ('C3_LANGUAGE','B1_DETAIL','B2_GIST') and c['action_id'] not in available_roles:why='MODEL_MANIFEST_UNAVAILABLE'
+            elif c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
             elif c['permission_class']=='external_tool' and not age.get('tools'):why='AGE_NO_TOOLS'
             elif c['permission_class']=='external_tool':why='NO_EXTERNAL_TOOL_REQUESTED'
             elif c['action_type']=='CLARIFY' and clarify and clarify.get('apply') and not direct:c['expected_utility']=1.  # WP-N13 AG9 abstain -> ask instead of guessing (explicit human ACTIVE)
@@ -572,6 +594,9 @@ class ActionGate:
             from .actionlearn import apply as learned_c5
             learning,_=learned_c5(self.s,cands,route,effort)  # WP-N4: learned promote/suppress pathways (scores shift only in ACTIVE)
         live=sorted((c for c in cands if 'suppressed' not in c),key=lambda c:(-c['score'],c['action_id']))
+        if not live:
+            self.s.log('action_selection_unavailable',e['event_id'],{'route':route,'suppressed':[{'action_id':c['action_id'],'reason':c['suppressed']} for c in suppressed]})
+            raise Unavailable('C5: kein verfügbares lokales Modell oder freigegebene Aktion')
         chosen=live[0];alternates=[c['action_id'] for c in live[1:]]
         p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],[e['source_ref']],selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
                  candidates=[{k:c[k] for k in ('action_id','action_type','score','expected_utility','expected_cost','focal_support','permission_class')} for c in cands],
