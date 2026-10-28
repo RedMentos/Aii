@@ -9,7 +9,7 @@
   "prereg_commit": "7923495ee05e3dc28e92706267a7994fa872b845",
   "native_workflow_source": "a4191622d4453a53369698313fbbcb11d2210a65",
   "native_run": 40648655251,
-  "native_status_at_checkpoint": "IN_PROGRESS_NO_RESULT",
+  "native_status_at_checkpoint": "GREEN_VERIFIED_LINUX_NATIVE_16_FINAL_12_OF_12_NUMERIC_LEXICAL_1_OF_4_UNSUPPORTED_MARKER",
   "software_workflow_source": "d1e781b8f2ba6b28e00bea85606901ea43a67996",
   "software_run": 40648744552,
   "software_status_at_checkpoint": "IN_PROGRESS_NO_RESULT",
@@ -35,7 +35,21 @@
     "How many unsupported-note answers are semantically calibrated versus lexical marker?",
     "C5 selected-role versus executed C3 fallback remains unresolved by this cohort."
   ],
-  "next_command": "Inspect Actions 40648655251 and 40648744552, download raw ZIPs, verify SHA256SUMS/CRC, score 16 frozen rows and provenance; private Library byte-exact backup; persist result and no-promotion.",
+  "next_command": "Inspect Actions 40648744552, verify exact full software ZIP/hash/test count; update BUILD_STATE and PR #870. C5 manifest-aware ActionSelection remains blocked by SourceHandoff frozen runtime acceptance; do not weaken guards.",
   "prerequisites": "No competing heavy native owner; pinned public artifacts and no model substitutions; do not edit registered fixture/scorer.",
-  "platform_remaining_budget": "UNKNOWN"
+  "platform_remaining_budget": "UNKNOWN",
+  "native_exact_tested_source": "a4191622d4453a53369698313fbbcb11d2210a65",
+  "native_artifact_id": 12798621742,
+  "native_artifact_sha256": "86da2eb550691b9c109255e07160a65ebe0e02b412f7ba868b9ed9f38a04a844",
+  "native_raw_sha256": "1bf265ac9be0a73ff45787add55c21fc0c4024bc35982a936258e70d1364d092",
+  "native_internal_hashes_verified": 22,
+  "native_private_backup": "/V13-Checkpoints/2026-10-28/Run11-JEF-AG0-Integrated/PR870_INTEGRATED_BILINGUAL_NATIVE_GREEN_40648655251_sha86da2eb5.zip",
+  "native_private_readback_byte_exact": true,
+  "native_bounded_quality": {
+    "numeric_lexical_match": "12/12",
+    "unsupported_lexical_marker": "1/4",
+    "unsupported_manual_nonblinded": "four replies avoid concrete invention; not a scored gate",
+    "mean_turn_elapsed_s": 6.522,
+    "phone_measured": false
+  }
 }
