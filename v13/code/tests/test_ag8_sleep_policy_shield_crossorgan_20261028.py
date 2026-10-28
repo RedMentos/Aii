@@ -2,7 +2,6 @@
 
 Actual Runtime/SQLite, deterministic synthetic evaluator. No native/Redmi learning.
 """
-import math
 import tempfile
 import unittest
 from pathlib import Path
@@ -34,11 +33,11 @@ class AG8SleepPolicyShieldCrossOrgan(unittest.TestCase):
         return self.si.propose(
             'learning_rule', {'dream_gain': 0.08}, origin='USER')
 
-    def test_nan_unseen_cannot_schedule_sleep_rule_or_approval(self):
+    def test_missing_unseen_cannot_schedule_sleep_rule_or_approval(self):
         pid = self.propose()
         baseline = {'overall': .5, 'seen': .5, 'unseen': .5,
                     'forgetting': {'rate': .1}}
-        candidate = {'overall': .55, 'seen': .5, 'unseen': math.nan,
+        candidate = {'overall': .55, 'seen': .5,
                      'forgetting': {'rate': .1}}
         with self.assertRaises(ValueError):
             self.si.evaluate(
