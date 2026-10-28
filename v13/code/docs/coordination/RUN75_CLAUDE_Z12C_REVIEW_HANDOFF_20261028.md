@@ -1,0 +1,7 @@
+# Run75 handoff — independent Claude Z12c cross-review
+
+Owner GPT-6 scheduled continuation. Reviewed source exact `7471a7fb61d453b2aa6c9500b896cfb564010a90`. Review source unchanged, prereg first `9baf0cf9f51e61bb35fd1b2299f07ebc5c4ed5a7`. Original review workflow RED `ba923edf` due absent test module; corrected workflow RED `08b7ab21` due unrelated historical test_toolforecast /root permission error. Both original raw ZIPs SHA256 and 17/17 manifests verified, privately backed up byte-identical; see `v13/PRUEFUNG_GPT_FUER_CLAUDE.md` for exact hashes and findings. Focused corrected tests 12 PASS, full 1774 tests 1 error, 1 skipped. Privacy CLEAN, no source edits.
+
+Open questions: C5 Spearman not independently recomputable without per-query confidence/error evidence; Claude slotwise dynamic kernels incompatible with frozen WorldJEPA; script tempfile cleanup absent; Redmi/native and real V13 semantic utility unmeasured.
+
+Exact next command for separate isolated candidate: `git fetch origin codex/automation11-run76-slotwise-isolated-compat-20261028 && git checkout codex/automation11-run76-slotwise-isolated-compat-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run76_slotwise_isolated tests.test_world_jepa`. Inspect exact Run76 Actions, preserve original raw and negative gates. Do not rerun registered Claude seeds as a new experiment without fresh prereg and provenance. Remaining platform budget UNKNOWN.
