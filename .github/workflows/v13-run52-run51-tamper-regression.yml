@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - codex/automation11-run52-shadow-tamper-red-repair-20261028
+  pull_request:
+    branches:
+      - codex/automation11-worldjepa-shadow-train-ablation-20261028
 permissions:
   contents: read
 concurrency:
