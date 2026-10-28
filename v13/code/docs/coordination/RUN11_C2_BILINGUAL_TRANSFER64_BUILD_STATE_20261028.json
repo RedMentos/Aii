@@ -17,7 +17,7 @@
   "model_sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
   "local_software_tests": "7/7 PASS",
   "github_software_run": 40639545762,
-  "github_software_status": "IN_PROGRESS",
+  "github_software_status": "GREEN",
   "linux_native_run": "NOT_RUN",
   "step2_utility": "FAIL",
   "b3_l1": "FAIL",
@@ -27,6 +27,13 @@
   "age0_learning_mode": "RECORD_ONLY",
   "phone_measured": false,
   "whole_system_complete": false,
-  "next_command": "cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_c2_bilingual_transfer64 tests.test_c2_benchmark tests.test_control_calibration",
-  "next_prerequisite": "Exact-source software CI GREEN and native worker source/installed SHA preflight; serialize native run with other owners; preserve full raw evidence"
+  "next_command": "Create registered GO marker after verifying no active native owner; wait for Linux-native transfer64 run; download and verify all raw evidence",
+  "next_prerequisite": "Exact-source software CI GREEN and native worker source/installed SHA preflight; serialize native run with other owners; preserve full raw evidence",
+  "github_software_source_sha": "5676c1b18869478cec888bff530a8a92a33d3a37",
+  "focused_tests": "23 PASS",
+  "full_tests": "2222 PASS, 1 skipped",
+  "software_artifact_sha256": "f268ea119777ec9cc57402eb7e965e638bdc1a812b9494ce5ecede5ab18d2460",
+  "software_artifact_internal_hashes": 16,
+  "software_artifact_private_readback_verified": true,
+  "native_workflow_staged": true
 }
