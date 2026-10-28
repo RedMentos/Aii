@@ -2472,5 +2472,42 @@
     "redmi_measured": false,
     "whole_system_complete": false,
     "next_command": "After native TP27 Actions 40685405624 releases concurrency, run source-pinned combined focused/full Linux software and independently audit raw ZIP"
+  },
+  "run11_step2_staged12_candidate_20261028": {
+    "status": "SOURCE_PINNED_SOFTWARE_QUEUED_NO_NATIVE_12ARM_EXECUTION",
+    "owner": "Automation review-only PR #918",
+    "pr": 918,
+    "base_pr": 917,
+    "base_sha": "53d7216b5786ad31faa497fb5de7b5ee2257709c",
+    "prereg_sha": "a35b084ebc293fed4a3e346bd709e5bb17142de3",
+    "workflow_source_sha": "f3ec4bc7878236629d1b9ae0527c12585bedc7b1",
+    "software_workflow_run_id": 40686517055,
+    "collector": "v13/code/scripts/step2_longnote_staged12_native.py",
+    "tests": "v13/code/tests/test_step2_longnote_staged12_native.py",
+    "workflow": ".github/workflows/automation11-step2-staged12-software-20261028.yml",
+    "scope": "ONE_OF_12 registered TC/TP/SC/SP x seeds 27/28/29, 70 B1/B2/C3 native + 70 C3 replay per run",
+    "registered_fixture_sha256": "b721650791284e4369d440d494de4aaf76da35fe4be11e34cb87bba1285e4040",
+    "registered_sha256": "d9d17ba23218c8d622ecb8ac3fcb0a0b6917fa1be72df2000256d8633d1b6eba",
+    "native_12arm_started": false,
+    "software_pass": false,
+    "main_integrated": false,
+    "upstream_tp27_native_run_id": 40685405624,
+    "upstream_world_jepa_integration_run_id": 40685844332,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "lp3_gate": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "open_questions": [
+      "TP27 70+70 original raw audit still pending",
+      "Staged12 software Actions 40686517055 pending",
+      "12-arm/3-seed native acceptance evidence not collected",
+      "Redmi native thermal/energy/RSS not measured"
+    ],
+    "next_command": "Wait for source-pinned native 40685405624 and queued combined 40685844332/staged 40686517055; independently audit original ZIPs, preserve RED, then decide authorized staged 12-arm run",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
