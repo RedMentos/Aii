@@ -1,0 +1,11 @@
+# SourceHandoff historical fixture-root regression — prereg 2026-10-28
+
+**Owner:** GPT-6 review-only child of C5 candidate #874 source `107526467ad9544934c62e0a9673673c3b756224`, not a production merge. Parent #871 full native acceptance 15/20 PASS, five RED retained.
+
+**Problem:** The original SourceHandoff cohort finished and its freeze was lifted (ROADMAP 2026-10-16), but `tests/test_source_handoff_candidate.py` calls `source_handoff_candidate.sources(ROOT)` where ROOT is the *latest* runtime. `sources()` correctly rejects any runtime outside the two exact archived historical versions. New authorized C5 runtime modifications therefore trigger a historical test RED even if the SourceHandoff mechanism is unchanged. Earlier #847 demonstrated this; do not suppress/skip the test or broaden `sources()` acceptance.
+
+**Proposed solution:** Keep `scripts/source_handoff_candidate.py::sources()` **unchanged** and still exact hash-bound. In the historical test suite only, reconstruct an isolated fixture root from the existing digest-bound `source-handoff-baseline` and `integrated_candidates.FIRING_SNAPSHOT`, apply the same reviewed exact `_transform` and `rebase` pipeline, and load historical candidate modules from that root. All original tamper, mixed-source, quote/source, wrong-turn and other negative controls remain. Add a counterexample asserting the *new* live runtime is rejected by the original `sources(ROOT)` contract while the exact historical fixture passes. The current production runtime must not be copied over the frozen fixture.
+
+**Predeclared checks:** All original historical tests still run; a one-byte baseline tamper must fail; a mixed original/candidate must fail; current new runtime must fail the historical `sources(ROOT)` check; original candidate source hashes unchanged; C5 current-source tests pass separately; full software suite and privacy/diff checks. Do not mutate the original cohort, manifests, model/seed hashes, historical runner or tests' semantic assertions. If another historical exact-root consumer fails, record separately and repair only with equivalent historical fixture isolation, not permissive source matching.
+
+**No promotion:** STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight0, Age0 RECORD_ONLY, Redmi not measured, whole V13 incomplete.
