@@ -14,6 +14,7 @@ from v13.config import initialize,save_config
 from v13.runtime import Runtime
 from v13.common import APP,dumps,atomic_write,digest,file_hash
 from v13.resources import device
+from v13.proof_lifecycle import cancelled_native_process_stopped
 
 def wait(r,timeout=120):
     end=time.monotonic()+timeout
@@ -40,7 +41,14 @@ def main():
                 m=r.store.one("SELECT * FROM messages WHERE session_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",(r.session,))
                 if m and m['status']=='STREAMING' and len(m['text'])>30:break
                 time.sleep(.02)
-            start=time.monotonic();r.cancel();wait(r);m=r.last_answer();partial=m['text'];mid=m['id'];report['cancel']={'status':m['status'],'characters':len(partial),'text':partial,'stop_s':time.monotonic()-start,'runner':json.loads(m['metadata']).get('runner',{}),'native_process_stopped':not r.pool.pids()}
+            start=time.monotonic();r.cancel();wait(r);m=r.last_answer();partial=m['text'];mid=m['id']
+            runner=json.loads(m['metadata']).get('runner',{})
+            live_pool_pids=r.pool.pids()
+            interrupted=(runner.get('interruption_unload') or {}).get('before') or {}
+            report['cancel']={'status':m['status'],'characters':len(partial),'text':partial,'stop_s':time.monotonic()-start,
+                              'runner':runner,'cancelled_runner_pid':interrupted.get('pid'),
+                              'live_pool_pids_after_cancel':live_pool_pids,
+                              'native_process_stopped':cancelled_native_process_stopped(runner,live_pool_pids)}
             r.close();r=Runtime(h);saved=r.store.one('SELECT * FROM messages WHERE id=?',(mid,));report['cancel']['restart_preserved']=saved['text']==partial and saved['status']=='CANCELLED'
             r.cfg.update(observer_mode='off',route_override='simple',deadline_seconds=.01);report['deadline']=ask(r,'Erkläre die Relativitätstheorie.')
             report['integrity_errors']=r.store.integrity(True)
