@@ -1,0 +1,13 @@
+# Run11 C2 transfer64 paired audit prereg — 2026-10-28
+
+Owner GPT-6, review-only child of PR #857 at `849166ec1842d3ea3390ba782573410a9e93c044`. This preregistration precedes new code and tests. Do not overwrite #857, its independent routehead-train64 child, #850 or main. Preserve original frozen fixture, model, source and native rows.
+
+**Problem:** Native Needle3 returned 19/64 author-label agreements, while the current scaffold returned 42/64 on the same frozen bilingual transfer64; aggregate paired counts were 11 both correct, 8 Needle-only, 31 scaffold-only, 14 both wrong. Aggregate results alone cannot verify raw row order, paired labels or native provenance. Native confidence AUROC 0.4772; no C2 promotion.
+
+**Planned isolated offline package:** A read-only standard-library script accepts exactly two private per-row JSON files and their externally recorded SHA256 digests, plus the frozen transfer64 fixture Git blob `e9aaae43f3313fbdc8e4b2fc870f2712a5557a66` / items SHA256 `12863402ffecef7565d23d1162fa061a1983ee92b46332c60adcfb3cd37ca9af`. Validate 64 ordered IDs, labels, route enums, finite latency, native validation flags and confidence; reject drift, nonfinite and wrong hashes. Calculate paired outcomes and exact two-sided McNemar conditional-binomial p overall, by language and by route. Write an exclusive no-overwrite report with negative gates. Never fit or select a route using evaluation labels. Do not include private raw rows in Git.
+
+**Predeclared comparison:** Expected aggregate discordance is 8 Needle-only vs 31 scaffold-only, exact two-sided p approximately 0.000294 if the private raw reproduces the published aggregate. This is a fixed descriptive check, **not** a new independent quality cohort, deployment decision or causal claim. Labels are author-assigned and rows may be correlated; a p-value is not a generalization guarantee. A discrepancy is RED and must be retained, not silently reconciled.
+
+**Tests:** Synthetic fixture/hash/order/tamper/invalid-native/nonfinite guards, exact-test symmetry and no-discordance, strata and negative gates. Focused tests locally and Linux full suite via a separate review PR where available. Real private row replay only when byte-exact raw files are accessible. No native inference or paid provisioning.
+
+All original gates unchanged: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight 0, Age0 RECORD_ONLY, no Redmi and no whole-system completion.
