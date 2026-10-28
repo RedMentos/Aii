@@ -16,8 +16,10 @@ class WorldJEPAReaderSnapshot(unittest.TestCase):
         self.X2 = self.X[:, ::-1].copy()
 
     def fitted(self):
+        # Reader/refit synchronization needs an actually trained snapshot:
+        # zero-step controls deliberately have no confidence/export authority.
         return wj.WorldJEPA(seed=11, ensemble=1).fit(
-            self.X, self.A, self.X2, steps=0)
+            self.X, self.A, self.X2, steps=1)
 
     def _interleave(self, reader, block):
         entered = threading.Event()
@@ -43,7 +45,7 @@ class WorldJEPAReaderSnapshot(unittest.TestCase):
         def write_job():
             try:
                 writer_started.set()
-                model.fit(self.X + 7, self.A, self.X2 + 7, steps=0)
+                model.fit(self.X + 7, self.A, self.X2 + 7, steps=1)
             except BaseException as exc:
                 errors.append(("writer", repr(exc)))
             finally:

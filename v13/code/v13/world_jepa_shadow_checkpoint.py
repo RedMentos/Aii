@@ -19,7 +19,8 @@ import numpy as np
 
 from v13 import world_jepa as wj
 
-SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v1'
+SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v2'
+LEGACY_SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v1'
 SHA = re.compile(r'[0-9a-f]{64}\Z')
 MAX_BYTES = 32 * 1024 * 1024
 MAX_UNCOMPRESSED = 64 * 1024 * 1024
@@ -57,9 +58,11 @@ def _extract(model, source_sha256):
                ('enc', 'tgt', 'preds', 'mu', 'sd', 'zsd', '_ztrain',
                 '_nn_med', '_action_counts', 'seed', 'ensemble')):
         raise ValueError('WorldJEPA must be fitted before inference export')
+    if type(getattr(model, '_fit_steps', None)) is not int or model._fit_steps <= 0:
+        raise ValueError('WorldJEPA zero-step or missing training-step evidence')
     meta = {'schema': SCHEMA, 'source_sha256': _pin(source_sha256),
             'model_revision': wj.REVISION, 'seed': model.seed,
-            'ensemble': model.ensemble}
+            'ensemble': model.ensemble, 'fit_steps': model._fit_steps}
     arrays = {
         'mu': np.asarray(model.mu),
         'sd': np.asarray(model.sd),
@@ -84,12 +87,23 @@ def _extract(model, source_sha256):
 
 
 def _validate(meta, arrays, source_sha256):
-    if (type(meta) is not dict or set(meta) !=
-            {'schema', 'source_sha256', 'model_revision', 'seed', 'ensemble'}
-            or meta['schema'] != SCHEMA or meta['source_sha256'] != _pin(source_sha256)
-            or meta['model_revision'] != wj.REVISION
-            or type(meta['seed']) is not int or not 0 <= meta['seed'] <= 2**63-1
-            or type(meta['ensemble']) is not int or not 1 <= meta['ensemble'] <= 16):
+    # v1 had no optimizer-step evidence. Read it for numeric inference only;
+    # its loaded confidence must remain SIMULATION_UNCERTAIN. New v2 archives
+    # bind a positive integer step count and never silently upgrade v1.
+    if type(meta) is not dict:
+        raise ValueError('WorldJEPA checkpoint metadata invalid')
+    legacy = meta.get('schema') == LEGACY_SCHEMA
+    expected = {'schema', 'source_sha256', 'model_revision', 'seed', 'ensemble'}
+    if not legacy:
+        expected.add('fit_steps')
+    if (set(meta) != expected
+            or meta.get('schema') not in (SCHEMA, LEGACY_SCHEMA)
+            or meta.get('source_sha256') != _pin(source_sha256)
+            or meta.get('model_revision') != wj.REVISION
+            or type(meta.get('seed')) is not int or not 0 <= meta['seed'] <= 2**63-1
+            or type(meta.get('ensemble')) is not int or not 1 <= meta['ensemble'] <= 16
+            or (not legacy and (type(meta.get('fit_steps')) is not int
+                                or not 1 <= meta['fit_steps'] <= 10**9))):
         raise ValueError('WorldJEPA checkpoint source/revision/config mismatch')
     a = arrays.get('action_counts')
     mu = arrays.get('mu')
@@ -212,4 +226,5 @@ def load(path, source_sha256, expected_sha256):
     model.preds = [{k: arrays[f'pred{i}__{k}'] for k in PRED_KEYS}
                    for i in range(meta['ensemble'])]
     model.history = []  # training history/optimizer not present: inference-only
+    model._fit_steps = 0 if meta['schema'] == LEGACY_SCHEMA else meta['fit_steps']
     return model
