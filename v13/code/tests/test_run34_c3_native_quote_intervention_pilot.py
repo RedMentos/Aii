@@ -74,6 +74,46 @@ class Run34NativePilotPreflight(unittest.TestCase):
             self.assertNotIn("oracle", context)
             self.assertFalse(envelope["native_executed"])
 
+    def test_forged_metrics_score_and_raw_hash_cannot_pass_native_proof(self):
+        from v13.common import dumps
+        import hashlib
+        rows = []
+        row_hashes = {}
+        for arm in pilot.ARMS:
+            envelope = cf.build_envelope(pilot.FIXTURE, arm, pilot.SEED)
+            row = {
+                "arm": arm, "envelope": envelope, "raw_answer": "{}",
+                "raw_answer_sha256": "0" * 64,
+                "score": {"utility": 1.0, "forged": True},
+                "native_status": "FINAL",
+                "native_metrics": {"status": "ERROR", "actual_model": "forged"},
+                "process_reaped": True, "oracle_visible_to_native": False,
+                "model_sha256": pilot.C3_GGUF_SHA256,
+                "runner_sha256": "a" * 64, "envelope_verified": True,
+            }
+            rows.append(row)
+            row_hashes[arm] = hashlib.sha256(dumps(row).encode()).hexdigest()
+        report = {
+            "schema": "v13.run34.c3_only.native_pilot.raw.v1",
+            "fixture_id": pilot.FIXTURE, "seed": pilot.SEED,
+            "model_sha256": pilot.C3_GGUF_SHA256,
+            "runner_sha256": "a" * 64,
+            "rows": rows, "row_sha256": row_hashes,
+            "canonical_gate_pass": False, "phone_measured": False,
+            "jepa_weight": 0,
+        }
+        # The rows are synthetic adversarial forgeries, NEVER native evidence.
+        with self.assertRaises(ValueError):
+            pilot.verify_report(report, pilot.C3_GGUF_SHA256, "a" * 64)
+
+    def test_native_source_pins_cover_run33_runner_and_scorer(self):
+        self.assertEqual(pilot.RUN33_SOURCE_BLOB,
+                         "b1d58d7e0c3937787cf15dd801e278de25845879")
+        self.assertEqual(pilot.FROZEN_RUNNERS_BLOB,
+                         "efda7aa1aa5729e974d0d641870d4da05d21c961")
+        self.assertEqual(pilot.FROZEN_UTILITY_BLOB,
+                         "f4a92dab9c4a40761d64394cdca1c052e9a76bfd")
+
 
 if __name__ == "__main__":
     unittest.main()
