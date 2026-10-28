@@ -1,0 +1,56 @@
+{
+  "schema": "v13.run11.bilingual_arith_heldout.build_state.v1",
+  "date_utc": "2026-10-28",
+  "owner": "GPT-6 independent review child of PR #849",
+  "base_commit": "b99ce3ef8dd772130c3a56a1ec02e7ea203f3b5c",
+  "tested_commit": "3c030cd40dd198d80b2792c2d87d60e1e48cafe0",
+  "branch": "assistant/v13-run11-bilingual-arith-heldout-scorer-20261028",
+  "pull_request": 853,
+  "frozen_fixture_git_blob": "ceda0a5cb506cf09885652b24893cf7d8fdff63b",
+  "fixture_rows": 16,
+  "cohorts": {
+    "numeric": 12,
+    "unsupported": 4
+  },
+  "test_evidence": {
+    "run_id": 40636025994,
+    "conclusion": "SUCCESS",
+    "evidence_kind": "LINUX_SOFTWARE_ONLY",
+    "focused_tests": 10,
+    "full_tests": 2228,
+    "skipped": 1,
+    "exit_codes": {
+      "FIXTURE": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "artifact_zip_sha256": "92ec6fce7ad49911185129b88b79b4b19ef5a784fc866203830b496480726e9c",
+    "sha_manifest_verified": true,
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Independent-Review/ARITH_SCORER_ROLE_PINNED_SOFTWARE_PASS_40636025994_sha92ec6fce.zip"
+  },
+  "source_scope": "frozen author-defined corpus, strict offline scorer and tests only; no runtime/prompt/model/seed changes",
+  "native_executed": false,
+  "external_manifest_provenance_verified": false,
+  "semantic_grounding_proven": false,
+  "age0_tool_authority": false,
+  "jepa_weight": 0,
+  "step2_utility": "FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3_heldout": "FAIL",
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Ob 16 frozen questions under current Age0 candidate actually produce numeric and uncertainty results",
+    "How candidate compares with independently pinned baseline on same fixture",
+    "Whether fresh-session global state contamination changes answer quality",
+    "Manual grounding review for unsupported-note responses"
+  ],
+  "next_owner": "GPT-6 native collector child PR #854; integration owner of #850 remains separate",
+  "next_command": "Review PR #854 collector software guards and native prereg, then on an isolated pinned Linux runner run `python -m scripts.age0_bilingual_arith_native_collector --home <fresh_bootstrapped_home> --out <new_evidence_dir> --prompt-git-blob 646c6f31b52ca2664c1952af7c7e842fc3e20885` only after exclusive native ownership is verified.",
+  "platform_budget_remaining": "UNKNOWN"
+}
