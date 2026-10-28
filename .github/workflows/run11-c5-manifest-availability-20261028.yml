@@ -5,9 +5,8 @@ on:
       - codex/v13-run11-c5-manifest-availability-20261028
     paths:
       - '.github/workflows/run11-c5-manifest-availability-20261028.yml'
-      - 'v13/code/v13/focal.py'
-      - 'v13/code/v13/runtime.py'
-      - 'v13/code/tests/test_c5_manifest_availability_20261028.py'
+      - 'v13/code/v13/bodies.py'
+      - 'v13/code/tests/test_body_slot_manifest_absence_20261028.py'
 permissions:
   contents: read
 jobs:
@@ -30,11 +29,12 @@ jobs:
           e="$RUNNER_TEMP/v13-c5-manifest-guards"
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
-          git hash-object v13/code/v13/focal.py > "$e/FOCAL_BLOB.txt"
+          git hash-object v13/code/v13/bodies.py > "$e/BODIES_BLOB.txt"
           git hash-object v13/code/v13/runtime.py > "$e/RUNTIME_BLOB.txt"
-          (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_c5_manifest_availability_20261028 tests.test_focal tests.test_step12) > "$e/FOCUSED_RAW.log" 2>&1
+          if [ "$(cat "$e/RUNTIME_BLOB.txt")" != '68e7ed1352800174972558f1e0b0683a42c8689a' ]; then echo 'FROZEN_RUNTIME_DRIFT' >> "$e/FOCUSED_RAW.log"; fi
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_body_slot_manifest_absence_20261028 tests.test_focal tests.test_step12) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
-          python3 -m compileall -q v13/code/v13/focal.py v13/code/v13/runtime.py v13/code/tests/test_c5_manifest_availability_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/v13/bodies.py v13/code/tests/test_body_slot_manifest_absence_20261028.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base af71f1ebc26d934a180db39f77a2978ced7b6261 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
