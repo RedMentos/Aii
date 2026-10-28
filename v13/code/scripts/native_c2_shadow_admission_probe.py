@@ -66,7 +66,7 @@ def run(installed_home, output):
         "schema": "v13.c2.shadow_native96_probe.v1",
         "status": "RUNNING", "host": os.uname().machine,
         "corpus_sha256": EXPECTED_ITEMS_SHA256,
-        "source_revision": admission.REVISION,
+        "source_revision": admission.REVISION, "seed": 13,
         "scope": "LINUX_NATIVE_C2_PARSER_SHADOW_ONLY",
         "age_authority": 0, "weight_updates": False,
         "runtime_route_modified": False, "redmi_measured": False,
