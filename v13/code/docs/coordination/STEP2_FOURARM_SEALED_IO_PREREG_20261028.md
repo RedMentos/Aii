@@ -1,0 +1,9 @@
+# STEP2 four-arm sealed read-only evidence input — preregistration, 2026-10-28
+
+Child review of #820 source commit `5da20dc0ac3c17e7e3c5c599092ab1839717a3a5`; independent from #818's native runner ownership. No changes to original cohorts, runtime, Canon, model pins or existing negative gates. This is **software-only** and cannot run models.
+
+Problem: a scorer that trusts self-declared raw SHA256 fields cannot detect changed, swapped or missing on-disk raw evidence. Add a strictly read-only input layer requiring a separately supplied 64-character SHA256 pin for a manifest. The manifest binds all twelve run summaries and raw evidence byte digests, exact fixture IDs, arms and seeds. Reject duplicate JSON keys, NaN/Infinity, path traversal, symlinks, duplicate evidence paths, oversized files, malformed/incomplete manifests and any mismatched bytes. Use no-follow file-descriptor reads within one root and detect changes during a read. Require the run summary's raw SHA to match its raw bytes. Then invoke #820's fail-closed scorer, which must never promote a gate. Native source/model SHA fields remain *claims* until the future native collector independently hashes the referenced bytes.
+
+Expected synthetic tests: one complete positive remains `candidate_supported=true` but `canonical_gate_pass=false`; altered summary/raw/manifest, external pin, path, duplicate, symlink, fixture, seed and malformed JSON all reject. Test suite is stdlib-only locally and GitHub Actions focused+full Linux software remotely. Preserve failed attempts and exact evidence. No Redmi or native evidence asserted.
+
+Next after GREEN: wire an independently preregistered native runner to emit this exact schema with byte-verified model/source/runner artifacts, verify owner/cgroup and frozen STEP2 criterion 3, then run genuine paired native arms serially. Until then STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Age0/RECORD_ONLY.
