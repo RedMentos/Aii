@@ -7,6 +7,7 @@ on:
       - 'v13/code/scripts/step2_fourarm_native_collector_candidate.py'
       - 'v13/code/scripts/step2_longnote_fourarm_io.py'
       - 'v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py'
+      - 'v13/code/docs/coordination/STEP2_NATIVE_MODEL_PIN_CANDIDATES_20261028.md'
 permissions:
   contents: read
 concurrency:
