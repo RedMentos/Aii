@@ -12,7 +12,7 @@ from scripts.step2_longnote_fourarm_io import load
 from tests.test_step2_longnote_fourarm_analysis_20261028 import IDS, fixture
 
 
-def report_pair(summary, fixtures, fixture_hash):
+def report_pair(summary, fixtures, fixture_hash, models, runner_sha256):
     rows = []
     for i, fid in enumerate(IDS):
         for variant in VARIANTS:
@@ -29,7 +29,12 @@ def report_pair(summary, fixtures, fixture_hash):
     source = {'status': summary['step2_status'], 'fixture_sha256': fixture_hash,
               'fixtures': fixtures, 'rows': rows, 'row_sha256': hashes,
               'source_unchanged': True, 'all_structural_checks_passed': True,
-              'installed_artifacts_unchanged': True}
+              'installed_artifacts_unchanged': True,
+              'z2b_run': {'arm': summary['arm'], 'seed': summary['seed'],
+                          'enable': summary['enable']},
+              'z2b_queried_offers': summary['queried_offers'],
+              'preparations': [{'status': 'RECORDED', 'model_sha256': models,
+                                'runner_sha256': runner_sha256}]}
     tool = {'status': summary['tool_status'], 'rows': copy.deepcopy(rows),
             'row_sha256': dict(hashes), 'installed_artifacts_unchanged': True}
     return canonical(source), canonical(tool)
@@ -59,14 +64,15 @@ class CollectorScorerIntegration(unittest.TestCase):
     def run_one(self, arm, seed, run_dir):
         run_dir.mkdir(parents=True, exist_ok=False)
         summary = copy.deepcopy(self.by_key[arm, seed])
-        first, second = report_pair(summary, self.fixtures, self.fixture_hash)
+        models = dict(self.models)
+        if arm.startswith('S'):
+            models['B2_GIST'] = models['B1_DETAIL']
+        first, second = report_pair(summary, self.fixtures, self.fixture_hash,
+                                    models, self.artifacts['runner_sha256'])
         source = run_dir / 'step2.json'
         tool = run_dir / 'tool.json'
         source.write_bytes(first)
         tool.write_bytes(second)
-        models = dict(self.models)
-        if arm.startswith('S'):
-            models['B2_GIST'] = models['B1_DETAIL']
         return summary, source, tool, models
 
     def collect(self):
