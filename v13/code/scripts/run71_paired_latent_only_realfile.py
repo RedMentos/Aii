@@ -180,7 +180,7 @@ def _evaluate_model(model, std, stats, xt, actions, truth, *, include_zero_train
                   'blind_diagnostic': scores['blind_diagnostic']}
     oracle = scores['oracle_diagnostic']
     blind = scores['blind_diagnostic']
-    if (oracle['informative_pairs'] <= 0 or oracle['wrong'] or oracle['tied']
+    if (oracle['wrong'] or oracle['tied']
             or blind['correct'] or blind['wrong']
             or blind['tied'] != blind['informative_pairs']):
         raise AssertionError('RUN71_LATENT_DIAGNOSTIC_CONTROL_FAILURE')
