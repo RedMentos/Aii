@@ -1,5 +1,6 @@
 """Run42 disjoint synthetic Orion source-to-tool SHADOW; no native model."""
 import unittest
+from unittest import mock
 from scripts import run42_b2_eligibility_source_shadow as study
 from tests.test_run40_b2_store_history_readonly import Store
 
@@ -80,6 +81,48 @@ class ExactSourceEligibility(unittest.TestCase):
         self.offer(RULE); self.offer(ATLAS)
         cur = self.s.event(CURRENT)
         self.assertEqual(self.eval(cur)['status'], 'ABSTAIN_OPTION_SOURCE')
+
+    def test_revoked_current_during_option_scan_must_abstain(self):
+        _, cur = self.setup_positive()
+        original = self.s.read_source
+        current_id = cur['source_ref']['source_id']
+        seen = []
+        def raced(ref):
+            if ref['source_id'] == current_id:
+                seen.append(1)
+                # history validates once; evaluate reads once; the option
+                # scan then sees a revoked current source and catches it.
+                if len(seen) == 3:
+                    self.s.db.execute(
+                        'UPDATE sources SET deleted=1 WHERE id=?',
+                        (current_id,))
+            return original(ref)
+        self.s.read_source = raced
+        result = self.eval(cur)
+        self.assertGreaterEqual(len(seen), 3)
+        self.assertEqual(result['status'], 'ABSTAIN_CURRENT_SOURCE_CHANGED')
+        self.assertIsNone(result['decision'])
+        self.assertEqual(result['source_refs'], [])
+
+    def test_current_bytes_change_after_options_before_decision_abstains(self):
+        _, cur = self.setup_positive()
+        current_id = cur['source_ref']['source_id']
+        original = study.eligibility.fixed_rule
+        seen = []
+        def mutate_after_option_selection(*args, **kwargs):
+            if not seen:
+                seen.append(1)
+                # Source text now differs from the immutable source SHA.
+                self.s.sources[current_id] = CURRENT.replace(
+                    'Project Orion', 'Project Atlas')
+            return original(*args, **kwargs)
+        with mock.patch.object(study.eligibility, 'fixed_rule',
+                               side_effect=mutate_after_option_selection):
+            result = self.eval(cur)
+        self.assertEqual(seen, [1])
+        self.assertEqual(result['status'], 'ABSTAIN_CURRENT_SOURCE_CHANGED')
+        self.assertIsNone(result['decision'])
+        self.assertEqual(result['source_refs'], [])
 
     def test_current_without_project_refuses(self):
         self.offer(RULE); self.offer(SHEET)
