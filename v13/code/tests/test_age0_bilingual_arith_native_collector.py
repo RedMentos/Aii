@@ -33,7 +33,7 @@ class CollectorGuards(unittest.TestCase):
         message = {"text": "37 Euro", "status": "FINAL", "metadata": json.dumps(meta)}
         row = C.row_from_message(item, message)
         self.assertEqual(row["runner_role"], "B1_DETAIL")
-        self.assertEqual(row["runner_model_sha256"], S.ROLE_MODELS["B1_DETAIL"])
+        self.assertIsNone(row["runner_model_sha256"])  # no guessed hash
         self.assertIsNone(row["tool_call"])
         self.assertEqual(row["tool_shadow"]["tool"], "calc")
         self.assertEqual(row["answer"], "37 Euro")
@@ -41,6 +41,22 @@ class CollectorGuards(unittest.TestCase):
         self.assertEqual(missing["status"], "MISSING")
         self.assertIsNone(missing["runner_role"])
         self.assertEqual(missing["answer"], "")
+
+    def test_actual_native_model_file_hash_is_observed_not_guessed(self):
+        from types import SimpleNamespace
+        from v13.common import file_hash
+        model = self.root / "body.gguf"
+        model.write_bytes(b"software-only fake bytes")
+        models = SimpleNamespace(path_for=lambda role: model)
+        meta = {"runner": {"role": "B1_DETAIL", "actual_model": "body.gguf"}}
+        self.assertEqual(C.bind_actual_runner_model(models, meta), file_hash(model))
+        meta["runner"]["actual_model"] = "other.gguf"
+        with self.assertRaises(ValueError):
+            C.bind_actual_runner_model(models, meta)
+        meta["runner"]["actual_model"] = "body.gguf"
+        meta["runner"]["role"] = "EXTERNAL_TOOL"
+        with self.assertRaises(ValueError):
+            C.bind_actual_runner_model(models, meta)
 
     def test_wrong_runner_does_not_receive_a_valid_model_hash(self):
         item = S.fixture()[0]
