@@ -182,17 +182,25 @@ def recall_and_admit(query, session, memory):
             return deny("TOO_MANY_SCOPED_CORRECTIONS")
         by_id = {m["id"]: m for m in retrieved
                  if isinstance(m, dict) and isinstance(m.get("id"), str)}
+        scoped = []
         for row in rows:
             try:
-                fresh = memory.candidate(row["id"], session)
-                verified = memory._verified_rows([fresh])
-                if (len(verified) != 1 or verified[0]["id"] != fresh["id"]):
-                    return deny("UNVERIFIABLE_SCOPED_CORRECTION")
-                by_id[fresh["id"]] = fresh
+                scoped.append(memory.candidate(row["id"], session))
             except (KeyError, ValueError, TypeError, OSError):
                 # An active same-project correction is not ignorable just
-                # because its SourceRef or F1/F5 decision became unreadable.
+                # because its SourceRef became unreadable.
                 return deny("UNVERIFIABLE_SCOPED_CORRECTION")
+        try:
+            # F1/F5 verification scans packet history. Verify the bounded set
+            # once, not once per row, without losing any conflict-veto authority.
+            verified = memory._verified_rows(scoped)
+            wanted = {m["id"] for m in scoped}
+            found = {m["id"] for m in verified}
+            if len(wanted) != len(scoped) or len(verified) != len(scoped) or found != wanted:
+                return deny("UNVERIFIABLE_SCOPED_CORRECTION")
+        except (KeyError, ValueError, TypeError, OSError):
+            return deny("UNVERIFIABLE_SCOPED_CORRECTION")
+        by_id.update((m["id"], m) for m in scoped)
         return admit(query, session, list(by_id.values()), memory)
     except Exception:
         return deny("RETRIEVAL_UNAVAILABLE")
