@@ -67,8 +67,8 @@ class DescriptorBoundedBlobTests(unittest.TestCase):
                 st_size = 0
             return Stale()
 
-        with mock.patch.object(offline, 'MAX_BLOB', 16), \\
-             mock.patch.object(offline.os, 'fstat', side_effect=stale_size):
+        with (mock.patch.object(offline, 'MAX_BLOB', 16),
+              mock.patch.object(offline.os, 'fstat', side_effect=stale_size)):
             with self.assertRaisesRegex(ValueError, 'RUN44_BLOB_CAP'):
                 offline._read_bounded_regular_file(self.plain)
 
