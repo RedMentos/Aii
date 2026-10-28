@@ -7,7 +7,7 @@ human-labelled learned cue head (retrieval_worker) keeps the last word. Never an
 """
 import math
 import time
-from .common import digest,Unavailable,Limits
+from .common import digest,dumps,Unavailable,Limits
 
 PROMPT_VERSION='egemma-similarity-v1'
 MAX_CHARS=1500  # one physical batch of 512 tokens holds this comfortably
@@ -93,12 +93,30 @@ class SemanticKeys:
         vectors=self.encoder([query]+[r['key_text'] for r in missing],cancel,deadline)
         if len(vectors)!=1+len(missing):raise Unavailable('Embedding-Anzahl passt nicht')
         q=truncate(vectors[0],dim)
-        for r,v in zip(missing,vectors[1:]):
-            v=[round(x,6) for x in truncate(v,dim)];cached[r['id']]=v;self.s.set_state(self.cache_key(r),v)
-        result={mid:cosine(q,v) for mid,v in cached.items()}
-        self.last={'status':'OK','mode':self.mode(),'candidates':len(rows),'encoded_keys':len(missing),'deferred_keys':max(0,deferred),'dim':dim,
+        # :forget can commit during slow native encoding. Source liveness and
+        # cache publication must share one Store transaction with forget's
+        # source tombstone/cache deletion; a stale callback may not resurrect it.
+        with self.s.tx() as cur:
+            def still_live(row):
+                return cur.execute(
+                    "SELECT 1 FROM memories m JOIN sources s ON s.id=m.source_id "
+                    "WHERE m.id=? AND m.source_id=? AND m.active=1 AND s.deleted=0",
+                    (row['id'],row['source_id'])
+                ).fetchone() is not None
+            live_ids={r['id'] for r in rows if still_live(r)}
+            for r,v in zip(missing,vectors[1:]):
+                v=[round(x,6) for x in truncate(v,dim)]
+                if r['id'] not in live_ids:continue
+                key=self.cache_key(r)
+                old=cur.execute("SELECT version FROM states WHERE key=?",(key,)).fetchone()
+                version=(old[0] if old else 0)+1
+                cur.execute("INSERT OR REPLACE INTO states VALUES (?,?,?)",(key,version,dumps(v)))
+                cached[r['id']]=v
+        result={mid:cosine(q,v) for mid,v in cached.items() if mid in live_ids}
+        self.last={'status':'OK','mode':self.mode(),'candidates':len(rows),'encoded_keys':len(missing),'deferred_keys':max(0,deferred),
+                   'revoked_rows':len(rows)-len(live_ids),'dim':dim,
                    'duration_s':round(time.monotonic()-started,4),'encoder':dict(getattr(self.encoder,'last_metrics',{}) or {})}
-        self.last_query={'digest':digest(query),'vector':q,'event_id':event_id}  # only this successful event can feed WP-N8
+        self.last_query={'digest':digest(query),'vector':q,'event_id':event_id} if result else None
         return result
 
 def attach(runtime):

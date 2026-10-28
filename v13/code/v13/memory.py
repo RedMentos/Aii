@@ -276,6 +276,23 @@ class Memory:
         local={(r['kind'],r['key_text']):r['value'] for r in rows if r['scope']=='session' and r['session_id']==session}
         rows=[r for r in rows if r['scope']!='global' or (r['kind'],r['key_text']) not in local or local[(r['kind'],r['key_text'])]==r['value']]
         sims=self._embedding_similarities(query,rows,cancel,deadline)
+        # Native encoding may block while a human revokes F1/F5 evidence.
+        # Recheck the actual source/decision lineage before any lexical,
+        # learned or embedding candidate can reach the output path.
+        if keys is not None and keys.mode()!='off':
+            checked=self._verified_rows(rows)
+            valid={r['id'] for r in checked}
+            for old_row in rows:
+                if old_row['id'] in valid:continue
+                # Revoked human evidence must disappear quietly. A still-live
+                # source that became unverifiable during encoding is a genuine
+                # integrity error, not a successful empty retrieval.
+                source=self.s.one('SELECT deleted FROM sources WHERE id=?',(old_row['source_id'],))
+                memory=self.s.one('SELECT active FROM memories WHERE id=?',(old_row['id'],))
+                if source is not None and not source['deleted'] and memory is not None and memory['active']:
+                    keys.last_query=None
+                    raise ValueError('Memory provenance changed during semantic encoding')
+            rows=checked
         live=bool(sims) and self.semantic_keys.mode()=='on';floor=self.cfg.get('memory_embed_threshold',1.)
         def base(r):
             lexical=relevance(query,r['key_text']);sim=sims.get(r['id'])
@@ -295,7 +312,12 @@ class Memory:
                     elif policy and policy.get('decision')=='reject':score=0.;channel='learned'
             if score<self.cfg['memory_threshold']:continue
             ref={'source_id':r['source_id'],'sha256':r['hash'],'char_start':0,'char_end':r['chars'],'modality':'text'}
-            value=self.s.read_source(ref)
+            try:value=self.s.read_source(ref)
+            except ValueError:
+                source=self.s.one('SELECT deleted FROM sources WHERE id=?',(r['source_id'],))
+                if source is None or source['deleted']:continue  # concurrent :forget, not a live integrity mismatch
+                if keys is not None:keys.last_query=None
+                raise
             if value!=r['value']:raise ValueError('Memory value provenance changed')
             r.update(source_ref=ref,value=value,retrieval_score=score,retrieval_policy=policy,embedding_similarity=sim,retrieval_channel=channel);candidates.append(r)
         if hasattr(self,'consolidation'):candidates=self.consolidation.merge(query,session,candidates,semantic_decisions_present=semantic is not None,cancel=cancel,deadline=deadline)
