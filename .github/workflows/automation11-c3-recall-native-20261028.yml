@@ -1,0 +1,151 @@
+name: V13 Automation11 actual Memory recall C3 native heldout
+on:
+  push:
+    branches:
+      - assistant/v13-automation11-c3-recall-native-20261028
+    paths:
+      - '.github/workflows/automation11-c3-recall-native-20261028.yml'
+      - 'v13/code/scripts/native_c3_recall_consumer_heldout.py'
+      - 'v13/code/tests/test_source_consumer_recall_integration.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify source-consumer candidate and native model hashes, run guarded heldout
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-automation11-c3-recall-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          351ef68866dc40b34f94f086151df9ea3fe46ea9 v13/code/scripts/native_c3_recall_consumer_heldout.py
+          a0ffe4f9ff5edf67310629bc94d7e87b2f8f53a2 v13/code/tests/test_source_consumer_recall_integration.py
+          5a9bd172f019799cd8568375fe7a86b5f860edc0 v13/code/v13/source_consumer.py
+          b041fada7bef403d2600a0e276891911fe7a1bc3 v13/code/tests/test_source_consumer_admission.py
+          7963f391ca0bca21c7c3d73d44518a99744c8863 v13/code/tests/test_source_consumer_data_boundary.py
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          501c8f43c92f031e034e4b93f4adbd4c67b7edfe v13/code/v13/memory.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          646c6f31b52ca2664c1952af7c7e842fc3e20885 v13/code/v13/prompts.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run11-source-consumer-venv"
+          py="$RUNNER_TEMP/v13-run11-source-consumer-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/scripts/native_c3_recall_consumer_heldout.py v13/code/tests/test_source_consumer_recall_integration.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_source_consumer_admission tests.test_source_consumer_data_boundary tests.test_source_consumer_recall_integration) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          home="$RUNNER_TEMP/v13-run11-source-consumer-home"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ ! -e "$home" ]; then
+            timeout --signal=INT --kill-after=15s 14m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$home" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code "$py" - "$home" > "$e/MODEL_VERIFY_RAW.log" 2>&1 <<'PY'
+          import json,pathlib,sys
+          from v13.models import ModelManager
+          h=pathlib.Path(sys.argv[1]);m=ModelManager(h);v=m.verify(deep=True)
+          assert len(v)>=4 and all(x['ok'] and x['hash_checked'] for x in v.values()),v
+          cfg=json.loads((h/'config/settings.json').read_text())
+          assert cfg['system_stage']==0 and cfg['learning_mode']=='RECORD_ONLY'
+          assert cfg.get('jepa_weight',0)==0 and not cfg['latents_enabled']
+          print('MODEL_HASHED_AGE0',json.dumps({k:x['revision'] for k,x in v.items()},sort_keys=True))
+          PY
+            echo "$?" > "$e/MODEL_VERIFY_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/MODEL_VERIFY_RAW.log"
+            echo SKIPPED_RED > "$e/MODEL_VERIFY_EXIT.txt"
+          fi
+          if [ "$(cat "$e/MODEL_VERIFY_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=INT --kill-after=15s 20m env PYTHONPATH=. "$py" scripts/native_c3_recall_consumer_heldout.py --installed-home "$home" --out "$e/NATIVE_REPORT.json") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_VERIFY_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/NATIVE_REPORT.json" ]; then
+            env PYTHONPATH=v13/code "$py" - "$e/NATIVE_REPORT.json" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,pathlib,sys
+          d=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert d.get('status')=='C3_RECALL_NATIVE_SCOPED_PASS',d.get('status')
+          assert d['fixture_sha256']=='9aef60556396470a91d0684ce85151a1dfec112eca92be62485ae1d99d33fd93'
+          s=d['score']
+          assert s['positive_correct']>=7 and s['positive_n']==8 and s['baseline_n']==8,s
+          assert s['exact_gain']>=3 and s['negative_n']==32 and s['negative_clean'],s
+          assert s['native_complete'] and s['retrieval_complete'],s
+          assert d['native_call_count']==16 and not d['integrity_errors'] and d['model_hash_unchanged']
+          assert not d['phone_measured'] and d['native_seed']==13
+          print('C3_ACTUAL_RECALL_NATIVE_SCOPED_PASS_NO_STAGE11_PROMOTION',s)
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo MISSING_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3f05c818843f05a97fcd3577679c81b3f56d1227 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3f05c818843f05a97fcd3577679c81b3f56d1227 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-automation11-c3-recall-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-automation11-c3-recall-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce native result without changing original stage11
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-automation11-c3-recall-native"
+          for name in BLOBS INSTALL COMPILE FOCUSED BOOTSTRAP MODEL_VERIFY NATIVE REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -50 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'ACTUAL_C3_MEMORY_RECALL_NATIVE_SCOPED_ONLY_NO_STAGE11_OR_JEPA'
