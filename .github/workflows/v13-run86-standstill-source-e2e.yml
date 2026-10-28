@@ -23,15 +23,15 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 50
-      - name: Capture Run86 real backup/restore and raw evidence
+      - name: Capture Run86 real standstill/source and raw evidence
         shell: bash
         run: |
           set +e
           e="$RUNNER_TEMP/v13-run86"
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
-          for p in v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_E2E_PREREG.md v13/code/tests/test_run86_standstill_source_e2e.py v13/code/v13/standstill.py v13/code/v13/operator.py v13/code/v13/runtime.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/SOURCE_RAW.log"
-          if [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_E2E_PREREG.md)" = 38dec42344b8d0917c6b0bc919b04dea8931cd9a ] && [ "$(git hash-object v13/code/tests/test_run86_standstill_source_e2e.py)" = b4109d4cd1a2fbdc8c058533e2728fa5118a214d ] && [ "$(git hash-object v13/code/v13/standstill.py)" = 92e80399501036aeed5f29fc7d9fb23af9941c95 ] && [ "$(git hash-object v13/code/v13/operator.py)" = 7bf3a992af1db87f6ee2432c2486dbbced0f2bd4 ] && [ "$(git hash-object v13/code/v13/runtime.py)" = 68e7ed1352800174972558f1e0b0683a42c8689a ]; then echo 0 > "$e/SOURCE_EXIT.txt"; else echo 1 > "$e/SOURCE_EXIT.txt"; fi
+          for p in v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_RED_AMENDMENT.md v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_E2E_PREREG.md v13/code/tests/test_run86_standstill_source_e2e.py v13/code/v13/standstill.py v13/code/v13/operator.py v13/code/v13/runtime.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/SOURCE_RAW.log"
+          if [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_RED_AMENDMENT.md)" = 643f116299a172e51fc3d2d692a80ebc507642ea ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN86_STANDSTILL_SOURCE_E2E_PREREG.md)" = 38dec42344b8d0917c6b0bc919b04dea8931cd9a ] && [ "$(git hash-object v13/code/tests/test_run86_standstill_source_e2e.py)" = a32244f01420c1f37f5de0c155df997b81c975ed ] && [ "$(git hash-object v13/code/v13/standstill.py)" = 92e80399501036aeed5f29fc7d9fb23af9941c95 ] && [ "$(git hash-object v13/code/v13/operator.py)" = 7bf3a992af1db87f6ee2432c2486dbbced0f2bd4 ] && [ "$(git hash-object v13/code/v13/runtime.py)" = 68e7ed1352800174972558f1e0b0683a42c8689a ]; then echo 0 > "$e/SOURCE_EXIT.txt"; else echo 1 > "$e/SOURCE_EXIT.txt"; fi
           python3 -m venv "$RUNNER_TEMP/v13-run86-venv"
           py="$RUNNER_TEMP/v13-run86-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/BASE_INSTALL_RAW.log" 2>&1
@@ -67,7 +67,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: run86-age0-backup-restore-${{ github.run_id }}-${{ github.sha }}
+          name: run86-standstill-source-${{ github.run_id }}-${{ github.sha }}
           path: ${{ runner.temp }}/v13-run86/
           if-no-files-found: error
           retention-days: 30
