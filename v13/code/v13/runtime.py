@@ -9,7 +9,7 @@ from .common import digest,dumps,safe_text,visible_text,atomic_write,Cancelled,U
 from .config import initialize
 from .contracts import packet
 from .store import Store
-from .models import ModelManager,ROLES,model_key
+from .models import ModelManager,ROLES
 from . import semantic_memory,episodes,duplex
 from .agi import live as agi_live
 from .runners import RunnerPool,NeedleRunner,check,kill_process
@@ -27,7 +27,7 @@ from . import effort
 from .prompts import text as prompt
 from .inputs import save_context
 from . import age as agectl
-from .focal import FocalLoop,ActionGate
+from .focal import FocalLoop,ActionGate,available_body_roles
 from . import attention as attctl
 from . import toolstep as toolctl
 from . import skilllive
@@ -434,7 +434,7 @@ class Runtime:
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
             # A removed B manifest must not be bypassed by a previously synced
             # BodyFabric/AG0 slot. C5 records the suppression before dispatch.
-            available_bodies={r for r in ('B1_DETAIL','B2_GIST') if (self.models.installed.get(model_key(r,getattr(self.models,'b2_control','two_body'))) or {}).get('download_complete')}
+            available_bodies=available_body_roles(self.models)
             c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar,available_roles=available_bodies)
             clarify_turn=c5['role']=='ASK_USER'
             if clar:meta['clarify']=clar|{'selected':clarify_turn}
