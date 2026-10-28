@@ -280,7 +280,19 @@ class Memory:
         # Recheck the actual source/decision lineage before any lexical,
         # learned or embedding candidate can reach the output path.
         if keys is not None and keys.mode()!='off':
-            rows=self._verified_rows(rows)
+            checked=self._verified_rows(rows)
+            valid={r['id'] for r in checked}
+            for old_row in rows:
+                if old_row['id'] in valid:continue
+                # Revoked human evidence must disappear quietly. A still-live
+                # source that became unverifiable during encoding is a genuine
+                # integrity error, not a successful empty retrieval.
+                source=self.s.one('SELECT deleted FROM sources WHERE id=?',(old_row['source_id'],))
+                memory=self.s.one('SELECT active FROM memories WHERE id=?',(old_row['id'],))
+                if source is not None and not source['deleted'] and memory is not None and memory['active']:
+                    keys.last_query=None
+                    raise ValueError('Memory provenance changed during semantic encoding')
+            rows=checked
         live=bool(sims) and self.semantic_keys.mode()=='on';floor=self.cfg.get('memory_embed_threshold',1.)
         def base(r):
             lexical=relevance(query,r['key_text']);sim=sims.get(r['id'])
@@ -304,6 +316,7 @@ class Memory:
             except ValueError:
                 source=self.s.one('SELECT deleted FROM sources WHERE id=?',(r['source_id'],))
                 if source is None or source['deleted']:continue  # concurrent :forget, not a live integrity mismatch
+                if keys is not None:keys.last_query=None
                 raise
             if value!=r['value']:raise ValueError('Memory value provenance changed')
             r.update(source_ref=ref,value=value,retrieval_score=score,retrieval_policy=policy,embedding_similarity=sim,retrieval_channel=channel);candidates.append(r)

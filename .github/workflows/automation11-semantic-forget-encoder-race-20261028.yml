@@ -16,6 +16,9 @@ jobs:
       HF_HUB_OFFLINE: '1'
       NO_MODEL_DOWNLOADS: '1'
       NEEDLE_TELEMETRY: '0'
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -25,6 +28,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/semantic"
           "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          # Full-suite Body-JEPA/LP3 tests import torch at collection time.
+          "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
       - name: Source and test pins
         run: |
           mkdir -p "$RUNNER_TEMP/semantic-evidence"
