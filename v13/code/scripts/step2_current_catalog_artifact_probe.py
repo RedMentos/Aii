@@ -99,7 +99,7 @@ def probe(home, report_path, expected_catalog_blob, catalog_path=None,
               'roles': output, 'total_model_bytes': total,
               'native_inference_performed': False, 'redmi_proof': False,
               'step2_gate_promoted': False, 'jepa_weight': 0}
-    data = dumps(report)
+    data = dumps(report).encode('utf-8')
     with report_path.open('xb') as stream:
         stream.write(data)
         stream.flush()
