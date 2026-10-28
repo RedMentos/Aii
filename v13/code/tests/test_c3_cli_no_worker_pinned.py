@@ -65,7 +65,8 @@ class C3CliNoWorkerTests(unittest.TestCase):
                          "license_id": spec["license_id"],
                          "quant_format": spec["quant_format"],
                          "files": {spec["main_file"]: {
-                             "sha256": file["sha256"], "size": file["size"]}}}
+                             "sha256": file["sha256"], "size": file["size"],
+                             "path": "models/language/fake.gguf"}}}
             ctx.models.installed["language"] = installed
             self.assertTrue(_pinned_c3(ctx.models))
             ctx.models.installed["language"] = dict(installed, model_id="operator-import")
