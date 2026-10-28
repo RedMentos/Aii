@@ -1,0 +1,94 @@
+name: V13 Run11 paired bilingual native archive audit software
+on:
+  push:
+    branches:
+      - assistant/v13-run11-bilingual-paired-native-audit-20261028
+    paths:
+      - '.github/workflows/run11-bilingual-paired-native-audit-20261028.yml'
+      - 'v13/code/scripts/age0_bilingual_native_pair_audit.py'
+      - 'v13/code/tests/test_age0_bilingual_native_pair_audit.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source focused and full software regression; preserve all exits
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-bilingual-paired-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/scripts/age0_bilingual_arith_scorer.py > "$e/SCORER_BLOB.txt"
+          git hash-object v13/code/specs/age0-bilingual-arith-heldout-20261028.json > "$e/FIXTURE_BLOB.txt"
+          if [ "$(cat "$e/SCORER_BLOB.txt")" = 0348b17dedc0e4142a73a8ad8c93a57a2c7d6491 ] && [ "$(cat "$e/FIXTURE_BLOB.txt")" = ceda0a5cb506cf09885652b24893cf7d8fdff63b ]; then
+            echo 0 > "$e/BLOBS_EXIT.txt"
+          else
+            echo 1 > "$e/BLOBS_EXIT.txt"
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-bilingual-paired-audit-venv"
+          py="$RUNNER_TEMP/v13-bilingual-paired-audit-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_age0_bilingual_native_pair_audit tests.test_age0_bilingual_arith_scorer tests.test_age0_bilingual_arith_native_collector) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/age0_bilingual_native_pair_audit.py v13/code/tests/test_age0_bilingual_native_pair_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5239ca62ea359d752eff2602f7462e6c6c0833dc --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 5239ca62ea359d752eff2602f7462e6c6c0833dc HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-bilingual-paired-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-bilingual-paired-audit/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact-source software-only result
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-bilingual-paired-audit"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained, no promotion"
+              tail -80 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'PAIRED_AUDIT_SOFTWARE_ONLY_NO_NEW_NATIVE_OR_REDM I_PROOF'
