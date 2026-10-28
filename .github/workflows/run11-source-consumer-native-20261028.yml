@@ -29,7 +29,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Verify original model/runtime hashes, test scorer, bootstrap pinned native models and run preregistered ablation
+      - name: Verify source-consumer candidate and native model hashes, run guarded heldout
         shell: bash
         run: |
           set +e
@@ -97,7 +97,7 @@ jobs:
             echo SKIPPED_RED > "$e/MODEL_VERIFY_EXIT.txt"
           fi
           if [ "$(cat "$e/MODEL_VERIFY_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=INT --kill-after=15s 20m env PYTHONPATH=. "$py" scripts/native_memory_consumer_ablation.py --installed-home "$home" --out "$e/NATIVE_REPORT.json") > "$e/NATIVE_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=INT --kill-after=15s 20m env PYTHONPATH=. "$py" scripts/native_source_consumer_admission.py --installed-home "$home" --out "$e/NATIVE_REPORT.json") > "$e/NATIVE_RAW.log" 2>&1
             echo "$?" > "$e/NATIVE_EXIT.txt"
           else
             echo SKIPPED_VERIFY_RED > "$e/NATIVE_RAW.log"
