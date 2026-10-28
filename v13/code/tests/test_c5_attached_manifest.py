@@ -33,8 +33,7 @@ class C5AttachedManifest(unittest.TestCase):
 
     def choose(self, route="detail", direct=False):
         return self.gate.select(self.event(), route=route, direct=direct,
-                                resource_state="NORMAL",
-)
+                                resource_state="NORMAL")
 
     def test_no_b_manifest_selects_c3_without_fallback(self):
         self.r.models.installed = {"language": {"download_complete": True}}
@@ -84,8 +83,7 @@ class C5AttachedManifest(unittest.TestCase):
             c5.learn(ctx, "C3_LANGUAGE", rule_violation=1., cost_error=1.)
         c5.set_mode("ACTIVE", "EXPLICIT_HUMAN")
         result = self.gate.select(self.event(), route="detail", direct=False,
-                                  resource_state="NORMAL", effort=.5,
-)
+                                  resource_state="NORMAL", effort=.5)
         self.assertEqual(result["role"], "C3_LANGUAGE")
         self.assertIn({"action_id": "B1_DETAIL", "reason": "MODEL_MANIFEST_UNAVAILABLE"},
                       result["suppressed"])
