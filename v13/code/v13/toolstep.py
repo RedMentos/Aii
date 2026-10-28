@@ -40,7 +40,7 @@ EXPR=re.compile(r'(?<![\w.])(\(?\s*'+NUM+r'(?:\s*(?:\*\*|[+\-*/%])\s*\(?\s*'+NUM
 HALF_CUE=re.compile(r'\b(?:hälfte|halbiere|halbieren|halbiert|half|halve)\b',re.I)
 HALF_REQUEST=re.compile(r'\b(?:berechne|rechne|ermittle|wieviel|wie\s+viel|was\s+ist|halbiere|halbieren|calculate|compute|what\s+is|how\s+much|halve)\b',re.I)
 HALF_NEGATION=re.compile(r"\b(?:nicht|kein\w*|ohne|not|don['’]t|do\s+not)\b",re.I)
-HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9]\d{0,8})(?![\w]|[.,]\d)')
+HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9][0-9]{0,8})(?![\w]|[.,][0-9])')
 
 def propose_half(text):
     t=str(text)
@@ -50,6 +50,11 @@ def propose_half(text):
     values=list(HALF_INTEGER.finditer(t))
     if len(values)!=1:return None
     m=values[0]
+    # Excluded second numbers must not disappear from the single-operand check.
+    if any(ch.isdigit() for ch in t[:m.start()] + t[m.end():]):return None
+    # A separated unary sign or sign word must not turn -120 into +120.
+    prior=t[:m.start()].rstrip().casefold()
+    if prior.endswith(('+','-','−','–')) or (prior.split() and prior.split()[-1] in ('minus','negative','negativ')):return None
     return {'tool':'calc','args':{'expression':m.group(0)+'/2'},'confidence':.9,'span':[m.start(),m.end()]}
 
 NOTE_NAMED=re.compile(r'^\s*(?:please\s+)?(?:save|write|make|take|create)\s+(?:a\s+)?note\s+(?:called|named)\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s*:\s*(\S[\s\S]{0,1999})$',re.I)
