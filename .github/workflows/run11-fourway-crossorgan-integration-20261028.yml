@@ -1,0 +1,121 @@
+name: V13 Run11 four-way cross-organ integration software review
+on:
+  push:
+    branches: [assistant/v13-run11-fourway-independent-integration-20261028]
+    paths:
+      - '.github/workflows/run11-fourway-crossorgan-integration-20261028.yml'
+      - 'v13/code/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-fourway-crossorgan-20261028
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve exact import identities, focused and full Linux software tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11-fourway-integration"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git show -s --format='%P' HEAD > "$e/PARENTS.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          b969aa4989f067e61625120ebd4f508c51e5c757 .github/workflows/step2-crossarm-b1-identity-20261028.yml
+          9b6ecc06673ca4e75ef5f700e0b04533c4f68e3d v13/code/docs/coordination/RUN11_STEP2_CROSSARM_B1_REVIEW_HANDOFF_20261028.md
+          1df641afcf1e8c443670375f9e4622ea6b347173 v13/code/docs/coordination/STEP2_CROSSARM_B1_IDENTITY_PREREG_20261028.md
+          64a8ba7fc35b2e16356faed3b7be166f7f550fc8 v13/code/scripts/step2_longnote_fourarm_analysis.py
+          2eda5a90801832aa5bf78f48144f3a59b7db9e02 v13/code/tests/test_step2_crossarm_b1_identity_20261028.py
+          ddf35c2df587f073f433b1a284794bb0dc7dabb8 .github/workflows/world-jepa-heldout-action-readout-20261028.yml
+          666668cef2733b4692a2f3c29b0b48173800e0a0 v13/code/docs/coordination/RUN11_WORLD_JEPA_HELDOUT_ACTION_HANDOFF_20261028.md
+          312fc20c5bf486fc19af3449a2afd312a09f74e0 v13/code/docs/coordination/WORLD_JEPA_HELDOUT_ACTION_READOUT_PREREG_20261028.md
+          7d23ae54866fc3b061265a40ae4c1a7cd0ab30b0 v13/code/scripts/world_jepa_heldout_action_readout_20261028.py
+          0d6246a95e4264f3371335c27b26f2a322ff0007 v13/code/tests/test_world_jepa_heldout_action_readout_20261028.py
+          23930dc031dd48adb29446bf4afd8663d09f6b89 .github/workflows/control-fabric-monotonic-latency-20261028.yml
+          c99cde0178de56aa9ed6fc8883e76e6440258f85 v13/code/docs/coordination/CONTROL_FABRIC_MONOTONIC_LATENCY_PREREG_20261028.md
+          fc036090d7ca6e835fb291e0e4c35a93013be9e7 v13/code/docs/coordination/RUN11_CONTROL_FABRIC_MONOTONIC_HANDOFF_20261028.md
+          b546f42538c5c932edf3f65fda93ffb3ca2a4def v13/code/tests/test_control_budget_monotonic_20261028.py
+          476b7da24c84ee853e4bd07f981312169b1390f8 v13/code/v13/control_budget.py
+          b8110d214c752a2cceb2e5849dc09a79b64cffef .github/workflows/world-jepa-shadow-inference-checkpoint-20261028.yml
+          7b083aa6a93f089f232d9a211c0f0eac0c3d2fe9 v13/code/docs/coordination/RUN11_WORLD_JEPA_INFERENCE_CHECKPOINT_HANDOFF_20261028.md
+          24610f410edb1d30d612fd8e061ecc5ba5ba2d67 v13/code/docs/coordination/WORLD_JEPA_SHADOW_INFERENCE_CHECKPOINT_PREREG_20261028.md
+          3f1d01efe8e684414941b86bf50d1738b956f500 v13/code/tests/test_world_jepa_shadow_checkpoint_20261028.py
+          0b6fdef06b7300c008562d296110690c82c1675c v13/code/v13/world_jepa_shadow_checkpoint.py
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo BLOB_MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q BLOB_MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run11-fourway-venv"
+          py="$RUNNER_TEMP/v13-run11-fourway-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_step2_crossarm_b1_identity_20261028 tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_step2_fourarm_native_collector_candidate_20261028 tests.test_world_jepa_heldout_action_readout_20261028 tests.test_world_jepa_shadow_checkpoint_20261028 tests.test_world_jepa tests.test_control_budget_monotonic_20261028 tests.test_control_budget) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m scripts.world_jepa_heldout_action_readout_20261028 --synthetic-smoke --steps 400) > "$e/ABLATION_RAW.json" 2> "$e/ABLATION_STDERR.log"
+            echo "$?" > "$e/ABLATION_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            echo SKIPPED_FOCUSED_RED > "$e/ABLATION_STDERR.log"
+            echo SKIPPED_RED > "$e/ABLATION_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/world_jepa_heldout_action_readout_20261028.py v13/code/tests/test_world_jepa_shadow_checkpoint_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0cc5e59fc1c91a71b0b232b42f70668c562d9d2b --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 0cc5e59fc1c91a71b0b232b42f70668c562d9d2b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-run11-fourway-integration-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11-fourway-integration/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits; never promote native/Redmi gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11-fourway-integration"
+          for name in BLOBS INSTALL FOCUSED FULL ABLATION COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw evidence retained"
+              tail -60 "$e/${name}_RAW.log" 2>/dev/null || tail -60 "$e/ABLATION_STDERR.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'FOURWAY_SOFTWARE_REVIEW_ONLY_STEP2_FAIL_B3_FAIL_NO_GATE_PROMOTION'
