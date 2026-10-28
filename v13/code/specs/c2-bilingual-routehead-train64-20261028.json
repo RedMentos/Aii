@@ -1,1 +1,460 @@
-The requested file reference is not currently visible. Use files.search or files.list to rediscover the file, then retry with a returned ref_id or file_id.
+{
+  "schema": "v13.c2.bilingual_routehead_train64.v1",
+  "purpose": "disjoint 48-fit/16-validation author-labelled C2 embedding route-head shadow training; no evaluation-row training",
+  "label_source": "AUTHOR_LABELS_FROM_PINNED_CONTROL_TOOL_DEFINITION_NOT_USER_GOLD",
+  "route_language_balance": "8 each of 4 routes x 2 languages",
+  "split_rule": "first six IDs per route/language fit, last two validation",
+  "transfer64_eval_items_sha256": "12863402ffecef7565d23d1162fa061a1983ee92b46332c60adcfb3cd37ca9af",
+  "original96_eval_items_sha256": "54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6",
+  "items_sha256": "fd715d8491fd673eabc1b62f30633fce2410ee554773336e584cf48ec364b75c",
+  "items": [
+    {
+      "id": "train-simple-en-00",
+      "text": "Hello, can we chat for a moment?",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-01",
+      "text": "Thanks for explaining that.",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-02",
+      "text": "Which month comes after April?",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-03",
+      "text": "Tell me a short friendly greeting.",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-04",
+      "text": "Is a pear a fruit?",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-05",
+      "text": "What is another word for quick?",
+      "label": "simple",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-en-06",
+      "text": "Please say good night.",
+      "label": "simple",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-simple-en-07",
+      "text": "How are you feeling today?",
+      "label": "simple",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-simple-de-00",
+      "text": "Hey, schönen Nachmittag!",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-01",
+      "text": "Vielen Dank für deine Antwort.",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-02",
+      "text": "Welcher Monat folgt auf Juni?",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-03",
+      "text": "Sag bitte kurz guten Morgen.",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-04",
+      "text": "Ist eine Banane eine Frucht?",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-05",
+      "text": "Was ist ein anderes Wort für schnell?",
+      "label": "simple",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-simple-de-06",
+      "text": "Bis später, mach es gut.",
+      "label": "simple",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-simple-de-07",
+      "text": "Wie geht es dir gerade?",
+      "label": "simple",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-detail-en-00",
+      "text": "Calculate 14% of 750.",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-01",
+      "text": "Write JavaScript to remove duplicate strings from an array.",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-02",
+      "text": "Why is the Python expression 1/0 invalid?",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-03",
+      "text": "Compute 347 minus 189 exactly.",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-04",
+      "text": "Show a regex for a valid hex color code.",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-05",
+      "text": "Explain the difference between shallow and deep copy in Python.",
+      "label": "detail",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-en-06",
+      "text": "Calculate 15.5 times 4.2.",
+      "label": "detail",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-detail-en-07",
+      "text": "Write a shell command to count lines in a file.",
+      "label": "detail",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-detail-de-00",
+      "text": "Berechne 18 Prozent von 650.",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-01",
+      "text": "Schreibe eine Python-Funktion zur Binärsuche.",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-02",
+      "text": "Warum ist die Division durch null nicht definiert?",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-03",
+      "text": "Rechne 729 minus 438.",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-04",
+      "text": "Gib eine SQL-Abfrage für die fünf neuesten Bestellungen.",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-05",
+      "text": "Erkläre den Unterschied zwischen == und is in Python.",
+      "label": "detail",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-detail-de-06",
+      "text": "Berechne 8,75 mal 12.",
+      "label": "detail",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-detail-de-07",
+      "text": "Schreibe einen regulären Ausdruck für drei Großbuchstaben.",
+      "label": "detail",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-gist-en-00",
+      "text": "Outline the broad stages of planning a public playground.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-01",
+      "text": "Summarize the main ideas of a meeting about office lighting.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-02",
+      "text": "Give a high-level account of how postal services developed.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-03",
+      "text": "Sketch a broad plan to teach digital literacy.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-04",
+      "text": "Summarize the principles of urban water conservation.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-05",
+      "text": "Give an overview of how museums organize exhibitions.",
+      "label": "gist",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-en-06",
+      "text": "Describe the big picture of a community composting program.",
+      "label": "gist",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-gist-en-07",
+      "text": "Summarize the main themes of a conversation about sleep routines.",
+      "label": "gist",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-gist-de-00",
+      "text": "Skizziere grob die Planung eines öffentlichen Spielplatzes.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-01",
+      "text": "Fasse die Kerngedanken einer Sitzung zur Bürobeleuchtung zusammen.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-02",
+      "text": "Gib einen Überblick über die Entwicklung der Post.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-03",
+      "text": "Entwirf einen allgemeinen Plan für digitale Grundbildung.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-04",
+      "text": "Fasse Grundprinzipien des Wassersparens in Städten zusammen.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-05",
+      "text": "Beschreibe grob, wie Museen Ausstellungen organisieren.",
+      "label": "gist",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-gist-de-06",
+      "text": "Erkläre die Hauptidee eines gemeinschaftlichen Kompostprojekts.",
+      "label": "gist",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-gist-de-07",
+      "text": "Fasse die Hauptthemen eines Gesprächs über Schlafgewohnheiten zusammen.",
+      "label": "gist",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-both-en-00",
+      "text": "Compare two flood defense strategies, account for budget and ecosystems, then propose a staged decision.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-01",
+      "text": "Assess a move from monolith to microservices under staffing, uptime and rollback constraints.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-02",
+      "text": "Contrast three housing policies by affordability, displacement and implementation complexity.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-03",
+      "text": "Design a balanced response to a school data leak considering transparency, privacy and repair.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-04",
+      "text": "Compare remote and in-person medical appointments for rural patients and propose a hybrid rollout.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-05",
+      "text": "Plan a multi-stage library digitization balancing cost, accessibility and archival fidelity.",
+      "label": "both",
+      "lang": "en",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-en-06",
+      "text": "Evaluate two municipal heating options across lifecycle costs, emissions and resilience.",
+      "label": "both",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-both-en-07",
+      "text": "Propose a coordinated disaster drill with roles, timelines, communication and failure contingencies.",
+      "label": "both",
+      "lang": "en",
+      "split": "validation"
+    },
+    {
+      "id": "train-both-de-00",
+      "text": "Vergleiche zwei Hochwasserschutzstrategien nach Budget und Umweltfolgen und plane Etappen.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-01",
+      "text": "Bewerte den Wechsel vom Monolithen zu Microservices nach Personal, Ausfallsicherheit und Rückweg.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-02",
+      "text": "Vergleiche drei Wohnungspolitiken nach Bezahlbarkeit, Verdrängung und Umsetzung.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-03",
+      "text": "Entwirf eine Reaktion auf ein Schuldatenleck mit Transparenz, Privatsphäre und Schadensbegrenzung.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-04",
+      "text": "Vergleiche digitale und persönliche Arzttermine auf dem Land und plane einen hybriden Start.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-05",
+      "text": "Plane die Digitalisierung einer Bibliothek unter Kosten-, Zugangs- und Archivierungszielen.",
+      "label": "both",
+      "lang": "de",
+      "split": "fit"
+    },
+    {
+      "id": "train-both-de-06",
+      "text": "Bewerte zwei Heizkonzepte für eine Stadt nach Lebenszykluskosten, Emissionen und Resilienz.",
+      "label": "both",
+      "lang": "de",
+      "split": "validation"
+    },
+    {
+      "id": "train-both-de-07",
+      "text": "Entwirf eine Katastrophenschutzübung mit Rollen, Zeitplan, Kommunikation und Ausfalloptionen.",
+      "label": "both",
+      "lang": "de",
+      "split": "validation"
+    }
+  ]
+}
