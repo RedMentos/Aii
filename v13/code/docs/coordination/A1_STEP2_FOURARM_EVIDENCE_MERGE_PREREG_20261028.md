@@ -1,0 +1,9 @@
+# A1 × STEP2 × four-arm evidence scorer/IO integration — prereg, 2026-10-28
+
+Review-only branch from #823 docs-only head `ae509a42563e64afbf23bec04a2b73163d201359`; exact source-tested ancestor `521b1fa1f06a0dbdbedcd51f7ac29708aa04be2e` has Actions `40620060272` SUCCESS (17 focused, 2130 full OK, 1 skipped), ZIP SHA256 `05b6a0d9bca0b329896d0265dba19fdd30f15e4bdde33134833ef36f926a72ed`, private byte-exact backup. Independent scorer+sealed-IO #821 exact `5bb7b445d13ee84ccb3cf26d13d6d8756e8f6efc` has Actions `40619638242` SUCCESS (14 focused, 2127 full OK, 1 skipped), ZIP SHA256 `f7842ed78c528a7489f21c6dd44eae1ca1a20118cbe4086b8a0b7a9ff49fc107`, private byte-exact backup. Its parent #820 exact corrected scorer `cfe531e116dfc5307985e12846f513d5c7feccdb` also GREEN; RED-first 40619574808 (three expected status-guard failures) preserved.
+
+## Merge
+Make a two-parent merge (first parent this prereg, second parent #821 5bb7...). Import **only** nine new #820/#821 paths: both workflows, three coordination prereg docs, scorer source/test and sealed IO source/test. No existing runtime, Canon, frozen cohort, A1 or STEP2 runner file may be overwritten. Verify exact blob hashes and parent ancestry. Then run branch-only focused A1+STEP2+scorer+sealed IO tests and full Linux software suite, privacy CLEAN, compileall and closed raw exits. Synthetic scores are only synthetic; no real native inference.
+
+## Next
+After GREEN, integrate separately tested #824 native collector candidate (mock-only) through another preregistered review merge, not by overwriting active owner work. Actual TP/TC/SP/SC requires a **new** exact native prereg with pinned source/model/runner/seed hashes, exclusive owner/cgroup and fresh evidence. Preserve STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Age0/RECORD_ONLY and all original failed attempts.
