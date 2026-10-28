@@ -39,6 +39,14 @@ jobs:
           echo "$?" > "$e/NUMPY_EXIT.txt"
           (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run55_world_jepa_synthetic_predicted_latent_readout tests.test_run54_world_jepa_synthetic_outcome_baselines tests.test_run51_world_jepa_shadow_fit tests.test_run50_world_jepa_action_outcome_adapter tests.test_run48_world_jepa_holdout_diagnostic tests.test_run46_world_jepa_zero_step_evidence) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 120s env PYTHONPATH=.:tests "$py" -c 'import json; from v13 import world_model; from v13 import world_jepa_action_outcome_adapter as adapter; from v13 import world_jepa_synthetic_predicted_latent_readout as probe; from tests.test_run50_world_jepa_action_outcome_adapter import FakeReadOnlyView; b=adapter.build(world_model.transitions(FakeReadOnlyView(128))); print(json.dumps(probe.run(b,approved_shadow_fit=True,source_kind="SYNTHETIC_TEST_ONLY",seed=11,steps=20,ensemble=2),sort_keys=True,allow_nan=False))') > "$e/METRICS_RAW.json" 2> "$e/METRICS_ERR.log"
+            echo "$?" > "$e/METRICS_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/METRICS_EXIT.txt"
+          fi
           python3 -m compileall -q v13/code/v13/world_jepa_synthetic_predicted_latent_readout.py v13/code/tests/test_run55_world_jepa_synthetic_predicted_latent_readout.py v13/code/v13/world_jepa_synthetic_outcome_baselines.py v13/code/tests/test_run54_world_jepa_synthetic_outcome_baselines.py v13/code/v13/world_jepa_action_outcome_shadow_fit.py v13/code/tests/test_run51_world_jepa_shadow_fit.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
@@ -79,7 +87,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-run55"
-          for n in FROZEN NUMPY FOCUSED COMPILE INSTALL FULL PRIVACY DIFF; do
+          for n in FROZEN NUMPY FOCUSED METRICS COMPILE INSTALL FULL PRIVACY DIFF; do
             if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
               echo "$n RED; raw retained; no native or gate promotion"
               tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
