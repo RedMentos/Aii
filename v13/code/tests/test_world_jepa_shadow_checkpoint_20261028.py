@@ -95,6 +95,11 @@ class WorldJepaShadowCheckpointTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             cp.save(model, self.path, SOURCE)
         self.assertFalse(self.path.exists())
+        model, _, _ = fitted()
+        model._action_counts[0] = len(model._ztrain) + 1
+        with self.assertRaises(ValueError):
+            cp.save(model, self.path, SOURCE)
+        self.assertFalse(self.path.exists())
 
     def test_hash_consistent_but_incomplete_archive_is_rejected(self):
         meta = {'schema': cp.SCHEMA, 'source_sha256': SOURCE,
