@@ -1,0 +1,17 @@
+# Run11 C2 bilingual Needle embedding route-head shadow prereg — 2026-10-28
+
+Owner GPT-6; independent **offline learning** child of PR #857, source `797da0a1a7c7965cb00504e8b10570696d500e80`, with #857 native transfer64 currently running. This preregistration precedes new train64 fixture and any route-head fit. No overwrite of #857, #850, main, model weights or existing cohorts.
+
+**Problem:** #850 Needle native `select_processing` agreement 15/96, scaffold 46/96, confidence AUROC ~0.4583 on author-labelled English96. Needle's official docs expose text embeddings (`needle_embed`) independently of its tool-call head. A tiny *offline* readout on frozen embeddings may perform better, but must be tested on a genuinely disjoint cohort.
+
+**Frozen evaluation:** PR #857's 64-item bilingual transfer cohort, fixture Git blob `e9aaae43f3313fbdc8e4b2fc870f2712a5557a66`, items SHA256 `12863402ffecef7565d23d1162fa061a1983ee92b46332c60adcfb3cd37ca9af`, 8 EN + 8 DE per route. Never fit or choose hyperparameters using these labels, nor on #850's 96 English evaluation rows. Existing transfer native raw result is a separate comparator; no changes to it.
+
+**New training cohort registered before generation:** exactly 64 *different* author-labelled prompts, 8 EN + 8 DE per route (`simple/detail/gist/both`), IDs `train-{route}-{lang}-00..07`, fixed order route→lang→index; no exact overlap with original96 or transfer64. Source label rules are the pinned `select_processing` tool description, with subjective author-label caveat. Freeze Git blob and canonical SHA256 before model inference. Partition by each route/language cell: first six IDs train (48), last two validation (16). Never train on validation or transfer test.
+
+**Fixed readout algorithm:** Needle3 frozen CQ2 `E` embeddings, each row L2 normalized with `max(norm,1e-9)`; linear four-way softmax `W[D,4],b[4]`, all-zero initialization, 400 deterministic full-batch gradient steps, learning rate 0.5, L2 penalty coefficient 0.01 on W, per-step global gradient norm cap 1.0, seed 13 (even though no stochastic updates), no early stopping/hyperparameter search. Save finite W/b and immutable SHA256, `allow_pickle=False`, deterministic repeat and reload proof. Validate source/model/fixture/seed and absence of training overlap before launching. The linear head is a candidate shadow readout, **not** C2 native confidence calibration, Body-JEPA or live JEF authority.
+
+**Primary readouts:** author-label route accuracy/macro-F1/confusion on train48, validation16, frozen transfer64, plus EN/DE split and comparison with already measured native Needle/scaffold; report parameter count and inference overhead. The transfer64 test must be evaluated once per fixed head, with no adaptive selection. No activation even if score improves; future independent retention, resource/Redmi, safety and human approval gates required.
+
+**Execution:** create fixture, no-model negative tests, Linux full software CI, then exactly one serial pinned native embedding/fit/test job after #857's native job finishes. Preserve raw embeddings/weights in closed evidence with hashes, failed attempts, license/provenance and all negative gates. No paid provisioning. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight0, Age0 RECORD_ONLY, phone_measured=false, whole-system incomplete.
+
+Platform remaining budget UNKNOWN. Next: commit and remote-verify frozen train64 fixture; do not train until source/test guards pass.
