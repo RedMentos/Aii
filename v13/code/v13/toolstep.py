@@ -54,7 +54,9 @@ def propose_half(text):
     # disappear from the count and turn an ambiguous request into a tool call.
     # str.isdigit also catches non-ASCII digits excluded by the plain-integer parser.
     if any(ch.isdigit() for ch in t[:m.start()] + t[m.end():]):return None
-    if re.search(r'(?:[+\-−–]|\b(?:minus|negative|negativ))\s*
+    prior=t[:m.start()].rstrip().casefold()
+    if prior.endswith(('+','-','−','–')) or (prior.split() and prior.split()[-1] in ('minus','negative','negativ')):return None
+    return {'tool':'calc','args':{'expression':m.group(0)+'/2'},'confidence':.9,'span':[m.start(),m.end()]}
 
 NOTE_NAMED=re.compile(r'^\s*(?:please\s+)?(?:save|write|make|take|create)\s+(?:a\s+)?note\s+(?:called|named)\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s*:\s*(\S[\s\S]{0,1999})$',re.I)
 NOTE=re.compile(r'^\s*(?:please\s+)?(?:note down|(?:save|write|make|take|create)\s+(?:a\s+)?note)\s*:\s*(\S[\s\S]{0,1999})$',re.I)
