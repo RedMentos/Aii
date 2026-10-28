@@ -36,8 +36,18 @@ jobs:
           done > "$e/SOURCE_BLOBS_RAW.log"
           git hash-object v13/code/scripts/step2_longnote_revision_fixtures.py > "$e/ORIGINAL_BLOB.txt"
           if [ "$(cat "$e/ORIGINAL_BLOB.txt")" = eeb4155dc3421c2b57ca0871c126f8ea2249c649 ]; then echo 0 > "$e/ORIGINAL_EXIT.txt"; else echo 1 > "$e/ORIGINAL_EXIT.txt"; fi
+          git hash-object v13/code/scripts/run15_step2_disjoint_bilingual_fixtures.py > "$e/NEW_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_run15_step2_disjoint_bilingual_fixtures.py > "$e/NEW_TEST_BLOB.txt"
+          if [ "$(cat "$e/NEW_SOURCE_BLOB.txt")" = 635e5727a42cb1eac4f84441afda2977b0c8109c ] && [ "$(cat "$e/NEW_TEST_BLOB.txt")" = ab3b32200a52b6046e1dc29fc7818bbe1b4fdf0d ]; then echo 0 > "$e/NEW_BLOBS_EXIT.txt"; else echo 1 > "$e/NEW_BLOBS_EXIT.txt"; fi
           (cd v13/code && timeout --signal=TERM --kill-after=5s 90s env PYTHONPATH=.:tests python3 -m unittest -v tests.test_run15_step2_disjoint_bilingual_fixtures tests.test_step2_longnote_revision_fixtures_20261028 tests.test_run13_b2_identity_ambiguity_guard) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && env PYTHONPATH=.:tests python3 -c 'from scripts.run15_step2_disjoint_bilingual_fixtures import FIXTURE_SHA256; print(FIXTURE_SHA256)') > "$e/FIXTURE_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/FIXTURE_SHA_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FIXTURE_SHA_RAW.log"
+            echo SKIPPED_RED > "$e/FIXTURE_SHA_EXIT.txt"
+          fi
           python3 -m compileall -q v13/code/scripts/run15_step2_disjoint_bilingual_fixtures.py v13/code/tests/test_run15_step2_disjoint_bilingual_fixtures.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
@@ -80,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-run15"
-          for n in ORIGINAL FOCUSED COMPILE INSTALL FULL PRIVACY DIFF; do
+          for n in ORIGINAL NEW_BLOBS FOCUSED FIXTURE_SHA COMPILE INSTALL FULL PRIVACY DIFF; do
             if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
               echo "$n RED; original raw retained; no gate promotion"
               tail -35 "$e/${n}_RAW.log" 2>/dev/null || true
