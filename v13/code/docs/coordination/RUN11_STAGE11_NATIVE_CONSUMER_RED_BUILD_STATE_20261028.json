@@ -1,0 +1,53 @@
+{
+  "schema": "V13_REVIEW_BRANCH_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "review_pr": 876,
+  "source_commit": "7d73dcc4042c51eccf1a93993f50c51a63517c26",
+  "native_run": 40655924504,
+  "conclusion": "FAILURE",
+  "artifact_id": 12801482999,
+  "artifact_zip_sha256": "bdfc34d56c197ae01bc509dfdaba58120bc2ccbcde646d934608c4c52855e24f",
+  "artifact_crc": "PASS",
+  "artifact_sha256s": "21/21 PASS",
+  "guards": {
+    "source_blobs": "PASS",
+    "install": "PASS",
+    "focused": "5/5 PASS",
+    "compile": "PASS",
+    "bootstrap": "PASS",
+    "deep_model_verify": "4/4 PASS",
+    "native": "EXIT_2",
+    "privacy": "CLEAN",
+    "diff_check": "PASS"
+  },
+  "native_calls": 32,
+  "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+  "device": "Linux_x86_64_NOT_REDMi",
+  "registered_score": {
+    "json_baseline": "5/8 (0.625), but see numeric token false-positive below",
+    "source_first": "8/8 (1.0)",
+    "gain": 0.375,
+    "no_source_exact_withheld_value": 0,
+    "wrong_topic_value_leaks": "8/8",
+    "status": "CONSUMER_PROMPT_GAIN_NOT_SUPPORTED"
+  },
+  "independent_findings": [
+    "The source-first arm returned the correct value for all eight synthetic facts, but wrong-topic arm copied the unrelated project budget in all eight; the candidate is NOT safe to deploy.",
+    "No-source arm generated unrelated unsupported amounts for Seldan (500.000), Talira (150.000), Fenro (500.000); prereg no_source_inventions checked only exact withheld value and missed these 3/8 hallucinations.",
+    "Scorer exact_amount matches 615 in 615.000 (Orven baseline); this is a numeric thousands-suffix false positive. A new preregistered scorer must reject dot/comma-digit suffixes; original raw run and original registered metric stay immutable."
+  ],
+  "negative_gates": [
+    "original_stage11_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "Body-JEPA_UNAVAILABLE",
+    "LP3_FAIL",
+    "jepa_weight_0",
+    "Age0_RECORD_ONLY",
+    "Redmi_UNMEASURED",
+    "full_system_incomplete"
+  ],
+  "next_command": "Preregister source-bound topic admission before any C3 prompt and strict numeric currency parser; rerun independent native holdout with no-source arbitrary-number and wrong-topic controls. Do not retroactively reclassify run 40655924504.",
+  "private_backup": "No rejected Drive retry; GitHub PR branch and Actions artifact are the durable remote checkpoints."
+}
