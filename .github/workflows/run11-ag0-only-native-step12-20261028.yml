@@ -1,0 +1,145 @@
+name: V13 Run11 AG0-only Age0 Linux native JEF C3 fallback STEP12
+on:
+  push:
+    branches:
+      - assistant/v13-run11-ag0-only-native-20261028
+    paths:
+      - '.github/workflows/run11-ag0-only-native-step12-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  age0-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install pinned Age0 and run real JEF modes STEP12 and public ask serially
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-ag0-only-native-endtoend"
+          mkdir -p "$e/proofs"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_BLOB.txt"
+          git hash-object v13/code/specs/control_tools.json > "$e/TOOLS_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-ag0-only-native-venv"
+          py="$RUNNER_TEMP/v13-ag0-only-native-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          export V13_HOME="$RUNNER_TEMP/v13-ag0-only-native-home"
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 9m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" probe jef-modes > "$e/JEF_MODES_RAW.log" 2>&1
+            echo "$?" > "$e/JEF_MODES_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/JEF_MODES_RAW.log"
+            echo SKIPPED_RED > "$e/JEF_MODES_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 10m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" probe step12 > "$e/STEP12_RAW.log" 2>&1
+            echo "$?" > "$e/STEP12_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/STEP12_RAW.log"
+            echo SKIPPED_RED > "$e/STEP12_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 3m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" ask 'Budget 120 Euro. Berechne die Hälfte.' > "$e/ASK_RAW.log" 2>&1
+            echo "$?" > "$e/ASK_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/ASK_RAW.log"
+            echo SKIPPED_RED > "$e/ASK_EXIT.txt"
+          fi
+          for f in jef-modes-proof.json step12-proof.json native-probe.json; do
+            if [ -f "$V13_HOME/exports/$f" ]; then cp "$V13_HOME/exports/$f" "$e/proofs/$f"; fi
+          done
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$V13_HOME" "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,pathlib,sys
+          from v13.models import ModelManager
+          from scripts.step2_current_catalog_artifact_probe import git_blob_sha
+          from v13.common import APP
+          home=pathlib.Path(sys.argv[1]);e=pathlib.Path(sys.argv[2])
+          assert git_blob_sha((APP/'specs/models.json').read_bytes())=='7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          assert git_blob_sha((APP/'specs/control_tools.json').read_bytes())=='954a3f468f10195fbce12d27f68585ee7edee2c9'
+          cfg=json.loads((home/'config/settings.json').read_text())
+          assert cfg['learning_mode']=='RECORD_ONLY' and cfg['system_stage']==0 and not cfg['latents_enabled']
+          assert cfg.get('jepa_weight',0)==0
+          v=ModelManager(home).verify(deep=True)
+          assert set(('needle','language','body','gist')).issubset(v)
+          assert all(v[k]['ok'] and v[k]['hash_checked'] for k in ('needle','language','body','gist'))
+          jef=e/'proofs/jef-modes-proof.json';step=e/'proofs/step12-proof.json'
+          if not jef.is_file() or not step.is_file():
+              raise SystemExit('MISSING_CLOSED_NATIVE_PROOFS')
+          j=json.loads(jef.read_text());s=json.loads(step.read_text())
+          assert j['status']=='JEF_MODES_PASS' and j['no_b_dependency_proven']
+          assert j['checks']['combined_c2'] and j['checks']['combined_c3'] and j['checks']['no_b_manifest']
+          turns=j['modes']['C2_PLUS_C3']['turns']
+          assert len(turns)==3
+          assert all(t['output_metadata']['runner']['role']=='C3_LANGUAGE' for t in turns)
+          assert all('native_control' in t['output_metadata']['route'] for t in turns)
+          fallback_count=sum(t['output_metadata'].get('fallback')=='C3_LANGUAGE' for t in turns)
+          print('AG0_C3_FALLBACK_COUNT',fallback_count,'OF',len(turns))
+          c3rows=j['modes']['C3_ONLY']['rows']
+          print('C3_UNSUPPORTED_LEADER_NEGATIVE_WITNESS',('John Doe' in c3rows[-1]['output']) if c3rows else 'MISSING')
+          assert s['status']=='VERTICAL_CHECKS_PASS'
+          assert s['step2_observed_both_roles'] and s['step1_native_control_observed']
+          assert not s['full_runner_proof'] and not s['complementarity_proven']
+          assert not s['phone_measured'] and not j['phone_measured']
+          assert (e/'ASK_RAW.log').stat().st_size>0
+          import re
+          ask=(e/'ASK_RAW.log').read_text(errors='replace')
+          assert re.search(r'(?<![0-9])60(?![0-9])',ask), 'PUBLIC_ARITHMETIC_60_MISSING'
+          print('AGE0_AG0_ONLY_LINUX_NATIVE_JEF_C2_C3_B1_B2_STEP12_NO_GATE_PROMOTION')
+          print('verified_role_count',len(v),'jef_checks',len(j['checks']),'step12_checks',len(s['checks']))
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base af71f1ebc26d934a180db39f77a2978ced7b6261 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check af71f1ebc26d934a180db39f77a2978ced7b6261 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-ag0-only-native-step12-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-ag0-only-native-endtoend/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce Age0 native JEF STEP12 end-to-end evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-ag0-only-native-endtoend"
+          for name in INSTALL BOOTSTRAP JEF_MODES STEP12 ASK REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained, no Age0 native integration PASS"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'AGE0_AG0_ONLY_LINUX_NATIVE_JEF_C2_C3_B1_B2_STEP12_NO_REDM I_OR_GATE_PROMOTION'
