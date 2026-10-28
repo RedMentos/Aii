@@ -1,0 +1,5 @@
+# First live C3 renderer revalidation software attempt RED (2026-10-28)
+
+**Original source-pinned attempt:** Actions [40663306842](https://github.com/RedMentos/Aii/actions/runs/40663306842), source `09a0cff686af37e595e943cd8da120827ed86966`, raw artifact **12804798216**, ZIP SHA256 **`e25c18ef489a6e94ba6a42ae68ce1114d32f37642dfd05e4916b8532fcbb0437`**, CRC clean. BLOBS/INSTALL/COMPILE/PRIVACY/DIFF exit0. Focused **33 tests, 7 ERROR + 2 FAIL**, full SKIPPED.
+
+**Cause identified:** `render_messages(..., *, memory=None, session=None)` accidentally reassigns the new keyword `session` from `admission['_render_session']` before the live argument checks. This makes direct historical formatter calls fail and makes explicitly wrong sessions appear valid. This is a source implementation defect, not a test-double error. Preserve original RED artifact; fix by renaming the local sealed field to `sealed_session`, leaving the explicit caller session untouched. Re-run focused and full on a new exact pinned source. No original native/Stage11 gate changes.
