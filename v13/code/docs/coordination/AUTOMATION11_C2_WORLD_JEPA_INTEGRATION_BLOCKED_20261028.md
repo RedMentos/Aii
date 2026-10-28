@@ -1,0 +1,7 @@
+# C2 + World-JEPA integration prereg branch — deliberately NOT executed (2026-10-28)
+
+Owner: automation; branch assistant/v13-run11-c2-world-jepa-verified-integration-20261028. Initial prereg fcffc07387244adb80255c29668676ceeb9b04a0 required exact independently GREEN #910 donor before import. Additional native route96 prereg 230230c6ee7e5e4d4f6f8f978a3b58ac790327b2 was written before any harness. No donor code was imported and no native job launched.
+
+**Observed blocker:** #910 full Linux suite RED at Actions 40677831195, exact source d5d7c568ca9fbfbfa7da93fb99811bd2ef50444f, 4 failures/62 errors caused by frozen Runtime SourceHandoff/native-firing/phone-package hash gates. Raw ZIP SHA256 64de0a826937792351d412d3d24c69de55c5d6423251345e8adf76b871793d45 privately saved and independently read back. Do not bypass source hashes, modify original cohort, import RED donor or claim policy replay.
+
+**Next authorized independent path:** #911 branch assistant/v13-run11-c2-admission-shadow-20261028 preserves frozen Runtime and implements source-bound C2 admission as SHADOW-only, no live route change. Its exact source-pinned full software run 40678871185 is pending; independently audit before any claim. Only a future fully reviewed SourceHandoff migration can activate a changed Runtime; route96 native consumer replay remains preregistered but blocked pending that migration. Continue other blueprint organs meanwhile. Original Age0/STEP2/B3/Body-JEPA/LP3/jepa_weight/Redmi/full-system negative gates unchanged. Remaining platform budget UNKNOWN.
