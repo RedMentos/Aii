@@ -24,13 +24,16 @@ class WorldState:
         # Strict session/profile isolation. Interrupted actions are not successful
         # latency samples; their failure count is shown separately.
         rows=self.s.rows("SELECT a.* FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? ORDER BY a.created DESC LIMIT 256",(self.r.session,))
-        samples=[];failures=0
+        samples=[];failures=0;invalid_outcomes=0
         for row in rows:
             if row['event_id']==event['event_id']:continue
             expected=json.loads(row['expected']);old=expected.get('forecast',{})
             if old.get('profile',{}).get('id')!=profile['id']:continue
             if row['status']!='FINAL':failures+=1;continue
             actual=json.loads(row['outcome'] or '{}')
+            if not isinstance(actual,dict):
+                invalid_outcomes+=1
+                continue
             if actual.get('role')!=role or not isinstance(actual.get('action_duration_s'),(float,int)):continue
             samples.append({'action_id':row['id'],'event_id':row['event_id'],'duration_s':actual['action_duration_s'],'input_chars':old['input_chars']})
             if len(samples)>=32:break
@@ -39,7 +42,7 @@ class WorldState:
         covered=bool(lengths and min(lengths)*.5<=length<=max(lengths)*2)
         values=[x['duration_s'] for x in samples]
         result={'method':'EMPIRICAL_TIMING_V1','profile':profile,'input_chars':length,'sample_count':len(samples),'failed_action_count':failures,
-                'sample_action_ids':[x['action_id'] for x in samples],'covered':covered,'prediction_authority':'HYPOTHESIS',
+                'sample_action_ids':[x['action_id'] for x in samples],'invalid_outcome_shape_count':invalid_outcomes,'covered':covered,'prediction_authority':'HYPOTHESIS',
                 'duration_median_s':statistics.median(values) if enough and covered else None,
                 'observed_range_s':[min(values),max(values)] if values else None,'confidence_calibrated':False,
                 'status':'SUPPORTED_BY_RECENT_OBSERVATIONS' if enough and covered else 'INSUFFICIENT_COVERAGE'}
@@ -58,13 +61,15 @@ class WorldState:
         if existing:
             self._refresh(event['session_id'])
             return json.loads(existing['payload'])['observation']
-        actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
+        raw_actual=json.loads(action['outcome'])
+        actual=raw_actual if isinstance(raw_actual,dict) else {}
+        forecast=json.loads(action['expected']).get('forecast',{})
         predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
         comparable=action['status']=='FINAL' and actual.get('role')==forecast.get('profile',{}).get('role') and predicted is not None and duration is not None
-        outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':actual,'prediction_packet_id':forecast.get('packet_id'),
+        outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':raw_actual,'prediction_packet_id':forecast.get('packet_id'),
                  'timing_error_s':duration-predicted if comparable else None,'scored':bool(comparable),'semantic_success':None,
                  'causal_claim':False,'external_world_observation':False}
-        if action['status']=='FINAL' and forecast.get('learned_latent_prediction'):
+        if action['status']=='FINAL' and isinstance(raw_actual,dict) and forecast.get('learned_latent_prediction'):
             try:
                 transition=self.transition(aid)
                 error=self.r.learner.world_score(transition,forecast['learned_latent_prediction'])
