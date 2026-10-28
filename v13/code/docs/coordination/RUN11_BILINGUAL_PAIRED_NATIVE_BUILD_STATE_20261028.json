@@ -1,0 +1,37 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-bilingual-paired-native-audit-20261028",
+  "base_pr": 855,
+  "prereg_commit": "9cb874b947c007a9d79986921d589a955abb316b",
+  "evidence_kind": "LINUX_NATIVE_ARCHIVE_INTEGRITY_PLUS_LEXICAL_PROXY",
+  "candidate_run": 40637244491,
+  "baseline_run": 40637658538,
+  "candidate_numeric": "12/12",
+  "baseline_numeric": "10/12",
+  "unsupported_marker": "1/4 each",
+  "numeric_wins_candidate": [
+    "a01",
+    "a02"
+  ],
+  "numeric_losses_candidate": [],
+  "paired_route_changed_ids": [
+    "a11"
+  ],
+  "native_zip_hashes_verified": true,
+  "internal_sha256_checks_per_archive": 22,
+  "private_library_byte_exact_readback": true,
+  "software_test_local_shim": "9/9 PASS (scorer shim, not authoritative)",
+  "exact_source_ci": "PENDING",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3_heldout": "FAIL",
+  "jepa_weight": 0,
+  "age0": "RECORD_ONLY",
+  "phone_measured": false,
+  "whole_system_complete": false,
+  "next_command": "cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_age0_bilingual_native_pair_audit",
+  "next_prerequisite": "Exact-source focused/full CI; independent review of frozen lexical limits and new disjoint cohort prereg"
+}
