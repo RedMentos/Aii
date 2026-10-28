@@ -45,7 +45,8 @@ def _verified(models):
                            for v in rows.values()):
         raise ValueError("Pinned model deep-hash verification failed")
     return {k: {"ok": v["ok"], "hash_checked": v["hash_checked"],
-                "sha256": v.get("sha256")} for k, v in rows.items()}
+                "revision": v.get("revision"), "errors": v.get("errors", [])}
+            for k, v in rows.items()}
 
 
 def _peak_rss(pid):
