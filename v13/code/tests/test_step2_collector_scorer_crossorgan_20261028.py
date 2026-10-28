@@ -113,6 +113,13 @@ class CollectorScorerIntegration(unittest.TestCase):
         self.assertEqual(result['jepa_weight'], 0)
         self.assertEqual(result['evidence_kind'], 'LINUX_NATIVE')  # label, NOT native proof
 
+    def test_native_label_requires_independent_fixture_pin(self):
+        sealed = self.collect()
+        with self.assertRaises(ValueError):
+            load(self.work, 'manifest.json', sealed['manifest_sha256'], IDS)
+        # The independently supplied registered fixture hash remains accepted.
+        self.assertFalse(self.check(sealed['manifest_sha256'])['canonical_gate_pass'])
+
     def test_resealed_summary_score_must_not_disagree_with_raw_tool_rows(self):
         sealed = self.collect()
         path = self.work / 'TP_s27.json'
