@@ -59,8 +59,8 @@ def _answer_uses_euro_source(answer, source):
         return False
     amount = source["value"].split(" ", 1)[0]
     # Fail closed on wrong currency, grouping, decimal extensions or unquoted amounts.
-    return bool(re.search(r"(?<!\\d)" + re.escape(amount)
-                          + r"(?!\\d|[.,]\\d)\\s*(?:Euro(?:s)?|EUR|€)(?!\\w)",
+    return bool(re.search(r"(?<!\d)" + re.escape(amount)
+                          + r"(?!\d|[.,]\d)\s*(?:Euro(?:s)?|EUR|€)(?!\w)",
                           answer, flags=re.I))
 
 
