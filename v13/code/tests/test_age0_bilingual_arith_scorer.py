@@ -16,12 +16,13 @@ class HeldoutScorerTests(unittest.TestCase):
             "schema": "v13.age0.bilingual_numeric_answers.v1",
             "prompt_git_blob": S.CANDIDATE_PROMPT,
             "source_commit": "b99ce3ef8dd772130c3a56a1ec02e7ea203f3b5c",
-            "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+            "model_catalog_git_blob": S.CATALOG_BLOB,
             "rows": [{
                 "id": item["id"], "prompt": item["prompt"],
                 "answer": ("The answer is " + item["expected"] + ".")
                           if item["kind"] == "numeric" else "Not stated in the note.",
                 "status": "FINAL", "runner_role": "B1_DETAIL",
+                "runner_model_sha256": S.ROLE_MODELS["B1_DETAIL"],
                 "tool_call": None, "tool_shadow": None,
                 "learning_mode": "RECORD_ONLY", "jepa_weight": 0
             } for item in self.items]
@@ -102,7 +103,7 @@ class HeldoutScorerTests(unittest.TestCase):
     def test_unpinned_source_prompt_and_model_identity_rejected(self):
         for field, bad in (
             ("prompt_git_blob", "0"*40), ("source_commit", "unknown"),
-            ("model_sha256", "unknown"), ("schema", "bad"),
+            ("model_catalog_git_blob", "unknown"), ("schema", "bad"),
         ):
             d = json.loads(json.dumps(self.manifest))
             d[field] = bad
@@ -118,9 +119,18 @@ class HeldoutScorerTests(unittest.TestCase):
         self.assertEqual(len(report["runs"]), 2)
         with self.assertRaises(ValueError):
             S.evaluate(first, first)
-        baseline["model_sha256"] = "0"*64
+        baseline["rows"][0]["runner_model_sha256"] = "0"*64
         with self.assertRaises(ValueError):
             S.evaluate(first, self.save(baseline, "other-model.json"))
+        baseline["rows"][0]["runner_role"] = "C3_LANGUAGE"
+        baseline["rows"][0]["runner_model_sha256"] = S.ROLE_MODELS["C3_LANGUAGE"]
+        changed = S.evaluate(first, self.save(baseline, "other-route.json"))
+        self.assertEqual(changed["paired_route_changed_ids"], ["a01"])
+
+    def test_runner_role_model_hash_mismatch_rejected(self):
+        self.manifest["rows"][0]["runner_model_sha256"] = S.ROLE_MODELS["C3_LANGUAGE"]
+        with self.assertRaises(ValueError):
+            S.evaluate(self.save())
 
     def test_refuse_to_overwrite_existing_score(self):
         path = self.save()
