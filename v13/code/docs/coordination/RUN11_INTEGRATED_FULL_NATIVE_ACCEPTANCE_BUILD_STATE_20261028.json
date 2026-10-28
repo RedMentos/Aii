@@ -70,5 +70,32 @@
     "technical_blocker": "source_handoff_candidate.sources(ROOT) historical exact baseline/candidate check rejects later runtime variant; PR847 full suite RED",
     "next": "preregister new current-source lineage with historical fixture-root tests and separate current C5 end-to-end proof, no old hash changes",
     "decision_note": "v13/code/docs/coordination/RUN11_SOURCE_HANDOFF_POLICY_CLARIFICATION_20261028.md"
-  }
+  },
+  "roadmap_next_independent_packages": [
+    {
+      "priority": 1,
+      "name": "Full current-source acceptance",
+      "state": "RUNNING",
+      "run": 40649812006,
+      "next": "Close and audit 10/15/20 stages; repair exact observed failures only on separate review branch"
+    },
+    {
+      "priority": 2,
+      "name": "C5 manifest-aware ActionSelection/World fallback provenance",
+      "state": "BLOCKED_BY_HISTORICAL_TEST_BINDING_NOT_PERPETUAL_FREEZE",
+      "next": "New source lineage and independent historical fixture-root test; preserve old cohort and PR847 RED"
+    },
+    {
+      "priority": 3,
+      "name": "Z12b World-JEPA slot-wise compositional action",
+      "state": "Z12B_WORLD_JEPA_FAIL",
+      "next": "Preregister new disjoint real-file action cohort; test composition and no-action false alarms without tuning original heldout"
+    },
+    {
+      "priority": 4,
+      "name": "Redmi phone mandatory evidence",
+      "state": "USER_DEVICE_REQUIRED",
+      "next": "Run existing HANDY_PFLICHT.sh on actual Redmi; no Linux proxy"
+    }
+  ]
 }
