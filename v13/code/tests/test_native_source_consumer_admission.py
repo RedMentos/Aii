@@ -1,6 +1,6 @@
 """Scorer-only controls; native proof requires real C3 runner and actual source store."""
 import unittest
-from scripts.native_source_consumer_admission import NAMES, fixtures, score
+from scripts.native_source_consumer_admission import fixtures, score
 
 
 class NativeSourceConsumerScorerTests(unittest.TestCase):
@@ -32,8 +32,7 @@ class NativeSourceConsumerScorerTests(unittest.TestCase):
         row = self.example()
         row["positive"][0]["native_status"] = "CANCELLED"
         self.assertEqual(score(row)["status"], "SOURCE_CONSUMER_SCOPED_NATIVE_FAIL")
-        self.assertEqual(score(self.example()["positive"] and
-                               {"positive": [], "negative": []})["status"], "INCOMPLETE")
+        self.assertEqual(score({"positive": [], "negative": []})["status"], "INCOMPLETE")
 
 
 if __name__ == "__main__":
