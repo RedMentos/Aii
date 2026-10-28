@@ -40,5 +40,10 @@
   "full_tests": "2243 PASS, 1 skipped",
   "software_ci_artifact_sha256": "b2bdb166892e87419554d48325bae7eba4a2ea76d032fc70f9e196a1f1b208b3",
   "software_ci_internal_hashes": 16,
-  "software_ci_private_backup_verified": true
+  "software_ci_private_backup_verified": true,
+  "exact_frozen_scorer_git_blob": "0348b17dedc0e4142a73a8ad8c93a57a2c7d6491",
+  "exact_frozen_fixture_git_blob": "ceda0a5cb506cf09885652b24893cf7d8fdff63b",
+  "exact_native_zip_replay_local": "PASS; 9/9 tests, exact frozen scorer/fixture",
+  "aggregate_json_byte_identical_to_initial": true,
+  "local_software_test_local_shim": "SUPERSEDED by exact-source replay"
 }
