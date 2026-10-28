@@ -1,0 +1,176 @@
+name: V13 Automation11 STEP2 TP27 70-row native + C3 tool replay
+on:
+  push:
+    branches:
+      - assistant/v13-run11-tp27-audit-70row-20261028
+    paths:
+      - '.github/workflows/automation11-step2-tp27-full70-native-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  step2-tp27-70:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen TP27 70-row native and tool replay, raw preserved on RED
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-step2-tp27-full70-evidence"
+          work="$RUNNER_TEMP/v13-step2-tp27-full70-work"
+          mkdir -p "$e" "$work"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          88eba5783ed1c21f50ee199ae6314bf87d00472d v13/code/scripts/step2_longnote_tp27_full70_native.py
+          67b31ce2f048b59b1b7f106db20ab9adb3e0e59c v13/code/tests/test_step2_longnote_tp27_full70_native.py
+          4943c67c766792cab1f4db6805f53a9f8eded991 v13/code/docs/coordination/AUTOMATION11_STEP2_TP27_70ROW_NATIVE_PREREG_20261028.md
+          7253b113b43de110059575cc14ef7b2ce7bccc43 v13/code/scripts/step2_longnote_tp27_native_pilot.py
+          eeb4155dc3421c2b57ca0871c126f8ea2249c649 v13/code/scripts/step2_longnote_revision_fixtures.py
+          128647ee0680262575807722cd670db79a709385 v13/code/scripts/step2_longnote_runner_preflight.py
+          7c299616495450e4a38f9aab9921f7176ba67556 v13/code/scripts/step2_z2b_seeds.py
+          2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7 v13/code/scripts/step2_z2_timescale.py
+          e8d8c87de2474a764e4bbc28b4fe028413a316e1 v13/code/scripts/step2_tool_replay.py
+          5722cdcf6163331ae83677bd96394399cca0fbc3 v13/code/scripts/step2_fourarm_native_collector_candidate.py
+          a7ba12a8807a1ca8236f1c70d54dedb65c212caa v13/code/tests/integration_step2_utility.py
+          1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          8efd950c7bc221fbdae3fca200610cb383286001 v13/code/v13/common.py
+          f4a92dab9c4a40761d64394cdca1c052e9a76bfd v13/code/v13/utility.py
+          3d969fdf4c91781288dbab36d05478f7ba2a8b8d v13/code/scripts/calc_tool_ablation.py
+          dc23e192bcd01589475692666ebb6568c80d078b v13/code/v13/bootstrap.py
+          e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-step2-tp27-full70-venv"
+          py="$RUNNER_TEMP/v13-step2-tp27-full70-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_step2_longnote_tp27_full70_native tests.test_step2_longnote_tp27_native_pilot tests.test_step2_longnote_runner_preflight_20261028 tests.test_step2_fourarm_native_collector_candidate_20261028 tests.test_step2_longnote_fourarm_io_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            "$py" -m py_compile v13/code/scripts/step2_longnote_tp27_full70_native.py v13/code/tests/test_step2_longnote_tp27_full70_native.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+            echo SKIPPED_PREREQ_RED > "$e/COMPILE_RAW.log"
+            echo SKIPPED_RED > "$e/COMPILE_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-step2-tp27-full70-installed"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_SOFTWARE_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 120m env PYTHONPATH=v13/code "$py" v13/code/scripts/step2_longnote_tp27_full70_native.py --installed-home "$V13_HOME" --evidence-dir "$work/evidence" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          for f in RECEIPT.json; do
+            if [ -f "$work/evidence/$f" ]; then cp "$work/evidence/$f" "$e/$f"; fi
+          done
+          for f in step2_TP_s27.json tool_TP_s27.json summary_TP_s27.json tool_TP_s27.preregistration.json; do
+            if [ -f "$work/evidence/run/$f" ]; then cp "$work/evidence/run/$f" "$e/$f"; fi
+          done
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code "$py" - "$e" > "$e/REPLAY_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          from scripts import step2_longnote_tp27_full70_native as full
+          e=Path(sys.argv[1])
+          receipt=json.loads((e/'RECEIPT.json').read_bytes())
+          source_bytes=(e/'step2_TP_s27.json').read_bytes()
+          tool_bytes=(e/'tool_TP_s27.json').read_bytes()
+          summary=json.loads((e/'summary_TP_s27.json').read_bytes())
+          tool_prereg=json.loads((e/'tool_TP_s27.preregistration.json').read_bytes())
+          source,tool=full.verify_pair(source_bytes,tool_bytes,receipt['installed_artifacts_before'],summary,tool_prereg)
+          assert receipt['status']=='PASS_SCOPED_ONE_ARM_NATIVE_TOOL_NO_CANON_GATE'
+          assert receipt['schema']=='v13.step2.tp27.full70.native_tool.v1'
+          assert receipt['native_rows']==receipt['tool_rows']==70
+          assert receipt['model_hashes_before']==receipt['model_hashes_after']
+          assert receipt['installed_artifacts_unchanged'] is True
+          assert receipt['canonical_gate_pass'] is False and receipt['age_authority']==0
+          assert receipt['jepa_weight']==0 and receipt['weight_updates'] is False
+          assert receipt['redmi_measured'] is False and receipt['whole_system_complete'] is False
+          assert receipt['raw_source_sha256']==hashlib.sha256(source_bytes).hexdigest()
+          assert receipt['raw_tool_sha256']==hashlib.sha256(tool_bytes).hexdigest()
+          assert len(source['rows'])==len(tool['rows'])==70
+          print('STEP2_TP27_ONE_ARM_LINUX_NATIVE_70_PLUS_70_NO_GATE_PROMOTION')
+          print('SOURCE_SHA256',receipt['raw_source_sha256'])
+          print('TOOL_SHA256',receipt['raw_tool_sha256'])
+          print('NATIVE_STATUS',source['status'],'TOOL_STATUS',tool['status'])
+          print('NATIVE_UTILITY',source['paired']['mean_utility'])
+          print('TOOL_UTILITY',tool['paired_tool']['mean_utility'])
+          PY
+            echo "$?" > "$e/REPLAY_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_RED > "$e/REPLAY_RAW.log"
+            echo SKIPPED_RED > "$e/REPLAY_EXIT.txt"
+          fi
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/FULL_INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/FULL_INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ]; then echo 0 > "$e/FULL_INSTALL_EXIT.txt"; else echo 1 > "$e/FULL_INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/REPLAY_EXIT.txt")" = 0 ] && [ "$(cat "$e/FULL_INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 9m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_OR_INSTALL_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e1066968369be7e5178f3edb745c5df1e2e0a491 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check e1066968369be7e5178f3edb745c5df1e2e0a491 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-automation11-step2-tp27-full70-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-tp27-full70-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce 70-row source/tool proof or preserve original RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-step2-tp27-full70-evidence"
+          for name in BLOBS INSTALL FOCUSED COMPILE BOOTSTRAP NATIVE REPLAY FULL_INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; original raw retained; no STEP2 gate promotion"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'STEP2_TP27_70_NATIVE_70_TOOL_ONE_ARM_NO_GATE_PROMOTION'
