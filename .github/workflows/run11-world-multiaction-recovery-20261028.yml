@@ -34,7 +34,7 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          d9a5e9481acf8c644c956a26201a1eaeaa8baa7a v13/code/v13/world.py
+          7f9b266828deace320adce86304aa22fdb55de18 v13/code/v13/world.py
           d5dfef220145a85392861868b2ad97d4f659c8a8 v13/code/tests/test_world_multiaction_recovery_20261028.py
           7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
           BLOBS
