@@ -76,6 +76,18 @@ class CollectorGuards(unittest.TestCase):
                                   "jepa_weight": 0, "latents_enabled": False,
                                   "b2_control": "two_body"}[key]
 
+    def test_existing_brain_and_android_marker_rejected_before_native(self):
+        db = self.home / "data/db/brain.sqlite3"
+        db.parent.mkdir(parents=True)
+        db.write_bytes(b"existing brain")
+        with self.assertRaisesRegex(ValueError, "Fresh unused"):
+            C.preflight(self.home, S.CANDIDATE_PROMPT)
+        db.unlink()
+        from unittest.mock import patch
+        with patch.dict("os.environ", {"ANDROID_ROOT": "/system"}, clear=False):
+            with self.assertRaisesRegex(ValueError, "Linux x86_64"):
+                C.preflight(self.home, S.CANDIDATE_PROMPT)
+
     def test_existing_output_refused_without_native(self):
         out = self.root / "existing"
         out.mkdir()
