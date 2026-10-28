@@ -110,3 +110,74 @@ def render_messages(cfg, query, admission):
                "Do not substitute another project or invent a value.")
     return [{"role": "system", "content": system},
             {"role": "user", "content": query}]
+
+
+def recall_and_admit(query, session, memory):
+    """Actual F1/F5 recall -> source-checked admission; never infer authority.
+
+    The exact-key scan is a *conflict veto*, not an alternative retrieval route.
+    A matching Memory.recall result is required for admission. A second active
+    same-project correction cannot disappear merely because top_k truncated it.
+    """
+    name = query_scope(query)
+    if name is None:
+        return admit(query, session, [], memory)
+    refused = admit(query, session, [], memory)
+
+    def deny(reason):
+        return dict(refused, reason=reason, model_allowed=False)
+
+    try:
+        retrieved = memory.recall(query, session, semantic=None, top_k=8)
+        if not any(isinstance(m, dict) and isinstance(m.get("key_text"), str)
+                   and TOPIC.fullmatch(m["key_text"])
+                   and entities(m["key_text"]) == {name} for m in retrieved):
+            return deny("NO_SCOPED_RETRIEVAL")
+        keys = sorted({f"{prefix} {name} {field}".lower()
+                       for prefix in ("Project", "Projekt")
+                       for field in ("budget", "budgets", "etat", "finanzrahmen")})
+        placeholders = ",".join("?" for _ in keys)
+        rows = memory.s.rows(
+            "SELECT id FROM memories WHERE active=1 AND kind='fact' "
+            "AND (session_id=? OR scope='global') "
+            f"AND LOWER(key_text) IN ({placeholders}) "
+            "ORDER BY created DESC LIMIT 257", (session, *keys))
+        if len(rows) > 256:
+            return deny("TOO_MANY_SCOPED_CORRECTIONS")
+        by_id = {m["id"]: m for m in retrieved
+                 if isinstance(m, dict) and isinstance(m.get("id"), str)}
+        for row in rows:
+            try:
+                fresh = memory.candidate(row["id"], session)
+                by_id[fresh["id"]] = fresh
+            except (KeyError, ValueError, TypeError, OSError):
+                continue
+        return admit(query, session, list(by_id.values()), memory)
+    except Exception:
+        return deny("RETRIEVAL_UNAVAILABLE")
+
+
+def verified_recall_messages(cfg, query, session, memory):
+    """Opt-in atomic-ish recall/verify/render candidate; no native call.
+
+    The caller must still check revocation immediately before model dispatch.
+    No arbitrary caller-supplied admission dictionary is used for authority.
+    """
+    decision = recall_and_admit(query, session, memory)
+    if decision["status"] != "ADMITTED":
+        return {"decision": decision, "messages": None}
+    source = decision["source"]
+    try:
+        fresh = memory.candidate(source["memory_id"], session)
+        if (not memory._verified_rows([fresh])
+                or fresh["source_ref"] != source["source_ref"]
+                or fresh["key_text"] != source["topic"]
+                or fresh["value"] != source["value"]
+                or memory.s.read_source(source["source_ref"]) != source["value"]):
+            raise ValueError("Source changed after admission")
+        messages = render_messages(cfg, query, decision)
+        return {"decision": decision, "messages": messages}
+    except Exception:
+        refused = admit(query, session, [], memory)
+        return {"decision": dict(refused, reason="SOURCE_REVALIDATION_FAILED",
+                                 model_allowed=False), "messages": None}
