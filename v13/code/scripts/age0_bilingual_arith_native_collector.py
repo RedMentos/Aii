@@ -90,7 +90,10 @@ def _atomic_json(path, obj):
         stream.write("\n")
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(tmp, path)
+    # Hardlink publish is atomic and refuses an existing destination; unlike
+    # os.replace it cannot silently overwrite earlier evidence.
+    os.link(tmp, path)
+    tmp.unlink()
 
 
 def collect(home, out, prompt_blob, seconds=120):
