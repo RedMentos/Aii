@@ -1,0 +1,15 @@
+# Run29 Store event temporal order revalidation — verified review handoff (2026-10-28)
+
+**Owner:** independent child of Run27 PR #933 at `a42e924c56b306a95c9b0972b7c3b372867d4812`; no changes to Run27, Run28, frozen Runtime/Store, model/cohort, or main. Source-only fix in `v13/code/scripts/run23_store_typed_bridge_shadow.py` (original blob `7f711ce8f5b580949e4b9eb924bc45a6ab7d4ac7`, fixed blob `d958df02327034e644dc31185ccc71e5492d033f`); new real SQLite adversarial tests `v13/code/tests/test_run29_store_seq_revalidation.py`.
+
+**Confirmed gap:** Run27 checked `old.seq < sheet.seq < current.seq` only during reader construction, then checked source SHA at use boundary. A real SQLite `events.rowid` update *after* the deterministic typed evaluation reverses historical order without changing source text, hash, event packet or user message. The bridge previously returned an authorized-looking (but SHADOW_ONLY) candidate. The new bridge retains original three verified sequence numbers, revalidates SHA as before and refuses if any event sequence changed. The post-return mutation window is not eliminated; no Store lock or F5 authority is claimed.
+
+**RED:** Independent original-test branch `assistant/v13-run29-seq-red-review-20261028` @ `23227ed4f205e625388b0af752804232435261f5`; Actions `40717528057` correctly FAILED with exactly one missing-refusal assertion: `test_reject_reordered_event_with_unchanged_content_hash`; 53 focused run, 1 failure; FROZEN/COMPILE/PRIVACY/DIFF zero, full correctly SKIPPED_RED. Original ZIP SHA256 `f78b1fbf3f57de6ea35a856b26d6b88fb9504b05298686909cabf75225ce1a15`, CRC clean, 15/15 inner SHA256 verified.
+
+**GREEN:** Actions `40717253492` at executable `5d42dd9c574dcb1474194995182b1daf0a464fed`: **53/53 focused PASS; 2502 full OK (1 skipped); all seven stage exits 0; privacy CLEAN.** Original ZIP SHA256 `c90a8ac0632dca472f39cc1a6020392061d5aeaa8e9f283bfbfda3d0309b7d82`, CRC clean, 15/15 inner SHA256 verified. Both raw ZIPs privately saved under `/V13-Checkpoints/2026-10-28/Run29-Store-Seq-Review/`; Library readback byte-identical for each.
+
+**Scope:** Source-only deterministic Store provenance and SHADOW typed candidate, no native B1/B2/C3 run, no independent F5 HumanDecision, no learned utility, no Redmi measurement. Run24 message-lineage import remains separately owned by Run28; integrate this tiny bridge-only fix after reviewing Run28 and rerun its cross-package tests. Keep original Run24/Run27 donor blobs untouched. If Run28's source adapter differs, only the bridge source needs this sequence guard.
+
+**Next command:** `cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run29_store_seq_revalidation tests.test_run23_store_typed_bridge_shadow tests.test_run27_store_typed_bridge_review`. After Run28 independent GREEN, cross-review/merge via new integration child; do not promote whole-system or STEP2 gates.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; whole V13 incomplete. Remaining platform budget UNKNOWN.
