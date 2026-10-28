@@ -115,14 +115,14 @@ def _answer_uses_euro_source(answer, source):
         return False
     amount = source["value"].split(" ", 1)[0]
     # Exact amount + Euro; never accept a decimal/grouped or negative variant.
-    if not re.search(r"(?<![-\\d])" + re.escape(amount)
-                     + r"(?!\\d|[.,]\\d)\\s*(?:Euro(?:s)?|EUR|€)(?!\\w)",
+    if not re.search(r"(?<![-\d])" + re.escape(amount)
+                     + r"(?!\d|[.,]\d)\s*(?:Euro(?:s)?|EUR|€)(?!\w)",
                      answer, flags=re.I):
         return False
-    if re.search(r"(?<!\\w)-\\s*" + re.escape(amount) + r"(?!\\d)", answer):
+    if re.search(r"(?<!\w)-\s*" + re.escape(amount) + r"(?!\d)", answer):
         return False
     # Reject extra unsupported quantities even if the right number also appears.
-    numbers = re.findall(r"(?<!\\w)\\d+(?:[.,]\\d+)*(?!\\w)", answer)
+    numbers = re.findall(r"(?<!\w)\d+(?:[.,]\d+)*(?!\w)", answer)
     if not numbers or any(number != amount for number in numbers):
         return False
     # A named foreign project must never be presented as the verified project.
