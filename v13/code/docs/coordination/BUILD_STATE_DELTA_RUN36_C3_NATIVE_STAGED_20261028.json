@@ -21,7 +21,7 @@
   "preconditions": {
     "run33_software": "SUCCESS_40729771477",
     "run34_software": "SUCCESS_40731068475_INDEPENDENT_RAW_AUDITED",
-    "run35_software": "PENDING_40732862439",
+    "run35_software": "SUCCESS_40732862439_INDEPENDENT_RAW_AUDITED",
     "exclusive_native_owner": "MUST_RECHECK_BEFORE_DISPATCH"
   },
   "closed_evidence": {
@@ -35,7 +35,15 @@
     "run35_red_zip_sha256": "84ce492f51d00425c4eaeb5b2034668d4ebe1133f5d84cecf9798850014b5c7d",
     "run35_red_expected_failures": 2,
     "run35_red_private_backup": "/V13-Checkpoints/2026-10-28/Run35-C3-Arm-Binding/RUN35_RED_40732809502_sha84CE492F.zip",
-    "run35_red_backup_readback": "BYTE_IDENTICAL"
+    "run35_red_backup_readback": "BYTE_IDENTICAL",
+    "run35_green_zip_sha256": "62ef79919474e2997394ebbde6ae345a096d485e8167dc7a9cbf933a93b46769",
+    "run35_green_inner_sha256": "15/15_PASS",
+    "run35_green_crc": "PASS",
+    "run35_green_focused": "16_PASS",
+    "run35_green_full": "2493_OK_1_SKIPPED",
+    "run35_green_privacy": "CLEAN",
+    "run35_green_private_backup": "/V13-Checkpoints/2026-10-28/Run35-C3-Arm-Binding/RUN35_GREEN_40732862439_sha62EF7991.zip",
+    "run35_green_backup_readback": "BYTE_IDENTICAL"
   },
   "negative_gates": {
     "Age0": "RECORD_ONLY",
@@ -48,11 +56,10 @@
     "V13_complete": false
   },
   "open_questions": [
-    "Run35 full software suite original raw independent audit",
     "Run36 native source/model/runner install and five C3 process execution",
     "B2 native source quote generation remains unproven; one-fixture conditional C3 test cannot promote STEP2",
     "Android/Termux native performance unmeasured"
   ],
-  "next_command": "Audit original Run35 GREEN Actions 40732862439 raw ZIP, verify CRC+inner SHA+focused/full/privacy/diff and private backup; check no active native owner; update Run36 workflow dispatch-only to push trigger with exclusive group; audit original Run36 native artifact and preserve failures.",
+  "next_command": "Check current active native Actions/owners; enable Run36 workflow push trigger on this isolated review branch, then audit original native raw ZIP, CRC/inner SHA, all five arms, source/model/runner pins, negative gates, and private backup; if blocked, retain failed attempt and continue independent canonical package.",
   "remaining_platform_budget": "UNKNOWN"
 }
