@@ -18,7 +18,7 @@ def row(current=CURRENT, quotes=(OLD,), evidence=None):
         {'role':'system','content':'Do not invent.'},
         {'role':'user','content':json.dumps({'current_source':current,'analysts':[
             {'role':'B2_GIST','verified_quotes':list(quotes)}]})}],
-        'source_evidence':[{'text':s,'source_ref':{'source_id':'src_'+str(i)}} for i,s in enumerate(evidence)],
+        'source_evidence':[{'text':s,'source_ref':{'source_id':'src_'+format(i,'032x'),'sha256':'a'*64,'char_start':0,'char_end':len(s)}} for i,s in enumerate(evidence)],
         'oracle_visible_to_native':False}
 
 
@@ -102,11 +102,27 @@ class VisibilityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'CONSUMER_MESSAGES_MISMATCH'):
             d.checked_rows(n,t)
 
+    def test_registered_evidence_identity_is_not_caller_controlled(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/'fake.zip';p.write_bytes(b'fake')
+            with self.assertRaisesRegex(ValueError,'NOT_REGISTERED_TP27_EVIDENCE'):
+                d.read_archive(p,d.sha(p.read_bytes()),'f'*40)
+
+    def test_missing_source_ref_hash_refused(self):
+        x=row();del x['source_evidence'][0]['source_ref']['sha256']
+        with self.assertRaisesRegex(ValueError,'SOURCE_REF_FORMAT'):
+            d._visible(x)
+
+    def test_source_span_length_refused(self):
+        x=row();x['source_evidence'][0]['source_ref']['char_end'] += 1
+        with self.assertRaisesRegex(ValueError,'SOURCE_REF_FORMAT'):
+            d._visible(x)
+
     def test_invalid_zip_hash_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'evidence.zip';p.write_bytes(b'not a zip')
             with self.assertRaisesRegex(ValueError,'ZIP_SIZE_OR_HASH_MISMATCH'):
-                d.read_archive(p,'0'*64,'f'*40)
+                d.read_archive(p,d.REGISTERED_ZIP_SHA256,d.REGISTERED_HEAD)
 
 
 if __name__=='__main__':unittest.main()
