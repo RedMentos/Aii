@@ -1,0 +1,38 @@
+{
+  "run29_store_seq_revalidation_review_20261028": {
+    "status": "SOURCE_ONLY_RED_GREEN_FULL_PASS_REVIEW_ONLY",
+    "parent_sha": "a42e924c56b306a95c9b0972b7c3b372867d4812",
+    "executable_green_sha": "5d42dd9c574dcb1474194995182b1daf0a464fed",
+    "source_blob": "d958df02327034e644dc31185ccc71e5492d033f",
+    "red_run": 40717528057,
+    "red_zip_sha256": "f78b1fbf3f57de6ea35a856b26d6b88fb9504b05298686909cabf75225ce1a15",
+    "green_run": 40717253492,
+    "green_zip_sha256": "c90a8ac0632dca472f39cc1a6020392061d5aeaa8e9f283bfbfda3d0309b7d82",
+    "focused": "53/53 PASS",
+    "full": "2502 OK (1 skipped)",
+    "stages": "7/7 zero",
+    "privacy": "CLEAN",
+    "red_expected_missing_refusal": true,
+    "raw_crc_inner_hashes_verified": true,
+    "private_library_backup_byte_verified": true,
+    "scope": "Store EventEnvelope temporal sequence integrity for deterministic German typed SHADOW bridge",
+    "run24_imported": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "open_questions": [
+      "Integrate bridge-only guard after independent Run28 user-message lineage review",
+      "Source snapshot is not a lock against post-return revocation",
+      "Native B1/B2/C3 utility and Redmi proof absent"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run29_store_seq_revalidation tests.test_run23_store_typed_bridge_shadow tests.test_run27_store_typed_bridge_review",
+    "remaining_platform_budget": "UNKNOWN"
+  }
+}
