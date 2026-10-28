@@ -2732,7 +2732,23 @@
     "test_code": "v13/code/tests/test_step2_tp27_visibility_diagnostic.py",
     "test_git_blob": "8c7582d0262e6ed38b9d9afe0d36e480159b843d",
     "local_synthetic_tests": "15/15 PASS; Python standard library, no model inference",
-    "source_only_ci": "pending, .github/workflows/automation12-tp27-visibility-software-20261028.yml; do not claim green until raw audited",
+    "source_only_ci": {
+      "run_id": 40694018769,
+      "tested_head": "d77c7880ccfb3fda5779e42a0eb6a5a8223d6a0d",
+      "artifact_id": 12818613102,
+      "zip_sha256": "132128d70723534498d18062a1ba523287448382262bdb655e03b762815258de",
+      "crc": "CLEAN",
+      "inner_sha256sums": "16/16 MATCH",
+      "pins": "4/4 MATCH",
+      "focused": "15/15 PASS",
+      "full": "2423 OK (1 skipped)",
+      "compile": "PASS",
+      "privacy": "CLEAN",
+      "diff": "PASS",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12_VISIBILITY_GREEN_40694018769_sha132128D7.zip",
+      "private_backup_byte_verified": true,
+      "claim_limit": "SOURCE_ONLY_SOFTWARE; no native inference or gate promotion"
+    },
     "aggregate_report": "v13/code/docs/coordination/RUN12_TP27_VISIBILITY_AGGREGATE_20261028.json",
     "private_raw_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/TP27_NATIVE_40685405624_sha965BF4EF.zip",
     "private_raw_backup_byte_verified": true,
@@ -2750,7 +2766,16 @@
       "Redmi": "UNMEASURED",
       "V13_complete": false
     },
-    "next_command": "Audit latest Run12 source-only Actions artifact at exact head, verify ZIP/HEAD/inner SHA/7 exits/15 focused/full/privacy. Then build a separate B2 long-source rule selection candidate with source-ref provenance in a new cohort; no frozen TP/s27 edits.",
-    "remaining_platform_budget": "UNKNOWN"
+    "next_command": "Review PR923 source-only final CI original ZIP and original native TP27 evidence; then review child PR924 B2 source-identity candidate and register fresh native cohort before integration.",
+    "remaining_platform_budget": "UNKNOWN",
+    "initial_ci_red": {
+      "run_id": 40693760265,
+      "tested_head": "f2280463ecadebfad435b8beab911f09f7b85737",
+      "zip_sha256": "72ef102b5d22c83cc3584c24d35d8e2d0d2df2cfa77c04149dd3213fe014596a",
+      "focused": "12 PASS",
+      "full": "2420 tests, 1 failure in unrelated test_live_output_port deadline/process_reaped timing",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12_INITIAL_FULL_RED_40693760265_sha72EF102B.zip",
+      "status": "PRESERVED_RED_NOT_OVERWRITTEN"
+    }
   }
 }
