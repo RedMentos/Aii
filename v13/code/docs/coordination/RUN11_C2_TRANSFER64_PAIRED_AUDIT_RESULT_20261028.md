@@ -34,3 +34,7 @@ The exact conditional-binomial McNemar statistic describes disagreement on these
 Next: verify GitHub CI exact-source focused/full results and artifact hashes; independently review paired input validator counterexamples; keep routehead train64 child separate; pursue substantive full-scope roadmap (JEF/C2/C3/B1/B2, STEP2, B3, Body-JEPA, Context OS, Dream/Sleep, Redmi). Do not train on either transfer64 or original96 evaluation rows.
 
 **Unchanged:** `STEP2=UTILITY_FAIL`, `B3_L1=FAIL`, `Body-JEPA=UNAVAILABLE`, `LP3_heldout=FAIL`, `jepa_weight=0`, `Age0=RECORD_ONLY`, `phone_measured=false`, `whole_system_complete=false`. Branch-scoped only; no AGI claim.
+
+## Verified exact-source Linux software closure
+
+GitHub Actions run **40642477475** at source `08806a4c25cb1ceadc49fcfb5ada108e69f4d6b6` **GREEN**: 18 focused tests PASS; **2229 full tests PASS, 1 skipped** (219.928 s), compileall, source blob pins, privacy scan CLEAN, diff check, and dependency install all exit 0. Raw artifact `12796129000` ZIP SHA256 `f93dc338e1ef704eb98a9b7d13bff4cad514b7523ac49c4f0bf65c364ec31e17`, CRC clean, **16/16** internal SHA256SUMS valid. Private Library backup `/V13-Checkpoints/2026-10-28/Run11-C2-Paired-Audit/C2_PAIRED_AUDIT_SOFTWARE_PASS_40642477475_shaf93dc338.zip` re-materialized and compared **byte-for-byte** at the same SHA256. This software GREEN does not constitute new native inference or Redmi proof. Subsequent documentation/state-only commits are not represented as separately retested source changes.
