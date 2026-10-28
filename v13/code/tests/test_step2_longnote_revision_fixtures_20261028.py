@@ -19,6 +19,9 @@ class LongNoteRevisionFixtures(unittest.TestCase):
                          Counter({"SPLIT": 3, "RULE": 3, "DETAIL": 3, "REVISION": 1}))
         self.assertEqual(len({f["id"] for f in FIXTURES}), 10)
         self.assertFalse({f["id"] for f in FIXTURES} & {f["id"] for f in original})
+        from tests import integration_step2_utility as baseline_step2
+        self.assertFalse({f["id"] for f in FIXTURES}
+                         & {f["id"] for f in baseline_step2.FIXTURES})
         self.assertFalse({f["old_rules"]["budget"] for f in FIXTURES}
                          & {f["rules"]["budget"] for f in original})
         self.assertEqual(z2.FIXTURES, original)
