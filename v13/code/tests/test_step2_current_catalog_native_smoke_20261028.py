@@ -89,10 +89,10 @@ class NativeSmokeControls(unittest.TestCase):
 
             def fake_runner(home, report, blob, progress):
                 home.mkdir(parents=True)
-                cli = (b'#!/bin/sh\\n'
-                       b'if [ "$1" = "--version" ]; then echo synthetic-version; exit 0; fi\\n'
-                       b'echo Hello. synthetic-answer\\n'
-                       b'echo "[ Prompt: 1 t/s | Generation: 2 t/s ]"\\n')
+                cli = (b'#!/bin/sh\n'
+                       b'if [ "$1" = "--version" ]; then echo synthetic-version; exit 0; fi\n'
+                       b'echo Hello. synthetic-answer\n'
+                       b'echo "[ Prompt: 1 t/s | Generation: 2 t/s ]"\n')
                 with tarfile.open(home / 'binary.tar.gz', 'w:gz') as tf:
                     info = tarfile.TarInfo('pkg/bin/llama-cli')
                     info.size = len(cli)
