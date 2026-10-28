@@ -5,10 +5,21 @@ predictor. Only explicitly permitted completed actions can train that predictor;
 own outputs never become semantic truth. RECORD_ONLY performs no weight updates.
 """
 import json
+import math
 import statistics
 from .common import digest,dumps,now,Unavailable
 from .contracts import packet
 from .resources import device
+
+def _valid_duration(value):
+    """Finite nonnegative elapsed seconds, never a bool or numeric sentinel."""
+    if type(value) not in (int, float) or value < 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except (OverflowError, ValueError):
+        return False
+
 
 class WorldState:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
@@ -24,22 +35,26 @@ class WorldState:
         # Strict session/profile isolation. Interrupted actions are not successful
         # latency samples; their failure count is shown separately.
         rows=self.s.rows("SELECT a.* FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? ORDER BY a.created DESC LIMIT 256",(self.r.session,))
-        samples=[];failures=0
+        samples=[];failures=0;invalid_timing=0
         for row in rows:
             if row['event_id']==event['event_id']:continue
             expected=json.loads(row['expected']);old=expected.get('forecast',{})
             if old.get('profile',{}).get('id')!=profile['id']:continue
             if row['status']!='FINAL':failures+=1;continue
             actual=json.loads(row['outcome'] or '{}')
-            if actual.get('role')!=role or not isinstance(actual.get('action_duration_s'),(float,int)):continue
-            samples.append({'action_id':row['id'],'event_id':row['event_id'],'duration_s':actual['action_duration_s'],'input_chars':old['input_chars']})
+            if actual.get('role')!=role:continue
+            duration=actual.get('action_duration_s');chars=old.get('input_chars')
+            if not _valid_duration(duration) or type(chars) is not int or chars<0:
+                invalid_timing+=1
+                continue
+            samples.append({'action_id':row['id'],'event_id':row['event_id'],'duration_s':duration,'input_chars':chars})
             if len(samples)>=32:break
         enough=len(samples)>=3
         lengths=[x['input_chars'] for x in samples]
         covered=bool(lengths and min(lengths)*.5<=length<=max(lengths)*2)
         values=[x['duration_s'] for x in samples]
         result={'method':'EMPIRICAL_TIMING_V1','profile':profile,'input_chars':length,'sample_count':len(samples),'failed_action_count':failures,
-                'sample_action_ids':[x['action_id'] for x in samples],'covered':covered,'prediction_authority':'HYPOTHESIS',
+                'sample_action_ids':[x['action_id'] for x in samples],'invalid_timing_sample_count':invalid_timing,'covered':covered,'prediction_authority':'HYPOTHESIS',
                 'duration_median_s':statistics.median(values) if enough and covered else None,
                 'observed_range_s':[min(values),max(values)] if values else None,'confidence_calibrated':False,
                 'status':'SUPPORTED_BY_RECENT_OBSERVATIONS' if enough and covered else 'INSUFFICIENT_COVERAGE'}
@@ -60,11 +75,12 @@ class WorldState:
             return json.loads(existing['payload'])['observation']
         actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
         predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
-        comparable=action['status']=='FINAL' and actual.get('role')==forecast.get('profile',{}).get('role') and predicted is not None and duration is not None
+        comparable=(action['status']=='FINAL' and actual.get('role')==forecast.get('profile',{}).get('role')
+                    and _valid_duration(predicted) and _valid_duration(duration))
         outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':actual,'prediction_packet_id':forecast.get('packet_id'),
                  'timing_error_s':duration-predicted if comparable else None,'scored':bool(comparable),'semantic_success':None,
                  'causal_claim':False,'external_world_observation':False}
-        if action['status']=='FINAL' and forecast.get('learned_latent_prediction'):
+        if action['status']=='FINAL' and _valid_duration(duration) and forecast.get('learned_latent_prediction'):
             try:
                 transition=self.transition(aid)
                 error=self.r.learner.world_score(transition,forecast['learned_latent_prediction'])
