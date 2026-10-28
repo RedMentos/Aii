@@ -1,0 +1,11 @@
+# Prereg: C3 renderer live session/revocation revalidation (2026-10-28)
+
+**Owner:** GPT-6, independent successor to scoped software-GREEN admission seal PR #889 source `c09eeba33b04a35964402f4c9eb9a6fedba74ca8`. Parent review head `1eba3787fab64fddd0624db034dad95406d26aaa`. Own only `v13/code/v13/source_consumer.py`, new tests and dedicated software workflow; preserve frozen `runtime.py`, native #887, all model/seed/cohort blobs.
+
+**Problem:** process-local seal blocks forged `ADMITTED` dictionaries but cannot detect revocation, conflict or cross-session replay *after* `admit` without the current Memory/session. The actual `verified_recall_messages` already rechecks chosen SourceRef once; a second correction can arrive between admission and rendering.
+
+**Conservative candidate:** allow optional keyword-only `memory` and `session` in `render_messages`. When either supplied, require both and re-run actual `recall_and_admit` immediately before prompt construction, comparing source ID/value/SourceRef/admitted count and seal; reject mismatch. Make `verified_recall_messages` always use this live path. Existing direct `admit`→`render_messages` without memory/session remains a pure sealed formatter for historical tests and is **not** an authorization API. This is not an atomic guarantee against a revocation during native generation; dispatch must check again before calling the model.
+
+**Predeclared tests:** normal F1/F5 source renders; forged dict still refused; cross-session replay with explicit session rejected; revoked source after admission rejected; newly inserted conflicting correction rejected; injected second-recall failure prevents messages; focused + full software CI, source pins, compile, privacy, diff. No native call or Stage11/STEP2/B3/Body-JEPA/LP3/Age/Redmi promotion.
+
+**Next command:** patch source and add tests; run source-pinned software CI. If green, independently audit raw artifact, persist BUILD_STATE delta, then continue to independent opt-in C3 CLI and native utility proof when its software gate passes.
