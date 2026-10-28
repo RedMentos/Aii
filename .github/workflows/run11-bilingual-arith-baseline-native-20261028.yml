@@ -7,7 +7,7 @@ concurrency:
   group: v13-run11-bilingual-arith-native-exclusive
   cancel-in-progress: false
 jobs:
-  candidate-native:
+  baseline-native:
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     env:
@@ -128,4 +128,4 @@ jobs:
               exit 1
             fi
           done
-          echo 'BILINGUAL_BASELINE_LINUX_NATIVE_ONLY_NO_REDM I_OR_GATE_PROMOTION'
+          echo 'BILINGUAL_BASELINE_LINUX_NATIVE_ONLY_NO_REDMI_OR_GATE_PROMOTION'
