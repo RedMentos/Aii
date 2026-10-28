@@ -1,0 +1,10 @@
+# First C3 source-query CLI software attempt RED (2026-10-28)
+
+**Immutable failed attempt:** Actions run [40662637424](https://github.com/RedMentos/Aii/actions/runs/40662637424), source `f8683b2e29107a957e31679194110f8b58c047ef`, artifact **12805050652**, ZIP SHA256 **`7b5faeac629331998bdfc8caa61b131262f838baa0fcaa4ab687e4308edb23db`**, CRC clean. BLOBS/INSTALL/COMPILE/PRIVACY/DIFF exit0; **29 focused tests, 3 FAIL**; full suite intentionally SKIPPED. Original artifact retained, not relabelled GREEN.
+
+**Observed failures:** fake-native FINAL returned CLARIFY, revocation-after-acquisition returned RETRIEVAL_UNAVAILABLE instead of SOURCE_CHANGED_BEFORE_DISPATCH, fake wrong-currency returned CLARIFY. All three tests patch `ModelManager.path_for` to return a fake C3 path for **every role**. `SemanticKeys.mode` calls `path_for('M_EMBED')` and therefore incorrectly thinks an embedding model is installed, trying a non-existent embedding path during F1/F5 retrieval. This is a **test double role-scope bug**; not evidence that native C3 or the actual guarded retrieval path is correct. Original 20 source-consumer tests and other CLI tests passed.
+
+**Next action:** restrict fake `path_for` to C3 only (or force semantic mode OFF in the isolated software fake tests), rerun focused and full software on a new source-pinned workflow commit, preserve this original RED ZIP. No model/source/seed/fixture changes and no original gate promotion.
+## Intermediate source-pinning RED (also retained)
+
+The test-only correction commit `87c9c6d1336792d1b74d83b95f1f80a59a7ec856` triggered an overlapping workflow before the pinned expected test SHA was updated. Actions **40662935153** RED; artifact **12803909171**, ZIP SHA256 **`cb99d77583caf2c8ad7dfb61d011c2dbffeec712ee75411592b35b0da22142b1`**, CRC clean. `BLOBS_EXIT=1` exactly because expected `2d5925df...` differed from actual `1f0cd307...` for `test_ask_verified_budget.py`; focused and full suites SKIPPED, not test failures. The subsequent workflow commit `2c9bed20517d7204bbc8e7e21d263c1f38f173b2` pins the corrected test and has a separate CI run. Do not silently discard this RED attempt.
