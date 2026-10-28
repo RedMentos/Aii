@@ -2808,5 +2808,42 @@
       "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12B_INITIAL_FOCUSED_RED_40695085585_sha65A37B0E.zip",
       "status": "PRESERVED_RED_NOT_OVERWRITTEN"
     }
+  },
+  "run27_store_typed_bridge_review_20261028": {
+    "status": "SOURCE_ONLY_RED_GREEN_FULL_PASS_REVIEW_ONLY",
+    "parent_run23_sha": "3478b9f7380a9fd65d6346ff02b9ef655d56e50b",
+    "source_green_sha": "fb4b198abecb39020893b4ce6fa1459f1612b9ab",
+    "bridge_blob": "7f711ce8f5b580949e4b9eb924bc45a6ab7d4ac7",
+    "test_blob": "e7a27307b17d1afc802a9172f62f10f6b232a1c4",
+    "red_run": 40709456519,
+    "red_zip_sha256": "9c6b7b857ed131d3fe22b09b36848eae66478336fd51e0cc826a21b3497a8f34",
+    "green_run": 40713635064,
+    "green_zip_sha256": "63983d6686d6d4a5df6c78ca29ef06c4ca5ed5270d64fe0ca7da2099af162701",
+    "focused": "51/51 PASS",
+    "full": "2500 OK (1 skipped)",
+    "stages": "7/7 zero",
+    "privacy": "CLEAN",
+    "raw_crc_and_inner_hashes": "15/15 verified each",
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run27-Store-Typed-Review/",
+    "private_readback_byte_verified": true,
+    "scope": "real persisted Store user source refs → deterministic German typed SHADOW for balanced A/B/NONE",
+    "model_executed": false,
+    "run24_stronger_message_binding_imported": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false,
+    "open_questions": [
+      "Run24 user-message lineage donor PR #932 requires separate import/review",
+      "No F5 HumanDecision or native B1/B2/C3 utility",
+      "No EN Store coverage (Run20 EN synthetic only)"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run18_step2_balanced_controls tests.test_run20_step2_typed_bridge tests.test_run23_store_typed_bridge_shadow tests.test_run27_store_typed_bridge_review",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
