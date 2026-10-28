@@ -2752,5 +2752,61 @@
     },
     "next_command": "Audit latest Run12 source-only Actions artifact at exact head, verify ZIP/HEAD/inner SHA/7 exits/15 focused/full/privacy. Then build a separate B2 long-source rule selection candidate with source-ref provenance in a new cohort; no frozen TP/s27 edits.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12b_b2_identity_shadow_20261028": {
+    "owner": "automation Run12b; isolated B2 source identity shadow; review-only",
+    "base_pr": 923,
+    "base_head": "feebf4b0a78990b1716763b60c1f22ec6fee1b5e",
+    "branch": "assistant/v13-run12-b2-source-identity-shadow-20261028",
+    "scope": "POST_HOC_SOURCE_ONLY_B2_LONGNOTE_IDENTITY_AND_RULE_CUE_PRIORITY",
+    "root_cause": "In original TP/s27 both_exact SPLIT/RULE 6/6, B2 context admitted unrelated Project Atlas archive and recent supplier sheet but excluded older binding project note under 768-char cap. memory.entities() pseudo-entity 'rules' overlaps current 'project rules' with Atlas 'project rules'. Generic entity match plus newest-first cap displaced relevant note.",
+    "original_native_evidence_sha256": "965bf4ef904cf96c759e1324b74c23662b03f1aa1c5c4698be71e9f5bb9db635",
+    "original_native_head": "fa76c7599fc066b7cb2d58b133a649bd9604ded9",
+    "original_native_utility": "UTILITY_FAIL",
+    "original_tool_utility": "TOOL_UTILITY_FAIL",
+    "candidate_module": "v13/code/scripts/run12_b2_context_identity_candidate.py",
+    "candidate_git_blob": "6107fc9034a0c67481296de6c127436ffccc245a",
+    "candidate_tests": "v13/code/tests/test_run12_b2_context_identity_candidate.py",
+    "candidate_tests_blob": "2507f249166d35617a52034ff7779e27a14c7e34",
+    "offline_replay": "v13/code/scripts/run12_b2_context_identity_tp27_replay.py",
+    "offline_replay_blob": "dadd4079656459d2d2c9b7df23688caba4b2cf67",
+    "offline_tests": "v13/code/tests/test_run12_b2_context_identity_tp27_replay.py",
+    "offline_tests_blob": "8670bf040564b0f794f4ca84b56c33ade2d41f81",
+    "local_synthetic_tests": "12 B2 candidate + 3 replay + 15 TP27 visibility = 30/30 PASS; no native/model",
+    "posthoc_replay_counts": {
+      "earlier_rule_fixtures": 6,
+      "original_note_in_b2_context": 0,
+      "candidate_note_in_b2_context": 6,
+      "candidate_distractor_selected": 0,
+      "candidate_context_cap_skips": 3,
+      "candidate_source_unavailable": 0
+    },
+    "posthoc_aggregate_sha256": "643af55b7e155666a6438a1955d96bf785dc71e218d823878c55979b2f9c32c0",
+    "aggregate_report": "v13/code/docs/coordination/RUN12B_TP27_CONTEXT_COUNTERFACTUAL_AGGREGATE_20261028.json",
+    "candidate_authority": "SOURCE_POINTER_ONLY; PRIOR_HYPOTHESIS_NOT_FACT; no rule value or answer authority",
+    "native_inference_this_branch": false,
+    "registered_models_seeds_cohorts_unchanged": true,
+    "source_only_ci": "pending .github/workflows/automation12-b2-identity-shadow-20261028.yml; audit raw before green claim",
+    "private_raw_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/TP27_NATIVE_40685405624_sha965BF4EF.zip",
+    "negative_gates": {
+      "Age0": "RECORD_ONLY",
+      "STEP2": "UTILITY_FAIL",
+      "B3_L1": "FAIL",
+      "Body_JEPA": "UNAVAILABLE",
+      "LP3": "FAIL",
+      "jepa_weight": 0,
+      "Redmi": "UNMEASURED",
+      "V13_complete": false
+    },
+    "next_command": "Verify Run12b source-only CI raw at exact head; independent review of B2 context candidate false-positive project matching and source-read race; preregister a fresh native B2+C3 longnote cohort before any frozen runtime integration.",
+    "remaining_platform_budget": "UNKNOWN",
+    "original_source_only_red": {
+      "run": 40695085585,
+      "sha256": "65a37b0e2340ea18dc07836830e769546892ba2e680f069d7508ddf45f50a4f5",
+      "focused": "44 tests, 1 module import error: wrong test filename",
+      "diff": "trailing whitespace in new candidate",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12B_INITIAL_FOCUSED_RED_40695085585_sha65A37B0E.zip",
+      "status": "PRESERVED_RED_NOT_OVERWRITTEN"
+    }
   }
 }
