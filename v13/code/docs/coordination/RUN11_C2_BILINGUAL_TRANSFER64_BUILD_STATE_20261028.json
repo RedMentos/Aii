@@ -27,7 +27,7 @@
   "age0_learning_mode": "RECORD_ONLY",
   "phone_measured": false,
   "whole_system_complete": false,
-  "next_command": "Create registered GO marker after verifying no active native owner; wait for Linux-native transfer64 run; download and verify all raw evidence",
+  "next_command": "Revise GO marker ATTEMPT=2; monitor new native run; preserve all RED/PASS raw artifacts and verify private readback",
   "next_prerequisite": "Exact-source software CI GREEN and native worker source/installed SHA preflight; serialize native run with other owners; preserve full raw evidence",
   "github_software_source_sha": "5676c1b18869478cec888bff530a8a92a33d3a37",
   "focused_tests": "23 PASS",
@@ -35,5 +35,11 @@
   "software_artifact_sha256": "f268ea119777ec9cc57402eb7e965e638bdc1a812b9494ce5ecede5ab18d2460",
   "software_artifact_internal_hashes": 16,
   "software_artifact_private_readback_verified": true,
-  "native_workflow_staged": true
+  "native_workflow_staged": true,
+  "first_native_run": 40640185593,
+  "first_native_status": "RED: FileExistsError before route calls",
+  "first_native_artifact_sha256": "4db7a28829a87b362d8cf8611f66154cba8d424f544dc8ab49bccbfe1935bdcd",
+  "first_native_artifact_internal_hashes": 17,
+  "first_native_bootstrap": "PASS pinned model",
+  "native_workflow_fix_commit": "9ac9b383e46a526eb691931e9ee21c8d6753933e"
 }
