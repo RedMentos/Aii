@@ -2,7 +2,7 @@ name: V13 Run11 C5 attached manifest with frozen runtime source software
 on:
   push:
     branches:
-      - assistant/v13-run11-c5-attached-manifest-20261028-0950
+      - assistant/v13-automation11-c5-workflow-audit-20261028
     paths:
       - '.github/workflows/run11-c5-attached-manifest-20261028.yml'
       - 'v13/code/v13/focal.py'
@@ -59,7 +59,7 @@ jobs:
           third=$?
           if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
           if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_c5_manifest_proactive tests.test_actionlearn tests.test_focal) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_c5_attached_manifest tests.test_actionlearn tests.test_focal) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
           else
             echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
