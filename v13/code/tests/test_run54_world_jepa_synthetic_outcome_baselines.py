@@ -83,6 +83,23 @@ class Run54SyntheticOutcomeBaselines(unittest.TestCase):
                                         'UNREGISTERED_SYNTHETIC_ARRAYS'):
                 self.evaluate()
 
+    def test_permission_refusal_precedes_untrusted_array_access(self):
+        class ArrayBomb:
+            def __array__(self, *args, **kwargs):
+                raise AssertionError('unapproved source was accessed')
+        hostile = {'manifest': {}, 'train': (ArrayBomb(),),
+                   'holdout': (ArrayBomb(),)}
+        with self.assertRaisesRegex(PermissionError, 'APPROVAL_REQUIRED'):
+            baseline.run(hostile, source_kind='SYNTHETIC_TEST_ONLY')
+
+    def test_oversized_or_noncanonical_array_refused_before_fit(self):
+        self.bundle['train'] = (np.empty((2049, 7)), self.bundle['train'][1],
+                                self.bundle['train'][2])
+        with mock.patch('v13.world_jepa.WorldJEPA.fit',
+                        side_effect=AssertionError('unbounded fit')):
+            with self.assertRaisesRegex(ValueError, 'UNBOUNDED_ADAPTER_INPUT'):
+                self.evaluate()
+
     def test_missing_bundle_refused(self):
         with self.assertRaisesRegex(ValueError, 'ADAPTER_BUNDLE_REQUIRED'):
             baseline.run(None, approved_shadow_fit=True,
