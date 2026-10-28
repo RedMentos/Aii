@@ -39,7 +39,8 @@ def evaluate(store, session, project, refs, temporal_mode, option_role):
         # The option source is either the latest supplier sheet or the current
         # exact text. Even when not used for options, the sheet remains a
         # registered, live, temporally ordered input and is revalidated.
-        before = {role: reader(ref)["sha256"] for role, ref in refs.items()}
+        before_rows = {role: reader(ref) for role, ref in refs.items()}
+        before = {role: row["sha256"] for role, row in before_rows.items()}
         options_ref = refs[option_role]
         result = german.evaluate(
             project, refs["current"], refs["old"], options_ref,
@@ -54,6 +55,11 @@ def evaluate(store, session, project, refs, temporal_mode, option_role):
             raise Refusal("typed_candidate_source_contract")
         for role in ("old", "sheet", "current"):
             reader.revalidate(refs[role], before[role])
+            # Hash equality alone cannot detect an event rowid/temporal
+            # reorder between typed evaluation and return. Preserve the
+            # originally validated sequence identity for every Store ref.
+            if reader(refs[role])["seq"] != before_rows[role]["seq"]:
+                raise Refusal("event_sequence_changed_during_evaluation")
     except Refusal:
         raise
     except (adapter.Refusal, german.Refusal) as exc:
