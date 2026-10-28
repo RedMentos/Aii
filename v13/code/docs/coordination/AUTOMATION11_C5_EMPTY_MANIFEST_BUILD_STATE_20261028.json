@@ -1,0 +1,56 @@
+{
+  "schema": "v13.scoped_review_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6 automation11 independent implementation",
+  "status": "C5_PERSISTED_EMPTY_MANIFEST_SOFTWARE_GREEN_NATIVE_NOT_RERUN",
+  "parent_pr": 884,
+  "candidate_pr": 886,
+  "source_commit": "d32a570db9230f87dc3c079897597b5b3d1c3a3a",
+  "parent_commit": "c3b2a719a7f460c314939514395f86571893474a",
+  "workflow": {
+    "run_id": 40659903839,
+    "conclusion": "success",
+    "artifact_id": 12802899438,
+    "artifact_sha256": "1bc013cb248547828a7d2e8d1716b100809ac9249d1746350a5887d20c1594b6",
+    "zip_crc": "PASS",
+    "zip_entries": 17,
+    "internal_sha256_pass": 16,
+    "internal_sha256_total": 16,
+    "focused_tests": 26,
+    "focused_status": "PASS",
+    "full_tests": 2272,
+    "full_status": "PASS",
+    "full_skips": 1,
+    "source_blobs": "PASS",
+    "isolated_install": "PASS",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "diff_check": "PASS"
+  },
+  "candidate_focal_blob": "ac8555637ab8052ec75e8db2eafa5e7e3fb0c5bf",
+  "new_tests_blob": "9dca999cb7173f8b12aa1791c021b85ed0b279af",
+  "frozen_runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "changes": [
+    "Explicit persisted empty models.json now authoritatively exposes zero model roles and fails closed on non-direct C5.",
+    "Uninitialized no-file historical software seam preserved.",
+    "Direct SOURCE_COPY remains available, restart and C3 install recovery covered."
+  ],
+  "open_questions": [
+    "Native #884 C3-only positive belongs to old focal source blob; this source update has only software evidence.",
+    "No model on an uninitialized runtime still uses software seam until manifest is explicitly persisted; deployment setup must create and verify manifest before user turns.",
+    "Runtime/production merge not performed."
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "HELDOUT_FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "redmi": "UNMEASURED",
+    "original_20_stage_native": "15_PASS_5_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "Cross-organ integrate C5 persisted-empty source and actual Memory.recall C3 source on a fresh review branch, run full original software and then preregister serial native end-to-end without replacing #884/#887 evidence.",
+  "backup": "Remote GitHub review checkpoint verified; Actions raw artifact 30-day retention; rejected anyone-writable Drive not retried."
+}
