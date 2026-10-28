@@ -1,0 +1,78 @@
+{
+  "checkpoint_id": "V13_RUN11_C3_CONTEXT_WORLD_20261028",
+  "scope": "REVIEW_ONLY_BRANCH_NOT_PRODUCTION",
+  "date_utc": "2026-10-28",
+  "owner": "ChatGPT continuation; source review integration only",
+  "primary_branch": "assistant/v13-run11-c3-context-world-merge-20261028",
+  "primary_head_before_this_doc": "1743e0f723e3dc16fbc610b254cfbfa03f398a90",
+  "parent_c3": "3ca9a6d158759f5abc9c00883135487c0a33e3ae",
+  "context_donor": "ff6658b2c1a57239836c9745f0e0dddefe6fdd21",
+  "world_donor": "f360b9453eb706755e8afc1c3ca5d62a6e514f5d",
+  "prereg_commit": "089cf432e8c74834ef3e69f293cd1f7431d18beb",
+  "three_parent_merge": "169ca27aac5d1f2336c563c3d257f631936cb44d",
+  "frozen_blobs": {
+    "runtime": "68e7ed1352800174972558f1e0b0683a42c8689a",
+    "model_catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "source_consumer": "0edb409e5ee6674e22539713874e9a038f9cba24",
+    "context_os": "fd8ea629dc565a5f27b212599f3b006bb93605fd",
+    "world_jepa": "87dde9c51ac9c042694870f3e15619711503a537"
+  },
+  "software_evidence": {
+    "run": 40672888704,
+    "source": "a9a9fa1577b8aaf02dff2ded8bb512749527aa10",
+    "artifact": 12809053224,
+    "zip_sha256": "e6c36ce60e4c2e78319c6c185d5e9d82830e3fac398decf78434ce301bd8720c",
+    "focused_ok": 76,
+    "full_ok": 2326,
+    "skipped": 1,
+    "manifest_ok": 16,
+    "stage_exit_zero": 7,
+    "privacy": "CLEAN",
+    "private_library": "/V13/RawEvidence/V13_C3_CONTEXT_WORLD_MERGE_SOFTWARE_40672888704_RAW.zip",
+    "private_readback_byte_exact": true
+  },
+  "native_evidence": {
+    "branch": "assistant/v13-run11-c3-context-world-native-20261028",
+    "run": 40673794366,
+    "source": "57057a6188bcea6980b16ef3f8371483b6f6959b",
+    "artifact": 12809537308,
+    "zip_sha256": "23c8568e93482d0e7f7ac902d63f4ce1d939e86dd2e72f095ea419a899f367a5",
+    "positive": 2,
+    "negative_no_native": 8,
+    "native_calls": 2,
+    "model_hash_unchanged": true,
+    "phone_measured": false,
+    "private_library": "/V13/RawEvidence/V13_C3_CONTEXT_WORLD_NATIVE_40673794366_RAW.zip",
+    "private_readback_byte_exact": true
+  },
+  "other_active_review_candidates": {
+    "world_jepa_atomic": "#902; independent software proof pending",
+    "c3_scoped_batch": "#904; independent software proof pending"
+  },
+  "original_gates": {
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "stage11": "NOT_PROMOTED",
+    "age": "AGE0_RECORD_ONLY"
+  },
+  "open_questions": [
+    "C3 source-verified consumer is an opt-in isolated CLI, not normal Runtime._turn",
+    "Original STEP2 two-body complementarity and B3 L1 require their own registered utility proofs",
+    "World-JEPA SHADOW needs causal utility and valid transactional restart proof",
+    "Real Redmi thermal/RSS/energy/longrun remains unavailable",
+    "C3 batch optimization speedup unmeasured; native on changed source pending"
+  ],
+  "next_owner": "ChatGPT continuation / independent review branches",
+  "next_command": "Read PR #902/#904 exact-source Actions and independently audit raw ZIPs; if green, checkpoint; then assess registered learning utility/STEP2 and approved native integration, without changing frozen SourceHandoff runtime.",
+  "prerequisites": [
+    "No competing heavy native/model jobs",
+    "Do not change registered cohort/model/seed hashes",
+    "Do not retry rejected anyone-writable Drive destination",
+    "Review branch only, no production merge or force-push"
+  ]
+}
