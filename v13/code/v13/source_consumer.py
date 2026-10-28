@@ -5,10 +5,26 @@ authorizes learning or turns model hypotheses into facts. It refuses absent,
 wrong-entity, wrong-topic, tampered, revoked, cross-session or conflicting
 corrections *before* any model prompt can contain them.
 """
+import hashlib
+import hmac
+import json
 import re
+import secrets
 
 from .memory import entities, relevance
 from .prompts import text as prompt
+
+# A process-local proof binds an admitted F1/F5 source to its exact render input.
+# It is NOT a durable permission token or a substitute for dispatch-time revocation.
+_RENDER_KEY = secrets.token_bytes(32)
+
+
+def _render_proof(query, session, source, count):
+    payload = json.dumps({"query": query, "session": session, "source": source,
+                          "admitted_count": count},
+                         sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hmac.new(_RENDER_KEY, payload, hashlib.sha256).hexdigest()
+
 
 BUDGET = re.compile(r"\b(?:budget|budgets|finanzrahmen|etat)\b", re.I)
 PROJECT = re.compile(r"\b(?:projekt|project)\s+([\w-]+)", re.I)
@@ -89,7 +105,9 @@ def admit(query, session, memories, memory):
                 "answer": abstain, "model_allowed": False, "admitted_count": 0}
     chosen = sorted(valid, key=lambda x: x["memory_id"])[0]
     return {"status": "ADMITTED", "reason": "ONE_VERIFIED_CORRECTION",
-            "model_allowed": True, "admitted_count": len(valid), "source": chosen}
+            "model_allowed": True, "admitted_count": len(valid), "source": chosen,
+            "_render_session": session,
+            "_render_seal": _render_proof(query, session, chosen, len(valid))}
 
 
 def render_messages(cfg, query, admission):
@@ -97,6 +115,13 @@ def render_messages(cfg, query, admission):
     if admission.get("status") != "ADMITTED" or admission.get("model_allowed") is not True:
         raise ValueError("Source admission required before native generation")
     source = admission.get("source")
+    seal = admission.get("_render_seal")
+    session = admission.get("_render_session")
+    count = admission.get("admitted_count")
+    if (not isinstance(source, dict) or not isinstance(seal, str)
+            or not isinstance(session, str) or type(count) is not int
+            or not hmac.compare_digest(seal, _render_proof(query, session, source, count))):
+        raise ValueError("Authenticated F1/F5 admission required for C3 rendering")
     if (not isinstance(source, dict) or not isinstance(source.get("topic"), str)
             or not TOPIC.fullmatch(source["topic"])
             or not isinstance(source.get("value"), str)

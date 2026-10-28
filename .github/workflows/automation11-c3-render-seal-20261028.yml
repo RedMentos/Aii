@@ -1,0 +1,106 @@
+name: V13 Automation11 C3 renderer admission seal full software
+on:
+  push:
+    branches:
+      - assistant/v13-c3-render-admission-seal-20261028
+    paths:
+      - '.github/workflows/automation11-c3-render-seal-20261028.yml'
+      - 'v13/code/v13/source_consumer.py'
+      - 'v13/code/tests/test_source_consumer_recall_integration.py'
+      - 'v13/code/tests/test_source_consumer_admission.py'
+      - 'v13/code/tests/test_source_consumer_render_seal.py'
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen runtime and new stage19 candidate, test full software
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11-render-seal"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          432b2e33eb53142b0d4246813b96fc791b0900f0 v13/code/scripts/acceptance.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          609e85f7750df25256f1f5a86aa0a4b9da57945e v13/code/v13/source_consumer.py
+          67f560ff193f0d323d11688c0668d03cb15e81e2 v13/code/tests/test_source_consumer_render_seal.py
+          b041fada7bef403d2600a0e276891911fe7a1bc3 v13/code/tests/test_source_consumer_admission.py
+          7963f391ca0bca21c7c3d73d44518a99744c8863 v13/code/tests/test_source_consumer_data_boundary.py
+          a0ffe4f9ff5edf67310629bc94d7e87b2f8f53a2 v13/code/tests/test_source_consumer_recall_integration.py
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run11-render-seal-venv"
+          py="$RUNNER_TEMP/v13-run11-render-seal-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_source_consumer_admission tests.test_source_consumer_data_boundary tests.test_source_consumer_recall_integration tests.test_source_consumer_render_seal) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13/source_consumer.py v13/code/tests/test_source_consumer_admission.py v13/code/tests/test_source_consumer_data_boundary.py v13/code/tests/test_source_consumer_recall_integration.py v13/code/tests/test_source_consumer_render_seal.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fb53c81e95e251f4d295da08b80dde64fe8a9565 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check fb53c81e95e251f4d295da08b80dde64fe8a9565 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-automation11-c3-recall-consumer-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11-render-seal/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused and full software with original native verdict preserved
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11-render-seal"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -60 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'C3_RENDER_SEAL_SOFTWARE_ONLY_NO_NATIVE_OR_GATE_PROMOTION'
