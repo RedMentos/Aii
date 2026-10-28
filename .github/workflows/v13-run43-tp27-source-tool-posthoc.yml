@@ -1,0 +1,94 @@
+name: V13 Run43 original TP27 posthoc source-to-tool replay
+on:
+  push:
+    branches:
+      - assistant/v13-run43-tp27-source-tool-posthoc-20261028
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run43-tp27-posthoc-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Source-pinned original TP27 posthoc software audit
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run43"
+          mkdir -p "$e" "$RUNNER_TEMP/run43-original"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/scripts/run42_b2_eligibility_source_shadow.py v13/code/scripts/run40_b2_store_history_readonly.py v13/code/v13/agi/eligibility.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/FROZEN_RAW.log"
+          if [ "$(git hash-object v13/code/scripts/run42_b2_eligibility_source_shadow.py)" = d60d38112e9db69cd1ebab2fe5a91e35ca9feb0c ] && [ "$(git hash-object v13/code/scripts/run40_b2_store_history_readonly.py)" = f4befd61f22f87194c0cac070af73a1d7f559d73 ] && [ "$(git hash-object v13/code/v13/agi/eligibility.py)" = e1f1a2d09a614378a75e397819fdce96a46de22d ]; then echo 0 > "$e/FROZEN_EXIT.txt"; else echo 1 > "$e/FROZEN_EXIT.txt"; fi
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests python3 -m unittest -v tests.test_run43_tp27_source_tool_posthoc tests.test_run42_b2_eligibility_source_shadow tests.test_run40_b2_store_history_readonly) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/run43_tp27_source_tool_posthoc.py v13/code/tests/test_run43_tp27_source_tool_posthoc.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          timeout --signal=TERM --kill-after=5s 180s gh run download 40685405624 -R RedMentos/Aii -n v13-automation11-step2-tp27-full70-40685405624-fa76c7599fc066b7cb2d58b133a649bd9604ded9 -D "$RUNNER_TEMP/run43-original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 120s env PYTHONPATH=.:tests python3 scripts/run43_tp27_source_tool_posthoc.py --original-extracted "$RUNNER_TEMP/run43-original" --out "$e/POSTHOC_REPORT.json") > "$e/REPLAY_RAW.log" 2>&1
+            echo "$?" > "$e/REPLAY_EXIT.txt"
+          else
+            echo SKIPPED_ORIGINAL_UNAVAILABLE_RED > "$e/REPLAY_RAW.log"
+            echo SKIPPED_RED > "$e/REPLAY_EXIT.txt"
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-run43-venv"
+          py="$RUNNER_TEMP/v13-run43-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+            echo 0 > "$e/INSTALL_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo 1 > "$e/INSTALL_EXIT.txt"
+            echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4a12312cef3a5e2556173baa61b1294860e34153 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4a12312cef3a5e2556173baa61b1294860e34153 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve posthoc aggregate and original verification exits only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run43-tp27-posthoc-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run43/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only posthoc proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run43"
+          for n in FROZEN FOCUSED COMPILE DOWNLOAD REPLAY INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw retained; native NOT RUN"
+              tail -45 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN43_ORIGINAL_TP27_POSTHOC_SOFTWARE_ONLY_NO_GATE_PROMOTION
