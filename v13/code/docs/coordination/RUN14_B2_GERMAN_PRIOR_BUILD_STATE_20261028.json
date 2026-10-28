@@ -1,0 +1,56 @@
+{
+  "schema": "V13_RUN14_B2_GERMAN_PRIOR_SHADOW_BUILD_STATE_V1",
+  "date_utc": "2026-10-28",
+  "owner": "Run14 independent German earlier-rule source selection",
+  "scope": "REVIEW_ONLY_SYNTHETIC_LINUX_SOFTWARE_NO_NATIVE",
+  "parent_pr": 925,
+  "parent_source_head": "5a571e611e58d8f7e9c4897ee0008e707ce42c8a",
+  "pr": 926,
+  "prereg_commit": "4a3df0b8ac6b11364f6b275e42a32fbea8910772",
+  "source_tested_head": "16f1141ad2049af2d6814cb3d02fa21439210e9a",
+  "source_blobs": {
+    "scripts/run13_b2_identity_ambiguity_guard.py": "664051621dda9bab5f5e7294abc77256feaa7298",
+    "scripts/run14_b2_german_prior_cue.py": "55d1239bb79f9be0bb36c6ae376ba679fdc369db",
+    "tests/test_run14_b2_german_prior_cue.py": "d55ebe0134b6b00ea0214131f5e5cda56fffa445"
+  },
+  "ci": {
+    "run": 40699618294,
+    "artifact_id": 12821441829,
+    "zip_sha256": "f937ee53aee529816f45d7ce0224e796f275e76a5f41dea29dc13a1b48f63a6b",
+    "focused": "33/33 PASS",
+    "full": "2459 OK (1 skipped)",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "diff": "PASS",
+    "inner_hashes": "18/18 MATCH",
+    "private_readback": "BYTE_IDENTICAL"
+  },
+  "red": {
+    "run": 40699470240,
+    "zip_sha256": "1cf4ce0728072344830e7f8ddeee0c0ff8b01075f105546b1d0c80d066c72956",
+    "reason": "candidate absent at test-only commit",
+    "private_readback": "BYTE_IDENTICAL"
+  },
+  "private_backup_folder": "/V13-Checkpoints/2026-10-28/Run14-Handoff",
+  "result": "Synthetic German older-rule request selects older source note under 450-char cap; not a measured B2 quote or C3 decision.",
+  "limitations": [
+    "German lexical cue is fallible, not learned language competence",
+    "Single-project source guard conservative; multi-project requests refused",
+    "No native or Redmi execution, no live Runtime integration"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next": {
+    "command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run14_b2_german_prior_cue tests.test_run13_b2_identity_ambiguity_guard",
+    "prerequisites": "Fresh disjoint EN/DE native B2+C3 pilot with exact source/model/seed hashes, active owner check, semantic/temporal authority audit before live integration."
+  },
+  "remaining_execution_budget": "UNKNOWN"
+}
