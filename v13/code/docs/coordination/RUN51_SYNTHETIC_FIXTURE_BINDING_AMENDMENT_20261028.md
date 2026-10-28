@@ -1,0 +1,7 @@
+# Run51 prereg amendment — exact synthetic fixture binding (2026-10-28)
+
+Manual review found that `source_kind='SYNTHETIC_TEST_ONLY'` is a caller assertion and, by itself, cannot prevent an arbitrary real-data bundle from being passed to the fit. Before any CI or real use, tighten the candidate to the **single** registered Run50 FakeReadOnlyView(128) synthetic cohort and refuse all other input. The model remains SHADOW; this is not a real Store training approval.
+
+Registered synthetic source, generated deterministically by the unchanged `world_model.transitions(FakeReadOnlyView(128))` and Run50 adapter: 128 rows, train 89, holdout 39, all_rows SHA256 `2cf785f5d0f991f411bca4a6c4fd6f729f4986ecde3c22c3ee5445f8a1909b2e`, train_rows `391ddead524a2ab65d7265fbe65d7a53722c1f5af9346e736498972b3d2b7064`, holdout_rows `1f212c95c3ada20db225603880daca7397c6e5c1eb16f6ba19724ff882253d37`. Float64 little-endian array triple concatenation (X,A,X2) SHA256: train `cebc931259fa7d22405066b4481f10bac944b8de6eab9c3d0f0359c40fc474cf`, holdout `11a59b45890f4634d2cbb2526fc3dcd25d345d73dc4c5c84fb64de433fa97680`. Verify exact hashes in Linux CI; if mismatched, preserve RED and investigate rather than silently replacing registered hashes.
+
+Refuse any other manifest or array bytes **before** `WorldJEPA.fit`, including a forged `source_kind`. Add a negative test changing one array value while retaining the manifest; training must not execute. No new real-data authorization. Original model/seed/registered native cohorts unchanged. No gate promotion.
