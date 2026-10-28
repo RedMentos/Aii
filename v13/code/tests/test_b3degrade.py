@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 import numpy as np
 from v13 import b3calibration as B
 from v13 import b3degrade as D
@@ -11,6 +12,7 @@ from v13 import callosum as C
 from v13.contracts import packet
 from v13.operator import Operator
 from v13.runtime import Runtime
+from v13.resource_modes import mode_of
 from v13.verification import b3_doctor
 
 def ev(**kw):
@@ -87,8 +89,13 @@ class Live(unittest.TestCase):
         self.bridge();self.assertEqual(json.loads(Operator(self.r).run(':callosum promote B1_TO_B2'))['level'],'L1')
         self.assertTrue(D.allowed(self.r.store,'B1_TO_B2','L1'));self.assertFalse(D.allowed(self.r.store,'B1_TO_B2','L2'))
         self.assertEqual(self.doc()['degradation_level'],'L1')  # latent_level is then the bridge gate status (b3bridge.doctor_fields)
-        self.r.guard.state='PRESSURE'  # §97.2 ORANGE: one body resident, latent exchange impossible
-        doc=self.doc();self.assertEqual(doc['degradation_level'],'EXACT_SYMBOLIC');self.assertEqual(doc['degradation']['fired'],['COST_OVER_BUDGET'])
+        # Idle SleepRuntime.tick can re-sample resources on its background thread,
+        # replacing this manually injected pressure fixture between assignment and doctor.
+        with patch.object(self.r.guard,'update',return_value='PRESSURE'):
+            self.r.guard.state='PRESSURE'  # §97.2 ORANGE: one body resident, latent exchange impossible
+            self.assertEqual(mode_of(self.r.guard),'ORANGE')
+            doc=self.doc()
+        self.assertEqual(doc['degradation_level'],'EXACT_SYMBOLIC');self.assertEqual(doc['degradation']['fired'],['COST_OVER_BUDGET'])
         row=self.r.store.one("SELECT metrics FROM telemetry WHERE kind='b3_degraded' ORDER BY id DESC LIMIT 1")
         self.assertEqual(json.loads(row['metrics']),{'direction':'B1_TO_B2','level_from':'L1','level_to':'EXACT_SYMBOLIC','triggers':['COST_OVER_BUDGET']})
 
