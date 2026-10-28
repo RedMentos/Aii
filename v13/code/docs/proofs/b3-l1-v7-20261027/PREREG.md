@@ -28,3 +28,9 @@ second fresh 3000-row seed (20261302) before any L2 work. LATENT authority stays
 The first start died while computing states: the Linux OOM killer ended llama-server (8.7 GB) at the third embedding stage,
 before any model output was evaluated (no accuracy was seen). Change: state computation only — stage files on disk, a fresh
 server per 500 texts, fp16 tokens in chunks. Texts, models, data, recipe and criteria are untouched.
+
+## Amendment A2 (2026-10-27, after seed 20261301 finished: canon PASS on both tasks)
+Seed 20261301 result: private/escalate and private/apologize both canon PASS (see `BEFUND.md`). As stated above, the replication
+on a second fresh 3000-row seed (20261302, 0 shared sender texts with all earlier seeds, checked) is run before any L2 work. The
+script accepts the data seed only from the preregistered pair via `B3V7_SEED`. Replication rule: canon PASS on the same task
+on seed 20261302 = replicated; otherwise NOT_REPLICATED and L2 stays locked. Nothing else changes.

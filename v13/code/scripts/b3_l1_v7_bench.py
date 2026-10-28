@@ -23,14 +23,18 @@ import b3_l1_v5_bench as V5
 import b3_l1_v6_bench as V6
 from v13 import b3bridge as BB
 
-SEED_DATA = 20261301; N = 3000; TASKS = ('escalate', 'apologize')
+import os
+SEEDS = (20261301, 20261302)  # preregistered; the second only as the replication of a PASS on the first
+SEED_DATA = int(os.environ.get('B3V7_SEED', SEEDS[0]))
+if SEED_DATA not in SEEDS: raise SystemExit(f'data seed {SEED_DATA} not preregistered {SEEDS}')
+N = 3000; TASKS = ('escalate', 'apologize')
 
 
 def main(home, out, threads=4, seeds=5):
     V3.N = N
     home = Path(home); out = Path(out); out.mkdir(parents=True, exist_ok=True); rows = V3.make(SEED_DATA)
     olds = {'attempt3': V3.make(), 'attempt4': V3.make(V4.SEED_DATA), 'attempt5': V3.make(V5.SEED_DATA)}
-    olds.update({f'attempt6_{s}': V3.make(s) for s in V6.SEEDS})  # V3.N is 3000 here, a superset of each old 600-row set
+    olds.update({f'attempt6_{s}': V3.make(s) for s in V6.SEEDS}); olds.update({f'attempt7_{s}': V3.make(s) for s in SEEDS if s != SEED_DATA})  # V3.N is 3000 here, a superset of each old 600-row set
     overlap = {f'same_sender_text_as_{k}': sum(r['text'] in {o['text'] for o in v} for r in rows) for k, v in olds.items()}
     b1 = next((home/'models/body').glob('*.gguf')); b2 = next((home/'models/gist').glob('*.gguf')); cache = out/'states.npz'; t = time.time()
     data_sha = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
