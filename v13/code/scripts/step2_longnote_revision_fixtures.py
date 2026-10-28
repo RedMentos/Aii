@@ -11,13 +11,13 @@ REVISION = "step2-longnote-revision-fixtures-v1"
 # Fresh project names and budgets versus the immutable Z2 cohort.
 CASES = (
     ("Aquila", "SPLIT", (134, 9, True), (91, 7, True), (105, 8, False), None),
-    ("Borealis", "SPLIT", (142, 10, False), (116, 9, False), (128, 12, True), None),
-    ("Cygnus", "SPLIT", (157, 11, True), (131, 10, True), (139, 12, True), None),
-    ("Draco", "RULE", (166, 12, True), (147, 11, True), (151, 10, False), None),
-    ("Equinox", "RULE", (173, 13, False), (154, 13, False), (161, 14, False), None),
-    ("Fornax", "RULE", (184, 14, True), (165, 12, True), (179, 13, True), None),
-    ("Gemini", "DETAIL", (191, 15, True), (171, 14, True), (181, 16, False), None),
-    ("Helios", "DETAIL", (203, 16, False), (187, 15, False), (194, 17, True), None),
+    ("Bellatrix", "SPLIT", (142, 10, False), (116, 9, False), (128, 12, True), None),
+    ("Cetus", "SPLIT", (157, 11, True), (131, 10, True), (139, 12, True), None),
+    ("Deneb", "RULE", (166, 12, True), (147, 11, True), (151, 10, False), None),
+    ("Erebos", "RULE", (173, 13, False), (154, 13, False), (161, 14, False), None),
+    ("Fomalhaut", "RULE", (184, 14, True), (165, 12, True), (179, 13, True), None),
+    ("Ganymede", "DETAIL", (191, 15, True), (171, 14, True), (181, 16, False), None),
+    ("Hyperion", "DETAIL", (203, 16, False), (187, 15, False), (194, 17, True), None),
     ("Icarus", "DETAIL", (217, 17, True), (199, 17, True), (208, 18, True), None),
     ("Janus", "REVISION", (229, 18, True), (207, 17, True), (221, 16, False), (223, 16, False)),
 )
