@@ -63,7 +63,25 @@ jobs:
           fi
           export V13_HOME="$RUNNER_TEMP/v13-run36-installed"
           if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
-            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" - > "$e/BOOTSTRAP_RAW.log" 2>&1 <<'PY'
+          import fcntl,os
+          from pathlib import Path
+          from v13.config import initialize
+          from v13.models import ModelManager
+          from v13.bootstrap import install_native
+          home=Path(os.environ['V13_HOME'])
+          initialize(home)
+          with (home/'data/coordinator.lock').open('a+') as lock:
+              fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+              manager=ModelManager(home)
+              manager.install('language')
+              manager.install('needle')
+              install_native(home)
+              proof=ModelManager(home).verify(deep=True)
+              assert set(proof)=={'language','needle'}
+              assert proof['language']['ok'] and proof['needle']['ok']
+          print('PINNED_C3_AND_C2_RUNNER_SUPPORT_ONLY_NO_B1_B2_INSTALL')
+          PY
             echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
           else
             echo SKIPPED_SOFTWARE_RED > "$e/BOOTSTRAP_RAW.log"; echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
