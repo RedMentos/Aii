@@ -45,6 +45,8 @@ HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9]\d{0,8})(?![\w]|[.,]\d)')
 def propose_half(text):
     t=str(text)
     if not HALF_CUE.search(t) or not HALF_REQUEST.search(t) or HALF_NEGATION.search(t):return None
+    # A compound numeric expression is not a single quantity to halve.
+    if re.search(r'\\d\\s*[+\\-−–*/]\\s*\\d',t):return None
     values=list(HALF_INTEGER.finditer(t))
     if len(values)!=1:return None
     m=values[0]
