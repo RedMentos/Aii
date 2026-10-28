@@ -29,14 +29,6 @@ from .memory import relevance,terms
 from .attention import GAIN as ATT_BASE
 
 BODY=('B1_DETAIL','B2_GIST')
-
-def available_body_roles(models):
-    """Manifest-only B eligibility; cached AG0 slots cannot resurrect removed roles."""
-    from .models import model_key
-    control=getattr(models,'b2_control','two_body')
-    return {role for role in BODY if
-            (models.installed.get(model_key(role,control)) or {}).get('download_complete')}
-
 STATE_TYPES=('ACTIVE','REACTIVATABLE','EPISODIC_POINTER')
 # §59 / §60 / §85.4 BOOT values; engineering BOOT values are marked ENG.
 BOOT={'coalition_threshold':.45,'disagreement_trigger':.40,'uncertainty_trigger':.45,'salience_trigger':.65,
@@ -562,7 +554,7 @@ class ActionGate:
         if tool:add('EXTERNAL_TOOL',tool['utility'],.1,'local_tool' if tool['risk']=='READ_LOCAL' else 'external_tool',1. if tool['risk']=='READ_LOCAL' else 0.,'TOOL_CALL')  # WP-K: concrete proposal
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
-    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None,available_roles=None):
+    def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
         age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
@@ -572,7 +564,6 @@ class ActionGate:
             elif c['action_type']=='CLARIFY' and clarify and clarify.get('apply') and not direct:c['expected_utility']=1.  # WP-N13 AG9 abstain -> ask instead of guessing (explicit human ACTIVE)
             elif c['action_type']=='CLARIFY':why='WAIT_VS_ACT_BIAS_BOOT'  # §85.5 ask is available, not executed at BOOT
             elif direct and c['action_id']!='SOURCE_COPY':why='EXACT_OR_FIXED_OUTPUT'
-            elif available_roles is not None and c['action_id'] in BODY and c['action_id'] not in available_roles:why='MODEL_MANIFEST_ABSENT'
             elif resource_state=='PRESSURE' and c['action_id'] in BODY:why='RESOURCE_PRESSURE'
             if why:c['suppressed']=why;suppressed.append(c)
             c['score']=round(c['expected_utility']-.25*c['expected_cost']+g_act*.25*c['focal_support'],4)
