@@ -31,6 +31,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback world observe --learn (abgeschlossenes eigenes Action-Outcome)
 :feedback retrieval <Memory-ID> relevant|irrelevant [--learn]
 :remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
+:verified <Frage> (nur quellengebundene F1/F5-Vorprüfung; kein Modellaufruf)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
@@ -92,6 +93,16 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd=='verified':
+            if (not args or args[0].casefold()=='native'
+                    or any(x.casefold()=='--native' for x in args)):
+                raise ValueError(':verified <Frage> (nur F1/F5-Vorprüfung, kein natives Modell)')
+            question=' '.join(args).strip()
+            if not question or len(question.encode('utf-8'))>r.cfg['input_bytes']:
+                raise ValueError(':verified Frage fehlt oder zu lang')
+            r.require_idle()
+            from scripts.ask_verified_budget import query as verified_budget_query
+            return dumps(verified_budget_query(r,question,session=r.session,native=False))
         if cmd in {'sleep','scheduler'}:
             from .sleep import operator_command
             return operator_command(r,cmd,args)
