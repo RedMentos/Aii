@@ -17,6 +17,7 @@ import time
 from urllib.parse import urlsplit
 
 from scripts import current_c3_native_linux_smoke_20261028 as c3
+from scripts.native_smoke_io_20261028 import run_one_turn
 from scripts.step2_current_catalog_artifact_probe import git_blob_sha
 from v13.common import APP, file_hash
 from v13.models import download_file
@@ -73,29 +74,9 @@ def _catalog():
 
 def _native_one(cli, model, role, evidence_dir, env):
     cmd = [str(cli), '-m', str(model), '-p', PROMPT, '-n', str(N_TOKENS),
-           '-c', '256', '-t', '2', '--temp', '0']
-    started = time.monotonic()
-    try:
-        proc = subprocess.run(cmd, input='', capture_output=True, text=True,
-                              timeout=180, env=env, check=False)
-        stdout, stderr, code = proc.stdout, proc.stderr, proc.returncode
-    except subprocess.TimeoutExpired as exc:
-        stdout = (exc.stdout or b'').decode('utf-8', errors='replace') if isinstance(exc.stdout, bytes) else (exc.stdout or '')
-        stderr = (exc.stderr or b'').decode('utf-8', errors='replace') if isinstance(exc.stderr, bytes) else (exc.stderr or '')
-        code = 124
-    elapsed = time.monotonic() - started
-    (evidence_dir / (role + '_STDOUT_RAW.log')).write_text(stdout, encoding='utf-8')
-    (evidence_dir / (role + '_STDERR_RAW.log')).write_text(stderr, encoding='utf-8')
-    return {
-        'role': role,
-        'native_exit_code': code,
-        'native_elapsed_s': round(elapsed, 3),
-        'stdout_sha256': hashlib.sha256(stdout.encode()).hexdigest(),
-        'stderr_sha256': hashlib.sha256(stderr.encode()).hexdigest(),
-        'stdout_chars': len(stdout),
-        'stderr_chars': len(stderr),
-        'native_smoke_pass': code == 0 and bool(stdout.strip()) and stdout.strip() != PROMPT,
-    }
+           '-c', '256', '-t', '2', '--temp', '0', '--single-turn']
+    result = run_one_turn(cmd, evidence_dir, role, env)
+    return {'role': role, **result}
 
 
 def run(scratch_home, evidence_dir):

@@ -1,0 +1,95 @@
+name: V13 Run11 pinned C3 one-turn native Linux rerun (bounded raw)
+on:
+  push:
+    branches:
+      - codex/v13-run11-native-singleturn-bounded-review-20261028
+    paths:
+      - 'v13/code/scripts/native_smoke_io_20261028.py'
+      - 'v13/code/scripts/current_c3_native_linux_smoke_20261028.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-c3-singleturn-native
+  cancel-in-progress: false
+jobs:
+  c3-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      V13_NO_AUTOSTART: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Software guards then exact pinned C3 Linux native one-turn smoke
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-singleturn-native-c3"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_BLOB.txt"
+          git hash-object v13/code/v13/models.py > "$e/MANAGER_BLOB.txt"
+          git hash-object v13/code/scripts/current_c3_native_linux_smoke_20261028.py > "$e/C3_PROBE_BLOB.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests python3 -m unittest -q tests.test_native_smoke_io_20261028 tests.test_current_c3_native_linux_smoke_20261028 tests.test_current_b1b2_native_linux_smoke_20261028) > "$e/GUARDS_RAW.log" 2>&1
+          echo "$?" > "$e/GUARDS_EXIT.txt"
+          if [ "$(cat "$e/GUARDS_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 10m env PYTHONPATH=v13/code python3 v13/code/scripts/current_c3_native_linux_smoke_20261028.py \
+              --scratch-home "$RUNNER_TEMP/v13-singleturn-c3-scratch" \
+              --evidence-dir "$e/native" > "$e/NATIVE_PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_PROBE_EXIT.txt"
+          else
+            echo SKIPPED_GUARDS_RED > "$e/NATIVE_PROBE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_PROBE_EXIT.txt"
+          fi
+          python3 - "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,pathlib,sys
+          p=pathlib.Path(sys.argv[1])/'native'
+          report=p/'REPORT.json'
+          if not report.is_file():
+              raise SystemExit('NO_CLOSED_NATIVE_REPORT')
+          j=json.loads(report.read_text())
+          assert j['evidence_kind']=='LINUX_NATIVE_C3_ONLY'
+          assert j['model_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          assert j['runner_tar_sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          assert j['native_exit_code']==0 and j['native_execution_performed'] and j['native_smoke_pass']
+          assert j['generation_marker_seen'] and j['raw_capture_complete']
+          assert not j['raw_output_capped'] and not j['native_timed_out']
+          assert j['stdout_bytes'] < 1048576 and j['stderr_bytes'] < 1048576
+          for name,key in [('NATIVE_STDOUT_RAW.log','stdout_sha256'),('NATIVE_STDERR_RAW.log','stderr_sha256')]:
+              assert hashlib.sha256((p/name).read_bytes()).hexdigest()==j[key]
+          assert not j['c2_jef_executed'] and not j['b1_b2_executed'] and not j['redmi_measured']
+          assert not j['step2_gate_promoted'] and j['jepa_weight']==0 and j['age_authority']==0
+          assert not j['whole_system_complete']
+          print('PINNED_C3_LINUX_NATIVE_ONE_TURN_ONLY_NO_GATE_PROMOTION')
+          PY
+          echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1d8c05b84b2b178d8ec0c1f5249c5fc36e171c9a --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 1d8c05b84b2b178d8ec0c1f5249c5fc36e171c9a HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c3-native-singleturn-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-singleturn-native-c3/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact native evidence with all negative gates intact
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-singleturn-native-c3"
+          for name in GUARDS NATIVE_PROBE REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained; no native PASS claim"
+              tail -80 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'CURRENT_C3_NATIVE_LINUX_ONLY_NO_C2_B1_B2_REDMI_OR_GATE_PROMOTION'
