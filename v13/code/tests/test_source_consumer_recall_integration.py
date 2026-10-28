@@ -57,6 +57,20 @@ class RecallConsumerIntegration(unittest.TestCase):
         self.assertEqual(result["decision"]["reason"], "CONFLICTING_AUTHORIZED_SOURCES")
         self.assertIsNone(result["messages"])
 
+    def test_scoped_f1_f5_lineage_verification_is_batched_once(self):
+        first = self.add()
+        second = self.add(key="Project Elyra budgets", value="700 Euro")
+        original = self.r.memory._verified_rows
+        with patch.object(self.r.memory, "recall", return_value=[first]), \
+             patch.object(self.r.memory, "_verified_rows", wraps=original) as verify:
+            decision = recall_and_admit(self.query, self.r.session, self.r.memory)
+        self.assertEqual(decision["status"], "CLARIFY")
+        self.assertEqual(decision["reason"], "CONFLICTING_AUTHORIZED_SOURCES")
+        batches = [call.args[0] for call in verify.call_args_list
+                   if call.args and len(call.args[0]) == 2]
+        self.assertEqual(len(batches), 1)
+        self.assertEqual({row["id"] for row in batches[0]}, {first["id"], second["id"]})
+
     def test_active_corrupt_competing_source_cannot_disappear_from_conflict_veto(self):
         first = self.add()
         second = self.add(key="Project Elyra budgets", value="700 Euro")
