@@ -1,0 +1,7 @@
+# Run74 import amendment — normal two-body B1+B2 coexistence (2026-10-28)
+
+Prereg-only, before any Run73 import into Run74. Run73 original exact source `7334b99411d107dc691a1e6ddba6659bd1723256` independently GREEN (Actions 40778379188, ZIP SHA256 `61eeeac526b18ccc8bb5b9ea2bbb7fb5963fab01d18e86a394166020c8950b7e`, CRC clean, 17/17 SHA256SUMS, 25 focused/2649 full OK, privacy CLEAN, original private byte-identical backup). Independent source review identified that a normal Age0 turn contains both B1_DETAIL and B2_GIST OfferPackets. First Run73 bridge wrongly abstained on more than one **total** offer; this did not surface in its single-offer fixture.
+
+Run73 follow-up prereg `b0ad4dd41f7868721b6699921a402f1c546cf8ca` preceded fix `7ead5aeddca2fdd771abda7f35a4513152cfa4ce`: bounded scan now selects exactly one B2_GIST offer, ignores unrelated valid B1_DETAIL offers, still rejects multiple B2, preserves all exact event/source/corollary/intent/final reread checks. New test covers B1+B2 coexistence. Exact new CI Actions `40779299088` **PENDING** at this amendment. Preserve RED if observed.
+
+Upon independent GREEN, Run74 imports **four** exact Git blobs, not the historical three: original Run73 prereg, follow-up coexistence prereg, final module, final test. Verify all destination Git hashes byte-identical. Do not import workflow from Run73; use a new pinned Run74 integration CI. All negative gates and claim limits of original Run74 prereg remain unchanged.
