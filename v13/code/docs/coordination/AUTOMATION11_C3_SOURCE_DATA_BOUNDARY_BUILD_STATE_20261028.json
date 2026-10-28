@@ -1,0 +1,56 @@
+{
+  "schema": "v13.scoped_review_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6 automation11 independent implementation",
+  "status": "C3_SOURCE_DATA_BOUNDARY_SOFTWARE_GREEN_NATIVE_NOT_RERUN",
+  "parent_pr": 879,
+  "candidate_pr": 883,
+  "source_commit": "e285f6c22b8b8ff18cf4c06a11fbb5ef5ba46946",
+  "parent_commit": "8716373b62e1f873129993ba09eb84ad242ac0be",
+  "workflow": {
+    "run_id": 40658594496,
+    "conclusion": "success",
+    "artifact_id": 12802313138,
+    "artifact_sha256": "dd00eecfe1c87459a53943059aab3dde0625fd26f5f7a0edbfdeaad145972219",
+    "zip_crc": "PASS",
+    "zip_entries": 17,
+    "internal_sha256_pass": 16,
+    "internal_sha256_total": 16,
+    "focused_tests": 13,
+    "focused_status": "PASS",
+    "full_tests": 2282,
+    "full_status": "PASS",
+    "full_skips": 1,
+    "source_blobs": "PASS",
+    "isolated_install": "PASS",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "diff_check": "PASS"
+  },
+  "source_consumer_blob": "e7bfef88802d516af59fc775a126912a97028821",
+  "new_tests_blob": "7963f391ca0bca21c7c3d73d44518a99744c8863",
+  "frozen_runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "changes": [
+    "Reject instruction-bearing/ambiguous sourced project-budget values and topics before model admission.",
+    "Recheck bounded topic/value/query/source-ref shape at prompt rendering.",
+    "Preserve existing historical tests and keep candidate unintegrated with Runtime."
+  ],
+  "open_questions": [
+    "Future runtime consumer must revalidate SourceRef at the point of use; render_messages alone is not an authority validator for a forged Python dictionary.",
+    "Locale-formatted and decimal budget values conservatively abstain; new disjoint locale benchmark required before widening.",
+    "No native C3 rerun with this changed source; original #879 scoped native 8/8 and 24/24 belongs to prior source only."
+  ],
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "HELDOUT_FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "redmi": "UNMEASURED",
+    "original_20_stage_native": "15_PASS_5_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "Implement and preregister an exact Memory.recall -> SourceConsumer.admit -> C3 native source-use integration candidate on a fresh disjoint cohort; preserve original #879 and new source byte pins. Keep model calls serial; only claim a new native result after raw closure.",
+  "backup": "Remote GitHub checkpoint verified, Actions raw artifact 30-day retention; rejected anyone-writable Drive not retried."
+}
