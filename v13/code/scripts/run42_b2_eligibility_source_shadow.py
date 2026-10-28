@@ -70,6 +70,14 @@ def evaluate(store, current_event, session, generation, model_revision, *, scan_
              for name in ('budget', 'deadline', 'local_only')}
     if any(v is None for v in rules.values()):
         return _base('ABSTAIN_INCOMPLETE_RULES')
+    # The option scan intentionally tolerates unavailable historical refs.
+    # A revoked/changed *current* source is different: stale current text
+    # must never authorize even a SHADOW decision using older option sheets.
+    try:
+        if store.read_source(current_ref) != current:
+            return _base('ABSTAIN_CURRENT_SOURCE_CHANGED')
+    except (ValueError, OSError, KeyError):
+        return _base('ABSTAIN_CURRENT_SOURCE_CHANGED')
     decision = eligibility.decide(rules, parsed, current,
                                   quotes=(rule_text, option_text))
     if decision['action'] == 'UNKNOWN' or decision['rejected']:
