@@ -1,0 +1,47 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-integrated-full-acceptance-20261028-0825",
+  "pr": 871,
+  "parent_pr": 870,
+  "parent_head": "07f0ad11607591ee4666a4833a68c182a46c932a",
+  "prereg_commit": "d5b46ad62f483411c192504ae24db3e1c1749421",
+  "prereg_blob": "8643dddb0cf3444bdf7c1cb89b42ec658e16c8aa",
+  "workflow_source": "4f106ad6b63977cdec1a4d9050ee2c361fe36260",
+  "run_id": 40649812006,
+  "status_at_checkpoint": "IN_PROGRESS_NO_NATIVE_RESULT",
+  "registered_stage_count": 20,
+  "checkpoint_limits": [
+    5,
+    10,
+    15,
+    20
+  ],
+  "source_blob_count": 24,
+  "acceptance_script_blob": "432b2e33eb53142b0d4246813b96fc791b0900f0",
+  "runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "changes": "ONLY PREREG DOC AND GITHUB WORKFLOW; NO PRODUCTION SOURCE/MODEL/SEED/TEST CHANGES",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Will all original 20 current-source actual-weight acceptance stages PASS?",
+    "Which exact stages remain RED and why?",
+    "Do four 5-stage artifact checkpoints persist closed raw even if later stages fail?",
+    "C5 no-B role selection vs executed C3 fallback remains separate SourceHandoff-frozen blocker."
+  ],
+  "known_workflow_issue": "The guard [ \"-n \"$live\"\" ] is always truthy, but absent checkpoint still fails closed through --resume and stage-count verification; do not edit the active registered run in place.",
+  "next_command": "Inspect Actions 40649812006, collect bootstrap/checkpoint5/checkpoint10/checkpoint15/checkpoint20/final artifacts; verify each CRC/SHA256SUMS, exact 24 source pins, 20 stage outcomes; private Library backup with byte-exact readback; persist failed stages, never promote original negative gates.",
+  "prerequisites": "Exclusive native owner and no concurrent heavy jobs; public pinned model downloads; no user device access; no paid provisioning.",
+  "platform_remaining_budget": "UNKNOWN"
+}
