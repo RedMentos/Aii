@@ -14,6 +14,29 @@ class ProposerTests(unittest.TestCase):
         self.assertEqual(T.propose('2 to the power of 20')['args'],{'expression':'2**20'})
         for t in ['Hello there','I was born in 1990','Meet on 2026-11-02','My code is 4471','date 12/05/2024']:self.assertIsNone(T.propose(t),t)
 
+    def test_bilingual_half_requires_one_plain_integer_and_explicit_request(self):
+        valid={
+            'Budget 120 Euro. Berechne die Hälfte.':'120/2',
+            'Wie viel ist die Hälfte von 90 Euro?':'90/2',
+            'Halbiere 8.':'8/2',
+            'What is half of 80?':'80/2',
+        }
+        for text,expression in valid.items():
+            proposal=T.propose(text)
+            self.assertIsNotNone(proposal,text)
+            self.assertEqual(proposal['tool'],'calc')
+            self.assertEqual(proposal['args']['expression'],expression)
+            self.assertEqual(text[proposal['span'][0]:proposal['span'][1]],expression.split('/')[0])
+        for text in (
+            'Berechne nicht die Hälfte von 120',
+            'Berechne die Hälfte von 120 und 60',
+            '2026-10-28: halbiere 120',
+            'Halbiere 1.200',
+            'Halbiere -120',
+            'The budget is 120 Euro.',
+        ):
+            self.assertIsNone(T.propose(text),text)
+
 class Base(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
@@ -51,6 +74,19 @@ class ShadowTests(Base):
         self.assertTrue(ts.compare(e,sh,'It is 1,776.'));self.assertFalse(ts.compare(e,sh,'About 1700.'))
         self.assertIsNone(ts.shadow(e,dict(p,risk='WRITE_LOCAL')))
         rep=T.report(self.r.store);self.assertEqual(rep['shadow_compared'],2);self.assertEqual(rep['shadow_agreement'],.5)
+    def test_german_half_age0_remains_shadow_and_generic_answer_disagrees(self):
+        text='Budget 120 Euro. Berechne die Hälfte.'
+        e=self.ev(text);ts=T.ToolStep(self.r);p=ts.plan(e,text)
+        self.assertEqual(p['tool'],'calc')
+        self.assertEqual(p['args'],{'expression':'120/2'})
+        self.assertNotEqual(p['status'],'APPROVED')
+        c5=ActionGate(self.r.store).select(e,route='detail',direct=False,resource_state='NORMAL',tool=p)
+        self.assertNotEqual(c5['role'],'EXTERNAL_TOOL')
+        shadow=ts.shadow(e,p)
+        self.assertEqual(shadow['result'],60)
+        self.assertFalse(ts.compare(e,shadow,'The calculation yields the requested amount based on the given value.'))
+        self.assertTrue(ts.compare(e,shadow,'The half is 60 Euro.'))
+
     def test_live_turn_plans_tool_without_errors(self):
         e=self.ev('Copy exactly: 2+2');self.r._turn(e)  # direct path: no proposal
         self.assertIsNone(self.r.store.one("SELECT id FROM packets WHERE kind='ToolProposal' AND event_id=?",(e['event_id'],)))
