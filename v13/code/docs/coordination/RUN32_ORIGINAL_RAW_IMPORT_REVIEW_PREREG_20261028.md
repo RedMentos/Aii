@@ -1,0 +1,9 @@
+# Run32 independent original-raw CI import-path repair — prereg 2026-10-28
+
+Parent: `assistant/v13-run32-keldara-native-quote-coverage-20261028` exact `9a7ef81a7a4b4d1af3f6943a5bdcd0ff7402ad85`, review-only, no overwrite of Run32 owner files. Original read-only artifact CI `40720433476` is RED with `AUDIT_EXIT != 0` because `python3 v13/code/scripts/run32_native_keldara_quote_coverage.py` executes from repository root and cannot import `scripts.run30_native_keldara_aggregate_audit` (`ModuleNotFoundError: No module named 'scripts'`). Source-only Run32 CI `40720433313` is GREEN, but original-raw audit has not passed.
+
+Hypothesis: setting `PYTHONPATH=v13/code` only for the audit subprocess fixes the import-path precondition without changing any frozen auditor, original source, seed, cohort, model, quote policy, or gate. Clone existing workflow into a distinct child-branch-only workflow with that single correction, plus immutable auditor source blob pin and privacy-safe evidence closure. Do not edit the original Run32 workflow or code.
+
+Original private Run26 Actions artifact ID `12826794972`, expected ZIP SHA256 `989abb8ac7b8fcd91ec047f97b735c9c8f84342e49251855b3375f7b3519762b`; independently downloaded and SHA/CRC checked before this prereg. 27 ZIP entries, no contents disclosed. New CI must re-download with scoped Actions read, compare exact ZIP SHA, run unchanged auditor and original preregistered assertions, upload only booleans/counts plus stage exit logs and inner hashes, never the private raw ZIP, source text or completions.
+
+RED evidence remains; any new discrepancy after import fix is a real new RED to preserve and investigate, not to waive. No native inference, no F5 authority, no Redmi proof. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; whole V13 incomplete. Remaining platform budget UNKNOWN.
