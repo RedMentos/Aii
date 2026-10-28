@@ -2513,5 +2513,40 @@
     ],
     "next_command": "Wait for source-pinned native 40685405624 and queued combined 40685844332/staged 40686517055; independently audit original ZIPs, preserve RED, then decide authorized staged 12-arm run",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_step2_staged12_assembler_20261028": {
+    "status": "SOURCE_REVIEW_CANDIDATE_TESTS_ADDED_CI_NOT_LAUNCHED",
+    "owner": "Automation review-only PR #919",
+    "pr": 919,
+    "base_pr": 918,
+    "base_sha": "a8c08ea4fe771c6815d996a91fc9acb20e7306df",
+    "prereg_sha": "6ebeeaf5baa99c49626d850706d40ba26e04c20b",
+    "source": "v13/code/scripts/step2_staged12_assemble.py",
+    "tests": "v13/code/tests/test_step2_staged12_assemble.py",
+    "scope": "ASSEMBLE_12_REGISTERED_NATIVE_RAW_PAIRS_AND_REPLAY_ORIGINAL_FOURARM_SCORER_NO_NATIVE_EXECUTION",
+    "source_committed": true,
+    "synthetic_tests_executed": false,
+    "ci_run_id": null,
+    "current_native_owner_run_id": 40685405624,
+    "upstream_staged_software_run_id": 40686517055,
+    "github_pending_slot_note": "Only one pending Actions run per concurrency group; #917 40685844332 cancelled before any job; do not queue another before staged CI starts/completes",
+    "registered_fixture_sha256": "b721650791284e4369d440d494de4aaf76da35fe4be11e34cb87bba1285e4040",
+    "registered_sha256": "d9d17ba23218c8d622ecb8ac3fcb0a0b6917fa1be72df2000256d8633d1b6eba",
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "lp3_gate": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "open_questions": [
+      "Run source-pinned assembler focused/full software only after native/staged owner releases queue",
+      "Full twelve-arm native source evidence still unmeasured",
+      "Redmi native thermal/energy/RSS and JEPA learning remain unmeasured"
+    ],
+    "next_command": "After Actions 40685405624 and 40686517055 close, audit original raw ZIPs; create source-pinned assembler software workflow, review RED/GREEN, preserve raw, then plan first missing registered arm/seed",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
