@@ -187,7 +187,7 @@ class WorldJEPA:
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
-            self.__dict__.update(_action_counts=action_counts, mu=mu, sd=sd,
+            self.__dict__.update(_fit_steps=steps, _action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds,
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
@@ -233,6 +233,11 @@ class WorldJEPA:
             requested = np.asarray(counts, dtype=object)
             if requested.shape != (n,):
                 raise ValueError('WorldJEPA confidence counts shape mismatch')
+        # Synthetic zero-step controls carry input/action coverage but no
+        # learned predictor evidence. Legacy checkpoints with unknown step
+        # provenance must also stay uncertain, regardless of ensemble spread.
+        if type(getattr(self, '_fit_steps', None)) is not int or self._fit_steps <= 0:
+            return conf, ['SIMULATION_UNCERTAIN'] * n
         count_valid = []
         for v in requested:
             try:
