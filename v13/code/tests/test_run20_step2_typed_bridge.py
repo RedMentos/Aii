@@ -29,6 +29,14 @@ class TypedBridge(unittest.TestCase):
                 results.append(got)
         self.assertEqual(Counter(x["action"] for x in results), {"A": 2, "B": 2, "NONE": 2})
 
+    def test_english_bare_option_mention_does_not_override_exact_sheet(self):
+        from v13.agi import eligibility as e
+        x = next(x for x in balanced.FIXTURES if x["id"] == "Sableton")
+        self.assertIsNone(e.read_fixed(x["current"], x["history"])["options"])
+        got = bridge.evaluate(inputs(x))
+        self.assertEqual(got["action"], "A")
+        self.assertEqual(got["options"], x["oracle"]["options"])
+
     def test_reject_oracle_as_input(self):
         x = balanced.FIXTURES[0]
         with self.assertRaises(bridge.Refusal): bridge.evaluate(dict(inputs(x), oracle=x["oracle"]))
