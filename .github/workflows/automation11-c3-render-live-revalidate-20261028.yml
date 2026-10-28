@@ -41,7 +41,7 @@ jobs:
           432b2e33eb53142b0d4246813b96fc791b0900f0 v13/code/scripts/acceptance.py
           efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
           7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
-          efb91a9312285c275671c2b05629754a2cca1ced v13/code/v13/source_consumer.py
+          71aaf6f0cf69963ad964c5735280ff5060294984 v13/code/v13/source_consumer.py
           346c56c27ee99549c61d811f06641a6e42740649 v13/code/tests/test_source_consumer_live_render_revalidation.py
           67f560ff193f0d323d11688c0668d03cb15e81e2 v13/code/tests/test_source_consumer_render_seal.py
           b041fada7bef403d2600a0e276891911fe7a1bc3 v13/code/tests/test_source_consumer_admission.py
