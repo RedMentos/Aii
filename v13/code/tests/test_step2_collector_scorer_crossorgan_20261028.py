@@ -27,6 +27,7 @@ def report_pair(summary, fixtures, fixture_hash, models, runner_sha256):
                                    'field_checks': fields}})
     hashes = {r['fixture'] + ':' + r['variant']: sha(canonical(r)) for r in rows}
     source = {'status': summary['step2_status'], 'fixture_sha256': fixture_hash,
+              'mock_run': {'arm': summary['arm'], 'seed': summary['seed']},
               'fixtures': fixtures, 'rows': rows, 'row_sha256': hashes,
               'source_unchanged': True, 'all_structural_checks_passed': True,
               'installed_artifacts_unchanged': True,
@@ -36,6 +37,7 @@ def report_pair(summary, fixtures, fixture_hash, models, runner_sha256):
               'preparations': [{'status': 'RECORDED', 'model_sha256': models,
                                 'runner_sha256': runner_sha256}]}
     tool = {'status': summary['tool_status'], 'rows': copy.deepcopy(rows),
+            'mock_run': {'arm': summary['arm'], 'seed': summary['seed']},
             'row_sha256': dict(hashes), 'installed_artifacts_unchanged': True}
     return canonical(source), canonical(tool)
 
