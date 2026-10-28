@@ -4,7 +4,7 @@
   "owner": "assistant/v13-run36-c3-only-native-velaris-20261028",
   "parent_source_commit": "1f2039f3fa7b62ed6c9e3699672af91dfe532144",
   "review_pr": 945,
-  "status": "LINUX_NATIVE_IN_PROGRESS_40734479879_NO_RESULT_YET",
+  "status": "LINUX_NATIVE_C3_ONLY_SCOPED_STRUCTURAL_PASS_NO_UTILITY_GAIN",
   "source": {
     "prereg_commit": "860e9ab8f3c970a520bc76571d42e82307d3f82c",
     "workflow_blob": "45affe024de5d8fdd1cc39dbdc788ac151de7e77",
@@ -46,7 +46,37 @@
     "run35_green_full": "2493_OK_1_SKIPPED",
     "run35_green_privacy": "CLEAN",
     "run35_green_private_backup": "/V13-Checkpoints/2026-10-28/Run35-C3-Arm-Binding/RUN35_GREEN_40732862439_sha62EF7991.zip",
-    "run35_green_backup_readback": "BYTE_IDENTICAL"
+    "run35_green_backup_readback": "BYTE_IDENTICAL",
+    "run36": {
+      "run": 40734479879,
+      "artifact_id": 12835973234,
+      "head": "436414f4c7c8dcebf5afc4bffdce57c8bb787284",
+      "zip_sha256": "e6b9f6454a451c1001ea45072bc4e738c455abbd2cfdbe8a6af0c0ab52328cbd",
+      "zip_crc": "PASS",
+      "inner_sha256": "22/22_PASS",
+      "proof_exits": "9/9_ZERO",
+      "focused": "16_PASS",
+      "privacy": "CLEAN",
+      "raw_report_sha256": "655b7da0917ec7fcb2eb8eec82d11980e11e865062cbeb8c5a2474ded7d79288",
+      "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+      "runner_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+      "rows": "5/5_FINAL_REAPED_ORACLE_FREE_HASH_BOUND",
+      "utility": {
+        "CURRENT_ONLY": 0.16666666666666666,
+        "B1_ONLY": 0.75,
+        "B1_B2_MISSING": 0.6666666666666666,
+        "B1_B2_EXACT": 0.75,
+        "B1_B2_DISTRACTOR": 0.6666666666666666
+      },
+      "exact_answer_count": 0,
+      "exact_vs_b1_only_raw_equal": true,
+      "missing_vs_distractor_raw_equal": true,
+      "action_correct_count": 0,
+      "remaining_fields_correct_count": 0,
+      "interpretation": "B2 exact rules did not improve action/remaining; +1/12 vs missing is project string only, no conditional B2 rule gain",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run36-C3-Velaris-Linux-Native/RUN36_NATIVE_GREEN_40734479879_shaE6B9F645.zip",
+      "backup_readback": "BYTE_IDENTICAL"
+    }
   },
   "negative_gates": {
     "Age0": "RECORD_ONLY",
@@ -59,10 +89,11 @@
     "V13_complete": false
   },
   "open_questions": [
-    "Run36 native source/model/runner install and five C3 process execution",
-    "B2 native source quote generation remains unproven; one-fixture conditional C3 test cannot promote STEP2",
+    "Preregister new disjoint C3 action/remaining instruction intervention with primary field metrics; original Run36 evidence immutable",
+    "Balanced 6-fixture x 3-seed Run33 cohort still unexecuted",
+    "B2 native source quote generation remains unproven",
     "Android/Termux native performance unmeasured"
   ],
-  "next_command": "Inspect GitHub Actions Run36 40734479879 (exact source 436414f4...), retain all failed attempts; download original artifact, verify ZIP SHA/CRC/inner SHA/stages and independent report replay, back up privately with byte-identical readback. Do not promote STEP2/B3/JEPA/Redmi on one-fixture C3-only result.",
+  "next_command": "Create separate preregistered controlled C3 action/remaining extraction study, preserve exact Run36 raw negative result and frozen Run33 cohorts, test source-only then exclusive pinned native; continue other canonical organs in parallel. No STEP2/B3/JEPA/Redmi promotion.",
   "remaining_platform_budget": "UNKNOWN"
 }
