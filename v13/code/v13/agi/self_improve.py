@@ -13,6 +13,7 @@ structural_modification (Age 5), the structural unlock and the user — they are
 executed here. Generation manifests keep the rollback point.
 """
 import copy
+import json
 import math
 import time
 from .base import StateBox,age_allows
@@ -44,9 +45,20 @@ def require_approved_origin(store, proposal, kind=None):
         raise PermissionError('AG8 regression shield not passed')
     if not isinstance(saved.get('request_id'),str) or not saved['request_id']:
         raise PermissionError('AG8 approval request missing')
-    row=store.one("SELECT status FROM requests WHERE id=?",(saved['request_id'],))
-    if row is None or row['status']!='APPROVED':
+    row=store.one("SELECT kind,payload,status FROM requests WHERE id=?",(saved['request_id'],))
+    if row is None or row['status']!='APPROVED' or row['kind']!='SELF_IMPROVEMENT':
         raise PermissionError('AG8 human approval request was not approved or was revoked')
+    try:
+        payload=json.loads(row['payload'])
+    except (TypeError,ValueError):
+        raise PermissionError('AG8 approved request payload malformed') from None
+    # Approval covers the original candidate diff and regression shield, not
+    # only a mutable proposal ID. Recheck this on every read/apply.
+    if (type(payload) is not dict or payload.get('proposal')!=saved['id']
+            or payload.get('kind')!=saved['kind']
+            or payload.get('diff')!=saved['diff']
+            or payload.get('shield')!=saved['shield']):
+        raise PermissionError('AG8 approved request payload differs from proposal')
     if saved.get('base_generation')!=store.generation_id:
         raise PermissionError('AG8 approval generation changed')
     return saved
