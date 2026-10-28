@@ -40,8 +40,8 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          6107fc9034a0c67481296de6c127436ffccc245a v13/code/scripts/run12_b2_context_identity_candidate.py
-          2507f249166d35617a52034ff7779e27a14c7e34 v13/code/tests/test_run12_b2_context_identity_candidate.py
+          66e80c6d049646303263398551e00429aefe24ba v13/code/scripts/run12_b2_context_identity_candidate.py
+          df7e17a72ce44f9e82f8cd9ea2d5cad1e654f4ce v13/code/tests/test_run12_b2_context_identity_candidate.py
           dadd4079656459d2d2c9b7df23688caba4b2cf67 v13/code/scripts/run12_b2_context_identity_tp27_replay.py
           8670bf040564b0f794f4ca84b56c33ade2d41f81 v13/code/tests/test_run12_b2_context_identity_tp27_replay.py
           b4b933209c9957a79a1ee323eda2d3f5881840ee v13/code/scripts/step2_tp27_visibility_diagnostic.py
