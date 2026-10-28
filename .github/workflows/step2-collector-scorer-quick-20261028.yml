@@ -8,6 +8,8 @@ on:
       - 'v13/code/scripts/step2_longnote_fourarm_io.py'
       - 'v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py'
       - 'v13/code/docs/coordination/STEP2_NATIVE_MODEL_PIN_CANDIDATES_20261028.md'
+      - 'v13/code/scripts/step2_current_catalog_artifact_probe.py'
+      - 'v13/code/tests/test_step2_current_catalog_artifact_probe_20261028.py'
 permissions:
   contents: read
 concurrency:
@@ -36,11 +38,11 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           git show -s --format='%P' HEAD > "$e/PARENTS.txt"
-          git hash-object v13/code/scripts/step2_fourarm_native_collector_candidate.py v13/code/scripts/step2_longnote_fourarm_io.py v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py > "$e/BLOBS_RAW.log"
+          git hash-object v13/code/scripts/step2_fourarm_native_collector_candidate.py v13/code/scripts/step2_longnote_fourarm_io.py v13/code/scripts/step2_current_catalog_artifact_probe.py v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py v13/code/tests/test_step2_current_catalog_artifact_probe_20261028.py > "$e/BLOBS_RAW.log"
           echo "$?" > "$e/BLOBS_EXIT.txt"
           (
             cd v13/code
-            timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_step2_fourarm_native_collector_candidate_20261028 tests.test_step2_longnote_fourarm_analysis_20261028 tests.test_step2_longnote_fourarm_io_20261028
+            timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_step2_current_catalog_artifact_probe_20261028 tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_step2_fourarm_native_collector_candidate_20261028 tests.test_step2_longnote_fourarm_analysis_20261028 tests.test_step2_longnote_fourarm_io_20261028
           ) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/step2_fourarm_native_collector_candidate.py v13/code/scripts/step2_longnote_fourarm_io.py v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py > "$e/COMPILE_RAW.log" 2>&1
