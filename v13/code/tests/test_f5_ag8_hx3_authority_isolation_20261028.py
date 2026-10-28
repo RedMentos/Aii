@@ -57,7 +57,11 @@ class F5AG8HX3Isolation(unittest.TestCase):
                       lesson, evidence, 'list_arith')
         return approved
 
-    def warm_ids(self, key):
+    def warm_ids(self, key, mid):
+        # Refresh the tested item before querying: warm activation decays on
+        # unrelated events, which must not masquerade as an authority refusal.
+        trigger = self.r.store.event(self.session, 'warm authority probe ' + key)
+        self.ctx.observe(trigger['event_id'], 'C3_LANGUAGE', {}, memory_ids=[mid])
         return self.ctx.warm(key, self.session, [])['ids']
 
     def restart(self, memories):
@@ -77,8 +81,8 @@ class F5AG8HX3Isolation(unittest.TestCase):
             'Project Vega budget', '42 credits')
         first = self.lesson('first.txt', 'first lesson')
         self.lesson('second.txt', 'second lesson')
-        self.assertIn(first_mid, self.warm_ids('Project Orion budget'))
-        self.assertIn(second_mid, self.warm_ids('Project Vega budget'))
+        self.assertIn(first_mid, self.warm_ids('Project Orion budget', first_mid))
+        self.assertIn(second_mid, self.warm_ids('Project Vega budget', second_mid))
         self.assertEqual(self.r.sleep.cycle._probe({'event_id': first_event})[0], 'PASS')
         self.assertEqual(self.r.sleep.cycle._probe({'event_id': second_event})[0], 'PASS')
         self.assertEqual(
@@ -97,8 +101,8 @@ class F5AG8HX3Isolation(unittest.TestCase):
                 "DELETE FROM packets WHERE kind='HumanDecision' "
                 "AND json_extract(payload,'$.source_ref.source_id')=?",
                 (first_sid,))
-        self.assertNotIn(first_mid, self.warm_ids('Project Orion budget'))
-        self.assertIn(second_mid, self.warm_ids('Project Vega budget'))
+        self.assertNotIn(first_mid, self.warm_ids('Project Orion budget', first_mid))
+        self.assertIn(second_mid, self.warm_ids('Project Vega budget', second_mid))
         self.assertNotEqual(
             self.r.sleep.cycle._probe({'event_id': first_event})[0], 'PASS')
         self.assertEqual(
@@ -116,7 +120,7 @@ class F5AG8HX3Isolation(unittest.TestCase):
         self.assertEqual([row['lesson'] for row in lessons], ['second lesson'])
         self.assertTrue(all(row['authority'] == 'DATA_NOT_INSTRUCTION'
                             for row in lessons))
-        self.assertIn(second_mid, self.warm_ids('Project Vega budget'))
+        self.assertIn(second_mid, self.warm_ids('Project Vega budget', second_mid))
         self.assertEqual(
             self.r.sleep.cycle._probe({'event_id': second_event})[0], 'PASS')
         self.assertEqual(self.r.cfg['learning_mode'], self.learning_mode)
