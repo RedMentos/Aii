@@ -1,0 +1,132 @@
+name: V13 Run11 C2 bilingual transfer64 Linux native (serial)
+on:
+  push:
+    branches:
+      - assistant/v13-run11-c2-bilingual-transfer64-20261028
+    paths:
+      - 'v13/code/docs/coordination/RUN11_C2_TRANSFER64_NATIVE_GO_20261028.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-c2-transfer64-single-native-owner
+  cancel-in-progress: false
+jobs:
+  native-transfer64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact-source and GO pin, bootstrap pinned C2, evaluate 64 rows
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c2-bilingual-transfer64-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          e9aaae43f3313fbdc8e4b2fc870f2712a5557a66 v13/code/specs/c2-bilingual-transfer64-20261028.json
+          758c5a7dea93bfb178bc3778428ee262178b6a58 v13/code/specs/c2-benchmark.json
+          4668d0befe4b06b8713dae49c3619193beaae025 v13/code/scripts/c2_benchmark.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo BLOB_MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q BLOB_MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          go=v13/code/docs/coordination/RUN11_C2_TRANSFER64_NATIVE_GO_20261028.txt
+          if [ -f "$go" ] && grep -Fxq 'SOFTWARE_RUN_ID=40639545762' "$go" && grep -Fxq 'SOFTWARE_HEAD_SHA=5676c1b18869478cec888bff530a8a92a33d3a37' "$go" && grep -Fxq 'SOFTWARE_RESULT=GREEN' "$go"; then
+            echo 0 > "$e/GO_EXIT.txt"
+          else
+            echo 1 > "$e/GO_EXIT.txt"
+            echo 'No verified software GREEN GO marker' > "$e/GO_RAW.log"
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-c2-transfer64-native-venv"
+          py="$RUNNER_TEMP/v13-c2-transfer64-native-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          home="$RUNNER_TEMP/v13-c2-transfer64-native-fresh-home"
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/GO_EXIT.txt")" = 0 ] && [ ! -e "$home" ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$home" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=15s 12m env PYTHONPATH=v13/code "$py" -m scripts.c2_bilingual_transfer64 \
+              --home "$home" --out "$e/bench" --only both > "$e/BENCH_RAW.log" 2>&1
+            echo "$?" > "$e/BENCH_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/BENCH_RAW.log"
+            echo SKIPPED_RED > "$e/BENCH_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BENCH_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$e" "$home" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,math,pathlib,sys
+          from scripts.c2_bilingual_transfer64 import fixture,ITEMS_SHA,MODEL_SHA,FIXTURE_BLOB
+          from v13.models import ModelManager
+          from v13.common import file_hash
+          e=pathlib.Path(sys.argv[1]);home=pathlib.Path(sys.argv[2]);b=e/'bench'
+          items=fixture();assert len(items)==64
+          models=ModelManager(home).verify(deep=True)
+          assert all(models[r]['ok'] and models[r]['hash_checked'] for r in ('needle','body','gist','language'))
+          assert file_hash(ModelManager(home).path_for('C2_CONTROL'))==MODEL_SHA
+          for arm in ('scaffold','needle'):
+              rows=json.loads((b/(arm+'.rows.json')).read_text())
+              report=json.loads((b/(arm+'.report.json')).read_text())
+              assert len(rows)==64 and report['n']==64
+              assert [(r['id'],r['label']) for r in rows]==[(i['id'],i['label']) for i in items]
+              assert report['items_sha256']==ITEMS_SHA and report['fixture_git_blob']==FIXTURE_BLOB
+              assert report['overall']['n']==64 and report['per_language']['en']['n']==32 and report['per_language']['de']['n']==32
+              assert all(r['pred'] in ('simple','detail','gist','both',None) and math.isfinite(r['latency_s']) and r['latency_s']>=0 for r in rows)
+              assert report['step2_utility']=='FAIL' and report['b3_l1']=='FAIL' and report['body_jepa']=='UNAVAILABLE' and report['lp3_heldout']=='FAIL'
+              assert report['jepa_weight']==0 and not report['phone_measured'] and not report['whole_system_complete'] and not report['training_or_calibration_on_transfer_rows']
+          print('C2_TRANSFER64_LINUX_NATIVE_AUTHOR_LABELS_ONLY_NO_PROMOTION')
+          print('needle_accuracy',json.loads((b/'needle.report.json').read_text())['overall']['accuracy'])
+          print('scaffold_accuracy',json.loads((b/'scaffold.report.json').read_text())['overall']['accuracy'])
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_BENCH_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b454f81da33de9d621af6417ed47ab55cba6263f --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check b454f81da33de9d621af6417ed47ab55cba6263f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c2-transfer64-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c2-bilingual-transfer64-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce registered native transfer64 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c2-bilingual-transfer64-native"
+          for name in BLOBS GO INSTALL BOOTSTRAP BENCH REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained, no C2 promotion"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'C2_TRANSFER64_NATIVE_LINUX_ONLY_NO_REDM I_OR_GATE_PROMOTION'

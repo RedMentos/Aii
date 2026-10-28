@@ -1,0 +1,403 @@
+{
+  "schema": "v13.c2.bilingual_transfer64.v1",
+  "purpose": "disjoint author-labelled bilingual C2 route transfer evaluation; never train on this cohort",
+  "language_balance": {
+    "en": 32,
+    "de": 32
+  },
+  "route_balance": {
+    "simple": 16,
+    "detail": 16,
+    "gist": 16,
+    "both": 16
+  },
+  "label_source": "AUTHOR_LABELS_FROM_PINNED_CONTROL_TOOL_DEFINITION_NOT_USER_GOLD",
+  "original_english96_items_sha256": "54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6",
+  "items_sha256": "12863402ffecef7565d23d1162fa061a1983ee92b46332c60adcfb3cd37ca9af",
+  "items": [
+    {
+      "id": "simple-en-00",
+      "text": "Hey, good to see you again.",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-01",
+      "text": "Could you say thanks in a friendly way?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-02",
+      "text": "What is a common greeting in the evening?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-03",
+      "text": "Do you prefer tea or juice?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-04",
+      "text": "What animal makes a meowing sound?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-05",
+      "text": "Is Tuesday before Wednesday?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-06",
+      "text": "Can you give me one encouraging sentence?",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-en-07",
+      "text": "See you later, take care.",
+      "label": "simple",
+      "lang": "en"
+    },
+    {
+      "id": "simple-de-00",
+      "text": "Hallo, bist du da?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-01",
+      "text": "Danke, das war nützlich.",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-02",
+      "text": "Wie begrüßt man jemanden am Abend?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-03",
+      "text": "Was ist das Gegenteil von laut?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-04",
+      "text": "Kannst du kurz Tschüss sagen?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-05",
+      "text": "Welches Tier miaut?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-06",
+      "text": "Ist Montag vor Dienstag?",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "simple-de-07",
+      "text": "Ich bin wieder zu Hause.",
+      "label": "simple",
+      "lang": "de"
+    },
+    {
+      "id": "detail-en-00",
+      "text": "Compute 29 percent of 360 exactly.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-01",
+      "text": "Write a SQL query to select users whose age is over 30.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-02",
+      "text": "Find the off-by-one error in range(1, n).",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-03",
+      "text": "Evaluate 137*24 without rounding.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-04",
+      "text": "Explain why list.pop(0) is O(n) in Python.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-05",
+      "text": "Convert 5/8 to decimal.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-06",
+      "text": "Return a regex that matches a 4-digit PIN.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-en-07",
+      "text": "Calculate 3.75 plus 8.625.",
+      "label": "detail",
+      "lang": "en"
+    },
+    {
+      "id": "detail-de-00",
+      "text": "Berechne 23 Prozent von 480.",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-01",
+      "text": "Schreibe Python-Code, der eine Liste sortiert, ohne sie zu verändern.",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-02",
+      "text": "Warum wirft dict['x'] einen KeyError, wenn der Schlüssel fehlt?",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-03",
+      "text": "Rechne 256 durch 16.",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-04",
+      "text": "Zeige die exakte SQL-Abfrage für doppelte E-Mail-Adressen.",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-05",
+      "text": "Wie lautet 7/16 als Dezimalzahl?",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-06",
+      "text": "Finde den Fehler in for i in range(len(a)+1).",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "detail-de-07",
+      "text": "Berechne 14 mal 37.",
+      "label": "detail",
+      "lang": "de"
+    },
+    {
+      "id": "gist-en-00",
+      "text": "Summarize the main themes of a discussion about city parks.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-01",
+      "text": "Outline a broad plan for organizing a community library.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-02",
+      "text": "Give a high-level overview of how recycling systems work.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-03",
+      "text": "Summarize the advantages of remote collaboration in a few themes.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-04",
+      "text": "Sketch a general strategy for learning a foreign language.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-05",
+      "text": "Provide a concise overview of the history of bicycles.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-06",
+      "text": "Outline a nontechnical plan for a school garden.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-en-07",
+      "text": "Summarize the key ideas behind open-source communities.",
+      "label": "gist",
+      "lang": "en"
+    },
+    {
+      "id": "gist-de-00",
+      "text": "Fasse die Hauptideen einer Debatte über Stadtbegrünung zusammen.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-01",
+      "text": "Gib einen groben Plan für ein Nachbarschaftsfest.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-02",
+      "text": "Erkläre die Grundidee von erneuerbaren Energien im Überblick.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-03",
+      "text": "Fasse Vor- und Nachteile von Gruppenarbeit auf hoher Ebene zusammen.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-04",
+      "text": "Skizziere einen allgemeinen Lernplan für eine neue Sprache.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-05",
+      "text": "Gib einen Überblick über die Geschichte des Fahrrads.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-06",
+      "text": "Fasse die Kernpunkte eines Projekts für einen Schulgarten zusammen.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "gist-de-07",
+      "text": "Beschreibe grob, wie öffentliche Bibliotheken organisiert sind.",
+      "label": "gist",
+      "lang": "de"
+    },
+    {
+      "id": "both-en-00",
+      "text": "Compare two city transit proposals, weigh cost and accessibility, and recommend a phased compromise.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-01",
+      "text": "Evaluate whether to migrate a small app from SQLite to PostgreSQL, considering performance, cost and rollback.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-02",
+      "text": "Contrast renewable energy options for a rural town and propose a multi-year implementation sequence.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-03",
+      "text": "Analyze a privacy policy change from security, usability, and legal perspectives, then identify tradeoffs.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-04",
+      "text": "Compare two study schedules for working students, identify failure modes and propose a hybrid.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-05",
+      "text": "Plan a software incident response balancing immediate restoration, evidence retention and future prevention.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-06",
+      "text": "Compare electric and diesel delivery fleets under budget, maintenance and emissions constraints.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-en-07",
+      "text": "Design a multi-step approach to reducing food waste that weighs incentives, logistics and measurement.",
+      "label": "both",
+      "lang": "en"
+    },
+    {
+      "id": "both-de-00",
+      "text": "Vergleiche zwei Nahverkehrskonzepte nach Kosten und Barrierefreiheit und entwirf einen Kompromiss.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-01",
+      "text": "Bewerte den Umzug einer kleinen App von SQLite zu PostgreSQL samt Risiken und Rückweg.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-02",
+      "text": "Vergleiche Solar- und Windkraft für eine Gemeinde und entwirf einen stufenweisen Plan.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-03",
+      "text": "Analysiere eine Datenschutzänderung hinsichtlich Sicherheit, Bedienbarkeit und Recht.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-04",
+      "text": "Vergleiche zwei Lernpläne für Berufstätige, prüfe Schwächen und kombiniere sie.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-05",
+      "text": "Plane die Reaktion auf einen Softwareausfall mit Wiederherstellung, Beweissicherung und Prävention.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-06",
+      "text": "Vergleiche Elektro- und Diesel-Lieferwagen nach Kosten, Wartung und Emissionen.",
+      "label": "both",
+      "lang": "de"
+    },
+    {
+      "id": "both-de-07",
+      "text": "Entwirf eine Strategie gegen Lebensmittelverschwendung mit Anreizen, Logistik und Erfolgsmessung.",
+      "label": "both",
+      "lang": "de"
+    }
+  ]
+}
