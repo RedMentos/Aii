@@ -62,5 +62,13 @@
       "internal_hashes_verified": 27,
       "private_readback_byte_exact": true
     }
-  ]
+  ],
+  "source_handoff_clarification": {
+    "historical_freeze_lifted": true,
+    "roadmap_date": "2026-10-16",
+    "historical_cohort_immutable": true,
+    "technical_blocker": "source_handoff_candidate.sources(ROOT) historical exact baseline/candidate check rejects later runtime variant; PR847 full suite RED",
+    "next": "preregister new current-source lineage with historical fixture-root tests and separate current C5 end-to-end proof, no old hash changes",
+    "decision_note": "v13/code/docs/coordination/RUN11_SOURCE_HANDOFF_POLICY_CLARIFICATION_20261028.md"
+  }
 }
