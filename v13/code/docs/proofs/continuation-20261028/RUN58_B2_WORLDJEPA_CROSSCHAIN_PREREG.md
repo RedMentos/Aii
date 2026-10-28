@@ -1,0 +1,13 @@
+# Run58 — integrate verified Run57 current-source guard into Run56 cross-chain (2026-10-28)
+
+Owner: GPT-6 continuation; review-only conditional child of Run56 PR #965 exact source head `e37fe520b924786001e3fa707ee5e9c0a17054ec`, and independent Run57 PR #964 source head `9b3ed8a032efd085e8f191bf40c35607e5aef705`. **Do not open Run58 PR or claim integrated GREEN until Run56 exact-head source-only CI independently audited GREEN.** No main merge.
+
+Prerequisite verified independently: Run57 original RED Actions 40758813100 preserved; final GREEN Actions 40759005950 source 9b3ed8a, original ZIP SHA256 `638b1cf3f55f668ae1b2a5b6f449a4cfe46621efe09e88d57ab58523c45b2971`, CRC clean, 15/15 SHA256SUMS, 30 focused/2534 full OK (1 skipped), privacy CLEAN; private Library copy byte-verified. Run55 source-only GREEN Actions 40758292446 ZIP SHA256 `80d7f18cb556b60247dfc69c949a28381a9a78467aeecdfd991e598927951adb`, 20/20 SHA256SUMS, 36 focused/2589 full OK (1 skipped), privacy CLEAN. Run56 CI pending at preregistration.
+
+## Exact integration hypothesis and files
+
+Run56's `scripts/run42_b2_eligibility_source_shadow.py` and `tests/test_run42_b2_eligibility_source_shadow.py` remain the original Run42 blobs `d60d38112e9db69cd1ebab2fe5a91e35ca9feb0c` and `4f1027a8e05c0d1a49f5c256519dd2f82fbb8a49`, respectively. Run57 modifies only those two paths (plus its independent workflow/prereg), producing exact reviewed blobs `3b0e5e67b908fe09130555c6f78e341c88d4de78` and `98a022de8a8aa396f55c88066b9761191b0b7502`. Copy only these two exact blobs into a new review branch from Run56, with no edits to WorldJEPA, Run51/53/54/55, native models or cohorts. Add a **new** Run58 real disk-backed Run44 OfflineView test that tampers the current blob after options/rules selection but before the final current-source reread; it must abstain with no decision/refs, preserve no production authority, and exercise the actual immutable SQLite/blob reader. Keep original Run57 tests intact. Test the unaffected ordinary offline decision and World-JEPA synthetic readout on the same source tree.
+
+## Verification and claim boundary
+
+Dedicated pinned Linux software-only CI on a PR against exact Run56 branch: assert original Run57 and Run55/53/54 blobs, run focused Run58/57/44/55/54/53/51 plus full suite, compile, privacy/diff, raw ZIP SHA256SUMS. Review original Actions raw before GREEN. This integrates **source-only** protections and software tests, not actual Runtime use, native Body/C3 or Redmi. No source/model/seed/cohort changes, no STEP2/B3/Body-JEPA/LP3/age authority promotion. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; full V13 incomplete. Stop/recheck if either parent branch changed.
