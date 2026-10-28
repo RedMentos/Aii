@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - codex/automation11-worldjepa-holdout-diagnostic-20261028
+  pull_request:
+    branches:
+      - assistant/v13-run47-b2-worldjepa-integration-20261028
 permissions:
   contents: read
 concurrency:
