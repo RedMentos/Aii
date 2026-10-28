@@ -35,7 +35,7 @@
     "How many unsupported-note answers are semantically calibrated versus lexical marker?",
     "C5 selected-role versus executed C3 fallback remains unresolved by this cohort."
   ],
-  "next_command": "Review PR #870 exact source and evidence, compare against parent #869 and current owner branches; prioritize next canonical functional package (C5 manifest-aware selection blocked by frozen SourceHandoff runtime). Do not modify frozen registered cohort/seed or promote negative gates.",
+  "next_command": "Review PR #870 exact source/evidence, check newest owners, then implement next independent canonical functional package. C5 manifest-aware ActionSelection remains blocked by frozen SourceHandoff runtime. Dream2 v3 15/15 scoped is already complete but canonical gate false; avoid duplicate run. Do not promote negative gates.",
   "prerequisites": "No competing heavy native owner; pinned public artifacts and no model substitutions; do not edit registered fixture/scorer.",
   "platform_remaining_budget": "UNKNOWN",
   "native_exact_tested_source": "a4191622d4453a53369698313fbbcb11d2210a65",
@@ -62,5 +62,14 @@
     "native": "16/16 FINAL; 12/12 numeric lexical; 1/4 unsupported lexical; exact 3 model roles; no tool calls",
     "software": "17 focused PASS; 2261 full OK, 1 skipped; compile/privacy/diff all 0",
     "source_pins": "13/13 native, 12/12 software"
+  },
+  "additional_state_discovery": {
+    "dream2_v3_path": "v13/code/docs/proofs/continuation-20261012/dream2-b40-v3-comparisons.json",
+    "dream2_v3_git_blob": "9e975c93a3ed1cd08d5979c075002ff02c9db8fe",
+    "dream2_v3_completed_arms": 15,
+    "dream2_v3_expected_arms": 15,
+    "dream2_v3_status": "COMPLETE_SCOPED_COMPARISONS",
+    "dream2_v3_canonical_gate_pass": false,
+    "note": "Older HANDOFF_CURRENT text saying 2/15 refers to v2; do not rerun as if v3 15/15 had not completed."
   }
 }
