@@ -1,0 +1,54 @@
+{
+  "schema": "v13.scoped_review_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6 automation11 independent review",
+  "status": "C5_ATTACHED_MANIFEST_SOFTWARE_GREEN_NATIVE_NOT_RUN",
+  "parent_pr": 880,
+  "review_pr": 881,
+  "source_commit": "461fde4d3c7d20564bed075a19699d918d10a925",
+  "base_commit": "3dd870a73f367ed86a48292c5164cbe2d80727e0",
+  "workflow": {
+    "run_id": 40658029374,
+    "conclusion": "success",
+    "artifact_id": 12802851713,
+    "artifact_sha256": "a57b5f42c54278d6d71b861184e09cca696dcbd56cc5e883648af448aea52cf2",
+    "zip_crc": "PASS",
+    "zip_entries": 17,
+    "internal_sha256_pass": 16,
+    "internal_sha256_total": 16,
+    "focused_tests": 22,
+    "focused_status": "PASS",
+    "full_tests": 2268,
+    "full_status": "PASS",
+    "full_skips": 1,
+    "source_blobs": "PASS",
+    "isolated_install": "PASS",
+    "compileall": "PASS",
+    "privacy_scan": "CLEAN",
+    "diff_check": "PASS"
+  },
+  "changed_files": [
+    ".github/workflows/run11-c5-attached-manifest-20261028.yml",
+    "v13/code/docs/coordination/AUTOMATION11_C5_WORKFLOW_REVIEW_PREREG_20261028.md"
+  ],
+  "frozen_runtime_git_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "candidate_focal_git_blob": "c605a4ea0a327dcd9dbccc0c70d365c5b8cf8b06",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "HELDOUT_FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "redmi": "UNMEASURED",
+    "original_20_stage_native": "15_PASS_5_FAIL",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Attached ModelManager.installed={} returns None availability, allowing B1 test-seam selection without installed model. Not native-ready; independent fail-closed migration needed.",
+    "Native C2+C3 no-B JEF selection on this exact source has not been measured.",
+    "Historical SourceHandoff and other frozen cohorts cannot be promoted from software GREEN."
+  ],
+  "next_command": "Preregister a new-source serial Linux-native no-B C2+C3 JEF probe with source/model/seed pins; use branch-specific workflow after confirming no heavy owner, preserve original RED. Separately design empty-manifest fail-closed behavior without changing historical frozen source in place.",
+  "backup": "GitHub review branch remote bytes verified; raw Actions artifact has 30-day retention; no rejected anyone-writable Drive retry."
+}
