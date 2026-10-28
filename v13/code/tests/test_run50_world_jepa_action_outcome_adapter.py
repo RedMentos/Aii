@@ -100,6 +100,20 @@ class Run50ActionOutcomeAdapter(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'INVALID_VECTOR'):
             adapter.build(bad_outcome)
 
+    def test_same_transition_content_under_distinct_ids_cannot_leak(self):
+        # Distinct action IDs alone do not guarantee distinct transition
+        # content. A held-out copy of a training row must be rejected.
+        rows = [dict(r) for r in self.records]
+        train_index = next(i for i, r in enumerate(rows)
+                           if adapter._partition(r['action_id']) == 'train')
+        holdout_index = next(i for i, r in enumerate(rows)
+                             if adapter._partition(r['action_id']) == 'holdout')
+        rows[holdout_index]['s'] = list(rows[train_index]['s'])
+        rows[holdout_index]['a'] = rows[train_index]['a']
+        rows[holdout_index]['y'] = list(rows[train_index]['y'])
+        with self.assertRaisesRegex(ValueError, 'CONTENT_OVERLAP'):
+            adapter.build(rows)
+
     def test_short_or_single_action_cohort_refused(self):
         with self.assertRaisesRegex(ValueError, 'RECORD_COUNT'):
             adapter.build(self.records[:12])
