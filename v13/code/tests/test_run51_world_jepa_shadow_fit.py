@@ -60,10 +60,21 @@ class Run51SyntheticShadowFit(unittest.TestCase):
                              source_kind='REAL_STORE')
 
     def test_declared_synthetic_but_changed_array_bytes_refused_before_fit(self):
+        # Preserve X2 state == X state so the tamper reaches the *source
+        # digest* gate rather than failing an earlier embedding-shape gate.
         self.bundle['train'][0][0, 0] += 0.001
+        self.bundle['train'][2][0, 0] += 0.001
         with mock.patch('v13.world_jepa.WorldJEPA.fit',
                         side_effect=AssertionError('must not fit')):
             with self.assertRaisesRegex(PermissionError, 'UNREGISTERED_SYNTHETIC_ARRAYS'):
+                self.fit()
+
+    def test_inconsistent_state_embedding_refused_before_digest_or_fit(self):
+        # Retain the distinct structural refusal observed in original RED CI.
+        self.bundle['train'][0][0, 0] += 0.001
+        with mock.patch('v13.world_jepa.WorldJEPA.fit',
+                        side_effect=AssertionError('must not fit')):
+            with self.assertRaisesRegex(ValueError, 'INVALID_ACTION_OUTCOME_EMBEDDING'):
                 self.fit()
 
     def test_invalid_config_and_manifest_fail_closed(self):
