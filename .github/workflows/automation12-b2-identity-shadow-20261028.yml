@@ -7,6 +7,8 @@ on:
       - '.github/workflows/automation12-b2-identity-shadow-20261028.yml'
       - 'v13/code/scripts/run12_b2_context_identity_candidate.py'
       - 'v13/code/tests/test_run12_b2_context_identity_candidate.py'
+      - 'v13/code/scripts/run12_b2_context_identity_tp27_replay.py'
+      - 'v13/code/tests/test_run12_b2_context_identity_tp27_replay.py'
 permissions:
   contents: read
 concurrency:
@@ -40,6 +42,8 @@ jobs:
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           65673d2dd717a52eedb00ab9cde331e8aa8f9b18 v13/code/scripts/run12_b2_context_identity_candidate.py
           2507f249166d35617a52034ff7779e27a14c7e34 v13/code/tests/test_run12_b2_context_identity_candidate.py
+          dadd4079656459d2d2c9b7df23688caba4b2cf67 v13/code/scripts/run12_b2_context_identity_tp27_replay.py
+          8670bf040564b0f794f4ca84b56c33ade2d41f81 v13/code/tests/test_run12_b2_context_identity_tp27_replay.py
           b4b933209c9957a79a1ee323eda2d3f5881840ee v13/code/scripts/step2_tp27_visibility_diagnostic.py
           8c7582d0262e6ed38b9d9afe0d36e480159b843d v13/code/tests/test_step2_tp27_visibility_diagnostic.py
           aa925d5d4128974c3e1aaf64e58d0e4310e5dfa1 v13/code/v13/organ.py
@@ -61,9 +65,9 @@ jobs:
           third=$?
           if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
           if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run12_b2_context_identity_candidate tests.test_step2_tp27_visibility_diagnostic tests.test_b2_quote_select tests.test_quote_context tests.test_step2_longnote_revision_fixtures) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run12_b2_context_identity_candidate tests.test_run12_b2_context_identity_tp27_replay tests.test_step2_tp27_visibility_diagnostic tests.test_b2_quote_select tests.test_quote_context tests.test_step2_longnote_revision_fixtures) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
-            "$py" -m compileall -q v13/code/scripts/run12_b2_context_identity_candidate.py v13/code/tests/test_run12_b2_context_identity_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+            "$py" -m compileall -q v13/code/scripts/run12_b2_context_identity_candidate.py v13/code/tests/test_run12_b2_context_identity_candidate.py v13/code/scripts/run12_b2_context_identity_tp27_replay.py v13/code/tests/test_run12_b2_context_identity_tp27_replay.py > "$e/COMPILE_RAW.log" 2>&1
             echo "$?" > "$e/COMPILE_EXIT.txt"
             if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
               (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
