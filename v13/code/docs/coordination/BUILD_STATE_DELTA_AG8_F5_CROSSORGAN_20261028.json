@@ -1,0 +1,44 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_AG8_F5_CROSSORGAN_20261028_V1",
+  "branch": "assistant/v13-ag8-f5-context-crossorgan-20261028",
+  "pr": 803,
+  "parent_pr": 802,
+  "tested_sha": "1a412fae18204dd4f33ffd1ef7e7998ad9c863a7",
+  "actions": 40607477386,
+  "focused": {
+    "run": 112,
+    "passed": 112
+  },
+  "full": {
+    "run": 2096,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "raw_exits": {
+    "BLOBS": 0,
+    "INSTALL": 0,
+    "FOCUSED": 0,
+    "FULL": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "red_actions": 40607142697,
+  "red_failure": "missing unseen evaluator metric accepted",
+  "failed_workflow_attempt": 40607438930,
+  "failed_workflow_reason": "nonexistent tests.test_agi module",
+  "zip_sha256": "fd20fa6f7af678518247fd6927c8abbc392e04da37cf0acb7ed5992503bd8707",
+  "private_backup": "/V13-Checkpoints/2026-10-28/Automation13-F5-AG8-Integration/AG8_F5_CROSSORGAN_FULL_GREEN_40607477386.zip",
+  "evidence_scope": "LINUX_SOFTWARE_SYNTHETIC_SQLITE_ONLY",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Age0": "RECORD_ONLY/SHADOW",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "HX3 revoked approval lookup RED 40607793205; narrow read-side fix, focused/full Linux software CI, no auto-merge"
+}
