@@ -16,6 +16,9 @@ jobs:
       HF_HUB_OFFLINE: '1'
       NO_MODEL_DOWNLOADS: '1'
       NEEDLE_TELEMETRY: '0'
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -25,6 +28,12 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/organ"
           "$RUNNER_TEMP/organ/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+          # Four existing full-suite modules import torch at collection time.
+          # Pin the same isolated CPU wheel as the existing staged12 workflow.
+          "$RUNNER_TEMP/organ/bin/python" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          # Required by full-suite Body-JEPA/LP3 imports (same pinned versions as
+          # the existing source-pinned staged12 workflow, no model downloads).
+          "$RUNNER_TEMP/organ/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' psutil PyYAML Pillow
       - name: Source pins
         run: |
           mkdir -p "$RUNNER_TEMP/organ-evidence"
