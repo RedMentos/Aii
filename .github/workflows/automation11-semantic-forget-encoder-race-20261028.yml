@@ -1,0 +1,77 @@
+name: V13 Run11 semantic forget encoder race source-only
+on:
+  push:
+    branches:
+      - assistant/v13-run11-semantic-forget-cache-atomic-20261028
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-semantic-cache-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  semantic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Isolated software dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/semantic"
+          "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
+      - name: Source and test pins
+        run: |
+          mkdir -p "$RUNNER_TEMP/semantic-evidence"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/semantic-evidence/HEAD.txt"
+          sha256sum v13/code/v13/semantic_memory.py v13/code/v13/memory.py v13/code/tests/test_semantic_forget_encoder_race_20261028.py | tee "$RUNNER_TEMP/semantic-evidence/source-sha256.txt"
+      - name: Focused real SQLite synthetic interleaving
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/tests"
+          set +e
+          "$RUNNER_TEMP/semantic/bin/python" -m unittest -v tests.test_semantic_memory tests.test_semantic_forget_encoder_race_20261028 > "$RUNNER_TEMP/semantic-evidence/focused.log" 2>&1
+          status=$?
+          set -e
+          cat "$RUNNER_TEMP/semantic-evidence/focused.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/semantic-evidence/focused.exit"
+          exit "$status"
+      - name: Full software suite
+        run: |
+          cd v13/code
+          export PYTHONPATH="$PWD:$PWD/tests"
+          set +e
+          "$RUNNER_TEMP/semantic/bin/python" -m unittest discover -s tests -p 'test_*.py' -q > "$RUNNER_TEMP/semantic-evidence/full.log" 2>&1
+          status=$?
+          set -e
+          tail -80 "$RUNNER_TEMP/semantic-evidence/full.log"
+          printf 'EXIT=%s\n' "$status" > "$RUNNER_TEMP/semantic-evidence/full.exit"
+          exit "$status"
+      - name: Compile, privacy and diff
+        run: |
+          set +e
+          "$RUNNER_TEMP/semantic/bin/python" -m compileall -q v13/code/v13/semantic_memory.py v13/code/v13/memory.py v13/code/tests/test_semantic_forget_encoder_race_20261028.py > "$RUNNER_TEMP/semantic-evidence/compile.log" 2>&1
+          a=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 17a1a4d24b9a565531e331ee393210e3a8cae5ff --head HEAD --no-worktree > "$RUNNER_TEMP/semantic-evidence/privacy.log" 2>&1
+          b=$?
+          git diff --check 17a1a4d24b9a565531e331ee393210e3a8cae5ff HEAD > "$RUNNER_TEMP/semantic-evidence/diff.log" 2>&1
+          c=$?
+          set -e
+          cat "$RUNNER_TEMP/semantic-evidence/compile.log" "$RUNNER_TEMP/semantic-evidence/privacy.log" "$RUNNER_TEMP/semantic-evidence/diff.log"
+          printf 'EXIT=%s\n' "$a" > "$RUNNER_TEMP/semantic-evidence/compile.exit"
+          printf 'EXIT=%s\n' "$b" > "$RUNNER_TEMP/semantic-evidence/privacy.exit"
+          printf 'EXIT=%s\n' "$c" > "$RUNNER_TEMP/semantic-evidence/diff.exit"
+          test "$a" -eq 0 && test "$b" -eq 0 && test "$c" -eq 0
+      - name: Retain original raw evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: semantic-run11-raw-${{ github.sha }}
+          path: ${{ runner.temp }}/semantic-evidence/
+          if-no-files-found: warn
+          retention-days: 30
