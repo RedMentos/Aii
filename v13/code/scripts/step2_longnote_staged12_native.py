@@ -94,6 +94,9 @@ def verify_pair(raw_source, raw_tool, tool_prereg, summary,
         raw_source, raw_tool, FIXTURE_IDS, FIXTURE_SHA256)
     expected = dict(base_artifacts)
     expected["model_sha256"] = expected_models(arm, base_artifacts["model_sha256"])
+    expected["model_revisions"] = dict(base_artifacts["model_revisions"])
+    if arm.startswith("S"):
+        expected["model_revisions"]["B2_GIST"] = expected["model_revisions"]["B1_DETAIL"]
     require(expected["runner_sha256"] == RUNNER_SHA256 and
             source["installed_artifacts"] == expected and
             source.get("distinct_bodies") is arm.startswith("T"),
