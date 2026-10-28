@@ -4,6 +4,7 @@ No model inference, Runtime, F5 authorization or learning. This suite starts
 RED until scripts.run11_store_shadow_use_boundary is implemented.
 """
 import copy
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -191,6 +192,76 @@ class StoreShadowUseBoundary(unittest.TestCase):
         forged["sources"]["old"]["seq"] = True
         with self.assertRaises(boundary.Refusal):
             self.inspect(forged)
+
+
+    # Follow-up independent adversarial review, preregistered before source fix.
+    # A future bridge must not launder model output, JEPA authority or a
+    # forged role source hash into an otherwise SHADOW-only candidate.
+    def test_bridge_model_output_flag_contamination_refuses_seal(self):
+        original = bridge.evaluate
+
+        def contaminated(*args, **kwargs):
+            result = original(*args, **kwargs)
+            result["model_output_used"] = True
+            return result
+
+        with patch.object(bridge, "evaluate", contaminated):
+            with self.assertRaises(boundary.Refusal):
+                self.seal()
+
+    def test_bridge_jepa_weight_contamination_refuses_seal(self):
+        original = bridge.evaluate
+
+        def contaminated(*args, **kwargs):
+            result = original(*args, **kwargs)
+            result["jepa_weight"] = 0.5
+            return result
+
+        with patch.object(bridge, "evaluate", contaminated):
+            with self.assertRaises(boundary.Refusal):
+                self.seal()
+
+    def test_bridge_role_source_hash_contamination_refuses_seal(self):
+        original = bridge.evaluate
+
+        def contaminated(*args, **kwargs):
+            result = original(*args, **kwargs)
+            result["source_hashes"]["old"] = "0" * 64
+            return result
+
+        with patch.object(bridge, "evaluate", contaminated):
+            with self.assertRaises(boundary.Refusal):
+                self.seal()
+
+    def test_ticket_disk_roundtrip_and_restart(self):
+        ticket = self.seal()
+        path = self.home / "shadow-ticket-test.json"
+        path.write_text(json.dumps(ticket, ensure_ascii=False), encoding="utf-8")
+        self.store.close()
+        self.store = Store(self.home)
+        restored = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(self.inspect(restored)["action"], ticket["candidate"]["action"])
+
+    def test_same_order_rowid_change_after_return_refuses(self):
+        ticket = self.seal()
+        current = self.refs["current"]
+        before = self.store.one("SELECT rowid AS seq FROM events WHERE id=?",
+                                (current,))["seq"]
+        with self.store.tx() as db:
+            db.execute("UPDATE events SET rowid=? WHERE id=?",
+                       (before + 1000, current))
+        self.assertLess(self.store.one(
+            "SELECT rowid AS seq FROM events WHERE id=?",
+            (self.refs["sheet"],))["seq"], before + 1000)
+        with self.assertRaises(boundary.Refusal):
+            self.inspect(ticket)
+
+    def test_nonserializable_ticket_candidate_refuses_without_exception_leak(self):
+        forged = copy.deepcopy(self.seal())
+        forged["candidate"]["options"] = {1, 2}
+        with self.assertRaises(boundary.Refusal):
+            self.inspect(forged)
+
 
 
 if __name__ == "__main__":
