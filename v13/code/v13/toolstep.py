@@ -89,8 +89,9 @@ def propose(text):
     if len(t)>400:return None
     m=PERCENT.search(t)
     if m:return {'tool':'calc','args':{'expression':f'{_num(m.group(1))}/100*{_num(m.group(2))}'},'confidence':.9,'span':[m.start(),m.end()]}
-    half=propose_half(t)
-    if half:return half
+    # A half request rejected as ambiguous must not fall through to the
+    # generic expression parser and silently change the requested operation.
+    if HALF_CUE.search(t) and HALF_REQUEST.search(t):return propose_half(t)
     w=t
     for pat,op in WORD_OPS:w=re.sub(pat,op,w,flags=re.I)
     w=re.sub(r'(?<=\d),(?=\d{3}\b)','',w)
