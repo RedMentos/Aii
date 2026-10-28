@@ -1,0 +1,11 @@
+# World-JEPA SHADOW concurrent fit generation guard prereg — 2026-10-28
+
+Owner: automation, isolated branch `assistant/v13-run11-world-jepa-stale-fit-guard-20261028`, base verified review checkpoint `b3586688c9d4ea88e1cfd05877f2dc8ce22ebeaa` (#912). Exact current World-JEPA source blob `98bf6f786656de20b33481f664a0fa93b4e7506f`, frozen Runtime `68e7ed1352800174972558f1e0b0683a42c8689a`. No other owner branch will be overwritten.
+
+**Observed source gap:** #909 serializes complete reads and fit publication with one process-local RLock but deliberately trains outside the lock. Two overlapping `WorldJEPA.fit` calls can finish out of start order; an older fit can publish *after* a newer fit, replacing the newest learned state. This is a source-level possible race, not a measured native failure.
+
+**Contract:** assign each valid fit a monotonic per-instance generation ticket *outside* `model.__dict__` (weak-key registry under existing lock), before training. At publication refuse a stale ticket with explicit `RuntimeError`, leaving the newer complete state intact. Keep full training unlocked; preserve exception-atomic old-state behavior, current model checkpoint format, public inference, and frozen Runtime/registered cohorts. If a newer valid fit fails, fail closed by not allowing older concurrent fit to publish; the prior committed fit remains intact. No silent stale success.
+
+**Tests preregistered:** deterministic barrier forces older valid fit to finish after newer valid fit; newer mu/pred remains, older fit raises; two distinct WorldJEPA instances do not supersede each other; failed newer valid fit leaves committed old state and supersedes older in-flight attempt; existing fit atomicity, reader/refit, checkpoint roundtrip and full Linux software suite. No model downloads/native/Redmi or JEPA utility claim. Source-pinned CI raw ZIP with SHA256SUMS, privacy/diff, independent audit and private backup. All original negative gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, Age0 RECORD_ONLY, V13 incomplete.
+
+Next: add tests first, source fix second, verify scoped/full software in isolated GitHub Actions; review before integration. Remaining platform budget UNKNOWN.

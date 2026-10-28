@@ -13,6 +13,7 @@ frozen; their spread plus the training count of the action and the state's dista
 counterfactual confidence (same shape as world_model.py §7.2.2). Below CF_MIN a counterfactual is SIMULATION_UNCERTAIN.
 """
 import threading
+import weakref
 from functools import wraps
 
 import numpy as np
@@ -29,6 +30,9 @@ CF_MIN = .5        # BOOT: below this a counterfactual is SIMULATION_UNCERTAIN
 # Python process. Keep the lock outside model.__dict__: fitted model snapshots
 # and existing tests serialize/deepcopy those attributes. Training runs unlocked.
 _WORLD_JEPA_IO_LOCK = threading.RLock()
+# Per-instance tickets live outside model.__dict__: checkpoint/deepcopy and
+# failed-fit exception-atomicity must not observe in-flight fit metadata.
+_WORLD_JEPA_FIT_TICKETS = weakref.WeakKeyDictionary()
 
 
 def _read_locked(fn):
@@ -131,6 +135,13 @@ class WorldJEPA:
                 or any(v.dtype.kind not in 'fiub' for v in (X, A, X2))
                 or not all(np.isfinite(v).all() for v in (X, A, X2))):
             raise ValueError('Invalid WorldJEPA transition shape or nonfinite values')
+        # Training stays concurrent, but a late older fit must never replace
+        # a newer fit's complete publication. Invalid inputs above do not
+        # supersede an in-flight valid fit. A failed newer valid fit leaves the
+        # previous committed model intact and vetoes older in-flight results.
+        with _WORLD_JEPA_IO_LOCK:
+            fit_ticket = _WORLD_JEPA_FIT_TICKETS.get(self, 0) + 1
+            _WORLD_JEPA_FIT_TICKETS[self] = fit_ticket
         rng = np.random.default_rng(self.seed)
         # Confidence may use only actions actually present in fit's training rows.
         # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
@@ -174,6 +185,8 @@ class WorldJEPA:
                            for key, v in row.items() if key != 'step')):
             raise ValueError('WorldJEPA fit produced nonfinite learned state')
         with _WORLD_JEPA_IO_LOCK:
+            if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
+                raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
             self.__dict__.update(_action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds,
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
