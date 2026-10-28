@@ -8,7 +8,7 @@ import json
 import re
 
 PROJECT = re.compile(r"\b(?:Projekt|Project)\s+([A-Z][A-Za-z0-9]*)\b")
-REVISION = "run21-event-source-adapter-shadow-v1"
+REVISION = "run24-event-source-message-lineage-shadow-v2"
 
 
 class Refusal(ValueError):
@@ -37,12 +37,15 @@ class EventSourceReader:
     def _load(self, ref):
         if ref not in self.kind_by_ref:
             raise Refusal("unregistered_source_ref")
-        row = self.store.one(
+        event_sql = (
             "SELECT e.rowid AS seq,e.id AS event_id,e.session_id,e.source_id,"
             "e.generation_id,e.experience_id,e.packet,s.deleted,s.hash,"
             "s.bytes,s.chars,s.kind AS source_kind "
-            "FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?",
-            (ref,))
+            "FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?")
+        message_sql = (
+            "SELECT id,session_id,role,text,status,metadata FROM messages "
+            "WHERE event_id=? ORDER BY id")
+        row = self.store.one(event_sql, (ref,))
         if (not row or row["session_id"] != self.session or row["deleted"] != 0 or
                 row["source_kind"] != "USER" or type(row["seq"]) is not int):
             raise Refusal("event_source_scope_or_revocation")
@@ -66,11 +69,37 @@ class EventSourceReader:
                     src.get("char_end") != row["chars"] or
                     src.get("modality") != "text"):
                 raise Refusal("event_packet_source_mismatch")
+            # Capture both ends of the Store input lineage before the blob read.
+            # A valid event/source alone does not establish an original user turn.
+            before_messages = self.store.rows(message_sql, (ref,))
             text = self.store.read_source(src)
         except Refusal:
             raise
         except Exception as exc:
             raise Refusal("event_source_unreadable") from exc
+        # Recheck the persisted event/source and user-message snapshots after
+        # reading the blob. This detects revocation or metadata changes during
+        # the read; it does NOT guarantee the source stays live after return.
+        after_row = self.store.one(event_sql, (ref,))
+        after_messages = self.store.rows(message_sql, (ref,))
+        if after_row != row or after_messages != before_messages:
+            raise Refusal("event_lineage_changed_during_read")
+        user_messages = [m for m in after_messages if m["role"] == "user"]
+        if len(user_messages) != 1:
+            raise Refusal("event_user_message_missing_or_ambiguous")
+        user = user_messages[0]
+        try:
+            metadata = json.loads(user["metadata"])
+            self.store.generation(row["generation_id"])
+        except Exception as exc:
+            raise Refusal("event_message_or_generation_unverified") from exc
+        if (user["session_id"] != self.session or
+                user["status"] != "FINAL" or
+                not isinstance(text, str) or user["text"] != text or
+                not isinstance(metadata, dict) or
+                set(metadata) != {"source_ref"} or
+                metadata["source_ref"] != src):
+            raise Refusal("event_user_message_source_mismatch")
         if (type(row["bytes"]) is not int or type(row["chars"]) is not int or
                 len(text.encode("utf-8")) != row["bytes"] or
                 len(text) != row["chars"] or
