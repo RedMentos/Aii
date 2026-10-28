@@ -30,6 +30,7 @@ jobs:
           "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5' 'prompt-toolkit==3.0.52'
           # Full-suite Body-JEPA/LP3 tests import torch at collection time.
           "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu
+          "$RUNNER_TEMP/semantic/bin/python" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' psutil PyYAML Pillow
       - name: Source and test pins
         run: |
           mkdir -p "$RUNNER_TEMP/semantic-evidence"
