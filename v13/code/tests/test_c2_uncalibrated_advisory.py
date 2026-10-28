@@ -2,7 +2,6 @@
 
 Isolated Runtime-source candidate; mocked software only, not native quality evidence.
 """
-import math
 import tempfile
 import time
 import unittest
