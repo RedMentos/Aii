@@ -50,8 +50,12 @@
     {
       "pr": 835,
       "source": "41c05a078533677a2a7cd889fc28448a6fc96590",
-      "status": "PENDING_FULL_LINUX_CI",
-      "run": 40628461533
+      "status": "GREEN",
+      "run": 40628461533,
+      "focused_tests": 32,
+      "full_tests": 2191,
+      "skips": 1,
+      "raw_sha256": "31b67a4bea1d09dd3f86e227b6796964fa0406fc048621404046800024f6c3f7"
     },
     {
       "pr": 836,
@@ -94,7 +98,7 @@
     "Other Canon JEF/C2/C3, Context OS, Body JEPA, Callosum, Dream/Sleep, Ages and multimodal acceptance gates remain required"
   ],
   "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q",
-  "next_action": "Inspect raw CI 40628461533 and 40628837206; if GREEN verify SHA/CRC/exit logs and private byte-exact backup, update this overlay and handoff; if RED preserve and fix without hiding failed attempt",
+  "next_action": "Inspect raw CI 40628837206; if GREEN verify SHA/CRC/exit logs and private byte-exact backup, update overlay/handoff; then select next canonical package.",
   "stop_reason": "NONE; review work ongoing",
   "platform_budget_remaining": "UNKNOWN"
 }
