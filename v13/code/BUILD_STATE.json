@@ -1991,5 +1991,101 @@
       "docs/coordination/RUN11_C2_ROUTE96_WORKER_PROTOCOL_AMENDMENT_20261028.md",
       "docs/coordination/RUN11_C2_ROUTE96_NATIVE_RESULT_20261028.md"
     ]
+  },
+  "run11_native_linux_chain_20261028": {
+    "status": "REVIEW_BRANCH_NATIVE_SMOKES_VERIFIED_AGE0_ARITHMETIC_RED",
+    "owner": "Codex #840-#844/#850; independent owner #846/#848/#849/#851 for AG0 and arithmetic",
+    "review_chain": [
+      840,
+      841,
+      842,
+      843,
+      844,
+      850
+    ],
+    "native_evidence": [
+      {
+        "scope": "C3 exact model native single-turn",
+        "run": 40630449102,
+        "pass": true,
+        "artifact_sha256": "064425a7cf1184c145a83e0248c5b42fdcccf5cccc67b8716376d9338b8b8573"
+      },
+      {
+        "scope": "B1/B2 distinct serial native",
+        "run": 40630688094,
+        "pass": true,
+        "artifact_sha256": "dcdf98d54b35f4300c6c1e8ffa0df3d06e8fcb6f5be27ab03683f463ce965d0b"
+      },
+      {
+        "scope": "B1/B2/C3 three-role serial native",
+        "run": 40631633470,
+        "pass": true,
+        "artifact_sha256": "731401473b0f9c5bbbcf663ebcefc59b46cc875d7d0bdc18fd3389e6f80e7a92"
+      },
+      {
+        "scope": "C2 Needle3 native function call",
+        "run": 40631873306,
+        "pass": true,
+        "artifact_sha256": "8f250f4e9a24473ce427925624e6f4904d68115776baf8eae2de2c66d7808fb8"
+      },
+      {
+        "scope": "Age0 native JEF C2+C3 no-B original",
+        "run": 40632157217,
+        "pass": false,
+        "reason": "JEF_MODES_PARTIAL combined_c3=false",
+        "artifact_sha256": "446ecaa32faf9703c4663590620a537ab29e45926e45ac65882d37d05c750ec0"
+      },
+      {
+        "scope": "Age0 AG0-only JEF/STEP12 structural, arithmetic",
+        "run": 40633577048,
+        "pass": false,
+        "reason": "JEF 8/8 STEP12 8/8 but public arithmetic 60 missing",
+        "artifact_sha256": "b23586075a8c10890dd87b31bd01d6fb64e7109c71a32a656e681851c0e03e73",
+        "owner": "independent #848"
+      },
+      {
+        "scope": "C2 96-row route quality",
+        "run": 40634077824,
+        "pass": false,
+        "reason": "Needle 15.62% vs scaffold 47.92% author-labelled, no promotion",
+        "artifact_sha256": "c4dd65ba18b446447271d4780b0741a4dc6994ab489496592ab3447123747076"
+      }
+    ],
+    "original_interactive_c3_red": {
+      "run": 40629227523,
+      "exit_code": 124,
+      "stdout_bytes": 962086943,
+      "stdout_sha256": "8fe6aa49858d358b9ce60bfefe48ee0e6512ed0a0cbf54a75d565f10689e9020",
+      "preserved": true
+    },
+    "full_linux_software_last_verified": {
+      "run": 40630928415,
+      "tests_passed": 2208,
+      "skipped": 1,
+      "source_sha": "ca1fbeaeb75597ded2ef71ec96977651513df173",
+      "scope": "before C2 route96 and AG0 changes"
+    },
+    "private_library_evidence": "/V13-Checkpoints/2026-10-28/Run11-Native-Singleturn/",
+    "source_main_not_updated": true,
+    "age0_record_only": true,
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "lp3_heldout_gate": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "open_questions": [
+      "Review #849 numeric C3 prompt and #851 shadow-only calculator without bypassing Age0 approval",
+      "Independent human-labelled heldout C2 routing and confidence calibration needed before native C2 authority",
+      "STEP2 four-arm causal utility remains negative",
+      "B3, Body-JEPA, Context OS long-term retention and Redmi thermal/RSS gates remain separate"
+    ],
+    "next_commands": [
+      "Review #848 exact native artifact and preserve arithmetic RED",
+      "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q",
+      "On device after approval: bash setup.sh && bash TESTEN.sh --quick"
+    ],
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
