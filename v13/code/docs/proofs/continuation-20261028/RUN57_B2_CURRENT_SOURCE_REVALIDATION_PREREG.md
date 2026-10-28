@@ -1,0 +1,13 @@
+# Run57 — Run42 current-source post-selection revalidation (2026-10-28)
+
+Owner GPT-6 continuation, independent read-only cross-organ review of Run42 PR #950 exact head `4a12312cef3a5e2556173baa61b1294860e34153`. Do not overwrite Run42 owner branch or merge to main. Original Run42 source-only GREEN Actions `40743826067` artifact `12840707560`, ZIP SHA256 `271521a5aa4587cd65b723c021c675592b84fca09d761178db1c129a1ee62787`, CRC/15 inner hashes, 28 focused/2532 full OK (1 skipped), privacy CLEAN, private Library byte-verified backup retained. This new case was not in the original test set.
+
+## Source integrity hypothesis and preregistered RED
+Run42 `evaluate` reads `current=store.read_source(current_ref)` early, later loops through current and historical option refs. Its loop **catches** ValueError/OSError/KeyError when re-reading a now-deleted current source and continues to older option sheets. It then calls `eligibility.decide(rules, parsed, current, ...)` with the stale initial current text and can produce a SHADOW action despite current source being revoked mid-evaluation. This violates the intended source-exact claim even though there is no Runtime authority.
+
+Add a deterministic real-SQLite synthetic race test with `Store.read_source` wrapper: the first read of current succeeds; on the second current read mark its source tombstoned, then delegate to original reader (which raises). Existing Run42 should still emit `SHADOW_DETERMINISTIC_DECISION_NO_OUTPUT` (RED relative to expected refusal). Preserve original raw RED and failed attempts. No artificial mutation of original registered source/seed/cohort.
+
+## Narrow correction after RED
+After option selection but before `eligibility.decide`, re-read current source ref and require exact equality to initial `current`; on ValueError/OSError/KeyError or mismatch return `ABSTAIN_CURRENT_SOURCE_CHANGED` with `decision=None` and no source refs. Do not weaken rule/option source validation, modify frozen eligibility recipe or grant any authority. Add a second test for changed current bytes and a positive no-race regression. This is a bounded post-selection fail-closed guard, not a claim of atomic SQLite snapshot or protection from mutation after the final read.
+
+Dedicated pinned software-only CI must preserve RED and then verify focused/full, frozen eligibility blob, privacy/diff, raw ZIP hashes and private backup. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, Redmi UNMEASURED, V13 incomplete. No native model, tool dispatch, Store writes by production source, or user-facing answer.
