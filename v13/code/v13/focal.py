@@ -532,13 +532,16 @@ class FocalLoop:
 def available_model_roles(models):
     """Manifest-only C5 availability; AG0 cannot revive a missing base manifest.
 
-    None preserves a deliberately uninstalled software-test seam. A populated
-    installed map is authoritative about which roles may be selected; native
+    None preserves only a new uninitialized software-test seam (no manifest
+    file). A persisted empty manifest means zero available models. Native
     runner path/bytes are still checked separately by ModelManager.path_for.
     """
     from .models import model_key
     installed=models.installed
-    if not installed:return None
+    if not isinstance(installed,dict):return set()  # malformed runtime capability fails closed
+    if not installed:
+        manifest=getattr(models,'path',None)
+        return set() if manifest is not None and manifest.is_file() else None
     roles=set()
     for role in ('C3_LANGUAGE','B1_DETAIL','B2_GIST'):
         entry=installed.get(model_key(role,models.b2_control))
