@@ -9,7 +9,7 @@ from .common import digest,dumps,safe_text,visible_text,atomic_write,Cancelled,U
 from .config import initialize
 from .contracts import packet
 from .store import Store
-from .models import ModelManager,ROLES
+from .models import ModelManager,ROLES,model_key
 from . import semantic_memory,episodes,duplex
 from .agi import live as agi_live
 from .runners import RunnerPool,NeedleRunner,check,kill_process
@@ -432,7 +432,10 @@ class Runtime:
                 try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
-            c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
+            # A removed B manifest must not be bypassed by a previously synced
+            # BodyFabric/AG0 slot. C5 records the suppression before dispatch.
+            available_bodies={r for r in ('B1_DETAIL','B2_GIST') if (self.models.installed.get(model_key(r,getattr(self.models,'b2_control','two_body'))) or {}).get('download_complete')}
+            c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar,available_roles=available_bodies)
             clarify_turn=c5['role']=='ASK_USER'
             if clar:meta['clarify']=clar|{'selected':clarify_turn}
             if clarify_turn:c5['role']='C3_LANGUAGE'  # C3 voices the clarifying question
