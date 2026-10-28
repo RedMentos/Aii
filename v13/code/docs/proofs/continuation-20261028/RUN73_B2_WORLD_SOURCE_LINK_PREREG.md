@@ -1,0 +1,19 @@
+# Run73 — source-bound B2 OfferPacket ↔ WorldTransition read-only event link (2026-10-28)
+
+Owner: GPT-6 scheduled continuation. Independent review-only sibling of Run72; base independently GREEN Run70 #977 exact `1a592970781c581dce643168004b50bda7a2d95d` (Actions 40770594298, original artifact SHA256 e0778e5d956375ef44b3d072e30cec1dd34abd1d8bdd943054569aee8da245ff, 32/32 hashes, 101 focused/2637 full OK). New file ownership exclusively `v13/code/v13/b2_world_event_link.py`, `v13/code/tests/test_b2_world_event_link.py`, and this prereg/CI/handoff. No frozen Runtime, model, cohort, seed, B2, JEPA, Store schema or source modifications.
+
+## Goal and contract
+
+Test the missing **cross-organ data path**, not more synthetic JEPA scores: given an already-open, explicitly authorized read-only Store, can a single authoritative event bind an earlier B2_GIST OfferPacket to a committed WorldTransition from the **same event, session and brain generation**, with exact current and outcome SourceRefs, action ID/role, final action and self-candidate hash? A B2 offer is a hypothesis, not ground truth. The world outcome is own digital text only, not external world truth. The adapter never opens Store itself, writes, executes tools, trains, starts native workers or emits an answer. It exposes only a provenance-bound SHADOW candidate for later explicitly authorized JEPA input. No B2 semantic content is treated as action ground truth.
+
+## Frozen design and tests before implementation
+
+- Input: Store object exposing read-only `one/rows/read_source`; exact `event_id`, `session_id`, `generation_id`, `b2_model_revision`; fixed bounded scan. Output: zero or one link with exact refs/IDs and no authority, or explicit abstention. No implicit latest-event search or global user-data read.
+- Require event envelope and source identity, B2 packet source/event/generation/model/role and creation before transition, WorldTransition source/event/generation, FINAL action with matching ID/event/role/outcome, source-backed assistant FINAL self-candidate digest, corollary and intent linkage. Re-read both sources at end. On missing/tampered/multiple/conflicting records fail closed, not silent fallback to another event.
+- Test in-memory SQLite with source hash verification: valid same-event link; different session/generation/model; foreign B2; altered event ref; deleted/revoked/tampered source; changed outcome; non-FINAL action; missing corollary/intent; forged packet action role; future B2; multiple candidates; source changes between selection and final reread; SQL queries SELECT-only and zero DB mutations; invalid limits/IDs.
+- Run focused `PYTHONPATH=.:tests python -m unittest -v tests.test_b2_world_event_link`, existing `tests.test_run40_b2_store_history_readonly` and `tests.test_world` (if present), full suite, compile, privacy scan, frozen Git hashes and closed SHA256SUMS via pinned GitHub Actions. RED must be preserved. No native or Redmi claims.
+- Gate result: structural event-source link only; **not** B2↔JEPA semantic learning or JEPA-only grounded utility. No inference or train route connected. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; whole system incomplete.
+
+## Research context
+
+Canon v10.16.1 locked action Corollary/Efference Copy and World/Self information flow. Current `v13.world.World.transition` already emits SourceRefs and action/corollary ID; `run40` validates B2 offer provenance. This package joins those existing provenances without rewriting either. No third-party dependency or license change. New implementation remains SHADOW/off by default.
