@@ -185,9 +185,14 @@ def recall_and_admit(query, session, memory):
         for row in rows:
             try:
                 fresh = memory.candidate(row["id"], session)
+                verified = memory._verified_rows([fresh])
+                if (len(verified) != 1 or verified[0]["id"] != fresh["id"]):
+                    return deny("UNVERIFIABLE_SCOPED_CORRECTION")
                 by_id[fresh["id"]] = fresh
             except (KeyError, ValueError, TypeError, OSError):
-                continue
+                # An active same-project correction is not ignorable just
+                # because its SourceRef or F1/F5 decision became unreadable.
+                return deny("UNVERIFIABLE_SCOPED_CORRECTION")
         return admit(query, session, list(by_id.values()), memory)
     except Exception:
         return deny("RETRIEVAL_UNAVAILABLE")
