@@ -39,9 +39,9 @@ def admit(query, session, memories, memory):
 
     `memories` must come from the trusted Memory.recall result, not a prompt.
     Candidate rows and F1/F5 provenance are re-read and rechecked; any malformed
-    row is discarded. A learned semantic association can support a topic only
-    when the retrieval result marks an in-support admission and the entity is
-    exactly the same. No unverified SourceRef reaches the model.
+    row is discarded. A learned semantic association is NOT trusted from an unbound caller
+    dictionary; cross-topic synonyms remain blocked pending a verified query
+    SourceRef and active learner decision proof. No unverified SourceRef reaches the model.
     """
     name = query_scope(query)
     if name is None:
@@ -66,17 +66,17 @@ def admit(query, session, memories, memory):
             if supplied.get("source_ref") != fresh["source_ref"]:
                 continue
             lexical = relevance(query, fresh["key_text"]) > 0
-            policy = supplied.get("retrieval_policy")
-            learned = (isinstance(policy, dict) and policy.get("decision") == "admit"
-                       and policy.get("in_support") is True)
-            if not (lexical or learned):
+            # A caller-supplied retrieval_policy is NOT a source-bound proof.
+            # Semantic synonym admission remains blocked until its decision
+            # can be reverified against the active learner and query SourceRef.
+            if not lexical:
                 continue
             source = memory.s.read_source(fresh["source_ref"])
             if source != fresh["value"]:
                 continue
             valid.append({"memory_id": fresh["id"], "topic": fresh["key_text"],
                           "value": source, "source_ref": fresh["source_ref"],
-                          "match": "LEXICAL" if lexical else "LEARNED_IN_SUPPORT"})
+                          "match": "LEXICAL"})
         except (KeyError, ValueError, TypeError, OSError):
             continue
     values = {x["value"] for x in valid}
