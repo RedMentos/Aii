@@ -1,0 +1,100 @@
+name: V13 Run63 factorized real file-action baseline
+on:
+  push:
+    branches:
+      - codex/automation11-run63-factorized-global-file-baseline-20261028
+  pull_request:
+    branches:
+      - codex/automation11-run60-z12b-slotlocal-baseline-20261028
+permissions:
+  contents: read
+concurrency:
+  group: v13-run63-factorized-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture real file-action software evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run63"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/scripts/run63_z12b_factorized_real_file_baselines.py v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py v13/code/docs/proofs/continuation-20261028/RUN63_FACTORIZED_REAL_FILE_PREREG.md v13/code/scripts/z12b_world_jepa.py v13/code/v13/world_jepa.py v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/FROZEN_RAW.log"
+          if [ "$(git hash-object v13/code/scripts/run63_z12b_factorized_real_file_baselines.py)" = 9d33026c3431fa4501fa2793db64f049bd5c6ef9 ] && [ "$(git hash-object v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py)" = b12f679176d5d51633515a8588f60317c8fa8a49 ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN63_FACTORIZED_REAL_FILE_PREREG.md)" = 9396fbf9d60cedfe3b3633b70c7b41dea3c22e2f ] && [ "$(git hash-object v13/code/scripts/z12b_world_jepa.py)" = 2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4 ] && [ "$(git hash-object v13/code/v13/world_jepa.py)" = b95cd3fd9172ddef0fb88f0a7d70e2921c43e777 ] && [ "$(git hash-object v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py)" = 08063f3df630f558589dd297860dd19e0021dc90 ] && [ "$(git hash-object v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py)" = e2e45040631b7f013e802417f86d8cb630d1deb3 ]; then echo 0 > "$e/FROZEN_EXIT.txt"; else echo 1 > "$e/FROZEN_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run63-venv"
+          py="$RUNNER_TEMP/v13-run63-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
+          echo "$?" > "$e/NUMPY_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run63_z12b_factorized_real_file_baselines tests.test_run60_z12b_slotlocal_real_file_baseline tests.test_world_jepa tests.test_world_jepa_fair_baseline) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -c 'import json; from scripts import run63_z12b_factorized_real_file_baselines as probe; print(json.dumps(probe.run(),sort_keys=True,allow_nan=False))') > "$e/METRICS_RAW.json" 2> "$e/METRICS_ERR.log"
+            echo "$?" > "$e/METRICS_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/METRICS_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/run63_z12b_factorized_real_file_baselines.py v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            third=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo 1 > "$e/INSTALL_EXIT.txt"
+              echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in INSTALL FULL; do echo SKIPPED_FOCUSED_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a94e27cbe0c100af2d88c994ea4f89bfd89bf433 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check a94e27cbe0c100af2d88c994ea4f89bfd89bf433 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run63-factorized-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run63/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce real-file software-only gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run63"
+          for n in FROZEN NUMPY FOCUSED METRICS COMPILE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no JEPA/native/gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN63_FACTORIZED_REAL_FILE_SOFTWARE_ONLY
