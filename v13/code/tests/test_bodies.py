@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 import numpy as np
 from v13.runtime import Runtime
+from v13.common import Unavailable
 from v13 import bodies,runners
 from v13.cognition import offer_schema
 from v13.agi.slots import ModelSlots
@@ -76,6 +77,40 @@ class SlotRouting(Base):
             self.r.bodies.begin_turn('evt%d'%k);picked.add(self.r.models.path_for('B2_GIST').name)
         self.assertEqual(picked,{'gist.gguf','gist2.gguf'})
         s.rollback('B2_GIST');self.r.bodies.begin_turn('evt1');self.assertEqual(self.r.models.path_for('B2_GIST').name,'gist.gguf')
+
+    def test_removed_base_manifest_cannot_resurrect_active_slots(self):
+        # Native JEF RED 40632157217: a removed B manifest was still served
+        # through an AG0 active slot, so the alleged C2+C3 turn used B1.
+        for role,key in (('B1_DETAIL','body'),('B2_GIST','gist')):
+            self.assertIsNotNone(self.r.bodies.slots.box.load()[0]['slots'].get(role))
+            self.r.models.installed.pop(key)
+            self.assertIsNone(self.r.bodies.path_override(role))
+            self.assertIsNone(self.r.bodies.revision_override(role))
+            with self.assertRaises(Unavailable):
+                self.r.models.path_for(role)
+        self.assertEqual(self.r.models.path_for('C3_LANGUAGE').name,'language.gguf')
+        # Missing manifest remains missing after a persisted restart.
+        self.r.models.save()
+        self.r.close()
+        self.r=Runtime(self.home)
+        for role in ('B1_DETAIL','B2_GIST'):
+            self.assertIsNone(self.r.bodies.path_override(role))
+            with self.assertRaises(Unavailable):
+                self.r.models.path_for(role)
+
+    def test_removed_base_manifest_cannot_serve_ramp_candidate(self):
+        candidate=install(self.home,'gist2','d'*64,300)
+        slots=self.r.bodies.slots
+        slots.propose_swap('B2_GIST',ModelSlots.from_installed(candidate))
+        slots.start_shadow('B2_GIST')
+        slots.parity('B2_GIST',{'overall':.5},{'overall':.5})
+        slots.ramp('B2_GIST')
+        self.r.models.installed.pop('gist')
+        for index in range(40):
+            self.r.bodies.begin_turn('missing-base-'+str(index))
+            self.assertIsNone(self.r.bodies.path_override('B2_GIST'))
+            with self.assertRaises(Unavailable):
+                self.r.models.path_for('B2_GIST')
 
 class Schema(unittest.TestCase):
     def test_offer_schema_fits_the_token_budget(self):
