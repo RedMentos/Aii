@@ -1,0 +1,49 @@
+{
+  "run30_keldara_native_aggregate_audit_20261028": {
+    "status": "ORIGINAL_LINUX_NATIVE_READONLY_AGGREGATE_VERIFIED_SOFTWARE_TEST_PENDING",
+    "parent_sha": "03c664c6a70eebe943ec6a0384a24814ca59c0c5",
+    "original_native_run": 40715223545,
+    "original_native_zip_sha256": "989abb8ac7b8fcd91ec047f97b735c9c8f84342e49251855b3375f7b3519762b",
+    "original_native_raw_sha256": "0a1ce865d590adb5c4ead5007f42c202dbe6f24140a562ebdbc44bcb9f39baf3",
+    "original_zip_crc": "CLEAN",
+    "inner_sha256_verified": "26/26",
+    "row_sha256_verified": "7/7",
+    "private_library_backup": "/V13-Checkpoints/2026-10-28/Run30-Native-Aggregate-Audit/RUN26_ORIGINAL_40715223545_sha989abb8a.zip",
+    "private_readback_byte_verified": true,
+    "scope": "one-fixture Keldara EN CQ Linux-native read-only field failure aggregate",
+    "variant_utility": {
+      "b1_only": 0.6666666666666666,
+      "b2_only": 0.25,
+      "both_none": 0.6666666666666666,
+      "both_exact": 0.6666666666666666,
+      "both_control": 0.6666666666666666,
+      "same_policy_dual": 0.6666666666666666,
+      "prompt_only_dual": 0.5833333333333334
+    },
+    "both_exact_minus_b1_only": 0,
+    "common_failed_fields": [
+      "project",
+      "action",
+      "A.remaining",
+      "B.remaining"
+    ],
+    "native_model_run_new": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "open_questions": [
+      "Run30 source-only CI must finish GREEN",
+      "Native C3 source-bound exact field extraction and action selection remain unproven",
+      "Fresh disjoint controls and Redmi longrun absent"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run30_native_keldara_aggregate_audit tests.test_run16_step2_fresh_en_native_pilot tests.test_run25_native_pilot_review",
+    "remaining_platform_budget": "UNKNOWN"
+  }
+}
