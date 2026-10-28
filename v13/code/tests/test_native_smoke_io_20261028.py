@@ -41,7 +41,7 @@ class NativeSmokeBoundedIO(unittest.TestCase):
     def test_timeout_preserves_raw_prefix_without_false_pass(self):
         with tempfile.TemporaryDirectory() as tmp:
             cli = Path(tmp) / 'slow.sh'
-            cli.write_text("#!/bin/sh\nprintf 'partial'\nsleep 2\n")
+            cli.write_text("#!/bin/sh\nprintf 'partial'\nexec sleep 2\n")
             cli.chmod(0o755)
             r = run_one_turn([str(cli), '--single-turn'], tmp, 'T',
                              os.environ.copy(), timeout=0.2)
