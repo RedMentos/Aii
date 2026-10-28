@@ -40,7 +40,8 @@ class ExactSourceEligibility(unittest.TestCase):
         self.assertEqual([o['remaining'] for o in r['decision']['options']], [45,70])
         self.assertEqual([o['eligible'] for o in r['decision']['options']], [True,False])
         self.assertEqual(r['source_refs'][0]['source_id'], note['source_ref']['source_id'])
-        self.assertGreater(r['source_refs'][0]['char_start'], 240)
+        self.assertGreater(RULE.index('Budget 160 euros'), 240)
+        self.assertGreater(r['source_refs'][0]['char_end'], 240)
         self.assertFalse(r['canonical_gate_pass'])
         self.assertEqual(r['authority'], 'SHADOW_NO_AUTHORITY')
 
