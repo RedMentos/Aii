@@ -39,25 +39,25 @@ jobs:
           mkdir -p "$V13_HOME"
           if [ "$(cat "$e/BASE_INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/SOURCE_EXIT.txt")" = 0 ]; then
             (cd v13/code && timeout --signal=TERM --kill-after=15s 22m "$py" - <<'PY'
-import json,os
-from pathlib import Path
-from v13.config import initialize
-from v13.models import ModelManager,catalog
-from v13.bootstrap import install_native
-from v13.common import file_hash
-home=Path(os.environ["V13_HOME"])
-initialize(home)
-m=ModelManager(home)
-m.install("language")
-m.install("needle")
-install_native(home)
-rep=m.verify(deep=True)
-assert rep["language"]["ok"] and rep["language"]["hash_checked"]
-assert rep["needle"]["ok"] and rep["needle"]["hash_checked"]
-assert m.revision("C3_LANGUAGE")==catalog()["models"]["language"]["revision"]
-assert file_hash(m.path_for("C3_LANGUAGE"))==catalog()["models"]["language"]["files"][0]["sha256"]
-print(json.dumps({"status":"PINNED_C3_AND_NEEDLE_INSTALLED_HASH_VERIFIED","language_revision":m.revision("C3_LANGUAGE"),"language_sha256":file_hash(m.path_for("C3_LANGUAGE")),"model_bytes_uploaded":False,"runner_tag":catalog()["runner"]["tag"],"deep_verified":rep},sort_keys=True))
-PY
+          import json,os
+          from pathlib import Path
+          from v13.config import initialize
+          from v13.models import ModelManager,catalog
+          from v13.bootstrap import install_native
+          from v13.common import file_hash
+          home=Path(os.environ["V13_HOME"])
+          initialize(home)
+          m=ModelManager(home)
+          m.install("language")
+          m.install("needle")
+          install_native(home)
+          rep=m.verify(deep=True)
+          assert rep["language"]["ok"] and rep["language"]["hash_checked"]
+          assert rep["needle"]["ok"] and rep["needle"]["hash_checked"]
+          assert m.revision("C3_LANGUAGE")==catalog()["models"]["language"]["revision"]
+          assert file_hash(m.path_for("C3_LANGUAGE"))==catalog()["models"]["language"]["files"][0]["sha256"]
+          print(json.dumps({"status":"PINNED_C3_AND_NEEDLE_INSTALLED_HASH_VERIFIED","language_revision":m.revision("C3_LANGUAGE"),"language_sha256":file_hash(m.path_for("C3_LANGUAGE")),"model_bytes_uploaded":False,"runner_tag":catalog()["runner"]["tag"],"deep_verified":rep},sort_keys=True))
+          PY
             ) > "$e/INSTALL_RAW.log" 2>&1
             echo "$?" > "$e/INSTALL_EXIT.txt"
           else
