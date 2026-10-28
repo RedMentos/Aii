@@ -1,0 +1,61 @@
+{
+  "schema": "V13_RUN18_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "Run18 balanced source controls",
+  "parent_sha": "470a6a22ff2a8c07c369245916e2b336d0a9c258",
+  "verified_source_sha": "b909dc142aeb589221dde453453c461ec1fc2d18",
+  "ci_run_id": 40702949272,
+  "ci_conclusion": "SUCCESS",
+  "raw_zip_sha256": "7e1aef72e05524278c834320a6ce32bac1445ad88af025247d210b180cbb7d01",
+  "private_backup_readback": "BYTE_IDENTICAL",
+  "focused_tests": 14,
+  "full_tests": 2463,
+  "full_skipped": 1,
+  "privacy": "CLEAN",
+  "original_red_run_id": 40702919727,
+  "original_red_sha256": "bacf3813996b32e564ecbd3e861920e39fddb0f43cd60e208d2fcaa63b87c263",
+  "cohort": {
+    "source_only": true,
+    "language": {
+      "EN": 3,
+      "DE": 3
+    },
+    "labels": {
+      "A": 2,
+      "B": 2,
+      "NONE": 2
+    },
+    "proposed_seeds": [
+      20261201,
+      20261202,
+      20261203
+    ],
+    "native_authorized": false
+  },
+  "original_run15_baseline": {
+    "always_A_correct": 5,
+    "total": 6,
+    "german_always_A_correct": 3,
+    "german_total": 3
+  },
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "Independent native baseline against balanced labels not run",
+    "Type-label confounding requires more independent cases",
+    "Run16 native owner active; heavy jobs must serialize",
+    "German typed reader requires F1/F5 integration"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run18_step2_balanced_controls",
+  "next_package": "Register source/model-hash-bound native balanced A/B/NONE control after Run16 owner check",
+  "budget_remaining": "UNKNOWN"
+}
