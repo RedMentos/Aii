@@ -39,7 +39,8 @@ class EventSourceReader:
             raise Refusal("unregistered_source_ref")
         row = self.store.one(
             "SELECT e.rowid AS seq,e.id AS event_id,e.session_id,e.source_id,"
-            "e.packet,s.deleted,s.hash,s.chars,s.kind AS source_kind "
+            "e.generation_id,e.experience_id,e.packet,s.deleted,s.hash,"
+            "s.bytes,s.chars,s.kind AS source_kind "
             "FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?",
             (ref,))
         if (not row or row["session_id"] != self.session or row["deleted"] != 0 or
@@ -49,9 +50,16 @@ class EventSourceReader:
             packet = json.loads(row["packet"])
             src = packet["source_ref"]
             if (packet.get("event_id") != ref or
+                    packet.get("schema_version") != "1.0" or
+                    packet.get("producer_component") != "A0_SOURCE" or
+                    packet.get("brain_generation_id") != row["generation_id"] or
+                    packet.get("experience_id") != row["experience_id"] or
                     packet.get("authority") != "AUTHORITATIVE" or
                     packet.get("kind") != "USER_TEXT" or
                     not isinstance(src, dict) or
+                    set(src) != {"source_id", "sha256", "char_start",
+                                 "char_end", "modality"} or
+                    packet.get("provenance") != [src] or
                     src.get("source_id") != row["source_id"] or
                     src.get("sha256") != row["hash"] or
                     src.get("char_start") != 0 or
@@ -63,7 +71,10 @@ class EventSourceReader:
             raise
         except Exception as exc:
             raise Refusal("event_source_unreadable") from exc
-        if (hashlib.sha256(text.encode("utf-8")).hexdigest() != row["hash"] or
+        if (type(row["bytes"]) is not int or type(row["chars"]) is not int or
+                len(text.encode("utf-8")) != row["bytes"] or
+                len(text) != row["chars"] or
+                hashlib.sha256(text.encode("utf-8")).hexdigest() != row["hash"] or
                 {x.lower() for x in PROJECT.findall(text)} != {self.project.lower()}):
             raise Refusal("event_source_hash_or_project")
         return {"ref": ref, "text": text, "sha256": row["hash"],
