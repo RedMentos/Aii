@@ -1,0 +1,9 @@
+# Run73 follow-up prereg — B1+B2 coexisting OfferPackets (2026-10-28)
+
+Independent source-level review after original exact Run73 GREEN `7334b99411d107dc691a1e6ddba6659bd1723256`, Actions `40778379188`, original ZIP SHA256 `61eeeac526b18ccc8bb5b9ea2bbb7fb5963fab01d18e86a394166020c8950b7e`, CRC clean, 17/17 SHA256SUMS, 25 focused/2649 full OK (1 skipped), privacy CLEAN, privately byte-verified backup.
+
+**Observed gap:** initial fixture has exactly one OfferPacket. Actual Age0 observer can emit both B1_DETAIL and B2_GIST OfferPackets for the same event, so the original `len(all_offers)==1` check would abstain on the normal two-body path. This is a missing real-world coexistence case, not a discovered security exploit or quality success.
+
+**Fixed before code:** retain bounded read-only scan and fail-closed on malformed packets, but select exactly one **B2_GIST** offer after parsing all bounded OfferPackets. A valid B1_DETAIL offer from the same event/generation is irrelevant and must not suppress the B2↔World source link. Two B2 offers remain ambiguous and must abstain; a B1 packet claiming the B2 role but wrong generation/provenance is not an accepted B2. Preserve event/session/generation, WorldTransition, intent/corollary/final source reread, no authority and all original negative gates. Add regression tests for B1+B2 coexistence and duplicate B2, plus full software suite, privacy, closed original raw. Do not alter frozen World, Store, B2, JEPA or registered cohorts. Original GREEN is not evidence of this new case; new exact-head CI required.
+
+Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0; whole-system incomplete.
