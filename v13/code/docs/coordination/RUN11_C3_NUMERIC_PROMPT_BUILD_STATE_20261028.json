@@ -1,0 +1,77 @@
+{
+  "schema": "V13_RUN11_C3_NUMERIC_PROMPT_CHECKPOINT_V1",
+  "owner": "GPT-6 review candidate",
+  "source": {
+    "branch": "assistant/v13-run11-c3-numeric-explicitness-20261028",
+    "parent_commit": "db7702f151aa951a6f4293f98585687e6ca9c8ae",
+    "prompt_baseline_blob": "a74d7517a7ab70e801e177b58da057e57fd3460c",
+    "prompt_candidate_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+    "runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+    "focal_blob": "2135f4404f241cfc198abd7fe2288f13a622f4fc",
+    "toolstep_blob": "9640b2ce9abfc08cb82f7b550e18d856d9513f08",
+    "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "control_tools_blob": "954a3f468f10195fbce12d27f68585ee7edee2c9",
+    "registered_frozen_cohorts_unchanged": true
+  },
+  "evidence": {
+    "baseline_native_red": {
+      "run": 40633577048,
+      "artifact": 12792223727,
+      "zip_sha256": "b23586075a8c10890dd87b31bd01d6fb64e7109c71a32a656e681851c0e03e73",
+      "jef_structural_pass": true,
+      "step12_structural_pass": true,
+      "public_ask_60": false
+    },
+    "candidate_software_full_green": {
+      "run": 40633968988,
+      "artifact": 12792194808,
+      "zip_sha256": "3a05e49496b1c4e02a4713c39111ce5c649978b88c66d3a06431f862d0e7e15d",
+      "focused_tests": 32,
+      "full_tests": 2218,
+      "skipped": 1,
+      "all_exits_zero": true,
+      "internal_hashes_verified": 18,
+      "private_library_byte_readback": true
+    },
+    "candidate_native_green": {
+      "run": 40634460512,
+      "source_commit": "898f43d3462fb4247648d313bec3336e30f2c4d9",
+      "artifact": 12792369642,
+      "zip_sha256": "14b45a4c4cab15177d2497ffb2cf2ad2b395ae06a107187f608385053f90b9db",
+      "all_stage_exits_zero": true,
+      "internal_hashes_verified": 27,
+      "crc_ok": true,
+      "private_library_byte_readback": true,
+      "jef_status": "JEF_MODES_PASS",
+      "jef_checks_pass": 8,
+      "jef_combined_c3_turns": 3,
+      "step12_status": "VERTICAL_CHECKS_PASS",
+      "step12_checks_pass": 8,
+      "public_arithmetic_prompt": "Budget 120 Euro. Berechne die Hälfte.",
+      "public_arithmetic_answer": "The calculation is straightforward: half of 120 Euro is 60 Euro.",
+      "actual_final_runner": "B1_DETAIL",
+      "tool_call": null,
+      "tool_shadow": null,
+      "phone_measured": false,
+      "full_runner_proof": false,
+      "complementarity_proven": false
+    }
+  },
+  "open_questions": [
+    "Will the numeric instruction generalize to held-out bilingual arithmetic and non-arithmetic tasks without increasing hallucination?",
+    "Does C3-only retain appropriate uncertainty on unsupported-source questions?",
+    "Can separate native model/seed matched control arms be run without changing registered frozen cohorts?"
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "jepa_weight": 0,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "phone_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Preregister a held-out bilingual arithmetic and unsupported-grounding evaluation with independent fixtures and frozen prompt/model controls. Do not promote STEP2/B3/Body-JEPA/Redmi; preserve #848 arithmetic RED and #849 single-case PASS as distinct cohorts.",
+  "remaining_platform_budget": "UNKNOWN"
+}
