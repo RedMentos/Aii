@@ -86,12 +86,16 @@ def run_needle(items, home):
             t0 = time.perf_counter(); pred = conf = None; err = None; raw = None
             try:
                 raw = r.needle.control(it['text'], cancel, time.monotonic()+60)
-                calls = raw.get('function_calls') or []
-                pred = next((route_of(c.get('arguments', {})) for c in calls if isinstance(c, dict) and route_of(c.get('arguments', {}))), None)
                 conf = raw.get('confidence')
-                try: observation(raw); valid = True
-                except Exception as e: valid = False; err = 'validation:'+str(e)[:60]
-                if not valid: pred = None  # invalid native control cannot score as correct
+                try:
+                    # Score exactly the first validated select_processing proposal,
+                    # not a route-like argument from an unrelated tool call.
+                    pred = observation(raw)['route']
+                    valid = True
+                except Exception as e:
+                    pred = None  # invalid native control cannot score as correct
+                    valid = False
+                    err = 'validation:'+str(e)[:60]
             except Exception as e: err = type(e).__name__+':'+str(e)[:80]; valid = False
             rows.append({'id': it['id'], 'label': it['label'], 'pred': pred, 'latency_s': time.perf_counter()-t0, 'confidence': conf,
                          'validated': valid, 'error': err})
