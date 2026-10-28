@@ -72,7 +72,7 @@ jobs:
           echo "$?" > "$evidence/INSTALL_EXIT.txt"
           (
             cd v13/code
-            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_ag8_sleep_policy_shield_crossorgan_20261028 tests.test_ag8_shield_metrics_run380 tests.test_agi tests.test_f5_cached_dream_crossorgan_20261028 tests.test_dream_cached_verdict_authority_20261028 tests.test_context_sleep_f5_crossorgan_20261028 tests.test_dream_validation_authority_run275 tests.test_context_warm_authority_run271 tests.test_context_os tests.test_sleep_memory_authority_run274 tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_offline tests.test_sleep_memory_c3_continuity_run205 tests.test_memory_human_decision_lineage_run270 tests.test_episodic_route_f5_authority_run279
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_ag8_sleep_policy_shield_crossorgan_20261028 tests.test_ag8_shield_metrics_run380 tests.test_agi_live tests.test_harness_hx tests.test_hx_approval_run133 tests.test_f5_cached_dream_crossorgan_20261028 tests.test_dream_cached_verdict_authority_20261028 tests.test_context_sleep_f5_crossorgan_20261028 tests.test_dream_validation_authority_run275 tests.test_context_warm_authority_run271 tests.test_context_os tests.test_sleep_memory_authority_run274 tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_offline tests.test_sleep_memory_c3_continuity_run205 tests.test_memory_human_decision_lineage_run270 tests.test_episodic_route_f5_authority_run279
           ) > "$evidence/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$evidence/FOCUSED_EXIT.txt"
           if [ "$(cat "$evidence/FOCUSED_EXIT.txt")" = 0 ]; then
