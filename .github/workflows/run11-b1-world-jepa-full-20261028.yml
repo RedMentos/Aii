@@ -1,4 +1,4 @@
-name: V13 Run11 STEP2 B1 plus World-JEPA full Linux integration review
+name: V13 Run11 B1 World-JEPA control fabric full Linux integration review
 on:
   push:
     branches: [assistant/v13-run11-b1-world-jepa-integration-20261028]
@@ -8,6 +8,8 @@ on:
       - 'v13/code/scripts/world_jepa_heldout_action_readout_20261028.py'
       - 'v13/code/tests/test_step2_crossarm_b1_identity_20261028.py'
       - 'v13/code/tests/test_world_jepa_heldout_action_readout_20261028.py'
+      - 'v13/code/v13/control_budget.py'
+      - 'v13/code/tests/test_control_budget_monotonic_20261028.py'
 permissions:
   contents: read
 concurrency:
@@ -39,7 +41,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           git show -s --format='%P' HEAD > "$e/PARENTS.txt"
           git log --format='%H %P' -6 > "$e/ANCESTRY_RAW.log"
-          for path in v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/world_jepa_heldout_action_readout_20261028.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md v13/code/specs/models.json; do
+          for path in v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/world_jepa_heldout_action_readout_20261028.py v13/code/v13/control_budget.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md v13/code/specs/models.json; do
             git hash-object "$path"
           done > "$e/BLOBS_RAW.log"
           first=$?
@@ -60,7 +62,7 @@ jobs:
           if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
             (
               cd v13/code
-              timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_step2_crossarm_b1_identity_20261028 tests.test_step2_longnote_fourarm_analysis_20261028 tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_world_jepa_heldout_action_readout_20261028 tests.test_world_jepa_action_permutation_control
+              timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_step2_crossarm_b1_identity_20261028 tests.test_step2_longnote_fourarm_analysis_20261028 tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_world_jepa_heldout_action_readout_20261028 tests.test_world_jepa_action_permutation_control tests.test_control_budget_monotonic_20261028 tests.test_control_budget
             ) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
           else
@@ -77,7 +79,7 @@ jobs:
             echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
             echo SKIPPED_RED > "$e/FULL_EXIT.txt"
           fi
-          python3 -m compileall -q v13/code/v13 v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/world_jepa_heldout_action_readout_20261028.py v13/code/tests/test_step2_crossarm_b1_identity_20261028.py v13/code/tests/test_world_jepa_heldout_action_readout_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/world_jepa_heldout_action_readout_20261028.py v13/code/tests/test_step2_crossarm_b1_identity_20261028.py v13/code/tests/test_world_jepa_heldout_action_readout_20261028.py v13/code/tests/test_control_budget_monotonic_20261028.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 0cc5e59fc1c91a71b0b232b42f70668c562d9d2b --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
