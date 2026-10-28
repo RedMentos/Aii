@@ -1,0 +1,11 @@
+# Run22 EventEnvelope persisted-lineage binding review — preregistration (2026-10-28)
+
+**Parent:** Run21 separate SHADOW branch `assistant/v13-run21-event-source-adapter-shadow-20261028` at exact commit `cb6a1923cf62eb7dbe3bfc9a9e30b7b63ecd36f5`. This child is review-only and owns only `scripts/run21_event_source_adapter_shadow.py`, a new `tests/test_run22_event_lineage_review.py`, a dedicated source-only workflow and this coordination file. No frozen Runtime/Store/English eligibility reader/model/seed/cohort changes.
+
+**Gap:** Run21 verifies source text SHA and session/project/rowid but does not bind the EventEnvelope's declared `brain_generation_id`, `experience_id`, `schema_version`, `producer_component` or `provenance` to the persisted `events` row and source ref. A modified event packet can pass while falsely asserting a different generation/experience or carrying an unrelated provenance pointer. A valid `USER_TEXT` source must not be promoted to F5 HumanDecision or binding-rule authority.
+
+**Proposed source-only change:** Reject any event whose packet is not exactly an EventEnvelope v1.0 from A0_SOURCE, whose declared generation/experience differs from the immutable event row, or whose provenance is not the exact single persisted full-span source ref. Require source byte and character lengths to match the row and enforce `source_ref` equality, including all keys, rather than accepting extra ambiguous fields. Do not compare historical event generation to the *current* active generation: historical evidence remains valid until revoked.
+
+**RED-first proof:** real ephemeral Store with three ordered USER_TEXT events; for each of the lineage fields and provenance modifications, modify only the stored packet while retaining the real blob and hash, and expect a refusal. A clean historical source must continue to produce a zero-authority SHADOW action. Run focused and full software tests, frozen blob assertions, compile, privacy scan and diff, capture original raw stage exits and SHA256SUMS in a GitHub Actions artifact. Preserve the RED attempt and later GREEN independently.
+
+**Negative gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, Redmi unmeasured; full V13 incomplete. No native run or learning, no F1/F5 authority. Heavy owner untouched. Budget UNKNOWN.
