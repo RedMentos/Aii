@@ -14,7 +14,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import step2_longnote_runner_preflight as pre
 from scripts import step2_z2b_seeds as z2b
-from scripts import step2_z2_timescale as z2
+# Z2b imports its harness under the top-level module name. Never import a
+# second scripts.step2_z2_timescale alias: pre.configured patches z2b.z2.
+z2 = z2b.z2
 from v13.common import atomic_write, dumps, file_hash
 from v13.config import initialize
 from v13.models import ModelManager
@@ -129,12 +131,19 @@ def run(installed_home, evidence_dir):
     try:
         with pre.configured():
             step2 = z2.harness()
+            if (z2 is not z2b.z2
+                    or z2.FIXTURES != pre.corpus.FIXTURES
+                    or step2.FIXTURES != pre.corpus.FIXTURES
+                    or step2.FIXTURES[0]['id'] != FIXTURE_ID):
+                raise ValueError('STEP2 private harness fixture alias changed')
             with z2b.Patches(step2, query=True) as patch:
                 arm_home = z2.sibling_home(installed_home, evidence_dir / "tp27-home",
                                            pre.candidate_settings(ARM, SEED))
                 report_path = evidence_dir / "STEP2_RAW.json"
                 report = step2.run_locked(arm_home, report_path, fixture_limit=1)
                 count = dict(patch.count)
+        if report.get('fixture_sha256') != dry['registered']['fixture_sha256']:
+            raise ValueError('Native STEP2 fixture SHA differs from registered Aquila cohort')
         receipt["model_hashes_after"] = pinned_models(installed_home)
         receipt["model_hashes_unchanged"] = (
             receipt["model_hashes_before"] == receipt["model_hashes_after"])
