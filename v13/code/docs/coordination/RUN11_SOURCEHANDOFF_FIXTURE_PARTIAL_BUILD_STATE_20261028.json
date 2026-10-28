@@ -1,0 +1,32 @@
+{
+  "schema": "V13_REVIEW_BRANCH_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "workflow_run": 40655541818,
+  "conclusion": "FAILURE",
+  "artifact_id": 12800899333,
+  "artifact_zip_sha256": "80a259809505e0c7fa678dc3ca292ff70f2cee76f8e433c43bf17c7799ef8cb8",
+  "artifact_crc": "PASS",
+  "artifact_sha256s": "16/16 PASS",
+  "focused": "33 PASS (historical candidate+C5+focal)",
+  "full": "2268 tests: 4 FAIL, 51 ERROR, 1 skipped",
+  "compile": "PASS",
+  "privacy": "CLEAN",
+  "diff_check": "PASS",
+  "blob_pins": "PASS",
+  "install": "PASS",
+  "claim_limit": "Software review RED; no native run or gate promotion.",
+  "cause": "Historical SourceHandoff exact-root binding rejects new runtime variant; original frozen baseline/candidate hashes unchanged. Focused C5 and historical fixture behavior passed but full suite remains RED.",
+  "next_command": "Do not promote. Remaining 51 errors/4 fails are other exact ROOT consumers: native_firing_merged/runtime_candidate, source_handoff_ablation, rule_transport_ablation, b2_offer/quote/body_question, step2_z2, eligibility and extracted phone package. Isolate historical fixture for each while preserving exact hash and tamper negatives.",
+  "negative_gates": [
+    "original_20_stage_15_PASS_5_FAIL",
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "Body-JEPA_UNAVAILABLE",
+    "LP3_FAIL",
+    "jepa_weight_0",
+    "Age0_RECORD_ONLY",
+    "Redmi_UNMEASURED",
+    "full_system_incomplete"
+  ]
+}
