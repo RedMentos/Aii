@@ -47,7 +47,7 @@ class MonotonicFabricLatency(unittest.TestCase):
                 self.assertEqual(lat['invalid_stage_marks'], 1)
                 rep = cb.report(store, home, cfg | {'control_budget_p95_ms': 10000.})
                 self.assertEqual(rep['verdict'], 'INCOMPLETE_EVIDENCE')
-                self.assertFalse(rep['limits']['control_p95_ms']['pass'] is False)  # valid subset within cap
+                self.assertTrue(rep['limits']['control_p95_ms']['pass'])  # valid subset within cap
                 self.assertEqual(rep['latency']['invalid_stage_marks'], 1)
                 self.assertEqual(cb.report(store, home, cfg)['verdict'], 'NO_LIMITS')
             finally:
