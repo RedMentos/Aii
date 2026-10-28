@@ -10,3 +10,4 @@ Reviewer: separate continuation on `assistant/v13-c3-cli-postgen-native-fresh-20
 - Claim limit: scoped existing-home operator utility with actual C3 generation on the historical source. **Not** proof of revocation during generation, new postgen code, live Runtime._turn integration, Redmi utility or AGI.
 
 This independent audit precedes the newly preregistered disjoint Averdin/Nerissa native run; preserve both cohorts and all original negative gates.
+Private persistent backup: ChatGPT Library `/V13/RawEvidence/V13_C3_CLI_NATIVE_40664439804_RAW.zip` (not public Drive). Independently materialized Library readback was byte-identical to the original ZIP: SHA256 `2918ee6b68a770f6e2416692dc6f9f0b8b77f091f070c35f8a5bcb20e3ba1738`, `cmp` PASS. This is a backup of the historical raw artifact, not new source-native evidence.
