@@ -2161,5 +2161,46 @@
     ],
     "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_c2_calibrated_advisory_candidate_20261028": {
+    "status": "RED_FROZEN_RUNTIME_SOURCEHANDOFF_INTEGRITY_BLOCKER",
+    "owner": "Automation draft PR #910",
+    "tested_source_sha": "d5d7c568ca9fbfbfa7da93fb99811bd2ef50444f",
+    "runtime_blob": "0c328fa485dcbfb8f27f7a82ae861f2b69f03603",
+    "run_id": 40677831195,
+    "artifact_id": 12811726102,
+    "artifact_sha256": "64de0a826937792351d412d3d24c69de55c5d6423251345e8adf76b871793d45",
+    "internal_hashes": "16/16",
+    "stage_exits": {
+      "blobs": 0,
+      "compile": 0,
+      "diff": 0,
+      "focused": 0,
+      "full": 1,
+      "install": 0,
+      "privacy": 0
+    },
+    "focused": "119/119 PASS",
+    "full": "2342 FAILED (4 failures, 62 errors, 1 skipped)",
+    "private_backup": "/V13/RawEvidence/V13_C2_CALIBRATED_ADVISORY_FULL_RED_40677831195_RAW.zip",
+    "backup_byte_verified": true,
+    "blocker": "Exact frozen Runtime hash required by SourceHandoff, native-firing and phone-package tests; no allowlist bypass",
+    "main_integrated": false,
+    "native_measured": false,
+    "redmi_measured": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "lp3_gate": "FAIL",
+    "jepa_weight": 0,
+    "whole_system_complete": false,
+    "open_questions": [
+      "Build independent C2 source-bound admission SHADOW module without modifying frozen Runtime",
+      "Complete separate authorized SourceHandoff source migration before any Runtime edit can pass full suite",
+      "Do not import RED #910 into preregistered integration branch"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
