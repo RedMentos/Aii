@@ -96,7 +96,8 @@ class HarnessLibrary:
         """Read-only approved view; a withdrawn AG8 request cannot serve an old override.
 
         Walk the stored apply/previous chain to keep a still-approved older
-        version. Values and targets must match the durable approved diff. If the\n        history is missing or malformed, fall back to default.
+        version. Values and targets must match the durable approved diff. If the
+        history is missing or malformed, fall back to default.
         Persisted history stays intact for an explicit human rollback.
         """
         from .self_improve import KEY as AG8_KEY, REVISION as AG8_REVISION, require_approved_origin
