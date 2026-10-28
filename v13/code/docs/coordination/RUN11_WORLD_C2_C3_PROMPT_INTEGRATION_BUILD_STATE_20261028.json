@@ -1,0 +1,54 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-c2-c3-prompt-integration-20261028",
+  "pr": 867,
+  "parent_pr": 866,
+  "sibling_source_pr": 849,
+  "prereg_commit": "a5fb32a20a86fd92efe6a84259f6c63c69178eff",
+  "world_source_blob": "3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7",
+  "c2_script_blob": "12fe792cacd2dc92c2b3c5c33e01424e20a148e4",
+  "c3_prompt_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+  "prompt_test_blob": "a27a41266ffe2dc9e0ec5504b418c97639a10864",
+  "green": {
+    "run": 40646821943,
+    "source_sha": "53885205b066b886fc914cdace7e67b956382e5e",
+    "focused_pass": 35,
+    "full_pass": 2241,
+    "full_skipped": 1,
+    "artifact_id": 12798371676,
+    "zip_sha256": "730f4e36c82f8fcafb3ed2320fa0af1869d7eb6a366500477dc0dddc2a5d5024",
+    "internal_hashes": 16,
+    "private_library_readback": true,
+    "stage_exits": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "evidence_kind": "LINUX_SOFTWARE_SYNTHETIC_ONLY",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "PR #849 one-case native arithmetic proof is independent, not combined or paired general utility.",
+    "Child #868 AG0 slot combined CI pending; native JEF rerun only after software GREEN and owner check.",
+    "PR #860 runtime source-frozen RED excluded."
+  ],
+  "next_command": "git fetch origin assistant/v13-run11-world-c2-c3-prompt-integration-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_prompts tests.test_c2_benchmark tests.test_world_modulator_atomicity_run349 tests.test_world_corrupt_packet_recovery_run420 tests.test_world_receipt_binding_run424 tests.test_world_valid_recent_window_run431",
+  "prerequisites": "Independent review and pinned native JEF/STEP12 source run; no heavy model overlap.",
+  "platform_remaining_budget": "UNKNOWN"
+}
