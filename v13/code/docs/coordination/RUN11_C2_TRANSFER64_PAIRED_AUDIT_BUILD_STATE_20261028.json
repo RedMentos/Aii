@@ -17,7 +17,7 @@
   "derived_private_library": "/V13-Checkpoints/2026-10-28/Run11-C2-Paired-Audit/paired.audit.json",
   "local_focused_tests": "7 PASS",
   "local_compileall": "PASS",
-  "full_linux_ci": "PENDING_UNVERIFIED",
+  "full_linux_ci": "GREEN exact-source 40642477475 at 08806a4c25cb1ceadc49fcfb5ada108e69f4d6b6",
   "paired": {
     "n": 64,
     "needle_correct": 19,
@@ -39,7 +39,24 @@
     "phone_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Verify .github/workflows/run11-c2-paired-transfer-audit-20261028.yml run on current branch; download ZIP, check CRC/SHA256SUMS, focused/full/compile/privacy/diff exit codes; update scoped state without promoting gates.",
+  "next_command": "Independent review of source and paired labels; preserve PR858 as review-only; then continue independent JEF/C2/C3/B1/B2 and STEP2/JEPA packages without promoting gates.",
   "next_prerequisite": "CI run exists and completes; private Library raw byte-exact readback; independent source review. Redmi remains unavailable.",
-  "platform_remaining_budget": "UNKNOWN"
+  "platform_remaining_budget": "UNKNOWN",
+  "full_linux_test_count": 2229,
+  "full_linux_skipped": 1,
+  "focused_linux_test_count": 18,
+  "ci_artifact_id": 12796129000,
+  "ci_zip_sha256": "f93dc338e1ef704eb98a9b7d13bff4cad514b7523ac49c4f0bf65c364ec31e17",
+  "ci_internal_sha256_count": 16,
+  "ci_stage_exits": {
+    "BLOBS": 0,
+    "INSTALL": 0,
+    "FOCUSED": 0,
+    "FULL": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "ci_private_library_readback_verified": true,
+  "derived_private_library_readback_verified": true
 }
