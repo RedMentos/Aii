@@ -147,6 +147,10 @@ def verify_report(report, model_sha, binary_sha):
         envelope = row.get("envelope")
         if not cf.verify_envelope(envelope):
             raise ValueError("native_envelope_invalid")
+        if (envelope.get("fixture_id") != FIXTURE or
+                envelope.get("seed") != SEED or
+                envelope.get("arm") != row["arm"]):
+            raise ValueError("native_envelope_arm_mismatch")
         context = json.loads(envelope["messages"][1]["content"])
         if set(context) != {"current_source", "analysts"}:
             raise ValueError("oracle_or_hidden_context_exposed")
@@ -197,7 +201,8 @@ def _run_unlocked(installed_home, evidence_dir):
             active_attempt = {"arm": arm, "raw_answer": "",
                               "native_metrics": {}, "process_reaped": False}
             envelope = cf.build_envelope(FIXTURE, arm, SEED)
-            cf.verify_envelope(envelope)
+            if cf.verify_envelope(envelope) is not True:
+                raise ValueError("native_envelope_invalid")
             context = json.loads(envelope["messages"][1]["content"])
             if set(context) != {"current_source", "analysts"}:
                 raise ValueError("oracle_in_native_input")
