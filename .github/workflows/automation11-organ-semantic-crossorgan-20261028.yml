@@ -1,4 +1,5 @@
 name: V13 Run11 organ plus semantic forget cross-organ software
+# Final merged-head replay: source/test pins unchanged; BUILD_STATE and handoff sealed.
 on:
   push:
     branches:
