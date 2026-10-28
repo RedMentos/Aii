@@ -36,8 +36,8 @@ jobs:
           mkdir -p "$e" "$work"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          2182bcf55183f9f142ecf3b7ee25816fb8af1e51 v13/code/scripts/step2_longnote_tp27_native_pilot.py
-          2338dab6ae282f0a46e2f4ec11dd48c1696e86f4 v13/code/tests/test_step2_longnote_tp27_native_pilot.py
+          7253b113b43de110059575cc14ef7b2ce7bccc43 v13/code/scripts/step2_longnote_tp27_native_pilot.py
+          97560a2ea63e3fa73d9c34ff9dc4fd4213c4fd60 v13/code/tests/test_step2_longnote_tp27_native_pilot.py
           eeb4155dc3421c2b57ca0871c126f8ea2249c649 v13/code/scripts/step2_longnote_revision_fixtures.py
           128647ee0680262575807722cd670db79a709385 v13/code/scripts/step2_longnote_runner_preflight.py
           7c299616495450e4a38f9aab9921f7176ba67556 v13/code/scripts/step2_z2b_seeds.py
