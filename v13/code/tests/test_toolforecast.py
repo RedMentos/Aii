@@ -22,6 +22,14 @@ from v13.transaction import operator_command as tx_command, settle_turn
 APP = Path(__file__).resolve().parents[1]
 
 
+def optional_restored_round8_available():
+    """Optional historical evidence must not make unrelated synthetic tests fail."""
+    try:
+        return Path('/root/native/restore/round8-note-tool-raw').exists()
+    except OSError:
+        return False
+
+
 class FakeTaps:
     """Deterministic stand-in encoder: one fixed random 1024-vector per text."""
     def __init__(self):
@@ -144,7 +152,7 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
+        plan = cc.plan('/root/native/restore') if optional_restored_round8_available() else None
         if plan:
             earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
             for k in plan:
