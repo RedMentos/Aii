@@ -1,0 +1,42 @@
+{
+  "run31_store_message_seq_crossreview_20261028": {
+    "status": "SOURCE_ONLY_FULL_GREEN_REVIEW_ONLY",
+    "parent_sha": "731c0dc4b8d4ec9084fa206f853576a28e77ce43",
+    "run24_adapter_blob": "fa8e290388386f279aa835633b8564f8f77cbe1f",
+    "run24_test_blob": "e192b9d20778dcfd572a56401465550ab8c601b7",
+    "run29_bridge_blob": "d958df02327034e644dc31185ccc71e5492d033f",
+    "run29_test_blob": "f8c221691fb3ada5ae7f86e40ae2ed97c6b3b82f",
+    "run28_original_red": 40714867072,
+    "run28_original_red_zip_sha256": "9fcce9fedd4e522c063c3b4a07e244a7ae89b44fdee3d2ec36a8e7369a7bf8bc",
+    "run31_first_green": 40718901104,
+    "run31_first_green_sha": "6d56a824dc0013494c53f50e0008ea78da723df2",
+    "run31_first_green_zip_sha256": "118951261a6e70bada54001eca63756918d0e9129a3dda1d81ed7b0884b83feb",
+    "focused": "66/66 PASS",
+    "full": "2515 OK (1 skipped)",
+    "stages": "7/7 zero",
+    "privacy": "CLEAN",
+    "original_raw_crc_inner_hashes_verified": true,
+    "private_library_backup_byte_verified": true,
+    "run28_unrelated_b3_test_failure_not_reproduced": true,
+    "donor_pin_ci_status": "PENDING",
+    "scope": "Original Store USER message lineage + EventEnvelope temporal sequence integrity for deterministic German typed SHADOW",
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "open_questions": [
+      "Donor-pin CI exact head must be checked",
+      "Run28 unrelated B3 resource-pressure test is potentially flaky; do not mask",
+      "Post-return Store source revocation not atomic",
+      "Native C3 utility, F5 authority, Redmi proof absent"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run24_message_source_lineage_review tests.test_run28_store_message_typed_integration tests.test_run29_store_seq_revalidation",
+    "remaining_platform_budget": "UNKNOWN"
+  }
+}

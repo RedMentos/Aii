@@ -1,0 +1,15 @@
+# Run31 Store user-message lineage + event sequence guard — verified cross-review handoff (2026-10-28)
+
+**Parent:** Run28 independent integration exact `731c0dc4b8d4ec9084fa206f853576a28e77ce43`, source-only Actions `40714867072`: 64 focused PASS but full 2513 tests had one unrelated `test_b3degrade.Live.test_promotion_needs_human_and_evidence_then_resource_mode_demotes` failure. Original raw ZIP SHA256 `9fcce9fedd4e522c063c3b4a07e244a7ae89b44fdee3d2ec36a8e7369a7bf8bc`, CRC clean. Preserve as RED, do not erase or claim it was fixed.
+
+**Donor:** Run29 PR #935 at exact executable `5d42dd9c574dcb1474194995182b1daf0a464fed`, original RED `40717528057` and GREEN `40717253492` independently verified. Run31 imports **byte-identical** bridge blob `d958df02327034e644dc31185ccc71e5492d033f` and real SQLite adversarial test blob `f8c221691fb3ada5ae7f86e40ae2ed97c6b3b82f`. Run28's Run24 original user-message adapter blob `fa8e290388386f279aa835633b8564f8f77cbe1f` and Run24 test blob `e192b9d20778dcfd572a56401465550ab8c601b7` remain untouched. Workflow now pins all four blobs. No Runtime, Store, model, seed or original fixture change.
+
+**Behavior:** Real Store→German typed SHADOW candidate still produces disjoint A/B/NONE balanced outputs; rejects altered original user-message role/status/metadata/text/session, revoked source, forged event packet, and newly rejects `events.rowid` reordering *after* typed evaluation even if SHA256 is unchanged. This is source-integrity protection only, not F5 HumanDecision authority or native model utility. Post-return revocation remains an open atomicity limitation.
+
+**Verified first GREEN:** Actions `40718901104` at `6d56a824dc0013494c53f50e0008ea78da723df2`: **66/66 focused PASS, 2515 full OK (1 skipped), all seven stage exits zero, privacy CLEAN.** Original raw ZIP SHA256 `118951261a6e70bada54001eca63756918d0e9129a3dda1d81ed7b0884b83feb`, CRC clean, 15/15 inner SHA256 verified. The unrelated Run28 B3 resource-pressure failure did not reproduce; do not silently edit the B3 test or promote B3 gates. A second CI with exact donor-pin assertions is separately dispatched and must be checked before final integration.
+
+**Persistence:** Original Run28 RED and Run31 first GREEN raw ZIPs privately saved at `/V13-Checkpoints/2026-10-28/Run31-Store-Message-Seq-Crossreview/`; Library readback byte-identical for both. GitHub review branch only; not main-integrated.
+
+**Next command:** `cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run24_message_source_lineage_review tests.test_run28_store_message_typed_integration tests.test_run29_store_seq_revalidation`. After donor-pin CI and independent review, integrate this child into the active Store→Context OS chain, preserving all original negative gates. Run26/30/32 native quote coverage remains separate.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; whole V13 incomplete. Remaining platform budget UNKNOWN.
