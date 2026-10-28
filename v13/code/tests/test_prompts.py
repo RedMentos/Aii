@@ -17,6 +17,15 @@ class EnglishFirstPrompts(unittest.TestCase):
         for name in ('runtime.py','verification.py','proofs.py','__main__.py'):
             self.assertNotIn('auf Deutsch',(root/name).read_text(),name)
 
+    def test_numeric_instruction_is_generic_and_does_not_pretend_tool_execution(self):
+        for lang,marker in (('en','actual numeric result'),('de','tatsächliche Zahlenergebnis')):
+            system=prompts.TEXT[lang]['system']
+            self.assertIn(marker,system)
+            self.assertNotIn('120',system)
+            self.assertNotIn('60',system)
+            self.assertIn('tools' if lang=='en' else 'Tools',system)
+        self.assertEqual(DEFAULTS['answer_language'],'en')
+
 class ConductAndPrivacy(unittest.TestCase):
     def test_conduct_rule_is_harm_based_and_open(self):
         for lang in ('en','de'):
