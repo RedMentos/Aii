@@ -54,7 +54,7 @@ class SourceConsumerAdmissionTests(unittest.TestCase):
 
     def test_conflicting_authorized_sources_do_not_choose_arbitrarily(self):
         a = self.add(value="615 Euro")
-        b = self.add(value="700 Euro")
+        b = self.add(key="Project Elyra budgets", value="700 Euro")  # separate active key, same topic
         result = self.decide(memories=[a, b])
         self.assertEqual(result["status"], "CLARIFY")
         self.assertEqual(result["reason"], "CONFLICTING_AUTHORIZED_SOURCES")
