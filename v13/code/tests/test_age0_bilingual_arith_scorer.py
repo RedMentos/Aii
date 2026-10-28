@@ -47,7 +47,9 @@ class HeldoutScorerTests(unittest.TestCase):
         self.assertTrue(S.numeric_proxy("Half of 74 is 37.", item))
         self.assertTrue(S.numeric_proxy("37.0", item))
         self.assertFalse(S.numeric_proxy("137", item))
-        self.assertFalse(S.numeric_proxy("37 and 39", item))\n        self.assertFalse(S.numeric_proxy("It is not 37.", item))\n        self.assertFalse(S.numeric_proxy("Maybe 37.", item))
+        self.assertFalse(S.numeric_proxy("37 and 39", item))
+        self.assertFalse(S.numeric_proxy("It is not 37.", item))
+        self.assertFalse(S.numeric_proxy("Maybe 37.", item))
         self.assertFalse(S.numeric_proxy("74", item))
         fractional = self.items[2]
         self.assertTrue(S.numeric_proxy("67,5", fractional))
