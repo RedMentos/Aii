@@ -1,0 +1,11 @@
+# Run11 World/Self timing sample validity prereg — 2026-10-28
+
+Owner GPT-6, isolated World/Self candidate child of #850 at `b454f81da33de9d621af6417ed47ab55cba6263f`. This preregistration precedes edits. Do not alter C2/STEP2/JEPA registered cohorts, model/seed hashes, native source pins or another owner's work.
+
+**Observed software edge:** `WorldState.forecast` currently admits any `action_duration_s` of type `(int,float)`, including booleans and negative durations, as timing evidence. `WorldState.observe` scores a completed outcome whenever `duration is not None`, without checking finite nonnegative numeric duration or finite forecast median. The durable Store's JSON serializer rejects NaN/Infinity on write, but accepts `True`, `False` and negative numbers. Thus a malformed completed action can contaminate the empirical median or produce a nonsensical timing error and modulator cost. This is a **synthetic input integrity counterexample**, not proof production data is corrupted.
+
+**Planned minimal World/Self fix:** A pure finite-nonnegative duration predicate rejecting bool. In `forecast`, exclude malformed completed timing samples (and malformed input-length metadata), count invalid samples separately without fabricating failures, and retain normal >=3 recent profile/session coverage gates. In `observe`, only score comparable finite nonnegative observed/predicted durations; invalid observed values remain persisted as observed raw facts but no timing error, no semantic success or learning reward. Keep all action/corollary/source/generation identity and existing valid timing outputs unchanged. Do not rewrite historical rows or registered evidence.
+
+**Tests:** synthetic actual Store/Runtime action outcomes with negative and bool durations; ensure invalid samples never enter supported forecast, invalid observation is unscored, valid [2,3,4] timing still predicts median3 and normal error. Source-pinned Linux focused/full software CI, raw hashes, privacy scan. No native inference or Redmi proof.
+
+All gates unchanged: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight0, Age0 RECORD_ONLY, phone_measured=false, whole_system_complete=false.
