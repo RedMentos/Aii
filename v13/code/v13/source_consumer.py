@@ -12,6 +12,10 @@ from .prompts import text as prompt
 
 BUDGET = re.compile(r"\b(?:budget|budgets|finanzrahmen|etat)\b", re.I)
 PROJECT = re.compile(r"\b(?:projekt|project)\s+([\w-]+)", re.I)
+# Conservative data grammar: user-provided source text is evidence, not an instruction.
+# Locale-grouped and decimal amounts remain unsupported until independently tested.
+TOPIC = re.compile(r"(?:Project|Projekt) [A-Za-z][A-Za-z0-9_-]{0,39} (?:budget|budgets|finanzrahmen|etat)", re.I)
+BUDGET_VALUE = re.compile(r"(?:0|[1-9][0-9]{0,8}) +(Euro|EUR|€)", re.I)
 
 
 def query_scope(query):
@@ -59,7 +63,7 @@ def admit(query, session, memories, memory):
             fresh = memory.candidate(supplied["id"], session)
             if not memory._verified_rows([fresh]):
                 continue
-            if fresh["kind"] != "fact" or not BUDGET.search(fresh["key_text"]):
+            if fresh["kind"] != "fact" or not isinstance(fresh["key_text"], str) or not TOPIC.fullmatch(fresh["key_text"]):
                 continue
             if entities(fresh["key_text"]) != {name}:
                 continue
@@ -72,7 +76,7 @@ def admit(query, session, memories, memory):
             if not lexical:
                 continue
             source = memory.s.read_source(fresh["source_ref"])
-            if source != fresh["value"]:
+            if source != fresh["value"] or not isinstance(source, str) or not BUDGET_VALUE.fullmatch(source):
                 continue
             valid.append({"memory_id": fresh["id"], "topic": fresh["key_text"],
                           "value": source, "source_ref": fresh["source_ref"],
@@ -92,7 +96,14 @@ def render_messages(cfg, query, admission):
     """Construct a C3 prompt only for the exact admitted correction."""
     if admission.get("status") != "ADMITTED" or admission.get("model_allowed") is not True:
         raise ValueError("Source admission required before native generation")
-    source = admission["source"]
+    source = admission.get("source")
+    if (not isinstance(source, dict) or not isinstance(source.get("topic"), str)
+            or not TOPIC.fullmatch(source["topic"])
+            or not isinstance(source.get("value"), str)
+            or not BUDGET_VALUE.fullmatch(source["value"])
+            or not isinstance(source.get("source_ref"), dict)
+            or query_scope(query) != next(iter(entities(source["topic"])), None)):
+        raise ValueError("Bounded budget source/topic required for C3 prompt")
     system = " ".join(prompt(cfg, k) for k in ("system", "conduct", "answer_rules"))
     system += (f"\nVerified user correction for this topic: {source['topic']} = {source['value']}. "
                "Use this exact correction only if the current request concerns that same project. "
