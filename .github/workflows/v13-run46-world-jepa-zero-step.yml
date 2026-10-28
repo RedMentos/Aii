@@ -37,7 +37,7 @@ jobs:
           py="$RUNNER_TEMP/v13-run46-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
           echo "$?" > "$e/NUMPY_EXIT.txt"
-          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run46_world_jepa_zero_step_evidence tests.test_world_jepa_fit_input_guard tests.test_world_jepa_coverage_integrity tests.test_world_jepa_shadow_checkpoint_20261028 tests.test_world_jepa_atomic_fit tests.test_world_jepa_stale_fit_order) > "$e/FOCUSED_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run46_world_jepa_zero_step_evidence tests.test_world_jepa_fit_input_guard tests.test_world_jepa_coverage_integrity tests.test_world_jepa_shadow_checkpoint_20261028 tests.test_world_jepa_atomic_fit tests.test_world_jepa_stale_fit_order tests.test_world_jepa_reader_snapshot) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
           python3 -m compileall -q v13/code/v13/world_jepa.py v13/code/v13/world_jepa_shadow_checkpoint.py v13/code/tests/test_run46_world_jepa_zero_step_evidence.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
