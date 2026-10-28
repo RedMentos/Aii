@@ -70,7 +70,7 @@ def _matrix(value, columns, label):
     for row in value:
         for number in row:
             if (type(number) not in (int, float) or
-                    not math.isfinite(number) or abs(number) > MAX_ABS_FEATURE):
+                    abs(number) > MAX_ABS_FEATURE or not math.isfinite(number)):
                 raise ValueError('Invalid probe ' + label + ' number')
     return np.asarray(value, dtype=np.float64)
 
