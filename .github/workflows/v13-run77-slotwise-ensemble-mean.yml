@@ -1,0 +1,88 @@
+name: V13 Run77 slot-wise ensemble mean candidate
+on:
+  push:
+    branches: [assistant/v13-run77-slotwise-ensemble-mean-candidate-20261028]
+permissions:
+  contents: read
+concurrency:
+  group: v13-run77-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture source-bound Run77 tests and evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run77"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/docs/proofs/continuation-20261028/RUN77_SLOTWISE_ENSEMBLE_MEAN_PREREG.md v13/code/v13/world_jepa_slots_mean_candidate.py v13/code/tests/test_run77_slotwise_ensemble_mean.py v13/code/v13/world_jepa_slots_isolated.py v13/code/v13/world_jepa_slots_kernels.py v13/code/v13/world_jepa.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/SOURCE_RAW.log"
+          if [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN77_SLOTWISE_ENSEMBLE_MEAN_PREREG.md)" = ae1a577e417e40218522d35b81c1c202c91322eb ] && [ "$(git hash-object v13/code/v13/world_jepa_slots_mean_candidate.py)" = ccfc512e4c1a50ae8565d1b27c29335a50313f30 ] && [ "$(git hash-object v13/code/tests/test_run77_slotwise_ensemble_mean.py)" = 8cdea8387db65f823d354099d89ca9a0f785b967 ] && [ "$(git hash-object v13/code/v13/world_jepa_slots_isolated.py)" = 6ba1ed3df9e58f2a35f890f3e98cf6e721076df6 ] && [ "$(git hash-object v13/code/v13/world_jepa_slots_kernels.py)" = 470377f999ccd250be284e674e4b8f165942889b ] && [ "$(git hash-object v13/code/v13/world_jepa.py)" = b95cd3fd9172ddef0fb88f0a7d70e2921c43e777 ]; then echo 0 > "$e/SOURCE_EXIT.txt"; else echo 1 > "$e/SOURCE_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run77-venv"
+          py="$RUNNER_TEMP/v13-run77-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
+          echo "$?" > "$e/NUMPY_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run77_slotwise_ensemble_mean tests.test_run76_slotwise_isolated tests.test_world_jepa tests.test_world_model) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/world_jepa_slots_mean_candidate.py v13/code/tests/test_run77_slotwise_ensemble_mean.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            third=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo 1 > "$e/INSTALL_EXIT.txt"
+              echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in INSTALL FULL; do echo SKIPPED_FOCUSED_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 2fa443822f99b367d137f0254e69e20268f664e8 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 2fa443822f99b367d137f0254e69e20268f664e8 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original Run77 raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run77-ensemble-mean-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run77/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce Run77 source-only gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run77"
+          for n in SOURCE NUMPY FOCUSED COMPILE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no JEPA/native/gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN77_ENSEMBLE_MEAN_SOFTWARE_ONLY
