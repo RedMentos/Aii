@@ -12,6 +12,7 @@ verdict is NO_LIMITS (report only). With limits set, each one is PASS/FAIL and t
 set limits pass. Energy/thermal overhead needs the phone (WP-R) and is reported as UNMEASURED.
 """
 import json
+import math
 from pathlib import Path
 
 KEY='WP_T14_CONTROL_BUDGET';REVISION='wp-t14-control-budget-v1'
@@ -21,9 +22,20 @@ CONTROL=tuple(s for s in STAGES[:-1] if s not in BODY)
 LIMITS=(('control_budget_p95_ms','control_p95_ms'),('control_budget_state_mb','state_mb'),('control_budget_params_mb','params_mb'))
 
 def durations(marks):
-    """Cumulative stage marks (seconds since turn start) -> seconds per stage; a stage lasts until the next mark."""
-    seen=sorted(((t,s) for s,t in (marks or {}).items() if s in STAGES and isinstance(t,(int,float))),key=lambda x:x[0])
-    return {s:max(0.,seen[i+1][0]-t) for i,(t,s) in enumerate(seen[:-1])}
+    """Canonical-order cumulative stage marks -> durations; malformed evidence is not latency proof."""
+    if not isinstance(marks, dict):
+        return {}
+    seen=[]
+    for stage in STAGES:
+        if stage not in marks:
+            continue
+        t=marks[stage]
+        if type(t) not in (int,float) or not math.isfinite(t) or t<0:
+            return {}
+        seen.append((stage,float(t)))
+    if any(seen[i+1][1]<seen[i][1] for i in range(len(seen)-1)):
+        return {}
+    return {stage:seen[i+1][1]-t for i,(stage,t) in enumerate(seen[:-1])}
 
 def pct(xs,q):
     if not xs:return None
@@ -31,19 +43,28 @@ def pct(xs,q):
 
 def latency(store,n=200):
     rows=store.rows("SELECT metadata,created FROM messages WHERE role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT ?",(n,))
-    ctrl=[];body=[];per={s:[] for s in STAGES[:-1]};inline=0;times=[]
+    ctrl=[];body=[];per={s:[] for s in STAGES[:-1]};inline=0;times=[];invalid=0
     for r in rows:
         try:meta=json.loads(r['metadata'] or '{}')
-        except ValueError:continue
-        d=durations(meta.get('stage_marks_s'))
-        if not d:continue
+        except ValueError:
+            invalid+=1
+            continue
+        if type(meta) is not dict:
+            invalid+=1
+            continue
+        marks=meta.get('stage_marks_s')
+        d=durations(marks)
+        if not d:
+            if marks is not None:
+                invalid+=1
+            continue
         times.append(r['created'])
         for s,v in d.items():per[s].append(v)
         ctrl.append(sum(v for s,v in d.items() if s in CONTROL));body.append(sum(v for s,v in d.items() if s in BODY))
         inline+=d.get('preanswer_observers',0.)>.001
     n=len(ctrl);span=(max(times)-min(times))/3600 if n>1 else 0.
     ms=lambda x:None if x is None else round(1000*x,2)
-    return {'turns':n,'control_mean_ms':ms(sum(ctrl)/n) if n else None,'control_p95_ms':ms(pct(ctrl,.95)),'body_mean_ms':ms(sum(body)/n) if n else None,
+    return {'turns':n,'invalid_stage_marks':invalid,'control_mean_ms':ms(sum(ctrl)/n) if n else None,'control_p95_ms':ms(pct(ctrl,.95)),'body_mean_ms':ms(sum(body)/n) if n else None,
             'control_share':round(sum(ctrl)/max(1e-9,sum(ctrl)+sum(body)),4) if n else None,
             'stages_p95_ms':{s:ms(pct(v,.95)) for s,v in per.items() if v},'inline_observer_rate':round(inline/n,4) if n else None,
             'turns_per_hour':round(n/span,2) if span>0 else None}
@@ -75,6 +96,7 @@ def report(store,home,cfg,n=200):
         val=measured[key];limits[key]={'cap':cap,'value':val,'pass':val is not None and val<=cap}
     if limits:verdict='PASS' if all(l['pass'] for l in limits.values()) else 'FAIL'
     if limits and lat['turns']==0 and 'control_p95_ms' in limits:verdict='NO_DATA'
+    if limits and lat['invalid_stage_marks']:verdict='INCOMPLETE_EVIDENCE'
     return {'revision':REVISION,'verdict':verdict,'limits':limits,'measured':measured,'latency':lat,'checkpoints':ck,'state':st,
             'energy_thermal':'UNMEASURED (Redmi, WP-R)','note':'Blueprint §22.2.3: concrete limits only after target-hardware measurement; 0 = unset'}
 
