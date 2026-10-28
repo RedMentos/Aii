@@ -1,0 +1,63 @@
+{
+  "schema": "V13_RUN13_B2_IDENTITY_REVIEW_BUILD_STATE_V1",
+  "date_utc": "2026-10-28",
+  "scope": "REVIEW_ONLY_SOURCE_SYNTHETIC_LINUX_SOFTWARE_NO_NATIVE",
+  "owner": "Run13 independent B2 source-identity review",
+  "parent_pr": 924,
+  "parent_head": "9e5101cb542593cdbddfe888b12e6dfdc6ee3731",
+  "pr": 925,
+  "source_tested_head": "5a571e611e58d8f7e9c4897ee0008e707ce42c8a",
+  "source_blobs": {
+    "scripts/run12_b2_context_identity_candidate.py": "66e80c6d049646303263398551e00429aefe24ba",
+    "scripts/run13_b2_identity_ambiguity_guard.py": "664051621dda9bab5f5e7294abc77256feaa7298",
+    "tests/test_run13_b2_identity_ambiguity_guard.py": "6640537be0ed39e4b65a6807b8115dfd5e2dc9c4",
+    "v13/organ.py": "aa925d5d4128974c3e1aaf64e58d0e4310e5dfa1"
+  },
+  "prereg_commit": "4e41942a44872dab53899f42159edbfe08ab6b5b",
+  "ci": {
+    "green_run": 40699071231,
+    "green_artifact_id": 12820428438,
+    "green_zip_sha256": "71fc5f032440069db50881ad2363791fbcd053d197fc49a4a42232303ac140b0",
+    "focused": "23/23 PASS",
+    "full": "2449 OK (1 skipped)",
+    "compile": "PASS",
+    "privacy": "CLEAN",
+    "diff": "PASS",
+    "zip_crc": "CLEAN",
+    "inner_sha256": "16/16 MATCH",
+    "private_readback": "BYTE_IDENTICAL"
+  },
+  "preserved_red": [
+    {
+      "run": 40698004746,
+      "sha256": "e8c0ee2d300adff5917eaaf3d9d1b555a84f985e12ff96d4b57f66ecb3a38a6f",
+      "reason": "new candidate absent in test-only commit"
+    },
+    {
+      "run": 40698630417,
+      "sha256": "620459fafcc6934842b4a49708bc118e1c29746b8255beb4ff25e75388adbbfc",
+      "reason": "malformed SHA/span passed to source reader; 2 expected failures"
+    }
+  ],
+  "private_backup_folder": "/V13-Checkpoints/2026-10-28/Run13-Handoff",
+  "changes": [
+    "Refuse multi-project current requests and source spans in B2 shadow pointer selector",
+    "Preserve original slots/cap/session/generation/model/tombstone/source-reader and zero authority",
+    "Reject malformed digest/span before any source-reader callback"
+  ],
+  "canonical_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next": {
+    "command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run13_b2_identity_ambiguity_guard tests.test_run12_b2_context_identity_candidate",
+    "prerequisites": "Review #925 against original source, independently register fresh disjoint native B2+C3 cohort before live integration; do not promote gates."
+  },
+  "remaining_execution_budget": "UNKNOWN"
+}
