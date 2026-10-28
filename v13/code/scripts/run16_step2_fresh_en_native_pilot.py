@@ -24,6 +24,17 @@ from v13.common import atomic_write, dumps, file_hash
 z2 = z2b.z2
 ROOT = Path(__file__).resolve().parents[1]
 RUN15_SOURCE_BLOB = "635e5727a42cb1eac4f84441afda2977b0c8109c"
+PINNED_SOURCE_BLOBS = {
+    "scripts/step2_z2_timescale.py": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7",
+    "scripts/step2_z2b_seeds.py": "7c299616495450e4a38f9aab9921f7176ba67556",
+    "scripts/step2_longnote_tp27_native_pilot.py": "7253b113b43de110059575cc14ef7b2ce7bccc43",
+    "tests/integration_step2_utility.py": "a7ba12a8807a1ca8236f1c70d54dedb65c212caa",
+    "v13/cognition.py": "1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf",
+    "v13/runners.py": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+    "v13/models.py": "bd035cf8029850cce00b179edf533e53bf24358a",
+    "specs/models.json": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+}
+PINNED_RUNNER_TAR_SHA256 = "9abf88aea48a55d0f80edb1ee20220b186848cca0b"
 FIXTURE_ID = "Keldara"
 ARM = "CQ"
 SEED = 20261114
@@ -44,6 +55,14 @@ def prereg():
             fresh.CANONICAL_GATE_PASS is not False or
             fresh.JEPA_WEIGHT != 0):
         raise ValueError("Run15 fresh fixture preregistration changed")
+    for relative, expected in PINNED_SOURCE_BLOBS.items():
+        if git_blob_sha((ROOT / relative).read_bytes()) != expected:
+            raise ValueError("Run16 frozen source pin changed: " + relative)
+    catalog = json.loads((ROOT / "specs/models.json").read_text())
+    if (catalog["runner"]["tag"] != "b10964" or
+            catalog["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+            != PINNED_RUNNER_TAR_SHA256):
+        raise ValueError("Run16 runner release pin changed")
     settings = z2b.settings(ARM, SEED)
     if (settings["seed"] != SEED or
             settings["b2_control"] != "two_body" or
@@ -54,6 +73,8 @@ def prereg():
             "scope": SCOPE, "fixture_id": FIXTURE_ID, "fixture_limit": 1,
             "fixture_sha256": fresh.FIXTURE_SHA256,
             "fixture_source_git_blob": RUN15_SOURCE_BLOB,
+            "source_git_blobs": dict(PINNED_SOURCE_BLOBS),
+            "runner_tar_sha256": PINNED_RUNNER_TAR_SHA256,
             "arm": ARM, "seed": SEED, "settings": settings,
             "variant_count": len(VARIANTS), "canonical_gate_pass": False,
             "phone_measured": False, "jepa_weight": 0,
@@ -160,6 +181,8 @@ def run(installed_home, evidence_dir):
                 counts = dict(patch.count)
         after = native_pins.pinned_models(installed_home)
         runner_after = file_hash(installed_home / "bin/llama-server")
+        if prereg() != reg:
+            raise ValueError("Run16 source preregistration changed during native run")
         receipt["model_hashes_after"] = after
         receipt["runner_sha256_after"] = runner_after
         receipt["model_hashes_unchanged"] = before == after
