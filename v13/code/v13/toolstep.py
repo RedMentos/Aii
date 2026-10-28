@@ -35,6 +35,23 @@ NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
 EXPR=re.compile(r'(?<![\w.])(\(?\s*'+NUM+r'(?:\s*(?:\*\*|[+\-*/%])\s*\(?\s*'+NUM+r'\s*\)?)+)')
 
+# Conservative bilingual half request: one unsigned plain integer only.
+# A date, second value, signed number or decimal/thousands notation is ambiguous here.
+HALF_CUE=re.compile(r'\b(?:hälfte|halbiere|halbieren|halbiert|half|halve)\b',re.I)
+HALF_REQUEST=re.compile(r'\b(?:berechne|rechne|ermittle|wieviel|wie\s+viel|was\s+ist|halbiere|halbieren|calculate|compute|what\s+is|how\s+much|halve)\b',re.I)
+HALF_NEGATION=re.compile(r"\b(?:nicht|kein\w*|ohne|not|don['’]t|do\s+not)\b",re.I)
+HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9]\d{0,8})(?![\w]|[.,]\d)')
+
+def propose_half(text):
+    t=str(text)
+    if not HALF_CUE.search(t) or not HALF_REQUEST.search(t) or HALF_NEGATION.search(t):return None
+    # A compound numeric expression is not a single quantity to halve.
+    if re.search(r'\d\s*[+\-−–*/]\s*\d',t):return None
+    values=list(HALF_INTEGER.finditer(t))
+    if len(values)!=1:return None
+    m=values[0]
+    return {'tool':'calc','args':{'expression':m.group(0)+'/2'},'confidence':.9,'span':[m.start(),m.end()]}
+
 NOTE_NAMED=re.compile(r'^\s*(?:please\s+)?(?:save|write|make|take|create)\s+(?:a\s+)?note\s+(?:called|named)\s+["\']?([a-z][a-z0-9_]{1,31})["\']?\s*:\s*(\S[\s\S]{0,1999})$',re.I)
 NOTE=re.compile(r'^\s*(?:please\s+)?(?:note down|(?:save|write|make|take|create)\s+(?:a\s+)?note)\s*:\s*(\S[\s\S]{0,1999})$',re.I)
 
@@ -72,6 +89,9 @@ def propose(text):
     if len(t)>400:return None
     m=PERCENT.search(t)
     if m:return {'tool':'calc','args':{'expression':f'{_num(m.group(1))}/100*{_num(m.group(2))}'},'confidence':.9,'span':[m.start(),m.end()]}
+    # A half request rejected as ambiguous must not fall through to the
+    # generic expression parser and silently change the requested operation.
+    if HALF_CUE.search(t) and HALF_REQUEST.search(t):return propose_half(t)
     w=t
     for pat,op in WORD_OPS:w=re.sub(pat,op,w,flags=re.I)
     w=re.sub(r'(?<=\d),(?=\d{3}\b)','',w)
