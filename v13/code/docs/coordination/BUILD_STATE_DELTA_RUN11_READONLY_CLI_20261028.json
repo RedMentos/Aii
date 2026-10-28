@@ -1,0 +1,59 @@
+{
+  "schema": "v13.build_state_delta.run11.store_ticket_readonly_cli.v1",
+  "date": "2026-10-28",
+  "owner": "GPT review-only",
+  "pr": 941,
+  "branch": "assistant/v13-run11-store-ticket-readonly-cli-20261028",
+  "parent_pr": 939,
+  "parent_sha": "76b78dc0650b3284f975048d7e202a49f7732d8d",
+  "prereg_sha": "bcda87993fec717012b00492f55fcde63ef7a17f",
+  "source_sha": "f91efdb447e5edcae5cad29774c327386ea92bb3",
+  "status": "SOFTWARE_GREEN_REVIEW_ONLY",
+  "production_integrated": false,
+  "evidence": {
+    "red": {
+      "run": 40728049098,
+      "zip_sha256": "a82989231626cbf3a4d2d9ec0dc8ce03f816a9f381be5308304e1c9197869c2e",
+      "expected_missing_module": true
+    },
+    "green": {
+      "run": 40728106074,
+      "zip_sha256": "a9b42f240b2d84a1c70492fac4e51930c6fc282b7b5c36ff39f7ab3b31036471",
+      "focused_pass": 41,
+      "full_ok": 2556,
+      "full_skipped": 1,
+      "stage_exits_zero": 7,
+      "privacy": "CLEAN"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Store-Ticket-ReadOnly-CLI/",
+    "library_byte_identical": true
+  },
+  "scope": [
+    "SQLite SQL-read-only CLI",
+    "source-bound Store SHADOW ticket inspection",
+    "generic refusal",
+    "no Store constructor"
+  ],
+  "limitations": [
+    "no Runtime/Operator integration",
+    "no post-return atomicity",
+    "SQLite WAL sidecar coordination possible",
+    "no Android/Redmi proof",
+    "no native/model utility",
+    "no F5 or learning authority"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "canonical_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run11_store_ticket_readonly_cli tests.test_run11_store_shadow_ticket_io tests.test_run11_store_shadow_use_boundary",
+  "next_priority": "Independent review, then fresh disjoint B2 quote-selection x C3 extraction native causal experiment; do not touch frozen Keldara",
+  "platform_remaining_budget": "UNKNOWN"
+}
