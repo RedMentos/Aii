@@ -1,0 +1,11 @@
+# Run20 STEP2 EN/DE typed source bridge — preregistration (2026-10-28)
+
+**Base:** Run19 independent German source guard candidate `b08b715d59962f0ef40324785aa1d2d7cb9893e3` (CI `40704173249` running at preregistration; do not claim GREEN until raw verified). Run17 parent source proof `9f115579d584e30899e12eeec7df71fa30fa4504` 2466 full PASS; Run18 separate donor source `b909dc142aeb589221dde453453c461ec1fc2d18` 2463 full PASS. Source donor `scripts/run18_step2_balanced_controls.py` and its tests must be imported **byte-identically**, not regenerated or modified. Original TP/s27 and Run15 cohorts stay frozen.
+
+**Goal:** isolated *software-only* typed source→decision path for six balanced Run18 cases (A=2, B=2, NONE=2). EN uses existing unchanged deterministic `eligibility.read_fixed/args_for/tool` with explicit old note/current sheet source text. DE uses Run19 strict German source-ref reader and unchanged `eligibility.recipe`. An explicit synthetic source selector supplies exact old note/current sheet positions; this is **not** native B1/B2 retrieval, C3 output, F1/F5 live provenance, or learned complementarity. No oracle/rules may enter the bridge input; oracle is used only in test scoring. No Runtime integration or tool dispatch.
+
+**Owned new paths:** `scripts/run20_step2_typed_bridge.py`, `tests/test_run20_step2_typed_bridge.py`, Run20 branch-scoped CI and additive coordination/BUILD_STATE. Two Run18 donor source/test files are copied byte-identically into this branch with donor SHA checks. Do not edit frozen `v13/agi/eligibility.py`, `v13/cognition.py`, original TP/s27/Run15 fixtures, model/seed hashes or other owners' branches.
+
+**RED-first tests:** six balanced actions match independent oracle with only source inputs; no oracle leakage; missing old rule or supplier sheet refuses; mixed Project Quasar source refuses; stale temporal mode refuses; all paths remain SHADOW/SOFTWARE_ONLY and no model call. Full pinned-dependency suite, compile, privacy/diff, exact source hashes, raw SHA256SUMS and private byte-readback. Preserve failed attempts. Native use needs new preregistration, exact model/runner/seed pins and Run16 owner coordination.
+
+**Negative gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; whole V13 incomplete. Owner Run20, budget UNKNOWN.
