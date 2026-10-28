@@ -1,0 +1,11 @@
+# WP-AGE0d answer-visible FINAL-bound arithmetic SHADOW integration — prereg 2026-10-28
+
+Owner: GPT-6 independent review branch `assistant/v13-age0d-final-shadow-f5-integration-20261028`. Parent PR #804 exact candidate `e621be4869da2b6d87ff1e0b3317f887dd82cbe2`; **do not modify production source until PR #804 full software CI is GREEN**. No main/other-owner changes.
+
+This is a substantive Age-0 answer-quality diagnostic, not a new safety-only helper. Current integrated branch has `v13/code/v13/selfmodel.py` blob `e08ff42cb7ae13027e832c0908f0ac72903a9b1d`, 361 lines, and lacks `v13/code/v13/agi/answer_arithmetic_shadow.py`. The independently green older Run530 PR #529 (Actions 40322505870, 121 tests, privacy CLEAN, source-only) adds exactly three insertion hunks to the same 361-line selfmodel baseline (39 lines total, no deletions), reviewed source blob `aab1d1905c98ce1d276e5136975a97f62e8e21dc`, test blob `47a6468c03f2b3e65a3b960b7966ddfc7868871e`. Required Run134 evaluator blob `3cec2c4b6883e3f02f449cc74cf44d5584a6affb`, original evaluator tests `7022699b8dc63622a910a7dd785cb2cf0188ac99`. Check exact compatibility against current runtime before import.
+
+Contract: Age-0 SHADOW ONLY, no user notice or self-message, no learning, no Age reopening, no altered final output. Only source-valid same-event/same-session persisted FINAL assistant text byte-identical to late-offer output can yield a bounded diagnostic. Wrong answer must be detected only on supported unambiguous arithmetic; ambiguous inputs abstain. Preserve every original negative gate and original cohort hashes. Do not infer general self-correction or native/Redmi performance from synthetic tests.
+
+Sequence: parent #804 exact-head full GREEN; preregistered test-only RED against absent feature, preserve raw; import exact compatible Run530 selfmodel/evaluator/tests without replacing other organ changes; independent Runtime/SQLite restart/forged-output regression; focused and full Linux software tests with exact blobs/privacy/closed raw artifact; durable GitHub + private Library checkpoint. No auto-merge.
+
+STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; Age0 RECORD_ONLY/SHADOW; canonical_architecture_complete=false; user_full_scope_complete=false.
