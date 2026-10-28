@@ -21,6 +21,63 @@ def _valid_duration(value):
         return False
 
 
+# Reconciled historical PR #430 strict receipts; newer duration policy stays in _valid_duration.
+def _reject_json_constant(value):
+    raise ValueError('Nonfinite JSON literal in persisted World state')
+
+
+def _strict_json_object(raw):
+    obj=json.loads(raw,parse_constant=_reject_json_constant)
+    if not isinstance(obj,dict):raise ValueError('World JSON object required')
+    return obj
+
+
+# A PredictionOutcome is a derived view, never a source of authority.
+# Keep this predicate shared by observe/recover/materialized-count. CASE guards
+# JSON functions against malformed historical SQLite rows.
+_VALID_RECEIPT_SQL = """
+CASE WHEN json_valid(p.payload) AND json_valid(a.outcome) THEN
+    json_extract(p.payload,'$.event_id')=p.event_id
+    AND json_extract(p.payload,'$.brain_generation_id')=e.generation_id
+    AND json_extract(p.payload,'$.producer_component')='F4_WORLD'
+    AND json_extract(p.payload,'$.action_id')=a.id
+    AND json_type(p.payload,'$.observation')='object'
+    AND json_extract(p.payload,'$.observation.action_id')=a.id
+    AND json_extract(p.payload,'$.observation.status')=a.status
+    AND json_type(p.payload,'$.observation.observed')='object'
+    AND json_extract(p.payload,'$.observation.observed')=json(a.outcome)
+    AND json_type(p.payload,'$.observation.self_caused')='true'
+    AND json_type(p.payload,'$.observation.semantic_success')='null'
+    AND json_type(p.payload,'$.observation.causal_claim')='false'
+    AND json_type(p.payload,'$.observation.external_world_observation')='false'
+    AND json_type(p.payload,'$.observation.scored') IN ('true','false')
+ELSE 0 END
+"""
+
+
+def _verified_receipt(raw, event_id, generation_id, action):
+    """Recheck a stored derived observation against immutable action bytes."""
+    p = _strict_json_object(raw)
+    obs = p.get('observation')
+    if not isinstance(obs, dict) or action is None or action['outcome'] is None:
+        raise ValueError('World receipt has no completed action')
+    if (p.get('event_id') != event_id or
+        p.get('brain_generation_id') != generation_id or
+        p.get('producer_component') != 'F4_WORLD' or
+        p.get('action_id') != action['id'] or
+        action['event_id'] != event_id or
+        obs.get('action_id') != action['id'] or
+        obs.get('status') != action['status'] or
+        obs.get('observed') != _strict_json_object(action['outcome']) or
+        obs.get('self_caused') is not True or
+        obs.get('semantic_success', object()) is not None or
+        obs.get('causal_claim') is not False or
+        obs.get('external_world_observation') is not False or
+        type(obs.get('scored')) is not bool):
+        raise ValueError('World receipt/action source mismatch')
+    return obs
+
+
 class WorldState:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
 
@@ -68,32 +125,97 @@ class WorldState:
     def observe(self,aid):
         action=self.s.one('SELECT * FROM actions WHERE id=?',(aid,))
         if not action or action['outcome'] is None:return None
-        event=self.s.one('SELECT * FROM events WHERE id=?',(action['event_id'],));env=json.loads(event['packet'])
-        existing=self.s.one("SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome' AND json_extract(payload,'$.action_id')=?",(env['event_id'],aid))
+        event=self.s.one('SELECT * FROM events WHERE id=?',(action['event_id'],))
+        try:
+            if not event:raise ValueError('World originating event missing')
+            env=_strict_json_object(event['packet'])
+            if env.get('event_id')!=action['event_id'] or env.get('authority')!='AUTHORITATIVE':
+                raise ValueError('World event lineage invalid')
+            self.s.read_source(env['source_ref'])
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError,RecursionError,OverflowError):
+            self.s.log('world_observation_refused',action['event_id'],{'reason':'INVALID_EVENT_SOURCE'})
+            return None
+        existing=self.s.one(
+            "SELECT p.payload FROM packets p JOIN actions a ON a.event_id=p.event_id "
+            "JOIN events e ON e.id=p.event_id WHERE p.event_id=? "
+            "AND p.kind='PredictionOutcome' AND a.id=? AND "+_VALID_RECEIPT_SQL,
+            (env['event_id'],aid))
         if existing:
-            self._refresh(event['session_id'])
-            return json.loads(existing['payload'])['observation']
-        actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
-        predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
+            try:
+                observed=_verified_receipt(existing['payload'],env['event_id'],
+                                           event['generation_id'],action)
+            except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                observed=None
+            if observed is not None:
+                self._refresh(event['session_id'])
+                return observed
+        try:
+            actual=_strict_json_object(action['outcome'])
+            expected=_strict_json_object(action['expected'])
+            forecast=expected.get('forecast',{})
+            if not isinstance(forecast,dict) or not isinstance(forecast.get('profile',{}),dict):
+                raise ValueError('World forecast shape invalid')
+            predicted=forecast.get('duration_median_s');duration=actual.get('action_duration_s')
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError,RecursionError,OverflowError):
+            # Original action bytes remain untouched; no fake PredictionOutcome or learning signal.
+            self.s.log('world_observation_refused',action['event_id'],{'reason':'INVALID_PERSISTED_WORLD_OUTCOME'})
+            return None
         comparable=(action['status']=='FINAL' and actual.get('role')==forecast.get('profile',{}).get('role')
                     and _valid_duration(predicted) and _valid_duration(duration))
         outcome={'action_id':aid,'status':action['status'],'self_caused':True,'observed':actual,'prediction_packet_id':forecast.get('packet_id'),
                  'timing_error_s':duration-predicted if comparable else None,'scored':bool(comparable),'semantic_success':None,
                  'causal_claim':False,'external_world_observation':False}
+        modulator=None
         if action['status']=='FINAL' and _valid_duration(duration) and forecast.get('learned_latent_prediction'):
             try:
                 transition=self.transition(aid)
                 error=self.r.learner.world_score(transition,forecast['learned_latent_prediction'])
+                if type(error) not in (int,float) or not math.isfinite(error):
+                    raise ValueError('World latent score nonfinite')
+                modulator=packet('ModulatorPacket','F4_WORLD',env['event_id'],env['brain_generation_id'],
+                    [transition['source_ref'],transition['outcome_source_ref']],
+                    epistemic_evidence=1.,human_correction=0.,task_success=0.,
+                    resource_cost=min(1.,max(0.,float(duration or 0))/self.r.cfg['deadline_seconds']),
+                    safety_veto=False,digital_prediction_error=error,
+                    values_status='measured own digital outcome; no semantic truth reward or automatic weight permission')
                 outcome.update(digital_latent_error=error,world_transition_packet_id=transition['packet_id'])
-                self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','F4_WORLD',env['event_id'],env['brain_generation_id'],[transition['source_ref'],transition['outcome_source_ref']],
-                    epistemic_evidence=1.,human_correction=0.,task_success=0.,resource_cost=min(1.,max(0.,float(duration or 0))/self.r.cfg['deadline_seconds']),safety_veto=False,
-                    digital_prediction_error=error,values_status='measured own digital outcome; no semantic truth reward or automatic weight permission'))
-            except Exception as exc:self.s.log('world_error_unavailable',env['event_id'],{'error':type(exc).__name__})
-        p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],[env['source_ref']],action_id=aid,observation=outcome)
-        self.s.add_packet('PredictionOutcome',p)
+            except Exception as exc:
+                self.s.log('world_error_unavailable',env['event_id'],{'error':type(exc).__name__})
+        p=packet('PredictionOutcome','F4_WORLD',env['event_id'],env['brain_generation_id'],
+                 [env['source_ref']],action_id=aid,observation=outcome)
+        # One durable crash boundary for a digital prediction-error modulator
+        # and its authoritative own-action receipt. Previously the modulator
+        # committed first, so a failed PredictionOutcome INSERT left an orphan
+        # that a retry could emit again. Recheck under the SQLite write lock
+        # to prevent two concurrent observers duplicating the pair.
+        with self.s.tx() as c:
+            existing=c.execute(
+                "SELECT p.payload FROM packets p JOIN actions a ON a.event_id=p.event_id "
+                "JOIN events e ON e.id=p.event_id WHERE p.event_id=? "
+                "AND p.kind='PredictionOutcome' AND a.id=? AND "+_VALID_RECEIPT_SQL,
+                (env['event_id'],aid)).fetchone()
+            if existing:
+                try:
+                    observed=_verified_receipt(existing['payload'],env['event_id'],
+                                               event['generation_id'],action)
+                except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                    existing=None
+            if existing:
+                inserted=False
+            else:
+                for kind,entry in (('ModulatorPacket',modulator),('PredictionOutcome',p)):
+                    if entry is not None:
+                        c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',
+                                  (entry['packet_id'],kind,entry['event_id'],entry['brain_generation_id'],
+                                   dumps(entry),now()))
+                observed=outcome
+                inserted=True
         self._refresh(event['session_id'])
-        self.s.log('prediction_outcome',env['event_id'],{'status':action['status'],'duration_s':duration,'timing_error_s':outcome['timing_error_s'],'scored':comparable})
-        return outcome
+        if inserted:
+            self.s.log('prediction_outcome',env['event_id'],
+                       {'status':action['status'],'duration_s':duration,
+                        'timing_error_s':outcome['timing_error_s'],'scored':comparable})
+        return observed
 
     def transition(self,aid):
         """Bind a real committed own outcome to intent/corollary and raw source."""
@@ -127,14 +249,62 @@ class WorldState:
     def _refresh(self,session):
         # Rebuild the materialized view from durable outcome packets. A crash
         # between packet insert and state write cannot silently lose an action.
-        rows=self.s.rows("SELECT p.payload,p.event_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=? ORDER BY p.created DESC LIMIT 128",(session,))
-        if not rows:return
-        byaction={}
+        # Bound materialization by 128 *valid source-bound* receipts, not
+        # 128 arbitrary recent packet rows. Otherwise a corrupt/forged packet
+        # flood can hide an older legitimate receipt while COUNT still says 1.
+        # Keep a separate bounded raw window for corruption telemetry.
+        recent_sql=(
+            "SELECT p.payload,p.event_id,e.generation_id,"
+            "a.id AS action_id,a.status AS action_status,a.outcome AS action_outcome "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "LEFT JOIN actions a ON a.event_id=p.event_id AND a.id="
+            "CASE WHEN json_valid(p.payload) THEN json_extract(p.payload,'$.action_id') END "
+            "WHERE p.kind='PredictionOutcome' AND e.session_id=? ")
+        raw_rows=self.s.rows(recent_sql+" ORDER BY p.created DESC LIMIT 128",(session,))
+        rows=self.s.rows(recent_sql+" AND "+_VALID_RECEIPT_SQL+
+                         " ORDER BY p.created DESC LIMIT 128",(session,))
+        rejected=0
+        for row in raw_rows:
+            try:
+                action={'id':row['action_id'],'event_id':row['event_id'],
+                        'status':row['action_status'],'outcome':row['action_outcome']}
+                _verified_receipt(row['payload'],row['event_id'],
+                                  row['generation_id'],action)
+            except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                rejected+=1
+        if not rows:
+            if rejected:self.s.log('world_packet_rejected',None,
+                                   {'count':rejected,'reason':'INVALID_PREDICTION_OUTCOME'})
+            # A previously materialized receipt may have been invalidated or
+            # removed. Never leave an obsolete observed count/recent list.
+            key='WORLD_STATE:'+session;old,v=self.s.state(key,{})
+            value={'mode':'NO_OBSERVATIONS','recent':[],
+                   'observed_action_count':0,'last_event_id':None}
+            if old and {k:x for k,x in old.items() if k!='updated_wall_time'}!=value:
+                self.s.set_state(key,value|{'updated_wall_time':now()},expected=v)
+            return
+        byaction={};latest_valid_event=None
         for row in rows:
-            observation=json.loads(row['payload'])['observation'];byaction.setdefault(observation['action_id'],observation)
+            try:
+                action={'id':row['action_id'],'event_id':row['event_id'],
+                        'status':row['action_status'],'outcome':row['action_outcome']}
+                observation=_verified_receipt(row['payload'],row['event_id'],
+                                               row['generation_id'],action)
+            except (ValueError,TypeError,KeyError,OverflowError,RecursionError):
+                rejected+=1;continue
+            if latest_valid_event is None:latest_valid_event=row['event_id']
+            byaction.setdefault(observation['action_id'],observation)
             if len(byaction)==32:break
-        count=self.s.one("SELECT COUNT(DISTINCT json_extract(p.payload,'$.action_id')) AS n FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='PredictionOutcome' AND e.session_id=? AND json_valid(p.payload)",(session,))['n']
-        value={'mode':'OBSERVED_DIGITAL_ACTIONS','recent':list(reversed(list(byaction.values()))),'observed_action_count':count,'last_event_id':rows[0]['event_id']}
+        # CASE guards SQLite JSON operations; malformed rows remain stored.
+        count=self.s.one(
+            "SELECT COUNT(DISTINCT a.id) AS n FROM packets p "
+            "JOIN events e ON e.id=p.event_id "
+            "JOIN actions a ON a.event_id=p.event_id AND a.id="
+            "CASE WHEN json_valid(p.payload) THEN json_extract(p.payload,'$.action_id') END "
+            "WHERE p.kind='PredictionOutcome' AND e.session_id=? AND "+_VALID_RECEIPT_SQL,
+            (session,))['n']
+        value={'mode':'OBSERVED_DIGITAL_ACTIONS','recent':list(reversed(list(byaction.values()))),'observed_action_count':count,'last_event_id':latest_valid_event}
+        if rejected:self.s.log('world_packet_rejected',None,{'count':rejected,'reason':'INVALID_PREDICTION_OUTCOME'})
         key='WORLD_STATE:'+session;old,v=self.s.state(key,{})
         if {k:x for k,x in old.items() if k!='updated_wall_time'}!=value:self.s.set_state(key,value|{'updated_wall_time':now()},expected=v)
 
@@ -142,7 +312,12 @@ class WorldState:
         # A completed action is authoritative even if its derived observation
         # was not written before termination. No outcome is invented for an
         # unfinished DISPATCHED/OUTCOME_UNKNOWN action.
-        rows=self.s.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id AND p.kind='PredictionOutcome' AND json_valid(p.payload) AND json_extract(p.payload,'$.action_id')=a.id) ORDER BY a.created",(self.r.session,'%"forecast"%'))
+        rows=self.s.rows(
+            "SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id "
+            "WHERE e.session_id=? AND a.outcome IS NOT NULL AND a.expected LIKE ? "
+            "AND NOT EXISTS (SELECT 1 FROM packets p WHERE p.event_id=a.event_id "
+            "AND p.kind='PredictionOutcome' AND "+_VALID_RECEIPT_SQL+") "
+            "ORDER BY a.created",(self.r.session,'%"forecast"%'))
         for row in rows:self.observe(row['id'])
         self._refresh(self.r.session)
 
