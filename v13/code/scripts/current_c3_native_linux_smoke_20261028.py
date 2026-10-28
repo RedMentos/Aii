@@ -18,6 +18,7 @@ import time
 from urllib.parse import urlsplit
 
 from scripts.step2_current_catalog_artifact_probe import git_blob_sha
+from scripts.native_smoke_io_20261028 import run_one_turn
 from v13.common import APP, file_hash
 from v13.models import download_file
 
@@ -104,20 +105,8 @@ def run(scratch_home, evidence_dir):
                                       env.get('LD_LIBRARY_PATH', '')])
     env['OMP_NUM_THREADS'] = '2'
     cmd = [str(cli), '-m', str(model), '-p', PROMPT, '-n', str(N_TOKENS),
-           '-c', '256', '-t', '2', '--temp', '0']
-    started = time.monotonic()
-    try:
-        proc = subprocess.run(cmd, input='', capture_output=True, text=True,
-                              timeout=180, env=env, check=False)
-        elapsed = time.monotonic() - started
-        stdout, stderr, code = proc.stdout, proc.stderr, proc.returncode
-    except subprocess.TimeoutExpired as exc:
-        elapsed = time.monotonic() - started
-        stdout = (exc.stdout or b'').decode('utf-8', errors='replace') if isinstance(exc.stdout, bytes) else (exc.stdout or '')
-        stderr = (exc.stderr or b'').decode('utf-8', errors='replace') if isinstance(exc.stderr, bytes) else (exc.stderr or '')
-        code = 124
-    (evidence_dir / 'NATIVE_STDOUT_RAW.log').write_text(stdout, encoding='utf-8')
-    (evidence_dir / 'NATIVE_STDERR_RAW.log').write_text(stderr, encoding='utf-8')
+           '-c', '256', '-t', '2', '--temp', '0', '--single-turn']
+    result = run_one_turn(cmd, evidence_dir, 'NATIVE', env)
     report = {
         'schema': 'v13.current_catalog.c3_native_linux_smoke.v1',
         'evidence_kind': 'LINUX_NATIVE_C3_ONLY',
@@ -132,14 +121,8 @@ def run(scratch_home, evidence_dir):
         'actual_llama_cli_sha256': binary_sha,
         'prompt_sha256': hashlib.sha256(PROMPT.encode()).hexdigest(),
         'max_tokens': N_TOKENS,
-        'native_exit_code': code,
-        'native_elapsed_s': round(elapsed, 3),
-        'stdout_sha256': hashlib.sha256(stdout.encode()).hexdigest(),
-        'stderr_sha256': hashlib.sha256(stderr.encode()).hexdigest(),
-        'stdout_chars': len(stdout),
-        'stderr_chars': len(stderr),
+        **result,
         'native_execution_performed': True,
-        'native_smoke_pass': code == 0 and bool(stdout.strip()) and stdout.strip() != PROMPT,
         'c2_jef_executed': False,
         'b1_b2_executed': False,
         'redmi_measured': False,
