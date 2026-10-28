@@ -1,0 +1,101 @@
+name: V13 Run11 bilingual baseline native collector software guards
+on:
+  push:
+    branches:
+      - assistant/v13-run11-arith-heldout-baseline-native-20261028
+    paths:
+      - '.github/workflows/run11-bilingual-baseline-native-collector-guards-20261028.yml'
+      - 'v13/code/scripts/age0_bilingual_arith_native_collector.py'
+      - 'v13/code/tests/test_age0_bilingual_arith_native_collector.py'
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test collector with no native execution and full software regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-heldout-baseline-native-collector-guards"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          a74d7517a7ab70e801e177b58da057e57fd3460c v13/code/v13/prompts.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          ceda0a5cb506cf09885652b24893cf7d8fdff63b v13/code/specs/age0-bilingual-arith-heldout-20261028.json
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo BLOB_MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q BLOB_MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-heldout-native-collector-venv"
+          py="$RUNNER_TEMP/v13-heldout-native-collector-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_age0_bilingual_arith_native_collector tests.test_age0_bilingual_arith_scorer) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/age0_bilingual_arith_native_collector.py v13/code/tests/test_age0_bilingual_arith_native_collector.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base db7702f151aa951a6f4293f98585687e6ca9c8ae --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check db7702f151aa951a6f4293f98585687e6ca9c8ae HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-heldout-baseline-native-collector-guards-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-heldout-baseline-native-collector-guards/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only source guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-heldout-baseline-native-collector-guards"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained"
+              tail -80 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'BILINGUAL_BASELINE_COLLECTOR_SOFTWARE_ONLY_NO_NATIVE_RUN'
