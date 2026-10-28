@@ -49,7 +49,7 @@ def score(report):
     controls = sum(x["exact_amount"] for x in baseline)
     neg_ok = (len(negative) == 32 and all(
         x["status"] == "CLARIFY" and x["native_calls"] == 0
-        and not x["unsupported_amount"] for x in negative))
+        and x["messages_none"] and not x["unsupported_amount"] for x in negative))
     native_ok = (len(positive) == 8 and len(baseline) == 8 and
                  all(x["native_status"] == "FINAL" and x["actual_model"]
                      and x["process_reaped"] for x in positive + baseline))
