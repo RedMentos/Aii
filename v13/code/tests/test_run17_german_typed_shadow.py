@@ -14,14 +14,14 @@ def make_sources(case):
     old = "run17:%s:old" % name
     options = current if case["type"] == "RULE" else "run17:%s:sheet" % name
     rows = {}
-    def add(ref, text, kind):
+    def add(ref, text, kind, seq):
         rows[ref] = {"ref": ref, "text": text, "sha256": hashlib.sha256(text.encode()).hexdigest(),
-                     "project": name, "session": "run17-session", "kind": kind,
+                     "project": name, "session": "run17-session", "kind": kind, "seq": seq,
                      "verified": True, "active": True}
-    add(current, case["current"], "current")
-    add(old, case["history"][0], "history")
+    add(current, case["current"], "current", 3)
+    add(old, case["history"][0], "history", 0)
     if options != current:
-        add(options, case["history"][2], "history")
+        add(options, case["history"][2], "history", 2)
     return rows, (name, current, old, options, case["temporal_mode"])
 
 

@@ -1,0 +1,13 @@
+# Run19 German source guard — verified review handoff (2026-10-28)
+
+**Owner:** Run19 independent fail-closed review of Run17 draft PR #928. Parent Run17 exact `23756d35c02bb4d2742b524ca97f0ddaf0372887`. Exact verified source head `b08b715d59962f0ef40324785aa1d2d7cb9893e3`, production integrated **NO**. Frozen English eligibility reader, original TP/s27 and Run15, all model/seed hashes unchanged.
+
+**Implemented:** German/English capitalized `Projekt|Project` source cues reject bilingual cross-project contamination without treating generic English `project policy` as a project; exact current `Option A:/B:` clauses take precedence over stale supplier sheets; malformed partial current option clauses cannot fall back to a historical sheet; source records require bounded integer event `seq` and old<sheet<current order, including missing/boolean/out-of-order refusal. Run17 synthetic fixture helper now supplies explicit sequence, no Runtime wiring. No F1/F5 authority can be inferred from caller-supplied `verified=True`.
+
+**Raw proof:** Actions `40704173249` SUCCESS at exact source head; 23 focused PASS, 2472 full OK (1 skipped), compile/INSTALL/FROZEN/PRIVACY/DIFF all exit 0; official privacy CLEAN. Artifact `12824075266` ZIP SHA256 `f51637fa2f48fccea7b4e593caf8300f4d46ddda5564117f6f53bc1493582f27`, CRC clean and all 15 SHA256SUMS entries verified. Private Library `/V13-Checkpoints/2026-10-28/Run19-Handoff/RUN19_GREEN_40704173249_shaF51637FA.zip` re-materialized and byte-identical.
+
+**Failures preserved:** RED-first `40703853422` five genuine adversarial refusals missing, ZIP SHA `f9b00ed18f4b392bf15a66b3dfe7621dc97615519089ce4eccd6af338b80709e`. Intermediate `40703972478` six errors from overbroad case-insensitive `project policy` match, ZIP SHA `fec974cdc6493375562cfe102eee2e51555375673bd13d8221af2eb875907531`. Both CRC/inner hashes clean, backed up privately. Capitalized cue fixed the regression without silently weakening cross-project rejection.
+
+**Next:** Run21 read-only real Store EventEnvelope source adapter (separate branch) must replace self-asserted source records with actual source-ref readback/revocation/rowid. Even this will prove source integrity only, not F5 HumanDecision authority. Run20 separate balanced typed bridge remains synthetic. Command: `cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run17_german_typed_shadow tests.test_run19_german_source_guard`. No native jobs while Run16 owner active.
+
+**Gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, Redmi unmeasured, V13 incomplete. Budget UNKNOWN.
