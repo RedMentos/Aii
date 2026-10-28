@@ -78,8 +78,12 @@ class BodyFabric:
         return (self.models.installed.get(model_key(role,self.models.b2_control)) or {}).get('exact_revision')
     def _committed(self,role,sl):
         """WP-T13: a finished swap (slot ACTIVE on a file other than the installed one) serves every turn."""
+        installed=self._installed_revision(role)
+        # Removing a B manifest must not turn its old ACTIVE slot into a
+        # committed swap merely because installed_revision became None.
+        if role in BODY_ROLES and installed is None:return None
         a=sl.get('active') if sl else None
-        if not a or not a.get('path') or a.get('revision')==self._installed_revision(role):return None
+        if not a or not a.get('path') or a.get('revision')==installed:return None
         p=Path(a['path']);p=p if p.is_absolute() else self.models.home/p
         return p if p.is_file() else None
     def revision_override(self,role):
@@ -89,6 +93,7 @@ class BodyFabric:
     def path_override(self,role):
         """Called by ModelManager.path_for. Returns the RAMP candidate's file for its share of turns, the swapped-in
         file after a committed swap (WP-T13), else None."""
+        if role in BODY_ROLES and self._installed_revision(role) is None:return None
         sl=self.slots.box.load()[0]['slots'].get(role)
         done=self._committed(role,sl) if sl and sl['stage']!='RAMP' else None
         if done:return done
