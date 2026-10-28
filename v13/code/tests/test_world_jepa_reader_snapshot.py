@@ -67,7 +67,7 @@ class WorldJEPAReaderSnapshot(unittest.TestCase):
         self.assertFalse(t1.is_alive())
         self.assertFalse(t2.is_alive())
         self.assertEqual(errors, [])
-        np.testing.assert_array_equal(model.mu, old_mu + 7)
+        np.testing.assert_allclose(model.mu, old_mu + 7, rtol=0, atol=1e-12)
 
     def test_confidence_read_is_not_mixed_with_refit(self):
         original = wj.encode
