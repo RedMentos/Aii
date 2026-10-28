@@ -7,8 +7,10 @@ Entries are data, never instructions: texts are length-capped, control character
 refused, and every lookup row carries authority DATA_NOT_INSTRUCTION. A rolled-back change retires its entries.
 ablation() compares a caller's solver with and without the library on the same tasks (the measurement itself is HX2).
 """
+import math
 import re
 import time
+from numbers import Real
 from pathlib import Path
 from .base import StateBox,new_id
 from ..common import digest
@@ -120,10 +122,23 @@ class ExperienceLibrary:
 
 def ablation(tasks,solve,library,task_type_of=lambda t:t['task_type'],k=3):
     """Same tasks, same solver, with and without library lessons. solve(task, lessons) -> score in [0,1]."""
+    def score(value, arm):
+        # Numeric text and bool are not measured [0,1] solver scores.
+        # Reject nonfinite and out-of-range values before averaging evidence.
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise ValueError('Invalid HX3 '+arm+' score')
+        try:
+            result=float(value)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError('Invalid HX3 '+arm+' score') from None
+        if not math.isfinite(result) or not 0. <= result <= 1.:
+            raise ValueError('Invalid HX3 '+arm+' score')
+        return result
     rows=[]
     for t in tasks:
         tt=task_type_of(t)
-        on=float(solve(t,library.lookup(tt,k)));off=float(solve(t,library.lookup(tt,k,enabled=False)))
+        on=score(solve(t,library.lookup(tt,k)),'with')
+        off=score(solve(t,library.lookup(tt,k,enabled=False)),'without')
         rows.append({'task_type':tt,'with':on,'without':off,'delta':round(on-off,6)})
     n=len(rows) or 1
     return {'n':len(rows),'with':sum(r['with'] for r in rows)/n,'without':sum(r['without'] for r in rows)/n,
