@@ -1,0 +1,13 @@
+# PR803 strict AG8 × F5 Context/Sleep/Dream — exact-head software GREEN
+
+UTC 2026-10-28. Parent PR #802 exact `990ea980b1a31db860702e74c6dada70f9ace8d5` independently GREEN (Actions 40606784006: 77 focused, 2088 full, 1 skipped). AG8 sibling PR #790 independently GREEN. Prereg `905cff9486c8dd57d38bcac7040c33b7554556e6` preceded test RED and exact AG8 blob import.
+
+RED Actions `40607142697` at test-only `a82189dec40c44d8b22b1f95bd4188f1811b5aa6`: 2 tests, 1 expected FAIL (missing `unseen` metric accepted), source AG8 `0f71e36b9542f1aa3aa57db734c448c305dfb48b`, raw ZIP SHA256 `4a43a2abaf72bb1219916441ad7061626984fe080194761ca8523474d0276756`. Initial NaN test design unexpectedly GREEN Actions 40606992412 because old JSON serialization failed closed; original raw preserved and not relabeled. Narrow exact sibling import `382b9e88c9a73f4466ff33355b14547069e4eb6d` changes only AG8 source blob `4ff5ee079653488d9117380c6b7435df38966824` and original Run380 test blob `0d07e975513b3adb4c24d3244314a13ba0e73926`. Independent cross-organ test blob `c9326c8224f585e400399b9ba4dbae87cb682a60` passed 2/2 Actions 40607411681.
+
+Combined GREEN Actions **40607477386** at exact tested source/workflow `1a412fae18204dd4f33ffd1ef7e7998ad9c863a7`: **112/112 focused PASS, 2096 full software tests OK (1 skipped)** in 218.641s; raw exits BLOBS=INSTALL=FOCUSED=FULL=COMPILE=PRIVACY=DIFF=0, privacy CLEAN. 13 pinned source/test Git blobs matched, including ContextOS, Sleep, Dream, Memory, AG8. Raw artifact `12780739783`, ZIP SHA256 `fd20fa6f7af678518247fd6927c8abbc392e04da37cf0acb7ed5992503bd8707`, CRC and 16 internal SHA256SUMS PASS; private Library backup `/V13-Checkpoints/2026-10-28/Automation13-F5-AG8-Integration/AG8_F5_CROSSORGAN_FULL_GREEN_40607477386.zip` re-materialized **BYTE_EXACT_PASS**.
+
+Intermediate combined Actions `40607438930` was RED due to nonexistent `tests.test_agi` module in workflow (86 tests, 1 import error); raw artifact `12782240643` retained privately. Fixed workflow only at `1a412fae18204dd4f33ffd1ef7e7998ad9c863a7`. Do not erase this failure.
+
+**Claim limit:** Linux software Runtime/SQLite synthetic evidence only; no native/Redmi/model learning/approval or age promotion; no production merge. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, Age-0 RECORD_ONLY/SHADOW, canonical_architecture_complete=false, user_full_scope_complete=false.
+
+**Next:** independent HX3 read-side revoked AG8 approval test on child `assistant/v13-hx3-approval-revocation-read-20261028` already RED at Actions 40607793205; repair narrowly, preserve original RED and rerun full suite. No auto-merge.
