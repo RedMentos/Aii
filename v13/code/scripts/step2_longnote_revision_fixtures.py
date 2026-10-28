@@ -45,8 +45,9 @@ def options_text(a, b):
 def long_kickoff(name, rules):
     # Actual rule values occur within the first 240 source characters for
     # the registered B2 excerpt width; the title alone cannot carry all.
-    intro = (f"Project {name} kickoff memo. This heading only identifies the archived "
-             "note; the binding decision limits appear below, not in the title. Reference only. ")
+    intro = (f"Project {name} kickoff memo: this heading identifies an archived "
+             "document, not a binding policy; the actual limits appear after the "
+             "audit description, not in the title. ")
     text = intro + rules_text(rules) + TAIL
     if not (len(text) > 400 and len(intro + rules_text(rules)) <= 240):
         raise ValueError("Long-note source visibility contract changed")
