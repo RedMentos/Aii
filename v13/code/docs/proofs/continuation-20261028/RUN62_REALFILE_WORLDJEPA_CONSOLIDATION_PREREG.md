@@ -1,0 +1,15 @@
+# Run62 — exact real-file-action + B2/World-JEPA cross-chain consolidation (2026-10-28)
+
+Owner GPT-6 continuation. Review-only conditional child of Run61 PR #969 exact source head `77490d2c1c1c6c3f58533437be3f52cb86fdbf70`. **Do not open Run62 PR or claim GREEN until Run61 exact-head original raw independently audited GREEN.** Production main unchanged.
+
+Parent Run61 integrates Run58 B2 disk-backed source revalidation and Run59 synthetic JEPA heldout action-swap readout, with exact unchanged source hashes. Run58 GREEN Actions 40761908408 ZIP SHA256 `a7af04f08a083cafcc7dbf91918ac2fd2322f96adf27784ba3713288812a2a73`, 20/20 inner hashes, 58 focused/2594 full OK (1 skipped); original RED retained. Run59 GREEN Actions 40761525613 ZIP SHA256 `c8ab7a3fbab0f05c4db99310ae7e83c111fa8a6defaee648719de06110d21405`, 20/20 hashes, 43 focused/2596 full OK (1 skipped). Run61 CI pending at preregistration.
+
+Independent Run60 PR #968 exact source head `a94e27cbe0c100af2d88c994ea4f89bfd89bf433` GREEN Actions 40762607763, original ZIP SHA256 `ef76f76d65627776d906e141571e0cfafe595ec65f76173dee14727ed9957ca7`, CRC clean, 20/20 hashes, 14 focused/2596 full OK (1 skipped), all nine exits zero, privacy CLEAN. Fresh isolated real file-action cohort (seeds 211/223/227, 240 train and 60 heldout op×slot transitions each): slot-local ridge heldout per-feature MSE 0.016492981896166048, persistence 0.0532817190410003, global exact-action ridge 0.06248578875059215. No direct original Z12b JEPA comparison: different cohort/metric, original Z12b FAIL preserved.
+
+## Exact integration
+
+After Run61 independently GREEN, copy Run60 source `v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py` and test `v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py` **byte-identically** from Run60, plus its original prereg doc. Do not import Run60 standalone workflow. No overlapping source paths with Run61, no edits to frozen `z12b_world_jepa.py`, `world_jepa.py`, Run42/51/54/55/57, model/seed/cohort or Runtime. New pinned integration CI: original source pins; focused Run60 real-file, Run58 disk-backed source-race, Run59 synthetic heldout action swap and parent WorldJEPA tests; full Linux suite; metrics for Run60 and Run59 separately (no cross-cohort pooling); privacy/diff; original raw SHA256SUMS and independent audit. Any RED preserved, no gate promotion.
+
+## Claim boundary / next
+
+Run60 is a **supervised compositional ridge baseline on real isolated file actions**, not a JEPA predictor or native Body model. Run59 is a supervised synthetic latent readout, not causal utility. Integration does not prove end-to-end V13. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; canonical_architecture_complete=false; user_full_scope_complete=false. If integration GREEN, next substantive experiment: fresh same-cohort real file-action comparison of slot-local ridge vs isolated slot-equivariant JEPA predictor and controls, with original Z12b thresholds untouched and new prereg before training.
