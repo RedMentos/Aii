@@ -112,6 +112,22 @@ class SlotRouting(Base):
             with self.assertRaises(Unavailable):
                 self.r.models.path_for('B2_GIST')
 
+    def test_committed_swap_requires_downloaded_base_manifest(self):
+        candidate=install(self.home,'gist2','d'*64,300)
+        slots=self.r.bodies.slots
+        slots.propose_swap('B2_GIST',ModelSlots.from_installed(candidate))
+        slots.start_shadow('B2_GIST')
+        slots.parity('B2_GIST',{'overall':.5},{'overall':.5})
+        for _ in range(3):
+            slots.ramp('B2_GIST')
+        self.assertEqual(self.r.models.path_for('B2_GIST').name,'gist2.gguf')
+        self.assertEqual(self.r.bodies.revision_override('B2_GIST'),'rev-gist2')
+        self.r.models.installed['gist']['download_complete']=False
+        self.assertIsNone(self.r.bodies.path_override('B2_GIST'))
+        self.assertIsNone(self.r.bodies.revision_override('B2_GIST'))
+        with self.assertRaises(Unavailable):
+            self.r.models.path_for('B2_GIST')
+
 class Schema(unittest.TestCase):
     def test_offer_schema_fits_the_token_budget(self):
         s=offer_schema(96);pr=s['properties']
