@@ -4,8 +4,9 @@ import unittest
 from unittest.mock import patch
 
 from scripts import run15_step2_disjoint_bilingual_fixtures as fresh
-from scripts import step2_z2_timescale as z2
 from scripts import step2_z2b_seeds as z2b
+# Z2b owns the single private harness module alias; do not create a second.
+z2 = z2b.z2
 from scripts import run16_step2_fresh_en_native_pilot as pilot
 
 
