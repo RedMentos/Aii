@@ -29,3 +29,6 @@ Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAI
 4. Continue independent canonical C3/B2 utility and World/Self/Context/JEPA packages; do not mistake these narrow synthetic studies for V13 completion.
 
 No destructive operations, model/seed/cohort changes, force-push or unauthorized paid provisioning.
+
+## Update after Run54 independent audit
+Run54 final source-only Actions `40756700727` SUCCESS, merge SHA `09a2a664844e568d224967cbf5a7550103db46fd`, original ZIP SHA256 `64b890920bb01dcd7a90bfa5b67daa7bb23f93f4ee069caafd3950f968d94c21`, CRC clean, 17/17 inner hashes, 30 focused/2583 full OK (1 skipped), all eight exits zero, privacy CLEAN. Private Library backup re-materialized byte-identical. Run55 action-control readout amendment preregistered before source change: shuffled model's ridge decoder uses the same shuffled train actions, verified against Run51 effective permutation SHA; observed model uses true actions. Run55 source blob now `96165bf52dcb498af5cccd02c0aa3684a18f873e`. **Next:** create Run55 PR and inspect exact-head CI `METRICS_RAW.json`; no utility gate promotion.
