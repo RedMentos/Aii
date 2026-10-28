@@ -28,6 +28,9 @@ OPTION = re.compile(r'\boption\s+([AB]):\s*cost\s+(\d+)\s+euros?,\s*duration\s+(
 MAX_ZIP = 25_000_000
 MAX_ENTRY = 12_000_000
 MAX_ENTRIES = 100
+REGISTERED_ZIP_SHA256 = '965bf4ef904cf96c759e1324b74c23662b03f1aa1c5c4698be71e9f5bb9db635'
+REGISTERED_HEAD = 'fa76c7599fc066b7cb2d58b133a649bd9604ded9'
+REQUIRED_EXITS = ('BLOBS','BOOTSTRAP','COMPILE','DIFF','FOCUSED','FULL','FULL_INSTALL','INSTALL','NATIVE','PRIVACY','REPLAY')
 
 
 def canonical(obj):
@@ -39,6 +42,8 @@ def sha(data):
 
 
 def read_archive(path, expected_sha, expected_head):
+    if expected_sha != REGISTERED_ZIP_SHA256 or expected_head != REGISTERED_HEAD:
+        raise ValueError('NOT_REGISTERED_TP27_EVIDENCE')
     path = Path(path)
     if path.stat().st_size > MAX_ZIP or sha(path.read_bytes()) != expected_sha:
         raise ValueError('ZIP_SIZE_OR_HASH_MISMATCH')
@@ -57,6 +62,7 @@ def read_archive(path, expected_sha, expected_head):
             names.add(n)
         required = {'SHA256SUMS.txt', 'HEAD.txt', 'RECEIPT.json', 'step2_TP_s27.json',
                     'tool_TP_s27.json', 'summary_TP_s27.json', 'tool_TP_s27.preregistration.json'}
+        required.update(n+'_EXIT.txt' for n in REQUIRED_EXITS)
         if not required.issubset(names):
             raise ValueError('MISSING_EVIDENCE')
         if z.read('HEAD.txt').decode().strip() != expected_head:
@@ -145,7 +151,17 @@ def _visible(row):
     evidence = row.get('source_evidence')
     if type(evidence) is not list or not evidence:
         raise ValueError('MISSING_SOURCE_EVIDENCE')
-    source_texts = [s['text'] for s in evidence if type(s) is dict and type(s.get('text')) is str and type(s.get('source_ref')) is dict]
+    source_texts = []
+    for source in evidence:
+        if type(source) is not dict or type(source.get('text')) is not str or type(source.get('source_ref')) is not dict:
+            raise ValueError('SOURCE_REF_FORMAT')
+        ref = source['source_ref']
+        if (type(ref.get('source_id')) is not str or not re.fullmatch(r'src_[0-9a-f]{32}',ref['source_id']) or
+                type(ref.get('sha256')) is not str or not re.fullmatch(r'[0-9a-f]{64}',ref['sha256']) or
+                type(ref.get('char_start')) is not int or type(ref.get('char_end')) is not int or
+                ref['char_start'] < 0 or ref['char_end'] - ref['char_start'] != len(source['text'])):
+            raise ValueError('SOURCE_REF_FORMAT')
+        source_texts.append(source['text'])
     if current not in source_texts:
         raise ValueError('CURRENT_NOT_SOURCE_BACKED')
     quotes = []
