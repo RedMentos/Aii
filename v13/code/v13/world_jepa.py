@@ -96,6 +96,25 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500):
+        # Invalid transitions cannot establish learned SHADOW inference evidence.
+        # The covariance objective divides by n-1; never fit a single row.
+        if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
+                or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
+                or type(steps) is not int or steps < 0
+                or type(log_every) is not int or log_every < 1):
+            raise ValueError('Invalid WorldJEPA fit configuration')
+        try:
+            X, A, X2 = np.asarray(X), np.asarray(A), np.asarray(X2)
+        except (TypeError, ValueError) as exc:
+            raise ValueError('Invalid WorldJEPA transition arrays') from exc
+        if (X.ndim != 2 or A.ndim != 2 or X2.ndim != 2
+                or not 2 <= len(X) <= 100000
+                or not 1 <= X.shape[1] <= 4096
+                or not 1 <= A.shape[1] <= 64
+                or A.shape[0] != len(X) or X2.shape != X.shape
+                or any(v.dtype.kind not in 'fiub' for v in (X, A, X2))
+                or not all(np.isfinite(v).all() for v in (X, A, X2))):
+            raise ValueError('Invalid WorldJEPA transition shape or nonfinite values')
         rng = np.random.default_rng(self.seed)
         # Confidence may use only actions actually present in fit's training rows.
         # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
