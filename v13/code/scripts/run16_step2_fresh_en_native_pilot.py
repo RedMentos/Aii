@@ -34,7 +34,7 @@ PINNED_SOURCE_BLOBS = {
     "v13/models.py": "bd035cf8029850cce00b179edf533e53bf24358a",
     "specs/models.json": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
 }
-PINNED_RUNNER_TAR_SHA256 = "9abf88aea48a55d0f80edb1ee20220b186848cca0b"
+PINNED_RUNNER_TAR_SHA256 = "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
 FIXTURE_ID = "Keldara"
 ARM = "CQ"
 SEED = 20261114
