@@ -2087,5 +2087,37 @@
       "On device after approval: bash setup.sh && bash TESTEN.sh --quick"
     ],
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_c2_route96_full_linux_20261028": {
+    "status": "LINUX_SOFTWARE_FULL_REGRESSION_PASS_BRANCH_SCOPED_ONLY",
+    "owner": "Codex PR #850",
+    "run_id": 40634434826,
+    "source_sha": "19586e4328ee9d16f8e132109e5901b21173e2b4",
+    "tests_run": 2215,
+    "tests_passed": 2215,
+    "skipped": 1,
+    "focused_run": 14,
+    "focused_passed": 14,
+    "install_exit": 0,
+    "compile_exit": 0,
+    "privacy_exit": 0,
+    "diff_exit": 0,
+    "artifact_id": 12792724555,
+    "artifact_sha256": "e98aa5d5c94085c3706c40ad2b393c72861030787e036a8ecc7674cd154a5d4c",
+    "artifact_crc_valid": true,
+    "internal_sha256_entries": 15,
+    "internal_sha256_mismatches": 0,
+    "private_backup_sha256_verified": true,
+    "private_library_path": "/V13-Checkpoints/2026-10-28/Run11-Native-Singleturn/C2-Route96-Full-Linux-2215-GREEN-40634434826-shaE98AA5D5.zip",
+    "model_source_hashes_unchanged": true,
+    "main_integrated": false,
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "age0_learning_mode": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q"
   }
 }
