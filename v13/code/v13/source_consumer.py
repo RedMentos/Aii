@@ -110,18 +110,29 @@ def admit(query, session, memories, memory):
             "_render_seal": _render_proof(query, session, chosen, len(valid))}
 
 
-def render_messages(cfg, query, admission):
+def render_messages(cfg, query, admission, *, memory=None, session=None):
     """Construct a C3 prompt only for the exact admitted correction."""
     if admission.get("status") != "ADMITTED" or admission.get("model_allowed") is not True:
         raise ValueError("Source admission required before native generation")
     source = admission.get("source")
     seal = admission.get("_render_seal")
-    session = admission.get("_render_session")
+    sealed_session = admission.get("_render_session")
     count = admission.get("admitted_count")
     if (not isinstance(source, dict) or not isinstance(seal, str)
-            or not isinstance(session, str) or type(count) is not int
-            or not hmac.compare_digest(seal, _render_proof(query, session, source, count))):
+            or not isinstance(sealed_session, str) or type(count) is not int
+            or not hmac.compare_digest(seal, _render_proof(query, sealed_session, source, count))):
         raise ValueError("Authenticated F1/F5 admission required for C3 rendering")
+    if (memory is None) != (session is None):
+        raise ValueError("Current Memory and session required together")
+    if memory is not None:
+        if session != admission["_render_session"]:
+            raise ValueError("C3 renderer session mismatch")
+        current = recall_and_admit(query, session, memory)
+        if (current.get("status") != "ADMITTED"
+                or current.get("source") != source
+                or current.get("admitted_count") != count
+                or current.get("_render_seal") != seal):
+            raise ValueError("C3 renderer live source authorization changed")
     if (not isinstance(source, dict) or not isinstance(source.get("topic"), str)
             or not TOPIC.fullmatch(source["topic"])
             or not isinstance(source.get("value"), str)
@@ -200,7 +211,7 @@ def verified_recall_messages(cfg, query, session, memory):
                 or fresh["value"] != source["value"]
                 or memory.s.read_source(source["source_ref"]) != source["value"]):
             raise ValueError("Source changed after admission")
-        messages = render_messages(cfg, query, decision)
+        messages = render_messages(cfg, query, decision, memory=memory, session=session)
         return {"decision": decision, "messages": messages}
     except Exception:
         refused = admit(query, session, [], memory)
