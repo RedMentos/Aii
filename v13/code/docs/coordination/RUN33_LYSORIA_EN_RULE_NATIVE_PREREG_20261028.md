@@ -1,0 +1,13 @@
+# Run33 fresh Lysoria EN RULE CQ one-fixture native diagnostic — prereg (2026-10-28)
+
+**Parent:** Run26 exact native GREEN `03c664c6a70eebe943ec6a0384a24814ca59c0c5`, Actions `40715223545`, original ZIP SHA256 `989abb8ac7b8fcd91ec047f97b735c9c8f84342e49251855b3375f7b3519762b` privately backed up and independently audited by Run30 Actions `40719280413`. **Frozen Run15 source** blob `635e5727a42cb1eac4f84441afda2977b0c8109c`, six original registered fixtures and seeds `20261114,20261115,20261116` unchanged. Original Run16/Run25 native pilot source `1fa2baf776ef5b9378405e18452b625f5575b891`, pinned runner/model catalog and B1/B2/C3 unchanged.
+
+**New, independently registered diagnostic:** Run15 second fixture **Lysoria (EN RULE)**, not Keldara EN SPLIT; arm **CQ**, seed **20261115** (already registered in Run15, not a new seed); seven original variants `b1_only,b2_only,both_none,both_exact,both_control,same_policy_dual,prompt_only_dual`; original B1 option/B2 earlier-rule fixed executive questions, same runner/model source pins, one fresh Linux-native hosted job after software-only GREEN and no competing heavy owner. Unlike Keldara, options are in current text, earlier binding rules are in old source. Do not change or re-score Keldara or the original TP/s27 cohorts. No oracle in native messages.
+
+**Implementation ownership:** New `scripts/run33_step2_lysoria_en_rule_native_pilot.py`, new tests, separate software-only and later native workflows, coordination docs only. Derive from Run16 source by changing only fixture selection, exact seed and receipt scope; reuse reversible private harness and pinned model/runner verification. On exception restore alias, retain raw/receipt and no gate promotion. Native dispatch only after source-only CI GREEN, exact pins and active-owner check. Record all failed attempts and pre/post artifact hashes.
+
+**Acceptance:** seven structural rows FINAL, 12/12 queried offers, unchanged B1/B2/C3 and runner SHA, no oracle leak, process reaping, fresh receipt/raw, independent row SHA replay, private byte-identical raw backup. Measure B2 rule quotation coverage and field correctness but **do not** claim STEP2 utility from one fixture or infer a causal two-body effect.
+
+**Next command after software GREEN:** `PYTHONPATH=v13/code python3 v13/code/scripts/run33_step2_lysoria_en_rule_native_pilot.py --installed-home <PINNED_HOME> --evidence-dir <FRESH_PRIVATE_DIR>`. Serialize heavy native jobs. No paid provisioning, no Redmi proof.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; whole V13 incomplete. Remaining platform budget UNKNOWN.
