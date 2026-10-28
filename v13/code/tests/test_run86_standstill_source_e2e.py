@@ -51,7 +51,8 @@ class TestRun86StandstillSourceE2E(unittest.TestCase):
                 reg.enable("calc")
                 self.assertEqual(reg.call("calc", {"expression": "1+1"},
                                           origin="USER")["reason"], "HARD_BLOCK:NOTAUS")
-                self.assertEqual(self._verified(r, op)["memory_id"], mid)
+                with self.assertRaisesRegex(ValueError, "RUNTIME_NOT_IDLE"):
+                    self._verified(r, op)
             finally:
                 r.close()
 
@@ -63,8 +64,10 @@ class TestRun86StandstillSourceE2E(unittest.TestCase):
                 self.assertTrue(r.paused)
                 self.assertTrue(P.report(r.store)["notaus"])
                 self.assertTrue(agectl.controller(r).view()["frozen"])
-                self.assertEqual(self._verified(r, op)["memory_id"], mid)
+                with self.assertRaisesRegex(ValueError, "RUNTIME_NOT_IDLE"):
+                    self._verified(r, op)
                 self.assertIn("aufgehoben", op.run(":stillstand aus"))
+                self.assertEqual(self._verified(r, op)["memory_id"], mid)
                 self.assertFalse(json.loads(op.run(":stillstand json"))["on"])
                 self.assertFalse(r.paused)
                 self.assertFalse(P.report(r.store)["notaus"])
