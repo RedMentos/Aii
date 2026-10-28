@@ -67,6 +67,53 @@ def _read_file(path, limit=MAX_RAW):
         os.close(fd)
 
 
+VARIANTS = ('b1_only', 'b2_only', 'both_none', 'both_exact',
+            'both_control', 'same_policy_dual', 'prompt_only_dual')
+
+
+def verify_native_reports(raw_step2, raw_tool, fixture_ids, fixture_sha256):
+    """Refuse altered/incomplete 70-row native and tool-replay evidence.
+
+    The STEP2 harness and tool replay each persist digest(dumps(row)); our
+    canonical() uses exactly that JSON encoding. No generated judge is used.
+    """
+    def decode(data):
+        def invalid(x):
+            raise ValueError('Nonfinite native report: ' + x)
+        return json.loads(data.decode('utf-8'), object_pairs_hook=pairs,
+                          parse_constant=invalid)
+    source, tool = decode(raw_step2), decode(raw_tool)
+    require(type(source) is dict and type(tool) is dict,
+            'Native report is not a JSON object')
+    expected = {f'{fid}:{v}' for fid in fixture_ids for v in VARIANTS}
+    require(len(fixture_ids) == 10 and len(set(fixture_ids)) == 10 and
+            source.get('fixture_sha256') == fixture_sha256 and
+            [f.get('id') for f in source.get('fixtures', [])] == list(fixture_ids) and
+            source.get('status') in ('UTILITY_FAIL', 'UTILITY_PASS_SCOPED') and
+            source.get('all_structural_checks_passed') is True and
+            source.get('source_unchanged') is True and
+            source.get('installed_artifacts_unchanged') is True and
+            tool.get('status') in ('TOOL_UTILITY_FAIL', 'TOOL_UTILITY_PASS_SCOPED') and
+            tool.get('installed_artifacts_unchanged') is True,
+            'Native report provenance/structural checks incomplete')
+    for report in (source, tool):
+        rows, hashes = report.get('rows'), report.get('row_sha256')
+        require(type(rows) is list and len(rows) == len(expected) and
+                type(hashes) is dict and set(hashes) == expected,
+                'Native rows/digests are not complete')
+        seen = set()
+        for row in rows:
+            require(type(row) is dict, 'Malformed native row')
+            key = str(row.get('fixture')) + ':' + str(row.get('variant'))
+            require(key in expected and key not in seen and
+                    row.get('status') == 'RECORDED' and
+                    hashes[key] == sha(canonical(row)),
+                    'Native row missing, repeated or changed')
+            seen.add(key)
+        require(seen == expected, 'Missing paired native rows')
+    return source, tool
+
+
 def make_registration(source_sha256, artifacts, fixture_ids, fixture_sha256):
     require(type(source_sha256) is dict and len(source_sha256) >= 8 and
             all(type(k) is str and len(v) == 64 for k, v in source_sha256.items()),
@@ -252,7 +299,10 @@ def main(argv=None):
         rid = f'{arm}_s{seed}'
         report_path = run_dir / ('step2_' + rid + '.json')
         tool_path = run_dir / ('tool_' + rid + '.json')
-        report = json.loads(_read_file(report_path))
+        report, tool = verify_native_reports(
+            _read_file(report_path), _read_file(tool_path),
+            [f['id'] for f in pre.corpus.FIXTURES],
+            pre.dry_run()['registered']['fixture_sha256'])
         preparations = report.get('preparations')
         require(type(preparations) is list and preparations and
                 all(p.get('status') == 'RECORDED' and
