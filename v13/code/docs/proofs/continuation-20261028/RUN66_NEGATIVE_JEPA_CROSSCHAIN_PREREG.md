@@ -1,0 +1,11 @@
+# Run66 — preserve verified negative real-file WorldJEPA learning in integrated review chain (2026-10-28)
+
+Owner GPT-6 scheduled continuation. Review-only child of Run65 #973 **exact GREEN** `bc47031ec9660d097385ad1065ee2ed4ed1647bf`; Actions `40766338408`, ZIP SHA256 `afb0ca600ca0fe5ed817bcd1ffe86cbea9046c657066eb1fc315b5bc7ed8bef3`, CRC clean, 26/26 inner hashes, 77 focused/2613 full OK, privacy CLEAN. Private Library backup byte-hash verified.
+
+Independent Run64 #972 **exact software GREEN but negative grounded outcome** `20d3054f783e9091446ff329f25fac99f1f09426`; Actions `40765954706`, ZIP SHA256 `737d65358a8cc55a58b272cb1f9f493700045ffeaaa31f26f5734857eae2bce3`, CRC clean, 20/20 hashes, 28 focused/2610 full OK, privacy CLEAN; private backup byte-hash verified. Fresh real file seeds 251/257/263: observed action JEPA+supervised readout overall MSE `0.12870843752790054`, zero action `0.12632463872696886`, shuffled `0.1302803682069105`, persistence `0.05344851652015011`, slot-local `0.015076023827937554`. **NO JEPA UTILITY GAIN**; preserve negative. Source blob `0566a4d0a9d81d8b1bbc11c0b6e6878c5b6a86bc`, test `7f0cd4fe268fdced3a58203b98e80041d24373cd`, prereg `fa3f03168685b3586c8b5a51fe7867761bf60505`.
+
+## Preregistered integration only
+
+Copy the three **exact** Run64 Git blobs into Run65 child, no changes to frozen original WorldJEPA, Z12b, Run60/63, B2 guard, synthetic WorldJEPA, registered seeds/cohorts/models or Runtime/Store. Add one pinned exact-head push+PR Linux CI running combined B2, Run59 synthetic WorldJEPA, Run60 real file slot-local, Run63 factorized, Run64 real-file WorldJEPA observed/zero/shuffle and supervised readout; full suite, compile, privacy/diff, original raw metrics and SHA256SUMS. No new experiments, thresholds or model selection. Run67 separate delta-inverse candidate is pending and **not** included unless independently GREEN.
+
+GREEN requires exact-head Actions original ZIP HEAD, all exits0, CRC, every SHA256SUMS, focused/full tests, frozen hashes, privacy. Preserve all original negative gates and all failed attempts. No main merge or learning authority. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; full V13 incomplete.
