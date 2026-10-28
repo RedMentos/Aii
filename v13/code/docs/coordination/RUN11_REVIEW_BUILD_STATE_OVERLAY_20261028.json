@@ -1,0 +1,109 @@
+{
+  "schema": "V13_RUN11_REVIEW_BUILD_STATE_OVERLAY_V1",
+  "date": "2026-10-28",
+  "status": "REVIEW_ONLY_FULL_LINUX_SOFTWARE_GREEN",
+  "canonical_build_state_unchanged": true,
+  "canonical_architecture_complete": false,
+  "main_merged": false,
+  "current_owner": "GPT-6 independent review integration",
+  "latest_source_commit": "9da8df36dfe7a5bb79fadd252d344b979576da6d",
+  "parent_source_commit": "41c05a078533677a2a7cd889fc28448a6fc96590",
+  "active_branch": "assistant/v13-run11-closedstore-full-review-integration-20261028",
+  "pr": 837,
+  "chain": [
+    {
+      "pr": 831,
+      "source": "28320b825d789ecc4d505a2b86279bcb2fc89927",
+      "status": "GREEN",
+      "full_tests": 2184,
+      "skips": 1,
+      "focused_tests": 36,
+      "run": 40627590775,
+      "raw_sha256": "6f36c9b48a9da240fa22d8755302ddc43e65ded976ee08d585adbe4911ff3dcd"
+    },
+    {
+      "pr": 832,
+      "source": "ad2004a27a55cef7bdab86d6f945136e99a6d2c7",
+      "status": "GREEN",
+      "focused_tests": 16,
+      "run": 40627766748,
+      "raw_sha256": "90731323f71228b04cc4ed5bacc140e6c69739b210f1e5179a659d4bdf1685c4"
+    },
+    {
+      "pr": 833,
+      "source": "b5ea799ff1b7ba61609b145e4f05d2da31b3dcfa",
+      "status": "RED2_THEN_GREEN9",
+      "run_red": 40627875568,
+      "run_green": 40627975054,
+      "raw_red_sha256": "b28039edb73e668fdbfc1b5a1297ca8507db40edfbe922892f1c7da427c949a8",
+      "raw_green_sha256": "e889dca433b3bdacfef261da5bc0de64ddd75f1cc6e585b573d6aa89c097fa46"
+    },
+    {
+      "pr": 834,
+      "source": "324c4c34b4521983065672a2fa298dfa549ecbb2",
+      "status": "RED1_THEN_GREEN11",
+      "run_red": 40628205778,
+      "run_green": 40628299975,
+      "raw_red_sha256": "bc1241cb19856a2c7d0914e7dfca43da5446124cd91c68c84c369bd862c00836",
+      "raw_green_sha256": "5a01837d295c57564dd86f4fced295b3f4dc56aebdbc2a257a83a7338ee0e66c"
+    },
+    {
+      "pr": 835,
+      "source": "41c05a078533677a2a7cd889fc28448a6fc96590",
+      "status": "GREEN",
+      "run": 40628461533,
+      "focused_tests": 32,
+      "full_tests": 2191,
+      "skips": 1,
+      "raw_sha256": "31b67a4bea1d09dd3f86e227b6796964fa0406fc048621404046800024f6c3f7"
+    },
+    {
+      "pr": 836,
+      "source": "4fe822d3bd9d6a8394bdf7f513f72614e1867e6d",
+      "status": "GREEN",
+      "focused_tests": 16,
+      "run": 40628640018,
+      "raw_sha256": "06af8621226f5273a347b7baccc8d0cb89395e862cf79e682a2c0aec2a4bd650"
+    },
+    {
+      "pr": 837,
+      "source": "9da8df36dfe7a5bb79fadd252d344b979576da6d",
+      "status": "GREEN",
+      "run": 40628837206,
+      "focused_tests": 36,
+      "full_tests": 2195,
+      "skips": 1,
+      "raw_sha256": "1e3cf98053c6a9367f5a014f43e92ae85c32b992d7f224c0e760a92cf7fc8a2e"
+    }
+  ],
+  "negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "Age0": "RECORD_ONLY",
+    "Redmi_current_proof": false,
+    "whole_system_complete": false
+  },
+  "software_evidence_scope": "Linux software and synthetic/closed synthetic SQLite only; no native model or Redmi execution in this chain",
+  "latest_synthetic_world_jepa_result": {
+    "direct_pooled_mae": 0.15257965707462282,
+    "jepa_seed3_pooled_mae": 0.2424321724394616,
+    "jepa_seed7_pooled_mae": 0.197254578469483,
+    "utility_gain": false
+  },
+  "private_backup_root": "/V13-Checkpoints/2026-10-28/",
+  "forbidden_destination": "anyone-writable Drive destination (approval rejected)",
+  "open_questions": [
+    "Exact fresh four-arm STEP2 registration and pinned distinct B1/B2 model artifacts not available for exclusive native run",
+    "World-JEPA has no demonstrated heldout utility gain over direct baseline; no live authority",
+    "Redmi Note 10 Pro thermal, energy, sustained RSS/KV and native learning proofs unavailable",
+    "Other Canon JEF/C2/C3, Context OS, Body JEPA, Callosum, Dream/Sleep, Ages and multimodal acceptance gates remain required",
+    "Current-catalog C3 real Linux native smoke #838 pending exact pinned runner/model execution; not a Redmi or STEP2 gate."
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest discover -s tests -p 'test_*.py' -q",
+  "next_action": "Review #838 current pinned C3 Linux native smoke raw result; preserve RED or GREEN, then select next canonical package. No production/main merge.",
+  "stop_reason": "NONE; source integration green, native review ongoing",
+  "platform_budget_remaining": "UNKNOWN"
+}
