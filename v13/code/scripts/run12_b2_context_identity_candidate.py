@@ -96,8 +96,13 @@ def select_context(current, current_event_id, session, generation, revision,
     # requires older rules, spend B2's bounded context on the older source
     # containing the rule *words*, not on a recent supplier sheet. B1 handles
     # recent exact options. This is source selection, never rule truth.
+    current_has_rules = all(re.search(rx,current,re.I) for rx in (
+        r'\bbudget\s+\d+\s+euros?\b',
+        r'\bdeadline\s+\d+\s+days?\b',
+        r'\blocal-only\s+requirement:?\s+(?:true|false)\b'))
     prior_requested = (bool(re.search(r'\b(?:earlier|prior|previous)\b',current,re.I)) and
                        bool(re.search(r'\brules?\b',current,re.I)) and
+                       not current_has_rules and
                        not re.search(r'\b(?:superseded|revised)\b',current,re.I))
     if prior_requested:
         eligible.sort(key=lambda row:row[3],reverse=True)
