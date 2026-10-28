@@ -7,6 +7,7 @@ from scripts import step2_z2_timescale as z2
 from scripts.step2_longnote_revision_fixtures import (
     CASES, FIXTURES, REVISION, long_kickoff, recent_sheet)
 from v13.agi.eligibility import recipe, stated, option_stated, stated_values
+from v13.cognition import quote_span, quote_choices
 
 
 class LongNoteRevisionFixtures(unittest.TestCase):
@@ -33,6 +34,16 @@ class LongNoteRevisionFixtures(unittest.TestCase):
                 self.assertTrue(all(stated(k, v, note) for k, v in expected.items()))
                 self.assertTrue(all(stated(k, v, note[:240]) for k, v in expected.items()))
                 self.assertFalse(all(stated(k, v, note[:200]) for k, v in expected.items()))
+                # Exercise the actual pointer/quote expansion, not merely a
+                # naive prefix slice. One heading choice must not carry all
+                # three rule values through the 200-char source expansion.
+                first = quote_choices([note])[0]
+                self.assertEqual(first[0], 0)
+                heading = note[first[1]:first[2]]
+                span = quote_span(heading, note, 200)
+                self.assertIsNotNone(span)
+                expanded = note[span[0]:span[1]]
+                self.assertFalse(all(stated(k, v, expanded) for k, v in expected.items()))
                 self.assertEqual(FIXTURES[[x["id"] for x in FIXTURES].index(name)]["old_rules"],
                                  expected)
 
