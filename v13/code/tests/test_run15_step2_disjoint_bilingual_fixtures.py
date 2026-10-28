@@ -6,7 +6,7 @@ from collections import Counter
 
 from scripts import step2_longnote_revision_fixtures as original
 from scripts import run15_step2_disjoint_bilingual_fixtures as fresh
-from v13.agi.eligibility import recipe
+from v13.agi import eligibility as e
 
 
 def canonical(x):
@@ -59,25 +59,52 @@ class FreshStep2BilingualFixtures(unittest.TestCase):
             if x["type"] == "REVISION":
                 self.assertNotEqual(x["rules"], x["old_rules"])
 
-    def test_oracle_matches_independent_recipe(self):
+    def test_oracle_matches_independent_reference_solver(self):
+        # Separate from the fixture generator's eligibility.recipe implementation.
         for x in fresh.FIXTURES:
-            opts = x["source_contract"]["options"]
-            expected = [{"entity": k, "cost": v[0], "days": v[1], "local": v[2]}
-                        for k, v in (("A", opts[0]), ("B", opts[1]))]
-            rules = x["rules"]
-            action, details = recipe(rules["budget"], rules["deadline"], rules["local_only"], expected)
-            self.assertEqual(x["oracle"], {"project": x["id"], "action": action, "options": details})
+            budget, deadline, local_required = (x["rules"][k] for k in
+                                                ("budget", "deadline", "local_only"))
+            details = []
+            for entity, triple in zip(("A", "B"), x["source_contract"]["options"]):
+                cost, days, local = triple
+                eligible = (cost <= budget and days <= deadline and
+                            (local or not local_required))
+                details.append({"entity": entity, "cost": cost,
+                                "remaining": budget - cost, "days": days,
+                                "local": local, "eligible": eligible})
+            viable = sorted((d for d in details if d["eligible"]),
+                            key=lambda d: (d["cost"], d["entity"]))
+            action = viable[0]["entity"] if viable else "NONE"
+            self.assertEqual(x["oracle"], {"project": x["id"],
+                                           "action": action, "options": details})
 
     def test_german_and_english_rule_intent_are_explicit(self):
         for x in fresh.FIXTURES:
             if x["language"] == "DE":
                 self.assertIn("Projekt ", x["current"])
-                self.assertIn("früheren", x["current"] if x["type"] != "REVISION" else "früheren")
                 if x["type"] == "REVISION":
+                    self.assertNotIn("früheren", x["current"])
                     self.assertIn("Aktuelle verbindliche Regeln", x["current"])
+                else:
+                    self.assertIn("früheren", x["current"])
             else:
                 self.assertIn("Project ", x["current"])
                 if x["type"] != "REVISION": self.assertIn("earlier", x["current"])
+
+    def test_german_native_fixed_reader_gap_is_explicit(self):
+        # Known negative native-control contract, not a learned German failure.
+        for x in fresh.FIXTURES:
+            if x["language"] != "DE":
+                continue
+            rules = x["rules"]
+            rule_text = x["current"] if x["type"] == "REVISION" else x["history"][0]
+            self.assertFalse(e.stated("deadline", rules["deadline"], rule_text))
+            self.assertFalse(e.stated("local_only", rules["local_only"], rule_text))
+            option_text = x["current"] if x["type"] == "RULE" else x["history"][2]
+            a = x["source_contract"]["options"][0]
+            self.assertFalse(e.option_stated(
+                {"entity": "A", "cost": a[0], "days": a[1], "local": a[2]},
+                [option_text]))
 
     def test_fixture_hash_stable_and_no_authority(self):
         self.assertEqual(fresh.FIXTURE_SHA256, hashlib.sha256(canonical(fresh.FIXTURES)).hexdigest())
