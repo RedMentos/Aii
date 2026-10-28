@@ -2292,5 +2292,39 @@
     ],
     "next_command": "Download and independently audit Actions 40683211643 raw ZIP; preserve RED if any, no threshold or label tuning",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_step2_tp27_70row_prereg_20261028": {
+    "status": "PREREG_ONLY_BLOCKED_UNTIL_CORRECTED_AQUILA_PILOT_GREEN_RAW",
+    "owner": "Automation draft PR #915",
+    "pr": 915,
+    "base_review_sha": "4c21b90a48caa54af1c97980f749b8443cfddae9",
+    "prereg_sha": "6f0fcc76d2b9e015a8e1f3aa5f4515363be5da3f",
+    "cohort": "10 disjoint long-note fixtures TP arm seed27 70 rows + tool replay",
+    "fixture_sha256": "b721650791284e4369d440d494de4aaf76da35fe4be11e34cb87bba1285e4040",
+    "model_sha256": {
+      "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+    },
+    "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "pilot_required_run_id": 40683211643,
+    "pilot_status": "PENDING_INDEPENDENT_RAW_AUDIT",
+    "native_executed": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2_gate": "UTILITY_FAIL",
+    "b3_l1_gate": "FAIL",
+    "body_jepa_gate": "UNAVAILABLE",
+    "lp3_gate": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "open_questions": [
+      "Corrected Aquila pilot must be GREEN and independently raw-audited before native 70",
+      "Full 12-arm/3-seed complementarity still missing",
+      "No Redmi measurements"
+    ],
+    "next_command": "After pilot Actions 40683211643 GREEN+raw audit, implement source-pinned one-arm collector and 70-row native+tool replay; otherwise retain RED and block",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
