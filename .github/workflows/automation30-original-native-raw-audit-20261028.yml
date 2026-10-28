@@ -1,0 +1,99 @@
+name: V13 Run30 original Run26 native raw aggregate read-only audit
+on:
+  push:
+    branches:
+      - assistant/v13-run30-keldara-native-aggregate-audit-20261028
+    paths:
+      - '.github/workflows/automation30-original-native-raw-audit-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run30-original-raw-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  read-only-aggregate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify original raw ZIP, execute auditor, export only aggregate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/run30-original-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          zip="$RUNNER_TEMP/run26-original-private.zip"
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12826794972/zip" \
+            --output "$zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            sha256sum "$zip" > "$e/ZIP_SHA256.txt"
+            echo "989abb8ac7b8fcd91ec047f97b735c9c8f84342e49251855b3375f7b3519762b  $zip" | sha256sum --check > "$e/ZIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/ZIP_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_DOWNLOAD_RED > "$e/ZIP_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/ZIP_CHECK_EXIT.txt"
+          fi
+          if [ "$(cat "$e/ZIP_CHECK_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/run30_native_keldara_aggregate_audit.py "$zip" > "$e/AGGREGATE.json" 2> "$e/AUDIT_RAW.log"
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else
+            echo SKIPPED_ZIP_RED > "$e/AUDIT_RAW.log"
+            echo SKIPPED_RED > "$e/AUDIT_EXIT.txt"
+          fi
+          if [ "$(cat "$e/AUDIT_EXIT.txt")" = 0 ]; then
+            python3 - "$e/AGGREGATE.json" > "$e/ASSERT_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['both_exact_minus_b1_only']==0
+          assert d['common_failed_fields']==['A.remaining','B.remaining','action','project']
+          assert d['all_variants_exact'] is False
+          assert d['canonical_gate_pass'] is False
+          assert d['phone_measured'] is False
+          assert d['jepa_weight']==0
+          assert d['whole_system_complete'] is False
+          assert set(d['variant_utility'])=={'b1_only','b2_only','both_none','both_exact','both_control','same_policy_dual','prompt_only_dual'}
+          print('RUN30_ORIGINAL_NATIVE_AGGREGATE_ONLY_NO_GATE_PROMOTION')
+          PY
+            echo "$?" > "$e/ASSERT_EXIT.txt"
+          else
+            echo SKIPPED_AUDIT_RED > "$e/ASSERT_RAW.log"
+            echo SKIPPED_RED > "$e/ASSERT_EXIT.txt"
+          fi
+          rm -f "$zip"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: run30-original-aggregate-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/run30-original-audit/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce read-only audit proof without native gate promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run30-original-audit"
+          for n in DOWNLOAD ZIP_CHECK AUDIT ASSERT; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; no gate promotion"
+              tail -30 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN30_ORIGINAL_RAW_AUDITED_AGGREGATE_ONLY
