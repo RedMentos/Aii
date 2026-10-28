@@ -1,0 +1,11 @@
+# Prereg: integrate independently GREEN C3 no-worker CLI and live source renderer (2026-10-28)
+
+**Owner:** GPT-6 integration reviewer. Parent no-worker CLI #891 exact source `4ee33a8d01418845f38b1344753e59a20f35d928`, 33 focused + 2302 full software GREEN. Other parent live source renderer #892 exact source `eeb6b512da23ad12589d5882f1e4b8c71e345ad0`, 33 focused + 2302 full software GREEN. This branch is review-only and preserves both histories; no force-push, no production merge. Source paths do not overlap: CLI owns `scripts/ask_verified_budget.py`, renderer owns `v13/source_consumer.py`.
+
+**Integration hypothesis:** the no-worker `BudgetContext` uses actual lexical `Memory.recall` and the live renderer's second source/session check; exact pinned C3 model and process cleanup remain unchanged. Merge both parents with a two-parent Git commit and explicit tree entries from live source branch, preserving all independent preregs, failures and proof ledgers. No new model/seed/registered cohort changes.
+
+**Predeclared tests:** source-pinned CLI + source-consumer focused suite, explicit cross-branch tests for (a) verified source READY with no model, (b) conflicting source inserted between two recalls fails closed, (c) revoked source before dispatch prevents fake C3, (d) exact model pin and Age0 gates; full Linux software suite, compile, privacy and diff. Any failure retained. No native claim on this combined source until separately rerun with a new source-pinned native protocol.
+
+**All negative gates remain:** original Stage11 FAIL, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA unavailable, LP3 heldout FAIL, Age0 RECORD_ONLY, `jepa_weight=0`, no Redmi native evidence, no whole-system completion. No changes to frozen Runtime `_turn`, models, C2, B1/B2, learning, dream or user permissions.
+
+**Next command:** create explicit two-parent merge tree, verify remote bytes, add integration regression tests and source-pinned full software workflow. After GREEN, continue to actual Linux-native integrated CLI proof only when native group free.
