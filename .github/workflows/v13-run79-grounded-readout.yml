@@ -1,0 +1,104 @@
+name: V13 Run79 grounded real-file slotwise readout
+on:
+  push:
+    branches: [assistant/v13-run79-realfile-grounded-readout-20261028]
+permissions:
+  contents: read
+concurrency:
+  group: v13-run79-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture Run79 source-bound grounded readout and raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run79"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/docs/proofs/continuation-20261028/RUN79_REALFILE_GROUNDED_READOUT_PREREG.md v13/code/scripts/run79_realfile_grounded_readout.py v13/code/tests/test_run79_realfile_grounded_readout.py v13/code/scripts/run78_realfile_ensemble_comparison.py v13/code/v13/world_jepa_slots_mean_candidate.py v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/SOURCE_RAW.log"
+          if [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN79_REALFILE_GROUNDED_READOUT_PREREG.md)" = 9982a0a24aef3ef983d615e7e9ce22153b8a03ca ] && [ "$(git hash-object v13/code/scripts/run79_realfile_grounded_readout.py)" = 5a21ad69d43e8b5ea633c2f53eeeca2d04280fe7 ] && [ "$(git hash-object v13/code/tests/test_run79_realfile_grounded_readout.py)" = fe87921bcb725c5691be98baa09cca222cdd8975 ] && [ "$(git hash-object v13/code/scripts/run78_realfile_ensemble_comparison.py)" = 803d18fc5a447e0a69586630c027226703dd59f5 ] && [ "$(git hash-object v13/code/v13/world_jepa_slots_mean_candidate.py)" = ccfc512e4c1a50ae8565d1b27c29335a50313f30 ] && [ "$(git hash-object v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py)" = 08063f3df630f558589dd297860dd19e0021dc90 ]; then echo 0 > "$e/SOURCE_EXIT.txt"; else echo 1 > "$e/SOURCE_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run79-venv"
+          py="$RUNNER_TEMP/v13-run79-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
+          echo "$?" > "$e/NUMPY_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run79_realfile_grounded_readout tests.test_run78_realfile_ensemble_comparison tests.test_run77_slotwise_ensemble_mean tests.test_run76_slotwise_isolated tests.test_world_jepa tests.test_world_model) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/run79_realfile_grounded_readout.py v13/code/tests/test_run79_realfile_grounded_readout.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=.:tests "$py" scripts/run79_realfile_grounded_readout.py) > "$e/EXPERIMENT_RAW.json" 2> "$e/EXPERIMENT_STDERR.log"
+            echo "$?" > "$e/EXPERIMENT_EXIT.txt"
+            if [ "$(cat "$e/EXPERIMENT_EXIT.txt")" = 0 ]; then
+              "$py" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["schema"]=="v13.run79.realfile_slotwise_grounded_readout_shadow.v1"; assert [r["seed"] for r in d["reports"]]==[431,433,439]; assert d["supervised_readout_used"] is True and d["jepa_only_utility_proven"] is False; assert d["whole_system_complete"] is False and d["learning_gate_pass"] is False' "$e/EXPERIMENT_RAW.json" > "$e/REPORT_RAW.log" 2>&1
+              echo "$?" > "$e/REPORT_EXIT.txt"
+            else
+              echo SKIPPED_EXPERIMENT_RED > "$e/REPORT_RAW.log"; echo SKIPPED_RED > "$e/REPORT_EXIT.txt"
+            fi
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/EXPERIMENT_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/EXPERIMENT_STDERR.log"
+            echo SKIPPED_RED > "$e/EXPERIMENT_EXIT.txt"
+            echo SKIPPED_RED > "$e/REPORT_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_EXIT.txt"
+          fi
+          if [ "$(cat "$e/EXPERIMENT_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            third=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo 1 > "$e/INSTALL_EXIT.txt"
+              echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            echo SKIPPED_EXPERIMENT_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+            echo SKIPPED_EXPERIMENT_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7f7cdc1a9c35a72267955f20e3b6480a717650c2 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 7f7cdc1a9c35a72267955f20e3b6480a717650c2 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original Run79 raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run79-grounded-readout-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run79/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce Run79 source and grounded readout gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run79"
+          for n in SOURCE NUMPY FOCUSED COMPILE EXPERIMENT REPORT INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no JEPA/native/gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN79_SUPERVISED_GROUNDED_SHADOW_ONLY
