@@ -23,7 +23,7 @@ class CurrentB1B2NativeGuards(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             cli = root / 'llama-cli'
-            cli.write_text('#!/bin/sh\necho Hello. generated-synthetic-tokens\n')
+            cli.write_text('#!/bin/sh\necho Hello. generated-synthetic-tokens\necho "[ Prompt: 1 t/s | Generation: 2 t/s ]"\n')
             cli.chmod(0o755)
             result = probe._native_one(cli, root/'fake.gguf', 'B1_DETAIL', root, {})
             self.assertEqual(result['native_exit_code'], 0)
@@ -41,7 +41,8 @@ class CurrentB1B2NativeGuards(unittest.TestCase):
                 result = probe._native_one(root/'cli', root/'model', 'B2_GIST', root, {})
             self.assertEqual(result['native_exit_code'], 124)
             self.assertFalse(result['native_smoke_pass'])
-            self.assertIn('partial', (root/'B2_GIST_STDOUT_RAW.log').read_text())
+            self.assertTrue((root/'B2_GIST_STDOUT_RAW.log').exists())
+            self.assertTrue(result['native_timed_out'])
 
     def test_no_download_on_invalid_platform_or_existing_scratch(self):
         with tempfile.TemporaryDirectory() as tmp:
