@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+import math
 import json
 import queue
 import re
@@ -258,11 +259,22 @@ class Runtime:
                     with contextlib.suppress(ValueError):yield from routes(json.loads(obj))
             proposals=list(routes(control));info['calibrated']=False
             calibrated=self.learner.control_calibrate(e,control)
-            if calibrated and calibrated['in_support']:
+            # The frozen author-labelled C2 route96 evaluation did not establish
+            # useful native routing or confidence calibration. A syntactically
+            # valid native proposal is telemetry, never route authority by itself.
+            confidence=calibrated.get('calibrated_confidence') if isinstance(calibrated,dict) else None
+            supported=(isinstance(calibrated,dict)
+                       and calibrated.get('in_support') is True
+                       and type(confidence) in (int,float)
+                       and math.isfinite(confidence) and 0. <= confidence <= 1.)
+            if supported:
                 info.update(calibrated=True,control_calibration=calibrated)
-                if calibrated['calibrated_confidence']<.6:proposals=[];info['native_control_rejected']=True
-            elif self.store.components().get('control_calibration'):
+                if confidence < .6:
+                    proposals=[];info['native_control_rejected']=True
+                    info['native_control_reason']='BELOW_CALIBRATED_THRESHOLD'
+            else:
                 proposals=[];info['native_control_rejected']=True
+                info['native_control_reason']='NO_SUPPORTED_FINITE_CALIBRATION'
             if route=='simple' and proposals:route=proposals[0];info['source']='NATIVE_C2_ADVISORY'
         except Cancelled:raise
         except Exception as exc:
