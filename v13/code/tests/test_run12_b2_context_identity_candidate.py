@@ -61,6 +61,18 @@ class B2IdentityTests(unittest.TestCase):
         self.assertIn('Budget 134 euros.',x['items'][0]['native_context']['exact_source_excerpt'])
         self.assertEqual(x['reasons']['CAP'],1)
 
+    def test_current_complete_rules_do_not_prioritize_old_note(self):
+        long_sheet=('Project Aquila supplier data sheet revision 3. The latest sheet lists the two remaining '
+                    'offers and explains that earlier offers were withdrawn. All figures confirmed. '
+                    'The procurement desk repeats the source introduction for clarity. '
+                    'Option A: cost 91 euros, duration 7 days, local true.')
+        items=[make_item(long_sheet,3),make_item(ATLAS,2),make_item(NOTE,1)]
+        for item in items:item['hypothesis']='H'*120
+        current=CUR+' Current binding rules: Budget 100 euros. Deadline 5 days. Local-only requirement: false.'
+        x=c.select_context(current,'current','s1','g1','m1',items,reader_for(items,[long_sheet,ATLAS,NOTE]))
+        self.assertEqual(x['items'][0]['source_ref']['source_id'],items[0]['source_ref']['source_id'])
+        self.assertEqual(x['reasons']['CAP'],1)
+
     def test_no_cross_project_even_with_shared_rule_words(self):
         items=[make_item(ATLAS,2)]
         self.assertEqual(run(items,[ATLAS])['items'],[])
