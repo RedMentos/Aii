@@ -72,7 +72,7 @@ def text_segments(text,ref,width=240,threshold=TEXT_THRESHOLD):
         tiled.append((i,e));i=e
     if i<len(text):tiled.append((i,len(text)))
     segs=[];start,end=tiled[0];why={'reason':'first'}
-    def emit(s,e,meta):segs.append({'text':text[s:e],'source_ref':ref|{'char_start':s,'char_end':e},'scale':'event',**meta})
+    def emit(s,e,meta):segs.append({'text':text[s:e],'source_ref':ref|{'char_start':ref['char_start']+s,'char_end':ref['char_start']+e},'scale':'event',**meta})
     for s,e in tiled[1:]:
         prev=text[start:end];unit=text[s:e];sig=text_signals(prev,unit,end-start,width);score=noisy_or(sig,TEXT_GAINS)
         cap=end-start+e-s>width*TEXT_MAX;cut=cap or (score>=threshold and end-start>=width*TEXT_MIN)
