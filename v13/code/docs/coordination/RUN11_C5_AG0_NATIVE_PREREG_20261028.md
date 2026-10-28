@@ -1,0 +1,13 @@
+# Run11 C5+AG0 native Age0 STEP12 integration prereg — 2026-10-28
+
+Owner: GPT-6. Isolated child of integration PR #847 at `0ed573e27d28d5bdceb950df4220c1f0afb24937`. Parent PRs #844/#845/#846 and main untouched. Run only after independent full Linux software reviews #845 `40632930791`, #846 `40632990148`, and integrated `40633149062` are GREEN and no active heavy native/model owner is running. If a prerequisite is RED, retain it and repair before native. Source exact current catalog `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, control schema `954a3f468f10195fbce12d27f68585ee7edee2c9`; do not alter models/seed/cohorts.
+
+## Fixed native stages and evidence
+
+On clean Ubuntu24.04 x86_64 (not Redmi), `python3 -m venv`, install existing pinned Python deps, `PYTHONPATH=v13/code python -m v13.bootstrap` in fresh temp `V13_HOME`, real pinned C2 Needle3 + C3 LFM2.5-350M + B1 LFM2.5-1.2B + B2 Qwen3.5-0.8B and pinned llama.cpp b10964. Verify all four exact sha256 via `ModelManager.verify(deep=True)`; no weights or user data in uploaded artifacts. Execute **serially** `probe jef-modes` (C2_ONLY, C3_ONLY, C2+C3 without B manifests, C1 restart), `probe step12` (native C2/C3 and both B roles), and one fixed public `ask 'Budget 120 Euro. Berechne die Hälfte.'`. Unlike original #844 workflow, run STEP12 and ask after successful bootstrap **even if JEF fails**, recording independent exits; never erase failed attempts.
+
+Expected structural PASS only if JEF `status=JEF_MODES_PASS`, every combined turn `runner.role=C3_LANGUAGE` and C2 native control observed, no B manifest, C1 restart, integrity; STEP12 `status=VERTICAL_CHECKS_PASS`, both B roles observed, C2 observed, `full_runner_proof=false`, `complementarity_proven=false`; ask nonempty with arithmetic witness 60 (semantic single-case only). A C3-only unsupported source question previously hallucinated `John Doe`; record it as **negative semantic witness** without treating JEF structural PASS as semantic quality.
+
+Preserve Age0 `learning_mode=RECORD_ONLY`, `system_stage=0`, latents off, `jepa_weight=0`, tools off unless separately approved. Keep STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, phone proof false, no whole-system acceptance. Exact raw stdout/stderr, stage exit, model/source hashes, output proof, privacy and diff, archive SHA256 manifest, verify GitHub remote artifact and private Library byte readback.
+
+Known original native RED 40632157217 artifact 12791672638 sha256 `446ecaa32faf9703c4663590620a537ab29e45926e45ac65882d37d05c750ec0`; this prereg is not permission to overwrite it. Native workflow creation/trigger deferred until software prerequisites verified. Remaining platform budget UNKNOWN.
