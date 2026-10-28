@@ -38,7 +38,7 @@ jobs:
           py="$RUNNER_TEMP/v13-run75-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
           echo "$?" > "$e/NUMPY_EXIT.txt"
-          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_slots tests.test_world_jepa tests.test_world_jepa_action_permutation_control) > "$e/FOCUSED_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_slots tests.test_world_jepa tests.test_world_model) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
           python3 -m compileall -q v13/code/v13/world_jepa_slots.py v13/code/v13/world_jepa.py v13/code/tests/test_world_jepa_slots.py v13/code/scripts/z12c_slot_world_jepa.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
