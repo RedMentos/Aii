@@ -1,0 +1,41 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-integrated-bilingual-native-20261028-0815",
+  "pr": 870,
+  "parent_pr": 869,
+  "parent_head": "511cada934c6518592bdd99f64eeb0fe1636b82c",
+  "prereg_commit": "7923495ee05e3dc28e92706267a7994fa872b845",
+  "native_workflow_source": "a4191622d4453a53369698313fbbcb11d2210a65",
+  "native_run": 40648655251,
+  "native_status_at_checkpoint": "IN_PROGRESS_NO_RESULT",
+  "software_workflow_source": "d1e781b8f2ba6b28e00bea85606901ea43a67996",
+  "software_run": 40648744552,
+  "software_status_at_checkpoint": "IN_PROGRESS_NO_RESULT",
+  "frozen_fixture_blob": "ceda0a5cb506cf09885652b24893cf7d8fdff63b",
+  "frozen_scorer_blob": "0348b17dedc0e4142a73a8ad8c93a57a2c7d6491",
+  "frozen_collector_blob": "a0a94ce08983b0621990c5b9c2f4712463e146bb",
+  "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "prompt_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+  "source_changes": "ONLY EXACT IMPORTED FROZEN TEST FIXTURE SCORER COLLECTOR TESTS AND WORKFLOWS; NO RUNTIME MODEL SEED AGE CHANGE",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Will integrated current source preserve 12/12 supported numeric lexical score?",
+    "How many unsupported-note answers are semantically calibrated versus lexical marker?",
+    "C5 selected-role versus executed C3 fallback remains unresolved by this cohort."
+  ],
+  "next_command": "Inspect Actions 40648655251 and 40648744552, download raw ZIPs, verify SHA256SUMS/CRC, score 16 frozen rows and provenance; private Library byte-exact backup; persist result and no-promotion.",
+  "prerequisites": "No competing heavy native owner; pinned public artifacts and no model substitutions; do not edit registered fixture/scorer.",
+  "platform_remaining_budget": "UNKNOWN"
+}
