@@ -1,0 +1,15 @@
+# Run11 AG0-only native JEF no-B + STEP12 prereg — 2026-10-28
+
+Owner GPT-6. Review-only child of #846 `7ceaecf55edaee0e0544da3351d6ae112b9acb12`; #844/#845/#846/#847 and main untouched. This is an **independent alternative native path**, not a replacement for #847 integrated candidate.
+
+## Prerequisites and actual evidence
+
+Original pinned Age0 native #844 run 40632157217 is **RED**: `JEF_MODES_PARTIAL`, `combined_c3=false` because an AG0 slot served B1 after B manifest removal; original raw artifact 12791672638 SHA256 `446ecaa32faf9703c4663590620a537ab29e45926e45ac65882d37d05c750ec0`. #846 AG0 guard blocks orphaned ACTIVE/RAMP slots, while leaving `v13/code/v13/runtime.py` and `v13/code/v13/focal.py` at their original frozen source hashes. Synthetic RED 40632820503: two expected failures. Focused GREEN 40632940211: 11/11. **Full Linux software GREEN 40632990148:** 37/37 focused, 2217 full tests (1 skipped), compile/privacy/diff/install exit0, artifact 12792920337 SHA256 `64ff75fa3b76259e3601d18b7a0c4f6c14048d76142dc2c746b71e17f56b96e4`, ZIP CRC + 16 internal hashes verified.
+
+#845 C5 runtime branch separately has full software RED 40632930791 (4 failures, 62 errors; primarily registered frozen-source candidate mismatches after runtime change), so #847 combined native is **not authorized under its stricter prereg yet**. Do not change frozen source/model/seed hashes to force a pass. AG0-only branch is independent and full-green; no other native/model owner active at prereg. Exact current catalog Git blob `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, control schema blob `954a3f468f10195fbce12d27f68585ee7edee2c9`.
+
+## Fixed native stages and falsifiers
+
+Clean Ubuntu24.04 Linux x86_64, fresh `V13_HOME`, pinned bootstrap of C2 Needle3, C3 LFM2.5-350M, B1 LFM2.5-1.2B, B2 Qwen3.5-0.8B and llama.cpp b10964; `ModelManager.verify(deep=True)` and Age0 RECORD_ONLY/latents OFF/jepa_weight0. Serial independent `probe jef-modes`, `probe step12`, and public `ask 'Budget 120 Euro. Berechne die Hälfte.'`, with bounded timeouts and raw evidence retained **even if an earlier probe fails**. The unchanged C5 may select a B action, but AG0 guard must refuse its stale slot and Runtime must record fallback to actual C3; test actual `runner.role=C3_LANGUAGE`, `fallback=C3_LANGUAGE`, C2 native, no B manifest, restart, integrity. If any row still uses B1/B2, preserve RED. STEP12 must observe C2 and both distinct B roles with `full_runner_proof=false`, `complementarity_proven=false`; public ask should contain numeric 60. No semantic quality claim from a single fixture. Original C3-only unsupported leader fixture hallucinated `John Doe`; preserve this negative witness.
+
+Retain original STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, Age0 RECORD_ONLY, jepa_weight0, no phone thermal/energy or whole-system claim. GitHub artifacts contain only closed raw logs/proofs, no weights/private data; SHA verify and private Library byte readback. No paid provisioning, no model changes. Next: create native workflow on this branch after final no-active-native check. Remaining platform budget UNKNOWN.
