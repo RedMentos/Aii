@@ -1,0 +1,88 @@
+{
+  "schema": "V13_BUILD_STATE_REVIEW_DELTA_V1",
+  "date_utc": "2026-10-28",
+  "owner": "automation11 independent review branches",
+  "production_integrated": false,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "packages": [
+    {
+      "pr": 820,
+      "branch": "assistant/v13-step2-fourarm-evidence-analysis-20261028",
+      "latest_source_sha": "cfe531e116dfc5307985e12846f513d5c7feccdb",
+      "source_blob": "a1fff2f0989ae84c623aab6a3f6e238c88fad3b8",
+      "prereg_sha": "416428d1c08f777cb14de9fb96e6457e631564e9",
+      "red_run": 40619574808,
+      "red_zip_sha256": "e1ea67478d979ded6e28bf4dda3bbe012cb22c8d2e7aa54df159dfda1c475ff9",
+      "red_result": "17 focused, 3 expected failures; full SKIPPED_RED",
+      "green_run": 40619583241,
+      "green_result": "17 focused PASS; 2122 full OK (1 skipped); all 7 exits 0; privacy CLEAN",
+      "green_zip_sha256": "fc892a8890bcb05d2252ebd2b710430077f21806551531017c86bdb65ff34fb3",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Automation11-STEP2-FourArm/GREEN-40619583241.zip",
+      "private_backup_byte_exact": true
+    },
+    {
+      "pr": 821,
+      "branch": "assistant/v13-step2-fourarm-sealed-io-20261028",
+      "latest_head": "5bb7b445d13ee84ccb3cf26d13d6d8756e8f6efc",
+      "source_blob": "5b30729ee451aaf383604b8a782929161e572b72",
+      "prereg_sha": "a35718ceb24f1cc2ca668c86beb65ee7d0c5ac59",
+      "initial_green_run": 40619346301,
+      "initial_result": "14 focused PASS; 2127 full OK (1 skipped); all exits 0",
+      "initial_zip_sha256": "f9c87cc3613f7b5bde1d9bdf5156b650f225bb9ae35852402ddf62995362fac2",
+      "final_combined_run": 40619638242,
+      "final_combined_result": "PENDING at checkpoint"
+    },
+    {
+      "pr": 822,
+      "branch": "assistant/v13-step2-fixture-runner-integration-review-20261028",
+      "tested_head": "cecb7fa93947937cf2b711f7cb89d1c53302283f",
+      "merge_sha": "5fc7c72543dae4a1939054cbf87799d36a885ea5",
+      "merge_parents": [
+        "67c219e4a983da23b533055177eed82912f81c29",
+        "c11fc2a9e88933f41db1da0b297c43b26d40364b"
+      ],
+      "fixture_blob": "eeb4155dc3421c2b57ca0871c126f8ea2249c649",
+      "fixture_test_blob": "c38d0ad15cef0305e1147218b6f11a0f79d6934b",
+      "runner_blob": "128647ee0680262575807722cd670db79a709385",
+      "green_run": 40619495420,
+      "green_result": "39 focused PASS; 2122 full OK (1 skipped); all 7 exits 0; privacy CLEAN",
+      "green_zip_sha256": "a91ec14a2f776b2176ea2d1485e18532e6e90920951cc13ccbc7a6974649ed78",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Automation11-STEP2-FourArm/GREEN-40619495420.zip",
+      "private_backup_byte_exact": true
+    },
+    {
+      "pr": 823,
+      "branch": "assistant/v13-a1-step2-source-ref-crossorgan-review-20261028",
+      "latest_head": "521b1fa1f06a0dbdbedcd51f7ac29708aa04be2e",
+      "merge_sha": "2569b5e8b49ee7220dfb09ee253810cab10c6bac",
+      "a1_candidate_blob": "7b6db92a0e25a6a5c6dcd5df725e04ac5c3d67cc",
+      "verified_source_blob": "571c31f8a3e4af931bc35f75983c8f7a37cb23ad",
+      "crossorgan_test_blob": "fb237cc467fd67b7eeca838f72208b97e391a8ff",
+      "prereg_sha": "4c5d3541bd1770ebc43db9528c1c8af9f431a261",
+      "ci_run": 40620060272,
+      "ci_result": "PENDING at checkpoint"
+    }
+  ],
+  "evidence_class": "software/synthetic Linux only; no native inference in these packages",
+  "original_negative_gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Age": "Age0/RECORD_ONLY",
+    "Redmi": "NOT_MEASURED"
+  },
+  "next_commands": [
+    "Inspect exact Actions 40619638242 and 40620060272; download ZIP artifacts; verify all raw exits, CRC and SHA256SUMS; back up byte-exact privately",
+    "If both GREEN, preregister and run an independent review-only A1+STEP2+four-arm scorer+sealed IO integration with focused/full Linux tests",
+    "For real TP/TC/SP/SC: write NEW preregistration after fixture/runner merge; verify model/source/runner/seed hashes and exclusive cgroup owner; collect raw native evidence serially; preserve original failed cohorts"
+  ],
+  "blocked": [
+    "Native models and Redmi device not available in this execution container; no real model or phone run claimed",
+    "Original #819 prereg fixture blob stale; must not execute without new exact binding",
+    "No production merge or authority promotion authorized from software-only evidence"
+  ],
+  "stop_reason": "NOT_STOPPED: checkpoint; continue after verified save"
+}
