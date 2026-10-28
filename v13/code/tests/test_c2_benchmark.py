@@ -39,9 +39,9 @@ class C2BenchTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             model = Path(td) / 'needle3.cact'
             model.write_bytes(b'CACT')
-            with patch('v13.runtime.Runtime', return_value=FakeRuntime(model)), \\
-                 patch('v13.control_calibration_worker.observation',
-                       side_effect=ValueError('invalid native control')):
+            with (patch('v13.runtime.Runtime', return_value=FakeRuntime(model)),
+                  patch('v13.control_calibration_worker.observation',
+                        side_effect=ValueError('invalid native control'))):
                 rows, extra = C.run_needle([{'id':'one','text':'budget',
                                              'label':'detail'}], Path(td))
             self.assertIsNone(rows[0]['pred'])
