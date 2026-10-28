@@ -147,6 +147,20 @@ class Run73SourceBoundDigitalLink(unittest.TestCase):
         self.assertGreaterEqual(self.s.reads.count("src1"), 2)
         self.assertGreaterEqual(self.s.reads.count("out1"), 2)
 
+    def test_b1_and_b2_offers_coexist_on_normal_two_body_turn(self):
+        original = self.s.one("SELECT payload FROM packets WHERE id='b2p1'")
+        src = json.loads(original["payload"])["provenance"][0]
+        b1 = {"packet_id": "b1p1", "event_id": "evt1",
+              "brain_generation_id": "gen1", "role": "B1_DETAIL",
+              "model_revision": "b1-rev1", "provenance": [src],
+              "offer": {"summary": "separate detail hypothesis"}}
+        self.s.packet("b1p1", "OfferPacket", b1, 2.1)
+        result = check(self.s)
+        self.assertEqual(result["status"], "SHADOW_SOURCE_BOUND_DIGITAL_LINK")
+        self.assertEqual(result["b2_offer_packet_id"], "b2p1")
+        self.assertEqual(result["authority"], "SHADOW_NO_AUTHORITY")
+        self.assertFalse(result["semantic_coupling_proven"])
+
     def test_wrong_session_generation_model_abstain(self):
         for args in (("wrong", "gen1", "b2-rev1"),
                      ("session1", "wrong", "b2-rev1"),

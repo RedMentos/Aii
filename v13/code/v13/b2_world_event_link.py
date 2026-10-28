@@ -86,10 +86,16 @@ def link(store, event_id, session_id, generation_id, b2_model_revision,
             return _base("ABSTAIN_EVENT_SCOPE_OR_SOURCE")
         offers = _rows(store, "OfferPacket", event_id, scan_limit)
         worlds = _rows(store, "WorldTransition", event_id, scan_limit)
-        if len(offers) != 1 or len(worlds) != 1:
+        # Both B1_DETAIL and B2_GIST normally offer on the same Age0 turn.
+        # Only B2 is the target organ; unrelated B1 offers are not ambiguous.
+        parsed = [(candidate, _json(candidate["payload"])) for candidate in offers]
+        b2 = [(candidate, packet) for candidate, packet in parsed
+              if packet.get("role") == "B2_GIST"]
+        if len(b2) != 1 or len(worlds) != 1:
             return _base("ABSTAIN_MISSING_OR_AMBIGUOUS_PACKET")
-        offer_row, world_row = offers[0], worlds[0]
-        offer, world = _json(offer_row["payload"]), _json(world_row["payload"])
+        offer_row, offer = b2[0]
+        world_row = worlds[0]
+        world = _json(world_row["payload"])
         outcome_ref = world.get("outcome_source_ref")
         if (offer_row["id"] != offer.get("packet_id")
                 or offer.get("event_id") != event_id
