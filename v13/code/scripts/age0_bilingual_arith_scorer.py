@@ -18,7 +18,12 @@ FIXTURE_BLOB = "ceda0a5cb506cf09885652b24893cf7d8fdff63b"
 BASELINE_PROMPT = "a74d7517a7ab70e801e177b58da057e57fd3460c"
 CANDIDATE_PROMPT = "646c6f31b52ca2664c1952af7c7e842fc3e20885"
 PROMPTS = {BASELINE_PROMPT, CANDIDATE_PROMPT}
-ROLES = {"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"}
+ROLE_MODELS = {
+    "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+}
+CATALOG_BLOB = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
 NUMBER = re.compile(r"(?<![\w.])[-+]?[0-9]+(?:[.,][0-9]+)?(?![\w])")
 UNKNOWN = re.compile(
     r"\b(?:unknown|not stated|not provided|not specified|cannot determine|"
@@ -75,8 +80,8 @@ def score(path, items):
         raise ValueError("Prompt is not a preregistered baseline/candidate")
     if not isinstance(data.get("source_commit"), str) or not SHA1.fullmatch(data["source_commit"]):
         raise ValueError("Missing source commit")
-    if not isinstance(data.get("model_sha256"), str) or not SHA256.fullmatch(data["model_sha256"]):
-        raise ValueError("Missing model SHA256")
+    if data.get("model_catalog_git_blob") != CATALOG_BLOB:
+        raise ValueError("Model catalog mismatch")
     rows = data.get("rows")
     if not isinstance(rows, list) or len(rows) != len(items):
         raise ValueError("Missing or extra answer rows")
@@ -96,8 +101,10 @@ def score(path, items):
         row = by_id[item["id"]]
         if row.get("prompt") != item["prompt"]:
             raise ValueError("Question drift: " + item["id"])
-        if row.get("status") != "FINAL" or row.get("runner_role") not in ROLES:
+        if row.get("status") != "FINAL" or row.get("runner_role") not in ROLE_MODELS:
             raise ValueError("Missing final/runner evidence: " + item["id"])
+        if row.get("runner_model_sha256") != ROLE_MODELS[row["runner_role"]]:
+            raise ValueError("Runner model identity mismatch: " + item["id"])
         if row.get("tool_call") is not None or row.get("learning_mode") != "RECORD_ONLY":
             raise ValueError("Age0 authority violation: " + item["id"])
         weight = row.get("jepa_weight")
@@ -121,7 +128,7 @@ def score(path, items):
                          "runner_role": row["runner_role"],
                          "answer_sha256": hashlib.sha256(answer.encode()).hexdigest()})
     return {"prompt_git_blob": data["prompt_git_blob"], "source_commit": data["source_commit"],
-            "model_sha256": data["model_sha256"], "input_sha256": hashlib.sha256(raw).hexdigest(),
+            "model_catalog_git_blob": data["model_catalog_git_blob"], "input_sha256": hashlib.sha256(raw).hexdigest(),
             "counts": counts, "items": per_item}
 
 
@@ -133,14 +140,17 @@ def evaluate(answers, compare=None, corpus=FIXTURE):
         second = score(compare, items)
         if first["prompt_git_blob"] == second["prompt_git_blob"]:
             raise ValueError("Paired comparison requires distinct frozen prompt versions")
-        if first["model_sha256"] != second["model_sha256"]:
-            raise ValueError("Paired comparison requires identical model bytes")
+        if first["model_catalog_git_blob"] != second["model_catalog_git_blob"]:
+            raise ValueError("Paired comparison requires identical catalog")
         results.append(second)
+    route_changes = ([a["id"] for a, b in zip(results[0]["items"], results[1]["items"])
+                      if a["runner_role"] != b["runner_role"]] if len(results) == 2 else None)
     return {
         "schema": "v13.age0.bilingual_numeric_offline_score.v1",
         "evidence_kind": "SOFTWARE_OFFLINE_SCORER_ONLY",
         "fixture_git_blob": FIXTURE_BLOB,
         "runs": results,
+        "paired_route_changed_ids": route_changes,
         "external_native_claims_verified": False,
         "semantic_grounding_verified": False,
         "phone_measured": False,
@@ -152,7 +162,7 @@ def evaluate(answers, compare=None, corpus=FIXTURE):
         "lp3_heldout": "FAIL",
         "whole_system_complete": False,
         "claim_limit": "Author labels; numeric and uncertainty lexical proxies only. "
-                       "Source/model SHA strings in external manifests are not independently verified.",
+                       "Source/model identity strings in external manifests are not independently verified.",
     }
 
 
