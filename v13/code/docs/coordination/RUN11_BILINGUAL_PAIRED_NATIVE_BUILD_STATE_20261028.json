@@ -23,7 +23,7 @@
   "internal_sha256_checks_per_archive": 22,
   "private_library_byte_exact_readback": true,
   "software_test_local_shim": "9/9 PASS (scorer shim, not authoritative)",
-  "exact_source_ci": "PENDING",
+  "exact_source_ci": "GREEN",
   "step2": "UTILITY_FAIL",
   "b3_l1": "FAIL",
   "body_jepa": "UNAVAILABLE",
@@ -33,5 +33,12 @@
   "phone_measured": false,
   "whole_system_complete": false,
   "next_command": "cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_age0_bilingual_native_pair_audit",
-  "next_prerequisite": "Exact-source focused/full CI; independent review of frozen lexical limits and new disjoint cohort prereg"
+  "next_prerequisite": "Exact-source focused/full CI; independent review of frozen lexical limits and new disjoint cohort prereg",
+  "software_ci_run": 40639051157,
+  "software_ci_source": "f042562124b619198fca8a2dcc13b4378d1311ca",
+  "focused_tests": "26 PASS",
+  "full_tests": "2243 PASS, 1 skipped",
+  "software_ci_artifact_sha256": "b2bdb166892e87419554d48325bae7eba4a2ea76d032fc70f9e196a1f1b208b3",
+  "software_ci_internal_hashes": 16,
+  "software_ci_private_backup_verified": true
 }
