@@ -20,7 +20,7 @@ def segments(text,ref,width,mode='fixed'):
     if mode=='event':
         from .episodes import text_segments
         return text_segments(text,ref,width)
-    return [{'text':text[i:i+width],'source_ref':ref|{'char_start':i,'char_end':min(len(text),i+width)}} for i in range(0,len(text),width)]
+    return [{'text':text[i:i+width],'source_ref':ref|{'char_start':ref['char_start']+i,'char_end':ref['char_start']+min(len(text),i+width)}} for i in range(0,len(text),width)]
 from .age import RIGHTS as _RIGHTS
 AGE0_RIGHTS=frozenset(r for r,s in _RIGHTS.items() if s==0)
 def percept_mode(cfg):
