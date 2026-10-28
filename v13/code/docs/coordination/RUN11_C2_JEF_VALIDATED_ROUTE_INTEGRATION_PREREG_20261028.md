@@ -1,0 +1,11 @@
+# Run11 C2/JEF validated-route integration prereg — 2026-10-28
+
+Owner GPT-6, review-only child of #850 at `b454f81da33de9d621af6417ed47ab55cba6263f`. This preregistration precedes integration. No production/main merge, no overwrite of independent owners or frozen native cohorts.
+
+**Scope:** Integrate **only exact disjoint source/test blobs** from independent candidates #859 (C2 native benchmark route scoring) and #860 (live JEF native route admissibility), after each exact-source Linux software CI and raw ZIP are verified GREEN. #859 candidate benchmark blob `12fe792cacd2dc92c2b3c5c33e01424e20a148e4`, tests `48554fd86c985fab520888af8bd7910236589683`. #860 candidate runtime blob `bcc8d8ccd3f6d4032949237ce89d1a969759c7e1`, tests `1e1ffdd2f7740bc1f1f569e066d524e9f24d7f9c`. No change to native `control_calibration_worker.observation`, model catalog, control tool spec, original96 corpus, transfer64 corpus or registered seeds.
+
+**Rationale:** Existing native benchmark can score a wrong-name tool route while validating a different `select_processing` proposal. Existing live JEF runtime can accept a route-like key in arbitrary native metadata. The two candidate fixes use the same strict first validated native `select_processing` observation. They should be tested together to avoid divergent benchmark/runtime definitions. This is source-level safety/consistency work, not proof that prior native runs were affected or that C2 routing quality improved. Needle remains 19/64 on transfer64 and scaffold 42/64 under original frozen source; confidence AUROC 0.4772.
+
+**Plan:** After both candidates pass, copy exact four Git blobs (two source, two tests) onto this new review branch; independently check original negative gates, code diff, explicit no-model counterexamples and full Linux software regression. No native inference, new route authority, training or evaluation-label reuse. Preserve both parent PRs and their private raw artifacts. A future new-source Linux native JEF proof requires separate preregistration and exclusive owner; Redmi still unavailable.
+
+All gates unchanged: STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight0, Age0 RECORD_ONLY, phone_measured=false, whole_system_complete=false.
