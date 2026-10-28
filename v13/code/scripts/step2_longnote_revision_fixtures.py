@@ -19,7 +19,7 @@ CASES = (
     ("Gemini", "DETAIL", (191, 15, True), (171, 14, True), (181, 16, False), None),
     ("Helios", "DETAIL", (203, 16, False), (187, 15, False), (194, 17, True), None),
     ("Icarus", "DETAIL", (217, 17, True), (199, 17, True), (208, 18, True), None),
-    ("Janus", "REVISION", (229, 18, True), (207, 17, True), (221, 16, False), (223, 17, False)),
+    ("Janus", "REVISION", (229, 18, True), (207, 17, True), (221, 16, False), (223, 16, False)),
 )
 DISTRACTOR = ("Project Atlas archive index. An unrelated maintenance meeting is planned; "
               "the index contains no active project rules or supplier prices.")
