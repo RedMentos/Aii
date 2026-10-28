@@ -27,3 +27,16 @@ Per PREREG: a PASS on one seed re-opens the L2 prefix SHADOW experiment only aft
 (20261302, run next). LATENT authority stays 0, runtime unchanged, G-CALLOSUM-UTILITY-002 stays PARTIAL (needs 8 axes, L2-L4).
 Claim limits as attempt 5: L1 receiver-adapter read only (no backbone injection), synthetic templates, aux targets are privileged
 labels, oracle EXACT span, Linux CPU, not Redmi.
+
+## Replication, data seed 20261302 (preregistered, 0 shared sender texts with all earlier seeds): REPLICATED
+Private view, accuracy %, mean of 5 split seeds:
+
+| Task | NO_MSG | label word | attr words | SCALAR | **LATENT** | canon | strict (vs SCALAR) |
+|---|---|---|---|---|---|---|---|
+| escalate | 68.3 | 80.8 | 89.7 | 93.6 | **93.9** | **PASS** | FAIL |
+| apologize | 64.6 | 84.5 | 92.2 | 96.6 | **94.3** | **PASS** | FAIL |
+
+Rule of PREREG A2 (canon PASS on the same task on the second seed) is met for both tasks: **REPLICATED**. First replicated L1 pass in the
+B3 series after attempts 3-6 (power was the limit). Strict rule vs SCALAR still FAIL on both seeds (apologize SCALAR is ahead by 2.3 here).
+Consequence: L2 prefix SHADOW on private/escalate and private/apologize may be reopened with a NEW prereg. LATENT authority stays 0,
+runtime unchanged, G-CALLOSUM-UTILITY-002 stays PARTIAL. Same claim limits as above.
