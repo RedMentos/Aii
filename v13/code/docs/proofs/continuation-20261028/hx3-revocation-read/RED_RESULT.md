@@ -1,0 +1,7 @@
+# HX3 revoked approval read — exact-head RED result (2026-10-28 UTC)
+
+Prereg `ad084e34720755c0ea6d006a3d7d5421dbbbfe27` preceded test-only `2afe4b89ac9038ee13357f48eeea8ad5ed31ead6` and pinned Actions `11210e434ef005d4af1a9b209b33f2e4d5dd9612`. Parent AG8/F5 PR #803 full CI was pending; no production HX3 source changed.
+
+Actions **40607793205 expected RED** at exact `11210e434ef005d4af1a9b209b33f2e4d5dd9612`: 2 actual Runtime/SQLite tests, 1 PASS and 1 FAIL. After a human AG8 request was changed to REJECTED and Runtime restarted, `ExperienceLibrary.lookup('list_arith')` returned both the revoked and valid lessons instead of only the independently valid one. The valid/restart control passed. Source HX3 Git blob `83ede4b83161bc78b5cc718c647d984e06d9f54a` unchanged; test blob `2c1e8a59c2e52f31867072c945b5e4c22e47a9d0`. Raw exits FOCUSED=1, INSTALL=COMPILE=PRIVACY=DIFF=0. Original artifact `12780769438`, ZIP SHA256 `6d98f8492aa76abc7d4ce6aa661d7caeb0171ed2feab29f2b8142d7743398611`, CRC PASS, private Library backup `/V13-Checkpoints/2026-10-28/Automation13-F5-AG8-Integration/HX3_REVOKED_APPROVAL_RED_40607793205.zip`.
+
+Next: only after PR #803 exact-head full CI GREEN, implement narrow read-side AG8 approval revalidation for HX3 entries, preserve source/evidence hash and valid-other-entry behavior, rerun focused/full suite, close raw evidence. This is evaluator/library data authority only; HX3 has no live consumer. No native/Redmi/learning/age/whole-system promotion. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, V13 incomplete.
