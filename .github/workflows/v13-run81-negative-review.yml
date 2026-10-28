@@ -1,0 +1,65 @@
+name: V13 Run81 negative outcome review seal
+on:
+  push:
+    branches: [assistant/v13-run81-worldjepa-negative-review-20261028]
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Validate source-bound negative build state and preserve raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run81"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          a=v13/code/docs/proofs/continuation-20261028/RUN81_WORLDJEPA_NEGATIVE_REVIEW.md
+          b=v13/code/docs/proofs/continuation-20261028/RUN81_BUILD_STATE_DELTA.json
+          git hash-object "$a" "$b" > "$e/SOURCE_RAW.log"
+          if [ "$(git hash-object "$a")" = e9c3bc28b85b6a7745f7784037b36acf350451c8 ] && [ "$(git hash-object "$b")" = 259b6d83a94c2eed5c51897906a6e069cfbc60bb ]; then echo 0 > "$e/SOURCE_EXIT.txt"; else echo 1 > "$e/SOURCE_EXIT.txt"; fi
+          python3 -m json.tool "$b" > "$e/JSON_RAW.log" 2>&1
+          echo "$?" > "$e/JSON_EXIT.txt"
+          python3 - "$b" > "$e/NEGATIVE_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x["gates"]=={"STEP2":"UTILITY_FAIL","B3_L1":"FAIL","Body_JEPA":"UNAVAILABLE","LP3":"FAIL","jepa_weight":0}
+          assert x["canonical_architecture_complete"] is False and x["user_full_scope_complete"] is False
+          assert x["production_main_merged"] is False and x["redmi_measured"] is False
+          for n in ("run78","run79"):
+              r=x["evidence"][n]
+              assert r["raw_verified"] is True and r["empirical_criterion_pass"] is False
+          assert x["evidence"]["run78"]["mean_target_slot_mse"]>x["evidence"]["run78"]["member0_target_slot_mse"]
+          assert x["evidence"]["run79"]["mean_grounded_target_slot_mse"]>x["evidence"]["run79"]["member0_grounded_target_slot_mse"]
+          assert x["evidence"]["run79"]["slot_local_ridge_grounded_target_slot_mse"]<x["evidence"]["run79"]["mean_grounded_target_slot_mse"]
+          print("RUN81_NEGATIVE_EVIDENCE_PRESERVED")
+          PY
+          echo "$?" > "$e/NEGATIVE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3c8bb02d79f27c66010bdf02222b4392570ad1c1 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3c8bb02d79f27c66010bdf02222b4392570ad1c1 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve Run81 raw review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run81-negative-review-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run81/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce negative review
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run81"
+          for n in SOURCE JSON NEGATIVE PRIVACY DIFF; do
+            test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n RED"; exit 1; }
+          done
+          echo RUN81_NEGATIVE_REVIEW_SOURCE_ONLY
