@@ -73,12 +73,26 @@ def row_from_message(item, message):
         "answer": message["text"] if message else "",
         "status": message["status"] if message else "MISSING",
         "runner_role": role,
-        "runner_model_sha256": ROLE_MODELS.get(role),
+        "runner_model_sha256": None,  # filled only after actual native model file is hashed
         "tool_call": meta.get("tool_call"),
         "tool_shadow": meta.get("tool_shadow"),
         "learning_mode": "RECORD_ONLY",
         "jepa_weight": 0,
     }
+
+
+def bind_actual_runner_model(models, metadata):
+    """Measure the actual selected runner file; never infer SHA from role alone."""
+    runner = metadata.get("runner")
+    if not isinstance(runner, dict) or runner.get("role") not in ROLE_MODELS:
+        raise ValueError("Missing supported persisted native runner role")
+    actual = runner.get("actual_model")
+    if not isinstance(actual, str) or not actual:
+        raise ValueError("Missing native actual_model metric")
+    selected = models.path_for(runner["role"])
+    if actual != selected.name:
+        raise ValueError("Persisted native actual_model differs from selected model file")
+    return file_hash(selected)
 
 
 def _append_fsynced(path, obj):
@@ -152,6 +166,10 @@ def collect(home, out, prompt_blob, seconds=120):
             row["learning_mode"] = runtime.cfg.get("learning_mode")
             row["jepa_weight"] = runtime.cfg.get("jepa_weight", 0)
             meta = json.loads(message["metadata"]) if message else {}
+            try:
+                row["runner_model_sha256"] = bind_actual_runner_model(runtime.models, meta)
+            except Exception as exc:
+                error = (error + ";" if error else "") + "MODEL_BINDING_" + type(exc).__name__
             raw = {
                 "id": item["id"], "event_id": eid, "lang": item["lang"],
                 "prompt": item["prompt"], "answer": row["answer"],
