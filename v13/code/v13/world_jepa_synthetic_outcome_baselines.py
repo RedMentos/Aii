@@ -44,8 +44,27 @@ def run(bundle, *, approved_shadow_fit=False, source_kind=None,
     All source/array and permission gates are inherited from Run51, on a
     private copy. No external Store object is accepted by Run51.
     """
+    # Permission refusal precedes even reading/copying caller arrays.
+    if approved_shadow_fit is not True or source_kind != 'SYNTHETIC_TEST_ONLY':
+        raise PermissionError('RUN54_EXPLICIT_SYNTHETIC_SHADOW_APPROVAL_REQUIRED')
     if type(bundle) is not dict:
         raise ValueError('RUN54_ADAPTER_BUNDLE_REQUIRED')
+    manifest = bundle.get('manifest')
+    if type(manifest) is not dict:
+        raise ValueError('RUN54_ADAPTER_MANIFEST_REQUIRED')
+    # Bound allocations before copying. Run51 independently verifies every
+    # exact source/array digest and all numeric/embedding invariants.
+    for side, count_key in (('train', 'n_train'), ('holdout', 'n_holdout')):
+        count = manifest.get(count_key)
+        triple = bundle.get(side)
+        if (type(count) is not int or not 8 <= count <= 256
+                or type(triple) not in (list, tuple) or len(triple) != 3):
+            raise ValueError('RUN54_UNBOUNDED_ADAPTER_INPUT')
+        for value, cols in zip(triple, (7, 4, 7)):
+            if (type(value) is not np.ndarray
+                    or value.shape != (count, cols)
+                    or value.dtype != np.dtype('float64')):
+                raise ValueError('RUN54_UNBOUNDED_ADAPTER_INPUT')
     try:
         copied = {
             'manifest': copy.deepcopy(bundle.get('manifest')),
