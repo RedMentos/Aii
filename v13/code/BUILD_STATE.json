@@ -2808,5 +2808,44 @@
       "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12B_INITIAL_FOCUSED_RED_40695085585_sha65A37B0E.zip",
       "status": "PRESERVED_RED_NOT_OVERWRITTEN"
     }
+  },
+  "run24_message_source_lineage_review_20261028": {
+    "status": "SOURCE_ONLY_RED_GREEN_FULL_PASS_REVIEW_ONLY",
+    "parent_pr": 931,
+    "parent_sha": "ef7041f67557eabec777e2e982003ff4e74c972b",
+    "source_sha": "f0580bf17cd70149528983d493cc7fee4385b443",
+    "source_blob": "fa8e290388386f279aa835633b8564f8f77cbe1f",
+    "test_blob": "e192b9d20778dcfd572a56401465550ab8c601b7",
+    "red_run": 40711562179,
+    "red_zip_sha256": "8bdd49f3be831f658f5f8d48671daa302b9c332d05b9c021f67fd4bdc28a8f28",
+    "red_expected_missing_refusals": 10,
+    "green_run": 40711786102,
+    "green_zip_sha256": "4ab43fbd8cb938b62c11f88f90febd227c55a410fad6dac8a78871e5d15076e4",
+    "focused": "39/39 PASS",
+    "full": "2488 OK (1 skipped)",
+    "stages": "7/7 zero",
+    "privacy": "CLEAN",
+    "crc_and_inner_hashes": "15/15 verified for both RED and GREEN",
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run24-Message-Lineage/",
+    "backup_byte_verified": true,
+    "scope": "Store EventEnvelope/user-message/generation lineage and mid-read revocation; read-only software",
+    "frozen_runtime_modified": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "open_questions": [
+      "Post-read mutation still requires caller revalidation at use boundary",
+      "Run23 separate Store→typed integration must independently review and rebase before any production merge",
+      "No native B1/B2/C3 or F5 decision authority proof"
+    ],
+    "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run21_event_source_adapter_shadow tests.test_run22_event_lineage_review tests.test_run24_message_source_lineage_review",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
