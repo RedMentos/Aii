@@ -1,0 +1,107 @@
+name: V13 Run11 organ plus semantic forget cross-organ software
+on:
+  push:
+    branches:
+      - assistant/v13-run11-organ-semantic-crossorgan-review-20261028
+    paths:
+      - '.github/workflows/automation11-organ-semantic-crossorgan-20261028.yml'
+      - 'v13/code/v13/organ.py'
+      - 'v13/code/v13/semantic_memory.py'
+      - 'v13/code/v13/memory.py'
+      - 'v13/code/tests/test_organ_semantic_forget_crossorgan_20261028.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-crossorgan-software-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run source-bound synthetic tests, preserve every raw stage
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11-crossorgan"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          aa925d5d4128974c3e1aaf64e58d0e4310e5dfa1 v13/code/v13/organ.py
+          138df0bcf90b0f278294b940358e64fac5c93eb9 v13/code/v13/semantic_memory.py
+          53dc948d0d360f94743ad996eb83ea0e85c2dd0b v13/code/v13/memory.py
+          de47ade27f9855453e8c6dccd82c1f201e1e0120 v13/code/tests/test_organ_semantic_forget_crossorgan_20261028.py
+          8831d4bd655d33c5e8440de729928ca8578a5301 v13/code/tests/test_semantic_forget_encoder_race_20261028.py
+          809340fb491df9580135e52e020c5c91d40c651c v13/code/tests/test_organ.py
+          BLOBS
+          : > "$e/PINS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/PINS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/PINS_RAW.log"; then echo 1 > "$e/PINS_EXIT.txt"; else echo 0 > "$e/PINS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run11-crossorgan-venv"
+          py="$RUNNER_TEMP/v13-run11-crossorgan-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_organ tests.test_organ_artifact_integrity tests.test_organ_path_safety_run365 tests.test_run441_organ_bridge_symlinks tests.test_semantic_memory tests.test_semantic_forget_encoder_race_20261028 tests.test_organ_semantic_forget_crossorgan_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            "$py" -m compileall -q v13/code/v13/organ.py v13/code/v13/semantic_memory.py v13/code/v13/memory.py v13/code/tests/test_organ_semantic_forget_crossorgan_20261028.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+            if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in FOCUSED FULL COMPILE; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6d1cb49488fa5f5876a8142296dc119e3a7c6f0e --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 6d1cb49488fa5f5876a8142296dc119e3a7c6f0e HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Retain closed original raw logs and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run11-organ-semantic-crossorgan-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11-crossorgan/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only results without Canon promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11-crossorgan"
+          for n in PINS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no learning or gate promotion"
+              tail -70 "$e/${n}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'CROSSORGAN_SOURCE_ONLY_NO_NATIVE_OR_CANON_GATE_PROMOTION'
