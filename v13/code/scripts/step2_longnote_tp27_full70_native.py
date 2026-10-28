@@ -69,22 +69,19 @@ def verify_pair(raw_source, raw_tool, before, summary, tool_prereg=None):
             tool.get("paired_tool", {}).get("complete") is True,
             "Ten-fixture paired evidence incomplete")
     cfg = source["config"]
-    require(cfg.get("seed") == SEED and
-            cfg.get("b2_control") == "two_body" and
-            cfg.get("b2_quote_select") == "pointer" and
-            cfg.get("offer_quote_context_chars") == 200 and
-            cfg.get("b1_recent_source_chars") == 600,
+    expected_settings = pre.candidate_settings(ARM, SEED)
+    require(all(cfg.get(k) == v for k, v in expected_settings.items()),
             "TP/s27 native controls changed")
     run = source.get("z2b_run")
     require(isinstance(run, dict) and run.get("arm") == ARM and
-            run.get("seed") == SEED and run.get("enable") == cfg,
+            run.get("seed") == SEED and run.get("enable") == expected_settings,
             "Native run identity/controls mismatch")
     offers = source.get("z2b_queried_offers")
     require(isinstance(offers, dict) and type(offers.get("offers")) is int and
             offers["offers"] > 0 and offers.get("with_question") == offers["offers"],
             "Fixed JEF question not present on every offered body turn")
     require(summary.get("arm") == ARM and summary.get("seed") == SEED and
-            summary.get("enable") == cfg and summary.get("query") is True and
+            summary.get("enable") == expected_settings and summary.get("query") is True and
             summary.get("queried_offers") == offers and
             summary.get("step2_status") == source["status"] and
             summary.get("tool_status") == tool["status"],
