@@ -1,0 +1,104 @@
+name: V13 Run12b B2 source identity shadow software
+on:
+  push:
+    branches:
+      - assistant/v13-run12-b2-source-identity-shadow-20261028
+    paths:
+      - '.github/workflows/automation12-b2-identity-shadow-20261028.yml'
+      - 'v13/code/scripts/run12_b2_context_identity_candidate.py'
+      - 'v13/code/tests/test_run12_b2_context_identity_candidate.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run12b-b2-identity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Source-bound tests and raw stages
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run12b-b2"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          65673d2dd717a52eedb00ab9cde331e8aa8f9b18 v13/code/scripts/run12_b2_context_identity_candidate.py
+          2507f249166d35617a52034ff7779e27a14c7e34 v13/code/tests/test_run12_b2_context_identity_candidate.py
+          b4b933209c9957a79a1ee323eda2d3f5881840ee v13/code/scripts/step2_tp27_visibility_diagnostic.py
+          8c7582d0262e6ed38b9d9afe0d36e480159b843d v13/code/tests/test_step2_tp27_visibility_diagnostic.py
+          aa925d5d4128974c3e1aaf64e58d0e4310e5dfa1 v13/code/v13/organ.py
+          BLOBS
+          : > "$e/PINS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/PINS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/PINS_RAW.log"; then echo 1 > "$e/PINS_EXIT.txt"; else echo 0 > "$e/PINS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run12b-venv"
+          py="$RUNNER_TEMP/v13-run12b-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run12_b2_context_identity_candidate tests.test_step2_tp27_visibility_diagnostic tests.test_b2_quote_select tests.test_quote_context tests.test_step2_longnote_revision_fixtures) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            "$py" -m compileall -q v13/code/scripts/run12_b2_context_identity_candidate.py v13/code/tests/test_run12_b2_context_identity_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+            if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in FOCUSED FULL COMPILE; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base feebf4b0a78990b1716763b60c1f22ec6fee1b5e --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check feebf4b0a78990b1716763b60c1f22ec6fee1b5e HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original raw software evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run12b-b2-identity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run12b-b2/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce stage exits without gate promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run12b-b2"
+          for n in PINS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no promotion"
+              tail -60 "$e/${n}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'RUN12B_SOURCE_ONLY_NO_NATIVE_OR_CANON_GATE_PROMOTION'
