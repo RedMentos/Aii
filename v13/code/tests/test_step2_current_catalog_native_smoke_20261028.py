@@ -101,10 +101,10 @@ class NativeSmokeControls(unittest.TestCase):
                 report.write_text('{}')
                 return {}
 
-            with patch.object(probe, 'preflight'), \\
-                 patch.object(probe, 'model_probe', side_effect=fake_models), \\
-                 patch.object(probe, 'runner_probe', side_effect=fake_runner), \\
-                 patch.object(probe, 'ModelManager', FakeManager):
+            with (patch.object(probe, 'preflight'),
+                  patch.object(probe, 'model_probe', side_effect=fake_models),
+                  patch.object(probe, 'runner_probe', side_effect=fake_runner),
+                  patch.object(probe, 'ModelManager', FakeManager)):
                 report = probe.smoke(scratch, evidence, 'synthetic-blob')
             self.assertEqual(len(report['roles']), 3)
             self.assertTrue(report['native_linux_load_decode'])
