@@ -12,6 +12,7 @@ import time
 from v13.common import dumps, file_hash
 from v13.models import ModelManager
 from scripts.step2_current_catalog_artifact_probe import probe as model_probe
+from scripts.native_smoke_io_20261028 import run_one_turn
 from scripts.step2_current_runner_archive_probe import probe as runner_probe
 
 ROLES = ('B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE')
@@ -67,7 +68,7 @@ def locate_cli(verified_archive, extraction_root):
 def command(cli, model):
     return [str(cli), '-m', str(model), '-p', PROMPT, '-n', str(TOKENS),
             '-c', str(CONTEXT), '-t', str(THREADS), '--seed', str(SEED),
-            '--temp', '0']
+            '--temp', '0', '--single-turn']
 
 
 def _write_new(path, content):
@@ -124,20 +125,30 @@ def smoke(scratch_root, evidence_dir, expected_catalog_blob, progress=print):
     records = []
     for role in ROLES:
         model = manager.path_for(role)
-        result = _run(command(cli, model), 180, env)
+        result = run_one_turn(command(cli, model), evidence_dir, role, env)
         prefix = role
-        _write_new(evidence_dir / (prefix + '.stdout'), result['stdout'])
-        _write_new(evidence_dir / (prefix + '.stderr'), result['stderr'])
+        stdout = (evidence_dir / (prefix + '_STDOUT_RAW.log')).read_bytes()
+        stderr = (evidence_dir / (prefix + '_STDERR_RAW.log')).read_bytes()
+        # Preserve the older evidence names while also retaining exact raw files.
+        _write_new(evidence_dir / (prefix + '.stdout'), stdout)
+        _write_new(evidence_dir / (prefix + '.stderr'), stderr)
         entry = {'role': role, 'model_sha256': file_hash(model),
                  'runner_cli_sha256': file_hash(cli),
-                 'returncode': result['returncode'], 'timeout': result['timeout'],
-                 'elapsed_seconds': result['elapsed_seconds'],
-                 'stdout_sha256': hashlib.sha256(result['stdout']).hexdigest(),
-                 'stderr_sha256': hashlib.sha256(result['stderr']).hexdigest(),
-                 'stdout_nonempty': bool(result['stdout'].strip())}
+                 'returncode': result['native_exit_code'],
+                 'timeout': result['native_timed_out'],
+                 'elapsed_seconds': result['native_elapsed_s'],
+                 'stdout_sha256': result['stdout_sha256'],
+                 'stderr_sha256': result['stderr_sha256'],
+                 'stdout_nonempty': bool(stdout.strip()),
+                 'stdout_bytes': result['stdout_bytes'],
+                 'stderr_bytes': result['stderr_bytes'],
+                 'raw_capture_complete': result['raw_capture_complete'],
+                 'raw_output_capped': result['raw_output_capped'],
+                 'generation_marker_seen': result['generation_marker_seen'],
+                 'native_smoke_pass': result['native_smoke_pass']}
         _write_new(evidence_dir / (prefix + '.json'), dumps(entry))
         records.append(entry)
-        if result['timeout'] or result['returncode'] != 0 or not result['stdout'].strip():
+        if not result['native_smoke_pass']:
             raise RuntimeError('Linux native smoke failed for ' + role)
     report = {'schema': 'v13.step2.current_catalog_linux_native_smoke.v1',
               'evidence_kind': 'LINUX_NATIVE_SMOKE_ONLY',
