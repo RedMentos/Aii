@@ -23,7 +23,11 @@ LIMITS=(('control_budget_p95_ms','control_p95_ms'),('control_budget_state_mb','s
 
 def durations(marks):
     """Canonical-order cumulative stage marks -> durations; malformed evidence is not latency proof."""
-    if not isinstance(marks, dict):
+    # A FINAL turn needs both interval boundaries. Missing ingress/finished
+    # makes a partial trace unsuitable for a configured latency PASS, even
+    # when its interior timestamps happen to be monotonic.
+    if (not isinstance(marks, dict) or
+            'ingress' not in marks or 'finished' not in marks):
         return {}
     seen=[]
     for stage in STAGES:
