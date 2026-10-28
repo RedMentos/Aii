@@ -23,9 +23,13 @@ class Refusal(ValueError):
 
 
 def _digest(value):
-    return hashlib.sha256(json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
-        allow_nan=False).encode("utf-8")).hexdigest()
+    try:
+        canonical = json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError, OverflowError, RecursionError) as exc:
+        raise Refusal("ticket_not_canonical_json") from exc
+    return hashlib.sha256(canonical).hexdigest()
 
 
 def _snapshot(store, session, project, refs):
@@ -53,14 +57,28 @@ def _candidate(store, session, project, refs, temporal_mode, option_role):
     except Exception as exc:
         raise Refusal("typed_shadow_source_refused") from exc
     if (not isinstance(result, dict) or
+            result.get("revision") != bridge.REVISION or
             result.get("status") != "SHADOW_ONLY" or
             result.get("authority") is not False or
             result.get("f5_decision_authority") is not False or
             result.get("native_executed") is not False or
+            result.get("model_output_used") is not False or
+            type(result.get("jepa_weight")) is not int or
+            result.get("jepa_weight") != 0 or
             result.get("canonical_gate_pass") is not False or
             result.get("verification_scope") != SCOPE or
-            result.get("action") not in ("A", "B", "NONE")):
+            result.get("action") not in ("A", "B", "NONE") or
+            result.get("source_refs") != refs):
         raise Refusal("non_shadow_candidate")
+    hashes = result.get("all_three_source_hashes")
+    if (not isinstance(hashes, dict) or set(hashes) != set(ROLES) or
+            any(not isinstance(hashes[k], str) or
+                re.fullmatch("[0-9a-f]{64}", hashes[k]) is None
+                for k in ROLES) or
+            result.get("source_hashes") != {
+                "current": hashes["current"], "old": hashes["old"],
+                "options": hashes[option_role]}):
+        raise Refusal("candidate_source_hash_mismatch")
     return result
 
 
@@ -145,8 +163,8 @@ def inspect_shadow(store, ticket, session, project):
         "schema": SCHEMA, "status": "SHADOW_ONLY",
         "verification_scope": SCOPE, "action": fresh["action"],
         "authority": False, "f5_decision_authority": False,
-        "native_executed": False, "canonical_gate_pass": False,
-        "jepa_weight": 0, "read_only": True,
+        "native_executed": False, "model_output_used": False,
+        "canonical_gate_pass": False, "jepa_weight": 0, "read_only": True,
         "post_return_atomic": False,
         "source_refs": dict(payload["refs"]),
         "source_hashes": {role: after[role]["sha256"] for role in ROLES}}
