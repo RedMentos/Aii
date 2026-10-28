@@ -1,0 +1,70 @@
+{
+  "schema": "v13.build_state.additive.review.v1",
+  "owner": "GPT-6 scheduled continuation",
+  "parent_sha": "3c8bb02d79f27c66010bdf02222b4392570ad1c1",
+  "branch": "assistant/v13-run81-worldjepa-negative-review-20261028",
+  "production_main_merged": false,
+  "scope": "LINUX_REAL_TEMPORARY_FILE_SHADOW",
+  "source_disjointness_verified": false,
+  "native_model_executed": false,
+  "redmi_measured": false,
+  "runtime_wired": false,
+  "age0_learning_mode": "RECORD_ONLY",
+  "gates": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0
+  },
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "evidence": {
+    "run76": {
+      "pr": 983,
+      "head": "2fa443822f99b367d137f0254e69e20268f664e8",
+      "actions": 40780438158,
+      "zip_sha256": "411a3058acb3b7d0d055d15ef8556f078a1d00c7d77ce45d9bc8d79452ed7692",
+      "raw_verified": true
+    },
+    "run77": {
+      "pr": 984,
+      "head": "cdb99f73c6d3af39ddd4e88dd8952cad636fed58",
+      "actions": 40781248191,
+      "zip_sha256": "1f87cb3dd42d87001d9200735a9a33d28520c5b586fadecf90df1936c05a65c5",
+      "raw_verified": true
+    },
+    "run78": {
+      "pr": 985,
+      "head": "7f7cdc1a9c35a72267955f20e3b6480a717650c2",
+      "actions": 40781536797,
+      "zip_sha256": "6f4a9d55f87a27d8c30e5c565650dea16d290f9518d56320c9291e52be1bb0b0",
+      "raw_verified": true,
+      "empirical_criterion_pass": false,
+      "member0_target_slot_mse": 0.68735955391474,
+      "mean_target_slot_mse": 0.923358653811138,
+      "shuffled_target_slot_mse": 1.6382396042289045
+    },
+    "run79": {
+      "pr": 986,
+      "head": "3c8bb02d79f27c66010bdf02222b4392570ad1c1",
+      "actions": 40781785429,
+      "zip_sha256": "21e5b61fc7fdb67ecd1ce25a1909b71d08de0460d02ffa52fb5ae48685c019e8",
+      "raw_verified": true,
+      "empirical_criterion_pass": false,
+      "member0_grounded_target_slot_mse": 0.3031085571997498,
+      "mean_grounded_target_slot_mse": 0.32455020555249164,
+      "shuffled_grounded_target_slot_mse": 0.3292292625790151,
+      "slot_local_ridge_grounded_target_slot_mse": 0.08485945483170348
+    }
+  },
+  "open_questions": [
+    "Run76 uncalibrated confidence must not gain authority",
+    "Source-disjoint real-world grounded action utility missing",
+    "No native/Redmi JEPA proof",
+    "Claude C5 per-query Spearman data absent"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_run77_slotwise_ensemble_mean tests.test_run78_realfile_ensemble_comparison tests.test_run79_realfile_grounded_readout",
+  "next_prerequisite": "Independent review of Run81 state delta, then pursue a distinct canonical utility path; no posthoc cohort retuning",
+  "remaining_platform_budget": "UNKNOWN"
+}
