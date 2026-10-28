@@ -12,6 +12,9 @@ Only the latent of the next observation is predicted, never the observation itse
 frozen; their spread plus the training count of the action and the state's distance to training states give the
 counterfactual confidence (same shape as world_model.py §7.2.2). Below CF_MIN a counterfactual is SIMULATION_UNCERTAIN.
 """
+import threading
+from functools import wraps
+
 import numpy as np
 
 REVISION = 'z12b-world-jepa-v1'
@@ -21,6 +24,19 @@ COVER_N = 8.       # BOOT: samples per action for ~63 % of the coverage term (as
 SPREAD_REF = .25   # BOOT: ensemble spread (in target-latent std units) that halves confidence
 OOD_SUPPORT = 2.   # BOOT: nearest-neighbour distance (median-NN units) still inside the training support
 CF_MIN = .5        # BOOT: below this a counterfactual is SIMULATION_UNCERTAIN
+
+# Protect complete inference/checkpoint reads from a refit publication in this
+# Python process. Keep the lock outside model.__dict__: fitted model snapshots
+# and existing tests serialize/deepcopy those attributes. Training runs unlocked.
+_WORLD_JEPA_IO_LOCK = threading.RLock()
+
+
+def _read_locked(fn):
+    @wraps(fn)
+    def read(*args, **kwargs):
+        with _WORLD_JEPA_IO_LOCK:
+            return fn(*args, **kwargs)
+    return read
 
 
 class Adam:
@@ -157,25 +173,30 @@ class WorldJEPA:
                 or not all(np.isfinite(v) for row in history
                            for key, v in row.items() if key != 'step')):
             raise ValueError('WorldJEPA fit produced nonfinite learned state')
-        self.__dict__.update(_action_counts=action_counts, mu=mu, sd=sd,
-                             history=history, enc=enc, tgt=tgt, preds=preds,
-                             zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
+        with _WORLD_JEPA_IO_LOCK:
+            self.__dict__.update(_action_counts=action_counts, mu=mu, sd=sd,
+                                 history=history, enc=enc, tgt=tgt, preds=preds,
+                                 zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
     # -- inference -------------------------------------------------------------------------------------------------
+    @_read_locked
     def latent(self, X, target=True):
         return encode(self.tgt if target else self.enc, (X-self.mu)/self.sd)[0]
 
+    @_read_locked
     def predict(self, X, A):
         """(mean prediction, spread in target-std units) for next latents."""
         z = self.latent(X, target=False)
         ps = np.stack([predict(p, z, A)[0] for p in self.preds])
         return ps.mean(0), (ps.std(0)/self.zsd).mean(1)
 
+    @_read_locked
     def ood(self, X):
         z = self.latent(X, target=False)
         d = np.sqrt(((z[:, None]-self._ztrain[None])**2).sum(-1)).min(1); return d/self._nn_med
 
+    @_read_locked
     def confidence(self, X, A, counts=None):
         """Train-bound per-action support, never caller-asserted evidence.
 
@@ -228,6 +249,7 @@ class WorldJEPA:
                 * np.minimum(1., OOD_SUPPORT/np.maximum(ood[finite], 1e-9)), 0., 1.)
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
+    @_read_locked
     def collapse_stats(self, X2):
         zt = self.latent(X2); ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None); p = ev/ev.sum()
         return {'effective_rank': float(np.exp(-(p[p > 0]*np.log(p[p > 0])).sum())), 'min_std': float(zt.std(0).min())}
