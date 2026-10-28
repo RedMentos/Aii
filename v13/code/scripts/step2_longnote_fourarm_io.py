@@ -77,6 +77,64 @@ def _json(data):
                       parse_constant=invalid)
 
 
+
+def _native_pair(raw):
+    """Decode the collector's exact two length-prefixed native reports."""
+    if len(raw) < 16:
+        raise ValueError('Native raw bundle missing length framing')
+    n1 = int.from_bytes(raw[:8], 'big')
+    if not 0 < n1 <= MAX_RAW or 8 + n1 + 8 > len(raw):
+        raise ValueError('Native STEP2 report length invalid')
+    offset = 8 + n1
+    n2 = int.from_bytes(raw[offset:offset + 8], 'big')
+    if not 0 < n2 <= MAX_RAW or offset + 8 + n2 != len(raw):
+        raise ValueError('Native tool report length invalid')
+    return raw[8:offset], raw[offset + 8:]
+
+
+def _bind_native(raw, report, fixture_ids):
+    """Reject sealed native summaries not derived from the closed raw rows.
+
+    A correctly bound report is still not independent proof that native
+    inference occurred; execution/device provenance needs external review.
+    """
+    from scripts.step2_fourarm_native_collector_candidate import (
+        canonical, sha, verify_native_reports,
+    )
+    from scripts.step2_z2_timescale import error_profile
+    step2_bytes, tool_bytes = _native_pair(raw)
+    source, tool = verify_native_reports(
+        step2_bytes, tool_bytes, fixture_ids, report['fixture_sha256'])
+    fixtures = source['fixtures']
+    if sha(canonical(fixtures)) != report['fixture_sha256']:
+        raise ValueError('Raw fixture content differs from registered corpus')
+    run = source.get('z2b_run')
+    if (type(run) is not dict or run.get('arm') != report['arm'] or
+            run.get('seed') != report['seed'] or
+            run.get('enable') != report['enable'] or
+            source.get('z2b_queried_offers') != report['queried_offers']):
+        raise ValueError('Native arm, seed, controls or JEF query counts disagree')
+    if (source['status'] != report['step2_status'] or
+            tool['status'] != report['tool_status']):
+        raise ValueError('Native status differs from scored summary')
+    preparations = source.get('preparations')
+    if (type(preparations) is not list or not preparations or
+            any(type(p) is not dict or p.get('status') != 'RECORDED' or
+                p.get('model_sha256') != report['model_sha256'] or
+                p.get('runner_sha256') != report['runner_sha256']
+                for p in preparations)):
+        raise ValueError('Native preparation model/runner provenance disagrees')
+    utility = {row['fixture'] + ':' + row['variant']: row['score']['utility']
+               for row in tool['rows']}
+    if utility != report['episode_utility_tool']:
+        raise ValueError('Native raw tool utility differs from scored summary')
+    computed = error_profile(tool['rows'], {f['id']: f for f in fixtures})
+    if any(report['error_profile_tool'][v] != computed[v]
+           for v in ('b1_only', 'b2_only')):
+        raise ValueError('Native raw complementary error profile differs')
+
+
+
 def load(root, manifest_name, expected_manifest_sha256, fixture_ids,
          expected_fixture_sha256=None):
     """Read twelve immutable-pinned pairs; validate complete pairing.
@@ -125,6 +183,8 @@ def load(root, manifest_name, expected_manifest_sha256, fixture_ids,
             if (expected_fixture_sha256 is not None and
                     report.get('fixture_sha256') != expected_fixture_sha256):
                 raise ValueError('Fixture hash differs from source')
+            if report.get('evidence_kind') in ('LINUX_NATIVE', 'REDMI_NATIVE'):
+                _bind_native(raw, report, fixture_ids)
             reports.append(report)
         return analyze(reports, fixture_ids)
     finally:
