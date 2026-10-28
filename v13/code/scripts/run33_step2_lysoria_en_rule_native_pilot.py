@@ -1,4 +1,4 @@
-"""Run33/Run25 fresh Lysoria EN STEP2 one-fixture native pilot (review-only).
+"""Run33 fresh Lysoria EN RULE STEP2 one-fixture native pilot (review-only).
 
 This module implements the already preregistered Run33 source-only contract.
 Import and prereg never load models. Native execution requires an existing
@@ -69,7 +69,7 @@ def prereg():
             settings["b1_recent_source_chars"] != 600 or
             z2b.ARMS[ARM] != {"base": "C", "query": True}):
         raise ValueError("Run33 CQ arm/seed controls changed")
-    return {"schema": "v13.step2.run33.keldara.pilot.prereg.v1",
+    return {"schema": "v13.step2.run33.lysoria.pilot.prereg.v1",
             "scope": SCOPE, "fixture_id": FIXTURE_ID, "fixture_limit": 1,
             "fixture_sha256": fresh.FIXTURE_SHA256,
             "fixture_source_git_blob": RUN15_SOURCE_BLOB,
@@ -156,7 +156,7 @@ def run(installed_home, evidence_dir):
     runner_before = file_hash(installed_home / "bin/llama-server")
     evidence_dir.mkdir(mode=0o700)
     receipt = {
-        "schema": "v13.step2.run33.keldara.native_pilot.v1",
+        "schema": "v13.step2.run33.lysoria.native_pilot.v1",
         "status": "RUNNING", "scope": SCOPE,
         "fixture_id": FIXTURE_ID, "fixture_limit": 1,
         "fixture_sha256": reg["fixture_sha256"],
