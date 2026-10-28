@@ -17,6 +17,19 @@ class Step2TP27PilotGuards(unittest.TestCase):
         self.assertEqual(len(pilot.VARIANTS), 7)
         self.assertEqual(len(dry["registered"]["fixture_sha256"]), 64)
 
+    def test_private_harness_uses_same_patched_z2_module_and_aquila(self):
+        self.assertIs(pilot.z2, pilot.z2b.z2)
+        original = pilot.z2.FIXTURES
+        self.assertEqual(original[0]["id"], "Kestrel")
+        with pilot.pre.configured():
+            harness = pilot.z2.harness()
+            self.assertIs(pilot.z2.FIXTURES, pilot.pre.corpus.FIXTURES)
+            self.assertIs(harness.FIXTURES, pilot.pre.corpus.FIXTURES)
+            self.assertEqual(harness.FIXTURES[0]["id"], "Aquila")
+            self.assertEqual(harness.FIXTURES[0]["type"], "SPLIT")
+        self.assertIs(pilot.z2.FIXTURES, original)
+        self.assertEqual(pilot.z2.FIXTURES[0]["id"], "Kestrel")
+
     def test_missing_installed_home_refuses_before_creating_evidence(self):
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)
