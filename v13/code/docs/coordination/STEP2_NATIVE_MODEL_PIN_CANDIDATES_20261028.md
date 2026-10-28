@@ -10,7 +10,7 @@
 | B2_GIST (PTQ distinct-file candidate ONLY) | same revision | `LFM2.5-1.2B-Instruct-Q4_0.gguf` | `2ea801949d760cdf1a2cc04a54262c22c3c0c54f0769d57760c9adeb0e59233f` |
 | C3_LANGUAGE (QAD) | `LiquidAI/LFM2.5-230M-GGUF@03502067c64ce32ac4fe87b0cec0310a1a13d3e9` | `LFM2.5-230M-QAD-Q4_0.gguf` | `e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292` |
 
-Primary-source file pages (publisher): 
+Primary-source file pages (publisher):
 - https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/8ed288026e23958ad9dfa92d53ed773a8eee7125/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf
 - https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/8ed288026e23958ad9dfa92d53ed773a8eee7125/LFM2.5-1.2B-Instruct-Q4_0.gguf
 - https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/blob/03502067c64ce32ac4fe87b0cec0310a1a13d3e9/LFM2.5-230M-QAD-Q4_0.gguf
