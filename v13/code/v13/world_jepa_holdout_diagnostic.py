@@ -15,7 +15,7 @@ import numpy as np
 from v13 import world_jepa as wj
 
 SCHEMA = 'v13.world_jepa.action_holdout_diagnostic.v1'
-HEX64 = re.compile(r'[0-9a-f]{64}\\Z')
+HEX64 = re.compile(r'[0-9a-f]{64}\Z')
 MIN_ROWS = 8
 MAX_ROWS = 256
 MAX_FEATURES = 512
@@ -36,9 +36,9 @@ def _digest_arrays(named):
             raise ValueError('RUN48_NONFINITE_OR_UNSAFE_STATE')
         kind = 'f8' if arr.dtype.kind == 'f' else 'i8'
         raw = np.ascontiguousarray(arr.astype('<' + kind, copy=False))
-        h.update(name.encode('ascii') + b'\\0')
-        h.update(json.dumps(list(raw.shape), separators=(',', ':')).encode('ascii') + b'\\0')
-        h.update(kind.encode('ascii') + b'\\0')
+        h.update(name.encode('ascii') + b'\0')
+        h.update(json.dumps(list(raw.shape), separators=(',', ':')).encode('ascii') + b'\0')
+        h.update(kind.encode('ascii') + b'\0')
         h.update(raw.tobytes(order='C'))
     return h.hexdigest()
 
