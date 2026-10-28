@@ -5,8 +5,8 @@ import json
 import unittest
 from unittest.mock import patch
 
-from scripts import step2_z2_timescale as z2
 from scripts import step2_z2b_seeds as z2b
+z2 = z2b.z2
 from scripts import step2_longnote_runner_preflight as run
 
 
@@ -33,11 +33,13 @@ class LongNoteRunnerPreflight(unittest.TestCase):
                 run.candidate_settings(arm, seed)
 
     def test_context_restores_original_objects_even_after_exception(self):
+        self.assertIs(run.z2, z2b.z2)
         originals = (z2.FIXTURES, z2b.ARMS, z2b.SEEDS, z2b.settings)
         with self.assertRaisesRegex(RuntimeError, "injected"):
             with run.configured():
                 self.assertEqual(tuple(z2b.SEEDS), run.SEEDS)
                 self.assertEqual(len(z2.FIXTURES), 10)
+                self.assertIs(z2b.z2.FIXTURES, z2.FIXTURES)
                 self.assertEqual(set(z2b.ARMS), set(run.ARMS))
                 self.assertTrue(all(z2b.ARMS[a]["query"] for a in run.ARMS))
                 raise RuntimeError("injected")
