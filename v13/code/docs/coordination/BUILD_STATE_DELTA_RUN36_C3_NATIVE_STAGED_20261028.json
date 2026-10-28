@@ -1,0 +1,52 @@
+{
+  "schema": "v13.build_state.delta.run36.staged.v1",
+  "date": "2026-10-28",
+  "owner": "assistant/v13-run36-c3-only-native-velaris-20261028",
+  "parent_source_commit": "1f2039f3fa7b62ed6c9e3699672af91dfe532144",
+  "review_pr": 945,
+  "status": "DISPATCH_ONLY_STAGED_NO_NATIVE_EXECUTION",
+  "source": {
+    "prereg_commit": "860e9ab8f3c970a520bc76571d42e82307d3f82c",
+    "workflow_blob": "17921b5153299c8b246c8a5face57d3de576230c",
+    "native_candidate_blob": "8a57b60a483c50550ca0714ac6472675dced701c",
+    "run33_blob": "b1d58d7e0c3937787cf15dd801e278de25845879",
+    "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "preconditions": {
+    "run33_software": "SUCCESS_40729771477",
+    "run34_software": "SUCCESS_40731068475_INDEPENDENT_RAW_AUDITED",
+    "run35_software": "PENDING_40732862439",
+    "exclusive_native_owner": "MUST_RECHECK_BEFORE_DISPATCH"
+  },
+  "closed_evidence": {
+    "run34_zip_sha256": "d0374126fdd974b59e9395ffb6a2d86a9de099418d7730f9638581b6ffbb6174",
+    "run34_inner_sha256": "15/15_PASS",
+    "run34_crc": "PASS",
+    "run34_focused": "14_PASS",
+    "run34_full": "2491_OK_1_SKIPPED",
+    "run34_private_backup": "/V13-Checkpoints/2026-10-28/Run34-C3-Source-Preflight/RUN34_GREEN_40731068475_shaD0374126.zip",
+    "run34_backup_readback": "BYTE_IDENTICAL",
+    "run35_red_zip_sha256": "84ce492f51d00425c4eaeb5b2034668d4ebe1133f5d84cecf9798850014b5c7d",
+    "run35_red_expected_failures": 2,
+    "run35_red_private_backup": "/V13-Checkpoints/2026-10-28/Run35-C3-Arm-Binding/RUN35_RED_40732809502_sha84CE492F.zip",
+    "run35_red_backup_readback": "BYTE_IDENTICAL"
+  },
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "open_questions": [
+    "Run35 full software suite original raw independent audit",
+    "Run36 native source/model/runner install and five C3 process execution",
+    "B2 native source quote generation remains unproven; one-fixture conditional C3 test cannot promote STEP2",
+    "Android/Termux native performance unmeasured"
+  ],
+  "next_command": "Audit original Run35 GREEN Actions 40732862439 raw ZIP, verify CRC+inner SHA+focused/full/privacy/diff and private backup; check no active native owner; update Run36 workflow dispatch-only to push trigger with exclusive group; audit original Run36 native artifact and preserve failures.",
+  "remaining_platform_budget": "UNKNOWN"
+}
