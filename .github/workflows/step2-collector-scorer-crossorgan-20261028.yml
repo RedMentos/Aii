@@ -1,0 +1,100 @@
+name: V13 STEP2 collector scorer cross-organ RED GREEN Linux review
+on:
+  push:
+    branches: [assistant/v13-fourarm-collector-scorer-crossorgan-automation11-20261028]
+    paths:
+      - '.github/workflows/step2-collector-scorer-crossorgan-20261028.yml'
+      - 'v13/code/scripts/step2_longnote_fourarm_analysis.py'
+      - 'v13/code/scripts/step2_longnote_fourarm_io.py'
+      - 'v13/code/scripts/step2_fourarm_native_collector_candidate.py'
+      - 'v13/code/tests/test_step2_collector_scorer_crossorgan_20261028.py'
+      - 'v13/code/tests/test_step2_fourarm_native_collector_candidate_20261028.py'
+      - 'v13/code/tests/test_step2_longnote_fourarm_analysis_20261028.py'
+      - 'v13/code/tests/test_step2_longnote_fourarm_io_20261028.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-collector-scorer-crossorgan-20261028
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve raw integrated software evidence
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-step2-collector-scorer-crossorgan"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          git log --format='%H %P' -5 > "$evidence/ANCESTRY_RAW.log"
+          for path in v13/code/scripts/a1_partial_source_ref_candidate.py v13/code/scripts/a1_step2_verified_source_candidate.py v13/code/scripts/step2_longnote_revision_fixtures.py v13/code/scripts/step2_longnote_runner_preflight.py v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/step2_longnote_fourarm_io.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md; do
+            git hash-object "$path"
+          done > "$evidence/BLOBS_RAW.log"
+          echo "$?" > "$evidence/BLOBS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-step2-collector-scorer-crossorgan-venv"
+          py="$RUNNER_TEMP/v13-step2-collector-scorer-crossorgan-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$evidence/INSTALL_EXIT.txt"; else echo 1 > "$evidence/INSTALL_EXIT.txt"; fi
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_step2_collector_scorer_crossorgan_20261028 tests.test_step2_fourarm_native_collector_candidate_20261028 tests.test_a1_step2_crossorgan_20261028 tests.test_a1_partial_source_ref_frozen_safe_20261028 tests.test_step2_longnote_fourarm_analysis_20261028 tests.test_step2_longnote_fourarm_io_20261028 tests.test_step2_longnote_runner_preflight_20261028 tests.test_step2_longnote_revision_fixtures_20261028
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          if [ "$(cat "$evidence/FOCUSED_EXIT.txt")" = 0 ]; then
+            (
+              cd v13/code
+              timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+            ) > "$evidence/FULL_RAW.log" 2>&1
+            echo "$?" > "$evidence/FULL_EXIT.txt"
+          else
+            echo 'SKIPPED_FOCUSED_RED' > "$evidence/FULL_RAW.log"
+            echo 'SKIPPED_RED' > "$evidence/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/a1_step2_verified_source_candidate.py v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/scripts/step2_longnote_fourarm_io.py v13/code/scripts/step2_fourarm_native_collector_candidate.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base db1b5238e6e9193d62e1a75a38f545c3a28533df --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check db1b5238e6e9193d62e1a75a38f545c3a28533df HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-step2-collector-scorer-crossorgan-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-collector-scorer-crossorgan/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits without discarding RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-step2-collector-scorer-crossorgan"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -45 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'STEP2_COLLECTOR_SCORER_CROSSORGAN_SOFTWARE_ONLY_NO_GATE_PROMOTION'
