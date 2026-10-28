@@ -14,7 +14,7 @@ Metrics per candidate: accuracy, macro-F1, confusion, valid-call rate (a missing
 latency p50/p95, peak RSS of the model process, file size; Needle also AUROC(confidence -> correct).
 Usage: python3 scripts/c2_benchmark.py --home $V13_HOME --cache DIR --out DIR [--only needle scaffold ...]
 """
-import argparse, json, os, re, sys, threading, time
+import argparse, json, math, os, re, sys, threading, time
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parent))
 from v13.cognition import scaffold_route
@@ -91,12 +91,13 @@ def run_needle(items, home):
                 conf = raw.get('confidence')
                 try: observation(raw); valid = True
                 except Exception as e: valid = False; err = 'validation:'+str(e)[:60]
+                if not valid: pred = None  # invalid native control cannot score as correct
             except Exception as e: err = type(e).__name__+':'+str(e)[:80]; valid = False
             rows.append({'id': it['id'], 'label': it['label'], 'pred': pred, 'latency_s': time.perf_counter()-t0, 'confidence': conf,
                          'validated': valid, 'error': err})
             if r.needle.proc: peak = max(peak, vmhwm(r.needle.proc.pid) or 0)
         model = r.models.path_for('C2_CONTROL')
-        scored = [(x['confidence'], x['pred'] == x['label']) for x in rows if isinstance(x['confidence'], (int, float))]
+        scored = [(x['confidence'], x['pred'] == x['label']) for x in rows if isinstance(x['confidence'], (int, float)) and not isinstance(x['confidence'], bool) and math.isfinite(x['confidence'])]
         extra = {'peak_rss_bytes': peak or None, 'model_file': Path(model).name, 'model_bytes': Path(model).stat().st_size,
                  'validated_rate': round(sum(x['validated'] for x in rows)/len(rows), 4),
                  'confidence_auroc': None if not scored else auroc([s for s, _ in scored], [c for _, c in scored]),

@@ -1,0 +1,64 @@
+name: V13 Run11 C2 frozen 96-route benchmark integrity guards
+on:
+  push:
+    branches:
+      - codex/v13-run11-c2-route96-native-eval-20261028
+    paths:
+      - '.github/workflows/run11-c2-route96-guards-20261028.yml'
+      - 'v13/code/scripts/c2_benchmark.py'
+      - 'v13/code/tests/test_c2_benchmark.py'
+permissions:
+  contents: read
+jobs:
+  route96-guards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Frozen 96 labels, invalid-call and confidence scoring guards
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c2-route96-guards"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/c2-benchmark.json > "$e/CORPUS_BLOB.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_BLOB.txt"
+          git hash-object v13/code/specs/control_tools.json > "$e/TOOLS_BLOB.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests python3 -m unittest -v tests.test_c2_benchmark tests.test_current_c2_native_linux_smoke_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/c2_benchmark.py v13/code/tests/test_c2_benchmark.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base af71f1ebc26d934a180db39f77a2978ced7b6261 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check af71f1ebc26d934a180db39f77a2978ced7b6261 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c2-route96-guards-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c2-route96-guards/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused compile privacy diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c2-route96-guards"
+          for name in FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'C2_ROUTE96_SOFTWARE_GUARDS_ONLY_NO_NATIVE_OR_PROMOTION'

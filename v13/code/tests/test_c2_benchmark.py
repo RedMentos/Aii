@@ -1,5 +1,6 @@
 """WP-V7 C2 benchmark harness: frozen corpus, call parsing, metrics (no models)."""
-import json,sys,unittest
+import json,sys,tempfile,types,unittest
+from unittest.mock import patch
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import c2_benchmark as C
@@ -18,5 +19,37 @@ class C2BenchTests(unittest.TestCase):
               {'label':'gist','pred':'gist','latency_s':.1},{'label':'both','pred':'gist','latency_s':.3}]
         s=C.summarize(rows);self.assertEqual(s['accuracy'],.5);self.assertEqual(s['valid_rate'],.75);self.assertEqual(s['confusion']['detail'],{'None':1})
         self.assertEqual(C.auroc([.9,.1],[True,False]),1.)
+
+    def test_invalid_native_observation_never_scores_pred_and_nonfinite_confidence(self):
+        class FakeNeedle:
+            proc = None
+            def load(self, *args): pass
+            def control(self, *args):
+                return {'function_calls': [{'name':'select_processing',
+                                            'arguments':{'route':'detail'}}],
+                        'confidence': float('nan')}
+        class FakeModels:
+            def __init__(self, path): self.path = path
+            def path_for(self, role): return self.path
+        class FakeRuntime:
+            def __init__(self, path):
+                self.needle = FakeNeedle()
+                self.models = FakeModels(path)
+            def close(self): pass
+        with tempfile.TemporaryDirectory() as td:
+            model = Path(td) / 'needle3.cact'
+            model.write_bytes(b'CACT')
+            fake_observer=types.ModuleType('v13.control_calibration_worker')
+            def reject(_): raise ValueError('invalid native control')
+            fake_observer.observation=reject
+            with (patch('v13.runtime.Runtime', return_value=FakeRuntime(model)),
+                  patch.dict(sys.modules, {'v13.control_calibration_worker': fake_observer})):
+                rows, extra = C.run_needle([{'id':'one','text':'budget',
+                                             'label':'detail'}], Path(td))
+            self.assertIsNone(rows[0]['pred'])
+            self.assertFalse(rows[0]['validated'])
+            self.assertEqual(extra['validated_rate'], 0.)
+            self.assertIsNone(extra['confidence_auroc'])
+            self.assertEqual(C.summarize(rows)['accuracy'], 0.)
 
 if __name__=='__main__':unittest.main()
