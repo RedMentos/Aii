@@ -55,7 +55,8 @@ class OrganTests(Base):
     def test_restore_brings_back_a_deleted_artifact_file(self):
         self.put('b1_predictor','B1_DETAIL',b'b1-good');snap=O.snapshot(self.r,'B1_DETAIL');path=self.r.home/snap['components']['b1_predictor']['path']
         self.put('b1_predictor','B1_DETAIL',b'b1-x');path.unlink()
-        O.restore(self.r,snap['id']);self.assertEqual(path.read_bytes(),b'b1-good')
+        O.restore(self.r,snap['id']);active=self.r.home/self.r.store.components()['b1_predictor']['path']
+        self.assertEqual(active.read_bytes(),b'b1-good');self.assertFalse(path.exists())  # old generations are never overwritten
 
     def test_component_added_after_snapshot_is_removed_on_restore(self):
         snap=O.snapshot(self.r,'B1_DETAIL');self.put('b1_predictor','B1_DETAIL',b'b1-new')
@@ -71,7 +72,7 @@ class OrganTests(Base):
         self.put('b1_predictor','B1_DETAIL',b'b1-good');snap=O.snapshot(self.r,'B1_DETAIL');self.put('b1_predictor','B1_DETAIL',b'b1-x')
         f=self.r.home/'organs/B1_DETAIL'/snap['id']/'manifest.json';m=json.loads(f.read_text());m['bridges']={'X_TO_B1.json':'0'};f.write_text(json.dumps(m))
         with self.assertRaises(RuntimeError):O.check(self.r,snap['id'])
-        f.write_text(json.dumps(snap));(self.r.home/'organs/B1_DETAIL'/snap['id']/'files'/Path(snap['components']['b1_predictor']['path']).name).write_bytes(b'evil')
+        f.write_text(json.dumps(snap));(self.r.home/'organs/B1_DETAIL'/snap['id']/'files'/snap['component_files']['b1_predictor']).write_bytes(b'evil')
         (self.r.home/snap['components']['b1_predictor']['path']).unlink()
         with self.assertRaises(RuntimeError):O.restore(self.r,snap['id'])
         self.assertNotEqual(self.active('b1_predictor'),snap['components']['b1_predictor']['sha256'])

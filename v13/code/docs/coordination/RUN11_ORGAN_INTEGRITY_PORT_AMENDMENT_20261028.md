@@ -1,0 +1,5 @@
+# Additive prereg amendment — inherited organ tests (2026-10-28)
+
+Read-only donor comparison after the initial prereg found that the parent `tests/test_organ.py` is older than the donor source: its deleted-artifact test requires rewriting the *historical* path, while the corrected immutable restore deliberately writes a new generation artifact and leaves the historical path absent. The old damaged-backup test also assumes a flat basename; donor snapshots use `component_files` to prevent collisions.
+
+Before software CI, port donor `tests/test_organ.py` **exactly**, alongside the three previously registered donor suites, from PR #440 head `9db3f09abd76f3c156e43b68528b3dea1fe8705c`. Donor test blob `809340fb491df9580135e52e020c5c91d40c651c`; old test blob `b7af5d8e1b76ed657011ec2a25a52aa65d3f6c20`. The corrected invariant is immutable old generation artifacts, not mutation of historical files. This amendment changes no model, cohort, acceptance gate, runtime behavior or external authority. Preserve the original prereg text and donor source identity.
