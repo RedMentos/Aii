@@ -47,7 +47,7 @@ def prereg():
     """Verify the already frozen new cohort and CQ controls, without inference."""
     path = ROOT / "scripts/run15_step2_disjoint_bilingual_fixtures.py"
     if (git_blob_sha(path.read_bytes()) != RUN15_SOURCE_BLOB or
-            fresh.SEEDS != (20261115, 20261115, 20261116) or
+            fresh.SEEDS != (20261114, 20261115, 20261116) or
             len(fresh.FIXTURES) != 6 or
             fresh.FIXTURES[1]["id"] != FIXTURE_ID or
             fresh.FIXTURES[1]["language"] != "EN" or
