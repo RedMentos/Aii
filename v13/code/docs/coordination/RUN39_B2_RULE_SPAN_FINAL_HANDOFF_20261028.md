@@ -1,0 +1,13 @@
+# Run39 — source-only B2 older-rule span candidate verified (2026-10-28)
+
+**Scope:** Review-only PR #947, branch `assistant/v13-run39-b2-rule-span-shadow-20261028`, exact tested source head `a56bad5ea73b72150b8af099d3be1638d4afda2e`, parent Run37 #946 at `b8f4cd794a6c3fbe371c62a117144be3ebb960a2`. No main merge, no native execution or Runtime/Store modifications.
+
+**Implementation:** `scripts/run39_b2_rule_span_candidate.py` (Git blob `a2f4d0e8a7ce69f0d0d41a7f884ccea490798724`) selects a bounded exact old-rule source span, not just the first 240 chars, and can inspect an explicitly supplied older B2 history beyond the newest output slots. It requires a single named project, explicit earlier-rule request, same session/generation/model, source integrity reader, at least two literal rule cue types, and no conflicting equally qualified sources. Output is SHADOW with no rule/answer authority. Synthetic tests Git blob `b589552e16edc668fd76ada07ee8adca77cb1b66`.
+
+**Original GitHub Actions evidence:** run `40742162318` at exact head `a56bad5...` **SUCCESS**. Independently downloaded artifact `12839339312`: ZIP SHA256 `d8c75e04c73b9beceea95b1e2ca0a26407b086307664831c4d1ff722fb894517`, CRC clean, **15/15 inner SHA256 matched**, HEAD exact, FROZEN/FOCUSED/COMPILE/INSTALL/FULL/PRIVACY/DIFF all exit 0, **28 focused PASS**, **2514 full OK (1 skipped)**, privacy CLEAN. The full suite printed an expected negative sensor-resume diagnostic inside a passing test; it is not a native sensor measurement. The local exact-source 12/12 synthetic tests also passed. No model was invoked.
+
+**Durable backup:** private Library `/V13-Checkpoints/2026-10-28/Run40-B2-Store-History-Readonly/RUN39_GREEN_40742162318_shaD8C75E04.zip`, independently re-materialized and SHA256 byte-identical to the original ZIP. Original failed attempts from prior cohorts remain untouched.
+
+**Limits:** A selector alone cannot retrieve evicted offers from the Store. Next is Run40 #948 bounded read-only SQLite adapter, then Run41 #949 actual Store software cross-check, then a separately preregistered disjoint native B2+C3 long-note comparison with source-verified quote and decision outcomes. The selector cannot prove B2 quote generation, C3 action use, or STEP2 utility.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; V13 incomplete. Remaining platform budget UNKNOWN.
