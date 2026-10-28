@@ -1,0 +1,86 @@
+{
+  "schema": "V13_RUN11_C5_AG0_CHECKPOINT_V1",
+  "recorded_utc": "2026-10-28T04:40:00Z",
+  "owner": "GPT-6 independent integration review",
+  "source": {
+    "parent_pr": 847,
+    "parent_commit": "0ed573e27d28d5bdceb950df4220c1f0afb24937",
+    "c5_pr": 845,
+    "ag0_pr": 846,
+    "main_integrated": false,
+    "branch_scoped": true,
+    "catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "control_tools_blob": "954a3f468f10195fbce12d27f68585ee7edee2c9"
+  },
+  "completed": {
+    "native_red": {
+      "run_id": 40632157217,
+      "artifact_id": 12791672638,
+      "zip_sha256": "446ecaa32faf9703c4663590620a537ab29e45926e45ac65882d37d05c750ec0",
+      "status": "JEF_MODES_PARTIAL",
+      "combined_c3": false,
+      "reason": "stale AG0 B1 slot served despite removed B manifest",
+      "internal_hashes_verified": 20,
+      "crc_ok": true
+    },
+    "software_red": {
+      "run_id": 40632820503,
+      "artifact_id": 12792326572,
+      "zip_sha256": "54dc384f8558848a15caeb3441be2970417429b403148a18b312549039c52a2d",
+      "tests": 10,
+      "failures": 2,
+      "expected_red": true,
+      "internal_hashes_verified": 13
+    },
+    "software_focused_green": {
+      "run_id": 40632940211,
+      "artifact_id": 12791728359,
+      "zip_sha256": "7a1cb5aae401be77b594396fb6abe10ba5a1d9fc374f1294d986a4ba7d8db545",
+      "tests": 11,
+      "passed": 11,
+      "compile_exit": 0,
+      "privacy_exit": 0,
+      "diff_exit": 0,
+      "internal_hashes_verified": 13
+    },
+    "github_import": {
+      "integration_commit": "71826405b35a07672c38b40b07ad1e6d3b70a435",
+      "remote_tree_verified": true
+    },
+    "private_backup": {
+      "path": "/V13-Checkpoints/2026-10-28/Run11-JEF-AG0",
+      "files": 3,
+      "byte_exact_readback": true
+    }
+  },
+  "in_progress": {
+    "c5_full_software_run": 40632930791,
+    "ag0_full_software_run": 40632990148,
+    "integrated_full_software_run": 40633149062
+  },
+  "not_yet_run": {
+    "integrated_native": true,
+    "redmi": true,
+    "step2_four_arm_utility": true,
+    "body_jepa": true,
+    "b3_latent": true
+  },
+  "negative_gates": {
+    "age0_learning_mode": "RECORD_ONLY",
+    "jepa_weight": 0,
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Will both independent and integrated full software suites pass exact pinned source?",
+    "Will serial Linux native JEF use C3 for all no-B combined turns?",
+    "Will STEP12 observe both distinct B roles without false gate promotion?",
+    "Does the public arithmetic ask answer 60?",
+    "C3-only unsupported leader answer hallucinated John Doe in original native proof; semantic reliability not established."
+  ],
+  "next_command": "After all three full software workflows complete GREEN and no active native owner, add/run isolated serial Age0 native workflow on assistant/v13-run11-c5-ag0-native-20261028; verify closed artifact SHA and back up privately.",
+  "remaining_platform_budget": "UNKNOWN"
+}
