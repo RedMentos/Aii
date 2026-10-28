@@ -40,7 +40,7 @@ jobs:
           efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
           7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
           813b013d01b7e873aa10c9e953c60e573564d3ce v13/code/v13/source_consumer.py
-          337e70008e95a7733ad7175edba7f3a200648858 v13/code/tests/test_source_consumer_admission.py
+          b041fada7bef403d2600a0e276891911fe7a1bc3 v13/code/tests/test_source_consumer_admission.py
           BLOBS
           : > "$e/BLOBS_RAW.log"
           while read -r want file; do
