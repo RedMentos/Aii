@@ -45,7 +45,7 @@ def fixture():
                            'b2_offer_body_state': False},
                 'queried_offers': {'offers': 20, 'with_question': 20},
                 'step2_status': 'UTILITY_FAIL',
-                'tool_status': 'SCORED', 'evidence_kind': 'SOFTWARE_SYNTHETIC',
+                'tool_status': 'TOOL_UTILITY_FAIL', 'evidence_kind': 'SOFTWARE_SYNTHETIC',
                 'episode_utility_tool': scores,
                 'error_profile_tool': {'b1_only': {'rule_fields_correct': .2,
                                                    'option_fields_correct': .9},
@@ -98,6 +98,9 @@ class FourArmAnalysis(unittest.TestCase):
         rows = fixture(); rows[1]['queried_offers']['with_question'] = 19; cases.append(rows)
         rows = fixture(); rows[1]['step2_status'] = 'DIAGNOSTIC_INCOMPLETE'; cases.append(rows)
         rows = fixture(); rows[1]['tool_status'] = 'STRUCTURAL_FAIL'; cases.append(rows)
+        rows = fixture(); rows[1]['tool_status'] = 'RUNNING'; cases.append(rows)
+        rows = fixture(); rows[1]['tool_status'] = 'NOT_RUN'; cases.append(rows)
+        rows = fixture(); rows[1]['tool_status'] = 'PREREGISTERED_NO_INFERENCE'; cases.append(rows)
         rows = fixture(); rows[1]['episode_utility_tool'].pop(f'{IDS[0]}:b1_only'); cases.append(rows)
         rows = fixture(); rows[1]['episode_utility_tool'][f'{IDS[0]}:b1_only'] = float('nan'); cases.append(rows)
         rows = fixture(); rows[1]['episode_utility_tool'][f'{IDS[0]}:b1_only'] = True; cases.append(rows)

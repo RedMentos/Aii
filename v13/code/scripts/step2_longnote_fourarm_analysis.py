@@ -80,8 +80,7 @@ def validate(runs, fixture_ids):
                  queried['offers'] > 0 and queried.get('with_question') == queried['offers'],
                  'JEF question arm not fully active')
         _require(r.get('step2_status') in ('UTILITY_FAIL', 'UTILITY_PASS_SCOPED') and
-                 r.get('tool_status') not in (None, 'ERROR', 'STRUCTURAL_FAIL',
-                                               'DIAGNOSTIC_INCOMPLETE'),
+                 r.get('tool_status') in ('TOOL_UTILITY_FAIL', 'TOOL_UTILITY_PASS_SCOPED'),
                  'Incomplete native/tool replay evidence')
         _require(r.get('evidence_kind') in ('LINUX_NATIVE', 'REDMI_NATIVE',
                                              'SOFTWARE_SYNTHETIC'),
