@@ -1,5 +1,6 @@
 """Run51 synthetic-only approved World-JEPA action-outcome SHADOW fit."""
 import copy
+import hashlib
 import unittest
 from unittest import mock
 
@@ -76,6 +77,28 @@ class Run51SyntheticShadowFit(unittest.TestCase):
                         side_effect=AssertionError('must not fit')):
             with self.assertRaisesRegex(ValueError, 'INVALID_ACTION_OUTCOME_EMBEDDING'):
                 self.fit()
+
+    def test_fallback_permutation_hash_matches_effective_reordering(self):
+        # Force the first random permutation to identity; subsequent model
+        # RNG calls use the original implementation and fit normally.
+        actual_rng = np.random.default_rng
+        calls = []
+        class IdentityPermutation:
+            def permutation(self, n):
+                calls.append(n)
+                return np.arange(n, dtype=np.int64)
+        def rng_factory(seed):
+            if not calls:
+                return IdentityPermutation()
+            return actual_rng(seed)
+        with mock.patch('v13.world_jepa_action_outcome_shadow_fit.np.random.default_rng',
+                        side_effect=rng_factory):
+            result = self.fit()
+        n = self.bundle['manifest']['n_train']
+        self.assertEqual(calls, [n])
+        effective = np.roll(np.arange(n), 1).astype('<i8')
+        expected = hashlib.sha256(effective.tobytes()).hexdigest()
+        self.assertEqual(result['report']['action_permutation_sha256'], expected)
 
     def test_invalid_config_and_manifest_fail_closed(self):
         for options in ({'steps': 0}, {'steps': True}, {'seed': True},
