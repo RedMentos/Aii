@@ -18,7 +18,13 @@ class LongNoteRevisionFixtures(unittest.TestCase):
         self.assertEqual(Counter(f["type"] for f in FIXTURES),
                          Counter({"SPLIT": 3, "RULE": 3, "DETAIL": 3, "REVISION": 1}))
         self.assertEqual(len({f["id"] for f in FIXTURES}), 10)
+        # Prevent a trivial always-A policy from looking useful.
+        self.assertEqual(Counter(f["oracle"]["action"] for f in FIXTURES),
+                         Counter({"A": 4, "B": 4, "NONE": 2}))
         self.assertFalse({f["id"] for f in FIXTURES} & {f["id"] for f in original})
+        from tests import integration_step2_utility as baseline_step2
+        self.assertFalse({f["id"] for f in FIXTURES}
+                         & {f["id"] for f in baseline_step2.FIXTURES})
         self.assertFalse({f["old_rules"]["budget"] for f in FIXTURES}
                          & {f["rules"]["budget"] for f in original})
         self.assertEqual(z2.FIXTURES, original)
@@ -85,6 +91,12 @@ class LongNoteRevisionFixtures(unittest.TestCase):
                 opts = [{"entity": e, "cost": o[0], "days": o[1], "local": o[2]}
                         for e, o in (("A", a), ("B", b))]
                 action, expected = recipe(*rules, opts)
+                eligible = [o for o in opts if o["cost"] <= rules[0]
+                            and o["days"] <= rules[1]
+                            and (o["local"] or not rules[2])]
+                manual_action = (min(eligible, key=lambda o: (o["cost"], o["entity"]))["entity"]
+                                 if eligible else "NONE")
+                self.assertEqual(action, manual_action)
                 self.assertEqual(f["oracle"]["action"], action)
                 self.assertEqual(f["oracle"]["options"], expected)
                 if kind == "REVISION":
