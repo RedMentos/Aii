@@ -1,0 +1,59 @@
+{
+  "schema": "v13.run11.half_second_number_review.build_state.v1",
+  "date_utc": "2026-10-28",
+  "owner": "GPT-6 independent child of PR #851",
+  "branch": "assistant/v13-run11-half-numeric-ambiguity-review-20261028",
+  "pull_request": 852,
+  "base_commit": "42daf68da2d0a5dac986f6744fa0cc9ef363b72a",
+  "tested_commit": "decc8160efbf68a5210db0554d48e7c31a7b09db",
+  "toolstep_git_blob": "fae8e9e4a99aa1f9c744bdf525cfad18de37abd6",
+  "scope": "Fail-closed half arithmetic proposal: reject hidden second numbers in signed/decimal/scientific/Unicode notation, reject spaced/unicode unary signs; no C5/runtime/model/seed/policy changes",
+  "test_evidence": {
+    "run_id": 40636455681,
+    "conclusion": "SUCCESS",
+    "kind": "LINUX_SOFTWARE_ONLY",
+    "focused_tests": 27,
+    "full_tests": 2219,
+    "skipped": 1,
+    "exit_codes": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "artifact_zip_sha256": "439ada9daae2f2235aa85173e9fd26ecbb36871b191295188c0bef6dacc4a6f7",
+    "sha_manifest_verified": true,
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Independent-Review/HALF_FINAL_SOFTWARE_PASS_40636455681_sha439ada9d.zip"
+  },
+  "preserved_red_attempts": [
+    {
+      "run_id": 40635896394,
+      "reason": "Syntax error after sign patch",
+      "sha256": "d5f22f6d6e2f8710408977fa67352b08562526210fad93d80a910eb3ef5f72c7"
+    },
+    {
+      "run_id": 40636136663,
+      "reason": "Duplicate tail syntax error; corrected from exact parent source",
+      "sha256": "f233c4e3cb402bdfb07ab58076ed77e8f1a0dedc8d7dad2c8fa9b0348b095470"
+    }
+  ],
+  "age0_tool_authority": false,
+  "native_executed": false,
+  "jepa_weight": 0,
+  "step2_utility": "FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3_heldout": "FAIL",
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Independent review and integration with PR #851, then integration owner of #850",
+    "Native Age0 final arithmetic still unproven by this parser; off-path shadow is not user answer"
+  ],
+  "next_owner": "PR #851 owner and integration owner of #850; no direct main merge",
+  "next_command": "Review PR #852 diff against parent #851 and raw run 40636455681; if accepted integrate only via authorized review chain, retaining Age0 shadow-only tool policy.",
+  "platform_budget_remaining": "UNKNOWN"
+}
