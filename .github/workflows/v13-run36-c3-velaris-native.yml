@@ -87,7 +87,7 @@ jobs:
             echo SKIPPED_SOFTWARE_RED > "$e/BOOTSTRAP_RAW.log"; echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
           fi
           if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
-            timeout --signal=TERM --kill-after=10s 35m env PYTHONPATH=v13/code "$py" v13/code/scripts/run34_c3_native_quote_intervention_pilot.py --installed-home "$V13_HOME" --evidence-dir "$work/velaris" > "$e/NATIVE_RAW.log" 2>&1
+            timeout --signal=TERM --kill-after=10s 35m env -u V13_LLAMA_SERVER PYTHONPATH=v13/code "$py" v13/code/scripts/run34_c3_native_quote_intervention_pilot.py --installed-home "$V13_HOME" --evidence-dir "$work/velaris" > "$e/NATIVE_RAW.log" 2>&1
             echo "$?" > "$e/NATIVE_EXIT.txt"
           else
             echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
