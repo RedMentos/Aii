@@ -5,7 +5,7 @@ on:
       - codex/automation11-run64-realfile-jepa-factorized-readout-20261028
   pull_request:
     branches:
-      - codex/automation11-run64-jepa-global-file-baseline-20261028
+      - codex/automation11-run63-factorized-global-file-baseline-20261028
 permissions:
   contents: read
 concurrency:
