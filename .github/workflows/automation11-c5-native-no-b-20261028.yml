@@ -1,0 +1,114 @@
+name: V13 Automation11 C5 actual C2 C3 no-B native proof
+on:
+  push:
+    branches:
+      - assistant/v13-automation11-c5-native-no-b-20261028
+    paths:
+      - '.github/workflows/automation11-c5-native-no-b-20261028.yml'
+      - 'v13/code/scripts/c5_no_b_native_probe.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-pinned isolated native C5 no-B five-turn proof
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-automation11-c5-native-no-b"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          c605a4ea0a327dcd9dbccc0c70d365c5b8cf8b06 v13/code/v13/focal.py
+          d02e55d1e87c45903179194c3d0c1230d8c237f3 v13/code/v13/bodies.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          8bea6df632527b4aa56edcceb4c9e62ce8bdcc6e v13/code/scripts/c5_no_b_native_probe.py
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/scripts/c5_no_b_native_probe.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-automation11-c5-venv"
+          py="$RUNNER_TEMP/v13-automation11-c5-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          home="$RUNNER_TEMP/v13-automation11-c5-installed"
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=15s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$home" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=INT --kill-after=15s 20m env PYTHONPATH=. "$py" scripts/c5_no_b_native_probe.py --installed-home "$home" --out "$e/NATIVE_REPORT.json") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/NATIVE_REPORT.json" ]; then
+            "$py" - "$e/NATIVE_REPORT.json" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d["status"]=="C5_NO_B_NATIVE_SCOPED_PASS",d["status"]
+          assert len(d["turns"])==5 and len(d["checks"])==10,d.get("checks")
+          assert all(d["checks"].values()),d["checks"]
+          assert d["no_b_manifest"] and d["model_hash_unchanged"]
+          assert not d["phone_measured"] and d["seed"]==13
+          print("C5_NO_B_NATIVE_SCOPED_PASS_NO_STEP2_OR_REDMI",d["checks"])
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo MISSING_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1129910b2119ee0e1645475a6a8df9252023a2cc --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 1129910b2119ee0e1645475a6a8df9252023a2cc HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-automation11-c5-native-no-b-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-automation11-c5-native-no-b/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original native proof and no promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-automation11-c5-native-no-b"
+          for name in BLOBS COMPILE INSTALL BOOTSTRAP NATIVE REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; original raw retained"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'C5_NO_B_LINUX_NATIVE_SCOPED_ONLY_NO_ORIGINAL_GATE_PROMOTION'
