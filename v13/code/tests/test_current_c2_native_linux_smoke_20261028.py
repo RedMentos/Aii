@@ -55,9 +55,6 @@ class CurrentC2NativeControlGuards(unittest.TestCase):
 
     def test_runaway_output_fails_closed_and_raw_is_bounded(self):
         with tempfile.TemporaryDirectory() as td:
-            r = probe._native_one(
-                sys.executable, Path(td)/'model', Path(td)/'tools', td,
-                os.environ.copy(), timeout=3) if False else None
             # Execute Python as the fake CLI, which ignores fixed Needle args
             # by using a temporary executable shell wrapper.
             cli = Path(td)/'runaway'
