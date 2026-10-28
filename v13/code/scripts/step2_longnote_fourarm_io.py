@@ -184,6 +184,8 @@ def load(root, manifest_name, expected_manifest_sha256, fixture_ids,
                     report.get('fixture_sha256') != expected_fixture_sha256):
                 raise ValueError('Fixture hash differs from source')
             if report.get('evidence_kind') in ('LINUX_NATIVE', 'REDMI_NATIVE'):
+                if not _pin(expected_fixture_sha256):
+                    raise ValueError('External registered fixture SHA256 required for native evidence')
                 _bind_native(raw, report, fixture_ids)
             reports.append(report)
         return analyze(reports, fixture_ids)
