@@ -1,0 +1,13 @@
+# Independently audited merged C3+ContextOS+WorldJEPA native replay (2026-10-28)
+
+**Scoped Linux-native GREEN on merged source, review-only.** PR #903, prereg `b6c75ac4a2ee5f2b32fc5c855e30bdcc1a7f6d55` before native workflow; software-verified parent #901 report integrated by two-parent docs merge `62a3c878ed92ed33146c3bea8916127adddfd1f4`. Source-pinned Actions `40673794366` SUCCESS at `57057a6188bcea6980b16ef3f8371483b6f6959b`.
+
+Raw artifact `12809537308`, downloaded ZIP **SHA256 `23c8568e93482d0e7f7ac902d63f4ce1d939e86dd2e72f095ea419a899f367a5`**, 7797 bytes. ZIP CRC clean, **23/23** internal SHA256 manifest entries independently recomputed, **10/10** stage exits zero; `HEAD.txt` exact. Frozen Runtime/model/catalog/runner/CLI/source consumer/ContextOS/WorldJEPA Git blobs all matched. Install/bootstrap/deep model verification, compile, privacy CLEAN, diff0, report check0. Focused **17/17 tests OK**.
+
+**Actual native C3:** unchanged frozen fixture SHA256 `4fe0977c26f5f0d213d992b17a5a4fa0b1d5fd05fa3eaf7146116076c4414eea`, seed 13, revision `657e078c94084481950a2d555a941481f715536b`, GGUF SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`. **2/2 FINAL**: Veloran 428 Euros (EN), Mirava 963 Euro (DE). **8/8 no-native CLARIFY** across no-source, wrong-project, conflict and malicious-source cases; exactly **2** native model calls. Model hashes unchanged, all processes reaped, zero Store integrity errors, `phone_measured=false`.
+
+Private raw ZIP backed up to ChatGPT Library `/V13/RawEvidence/V13_C3_CONTEXT_WORLD_NATIVE_40673794366_RAW.zip`; independent materialized readback **byte-exact** SHA256 `23c8568e93482d0e7f7ac902d63f4ce1d939e86dd2e72f095ea419a899f367a5`.
+
+**Scope:** This is an exact-source replay of the **same registered cohort** as #900 on the new three-organ tree, not an independent fresh generalization cohort. Native C3 operator CLI remains separate from normal Runtime._turn. World-JEPA remains SHADOW, `jepa_weight=0`. No production merge, Redmi, original Stage11/STEP2/B3/Body-JEPA/LP3/Age/full-V13 gate promotion. Parallel C3 batched verification #904 changes `source_consumer.py`; this native result **does not** certify #904's changed source.
+
+Next: independent native cohort only if source changes and measured benefit warrant it; prioritize original full blueprint utility and learning gates. Exact next command for original source: `python v13/code/scripts/ask_verified_budget.py --home <existing-home> --session <session-id> --query 'What is the budget for Project Veloran?' --native` only when a verified F1/F5 source is present and user explicitly requests native.
