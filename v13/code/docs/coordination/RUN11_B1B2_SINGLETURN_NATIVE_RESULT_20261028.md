@@ -10,9 +10,15 @@ Owner: Codex; review-only PR #841 based on #840 `7b3347103e65e5f491a91aba8a84e1b
 
 Shared official llama.cpp b10964 tar SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`, extracted llama-cli SHA256 `3acf625ff44f1dc28799e7e036519207b5564191d6243371bfae086b3911ed71`; catalog Git blob `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, manager blob `bd035cf8029850cce00b179edf533e53bf24358a`. `serial_execution=true`, `models_distinct=true`, `native_all_pass=true` **only for Linux model-load/one-turn generation smoke**. C3 native prior run `40630449102` separately GREEN, not part of this B1/B2 job.
 
+## Full software regression and private durability (verified after native)
+
+GitHub Actions `40630928415` at exact source `ca1fbeaeb75597ded2ef71ec96977651513df173`: **2208/2208 Linux software tests PASS, 1 skipped** (237.196s); focused 19/19 PASS; install/compile/privacy/diff all exit0. Closed ZIP artifact `12791353774` SHA256 `b2990af020faa1ed2e9e4cf587936e754bebc6143d2fe4314b7de6f8fa5d35d6`, CRC valid and 15/15 internal SHA256SUMS verified. Source blobs unchanged: catalog `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, model manager `bd035cf8029850cce00b179edf533e53bf24358a`.
+
+All five source/raw ZIPs (original 962MB-interactive RED, focused GREEN, C3-native GREEN, B1/B2-native GREEN, full-suite GREEN) persisted in private ChatGPT Library `/V13-Checkpoints/2026-10-28/Run11-Native-Singleturn/`. Every Library copy was re-materialized and SHA256 matched its original GitHub artifact digest. Rejected anyone-writable Drive destination not used. GitHub public branches contain no private data, models, or native binaries.
+
 ## Open next work
 
-1. Run full Linux software regression at this exact review branch source; do not mistake 13 focused tests for whole-suite proof.
+1. Full Linux software regression now GREEN at source `ca1fbea`; retain its exact source scope. Re-run only after substantive new source changes.
 2. Independently review native output semantic limits and move to preregistered STEP2 four-arm native collector only after installing exact three current models and runner, source/fixture/seed closure, exclusive owner and resource preflight. Do not recycle historical frozen STEP2 cohort.
 3. Address legacy `step2_current_catalog_native_smoke.py` default-interactive/unbounded capture path separately; this candidate does not silently modify it.
 4. Redmi native device/thermal/RSS evidence still requires operator.
