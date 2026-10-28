@@ -10,8 +10,10 @@ import hashlib
 import json
 from pathlib import Path
 
-from scripts import step2_z2_timescale as z2
 from scripts import step2_z2b_seeds as z2b
+# Z2b imports its harness module by the top-level name. Binding a second
+# scripts.step2_z2_timescale instance would silently run the old cohort.
+z2 = z2b.z2
 from scripts import step2_longnote_revision_fixtures as corpus
 
 ROOT = Path(__file__).resolve().parents[1]
