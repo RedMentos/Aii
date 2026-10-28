@@ -4,6 +4,7 @@ Candidate modules are loaded in memory while the 70-row runtime stays frozen.
 These tests establish binding/transport only, never learned semantic utility.
 """
 import copy
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -22,12 +23,46 @@ from v13.config import LEGACY_QUOTE_PATH
 
 
 class SourceHandoffCandidate(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # The 2026-10-11 historical cohort must remain byte-exact even after
+        # the live runtime evolves. This fixture is rebuilt from the original
+        # SHA256-bound snapshots, never from the current runtime source.
+        from scripts.integrated_candidates import FIRING_SNAPSHOT, rebase
+        from scripts.source_handoff_candidate import NAMES, _transform
+        cls.historical_tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.historical_tmp.name)
+        shutil.copytree(ROOT / SNAPSHOT, root / SNAPSHOT)
+        shutil.copytree(ROOT / FIRING_SNAPSHOT, root / FIRING_SNAPSHOT)
+        (root / "v13").mkdir()
+        manifest = json.loads((root / SNAPSHOT / "manifest.json").read_text())
+        if set(manifest["files"]) != set(NAMES):
+            raise AssertionError("historical cohort names changed")
+        original = {}
+        for name, expected in manifest["files"].items():
+            raw = (root / SNAPSHOT / Path(name).name).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != expected:
+                raise AssertionError("historical cohort source hash changed: " + name)
+            original[name] = raw.decode()
+        baseline, changed = _transform(original)
+        reviewed = rebase(baseline, root)
+        for name, text in reviewed.items():
+            (root / name).write_text(text)
+        expected = (reviewed, rebase(changed, root))
+        if sources(root) != expected:
+            raise AssertionError("historical exact source/candidate fixture mismatch")
+        cls.historical_root = root
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.historical_tmp.cleanup()
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.r = Runtime(Path(self.tmp.name))
         self.r.cfg.update(LEGACY_QUOTE_PATH|LEGACY_PRE_20261022)  # frozen candidate regression: the pre-2026-10-21 quote path
-        self.cognition = load_candidate('cognition').Cognition(self.r)
-        self.bodyview = load_candidate('bodyview')
+        self.cognition = load_candidate('cognition', self.historical_root).Cognition(self.r)
+        self.bodyview = load_candidate('bodyview', self.historical_root)
         self.calls = []
         self.output = {'summary':'A provisional reading.', 'quotes':[],
                        'uncertainty':'Source interpretation is uncertain.', 'needs_reentry':True}
@@ -158,14 +193,22 @@ class SourceHandoffCandidate(unittest.TestCase):
 
     def test_patch_applies_to_runtime_rendering_and_keeps_frozen_source_bytes(self):
         before = {p:p.read_bytes() for p in (ROOT/'v13').glob('*.py')}
-        patch_result = patch_text()
-        self.assertTrue(callable(load_candidate('runtime').Runtime))
+        patch_result = patch_text(self.historical_root)
+        self.assertTrue(callable(load_candidate('runtime', self.historical_root).Runtime))
         self.assertIn('self.cognition.analyst_context(selected,e,version)', patch_result)
         self.assertNotIn('integration_step2_utility.py', patch_result)
         self.assertEqual(before, {p:p.read_bytes() for p in (ROOT/'v13').glob('*.py')})
 
+    def test_live_new_lineage_cannot_masquerade_as_frozen_historical_source(self):
+        # Current C5 code is deliberately *not* accepted by the original
+        # historical exact-source gate; only the pinned historical fixture is.
+        with self.assertRaisesRegex(ValueError, 'neither exact frozen baseline'):
+            sources(ROOT)
+        baseline, candidate = sources(self.historical_root)
+        self.assertNotEqual(baseline, candidate)
+
     def test_exact_integrated_candidate_is_accepted_but_mixed_or_tampered_sources_reject(self):
-        original, changed = sources()
+        original, changed = sources(self.historical_root)
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             shutil.copytree(ROOT/SNAPSHOT, root/SNAPSHOT)
