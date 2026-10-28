@@ -48,6 +48,9 @@ class C5ManifestAvailability(unittest.TestCase):
         self.assertEqual(self.choose('detail', {'B2_GIST'})['role'], 'C3_LANGUAGE')
         self.assertEqual(self.gate.select(self.e, route='both', direct=False,
                                          resource_state='NORMAL')['role'], 'B1_DETAIL')
+        self.assertEqual(self.gate.select(self.e, route='both', direct=True,
+                                         resource_state='NORMAL',
+                                         available_roles=set())['role'], 'SOURCE_COPY')
 
     def test_shared_body_control_maps_b2_to_body_manifest(self):
         self.r.models.installed = {
