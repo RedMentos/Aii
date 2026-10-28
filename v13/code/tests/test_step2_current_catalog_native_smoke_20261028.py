@@ -107,6 +107,9 @@ class NativeSmokeControls(unittest.TestCase):
                   patch.object(probe, 'ModelManager', FakeManager)):
                 report = probe.smoke(scratch, evidence, 'synthetic-blob')
             self.assertEqual(len(report['roles']), 3)
+            self.assertEqual(report['seed'], SEED)
+            self.assertEqual(report['tokens'], TOKENS)
+            self.assertEqual(report['context'], CONTEXT)
             self.assertTrue(report['native_linux_load_decode'])
             for role, row in zip(probe.ROLES, report['roles']):
                 self.assertEqual(row['role'], role)
