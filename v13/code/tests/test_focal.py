@@ -108,12 +108,6 @@ class FocalRuntime(unittest.TestCase):
     def turn(self,text,route,script,halt=None,mode='max'):
         """script: role -> list of (summary, quote|None, needs_reentry) consumed per call."""
         Operator(self.r).run(':effort '+mode)
-        # These offer/runner mocks represent installed body fixtures. C5 must
-        # not select a role whose manifest was never installed.
-        for role in script:
-            if role in ('B1_DETAIL', 'B2_GIST'):
-                key='body' if role=='B1_DETAIL' else 'gist'
-                self.r.models.installed[key]={'download_complete':True,'exact_revision':'synthetic-focal-fixture'}
         self.r._route=Mock(return_value=(route,{'source':'BOOT_SCAFFOLD','scaffold':route}))
         def decide(component,e,baseline,*a,**k):
             if component=='halt' and halt:return {'learned':True,'action':halt}
