@@ -1,0 +1,7 @@
+# Run11 baseline heldout native execution handoff — 2026-10-28
+
+Baseline branch `assistant/v13-run11-arith-heldout-baseline-native-20261028`, PR #855, frozen parent #848. Software workflow `run11-bilingual-baseline-native-collector-guards-20261028.yml` runs automatically on its own source changes. The heavy native workflow `run11-bilingual-arith-baseline-native-20261028.yml` is **manual-only** (`workflow_dispatch`) and must **not** be started while candidate native run `40637244491` or another heavy native owner is active. No baseline native result exists at this checkpoint.
+
+When candidate evidence is closed and baseline software checks pass, use a new isolated Linux x86_64 home and exact baseline prompt Git blob `a74d7517a7ab70e801e177b58da057e57fd3460c`. The native workflow uses the same exclusive concurrency group, pinned model/source/seed cohort and 16 frozen questions as candidate. It must preserve all raw rows and any failed attempt, verify ZIP SHA256 plus internal SHA256SUMS, and privately back up the artifact. Do not upload GGUF weights or reuse a production home.
+
+Compare only after both source-bound native manifests exist, using `scripts.age0_bilingual_arith_scorer --answers <candidate>/ANSWERS.json --compare <baseline>/ANSWERS.json --out <new>/PAIRED_SCORE.json`. Route differences, lexical numeric proxies, and uncertainty markers require manual review; they do not establish general reasoning, grounded truth, or long-term memory. Negative gates unchanged.

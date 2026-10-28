@@ -1,0 +1,7 @@
+# Run11 baseline native queueing amendment — 2026-10-28
+
+Before baseline native execution, software guards are **GREEN** on baseline exact source `75a37f8c5bde7eb0575389acdfef700d`: GitHub Actions `40637063021`, 17 focused PASS, 2234 full PASS (1 skipped), source/compile/privacy/diff0. Artifact ZIP SHA256 `e939499f43c3a4bed61693f7e95c33e62301153a4b8867e32869c828522a742b`, CRC and 16/16 SHA256SUMS verified, privately backed up at `/V13-Checkpoints/2026-10-28/Run11-Independent-Review/BASELINE_COLLECTOR_SOFTWARE_PASS_40637063021_shae939499f.zip`.
+
+The candidate native workflow `40637244491` is currently the **only heavy native owner**. To avoid losing execution continuity between automation runs, the baseline workflow may now be **queued** by enabling its branch-scoped push trigger, but only with the **identical exclusive GitHub Actions concurrency group** `v13-run11-bilingual-arith-native-exclusive`, `cancel-in-progress: false`. A pending job is not a running job. The baseline job must not execute simultaneously with candidate; if the scheduler does not honor exclusive concurrency, stop and preserve the attempt as RED.
+
+This queueing change does not alter the frozen 16 items, prompt/model/seed hashes, source protocol, timeout, Age0 authority or scoring criteria. Candidate RED does not imply baseline RED; baseline is an independent observation, but no paired quality claim until both raw evidence packages are verified. Preserve all failed native attempts. No gate promotion.
