@@ -59,6 +59,13 @@ class Run51SyntheticShadowFit(unittest.TestCase):
                 pipeline.run(self.bundle, approved_shadow_fit=True,
                              source_kind='REAL_STORE')
 
+    def test_declared_synthetic_but_changed_array_bytes_refused_before_fit(self):
+        self.bundle['train'][0][0, 0] += 0.001
+        with mock.patch('v13.world_jepa.WorldJEPA.fit',
+                        side_effect=AssertionError('must not fit')):
+            with self.assertRaisesRegex(PermissionError, 'UNREGISTERED_SYNTHETIC_ARRAYS'):
+                self.fit()
+
     def test_invalid_config_and_manifest_fail_closed(self):
         for options in ({'steps': 0}, {'steps': True}, {'seed': True},
                         {'ensemble': 1}, {'ensemble': 5}):
