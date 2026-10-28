@@ -1,0 +1,80 @@
+{
+  "schema": "v13.build_state.delta.run37.staged.v1",
+  "date": "2026-10-28",
+  "owner": "assistant/v13-run37-c3-action-rule-prompt-probe-20261028",
+  "review_pr": 946,
+  "parent_sha": "7b0fab0a21edcbe5c35dc98118c02c97014b38d0",
+  "status": "SOURCE_GREEN_PENDING_NATIVE_DISPATCH_ONLY",
+  "source": {
+    "prereg_commit": "bf9349cfd1a9c4ca7d2e6bd50f0b7c6609ad7b12",
+    "envelope_blob": "071d65317794ddc621d7ea5abd4bae2a7d1536b7",
+    "native_pilot_blob": "293c3046de029ae91e99794315b7bac8d85c6cc2",
+    "native_workflow_blob": "0d46f0296707e239152b57d97f905a96a3fe583f",
+    "source_only_workflow_blob": "2a62eb2f1dce1a70cfde9ba6f32cc81dbc06b2f8",
+    "run33_source_blob": "b1d58d7e0c3937787cf15dd801e278de25845879",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+  },
+  "experiment": {
+    "fixture": "Elyndra",
+    "seed": 20261122,
+    "arms": [
+      "B1_ONLY",
+      "DISTRACTOR_FROZEN",
+      "EXACT_FROZEN",
+      "DISTRACTOR_HINT",
+      "EXACT_HINT"
+    ],
+    "hint_sha256": "5ac5fa2aa13a7d82edeb66b960eff443e7ed60b4ebf8f775987cb4fd4739a9c7",
+    "primary_outcomes": [
+      "action_correct",
+      "remaining_fields_correct_0_2"
+    ],
+    "secondary_outcomes": [
+      "utility",
+      "exact",
+      "field_checks"
+    ],
+    "evidence_level": "SOURCE_ONLY_NO_ELYNDRA_NATIVE"
+  },
+  "closed_evidence": {
+    "run36_native": {
+      "run": 40734479879,
+      "zip_sha256": "e6b9f6454a451c1001ea45072bc4e738c455abbd2cfdbe8a6af0c0ab52328cbd",
+      "interpretation": "no B2 rule-use gain; exact and B1-only byte-identical"
+    },
+    "run37_red": {
+      "run": 40735201325,
+      "head": "253ac98b464b0187a22581eb4670ab03da661d82",
+      "zip_sha256": "b94c064a23ee5fb13efc7e7bf9a43570ba3bc729923e7ac8fc29b0a7765a22bb",
+      "expected_error": "missing_new_source_ImportError",
+      "crc": "PASS",
+      "inner_sha256": "15/15_PASS",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run37-C3-Rule-Use-Intervention/RUN37_RED_40735201325_shaB94C064A.zip",
+      "backup_readback": "BYTE_IDENTICAL"
+    }
+  },
+  "preconditions": {
+    "source_only_green": "PENDING_HEAD_765294b66899c050ac2a344627b3dc3cf4c4bff1",
+    "native_owner": "MUST_RECHECK_BEFORE_DISPATCH",
+    "native_workflow": "DISPATCH_ONLY_NOT_EXECUTED"
+  },
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13_complete": false
+  },
+  "open_questions": [
+    "Run37 source-only full-suite GREEN original raw audit",
+    "Run37 five-arm native Elyndra execution and primary field outcomes",
+    "B2 actual quote generation still unproven",
+    "Balanced 6x3 Run33 study and Android/Redmi still unmeasured"
+  ],
+  "next_command": "Wait for exact Run37 source-only head 765294b... GREEN, independently audit original raw ZIP, private byte-identical backup; verify no active native owner; enable Run37 native workflow push trigger, audit all five arms/field contrasts and preserve failures. Do not modify original Run36 evidence.",
+  "remaining_platform_budget": "UNKNOWN"
+}
