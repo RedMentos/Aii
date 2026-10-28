@@ -21,7 +21,7 @@ RULES = {
 OPTIONS = re.compile(
     r"\bOption\s+([AB])\s*:\s*Kosten\s+(\d+)\s+Euro\s*,\s*"
     r"Dauer\s+(\d+)\s+Tage\s*,\s*lokal\s+(ja|nein)(?=\s*[.;]|$)", re.I)
-PROJECT = re.compile(r"\bProjekt\s+([A-Za-z][A-Za-z0-9]*)\b", re.I)
+PROJECT = re.compile(r"\b(?:Projekt|Project)\s+([A-Za-z][A-Za-z0-9]*)\b", re.I)
 REF = re.compile(r"[A-Za-z0-9:._/-]{1,256}\Z")
 
 
@@ -50,6 +50,9 @@ def _record(ref, reader):
         raise Refusal("source_hash_format")
     if hashlib.sha256(value.encode("utf-8")).hexdigest() != digest:
         raise Refusal("source_hash_mismatch")
+    seq = row.get("seq")
+    if type(seq) is not int or not 0 <= seq < 1_000_000_000_000:
+        raise Refusal("source_sequence")
     return row
 
 
@@ -89,7 +92,7 @@ def evaluate(project, current_ref, old_ref, options_ref, temporal_mode, source_r
     """Compute a fallible SHADOW candidate from three verified source records.
 
     source_reader(ref) must query current F1/F5 authority and return a record
-    with ref, text, sha256, project, session, kind, verified=True, active=True.
+    with ref, text, sha256, project, session, kind, seq, verified=True, active=True.
     This module does not implement F1/F5; callers must not substitute arbitrary
     user-supplied text or self-asserted hashes for that authoritative reader.
     """
@@ -112,6 +115,10 @@ def evaluate(project, current_ref, old_ref, options_ref, temporal_mode, source_r
         raise Refusal("source_scope")
     for row in (current, old, opt):
         _project(row["text"], project)
+    if old["seq"] >= current["seq"]:
+        raise Refusal("old_source_not_before_current")
+    if options_ref != current_ref and not old["seq"] < opt["seq"] < current["seq"]:
+        raise Refusal("supplier_sheet_not_between_note_and_current")
     now = current["text"]
     if temporal_mode == "RETAIN_PRIOR_RULES":
         if ("früheren verbindlichen Regeln" not in now or
@@ -128,6 +135,9 @@ def evaluate(project, current_ref, old_ref, options_ref, temporal_mode, source_r
                 "Aktuelle verbindliche Regeln:" not in now):
             raise Refusal("revision_temporal_contract")
         rules = _rules(now)
+    has_current_options = re.search(r"\bOption\s+[AB]\s*:", now, re.I) is not None
+    if has_current_options != (options_ref == current_ref):
+        raise Refusal("current_options_take_precedence")
     if options_ref != current_ref and "Lieferantenblatt" not in opt["text"]:
         raise Refusal("option_source_kind")
     options = _options(opt["text"])
