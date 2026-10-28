@@ -34,6 +34,27 @@ class CompressionTests(unittest.TestCase):
         out,spans,ok=C.compress(text,140)
         self.assertTrue(ok);self.assertLess(len(out),len(text))
         for s in ['1,234.50','2026-10-09','https://x.org/a','`pip install foo`']:self.assertIn(s,spans);self.assertIn(s,out)
+    def test_long_ascii_german_and_multiline_quotes_are_never_lost(self):
+        quotes = ('"' + 'A'*120 + '"',
+                  '„' + 'B'*120 + '“',
+                  '"' + 'C'*60 + '\n' + 'D'*60 + '"')
+        for quote in quotes:
+            with self.subTest(quote=quote[:20]):
+                text = 'Intro. Here is a literal ' + quote + '. ' + LONG
+                out,spans,ok=C.compress(text,140)
+                self.assertIn(quote,out)
+                self.assertIn(quote,spans)
+                self.assertTrue(ok or out==text)
+
+    def test_oversized_and_unbalanced_quotes_stay_raw(self):
+        for quote in ('"' + 'Q'*500 + '"', '"' + 'UNBALANCED'*15,
+                      '„' + 'DE_UNBALANCED'*12):
+            with self.subTest(quote=quote[:20]):
+                text='Intro. Here is a literal '+quote+'. '+LONG
+                out,spans,ok=C.compress(text,140)
+                self.assertFalse(ok)
+                self.assertEqual(out,text)
+
     def test_too_many_spans_or_no_gain_stays_raw(self):
         text=' '.join(str(i)+'x' for i in range(40))
         self.assertFalse(C.compress(text,140)[2]);self.assertFalse(C.compress('short.',140)[2])
