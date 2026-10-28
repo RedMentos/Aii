@@ -6,6 +6,7 @@ A supervised ridge readout on synthetic outcomes is not JEPA causal utility.
 from __future__ import annotations
 
 import copy
+import hashlib
 
 import numpy as np
 
@@ -53,10 +54,26 @@ def run(bundle, *, approved_shadow_fit=False, source_kind=None,
     x, a, x2 = safe['train']
     hx, ha, hx2 = safe['holdout']
     observed_y, heldout_y = x2[:, 4:], hx2[:, 4:]
+    # The negative-control decoder must see the same shuffled train actions
+    # used to fit that WorldJEPA model; otherwise supervised ridge could
+    # recover true action effects through random, untrained action features.
+    perm = np.random.default_rng(seed).permutation(len(a))
+    shuffled_a = a[perm].copy()
+    if np.array_equal(shuffled_a, a):
+        perm = np.roll(np.arange(len(a)), 1)
+        shuffled_a = a[perm].copy()
+    if np.array_equal(shuffled_a, a):
+        raise ValueError('RUN55_UNCHANGED_ACTION_CONTROL')
+    permutation_hash = hashlib.sha256(
+        np.ascontiguousarray(perm.astype('<i8')).tobytes()).hexdigest()
+    if permutation_hash != original['action_permutation_sha256']:
+        raise ValueError('RUN55_ACTION_PERMUTATION_MISMATCH')
     readouts = {}
     for name, model in (('observed_action', fitted['observed_model']),
                         ('shuffled_train_action', fitted['shuffled_model'])):
-        train_latent = np.asarray(model.predict(x, a)[0], dtype=np.float64)
+        train_actions = shuffled_a if name == 'shuffled_train_action' else a
+        train_latent = np.asarray(
+            model.predict(x, train_actions)[0], dtype=np.float64)
         heldout_latent = np.asarray(model.predict(hx, ha)[0], dtype=np.float64)
         if (train_latent.ndim != 2 or heldout_latent.ndim != 2
                 or train_latent.shape[0] != len(x)
@@ -76,6 +93,7 @@ def run(bundle, *, approved_shadow_fit=False, source_kind=None,
         'seed': seed, 'steps': steps, 'ensemble': ensemble,
         'n_train': len(x), 'n_holdout': len(hx),
         'ridge_lambda': linear.RIDGE_LAMBDA,
+        'control_train_permutation_sha256': permutation_hash,
         'predicted_latent_outcome_metrics': readouts,
         'direct_linear_outcome_metrics': baselines['baseline_metrics'],
         'world_jepa_latent_diagnostics': {
