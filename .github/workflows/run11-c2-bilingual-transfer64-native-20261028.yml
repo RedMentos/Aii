@@ -31,7 +31,7 @@ jobs:
         run: |
           set +e
           e="$RUNNER_TEMP/v13-c2-bilingual-transfer64-native"
-          mkdir -p "$e/bench"
+          mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           e9aaae43f3313fbdc8e4b2fc870f2712a5557a66 v13/code/specs/c2-bilingual-transfer64-20261028.json
