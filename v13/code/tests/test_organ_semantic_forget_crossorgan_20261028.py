@@ -27,6 +27,10 @@ class PausedEncoder(Fake):
 class OrganSemanticForgetCrossOrgan(Base):
     QUESTION = 'What is the budget of Project Alpha?'
 
+    def active(self, name):
+        entry = self.r.store.components()[name]
+        return (self.r.home / entry['path']).read_bytes()
+
     def remember(self):
         event = self.r.store.event(self.r.session, self.QUESTION)
         return self.r.memory.feedback(event['event_id'], 'fact', '120 Euro',
