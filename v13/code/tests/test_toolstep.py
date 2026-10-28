@@ -44,6 +44,12 @@ class ProposerTests(unittest.TestCase):
             'Halbiere 120 und ١٢.',
             'Calculate half of 120 and -5.',
             'Halbiere ١٢.',
+            'Halbiere - 120',
+            'Halbiere + 120',
+            'Halbiere −120',
+            'Halbiere – 120',
+            'Halbiere minus 120',
+            'Calculate half of negative 80',
             'The budget is 120 Euro.',
         ):
             self.assertIsNone(T.propose(text),text)
