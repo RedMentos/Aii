@@ -1,0 +1,41 @@
+{
+  "schema": "V13_BUILD_STATE_DELTA_F5_CACHE_CROSSORGAN_20261028_V1",
+  "branch": "assistant/v13-f5-dream-cache-crossorgan-review-20261028",
+  "pr": 802,
+  "parent_pr": 801,
+  "parent_sha": "67dcf9abe58c8360c94dd183e9d9deb3392729ad",
+  "tested_sha": "990ea980b1a31db860702e74c6dada70f9ace8d5",
+  "actions": 40606784006,
+  "focused": {
+    "run": 77,
+    "passed": 77
+  },
+  "full": {
+    "run": 2088,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "raw_exits": {
+    "BLOBS": 0,
+    "INSTALL": 0,
+    "FOCUSED": 0,
+    "FULL": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "zip_sha256": "8b07a932e36cabf6a9fb26100b5536feb15e3deb3fc0efbc2ac5c568d3149294",
+  "private_backup": "/V13-Checkpoints/2026-10-28/Automation13-F5-AG8-Integration/F5_CACHED_CROSSORGAN_GREEN_40606784006.zip",
+  "evidence_scope": "LINUX_SOFTWARE_SYNTHETIC_SQLITE_ONLY",
+  "gate_state": {
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "Age0": "RECORD_ONLY/SHADOW",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "AG8 strict shield child prereg branch; import exact PR790 blobs; run focused/full CI; preserve all negative gates"
+}
