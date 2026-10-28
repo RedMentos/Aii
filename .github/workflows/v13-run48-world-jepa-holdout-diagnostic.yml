@@ -10,7 +10,7 @@ permissions:
   contents: read
 concurrency:
   group: v13-run48-holdout-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   software:
     runs-on: ubuntu-24.04
