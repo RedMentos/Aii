@@ -29,6 +29,7 @@ class NativeSmokeControls(unittest.TestCase):
         self.assertEqual(argv[argv.index('-n') + 1], str(TOKENS))
         self.assertEqual(argv[argv.index('-c') + 1], str(CONTEXT))
         self.assertEqual(argv[argv.index('-t') + 1], str(THREADS))
+        self.assertIn('--single-turn', argv)
 
     def test_safe_cli_member_located_without_executing(self):
         with tempfile.TemporaryDirectory() as td:
@@ -63,6 +64,61 @@ class NativeSmokeControls(unittest.TestCase):
         self.assertIn(b'synthetic', r['stdout'])
         t = _run(['/bin/sleep', '1'], 0.01, {})
         self.assertTrue(t['timeout'])
+
+    def test_three_roles_synthetic_serial_smoke_preserves_legacy_and_bounded_raw(self):
+        # Synthetic shell CLI only. This test does NOT constitute native model proof.
+        from scripts import step2_current_catalog_native_smoke as probe
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            scratch = root / 'scratch'
+            evidence = root / 'evidence'
+
+            class FakeManager:
+                def __init__(self, home):
+                    self.home = Path(home)
+
+                def path_for(self, role):
+                    return self.home / (role + '.gguf')
+
+            def fake_models(home, report, blob, progress):
+                home.mkdir(parents=True)
+                for role in probe.ROLES:
+                    (home / (role + '.gguf')).write_bytes(b'GGUF synthetic ' + role.encode())
+                report.write_text('{}')
+                return {}
+
+            def fake_runner(home, report, blob, progress):
+                home.mkdir(parents=True)
+                cli = (b'#!/bin/sh\\n'
+                       b'if [ "$1" = "--version" ]; then echo synthetic-version; exit 0; fi\\n'
+                       b'echo Hello. synthetic-answer\\n'
+                       b'echo "[ Prompt: 1 t/s | Generation: 2 t/s ]"\\n')
+                with tarfile.open(home / 'binary.tar.gz', 'w:gz') as tf:
+                    info = tarfile.TarInfo('pkg/bin/llama-cli')
+                    info.size = len(cli)
+                    info.mode = 0o755
+                    tf.addfile(info, io.BytesIO(cli))
+                report.write_text('{}')
+                return {}
+
+            with patch.object(probe, 'preflight'), \\
+                 patch.object(probe, 'model_probe', side_effect=fake_models), \\
+                 patch.object(probe, 'runner_probe', side_effect=fake_runner), \\
+                 patch.object(probe, 'ModelManager', FakeManager):
+                report = probe.smoke(scratch, evidence, 'synthetic-blob')
+            self.assertEqual(len(report['roles']), 3)
+            self.assertTrue(report['native_linux_load_decode'])
+            for role, row in zip(probe.ROLES, report['roles']):
+                self.assertEqual(row['role'], role)
+                self.assertTrue(row['native_smoke_pass'])
+                self.assertTrue(row['generation_marker_seen'])
+                self.assertTrue(row['raw_capture_complete'])
+                self.assertFalse(row['raw_output_capped'])
+                self.assertEqual((evidence / (role + '.stdout')).read_bytes(),
+                                 (evidence / (role + '_STDOUT_RAW.log')).read_bytes())
+                self.assertEqual((evidence / (role + '.stderr')).read_bytes(),
+                                 (evidence / (role + '_STDERR_RAW.log')).read_bytes())
+                self.assertTrue((evidence / (role + '.json')).is_file())
 
     def test_low_cgroup_memory_refuses_before_download(self):
         with tempfile.TemporaryDirectory() as td:
