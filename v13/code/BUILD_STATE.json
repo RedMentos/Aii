@@ -2808,5 +2808,46 @@
       "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12B_INITIAL_FOCUSED_RED_40695085585_sha65A37B0E.zip",
       "status": "PRESERVED_RED_NOT_OVERWRITTEN"
     }
+  },
+  "run25_fresh_en_native_preflight_review_20261028": {
+    "status": "SOURCE_ONLY_RED_GREEN_FULL_PASS_NATIVE_NOT_RUN",
+    "parent_run16_sha": "1265ad6c31277f065cf01e680dfd9c75c4b4bc9c",
+    "source_green_sha": "e77781f6e97b4361aabc9a5d81690ce5c8df1d5f",
+    "module_blob": "1fa2baf776ef5b9378405e18452b625f5575b891",
+    "test_blob": "fafae7ca677bac35729a905bc958e2e28e5c0226",
+    "run15_fixture_blob": "635e5727a42cb1eac4f84441afda2977b0c8109c",
+    "original_red_run": 40701418421,
+    "original_red_zip_sha256": "08f565a5ea62b79ac2f85de4f3356deebeac79e3a6cf9fa5f656eb47dd6dd495",
+    "pin_red_run": 40712944396,
+    "pin_red_zip_sha256": "8ae35cf145ab781dd6d1a52f2070cbb27ff6169d5a211144bf8ab66f99d4a14f",
+    "initial_green_run": 40712428683,
+    "initial_green_zip_sha256": "674121cf26e95c7d87dd56c8b5ed98971eba20a25f1309a7add1b9bd6cc3e9ff",
+    "final_green_run": 40713729243,
+    "final_green_zip_sha256": "e645b132332ec382efc9100636750e32b0fc4adb68756a2827ecec6fbc4f4ea2",
+    "focused": "20/20 PASS",
+    "full": "2469 OK (1 skipped)",
+    "stages": "7/7 zero",
+    "privacy": "CLEAN",
+    "raw_crc_and_inner_hashes": "16/16 each",
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run16-Fresh-EN-Review/",
+    "backup_readback_byte_verified": true,
+    "scope": "Run16 preregistered Keldara EN SPLIT CQ seed20261114 7-variant native pilot preflight",
+    "native_executed": false,
+    "main_integrated": false,
+    "age0_learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "L1_FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false,
+    "open_questions": [
+      "Run26 Linux-native one-fixture owner/runner/bootstrap gate still pending",
+      "C3 exact extraction requires separate preregistered replay",
+      "German native fixed reader gap remains"
+    ],
+    "next_command": "PYTHONPATH=v13/code python3 v13/code/scripts/run16_step2_fresh_en_native_pilot.py --installed-home <PINNED_HOME> --evidence-dir <FRESH_PRIVATE_DIR>",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
