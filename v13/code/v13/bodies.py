@@ -75,11 +75,16 @@ class BodyFabric:
     # -- AG0 routing -------------------------------------------------------------------------------
     def _installed_revision(self,role):
         from .models import model_key
-        return (self.models.installed.get(model_key(role,self.models.b2_control)) or {}).get('exact_revision')
+        installed=self.models.installed.get(model_key(role,self.models.b2_control)) or {}
+        # AG0 slots persist across restarts. A removed/disabled base manifest
+        # must never be resurrected as a "committed swap" or RAMP candidate.
+        return installed.get('exact_revision') if installed.get('download_complete') is True else None
     def _committed(self,role,sl):
-        """WP-T13: a finished swap (slot ACTIVE on a file other than the installed one) serves every turn."""
+        """WP-T13: a finished swap only serves while its base role is still installed."""
+        base_revision=self._installed_revision(role)
+        if base_revision is None:return None
         a=sl.get('active') if sl else None
-        if not a or not a.get('path') or a.get('revision')==self._installed_revision(role):return None
+        if not a or not a.get('path') or a.get('revision')==base_revision:return None
         p=Path(a['path']);p=p if p.is_absolute() else self.models.home/p
         return p if p.is_file() else None
     def revision_override(self,role):
@@ -87,8 +92,8 @@ class BodyFabric:
         sl=self.slots.box.load()[0]['slots'].get(role)
         return sl['active']['revision'] if self._committed(role,sl) else None
     def path_override(self,role):
-        """Called by ModelManager.path_for. Returns the RAMP candidate's file for its share of turns, the swapped-in
-        file after a committed swap (WP-T13), else None."""
+        """Return a committed/RAMP candidate only for an installed base role."""
+        if self._installed_revision(role) is None:return None
         sl=self.slots.box.load()[0]['slots'].get(role)
         done=self._committed(role,sl) if sl and sl['stage']!='RAMP' else None
         if done:return done
