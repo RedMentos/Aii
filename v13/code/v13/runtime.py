@@ -27,7 +27,7 @@ from . import effort
 from .prompts import text as prompt
 from .inputs import save_context
 from . import age as agectl
-from .focal import FocalLoop,ActionGate,available_body_roles
+from .focal import FocalLoop,ActionGate
 from . import attention as attctl
 from . import toolstep as toolctl
 from . import skilllive
@@ -432,10 +432,7 @@ class Runtime:
                 try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
-            # A removed B manifest must not be bypassed by a previously synced
-            # BodyFabric/AG0 slot. C5 records the suppression before dispatch.
-            available_bodies=available_body_roles(self.models)
-            c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar,available_roles=available_bodies)
+            c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
             clarify_turn=c5['role']=='ASK_USER'
             if clar:meta['clarify']=clar|{'selected':clarify_turn}
             if clarify_turn:c5['role']='C3_LANGUAGE'  # C3 voices the clarifying question
