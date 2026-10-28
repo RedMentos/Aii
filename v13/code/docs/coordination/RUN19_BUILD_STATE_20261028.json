@@ -1,0 +1,44 @@
+{
+  "schema": "V13_RUN19_BUILD_STATE_V1",
+  "date": "2026-10-28",
+  "owner": "Run19 German source guard",
+  "parent_sha": "23756d35c02bb4d2742b524ca97f0ddaf0372887",
+  "verified_source_sha": "b08b715d59962f0ef40324785aa1d2d7cb9893e3",
+  "ci_run_id": 40704173249,
+  "ci_conclusion": "SUCCESS",
+  "raw_zip_sha256": "f51637fa2f48fccea7b4e593caf8300f4d46ddda5564117f6f53bc1493582f27",
+  "private_backup_readback": "BYTE_IDENTICAL",
+  "focused_tests": 23,
+  "full_tests": 2472,
+  "full_skipped": 1,
+  "privacy": "CLEAN",
+  "red_first": {
+    "run_id": 40703853422,
+    "sha256": "f9b00ed18f4b392bf15a66b3dfe7621dc97615519089ce4eccd6af338b80709e"
+  },
+  "regression_red": {
+    "run_id": 40703972478,
+    "sha256": "fec974cdc6493375562cfe102eee2e51555375673bd13d8221af2eb875907531"
+  },
+  "source_only": true,
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_v13_complete": false
+  },
+  "open_questions": [
+    "Real Store EventEnvelope source reader in Run21 not yet verified",
+    "F5 human binding-rule authority not implemented",
+    "Native B1/B2/C3 source selection not measured",
+    "No Redmi thermal/energy evidence"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_run17_german_typed_shadow tests.test_run19_german_source_guard",
+  "next_package": "Run21 read-only Store source-ref integrity and revocation adapter",
+  "budget_remaining": "UNKNOWN"
+}
