@@ -2445,7 +2445,7 @@
     "remaining_platform_budget": "UNKNOWN"
   },
   "run11_tp27_world_jepa_crosschain_integration_20261028": {
-    "status": "TWO_PARENT_REVIEW_CANDIDATE_SOURCE_MERGED_SOFTWARE_TEST_PENDING",
+    "status": "TWO_PARENT_SOURCE_MERGED_CI_CANCELLED_BEFORE_JOB_NO_PASS_CLAIM",
     "owner": "Automation review integration branch",
     "parent_tp27_pr": 916,
     "parent_tp27_sha": "770515daba84d8bb4b4fc9fa78b3bc424d8b8b88",
@@ -2471,7 +2471,10 @@
     "jepa_weight": 0,
     "redmi_measured": false,
     "whole_system_complete": false,
-    "next_command": "After native TP27 Actions 40685405624 releases concurrency, run source-pinned combined focused/full Linux software and independently audit raw ZIP"
+    "next_command": "Audit downstream #918 combined full software after TP27 native releases concurrency; do not count cancelled #917 as pass/fail",
+    "integration_ci_run_id": 40685844332,
+    "integration_ci_result": "CANCELLED_BEFORE_ANY_JOB_DUE_GITHUB_ONE_PENDING_PER_CONCURRENCY_GROUP",
+    "downstream_full_suite_run_id": 40686517055
   },
   "run11_step2_staged12_candidate_20261028": {
     "status": "SOURCE_PINNED_SOFTWARE_QUEUED_NO_NATIVE_12ARM_EXECUTION",
@@ -2505,7 +2508,8 @@
       "TP27 70+70 original raw audit still pending",
       "Staged12 software Actions 40686517055 pending",
       "12-arm/3-seed native acceptance evidence not collected",
-      "Redmi native thermal/energy/RSS not measured"
+      "Redmi native thermal/energy/RSS not measured",
+      "GitHub concurrency group permits one pending run; #917 software run 40685844332 cancelled before job, downstream #918 full suite pending"
     ],
     "next_command": "Wait for source-pinned native 40685405624 and queued combined 40685844332/staged 40686517055; independently audit original ZIPs, preserve RED, then decide authorized staged 12-arm run",
     "remaining_platform_budget": "UNKNOWN"
