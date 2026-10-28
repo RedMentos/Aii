@@ -1340,11 +1340,24 @@
     "owner": "GPT-6 scheduled continuation",
     "base_run70_sha": "1a592970781c581dce643168004b50bda7a2d95d",
     "prereg_commit": "c630fca788cca1ae4f5fb651158bee76645543e3",
-    "status": "CONDITIONAL_PENDING_RUN71_EXACT_CI",
+    "status": "RUN71_GREEN_EXACT_BLOBS_IMPORTED_PENDING_RUN72_CI",
+    "run71_push_actions": 40771004527,
+    "run71_original_zip_sha256": "9392aad48dfaf9f4ba4d39943c92889442436179e9ecd11fb6458e53b9599696",
+    "run71_inner_sha256sums": "20/20",
+    "run71_focused_tests": "52 PASS",
+    "run71_full_tests": "2638 OK (1 skipped)",
+    "run71_privacy": "CLEAN",
+    "run71_three_imported_git_blobs": "EXACT_REMOTE_VERIFIED",
+    "run71_latent_delta_observed_correct": 138,
+    "run71_latent_original_observed_correct": 157,
+    "run71_latent_permuted_correct": 258,
+    "run71_latent_informative_pairs": 432,
+    "run71_negative_result": "OBSERVED_ACTION_LATENT_PAIR_RANKING_WORSE_THAN_PERMUTED_AND_ZERO_MSE",
+    "run71_private_backup": "/V13-Checkpoints/2026-10-28/Run69-Paired-Counterfactual/Run71_ORIGINAL_GREEN_40771004527_sha9392aad4.zip",
     "run71_candidate_sha": "0184e1b7de9bfc59ed0b8062039ed37dcb85e159",
     "age_authority": 0,
     "jepa_weight": 0,
     "whole_system_complete": false,
-    "next_command": "Verify Run71 original push Actions 40771004527 raw HEAD, CRC, SHA256SUMS, stage exits, focused/full, privacy; only after GREEN import exact Run71 three files and run Run72 pinned integration CI"
+    "next_command": "Add Run72 pinned integration CI for B2 source guard, Run71 latent-only negative and Run69 grounded negative; independently verify exact push raw and private backup"
   }
 }
