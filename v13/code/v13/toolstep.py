@@ -40,7 +40,7 @@ EXPR=re.compile(r'(?<![\w.])(\(?\s*'+NUM+r'(?:\s*(?:\*\*|[+\-*/%])\s*\(?\s*'+NUM
 HALF_CUE=re.compile(r'\b(?:hälfte|halbiere|halbieren|halbiert|half|halve)\b',re.I)
 HALF_REQUEST=re.compile(r'\b(?:berechne|rechne|ermittle|wieviel|wie\s+viel|was\s+ist|halbiere|halbieren|calculate|compute|what\s+is|how\s+much|halve)\b',re.I)
 HALF_NEGATION=re.compile(r"\b(?:nicht|kein\w*|ohne|not|don['’]t|do\s+not)\b",re.I)
-HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9]\d{0,8})(?![\w]|[.,]\d)')
+HALF_INTEGER=re.compile(r'(?<![\w.,+\-])(?:0|[1-9][0-9]{0,8})(?![\w]|[.,][0-9])')
 
 def propose_half(text):
     t=str(text)
