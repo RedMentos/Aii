@@ -1,0 +1,11 @@
+# Run11 JEF native C2 route admissibility prereg — 2026-10-28
+
+Owner GPT-6, isolated **runtime candidate** review child of #850 at `b454f81da33de9d621af6417ed47ab55cba6263f`. Do not modify source-frozen #850/#857 or other owners' #845–#856 branches; no main merge.
+
+**Problem found in current runtime source:** `v13/runtime.py::_route` recursively traverses every dict/list/string in native C2 `control` and treats **any** key `route` with a recognized enum value as a proposal. This does not require the `select_processing` tool name, a successful native call, finite confidence or the native observer's negation/ungrounded validation. For scaffold-simple inputs, such unrelated metadata can change the selected processing route. This is a **software counterexample** and safety/quality concern, not proof that the existing real native rows were affected. PR #857 native C2 agreed with author labels on 19/64 vs scaffold 42/64; raw confidence AUROC 0.4772. This does not authorize new route authority.
+
+**Candidate, not production promotion:** Replace recursive key discovery with the existing `v13.control_calibration_worker.observation(control)` contract, which accepts only a successful validated native `select_processing` proposal with finite confidence. Use its first validated route as the sole candidate, otherwise retain scaffold route and record fail-closed rejection. Keep existing human override, approved external head, C5/Executive admissibility, calibrated-confidence gate, and route-simple-only policy. No change to Age0, model/seed/cohort, JEF permission, or learning rights. Do not modify `observation` or claim its confidence calibrated.
+
+**Predeclared tests:** No-model pure helper tests for valid select_processing, unrelated route-like metadata, wrong-name function call, native negation, nonfinite confidence, multiple valid proposals (first wins). Existing full software regression and independent review of runtime diff required. If an actual new-source Linux native JEF run is attempted, preregister it separately and keep all prior native proof source-bound. No Redmi measurement available.
+
+Gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight0, Age0 RECORD_ONLY, no whole-system completion.

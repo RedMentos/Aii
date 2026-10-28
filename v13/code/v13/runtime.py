@@ -42,6 +42,15 @@ from . import reflex as reflexctl
 from . import actionlearn as c5ctl
 from . import transaction as txctl
 
+def _validated_native_route(control):
+    """First actually validated C2 select_processing route, never recursive metadata."""
+    from .control_calibration_worker import observation
+    try:
+        return observation(control)['route']
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return None
+
+
 class Runtime:
     @property
     def session(self):
@@ -248,15 +257,10 @@ class Runtime:
             if not allowed:return route,info|{'executive_control_abstention':reason}
             info['executive_control_policy']='LOCAL_PROCESSING_ONLY'
             info['native_control']=control;info['native_control_metrics']=dict(self.needle.last_metrics)
-            def routes(obj):
-                if isinstance(obj,dict):
-                    if obj.get('route') in ROUTES:yield obj['route']
-                    for v in obj.values():yield from routes(v)
-                elif isinstance(obj,list):
-                    for v in obj:yield from routes(v)
-                elif isinstance(obj,str) and obj.startswith('{'):
-                    with contextlib.suppress(ValueError):yield from routes(json.loads(obj))
-            proposals=list(routes(control));info['calibrated']=False
+            validated_route=_validated_native_route(control)
+            proposals=[validated_route] if validated_route else []
+            if not proposals:info['native_control_rejected']=True
+            info['calibrated']=False
             calibrated=self.learner.control_calibrate(e,control)
             if calibrated and calibrated['in_support']:
                 info.update(calibrated=True,control_calibration=calibrated)
