@@ -1,7 +1,7 @@
 name: V13 STEP2 long-note runner dry-run preflight full Linux review
 on:
   push:
-    branches: [assistant/v13-step2-runner-preflight-runner-preflight-20261028]
+    branches: [assistant/v13-step2-longnote-runner-preflight-20261028]
     paths:
       - '.github/workflows/step2-longnote-runner-preflight-20261028.yml'
       - 'v13/code/scripts/step2_longnote_runner_preflight.py'
@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: v13-step2-runner-preflight-runner-preflight-20261028
+  group: v13-step2-runner-preflight-20261028
   cancel-in-progress: false
 jobs:
   software:
