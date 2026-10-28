@@ -2474,7 +2474,8 @@
     "next_command": "Audit downstream #918 combined full software after TP27 native releases concurrency; do not count cancelled #917 as pass/fail",
     "integration_ci_run_id": 40685844332,
     "integration_ci_result": "CANCELLED_BEFORE_ANY_JOB_DUE_GITHUB_ONE_PENDING_PER_CONCURRENCY_GROUP",
-    "downstream_full_suite_run_id": 40686517055
+    "downstream_full_suite_run_id": 40686517055,
+    "downstream_focused_software": "World-JEPA stale-fit 3 tests PASS in #919 Actions 40687383056, combined full suite still pending"
   },
   "run11_step2_staged12_candidate_20261028": {
     "status": "SOURCE_PINNED_SOFTWARE_QUEUED_NO_NATIVE_12ARM_EXECUTION",
@@ -2512,10 +2513,11 @@
       "GitHub concurrency group permits one pending run; #917 software run 40685844332 cancelled before job, downstream #918 full suite pending"
     ],
     "next_command": "Wait for source-pinned native 40685405624 and queued combined 40685844332/staged 40686517055; independently audit original ZIPs, preserve RED, then decide authorized staged 12-arm run",
-    "remaining_platform_budget": "UNKNOWN"
+    "remaining_platform_budget": "UNKNOWN",
+    "downstream_focused_software": "28/28 PASS in #919 Actions 40687383056, staged full suite still pending"
   },
   "run11_step2_staged12_assembler_20261028": {
-    "status": "SOURCE_REVIEW_CANDIDATE_TESTS_ADDED_CI_NOT_LAUNCHED",
+    "status": "SOURCE_PINNED_FOCUSED_SOFTWARE_GREEN_28_NO_FULL_OR_NATIVE",
     "owner": "Automation review-only PR #919",
     "pr": 919,
     "base_pr": 918,
@@ -2525,8 +2527,8 @@
     "tests": "v13/code/tests/test_step2_staged12_assemble.py",
     "scope": "ASSEMBLE_12_REGISTERED_NATIVE_RAW_PAIRS_AND_REPLAY_ORIGINAL_FOURARM_SCORER_NO_NATIVE_EXECUTION",
     "source_committed": true,
-    "synthetic_tests_executed": false,
-    "ci_run_id": null,
+    "synthetic_tests_executed": true,
+    "ci_run_id": 40687383056,
     "current_native_owner_run_id": 40685405624,
     "upstream_staged_software_run_id": 40686517055,
     "github_pending_slot_note": "Only one pending Actions run per concurrency group; #917 40685844332 cancelled before any job; do not queue another before staged CI starts/completes",
@@ -2546,7 +2548,20 @@
       "Full twelve-arm native source evidence still unmeasured",
       "Redmi native thermal/energy/RSS and JEPA learning remain unmeasured"
     ],
-    "next_command": "After Actions 40685405624 and 40686517055 close, audit original raw ZIPs; create source-pinned assembler software workflow, review RED/GREEN, preserve raw, then plan first missing registered arm/seed",
-    "remaining_platform_budget": "UNKNOWN"
+    "next_command": "Audit upstream TP27 native 40685405624; then queued staged full 40686517055; run assembler full suite after serial owner frees; do not promote STEP2 from synthetic 28/28",
+    "remaining_platform_budget": "UNKNOWN",
+    "ci_source_sha": "71827b0cabc94f58250624ad848dba2b714cb139",
+    "ci_artifact_id": 12815028486,
+    "ci_artifact_sha256": "1bb1d7207f1aaa11e522d8908b5afc8f5859dd783af8f63f770ecd6042dd31cb",
+    "ci_crc": "CLEAN",
+    "ci_internal_hashes": "14/14",
+    "ci_stage_exits": "6/6 zero",
+    "ci_focused": "28/28 PASS",
+    "ci_privacy": "CLEAN",
+    "ci_diff": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Handoff/ASSEMBLER_FOCUSED_GREEN_40687383056_sha1bb1d720.zip",
+    "private_backup_byte_verified": true,
+    "full_software_tested": false,
+    "native_12arm_started": false
   }
 }
