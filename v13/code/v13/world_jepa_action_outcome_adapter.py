@@ -71,6 +71,13 @@ def build(records):
     canonical.sort(key=lambda item: item['action_id'])
     train = [r for r in canonical if _partition(r['action_id']) == 'train']
     holdout = [r for r in canonical if _partition(r['action_id']) == 'holdout']
+    # An action ID is only a row identity, not a content-disjointness
+    # guarantee. Exact repeated (state, route, outcome) triples under
+    # different IDs would contaminate a held-out metric.
+    def content_digest(row):
+        return _row_digest({'s': row['s'], 'a': row['a'], 'y': row['y']})
+    if {content_digest(r) for r in train} & {content_digest(r) for r in holdout}:
+        raise ValueError('RUN50_TRAIN_HOLDOUT_CONTENT_OVERLAP')
     if len(train) < MIN_SPLIT_ROWS or len(holdout) < MIN_SPLIT_ROWS:
         raise ValueError('RUN50_INSUFFICIENT_SPLIT_ROWS')
     if (len({r['a'] for r in train}) < 2
