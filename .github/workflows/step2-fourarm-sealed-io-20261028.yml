@@ -6,6 +6,8 @@ on:
       - '.github/workflows/step2-fourarm-sealed-io-20261028.yml'
       - 'v13/code/scripts/step2_longnote_fourarm_io.py'
       - 'v13/code/tests/test_step2_longnote_fourarm_io_20261028.py'
+      - 'v13/code/scripts/step2_longnote_fourarm_analysis.py'
+      - 'v13/code/tests/test_step2_longnote_fourarm_analysis_20261028.py'
 permissions:
   contents: read
 concurrency:
