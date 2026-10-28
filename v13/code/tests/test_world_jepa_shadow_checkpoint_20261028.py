@@ -84,6 +84,18 @@ class WorldJepaShadowCheckpointTests(unittest.TestCase):
             cp.save(model, self.path, SOURCE)
         self.assertFalse(self.path.exists())
 
+    def test_fractional_action_support_and_wrong_dtype_cannot_be_coerced(self):
+        model, _, _ = fitted()
+        model._action_counts = np.array([1.5, 2., 3., 4.], dtype=np.float64)
+        with self.assertRaises(ValueError):
+            cp.save(model, self.path, SOURCE)
+        self.assertFalse(self.path.exists())
+        model, _, _ = fitted()
+        model.mu = model.mu.astype(np.float32)
+        with self.assertRaises(ValueError):
+            cp.save(model, self.path, SOURCE)
+        self.assertFalse(self.path.exists())
+
     def test_hash_consistent_but_incomplete_archive_is_rejected(self):
         meta = {'schema': cp.SCHEMA, 'source_sha256': SOURCE,
                 'model_revision': wj.REVISION, 'seed': 7, 'ensemble': 2}
