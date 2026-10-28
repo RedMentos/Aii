@@ -17,7 +17,7 @@ from v13.memory import Memory
 from v13.models import ModelManager
 from v13.runners import RunnerPool
 from v13.store import Store
-from v13.source_consumer import verified_recall_messages, BUDGET_VALUE
+from v13.source_consumer import verified_recall_messages, BUDGET_VALUE, PROJECT
 
 
 class BudgetContext:
@@ -79,7 +79,7 @@ def _age0_only(r):
             or r.cfg.get("latents_enabled") is not False
             or r.cfg.get("jepa_weight", 0) != 0):
         raise ValueError("AGE0_RECORD_ONLY_REQUIRED")
-    if not r.idle() or r.paused:
+    if not r.idle() or r.store.queue_paused():
         raise ValueError("RUNTIME_NOT_IDLE")
 
 
@@ -107,14 +107,27 @@ def _preflight(r, query, session):
 
 
 def _answer_uses_euro_source(answer, source):
-    match = BUDGET_VALUE.fullmatch(source["value"])
-    if not match or not isinstance(answer, str):
+    """Conservative answer gate: no extra numbers or foreign named projects."""
+    match = BUDGET_VALUE.fullmatch(source.get("value", ""))
+    topic = source.get("topic", "")
+    expected = PROJECT.search(topic)
+    if not match or not expected or not isinstance(answer, str):
         return False
     amount = source["value"].split(" ", 1)[0]
-    # Fail closed on wrong currency, grouping, decimal extensions or unquoted amounts.
-    return bool(re.search(r"(?<!\d)" + re.escape(amount)
-                          + r"(?!\d|[.,]\d)\s*(?:Euro(?:s)?|EUR|€)(?!\w)",
-                          answer, flags=re.I))
+    # Exact amount + Euro; never accept a decimal/grouped or negative variant.
+    if not re.search(r"(?<![-\d])" + re.escape(amount)
+                     + r"(?!\d|[.,]\d)\s*(?:Euro(?:s)?|EUR|€)(?!\w)",
+                     answer, flags=re.I):
+        return False
+    if re.search(r"(?<!\w)-\s*" + re.escape(amount) + r"(?!\d)", answer):
+        return False
+    # Reject extra unsupported quantities even if the right number also appears.
+    numbers = re.findall(r"(?<!\w)\d+(?:[.,]\d+)*(?!\w)", answer)
+    if not numbers or any(number != amount for number in numbers):
+        return False
+    # A named foreign project must never be presented as the verified project.
+    return all(name.casefold() == expected.group(1).casefold()
+               for name in PROJECT.findall(answer))
 
 
 def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
@@ -161,6 +174,19 @@ def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
     if not released or released.get("process_reaped") is not True:
         return {"status": "NATIVE_RELEASE_NOT_PROVEN", "model_called": bool(calls),
                 "native_calls": calls}
+    # Generation is a TOCTOU window: revoke/contradict during the model call and
+    # the answer must not leave this operator lane. Re-read after native teardown.
+    try:
+        final, final_packet = _preflight(r, text, session)
+        unchanged = (final_packet is not None and final["status"] == "READY"
+                     and final["memory_id"] == preflight["memory_id"]
+                     and final["source_ref"] == preflight["source_ref"]
+                     and final["messages_sha256"] == preflight["messages_sha256"])
+    except Exception:
+        unchanged = False
+    if not unchanged:
+        return {"status": "CLARIFY", "reason": "SOURCE_CHANGED_AFTER_GENERATION",
+                "model_called": True, "native_calls": 1, "process_reaped": True}
     if metrics.get("status") != "FINAL" or not _answer_uses_euro_source(output, packet["decision"]["source"]):
         return {"status": "UNVERIFIED_NATIVE_ANSWER", "reason": "NO_EXACT_EURO_SOURCE_MATCH",
                 "model_called": True, "native_calls": 1}

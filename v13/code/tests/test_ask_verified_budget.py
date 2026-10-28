@@ -9,14 +9,17 @@ from scripts.ask_verified_budget import query, _answer_uses_euro_source
 
 
 class FakeRunner:
-    def __init__(self, output="The budget for Project Elyra is 615 Euro."):
+    def __init__(self, output="The budget for Project Elyra is 615 Euro.", on_generate=None):
         self.output = output
+        self.on_generate = on_generate
         self.calls = 0
         self.last_metrics = {"status": "FINAL"}
 
     def generate(self, messages, cancel, deadline, *, max_tokens, seed):
         self.calls += 1
         assert max_tokens <= 128 and seed == 13
+        if self.on_generate is not None:
+            self.on_generate()
         yield self.output
 
 
@@ -118,8 +121,52 @@ class VerifiedBudgetCliTests(unittest.TestCase):
         self.assertEqual(runner.calls, 0)
         unload.assert_called_once()
 
+    def _native_with_fake(self, runner):
+        with patch("scripts.ask_verified_budget._pinned_c3", return_value=True), \
+             patch.object(self.r.memory.semantic_keys, "mode", return_value="off"), \
+             patch.object(self.r.models, "verify", return_value={"language": {"ok": True, "hash_checked": True}}), \
+             patch.object(self.r.models, "path_for", return_value=Path("fake.gguf")), \
+             patch.object(self.r.pool, "get", return_value=runner), \
+             patch.object(self.r.pool, "unload", return_value={"process_reaped": True}) as unload:
+            result = query(self.r, self.question, native=True)
+        unload.assert_called_once_with("C3_LANGUAGE")
+        return result
+
+    def test_revoke_during_generation_suppresses_native_answer(self):
+        row = self.add()
+        runner = FakeRunner(on_generate=lambda: self.r.memory.forget(row["id"]))
+        result = self._native_with_fake(runner)
+        self.assertEqual(runner.calls, 1)
+        self.assertEqual(result["status"], "CLARIFY")
+        self.assertEqual(result["reason"], "SOURCE_CHANGED_AFTER_GENERATION")
+        self.assertTrue(result["process_reaped"])
+        self.assertEqual(result["native_calls"], 1)
+        self.assertNotIn("answer", result)
+
+    def test_conflict_during_generation_suppresses_native_answer(self):
+        self.add()
+        runner = FakeRunner(on_generate=lambda: self.add(key="Project Elyra budgets",
+                                                         value="700 Euro"))
+        result = self._native_with_fake(runner)
+        self.assertEqual(runner.calls, 1)
+        self.assertEqual(result["status"], "CLARIFY")
+        self.assertEqual(result["reason"], "SOURCE_CHANGED_AFTER_GENERATION")
+        self.assertNotIn("answer", result)
+
+    def test_answer_gate_rejects_foreign_project_and_extra_quantities(self):
+        source = {"value": "615 Euro", "topic": "Project Elyra budget"}
+        self.assertTrue(_answer_uses_euro_source("The budget is 615 EUR.", source))
+        self.assertTrue(_answer_uses_euro_source("Projekt Elyra: 615 Euro.", source))
+        for answer in ("Project Dovan has 700 Euro; Project Elyra has 615 Euro.",
+                       "Project Dovan has 615 Euro.",
+                       "Project Elyra has 615 Euro and 999 dollars.",
+                       "Project Elyra has -615 Euro.",
+                       "Project Elyra has 615.000 Euro and 615 Euro."):
+            with self.subTest(answer=answer):
+                self.assertFalse(_answer_uses_euro_source(answer, source))
+
     def test_wrong_currency_or_grouped_number_not_accepted(self):
-        source = {"value": "615 Euro"}
+        source = {"value": "615 Euro", "topic": "Project Elyra budget"}
         self.assertTrue(_answer_uses_euro_source("615 Euros.", source))
         for text in ("615 dollars", "615.000 Euro", "1615 Euro", "615,000 Euro", "615 EUR extra 999 dollars"):
             with self.subTest(text=text):
