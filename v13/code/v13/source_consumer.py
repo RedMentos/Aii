@@ -116,11 +116,11 @@ def render_messages(cfg, query, admission, *, memory=None, session=None):
         raise ValueError("Source admission required before native generation")
     source = admission.get("source")
     seal = admission.get("_render_seal")
-    session = admission.get("_render_session")
+    sealed_session = admission.get("_render_session")
     count = admission.get("admitted_count")
     if (not isinstance(source, dict) or not isinstance(seal, str)
-            or not isinstance(session, str) or type(count) is not int
-            or not hmac.compare_digest(seal, _render_proof(query, session, source, count))):
+            or not isinstance(sealed_session, str) or type(count) is not int
+            or not hmac.compare_digest(seal, _render_proof(query, sealed_session, source, count))):
         raise ValueError("Authenticated F1/F5 admission required for C3 rendering")
     if (memory is None) != (session is None):
         raise ValueError("Current Memory and session required together")
