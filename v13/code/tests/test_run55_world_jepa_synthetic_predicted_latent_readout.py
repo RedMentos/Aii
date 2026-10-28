@@ -6,6 +6,7 @@ from unittest import mock
 import numpy as np
 
 from v13 import world_model
+from v13 import world_jepa
 from v13 import world_jepa_action_outcome_adapter as adapter
 from v13 import world_jepa_synthetic_predicted_latent_readout as probe
 from tests.test_run50_world_jepa_action_outcome_adapter import FakeReadOnlyView
@@ -48,6 +49,29 @@ class Run55GroundedReadout(unittest.TestCase):
             self.assertFalse(result[name])
         self.assertEqual(result['age_authority'], 0)
         self.assertEqual(result['jepa_weight'], 0)
+
+    def test_shuffled_control_readout_uses_shuffled_train_actions(self):
+        original_predict = world_jepa.WorldJEPA.predict
+        calls = []
+        def spy(model, x, a):
+            calls.append((np.asarray(x).copy(), np.asarray(a).copy()))
+            return original_predict(model, x, a)
+        with mock.patch.object(world_jepa.WorldJEPA, 'predict', spy):
+            report = self.readout()
+        train_a = self.bundle['train'][1]
+        holdout_a = self.bundle['holdout'][1]
+        perm = np.random.default_rng(11).permutation(len(train_a))
+        shuffled = train_a[perm]
+        if np.array_equal(shuffled, train_a):
+            perm = np.roll(np.arange(len(train_a)), 1)
+            shuffled = train_a[perm]
+        self.assertGreaterEqual(len(calls), 4)
+        # Final four predict calls are the two train/holdout readouts.
+        np.testing.assert_array_equal(calls[-4][1], train_a)
+        np.testing.assert_array_equal(calls[-3][1], holdout_a)
+        np.testing.assert_array_equal(calls[-2][1], shuffled)
+        np.testing.assert_array_equal(calls[-1][1], holdout_a)
+        self.assertNotEqual(report['control_train_permutation_sha256'], '')
 
     def test_deterministic_and_caller_arrays_unchanged(self):
         before = copy.deepcopy(self.bundle)
