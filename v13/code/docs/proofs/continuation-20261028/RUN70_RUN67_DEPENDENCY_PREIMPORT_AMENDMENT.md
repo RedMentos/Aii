@@ -1,0 +1,7 @@
+# Run70 pre-import dependency amendment — 2026-10-28
+
+The original Run70 prereg `RUN70_B2_WORLDJEPA_PAIRED_REALFILE_INTEGRATION_PREREG.md` committed at `0e87526692d46905a226f943f1bdb3bb86790e26` names Run69's three new files but omitted the **Run67 source dependency**. Run69 imports `scripts.run67_delta_jepa_realfile`, which is absent from the Run66 base. This amendment is committed **before any Run70 source import or test execution**, not a retroactive reinterpretation of an outcome.
+
+After independently GREEN Run69 exact-head evidence, import six byte-identical source artifacts from the verified Run69 parent chain: Run67 source `v13/code/scripts/run67_delta_jepa_realfile.py` blob `3ef07b776dd1acd8990672ba1184f5b528b4c88d`, tests `v13/code/tests/test_run67_delta_jepa_realfile.py` blob `973f2248766108c767d5e89bb53d16e46aceb1e9`, prereg `v13/code/docs/proofs/continuation-20261028/RUN67_DELTA_JEPA_REALFILE_PREREG.md` blob `af0bcef0f888ccc0bbbb5c21ac353c954e4a0a58`; Run69 source blob `135183d568b7121b17543ad30e23bb22352bac70`, tests blob `b51774d110660ce58b9f231a90e3c8c9bc791df1`, prereg blob `65f0d22795ca6fc3c64faf7b4a979848d2c2a0cc`. The source hashes are **pins**, not instructions to modify them. Run70 adds a separate workflow and does not import the Run67/69 branch workflows, since those are branch-specific.
+
+If any dependency path already exists on the Run66 base, verify the Git blob first and do not overwrite it. Preserve the negative Run67 MSE result and all original gates. No main merge or native/Redmi/JEPA utility promotion.
