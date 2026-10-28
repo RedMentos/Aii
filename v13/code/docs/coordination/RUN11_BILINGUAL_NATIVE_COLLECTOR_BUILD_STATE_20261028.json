@@ -1,0 +1,62 @@
+{
+  "schema": "v13.run11.bilingual_native_collector.build_state.v1",
+  "date_utc": "2026-10-28",
+  "owner": "GPT-6 independent native collector child of PR #853",
+  "branch": "assistant/v13-run11-arith-heldout-native-collector-20261028",
+  "pull_request": 854,
+  "base_commit": "3c030cd40dd198d80b2792c2d87d60e1e48cafe0",
+  "tested_software_commit": "2bfacd29dca1932798bbf865171e6112560f3077",
+  "collector_git_blob": "a0a94ce08983b0621990c5b9c2f4712463e146bb",
+  "scorer_git_blob": "0348b17dedc0e4142a73a8ad8c93a57a2c7d6491",
+  "fixture_git_blob": "ceda0a5cb506cf09885652b24893cf7d8fdff63b",
+  "model_catalog_git_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "prompt_git_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+  "software_evidence": {
+    "run_id": 40636659568,
+    "conclusion": "SUCCESS",
+    "evidence_kind": "LINUX_SOFTWARE_ONLY",
+    "focused_tests": 17,
+    "full_tests": 2235,
+    "skipped": 1,
+    "exit_codes": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "artifact_zip_sha256": "2bebc5c0b044beb26ad8e6b26c0b91059c1b8c8f89a78b1a8ea9e4900544d163",
+    "sha_manifest_verified": true,
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Independent-Review/NATIVE_COLLECTOR_FINAL_SOFTWARE_PASS_40636659568_sha2bebc5c0.zip"
+  },
+  "native_run": {
+    "run_id": 40637244491,
+    "source_commit": "1cd099d0aa856dbca3205460affa613bd3780813",
+    "state": "IN_PROGRESS_AT_CHECKPOINT",
+    "heavy_owner": "GitHub Actions v13-run11-bilingual-arith-native-exclusive",
+    "evidence_kind": "PENDING_LINUX_NATIVE_AGE0",
+    "phone_measured": false
+  },
+  "scope": "fresh unused Linux home, real serial Age0 Runtime 16 prompts, per-row actual model SHA, fsynced raw, no model/runtime/seed changes",
+  "open_questions": [
+    "Whether all 16 actual Age0 turns reach FINAL with runner model identity and no tool authority",
+    "Numeric lexical and unsupported uncertainty outcomes on candidate native",
+    "Independent baseline PR #855 software proof and subsequent exclusive native baseline",
+    "Cross-session global memory contamination not ruled out"
+  ],
+  "next_owner": "GPT-6 baseline PR #855 after candidate native run completes; integration owner #850 separate",
+  "next_command": "Inspect GitHub Actions run 40637244491; download artifact even on RED, verify ZIP SHA256 and internal SHA256SUMS, privately back up. If candidate source/native gates PASS, only then schedule PR #855 baseline native in a separate fresh home under same exclusive concurrency group.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "platform_budget_remaining": "UNKNOWN"
+}
