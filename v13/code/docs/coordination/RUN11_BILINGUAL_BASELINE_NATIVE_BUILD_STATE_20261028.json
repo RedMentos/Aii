@@ -1,0 +1,65 @@
+{
+  "schema": "v13.run11.bilingual_baseline_native.build_state.v1",
+  "date_utc": "2026-10-28",
+  "owner": "GPT-6 independent baseline child of PR #848",
+  "branch": "assistant/v13-run11-arith-heldout-baseline-native-20261028",
+  "pull_request": 855,
+  "base_commit": "db7702f151aa951a6f4293f98585687e6ca9c8ae",
+  "tested_software_commit": "75a37f8c5bde7eb0575389acdfef700d",
+  "fixture_git_blob": "ceda0a5cb506cf09885652b24893cf7d8fdff63b",
+  "scorer_git_blob": "0348b17dedc0e4142a73a8ad8c93a57a2c7d6491",
+  "collector_git_blob": "a0a94ce08983b0621990c5b9c2f4712463e146bb",
+  "baseline_prompt_git_blob": "a74d7517a7ab70e801e177b58da057e57fd3460c",
+  "candidate_prompt_git_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+  "model_catalog_git_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "same_runtime_git_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "same_runners_git_blob": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+  "same_toolstep_git_blob": "9640b2ce9abfc08cb82f7b550e18d856d9513f08",
+  "software_evidence": {
+    "run_id": 40637063021,
+    "conclusion": "SUCCESS",
+    "kind": "LINUX_SOFTWARE_ONLY",
+    "focused_tests": 17,
+    "full_tests": 2234,
+    "skipped": 1,
+    "exit_codes": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "artifact_zip_sha256": "e939499f43c3a4bed61693f7e95c33e62301153a4b8867e32869c828522a742b",
+    "sha_manifest_verified": true,
+    "private_backup": "/V13-Checkpoints/2026-10-28/Run11-Independent-Review/BASELINE_COLLECTOR_SOFTWARE_PASS_40637063021_shae939499f.zip"
+  },
+  "native_run": {
+    "run_id": 40637658538,
+    "source_commit": "f7eb46206bf2f80fe6c81008095d376021a34920",
+    "state": "QUEUED_BEHIND_CANDIDATE_AT_CHECKPOINT",
+    "exclusive_group": "v13-run11-bilingual-arith-native-exclusive",
+    "candidate_active_run": 40637244491,
+    "kind": "PENDING_LINUX_NATIVE_AGE0",
+    "phone_measured": false
+  },
+  "open_questions": [
+    "Whether baseline produces all 16 FINAL model-generated answers under frozen prompt",
+    "Whether candidate and baseline route to different runner roles",
+    "Whether paired lexical metrics improve without semantic grounding regression"
+  ],
+  "next_owner": "GPT-6 automation continuation; integration owner #850 separate",
+  "next_command": "After candidate run 40637244491 exits, inspect baseline run 40637658538. Download and verify each artifact (including RED), back up privately. If both valid, run strict paired scorer with exact frozen fixture; never claim native quality PASS from software tests.",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "platform_budget_remaining": "UNKNOWN"
+}
