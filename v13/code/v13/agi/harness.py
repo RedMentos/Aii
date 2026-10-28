@@ -96,7 +96,8 @@ class HarnessLibrary:
         """Read-only approved view; a withdrawn AG8 request cannot serve an old override.
 
         Walk the stored apply/previous chain to keep a still-approved older
-        version. If the history is missing or malformed, fall back to default.
+        version. Values and targets must match the durable approved diff. If the
+        history is missing or malformed, fall back to default.
         Persisted history stays intact for an explicit human rollback.
         """
         from .self_improve import KEY as AG8_KEY, REVISION as AG8_REVISION, require_approved_origin
@@ -106,13 +107,22 @@ class HarnessLibrary:
         except (ValueError,KeyError,TypeError,AttributeError):
             proposals={}
         valid={}
-        def approved(pid):
+        def approved(pid,target,value):
+            # A live-approved proposal ID is not permission to serve arbitrary
+            # persisted text or a different target under that same ID.
             if not isinstance(pid,str):return False
             if pid not in valid:
-                try:require_approved_origin(self.s,proposals.get(pid),kind='harness')
-                except (PermissionError,ValueError,KeyError,TypeError,AttributeError):valid[pid]=False
-                else:valid[pid]=True
-            return valid[pid]
+                try:
+                    proposal=proposals.get(pid)
+                    require_approved_origin(self.s,proposal,kind='harness')
+                    diff=candidate(proposal['diff'])
+                except (PermissionError,ValueError,KeyError,TypeError,AttributeError):
+                    valid[pid]=None
+                else:
+                    valid[pid]=diff
+            diff=valid[pid]
+            return (isinstance(diff,dict) and target in diff
+                    and type(value) is type(diff[target]) and value==diff[target])
         history={}
         for h in st.get('history') or ():
             if not isinstance(h,dict) or h.get('op')!='apply':continue
@@ -125,7 +135,7 @@ class HarnessLibrary:
             while isinstance(current,dict):
                 pid,version=current.get('proposal'),current.get('version')
                 if not isinstance(pid,str) or type(version) is not int:break
-                if approved(pid):
+                if approved(pid,target,current.get('value')):
                     out[target]=current;break
                 key=(target,pid,version)
                 if key in seen:break
