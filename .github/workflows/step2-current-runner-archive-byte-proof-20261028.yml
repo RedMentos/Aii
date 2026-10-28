@@ -1,6 +1,10 @@
 name: V13 STEP2 current llama.cpp runner archive byte proof Linux only
 on:
   workflow_dispatch:
+  push:
+    branches: [assistant/v13-fourarm-collector-scorer-crossorgan-automation11-20261028]
+    paths:
+      - '.github/workflows/step2-current-runner-archive-byte-proof-20261028.yml'
 permissions:
   contents: read
 concurrency:
