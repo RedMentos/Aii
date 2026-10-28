@@ -177,7 +177,7 @@ jobs:
               echo MISSING_PREVIOUS_CHECKPOINT > "$e/CHUNK10_RAW.log"
               echo SKIPPED_RED > "$e/CHUNK10_EXIT.txt"
             fi
-            
+
             env PYTHONPATH=v13/code "$py" - "$e" "10" > "$e/CHUNK10_CHECK_RAW.log" 2>&1 <<'PY'
           import json,pathlib,sys
           e=pathlib.Path(sys.argv[1]);expected=int(sys.argv[2])
@@ -223,7 +223,7 @@ jobs:
               echo MISSING_PREVIOUS_CHECKPOINT > "$e/CHUNK15_RAW.log"
               echo SKIPPED_RED > "$e/CHUNK15_EXIT.txt"
             fi
-            
+
             env PYTHONPATH=v13/code "$py" - "$e" "15" > "$e/CHUNK15_CHECK_RAW.log" 2>&1 <<'PY'
           import json,pathlib,sys
           e=pathlib.Path(sys.argv[1]);expected=int(sys.argv[2])
@@ -269,7 +269,7 @@ jobs:
               echo MISSING_PREVIOUS_CHECKPOINT > "$e/CHUNK20_RAW.log"
               echo SKIPPED_RED > "$e/CHUNK20_EXIT.txt"
             fi
-            
+
             env PYTHONPATH=v13/code "$py" - "$e" "20" > "$e/CHUNK20_CHECK_RAW.log" 2>&1 <<'PY'
           import json,pathlib,sys
           e=pathlib.Path(sys.argv[1]);expected=int(sys.argv[2])
