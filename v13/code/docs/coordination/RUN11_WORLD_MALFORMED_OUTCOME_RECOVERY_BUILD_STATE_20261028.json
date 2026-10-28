@@ -1,0 +1,27 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-malformed-outcome-recovery-20261028",
+  "base_pr": 850,
+  "base_commit": "b454f81da33de9d621af6417ed47ab55cba6263f",
+  "prereg_commit": "4b2d8d206ed636d91c41988ede9959f47cd8426c",
+  "world_original_blob": "b4ed658f2212c013b9c77285a3dc2d3dc5553758",
+  "world_candidate_blob": "ee430d3c1df2e00c51d42ce1b0aff00f621814e4",
+  "test_blob": "e52aadd31ff896ee770c520c6bf49a15cadadafc",
+  "full_linux_ci": "PENDING_UNVERIFIED",
+  "evidence_kind": "SOFTWARE_CANDIDATE_NO_NATIVE",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect run11-world-malformed-outcome-recovery-20261028.yml, verify exact-source focused/full, raw SHA256SUMS, private backup; if GREEN, independent review with World timing #861 and prereg integrated candidate.",
+  "next_prerequisite": "CI and private raw evidence; no Redmi device.",
+  "platform_remaining_budget": "UNKNOWN"
+}
