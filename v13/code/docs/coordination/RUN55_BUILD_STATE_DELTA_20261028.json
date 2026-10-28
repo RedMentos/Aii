@@ -1,0 +1,59 @@
+{
+  "schema": "V13_RUN55_BRANCH_SCOPED_BUILD_STATE_DELTA_V1",
+  "checkpoint_utc": "2026-10-28T19:50:00Z",
+  "owner": "GPT-6 scheduled continuation",
+  "repo": "RedMentos/Aii",
+  "production_main_integrated": false,
+  "canonical_ssot": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "canonical_ssot_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "packages": {
+    "run52": {
+      "pr": 960,
+      "head": "c13169bd1305489e57fc313a645f5c898af1ea12",
+      "ci_run": 40755675201,
+      "zip_sha256": "e6535a933f5ff3bb98fd32f55146252c226011fda6d44b90f9dd982834216dbd",
+      "status": "SOFTWARE_ONLY_GREEN_RAW_AUDITED"
+    },
+    "run53": {
+      "pr": 961,
+      "head": "2794875924b231928c0d17910b5edd7d0e6b3ac4",
+      "ci_run": 40756617793,
+      "zip_sha256": "e7d237a72a38686a94c476e23ad23d86da475a5af7b3dcb392ce678651c235cc",
+      "status": "POSITIVE_REGRESSION_GREEN_NO_SOURCE_BUG"
+    },
+    "run54": {
+      "pr": 962,
+      "head": "0a10a747dc06e9a90baa0143b4585c62dba05945",
+      "ci_run": 40756700727,
+      "status": "SOFTWARE_ONLY_GREEN_RAW_AUDITED",
+      "zip_sha256": "64b890920bb01dcd7a90bfa5b67daa7bb23f93f4ee069caafd3950f968d94c21",
+      "focused": "30/30 PASS",
+      "full": "2583 OK (1 skipped)",
+      "private_backup": "/V13-Checkpoints/2026-10-28/Run52-53-WorldJEPA-Review/Run54_GREEN_40756700727_sha64B89092.zip"
+    },
+    "run55": {
+      "branch": "codex/automation11-run55-worldjepa-grounded-readout-20261028",
+      "base_head": "0a10a747dc06e9a90baa0143b4585c62dba05945",
+      "status": "STAGED_PR_NEXT_NO_CI",
+      "source_blob": "96165bf52dcb498af5cccd02c0aa3684a18f873e"
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "blockers": [
+    "Redmi device not available for physical measurement",
+    "Run37 Elyndra native requires exclusive owner and pinned installed model/runner"
+  ],
+  "next_command": "Create draft Run55 PR against exact Run54 head 0a10a747dc06e9a90baa0143b4585c62dba05945; audit pinned source-only Actions METRICS_RAW.json and full suite; then integrate Run53 test.",
+  "platform_budget": "UNKNOWN",
+  "backup": "/V13-Checkpoints/2026-10-28/Run52-53-WorldJEPA-Review/"
+}
