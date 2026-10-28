@@ -33,16 +33,34 @@
       "internal_hashes_verified": 18,
       "private_library_byte_readback": true
     },
-    "candidate_native_in_progress": {
+    "candidate_native_green": {
       "run": 40634460512,
-      "source_commit": "898f43d3462fb4247648d313bec3336e30f2c4d9"
+      "source_commit": "898f43d3462fb4247648d313bec3336e30f2c4d9",
+      "artifact": 12792369642,
+      "zip_sha256": "14b45a4c4cab15177d2497ffb2cf2ad2b395ae06a107187f608385053f90b9db",
+      "all_stage_exits_zero": true,
+      "internal_hashes_verified": 27,
+      "crc_ok": true,
+      "private_library_byte_readback": true,
+      "jef_status": "JEF_MODES_PASS",
+      "jef_checks_pass": 8,
+      "jef_combined_c3_turns": 3,
+      "step12_status": "VERTICAL_CHECKS_PASS",
+      "step12_checks_pass": 8,
+      "public_arithmetic_prompt": "Budget 120 Euro. Berechne die Hälfte.",
+      "public_arithmetic_answer": "The calculation is straightforward: half of 120 Euro is 60 Euro.",
+      "actual_final_runner": "B1_DETAIL",
+      "tool_call": null,
+      "tool_shadow": null,
+      "phone_measured": false,
+      "full_runner_proof": false,
+      "complementarity_proven": false
     }
   },
   "open_questions": [
-    "Will prompt-only candidate output the explicit 60 in the final answer?",
-    "Which actual runner role (C3/B1/B2) answered the public arithmetic request?",
-    "Will JEF and STEP12 structural proofs remain PASS with the changed shared system prompt?",
-    "Does any source-grounding regression appear in the C3-only unsupported leader fixture?"
+    "Will the numeric instruction generalize to held-out bilingual arithmetic and non-arithmetic tasks without increasing hallucination?",
+    "Does C3-only retain appropriate uncertainty on unsupported-source questions?",
+    "Can separate native model/seed matched control arms be run without changing registered frozen cohorts?"
   ],
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -54,6 +72,6 @@
     "phone_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Fetch native run 40634460512 and artifact; verify ZIP SHA, CRC, internal manifest, independent stage exits, JEF/STEP12 checks, ASK_RAW 60, ASK_META actual runner/no tool. Back up privately, then update PR #849 and select next package.",
+  "next_command": "Preregister a held-out bilingual arithmetic and unsupported-grounding evaluation with independent fixtures and frozen prompt/model controls. Do not promote STEP2/B3/Body-JEPA/Redmi; preserve #848 arithmetic RED and #849 single-case PASS as distinct cohorts.",
   "remaining_platform_budget": "UNKNOWN"
 }
