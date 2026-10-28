@@ -1,5 +1,5 @@
 """WP-V7 C2 benchmark harness: frozen corpus, call parsing, metrics (no models)."""
-import json,sys,tempfile,unittest
+import json,sys,tempfile,types,unittest
 from unittest.mock import patch
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
@@ -39,9 +39,11 @@ class C2BenchTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             model = Path(td) / 'needle3.cact'
             model.write_bytes(b'CACT')
+            fake_observer=types.ModuleType('v13.control_calibration_worker')
+            def reject(_): raise ValueError('invalid native control')
+            fake_observer.observation=reject
             with (patch('v13.runtime.Runtime', return_value=FakeRuntime(model)),
-                  patch('v13.control_calibration_worker.observation',
-                        side_effect=ValueError('invalid native control'))):
+                  patch.dict(sys.modules, {'v13.control_calibration_worker': fake_observer})):
                 rows, extra = C.run_needle([{'id':'one','text':'budget',
                                              'label':'detail'}], Path(td))
             self.assertIsNone(rows[0]['pred'])
