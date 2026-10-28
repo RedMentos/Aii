@@ -4,6 +4,7 @@ No models are installed or executed; a fabricated report is never native proof.
 """
 import copy
 import unittest
+from unittest.mock import patch
 
 from scripts import run15_step2_disjoint_bilingual_fixtures as fresh
 from scripts import run16_step2_fresh_en_native_pilot as pilot
@@ -80,6 +81,19 @@ class NativePilotAdversarialReview(unittest.TestCase):
                 models = dict(self.models, B1_DETAIL=replacement)
                 with self.assertRaises(ValueError):
                     pilot.verify_report(self.report, models, self.counts)
+
+    def test_frozen_source_and_runner_pins_refuse_drift(self):
+        with patch.object(pilot, "RUN15_SOURCE_BLOB", "0" * 40):
+            with self.assertRaises(ValueError):
+                pilot.prereg()
+        with patch.object(pilot, "PINNED_RUNNER_TAR_SHA256", "0" * 64):
+            with self.assertRaises(ValueError):
+                pilot.prereg()
+        changed = dict(pilot.PINNED_SOURCE_BLOBS)
+        changed["scripts/step2_z2b_seeds.py"] = "0" * 40
+        with patch.object(pilot, "PINNED_SOURCE_BLOBS", changed):
+            with self.assertRaises(ValueError):
+                pilot.prereg()
 
     def test_prereg_only_does_not_modify_frozen_alias(self):
         original = pilot.z2.FIXTURES
