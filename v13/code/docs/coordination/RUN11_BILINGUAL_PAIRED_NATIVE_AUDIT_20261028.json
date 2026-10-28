@@ -1,0 +1,62 @@
+{
+  "age0_learning_mode": "RECORD_ONLY",
+  "b3_l1": "FAIL",
+  "baseline": {
+    "arm": "baseline",
+    "artifact_id": 12794187079,
+    "claim_limit": "Linux-native source-bound lexical scoring only",
+    "counts": {
+      "numeric": 12,
+      "numeric_proxy_match": 10,
+      "unsupported": 4,
+      "unsupported_uncertainty_marker": 1
+    },
+    "internal_sha256_verified": 22,
+    "manifest_sha256": "c228fa4935ac028dd8fe57cce038d96716cda7d33737e02ebec7359495053db5",
+    "native_stage_exits_zero": 8,
+    "prompt_git_blob": "a74d7517a7ab70e801e177b58da057e57fd3460c",
+    "raw_sha256": "6bb185c96903a7b6157f7ad57495311439711dd5a3621a60246821393a4e5870",
+    "source_commit": "f7eb46206bf2f80fe6c81008095d376021a34920",
+    "zip_sha256": "2efe9bd177f8366626873da452041bd15ffcdc71ee96eb9567fed6d93fdf42ce"
+  },
+  "body_jepa": "UNAVAILABLE",
+  "candidate": {
+    "arm": "candidate",
+    "artifact_id": 12794815033,
+    "claim_limit": "Linux-native source-bound lexical scoring only",
+    "counts": {
+      "numeric": 12,
+      "numeric_proxy_match": 12,
+      "unsupported": 4,
+      "unsupported_uncertainty_marker": 1
+    },
+    "internal_sha256_verified": 22,
+    "manifest_sha256": "074e2ccca5c84fbfa8d19ea17f59c47b5973834daf39647a52b945d46ffa20e1",
+    "native_stage_exits_zero": 8,
+    "prompt_git_blob": "646c6f31b52ca2664c1952af7c7e842fc3e20885",
+    "raw_sha256": "b72546d494eac850b4f3adf29ce6eaf6fc05c57c956ba5a2d8ce9589ea321fc7",
+    "source_commit": "1cd099d0aa856dbca3205460affa613bd3780813",
+    "zip_sha256": "b64235b1adf9d1cf90139123790c887b4308d7ea6538aafc99fceab690fbc173"
+  },
+  "evidence_kind": "LINUX_NATIVE_ARCHIVE_INTEGRITY_PLUS_LEXICAL_PROXY",
+  "frozen_scorer_not_modified": true,
+  "human_semantic_review": "NOT_AUTOMATED",
+  "jepa_weight": 0,
+  "lp3_heldout": "FAIL",
+  "numeric_losses_candidate": [],
+  "numeric_wins_candidate": [
+    "a01",
+    "a02"
+  ],
+  "paired_route_changed_ids": [
+    "a11"
+  ],
+  "phone_measured": false,
+  "schema": "v13.age0.bilingual_paired_native_integrity_audit.v1",
+  "step2_utility": "FAIL",
+  "unsupported_marker_changes": [
+    "u02",
+    "u03"
+  ],
+  "whole_system_complete": false
+}
