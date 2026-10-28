@@ -1,5 +1,10 @@
 name: V13 Run36 Velaris C3-only five-arm Linux-native pilot
 on:
+  push:
+    branches:
+      - assistant/v13-run36-c3-only-native-velaris-20261028
+    paths:
+      - '.github/workflows/v13-run36-c3-velaris-native.yml'
   workflow_dispatch:
 permissions:
   contents: read
