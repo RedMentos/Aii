@@ -51,6 +51,7 @@ def _strict_json(raw):
                       parse_constant=lambda x: (_ for _ in ()).throw(ValueError('Nonfinite metadata')))
 
 
+@wj._read_locked
 def _extract(model, source_sha256):
     if not all(hasattr(model, k) for k in
                ('enc', 'tgt', 'preds', 'mu', 'sd', 'zsd', '_ztrain',
