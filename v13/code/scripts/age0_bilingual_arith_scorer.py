@@ -57,7 +57,10 @@ def _decimal(text):
 
 def numeric_proxy(answer, item):
     """Conservative lexical result proxy, NOT proof of a correct explanation."""
-    # Explicit denial/uncertainty must never be mistaken for an asserted result.\n    if UNKNOWN.search(answer) or re.search(r"\\b(?:not|isn.t|incorrect|wrong|falsch|nicht|maybe|perhaps|vielleicht|unsicher)\\b", answer, re.I):\n        return False\n    numbers = [_decimal(m.group(0)) for m in NUMBER.finditer(answer)]
+    # Explicit denial/uncertainty must never be mistaken for an asserted result.
+    if UNKNOWN.search(answer) or re.search(r"\b(?:not|isn.t|incorrect|wrong|falsch|nicht|maybe|perhaps|vielleicht|unsicher)\b", answer, re.I):
+        return False
+    numbers = [_decimal(m.group(0)) for m in NUMBER.finditer(answer)]
     expected = _decimal(item["expected"])
     allowed = {_decimal(x) for x in item["operands"]} | {expected}
     return expected in numbers and all(n is not None and n in allowed for n in numbers)
