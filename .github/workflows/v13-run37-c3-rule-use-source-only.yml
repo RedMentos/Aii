@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - assistant/v13-run37-c3-action-rule-prompt-probe-20261028
+    paths:
+      - '.github/workflows/v13-run37-c3-rule-use-source-only.yml'
+      - 'v13/code/scripts/run37_c3_rule_use_hint_envelopes.py'
+      - 'v13/code/scripts/run37_c3_rule_use_native_pilot.py'
+      - 'v13/code/tests/test_run37_c3_rule_use_hint_envelopes.py'
+      - 'v13/code/tests/test_run37_c3_rule_use_native_pilot.py'
 permissions:
   contents: read
 concurrency:
