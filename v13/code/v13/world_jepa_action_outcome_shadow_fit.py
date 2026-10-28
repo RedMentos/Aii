@@ -56,8 +56,27 @@ def run(bundle, *, approved_shadow_fit=False, source_kind=None,
             or type(m.get('holdout_rows_sha256')) is not str
             or not HEX64.fullmatch(m['holdout_rows_sha256'])):
         raise ValueError('RUN51_INVALID_ADAPTER_PROVENANCE')
+    # Caller-declared 'synthetic' is not proof. Only the preregistered
+    # deterministic Run50 FakeReadOnlyView(128) fixture is authorized here.
+    if (m.get('n_total') != 128 or m['n_train'] != 89 or m['n_holdout'] != 39
+            or m.get('all_rows_sha256') !=
+            '2cf785f5d0f991f411bca4a6c4fd6f729f4986ecde3c22c3ee5445f8a1909b2e'
+            or m['train_rows_sha256'] !=
+            '391ddead524a2ab65d7265fbe65d7a53722c1f5af9346e736498972b3d2b7064'
+            or m['holdout_rows_sha256'] !=
+            '1f212c95c3ada20db225603880daca7397c6e5c1eb16f6ba19724ff882253d37'):
+        raise PermissionError('RUN51_UNREGISTERED_SYNTHETIC_SOURCE')
     train = _arrays(bundle.get('train'), m['n_train'])
     holdout = _arrays(bundle.get('holdout'), m['n_holdout'])
+    def array_digest(triple):
+        return hashlib.sha256(b''.join(
+            np.ascontiguousarray(v, dtype='<f8').tobytes() for v in triple
+        )).hexdigest()
+    if (array_digest(train) !=
+            'cebc931259fa7d22405066b4481f10bac944b8de6eab9c3d0f0359c40fc474cf'
+            or array_digest(holdout) !=
+            '11a59b45890f4634d2cbb2526fc3dcd25d345d73dc4c5c84fb64de433fa97680'):
+        raise PermissionError('RUN51_UNREGISTERED_SYNTHETIC_ARRAYS')
     x, a, x2 = train
     if len(set(np.argmax(a, axis=1))) < 2:
         raise ValueError('RUN51_TRAIN_ACTION_DIVERSITY_REQUIRED')
