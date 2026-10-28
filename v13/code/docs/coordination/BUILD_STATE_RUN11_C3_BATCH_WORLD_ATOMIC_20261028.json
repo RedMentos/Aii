@@ -1,0 +1,75 @@
+{
+  "checkpoint_id": "V13_RUN11_C3_BATCH_WORLD_ATOMIC_20261028",
+  "scope": "REVIEW_ONLY_BRANCH_NOT_PRODUCTION",
+  "date_utc": "2026-10-28",
+  "owner": "ChatGPT continuation; combined C3/ContextOS/WorldJEPA review integration",
+  "branch": "assistant/v13-run11-c3-batch-world-atomic-integrated-20261028",
+  "verified_source_head": "4e24234b5c26df7438c5f9af1b23a38e9b2263e3",
+  "report_head_before_this_doc": "108e7f00389ba0c2774c002e6e3cc42bbbfd8818",
+  "prereg": "6695eb1ae1eec767646d85dc2c20e5d3b43b68b9",
+  "merge": "1d8dcdbd98b5aaa62a26383aa119c276e108ddf6",
+  "parents": {
+    "c3_batch": "1f9600db1efe86e1280933a48e143e99471c6de3",
+    "world_atomic": "89af9777d4c15851dbfdda1fb44d30ce0a922ee8"
+  },
+  "frozen_blobs": {
+    "runtime": "68e7ed1352800174972558f1e0b0683a42c8689a",
+    "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "source_consumer": "4b73842be25e784f70ade4f6c4ced3fe2dcb9eab",
+    "context_os": "fd8ea629dc565a5f27b212599f3b006bb93605fd",
+    "world_jepa": "350a1343a014934f4dbfc200b87b0b69491cd187"
+  },
+  "software_evidence": {
+    "run": 40674664303,
+    "artifact": 12809394050,
+    "zip_sha256": "4474016ae5ef1c49a8b82859c348e6789d19c12d661140c0f41b08e6f319c612",
+    "focused_ok": 91,
+    "full_ok": 2332,
+    "skipped": 1,
+    "manifest_ok": 16,
+    "stage_exit_zero": 7,
+    "privacy": "CLEAN",
+    "private_library": "/V13/RawEvidence/V13_C3_BATCH_WORLD_ATOMIC_SOFTWARE_40674664303_RAW.zip",
+    "private_readback_byte_exact": true
+  },
+  "native_new_disjoint": {
+    "branch": "assistant/v13-run11-c3-batch-world-atomic-native-fresh-20261028",
+    "run": 40675550770,
+    "source": "cca8c43718888c74d91650e4094d2afdeb0cce10",
+    "fixture_sha256": "9dfd73282974634cbfe826d3b9fa45f7d0cdc76e5eb6a8525603deda55f097b2",
+    "seed": 13,
+    "status": "PENDING_AT_CHECKPOINT",
+    "no_adaptive_retry": true
+  },
+  "operator_candidate": {
+    "branch": "assistant/v13-run11-verified-operator-preflight-20261028",
+    "run": 40674981822,
+    "status": "PENDING_AT_CHECKPOINT"
+  },
+  "gates": {
+    "canonical_complete": false,
+    "full_scope_complete": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "NOT_PROMOTED",
+    "body_jepa": "NOT_PROMOTED",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "stage11": "NOT_PROMOTED",
+    "age": "AGE0_RECORD_ONLY"
+  },
+  "open_questions": [
+    "No normal Runtime._turn source-bound C3 consumer",
+    "C3 batch scoped scan still followed by per-candidate verification in admit; end-to-end speedup unmeasured",
+    "World-JEPA exception-atomic refit is software only, no real learning utility",
+    "Distinct-weight B1/B2 semantic complementarity STEP2 utility gate negative",
+    "Redmi sustained thermal/energy/RSS unavailable"
+  ],
+  "next_owner": "ChatGPT continuation; native and operator evidence lanes",
+  "next_command": "Audit Actions 40675550770 and 40674981822 exact-source raw ZIPs; if GREEN persist private byte-exact readbacks and verified reports; if RED preserve failed attempts and continue independent blueprint package.",
+  "prerequisites": [
+    "No competing heavy native jobs",
+    "Do not modify pinned model/seed/cohorts",
+    "No force-push or production merge",
+    "No retry of rejected anyone-writable Drive backup"
+  ]
+}

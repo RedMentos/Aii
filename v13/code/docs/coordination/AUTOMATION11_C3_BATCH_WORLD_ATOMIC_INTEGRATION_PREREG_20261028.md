@@ -1,0 +1,11 @@
+# Prereg: integrate independently verified C3 scoped-batch and World-JEPA exception-atomic SHADOW fit (2026-10-28)
+
+Owner: ChatGPT review-only integration branch `assistant/v13-run11-c3-batch-world-atomic-integrated-20261028`. Primary parent #904 exact source `78f8d6a8d19a26b1bb74488b94c747929a01d2ac`, **software evidence pending at prereg** (Actions `40673985109`). Donor #902 independently audited source `89af9777d4c15851dbfdda1fb44d30ce0a922ee8`, software Actions `40673509984` SUCCESS, 19 focused / 2331 full OK, raw ZIP SHA256 `489af6f581dd20a15c26a3011086b29417192ef47d1ac9585be36befec7b39c5`, private readback byte-exact. Do not merge donor until #904 exact-source software result independently audited GREEN.
+
+## Bound merge and acceptance
+- True two-parent Git merge with exact donor World-JEPA source `350a1343a014934f4dbfc200b87b0b69491cd187`, atomic test `2530540ee0ed4648e985f5c929565b9cdb128232`, donor prereg/workflow/audit. Preserve #904 C3 scoped-batch source `4b73842be25e784f70ade4f6c4ced3fe2dcb9eab` and ContextOS `fd8ea629dc565a5f27b212599f3b006bb93605fd` byte-identical; frozen Runtime `68e7ed1352800174972558f1e0b0683a42c8689a` and catalog `7af05962af41d0bc3f7dd18ef01d4eba55eabf99` unchanged.
+- Verify original F1/F5 same-project hidden conflict/unreadable veto, C3 live renderer postgeneration revocation, ContextOS exact long quote and World-JEPA failed refit preservation in one focused suite; full software suite, compile, source pins, privacy/diff, closed raw artifact and independent readback. Do not infer functional cross-organ learning utility from disjoint software tests.
+- Exact native C3 on #903 is pre-batch and **does not certify this merged C3 source**. Native replay on this new merged source only after software GREEN and no competing native job. Keep original frozen 2+8 fixture/seed/model hashes; a replay is not a fresh heldout generalization proof.
+- No production merge, no normal Runtime._turn source-consumer integration, no Redmi, no original Stage11/STEP2/B3/Body-JEPA/LP3/Age/whole-system gate promotion. Age0 RECORD_ONLY/SHADOW, `jepa_weight=0`.
+
+Next: audit #904 raw; if GREEN, import donor exact and run CI; then native source-pinned replay; checkpoint every stage. Do not overwrite parallel branches or historical RED evidence.
