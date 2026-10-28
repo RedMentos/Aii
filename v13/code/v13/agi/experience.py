@@ -38,6 +38,20 @@ class ExperienceLibrary:
         p=self._path(p)
         try:return digest(p.read_bytes()) if p.is_file() else None
         except OSError:return None  # unreadable evidence is stale
+    def _approval_live(self,proposal_id):
+        """A recorded HX3 lesson loses read authority if its AG8 approval is revoked.
+
+        Revalidate the durable proposal AND request row, not the saved entry's
+        original shield snapshot. HX3 remains data for evaluators, not live instructions.
+        """
+        from .self_improve import KEY as AG8_KEY, REVISION as AG8_REVISION, require_approved_origin
+        try:
+            state,_=StateBox(self.s,AG8_KEY,AG8_REVISION,lambda:{'proposals':{},'seq':0}).load()
+            proposal=(state.get('proposals') or {}).get(proposal_id)
+            require_approved_origin(self.s,proposal)
+        except (PermissionError,ValueError,KeyError,TypeError,AttributeError):
+            return False
+        return True
     def record(self,proposal,situation,lesson,evidence,task_type):
         """Record only a source-backed approved AG8 change plus existing evidence."""
         from .self_improve import require_approved_origin
@@ -70,7 +84,11 @@ class ExperienceLibrary:
         def f(st):
             n=0
             for e in st['entries'].values():
-                if e['status']=='ACTIVE' and any(self._hash(x['path'])!=x['sha256'] for x in e['evidence']):e['status']='STALE';n+=1
+                if e['status']!='ACTIVE':continue
+                if not self._approval_live(e['proposal']):
+                    e['status']='REVOKED';n+=1
+                elif any(self._hash(x['path'])!=x['sha256'] for x in e['evidence']):
+                    e['status']='STALE';n+=1
             return n
         return self.box.mutate(f)
     def retire(self,proposal_id,reason='rollback'):
@@ -84,8 +102,11 @@ class ExperienceLibrary:
         """Newest ACTIVE entries of a task type, as data. enabled=False is the ablation arm (always empty)."""
         if not enabled:return []
         es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
-        # A caller need not remember verify(): changed/unreadable evidence never reaches lookup.
-        if any(self._hash(x['path'])!=x['sha256'] for e in es for x in e['evidence']):
+        # A caller need not remember verify(): revoked approval or changed
+        # evidence must never be returned from the previously ACTIVE cache.
+        if any(not self._approval_live(e['proposal']) or
+               any(self._hash(x['path'])!=x['sha256'] for x in e['evidence'])
+               for e in es):
             self.verify()
             es=[e for e in self.box.load()[0]['entries'].values() if e['status']=='ACTIVE' and e['task_type']==task_type]
         es.sort(key=lambda e:(-(e['shield']['gain'] or 0),-e['created']))
