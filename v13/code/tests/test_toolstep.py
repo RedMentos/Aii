@@ -35,6 +35,15 @@ class ProposerTests(unittest.TestCase):
             'Halbiere -120',
             'Halbiere 120-30',
             'Halbiere 120+30',
+            # Excluded second-number spellings must not disappear from the
+            # single-operand check and accidentally authorize a proposal.
+            'Halbiere 120 und -5.',
+            'Halbiere 120 und 1,5.',
+            'Halbiere 120 und 1.200.',
+            'Halbiere 120 und 2e3.',
+            'Halbiere 120 und ١٢.',
+            'Calculate half of 120 and -5.',
+            'Halbiere ١٢.',
             'The budget is 120 Euro.',
         ):
             self.assertIsNone(T.propose(text),text)
