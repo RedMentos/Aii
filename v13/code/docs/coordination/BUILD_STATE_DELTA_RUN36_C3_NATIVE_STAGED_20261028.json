@@ -4,7 +4,7 @@
   "owner": "assistant/v13-run36-c3-only-native-velaris-20261028",
   "parent_source_commit": "1f2039f3fa7b62ed6c9e3699672af91dfe532144",
   "review_pr": 945,
-  "status": "NATIVE_DISPATCH_REQUESTED_PENDING_ACTIONS_OBSERVATION",
+  "status": "LINUX_NATIVE_IN_PROGRESS_40734479879_NO_RESULT_YET",
   "source": {
     "prereg_commit": "860e9ab8f3c970a520bc76571d42e82307d3f82c",
     "workflow_blob": "45affe024de5d8fdd1cc39dbdc788ac151de7e77",
@@ -17,7 +17,9 @@
       "EXACT_MINUS_B1_ONLY",
       "DISTRACTOR_MINUS_MISSING"
     ],
-    "workflow_dispatch_commit": "436414f4c7c8dcebf5afc4bffdce57c8bb787284"
+    "workflow_dispatch_commit": "436414f4c7c8dcebf5afc4bffdce57c8bb787284",
+    "native_workflow_run": 40734479879,
+    "native_workflow_exact_sha": "436414f4c7c8dcebf5afc4bffdce57c8bb787284"
   },
   "preconditions": {
     "run33_software": "SUCCESS_40729771477",
@@ -61,6 +63,6 @@
     "B2 native source quote generation remains unproven; one-fixture conditional C3 test cannot promote STEP2",
     "Android/Termux native performance unmeasured"
   ],
-  "next_command": "Find Run36 Actions run for exact workflow dispatch commit 436414f4..., audit all stages and original raw ZIP (including failures), CRC/inner SHA, pinned sources/models/runner, five arm metrics and private backup. If workflow fails to start, inspect GitHub Actions event registration and fix without changing frozen cohort/seed.",
+  "next_command": "Inspect GitHub Actions Run36 40734479879 (exact source 436414f4...), retain all failed attempts; download original artifact, verify ZIP SHA/CRC/inner SHA/stages and independent report replay, back up privately with byte-identical readback. Do not promote STEP2/B3/JEPA/Redmi on one-fixture C3-only result.",
   "remaining_platform_budget": "UNKNOWN"
 }
