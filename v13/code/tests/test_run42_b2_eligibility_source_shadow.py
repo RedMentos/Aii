@@ -81,6 +81,28 @@ class ExactSourceEligibility(unittest.TestCase):
         cur = self.s.event(CURRENT)
         self.assertEqual(self.eval(cur)['status'], 'ABSTAIN_OPTION_SOURCE')
 
+    def test_revoked_current_during_option_scan_must_abstain(self):
+        _, cur = self.setup_positive()
+        original = self.s.read_source
+        current_id = cur['source_ref']['source_id']
+        seen = []
+        def raced(ref):
+            if ref['source_id'] == current_id:
+                seen.append(1)
+                # history validates once; evaluate reads once; the option
+                # scan then sees a revoked current source and catches it.
+                if len(seen) == 3:
+                    self.s.db.execute(
+                        'UPDATE sources SET deleted=1 WHERE id=?',
+                        (current_id,))
+            return original(ref)
+        self.s.read_source = raced
+        result = self.eval(cur)
+        self.assertGreaterEqual(len(seen), 3)
+        self.assertEqual(result['status'], 'ABSTAIN_CURRENT_SOURCE_CHANGED')
+        self.assertIsNone(result['decision'])
+        self.assertEqual(result['source_refs'], [])
+
     def test_current_without_project_refuses(self):
         self.offer(RULE); self.offer(SHEET)
         cur = self.s.event('Decide using earlier rules.')
