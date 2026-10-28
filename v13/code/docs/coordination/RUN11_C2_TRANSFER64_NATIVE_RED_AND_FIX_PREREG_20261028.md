@@ -1,0 +1,7 @@
+# C2 transfer64 native RED and exact workflow fix prereg — 2026-10-28
+
+**Observed, preserved failed attempt:** Actions `40640185593`, source `ebef8885720553426bf614ec86fb6a943ab59b9a`, artifact `12795485380`, ZIP SHA256 `4db7a28829a87b362d8cf8611f66154cba8d424f544dc8ab49bccbfe1935bdcd`, CRC clean, **17/17 internal hashes PASS**. BLOBS=0, GO=0, INSTALL=0, BOOTSTRAP=0, BENCH=1, REPORT_CHECK=SKIPPED_RED, PRIVACY=0, DIFF=0. The exact pinned public model and native worker bootstrapped successfully. The benchmark did **not** run a single route because the workflow created `$e/bench` before invoking a script whose `--out` contract deliberately refuses preexisting directories. Python `FileExistsError` at `args.out.mkdir(parents=True, exist_ok=False)`. This is a workflow orchestration bug, **not** a failed model-quality measurement.
+
+**Predeclared minimal correction before edit:** change only the native workflow's initial `mkdir -p "$e/bench"` to `mkdir -p "$e"`. Keep the script's fail-closed no-overwrite behavior, source/model/fixture/seed hashes, 64 labels, native timeouts, raw retention and all negative gates unchanged. Re-run from a fresh Linux home after exact workflow readback, using a new explicit GO marker revision; preserve RED artifact and record new source SHA. Do not claim original RED as PASS or reuse its model home.
+
+Software suite already GREEN `40639545762` (23 focused / 2222 full, one skipped), source `5676c1b18869478cec888bff530a8a92a33d3a37`. No competing heavy native owner at initial launch. Remaining platform budget UNKNOWN.
