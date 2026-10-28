@@ -100,6 +100,25 @@ class B2IdentityAdversarial(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "UNBOUNDED"):
             guard.select_context(CUR, "current", "s1", "g1", "m1", [item] * 65, lambda _: NOTE)
 
+    def test_malformed_digest_never_reaches_source_reader(self):
+        item = offer(NOTE, 1)
+        item["source_ref"]["sha256"] = "not-a-sha256"
+        def no_read(ref):
+            raise AssertionError("malformed digest passed to source reader")
+        got = guard.select_context(CUR, "current", "s1", "g1", "m1", [item], no_read)
+        self.assertEqual(got["items"], [])
+        self.assertEqual(got["reasons"].get("BAD_REF"), 1)
+
+    def test_invalid_source_span_never_reaches_source_reader(self):
+        item = offer(NOTE, 1)
+        item["source_ref"]["char_start"] = -1
+        def no_read(ref):
+            raise AssertionError("negative span passed to source reader")
+        got = guard.select_context(CUR, "current", "s1", "g1", "m1", [item], no_read)
+        self.assertEqual(got["items"], [])
+        self.assertEqual(got["reasons"].get("BAD_REF"), 1)
+
+
 
 if __name__ == "__main__":
     unittest.main()
