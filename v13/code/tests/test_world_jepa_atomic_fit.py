@@ -1,4 +1,5 @@
 """Exception-atomic World-JEPA SHADOW fit; no native model or learning authority."""
+import copy
 import unittest
 from unittest.mock import patch
 
@@ -19,8 +20,7 @@ class WorldJEPAAtomicFit(unittest.TestCase):
         )
 
     def snapshot(self, m):
-        return {key: (value.copy() if isinstance(value, np.ndarray) else value)
-                for key, value in m.__dict__.items()}
+        return copy.deepcopy(m.__dict__)
 
     def assert_unchanged(self, m, old):
         self.assertEqual(set(m.__dict__), set(old))
