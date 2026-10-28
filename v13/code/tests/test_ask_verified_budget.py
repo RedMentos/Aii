@@ -165,6 +165,18 @@ class VerifiedBudgetCliTests(unittest.TestCase):
             with self.subTest(answer=answer):
                 self.assertFalse(_answer_uses_euro_source(answer, source))
 
+    def test_integrated_scoped_corrupt_competitor_never_calls_c3(self):
+        self.add()
+        second = self.add(key="Project Elyra budgets", value="700 Euro")
+        blob = self.r.home / "data/blobs" / second["source_ref"]["sha256"]
+        blob.write_text("tampered")
+        with patch.object(self.r.pool, "get", side_effect=AssertionError("native called")):
+            result = query(self.r, self.question, native=True)
+        self.assertEqual(result["status"], "CLARIFY")
+        self.assertEqual(result["reason"], "UNVERIFIABLE_SCOPED_CORRECTION")
+        self.assertEqual(result["native_calls"], 0)
+        self.assertNotIn("615 Euro", result.get("answer", ""))
+
     def test_wrong_currency_or_grouped_number_not_accepted(self):
         source = {"value": "615 Euro", "topic": "Project Elyra budget"}
         self.assertTrue(_answer_uses_euro_source("615 Euros.", source))
