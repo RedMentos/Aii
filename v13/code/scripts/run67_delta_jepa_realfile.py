@@ -145,11 +145,9 @@ class DeltaWorldJEPA:
 
 
 def _fit_readout(model, x, a, x2, xt, at, *, seed):
-    model = model(seed=seed)
-    if isinstance(model, frozen.WorldJEPA):
-        model.fit(x, a, x2, steps=STEPS, log_every=STEPS)
-    else:
-        model.fit(x, a, x2, steps=STEPS, log_every=STEPS)
+    model = (model(seed=seed, ensemble=1) if model is frozen.WorldJEPA
+             else model(seed=seed))
+    model.fit(x, a, x2, steps=STEPS, log_every=STEPS)
     z, _ = model.predict(x, a)
     zt, _ = model.predict(xt, at)
     if (z.shape != (len(x), frozen.Z)
