@@ -112,6 +112,12 @@ def run(installed_home, output):
                 try:
                     raw = r.needle.control(item["text"], cancel, time.monotonic() + 30)
                     row["native_returned"] = True
+                    # Preserve the exact parser-relevant raw native fields for
+                    # independent replay, not just the derived route/confidence.
+                    row["native_raw"] = (
+                        {k: raw.get(k) for k in
+                         ("success", "confidence", "validation", "function_calls")}
+                        if isinstance(raw, dict) else raw)
                     row["native_metrics"] = dict(r.needle.last_metrics)
                     try:
                         obs = observation(raw)
