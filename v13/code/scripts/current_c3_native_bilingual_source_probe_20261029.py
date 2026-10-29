@@ -14,7 +14,7 @@ from pathlib import Path
 import platform
 import shutil
 import subprocess
-import time
+import tempfile
 
 from scripts import current_c3_native_linux_smoke_20261028 as pinned
 from scripts.native_smoke_io_20261028 import run_one_turn
@@ -45,19 +45,22 @@ def _digest(raw):
 
 
 def _write_atomic(path, payload):
-    temp = path.with_suffix(path.suffix + '.tmp')
-    with temp.open('x', encoding='utf-8') as f:
-        json.dump(payload, f, indent=2, sort_keys=True, allow_nan=False)
-        f.write('\n')
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(temp, path)
-    fd = os.open(path.parent, os.O_RDONLY)
+    fd, temp = tempfile.mkstemp(prefix='.report-', dir=path.parent)
     try:
-        os.fsync(fd)
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            json.dump(payload, f, indent=2, sort_keys=True, allow_nan=False)
+            f.write('\n')
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp, path)
+        dfd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(dfd)
+        finally:
+            os.close(dfd)
     finally:
-        os.close(fd)
-
+        if os.path.exists(temp):
+            os.unlink(temp)
 
 def run(scratch_home, evidence_dir):
     if platform.system() != 'Linux' or platform.machine() not in ('x86_64', 'amd64'):
@@ -124,8 +127,6 @@ def run(scratch_home, evidence_dir):
         report['rows'].append(row)
         # Each completed attempt is durably recorded before the next native job.
         progress = evidence_dir / 'PROGRESS.json'
-        if progress.exists():
-            progress.unlink()
         _write_atomic(progress, report)
     report['all_native_generated'] = len(report['rows']) == len(CASES) and all(
         row['native_smoke_pass'] for row in report['rows'])
