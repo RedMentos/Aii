@@ -1,0 +1,14 @@
+# Run107 prereg — integrate verified operator/C3 native + SOURCE_EXACT + restore guards (2026-10-29)
+
+Owner: GPT-6 scheduled continuation. Review-only **conditional** child of Run105 #1009 exact `e56753ffe8fc3b78e341659a19e7af02302d9bb8` (Run105 CI `40799108504` pending at prereg). Run106 #1010 exact `9252c3b40a0dc95b4882b80ddabba20e87b267bb` CI `40799129300` pending. **Do not import or execute Run107 until both original raw artifacts independently GREEN.** Run103 #1007 already independently GREEN exact `b95ef0ccd3f079a600238054a83b422517aedc5e`, Actions `40796986858`, original ZIP `c4916be506d14b5f8d2d1d60870d4e95271322fdc4e0bf69af27ee8858edea2c` CRC/15 SHA256SUMS. Run97 #1003 independently GREEN exact `8dcec32c4da3c992ebca9d038fabba3009bdda8b`.
+
+## Existing canonical functionality preserved
+Run105: real scripted Operator command `:source budget Elyra 615 --confirm`, separate-process pinned C3 `source-answer --native`, negative controls and revocation; NOT physical TTY/Redmi. Run106: `python -m v13 source-answer` reconciles interrupted restore before initialize. Run103: shared `BudgetContext` recovers before Store for direct and standalone `ask_verified_budget`/`source_exact`. Run97: deterministic model-free SOURCE_EXACT output from verified F1/F5.
+
+## Import/acceptance
+1. Only after independent Run105+106 GREEN, atomically import **exact original Git blobs**: Run106 `v13/code/v13/__main__.py` + `tests/test_run106_cli_restore_before_initialize.py`; Run103 `v13/code/scripts/ask_verified_budget.py` + `tests/test_run103_budgetcontext_restore.py`; Run97 `v13/code/scripts/source_exact.py` + `tests/test_run97_source_exact_answer.py` (and source docs/preregs as needed). Confirm no other production file changes, no overwritten user/Claude work, no duplicate recovery hook beyond each entrypoint's required pre-init boundary.
+2. Add new **real temporary Store/Runtime** integration test: human operator source preview/confirm; close; standalone SOURCE_EXACT returns sourced FINAL with same SourceRef and no model; `v13 source-answer` READY; invalid pending restore journal fails closed **before** Store for both entrypoints; after removal normal route; human forget revokes both. Preserve fixed nonfactual CLARIFY behavior, zero native on negatives.
+3. Re-run **actual pinned C3 native** Run105 script on the integrated exact head with same GGUF revision `657e078c94084481950a2d555a941481f715536b`, SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, seed13, 90s/64 tokens, no source/model/seed change. Serial native jobs only. Focused/full software, compile, source SHA, privacy/diff, original raw ZIP/CRC/SHA256SUMS.
+4. If any parent RED, record and do **not** integrate that candidate. Preserve original Run96/102 RED. No main merge.
+
+No STEP2/B3/Body-JEPA/LP3/jepa_weight/age/Redmi or whole-system promotion. This is a narrow user-facing Linux-native+software integration, not general learning or AGI.

@@ -1,0 +1,44 @@
+{
+  "schema": "v13.run107.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run107-source-cli-native-integrated-20261029",
+  "base_head": "e56753ffe8fc3b78e341659a19e7af02302d9bb8",
+  "base_pr": 1009,
+  "prereg_first_commit": "9dde65f9e638d326197d9b1971e437d5960e3a08",
+  "parent_conditions": {
+    "Run105": "GREEN Actions 40799108504 exact e56753ffe8fc3b78e341659a19e7af02302d9bb8 ZIP fce3bf850bbd1d3ad112ca27c37ef5161657f19877461a77a8cc6a50bc2f7965 CRC 20/20 focused32 full2671 native FINAL, private byte-identical backup",
+    "Run106": "GREEN Actions 40799129300 exact 9252c3b40a0dc95b4882b80ddabba20e87b267bb ZIP 1f17c8bb2ad678725dfbdbb99c708fda6308e5c645fd38bfbd28d04d701dc8b6 CRC 15/15 focused19 full2672, private byte-identical backup",
+    "Run103": "GREEN Actions 40796986858 original ZIP c4916be506d14b5f8d2d1d60870d4e95271322fdc4e0bf69af27ee8858edea2c",
+    "Run97": "GREEN Actions 40793807136"
+  },
+  "status": "ALL_PARENTS_RAW_GREEN; EXACT_ATOMIC_IMPORT_VERIFIED; RUN107_CI_PENDING",
+  "native_calls_observed": 0,
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Run pinned Run107 focused/full software + actual native C3 with same model/revision/seed; close raw SHA256SUMS, privacy, compare exact import and private backup; no main merge or gate promotion.",
+  "remaining_execution_budget": "UNKNOWN",
+  "test_commit": "1989046461cda4cc5cc08bebe47e791d4d36bc46",
+  "test_blob": "eea594c35079632028f14fb261776399afa3209c",
+  "atomic_import": {
+    "commit": "02953036c8bb16815a462282b0a069fc2e3cd62d",
+    "verified_remote_blobs": 6,
+    "source_sha_unchanged": true,
+    "paths": [
+      "v13/code/v13/__main__.py",
+      "v13/code/tests/test_run106_cli_restore_before_initialize.py",
+      "v13/code/scripts/ask_verified_budget.py",
+      "v13/code/tests/test_run103_budgetcontext_restore.py",
+      "v13/code/scripts/source_exact.py",
+      "v13/code/tests/test_run97_source_exact_answer.py"
+    ]
+  }
+}
