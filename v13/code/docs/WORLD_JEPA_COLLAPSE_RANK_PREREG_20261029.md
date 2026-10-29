@@ -16,3 +16,7 @@ Review-only child of PR #1128 exact parent `185c19652f146f44fea2e996f5f5ad4f0058
 ## Candidate / limits
 
 Guard finite 2D probe inputs with at least 2 rows and the fitted feature width; calculate finite target latents; if covariance trace is zero/nonpositive return a documented zero-evidence collapsed result, otherwise stable entropy effective rank. Do not infer learned utility from rank, do not alter fit/weights/EMA, data, action labels, model or seed hashes. No native/Redmi; Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight0, World-JEPA unpromoted, V13 incomplete.
+
+## Predeclared additional numerical edge (after first focused GREEN, before test)
+
+Independent float-roundoff review of constant nonzero latent rows: for 3–17 repeated identical vectors, NumPy covariance can have positive trace around 1e-32 even though every row is exactly equal. A guard that tests only `sum(eigenvalues)==0` may still report positive rank. New real-model negative control: fit an authored nonconstant 4-row WorldJEPA zero-step fixture, then probe seven identical nonzero inputs; the resulting target latents are identical. Expected `effective_rank=0, collapsed=True` regardless of tiny positive covariance. First candidate expected RED. Candidate should test exact per-dimension row span before covariance, not introduce an arbitrary unregistered variance threshold. Preserve initial candidate GREEN raw separately; rerun inherited controls. This does not change training or confer JEPA utility.
