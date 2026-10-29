@@ -44,12 +44,16 @@ def digest(store,checkpoint=None):
         "WHERE role='assistant' AND status='FINAL' GROUP BY session_id")
     pending=[r for r in candidates
              if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)]
-    # Never-seen/oldest high-water sessions first; stable tie-breakers make
-    # scheduling deterministic without increasing the per-run compute cap.
-    pending.sort(key=lambda r:(st['sessions'].get(r['session_id'],{}).get('until',0),
+    # Least-recently-attempted first, then oldest undigested high-water.
+    # Otherwise eight sessions stalled on incomplete turns can monopolize
+    # every cycle and starve a ninth valid session forever.
+    attempts=st.setdefault('session_attempts',{})
+    pending.sort(key=lambda r:(attempts.get(r['session_id'],-1),
+                               st['sessions'].get(r['session_id'],{}).get('until',0),
                                r['last'],r['session_id']))
     for r in pending[:SESSIONS_MAX]:
-        sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
+        sess=r['session_id'];attempts[sess]=st['runs']
+        d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
         if checkpoint:checkpoint()
         # Process the oldest bounded window *after* the durable assistant
@@ -82,6 +86,12 @@ def digest(store,checkpoint=None):
                                  'exact':us+as_,'msg':p['assistant']['id']})
             out['turns']+=1;out['compressed']+=int(uok)+int(aok)
         d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=highwater;out['sessions']+=1
+    # Persist only attempts that are still pending; completed sessions do
+    # not accumulate an unbounded scheduling map across repeated sleeps.
+    st['session_attempts']={
+        r['session_id']:attempts[r['session_id']] for r in pending
+        if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)
+        and r['session_id'] in attempts}
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 
