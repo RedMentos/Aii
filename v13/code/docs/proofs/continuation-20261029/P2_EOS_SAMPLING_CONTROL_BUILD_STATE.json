@@ -1,0 +1,72 @@
+{
+  "schema": "v13.p2.qad_eos_control_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 native sampling control",
+  "branch": "codex/v13-p2-eos-sampling-control-20261029",
+  "parent_pr": 1070,
+  "review_pr": 1071,
+  "parent_sha": "9be1c524d1ab813be97b80873b0ba223372f7fd0",
+  "prereg_commit": "09068ebdbf63bba4c0278bb0090057f54bb15f6b",
+  "source_only": {
+    "run": 40851983864,
+    "head": "e7246b152178284b6c8115f0f10e72dfee905527",
+    "status": "PASS",
+    "tests": 9
+  },
+  "native": {
+    "run": 40852391277,
+    "head": "9fe4b2dc60a2f58d081687abf934850a96b8aecc",
+    "status": "GREEN_DESCRIPTIVE_EOS_CONTROL",
+    "artifact": 12887567185,
+    "zip_sha256": "a02e3e9026a2b5a2de9c5dfc279c46306b5851ac9fcbc2e5077e95a93a3272af",
+    "manifest_entries": 29,
+    "stage_exits_zero": 12,
+    "gguf_calls": 8,
+    "hf_calls": 0,
+    "original_hf_vs_generated": 3,
+    "control_hf_vs_generated": 7,
+    "original_native_sampler_disagreements": 5,
+    "control_native_sampler_disagreements": 0,
+    "top5_arrays_identical": 8
+  },
+  "reference": {
+    "run": 40851408574,
+    "artifact": 12887870364,
+    "zip_sha256": "2cb67b8dc3a861d821e75b0dfab4a56cd2f1a046a9e36ce0929197648c1d1633",
+    "result_sha256": "1df95bff7c78635ae3f5bce13e58d30182610e8a7978ab6afaabfa327e750a23",
+    "original_generated_matches": 3,
+    "original_toplogprob_first_matches": 7,
+    "original_native_sampler_disagreements": 5,
+    "original_token_ids_equal": 8
+  },
+  "new_calls": {
+    "hf": 0,
+    "gguf": 8,
+    "one_factor": "ignore_eos:false"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Continue P2X source-disjoint receiver training/validation cohort PR1072, verify source-only tests and freeze exported hashes; then separately preregister AG6-gated default-off C3 LoRA training/evaluation on pinned QAD FP32 without P0X training leakage. Keep one remaining HF-vs-GGUF top-logprob disagreement open and all negative gates.",
+  "remaining_platform_budget": "UNKNOWN",
+  "original_red": {
+    "run": 40852205487,
+    "head": "d32c867b7d7e2c5d067ca3e38c62f0bbb35dc526",
+    "status": "RED_ARTIFACT_AUTH_REDIRECT_NO_MODEL_CALLS",
+    "artifact": 12887727228,
+    "zip_sha256": "5b4be60cecc0e800daa9273ce44c2ec481264ab90d991f0137511a77d801f6f0"
+  },
+  "private_backup": {
+    "location": "/V13/RawEvidence/2026-10-29/P2-firsttoken/",
+    "green_and_red_saved_and_byte_reverified": true
+  },
+  "independent_result": "P2_EOS_SAMPLING_CONTROL_NATIVE_RESULT.md"
+}
