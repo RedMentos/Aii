@@ -1,0 +1,7 @@
+# Context OS source help discoverability handoff — 2026-10-29
+
+- Parent PR #1111 exact source head `e0f247a159c5acfcc5104f1f5c1154e6a494a53c`, full software GREEN 3195 tests, 11 skipped; this child is review-only.
+- Prereg `edb0ea940398ff6119bf8aa2ed8a9455ee017cc8` remotely verified first. Original test-only RED Actions `40905413983` at `03a0461d2a27fe4219edcaac47637eed03b8b199`: 1/2 focused tests failed as expected because `:help` did not mention `:ctxos source <Event-ID>`; exact-source roundtrip and SHADOW invariance test passed. Original raw artifact `12912005245`, ZIP SHA256 `bc68d4ad2f296f755709c74871c908d89e299f0cc5e08a1dd68d1341fb198ab5`, CRC and internal SHA256SUMS verified, privacy CLEAN.
+- Narrow source fix `219a0ee184923aaebcca844fd7c181426d44339f`: only `operator.py` HELP text now documents `:ctxos source <Event-ID>` as read-only current-chat original source audit, plus existing learned/digest switches. No `context_os.py` logic, Store, model, age, memory, learning or permission changes.
+- Next: run focused `tests.test_ctxos_source_help_20261029 tests.test_contextos_source_restore_20261029 tests.test_contextos_sleep_source_integration_20261029`, full suite, compileall, privacy/diff, preserve closed raw and SHA. Independent review before merge.
+- Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi unmeasured; V13 incomplete.
