@@ -3,6 +3,7 @@
 Oracles never enter native prompts. Numeric word presence earns no credit.
 """
 import json
+import math
 
 OPTION_FIELDS=('cost','remaining','days','local','eligible')
 
@@ -39,14 +40,39 @@ def score_decision(raw,oracle):
     return {'utility':sum(checks.values())/denominator,'exact':len(checks)==denominator and all(checks.values()),
             'field_checks':checks,'contradictions':errors,'contradiction_count':len(errors),'scored_fields':denominator}
 
+def _row_utility(row):
+    """Failed inference is zero; an explicit malformed score is not evidence."""
+    score=row.get('score')
+    if score is None:
+        return 0.
+    if not isinstance(score,dict):
+        raise ValueError('invalid score object')
+    if 'utility' not in score:
+        return 0.
+    value=score['utility']
+    if type(value) not in (int,float) or not math.isfinite(value) or not 0. <= value <= 1.:
+        raise ValueError('utility must be a finite number in [0,1], not bool')
+    return float(value)
+
 def paired_utility(rows,fixture_ids):
-    """Require every preregistered pair; failed inference scores zero, never dropped."""
+    """Require every preregistered pair; failed inference scores zero, never dropped.
+
+    Reject malformed numeric scores and duplicate cohort IDs without allowing
+    an unmeasured, nonfinite or boolean value into a completion/gate decision.
+    """
     variants=sorted({r['variant'] for r in rows});scores={};errors={}
+    if not fixture_ids or len(fixture_ids)!=len(set(fixture_ids)):
+        errors['_cohort']='empty or duplicate preregistered fixture ID'
     for variant in variants:
         vr=[r for r in rows if r['variant']==variant]
         ids=[r['fixture'] for r in vr]
-        if len(ids)!=len(set(ids)) or set(ids)!=set(fixture_ids):errors[variant]='missing or duplicate preregistered episode';continue
-        scores[variant]=sum(r.get('score',{}).get('utility',0.) for r in vr)/len(fixture_ids)
+        if len(ids)!=len(set(ids)) or set(ids)!=set(fixture_ids):
+            errors[variant]='missing or duplicate preregistered episode'
+            continue
+        try:
+            scores[variant]=sum(_row_utility(r) for r in vr)/len(fixture_ids)
+        except ValueError:
+            errors[variant]='invalid explicit utility score'
     required={'b1_only','b2_only','both_none','both_exact','both_control','same_policy_dual','prompt_only_dual'}
     complete=not errors and set(scores)==required
     best_solo=max((scores.get(v,0.) for v in ('b1_only','b2_only')),default=0.)
@@ -56,7 +82,7 @@ def paired_utility(rows,fixture_ids):
     if complete:
         b1_wins=b2_wins=0
         for fid in fixture_ids:
-            a=pairs['b1_only'][fid].get('score',{}).get('utility',0.);b=pairs['b2_only'][fid].get('score',{}).get('utility',0.)
+            a=_row_utility(pairs['b1_only'][fid]);b=_row_utility(pairs['b2_only'][fid])
             b1_wins+=a>b;b2_wins+=b>a
         distinct_errors=bool(b1_wins and b2_wins)
     candidate=scores.get('both_exact',0.)
