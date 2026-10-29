@@ -78,18 +78,54 @@ def run_seed(seed):
         rows=[]
         for q in queries:
             cf=WM.counterfactual(store,q['s'],q['a'])
-            pred=[cf['prediction'][t] for t in WM.TARGETS];err=_mean([abs(p-t) for p,t in zip(pred,q['truth'])])
-            rows.append({'err':err,'confidence':cf['confidence'],'samples_only':1-math.exp(-cf['coverage']['samples']/WM.COVER_N),
-                         'spread_only':1/(1+cf['model_spread']/WM.SPREAD_REF),'random':rng.random(),'label':cf['label']})
+            pred=cf.get('prediction')
+            valid=(type(pred) is dict and all(type(pred.get(t)) in (int,float)
+                   and math.isfinite(pred[t]) for t in WM.TARGETS))
+            if not valid:
+                # Keep the registered query in the denominator. The runtime
+                # rejected its outcome: no numeric error or primary rank exists.
+                rows.append({'err':None,'confidence':0.,'samples_only':None,
+                             'spread_only':None,'random':rng.random(),
+                             'label':'SIMULATION_UNCERTAIN','invalid_output':True})
+                continue
+            err=_mean([abs(pred[t]-truth) for t,truth in zip(WM.TARGETS,q['truth'])])
+            rows.append({'err':err,'confidence':cf['confidence'],
+                         'samples_only':1-math.exp(-cf['coverage']['samples']/WM.COVER_N),
+                         'spread_only':1/(1+cf['model_spread']/WM.SPREAD_REF),
+                         'random':rng.random(),'label':cf['label'],
+                         'invalid_output':False})
         store.close()
-    neg=[-r['err'] for r in rows]
-    sup=[r['err'] for r in rows if r['label']=='SIMULATION_SUPPORTED'];unc=[r['err'] for r in rows if r['label']!='SIMULATION_SUPPORTED']
-    return {**{a:{'primary':round(spearman([r[a] for r in rows],neg),5)} for a in ARMS},
-            'labels':{'supported_n':len(sup),'uncertain_n':len(unc),'supported_mean_err':round(_mean(sup),4) if sup else None,'uncertain_mean_err':round(_mean(unc),4) if unc else None},
+    valid_rows=[r for r in rows if r['err'] is not None]
+    invalid_n=len(rows)-len(valid_rows)
+    # Never substitute a post-hoc valid-only rank for the registered all-query
+    # Spearman primary. Historical synthetic target values may be nonphysical.
+    primaries=({a:{'primary':None} for a in ARMS} if invalid_n else
+               {a:{'primary':round(spearman([r[a] for r in rows],
+                                            [-r['err'] for r in rows]),5)}
+                for a in ARMS})
+    sup=[r['err'] for r in valid_rows if r['label']=='SIMULATION_SUPPORTED']
+    unc=[r['err'] for r in valid_rows if r['label']!='SIMULATION_SUPPORTED']
+    return {**primaries,
+            'status':'UNSCORABLE_INVALID_OUTPUT' if invalid_n else 'COMPLETE',
+            'invalid_output_n':invalid_n,'error_measured_n':len(valid_rows),
+            'query_count':len(rows),
+            'labels':{'supported_n':sum(r['label']=='SIMULATION_SUPPORTED' for r in rows),
+                      'uncertain_n':sum(r['label']!='SIMULATION_SUPPORTED' for r in rows),
+                      'supported_mean_err':round(_mean(sup),4) if sup else None,
+                      'uncertain_mean_err':round(_mean(unc),4) if unc else None,
+                      'mean_error_denominator':'VALID_PREDICTIONS_ONLY'},
             'fit_status':st['status'],'counts':st['counts']}
+
 
 def run_all(seeds=SEEDS):
     per={s:run_seed(s) for s in seeds}
+    if any(per[s]['status']!='COMPLETE' for s in seeds):
+        return {'prereg':PREREG,'per_seed':per,
+                'wins_of_5':{a:None for a in ARMS[1:]},
+                'supported_label_lower_error_of_5':None,
+                'summary':{a:{'mean':None,'sd':None} for a in ARMS},
+                'verdict':'UNSCORABLE_INVALID_OUTPUT',
+                'claim_limit':'Registered all-query primary cannot be computed with invalid counterfactual outputs; no post-hoc subset promoted; synthetic only'}
     wins={a:sum(per[s]['confidence']['primary']>per[s][a]['primary'] for s in seeds) for a in ARMS[1:]}
     beat=[a for a,n in wins.items() if n>=4]
     lab=sum((per[s]['labels']['supported_mean_err'] or 9)<(per[s]['labels']['uncertain_mean_err'] or 9) for s in seeds)
