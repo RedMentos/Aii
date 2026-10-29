@@ -118,8 +118,13 @@ class WeightConsolidation:
         h=digest(dumps([[i['memory_id'],i['target']] for i in items]))
         def put(st):
             for b in st['batches'].values():
-                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL'}:return dict(b,deduplicated=True)
-            bid='g6b_'+h[:16]+'_'+str(int(self.clock()))
+                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL','ANCHOR_INVALID'}:return dict(b,deduplicated=True)
+            stem='g6b_'+h[:16]+'_'+str(int(self.clock()))
+            bid=stem
+            suffix=1
+            while bid in st['batches']:
+                bid=stem+'_'+str(suffix)
+                suffix+=1
             b={'id':bid,'status':'STAGED','origin':origin,'created':self.clock(),'base_generation':self.s.generation_id,'dataset_hash':h,
                'items':items,'trainer':None,'gate':None,'request_id':None,'history':[['STAGED',self.clock()]],'neuromodulation':nm,'data_mix':mix,'admission':admission}
             st['batches'][bid]=b;st['order']=(st['order']+[bid])
@@ -145,8 +150,15 @@ class WeightConsolidation:
             def bad(st,b):b['data_mix']=mix;self._move(b,'DATA_MIX_FAIL')
             return self._set(bid,bad)
         try:
-            from ..anchor import for_batch
+            from ..anchor import for_batch,AnchorAdmissionError
             anchor,override=for_batch(self.s,b['items'],self.trainer)  # WP-U5 §69: anchor strength from novelty/stability
+        except AnchorAdmissionError:
+            # A numerical policy failure is not an unavailable optional
+            # diagnostic. Never pass the original unsafe coefficient to fit.
+            def invalid(st,b):
+                b['anchor']={'error':'AnchorAdmissionError','reason':'NUMERIC_ADMISSION_RED'}
+                self._move(b,'ANCHOR_INVALID')
+            return self._set(bid,invalid)
         except Exception as exc:anchor,override={'error':type(exc).__name__},None
         saved=dict(self.trainer.cfg) if override else None
         try:
