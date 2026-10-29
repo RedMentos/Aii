@@ -57,6 +57,12 @@ class Run117ExactRuleSpan(unittest.TestCase):
             candidate.select(["Project Zenith. Budget 9 euros. Deadline 1 days. "
                               "Local-only requirement: true."], "Atlas")
 
+    def test_cross_project_rule_inside_same_source_refused(self):
+        source = ("Project Atlas meeting. Project Zenith. Budget 130 euros. "
+                  "Deadline 6 days. Local-only requirement: true.")
+        with self.assertRaisesRegex(ValueError, "CROSS_PROJECT_SOURCE_AMBIGUOUS"):
+            candidate.select([source], "Atlas")
+
     def test_incomplete_later_revision_fails_closed(self):
         sources = ["Project Atlas. Budget 130 euros. Deadline 6 days. "
                    "Local-only requirement: true.",
