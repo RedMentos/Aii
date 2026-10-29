@@ -1,0 +1,37 @@
+{
+  "schema": "v13.p0x.independent_fullsuite_review_evidence.v1",
+  "date_utc": "2026-10-29",
+  "parent_pr": 1058,
+  "tested_head": "ac0e143777701a6d93c04a804b23a241552a9634",
+  "run": 40840437916,
+  "artifact": 12883255212,
+  "zip_sha256": "5202a90f05a2f40f6394cc02ffe61ec783393bfcd674122bd9eae2a43b20af42",
+  "zip_crc": "CLEAN",
+  "sha256sums": "13/13",
+  "full_software_tests": "2932 PASS; 11 skipped",
+  "full_exit": 0,
+  "dependency_exits": {
+    "base": 0,
+    "torch": 0,
+    "transformers": 0
+  },
+  "source_pins": "PASS",
+  "privacy": "CLEAN",
+  "diff": "CLEAN",
+  "private_backup": "/V13/RawEvidence/P0X_40840437916_independent_fullsuite_2932_GREEN.zip",
+  "private_backup_rematerialized_byte_identical": true,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "scope": "Full Linux software regression on branch-scoped independent P0X export audit. No new native model calls or Redmi evidence.",
+  "next_command": "Review latest source-ablation PR #1062 and independently audit any later native 600-call original artifact; no production merge without integration review.",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "v13.p0x.export_independent_audit_evidence.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 independent reviewer",
+  "branch": "codex/v13-p0x-independent-export-audit-20261029",
+  "base_pr": 1058,
+  "base_sha": "cd2d1d76c08a8b4f09f83b99d33e8effab140d26",
+  "tested_source_head": "0b8df6943d152783ee1cccd2178cb668f93e5ee0",
+  "tested_source_blobs": {
+    "verifier": "d1d6e65def6dad717e934c8fe68290b4a85d963b",
+    "tests": "6df94d86e93503dcc439ff7515bd4b86e810abed",
+    "workflow": "3409c654e838a9184b041a1665d8f411d19f67f7"
+  },
+  "run": 40840176772,
+  "artifact_id": 12882856467,
+  "raw_zip_sha256": "661ea028122fd5ddc7918f7fae08abfecfba55f8314700e6156b7c9ec7fa51a8",
+  "zip_crc": "CLEAN",
+  "sha256sums_verified": "11/11",
+  "focused_tests": "15/15 PASS",
+  "independent_oracle_matches": "150/150",
+  "source_prompts_checked": 750,
+  "external_pins_verified": true,
+  "privacy": "CLEAN",
+  "negative_gate_check": "PASS: no gate promoted",
+  "private_backup": "/V13/RawEvidence/P0X_EXPORT_AUDIT_40840176772_source_15tests_GREEN.zip",
+  "backup_rematerialized_byte_identical": true,
+  "original_red_attempts": [
+    {
+      "run": 40839962549,
+      "head": "2e34ed0e3fb14941fda2e85eb8f1910ad15917a6",
+      "status": "RED: first adversarial test delimiter accidentally escaped; original artifact remains in Actions"
+    },
+    {
+      "run": 40839984910,
+      "head": "b83a13627a260de347ae97bab54622211c14e6e4",
+      "status": "EXPECTED RED: forged foreign project accepted, 13/14 PASS",
+      "artifact_id": 12881834032,
+      "raw_zip_sha256": "abc9b9fb3d6d5b9850a823db42b2b2a6ea010dde9fc260a8689a2a6a404c6bf9",
+      "private_backup": "/V13/RawEvidence/P0X_EXPORT_AUDIT_40839984910_expected_RED_foreign_cohort.zip"
+    }
+  ],
+  "scope": "Synthetic/source-only independent export integrity, oracle, foreign cohort and pinned SHA. No model inference, no B1/B2 native, no P0X headroom, no Redmi. Parent P0X generator unchanged.",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_command": "Cross-review P0X native baseline PR #1059/#1060 once 150-call workflow completes; verify original raw, exact source, output parsing, resource and model/runner hashes, source-only export pins and negative gates; do not compete with active native owner.",
+  "remaining_platform_budget": "UNKNOWN",
+  "production_merge": false
+}

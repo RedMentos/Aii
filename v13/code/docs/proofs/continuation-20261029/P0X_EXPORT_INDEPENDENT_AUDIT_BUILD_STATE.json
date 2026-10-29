@@ -1,0 +1,43 @@
+{
+  "schema": "v13.p0x.export_independent_audit_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation, independent reviewer",
+  "branch": "codex/v13-p0x-independent-export-audit-20261029",
+  "parent_pr": 1058,
+  "parent_head_sha": "cd2d1d76c08a8b4f09f83b99d33e8effab140d26",
+  "canonical_blueprint": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "canonical_blob_sha": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "original_generator_blob_sha": "7ec4e877ad5ea3eed1c60102dac3baa15391dd2b",
+  "original_fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "source_files": [
+    "v13/code/scripts/p0x_export_independent_verify.py",
+    "v13/code/tests/test_p0x_export_independent_verify.py",
+    ".github/workflows/v13-p0x-export-independent-audit-20261029.yml"
+  ],
+  "source_commit_sha": "6b3fcff3a9388c096d0dd5cea700338caec9fdcd",
+  "source_ci_run_id": 40839803881,
+  "source_ci_status": "IN_PROGRESS_AT_CHECKPOINT",
+  "purpose": "Independent read-only exported source/answer oracle, identity, domain, single-source, foreign-source, hash, balance and negative-gate verification; no native calls or learning",
+  "model_calls": 0,
+  "tests_claimed": "NONE_UNTIL_ACTIONS_AUDITED",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "open_questions": [
+    "Await exact-head CI and closed raw artifact verification",
+    "Actual C3-only baseline for P0X not measured",
+    "Native heldout and P2 learning unmeasured",
+    "No user-device evidence"
+  ],
+  "exact_next_command": "Review GitHub Actions run 40839803881 at exact source head; independently verify TESTS_RAW.log, VERIFY_RAW.json, PINS_RAW.log, PRIVACY_RAW.log, SHA256SUMS and artifact; then continue a separate native C3-only baseline only after prereg and owner/lifecycle admission",
+  "private_backup": "No rejected anyone-writable Drive; GitHub review branch is current durable source; raw CI artifact pending",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
