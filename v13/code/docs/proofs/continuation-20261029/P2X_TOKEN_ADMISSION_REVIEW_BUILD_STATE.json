@@ -56,11 +56,55 @@
     "diff": "CLEAN"
   },
   "tokenizer_only_native": {
-    "run": 40855436052,
-    "workflow_head": "f7c32fb91b96d9a9d69e6f69fce97237177deb67",
-    "status": "IN_PROGRESS_AT_CHECKPOINT",
-    "expected_model_calls": 0,
-    "model_weights_downloaded": false
+    "original_red": {
+      "run": 40855436052,
+      "head": "f7c32fb91b96d9a9d69e6f69fce97237177deb67",
+      "zip_sha256": "7f499d04824c6083b1fcc1111ce49a83e319a7752d7adc510edc09c4320e30db",
+      "hashes": "23/23",
+      "exits": "9/10",
+      "error": "ImportError: Jinja2 not installed",
+      "model_calls": 0,
+      "private_backup": "/V13/RawEvidence/2026-10-29/P2X/tokenizer_probe_RED_40855436052_sha7f499d04.zip",
+      "byte_identical": true
+    },
+    "dependency_addendum_commit": "553de694b50afbac319dde2fdebbd25e2f84f1c4",
+    "verified_green": {
+      "run": 40855796760,
+      "head": "038c8e34577a5916e15fbe4b0d1a81cce3fc21f3",
+      "zip_sha256": "16c1639efa9a6f446d56b84847ef878cd391dcd9785a0627244244dec22d0171",
+      "hashes": "23/23",
+      "exits": "10/10",
+      "privacy": "CLEAN",
+      "source_hashes": "7/7",
+      "old_lengths": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        6,
+        6
+      ],
+      "old_container_type": "BatchEncoding",
+      "old_container_len": 2,
+      "corrected_lengths": [
+        168,
+        162,
+        174,
+        159,
+        166,
+        169,
+        60,
+        116
+      ],
+      "matches_trainer": "8/8",
+      "all_under_512": true,
+      "model_calls": 0,
+      "training_steps": 0,
+      "private_backup": "/V13/RawEvidence/2026-10-29/P2X/tokenizer_probe_GREEN_40855796760_sha16c1639e.zip",
+      "byte_identical": true
+    }
   },
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -74,6 +118,6 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Inspect GitHub Actions run 40855436052 status, download original artifact, verify ZIP CRC/SHA256SUMS/stage exits/exact head/pinned tokenizer SHA and all eight actual token lengths. Preserve RED if failure; if GREEN persist result and private raw backup. Then evaluate independent P2X validation scorer #1074 integrity and continue substantive canonical roadmap. Never activate adapter without AG6.",
+  "next_command": "Proceed to independent P2X native scorer #1074/#1076 integration review, then separately preregister QAD GGUF adapter transfer and disjoint 360-call base-vs-adapter validation if permitted; preserve AG6 unapproved and no live activation. In parallel advance other canonical organs; actual Redmi TESTEN.sh still requires device.",
   "remaining_platform_budget": "UNKNOWN"
 }
