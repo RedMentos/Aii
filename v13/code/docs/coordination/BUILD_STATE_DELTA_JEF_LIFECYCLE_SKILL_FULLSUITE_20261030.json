@@ -1,0 +1,59 @@
+{
+  "package": "JEF_LIFECYCLE_SKILL_UNFILTERED_FULLSUITE_20261030",
+  "review_pr": 1179,
+  "base_pr": 1178,
+  "base_sha": "0d01165bc271865deedd49b61dcd39b7eff87503",
+  "prereg_commit": "1f23262ef8568c1567ba90aec2230d1cc44d1e07",
+  "workflow_commit": "29bb500fe8661150bae7aab3314fd73af73a900b",
+  "tested_head": "29bb500fe8661150bae7aab3314fd73af73a900b",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "full": {
+    "run": 40975677615,
+    "status": "RED_FROZEN_HISTORICAL_ONLY",
+    "tests": 3372,
+    "errors": 2,
+    "skipped": 11,
+    "error_tests": [
+      "test_run34_c3_native_quote_intervention_pilot.Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates",
+      "test_run37_c3_rule_use_native_pilot.Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates"
+    ],
+    "error_reason": "native_source_or_catalog_changed",
+    "artifact": 12942567969,
+    "zip_sha256": "9052c4f4df15cd3cb45cdd578bf924361522aac59b8c07584d791c5a0ae44cd5",
+    "inner_hashes_ok": 30,
+    "crc_ok": true,
+    "full_exit": 1,
+    "all_other_stages_exit_zero": true,
+    "privacy": "CLEAN"
+  },
+  "parent_full": {
+    "run": 40973462353,
+    "tests": 3360,
+    "errors": 2,
+    "skipped": 11,
+    "same_errors": true
+  },
+  "private_backup": {
+    "path": "/V13/automation-evidence/20261030/github-actions-artifact-12942567969.zip",
+    "remote_sha256_verified": true,
+    "all_package_artifacts_byte_verified": "9/9"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "OFF",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_priority": [
+    "Actual native Body-/Train-Port with pinned tap/gradient and no base plasticity",
+    "ObjectiveAdapter real inputs/targets stop-gradient EMA and retention",
+    "STEP2 semantic complementarity utility on fresh prereg cohort",
+    "Current Redmi sustained resource proof when device available"
+  ],
+  "next_command": "git fetch origin && git switch -c review-jef-full origin/codex/v13-fullsuite-jef-lifecycle-skill-20261030-auto11m && cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+  "next_prerequisites": "Pinned isolated torch 2.5.1+cpu Transformers 4.44.2 PEFT 0.13.2 NumPy 2.2.6 and supporting deps; do not rewrite frozen Run34/Run37 source or cohorts",
+  "remaining_platform_budget": "UNKNOWN"
+}
