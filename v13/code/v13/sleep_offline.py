@@ -164,10 +164,11 @@ def _checked_digest_entries(store,session,entries):
     # A latest-message window drops older user rows when many FINAL answers
     # arrive in reverse order. Revalidate each retained event by exact ID,
     # still using native_history's source/rule/answer checks and bounded batches.
-    ids=[e.get('event_id') for e in ents if isinstance(e,dict)]
-    if (len(ids)!=len(ents) or any(type(eid) is not str or not eid for eid in ids)
-            or len(ids)!=len(set(ids))):
-        return []
+    # One malformed cached entry must not hide unrelated valid sources.
+    # Individual entries still fail closed in the aligned checks below.
+    ids=list(dict.fromkeys(e['event_id'] for e in ents
+                           if isinstance(e,dict) and type(e.get('event_id')) is str
+                           and e['event_id']))
     pairs={}
     for offset in range(0,len(ids),TURNS_MAX):
         batch=ids[offset:offset+TURNS_MAX]
