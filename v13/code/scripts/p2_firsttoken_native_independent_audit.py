@@ -11,7 +11,7 @@ from pathlib import Path
 
 TOKENIZER_ZIP_SHA = "fff6a6477090166176b71674ef593d1954966b5cbb685723054cd1b230c8e342"
 TOKENIZER_HEAD = "2d59a6d452a889dba0a4831accdd44982ed90a95"
-NATIVE_HEAD = "4309b9306d235865624944b24227e014ad5bc49b"
+NATIVE_HEAD = "d101aec5000e2e45fbe1b7da25475d1244c8cece"
 MASTER_SHA = "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079"
 GGUF_SHA = "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
 PROMPTS = ("Hello.", "2 + 2 = ?", "<|tool_call_start|>python<|tool_call_end|>",
@@ -107,7 +107,7 @@ def verify(native_path, tokenizer_path, expected_head=NATIVE_HEAD):
     refs = t.get("probes")
     if not isinstance(rows, list) or len(rows) != 8 or not isinstance(refs, list) or len(refs) != 8:
         raise ValueError("eight ordered native/reference rows required")
-    equal = overlap = 0
+    equal = overlap = logit_equal = sampler_disagree = 0
     for prompt, row, ref in zip(PROMPTS, rows, refs):
         if row.get("prompt") != prompt or ref.get("prompt") != prompt:
             raise ValueError("preregistered prompt mismatch")
@@ -128,6 +128,8 @@ def verify(native_path, tokenizer_path, expected_head=NATIVE_HEAD):
             raise ValueError("top-5 overlap tampering")
         overlap += n
         equal += (row["hf_first"] == row["gguf_first"])
+        logit_equal += (row["hf_first"] == b[0])
+        sampler_disagree += (row["gguf_first"] != b[0])
     if x.get("top1_equal_count") != equal or x.get("top5_overlap_total") != overlap:
         raise ValueError("aggregate count mismatch")
     if x.get("source_pins", {}).get("model.safetensors") != MASTER_SHA or x.get("gguf_sha256") != GGUF_SHA:
@@ -137,7 +139,9 @@ def verify(native_path, tokenizer_path, expected_head=NATIVE_HEAD):
             "native_zip_sha256": native_sha, "tokenizer_zip_sha256": token_sha,
             "native_manifest_entries": native_hashes, "tokenizer_manifest_entries": token_hashes,
             "native_stage_exits_zero": len(STAGES), "probe_count": 8,
-            "top1_equal_count": equal, "top5_overlap_total": overlap,
+            "top1_equal_count": equal, "gguf_toplogprob_first_equal_count": logit_equal,
+            "gguf_generated_vs_toplogprob_first_disagreements": sampler_disagree,
+            "top5_overlap_total": overlap,
             "parity_or_utility_proven": False, "training": False}
 
 
