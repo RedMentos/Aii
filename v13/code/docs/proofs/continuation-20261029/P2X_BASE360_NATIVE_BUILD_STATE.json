@@ -79,6 +79,8 @@
     "hashes": "9/9",
     "exits": "4/4",
     "tests": "15/15 PASS",
-    "privacy": "CLEAN"
+    "privacy": "CLEAN",
+    "private_backup": "/V13/RawEvidence/2026-10-29/P2X/base360_source_40857147626_sha5212bf85.zip",
+    "byte_identical": true
   }
 }
