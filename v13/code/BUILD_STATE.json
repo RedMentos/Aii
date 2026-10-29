@@ -3200,15 +3200,18 @@
     },
     "parent_transformers_run": {
       "run": 40958983649,
-      "status": "IN_PROGRESS_NO_RESULT_CLAIM"
+      "status": "COMPLETED_FAILURE_3304_TESTS_4_ERROR_11_SKIPPED"
     },
+    "parent_transformers_original_zip_sha256": "5be46cb9fc6c73570475bd937692e06748f8267492013033c0e6519e2845d47f",
+    "parent_transformers_original_raw": "CRC_CLEAN_26_OF_26_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
+    "peft_workflow_head": "552626808b6fbdff9dc9a5b19c1ff9e946f2b368",
     "peft_prereg": {
       "torch": "2.5.1+cpu",
       "transformers": "4.44.2",
       "peft": "0.13.2",
       "numpy": "2.2.6",
       "full_unfiltered_suite": true,
-      "workflow": "NOT_TRIGGERED_UNTIL_PARENT_HEAVY_SUITE_COMPLETES"
+      "workflow": "ACTIONS_40960222503_QUEUED_NO_RESULT_CLAIM"
     },
     "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
     "age0": "RECORD_ONLY",
