@@ -2858,5 +2858,50 @@
     "next_prerequisites": "Audit exact-head full software raw; independent review of native answer contradiction guard; continue canonical roadmap without promoting negative gates.",
     "report": "docs/proofs/continuation-20261029/VERIFIED_EXACT_CLI_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_worldmodel_selection_binding_20261029": {
+    "scope": "REVIEW_ONLY_WORLD_MODEL_SQLITE_SOFTWARE",
+    "owner_branch": "codex/v13-worldmodel-selection-timebind-20261029-auto10af",
+    "parent_pr": 1143,
+    "parent_sha": "38f21f2d201b742095343bac5150f6808773d21e",
+    "prereg_sha": "aa4cea3d972ccac91d9554f197187a6eb08f7398",
+    "original_red": {
+      "run": 40948575839,
+      "tests": "22 RUN / 3 FAIL",
+      "zip_sha256": "9528bb610051ab74614b260bf26a7b3712dcfbd83f6fa36f8a661cdbd344e16b"
+    },
+    "candidate_red": {
+      "run": 40948621049,
+      "tests": "22 RUN / 1 FAIL original mock-interface mismatch",
+      "zip_sha256": "9ea940f7b10d6e39da5fa9f5d870348434503cc93d4953a554efb3d7f3318a72"
+    },
+    "green": {
+      "run": 40949002067,
+      "head": "37e09fbc58ca761d15ce8c091e91f9de6d67b826",
+      "tests": "23/23 PASS",
+      "zip_sha256": "40c2f2be7f5e495118e941c5aba74716df90fa0531e53c015fb484611b3251a0",
+      "source_blob": "8d371bdb19faa275c6e17d73ee8745a1b6cf3741",
+      "test_blob": "81b5c23bc280dc11f2457a6f2bf8028088b95d3c",
+      "inner_hashes": "18/18",
+      "privacy": "CLEAN"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-WorldModelSelectionBinding/",
+    "private_backup_byte_exact": true,
+    "full_suite": "PENDING_NOT_CLAIMED",
+    "native_evidence": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_worldmodel_selection_binding_20261029 tests.test_world_model tests.test_worldmodel_operator_20261029 tests.test_worldmodel_realstore_integration_20261029 tests.test_worldmodel_inverse_heldout_baseline_20261029",
+    "next_prerequisites": "Independent full-suite review, audit real multiple-selection patterns, continue canonical organs; no authority/gate promotion.",
+    "report": "docs/proofs/continuation-20261029/WORLDMODEL_ACTION_SELECTION_BINDING_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }

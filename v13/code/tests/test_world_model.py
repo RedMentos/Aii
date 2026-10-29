@@ -123,7 +123,8 @@ class FiniteEvidence(Base):
         forecast={'input_chars':100,'resource_state':'NORMAL'}
         outcome={'action_duration_s':1.5,'characters':30}
         def row(label, fc=forecast, out=outcome, created=3600):
-            return {'id':label,'event_id':'event-'+label,'status':'FINAL',
+            return {'id':label,'event_id':'event-'+label,'generation_id':'gen_test',
+                    'status':'FINAL',
                     'expected':json.dumps({'forecast':fc}) if isinstance(fc,dict) else fc,
                     'outcome':json.dumps(out) if isinstance(out,dict) else out,
                     'created':created}
@@ -141,8 +142,19 @@ class FiniteEvidence(Base):
             row('nan-created',forecast,outcome,float('nan')),
             row('bad-latent',dict(forecast,learned_latent_prediction={'latent':[1.,float('nan')]})),
         ]
-        selection={'payload':json.dumps({'route_hint':'detail'})}
-        with mock.patch.object(self.r.store,'rows',return_value=rows), mock.patch.object(self.r.store,'one',return_value=selection):
+        # The World-Model now reads unique pre-dispatch packet rows through
+        # Store.rows. Preserve every original malformed numeric fixture and
+        # model outcome while mocking the new source-bound packet query.
+        def selected_rows(sql, params=()):
+            if 'FROM actions a' in sql:
+                return rows
+            if "FROM packets WHERE kind='ActionSelection'" in sql:
+                event_id, generation_id, _ = params
+                return [{'payload':json.dumps({
+                    'event_id':event_id,'brain_generation_id':generation_id,
+                    'route_hint':'detail'})}]
+            raise AssertionError('unexpected query')
+        with mock.patch.object(self.r.store,'rows',side_effect=selected_rows):
             got=WM.transitions(self.r.store)
         self.assertEqual([t['action_id'] for t in got],['bad-latent','good'])
         self.assertIsNone(got[0]['latent'])
