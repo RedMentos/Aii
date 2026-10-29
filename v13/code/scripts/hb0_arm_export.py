@@ -164,12 +164,18 @@ def verify(out_dir, expected_fixture_sha256):
           and manifest.get("canonical_gate_pass") is False
           and manifest.get("answer_key_is_model_input") is False,
           "HB0_MANIFEST_RED")
+    _need(manifest.get("source_git_blob_expected")
+          == "329153aaa73df009fdc433523994e372e0fd2c95",
+          "HB0_SOURCE_BLOB_DRIFT_RED")
+    # A malicious/accidental edit can rewrite BOTH data and its manifest hash.
+    # Compare against the independently regenerated, SHA-pinned cohort too.
+    expected_prompts, expected_answers = build(hb0.fixtures(), expected_fixture_sha256)
+    expected_bytes = {"prompts.jsonl": _jsonl(expected_prompts),
+                      "answers.jsonl": _jsonl(expected_answers)}
     for name in ("prompts.jsonl", "answers.jsonl"):
         raw = (out_dir / name).read_bytes()
         _need(_sha(raw) == manifest["sha256"][name], "HB0_EXPORT_HASH_RED")
-        lines = [json.loads(line) for line in raw.splitlines()]
-        _need(len(lines) == (900 if name == "prompts.jsonl" else 150),
-              "HB0_EXPORT_ROWS_RED")
+        _need(raw == expected_bytes[name], "HB0_EXPORT_CONTENT_DRIFT_RED")
     return manifest
 
 
