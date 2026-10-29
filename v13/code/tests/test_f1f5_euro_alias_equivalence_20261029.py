@@ -81,7 +81,8 @@ class EuroAliasEquivalenceTests(unittest.TestCase):
                           side_effect=AssertionError("C3 must not run")):
             got = exact_source(self.runtime, self.query)
         self.assertEqual(got["status"], "CLARIFY")
-        self.assertNotIn("answer", got)
+        self.assertEqual(got["reason"], "UNVERIFIABLE_SCOPED_CORRECTION")
+        self.assertNotIn("615", got.get("answer", ""))
         self.assertEqual(got["native_calls"], 0)
 
     def test_revoked_equivalent_competitor_does_not_poison_remaining_source(self):
