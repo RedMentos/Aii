@@ -18,8 +18,22 @@ STOP=set('a an the and or but of to in on at for from by with is are was were be
 LIVE=('TRUSTED','INTERNALISED');LEARNING=('CANDIDATE','SHADOW')
 
 def _route_only(sk):
-    routes=[s['route'] for s in sk['steps'] if 'route' in s]
-    return routes[0] if routes and len(routes)==len(sk['steps']) and routes[0] in {'simple','detail','gist','both'} else None
+    """Only a single unambiguous route may bypass C_fast.
+
+    Multi-step declarative skills can contain conflicting routes. Their first
+    step must not silently override the rest of the procedure.
+    """
+    steps=sk.get('steps')
+    if not isinstance(steps,(list,tuple)) or not steps:
+        return None
+    allowed={'simple','detail','gist','both'}
+    routes=[]
+    for step in steps:
+        if (not isinstance(step,dict) or set(step)-{'route','note'}
+                or type(step.get('route')) is not str or step['route'] not in allowed):
+            return None
+        routes.append(step['route'])
+    return routes[0] if len(set(routes))==1 else None
 
 def matches(lib,text,stages):
     words=set(re.findall(r'\w+',str(text).casefold()));out=[]
@@ -36,7 +50,14 @@ def automatic(r,e,text,meta):
         from .cognition import scaffold_route
         live=matches(hub(r).skills,text,LIVE)
         if not live:return None
-        sk=live[0];route=_route_only(sk)
+        # Multiple individually trusted procedures may disagree on the same
+        # input. Trigger length/name is not authority to bypass C_fast.
+        routes={_route_only(sk) for sk in live}
+        if len(routes)!=1:
+            r.store.log('skilllive_ambiguous',e['event_id'],
+                        {'match_count':len(live),'routes':sorted(routes)})
+            return None
+        sk=live[0];route=next(iter(routes))
         meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'])
         return route,{'source':'TRUSTED_SKILL_AUTOMATIC','skill':sk['name'],'skipped':['C2_CONTROL']}
     except Exception as exc:
