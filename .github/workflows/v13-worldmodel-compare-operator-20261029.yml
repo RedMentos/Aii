@@ -44,7 +44,7 @@ jobs:
             "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
           else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
           if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_worldmodel_operator_20261029 tests.test_world_model tests.test_worldmodel_numeric_guard_20261029 tests.test_worldmodel_output_domain_20261029 tests.test_worldmodel_selection_binding_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_worldmodel_operator_20261029 tests.test_world_model tests.test_worldmodel_numeric_guard_20261029 tests.test_world_model_output_domain_20261029 tests.test_worldmodel_selection_binding_20261029) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
           else echo SKIPPED > "$e/FOCUSED_EXIT.txt"; echo SKIPPED > "$e/FOCUSED_RAW.log"; fi
           "$py" -m py_compile v13/code/v13/operator.py v13/code/tests/test_worldmodel_operator_20261029.py > "$e/COMPILE_RAW.log" 2>&1
