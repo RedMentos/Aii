@@ -1,0 +1,64 @@
+{
+  "schema": "v13.run112.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run112-age0-step2-source-integrated-20261029",
+  "base_pr": 1014,
+  "base_sha": "f918ce2c2474678c99f44f8816fec27909c0d604",
+  "donor_pr": 1011,
+  "donor_sha": "68041ddf5e4675e662f9da46f5f22c9cd67ec1a1",
+  "prereg_first_commit": "aaeaa4e35ef045f85cbdeebf9f7abdf2d5f9cc08",
+  "prereg_blob": "f992732f5f4a05578473c96fb6bcf949c679fe62",
+  "staged_test_commit": "eb9cfec2d75942b9cace522c51cebed08776f9c0",
+  "staged_test_blob": "074f6561513411c0b94f6ceb84156d55f5ba857b",
+  "donor_raw": {
+    "run": 40799960691,
+    "zip_sha256": "cf188b1915b71b3b4e6d7b4fc17fcf484a7637b235b42359c09362120186fb6c",
+    "crc": "CLEAN",
+    "inner_sha256sum": "20/20 PASS",
+    "exit_files": "9/9 ZERO",
+    "focused": "49 PASS",
+    "full": "2687 PASS, one skipped",
+    "native": "ONE_LINUX_C3_FINAL",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run101-103-106-107-Audits/Run107_RAW_40799960691_shaCF188B19.zip",
+    "private_byte_match": true
+  },
+  "other_independent_raw": [
+    {
+      "run": 40796198506,
+      "zip_sha256": "229e804bd29ed26b9592496ec4b556a440db3595922b420bd6c3b2eb7acffd2a",
+      "hashes": "20/20",
+      "focused": 32,
+      "full": 2656,
+      "native": "TWO_LINUX_C3_FINAL"
+    },
+    {
+      "run": 40796986858,
+      "zip_sha256": "c4916be506d14b5f8d2d1d60870d4e95271322fdc4e0bf69af27ee8858edea2c",
+      "hashes": "15/15",
+      "focused": 39,
+      "full": 2664
+    },
+    {
+      "run": 40799129300,
+      "zip_sha256": "1f17c8bb2ad678725dfbdbb99c708fda6308e5c645fd38bfbd28d04d701dc8b6",
+      "hashes": "15/15",
+      "focused": 19,
+      "full": 2672
+    }
+  ],
+  "precondition": "Run110 exact f918ce2c2474678c99f44f8816fec27909c0d604 original Actions 40801220110 must be independently GREEN before import or Run112 execution",
+  "status": "PREREG_FIRST_AND_TEST_STAGED_ONLY; DONOR_RAW_GREEN; TARGET_RUN110_RAW_PENDING; NO_IMPORT; NO_RUN112_EXECUTION",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Wait for exact Run110 CI original raw artifact, audit ZIP CRC+inner hashes+all exits+fixture SHA and private backup. Only if GREEN, create exact six-blob atomic import from Run107, run focused+full+native C3 on integrated head with closed raw, independent review and remote verification.",
+  "remaining_execution_budget": "UNKNOWN"
+}
