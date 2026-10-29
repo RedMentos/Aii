@@ -7,6 +7,7 @@ Rights and maturity are orthogonal (§95.2): maturity scales budgets inside what
 stage ceiling, user cap, hard rules, user permissions and resource state allow.
 BUILD_CEILING is 0 until STEP7 (Age>0 is not released); all thresholds are BOOT values.
 """
+import math
 from .common import now,uid
 
 STATE_KEY='age_control'
@@ -69,6 +70,32 @@ def gate_pass(metrics,stage,band=0.):
     if metrics.get('experience',0)<GATES['experience'][stage]:return False
     return all(isinstance(metrics.get(k),(int,float)) and metrics[k]>=GATES[k][stage]-band for k in METRICS)
 
+def _admit_record_evidence(metrics, evidence_id):
+    """Reject malformed direct Age records before any Store or telemetry mutation.
+
+    Partial finite observations remain legal but cannot satisfy a promotion
+    gate. The separately registered, default-off finite/ID wrappers remain
+    unchanged as independent historical controls.
+    """
+    if not isinstance(metrics, dict):
+        raise ValueError('AGE_EVIDENCE_METRICS_INVALID')
+    if 'experience' in metrics and (
+            type(metrics['experience']) is not int or metrics['experience'] < 0):
+        raise ValueError('AGE_EVIDENCE_EXPERIENCE_INVALID')
+    if 'regression_pass' in metrics and type(metrics['regression_pass']) is not bool:
+        raise ValueError('AGE_EVIDENCE_REGRESSION_INVALID')
+    for name in METRICS:
+        if name in metrics:
+            value = metrics[name]
+            # Check range before isfinite to avoid float-conversion overflow
+            # for arbitrarily large Python integers.
+            if (type(value) not in (int, float) or not 0 <= value <= 1
+                    or not math.isfinite(value)):
+                raise ValueError('AGE_EVIDENCE_METRIC_INVALID:' + name)
+    if evidence_id is not None and (type(evidence_id) is not str or not evidence_id):
+        raise ValueError('AGE_EVIDENCE_ID_INVALID')
+
+
 class AgeControl:
     def __init__(self,store,cfg,build_ceiling=None):
         self.s=store;self.cfg=cfg;self.build_ceiling=BUILD_CEILING if build_ceiling is None else build_ceiling
@@ -95,6 +122,7 @@ class AgeControl:
     # Evidence, promotion, demotion ------------------------------------------------------------------------------
     def record(self,subject,metrics,evidence_id=None):
         """Feed one evidence record (one stable regression/shadow/retention assessment) for system or a capability."""
+        _admit_record_evidence(metrics, evidence_id)
         st,v=self.state();sub=self._subject(st,subject);eid=evidence_id or uid('evidence')
         if eid in st['seen_evidence']:raise ValueError('Nachweis schon gezählt: '+eid)
         st['seen_evidence']=(st['seen_evidence']+[eid])[-512:];sub['evidence_count']+=1;sub['last_evidence']=eid
