@@ -144,8 +144,8 @@ class Candidate360Tests(unittest.TestCase):
             self.assertEqual(args[args.index("--cache-ram") + 1], "128")
             self.assertEqual(args[args.index("--ctx-checkpoints") + 1], "6")
             self.assertEqual(args[args.index("--lora-scaled") + 1],
-                             "synthetic-adapter")
-            self.assertEqual(args[args.index("--lora-scaled") + 2], "1")
+                             "synthetic-adapter:1")
+            self.assertEqual(args[args.index("--lora-scaled") + 2], "--host")
             server.close()
             self.assertTrue(proc.terminated)
 
