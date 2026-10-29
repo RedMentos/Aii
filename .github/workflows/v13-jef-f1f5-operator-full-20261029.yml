@@ -30,6 +30,9 @@ jobs:
           e="$RUNNER_TEMP/v13-jef-f1f5-operator-full"
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/tests/test_jef_f1f5_operator.py > "$e/TEST_BLOB_RAW.log"
+          test "$(cat "$e/TEST_BLOB_RAW.log")" = 0b47dfd43efa000c9c66b5838c0fe795f7e4838f
+          echo "$?" > "$e/TEST_BLOB_EXIT.txt"
           python3 -m venv "$RUNNER_TEMP/v13-jef-f1f5-full-venv" > "$e/VENV_RAW.log" 2>&1
           echo "$?" > "$e/VENV_EXIT.txt"
           py="$RUNNER_TEMP/v13-jef-f1f5-full-venv/bin/python"
@@ -75,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-jef-f1f5-operator-full"
-          for stage in VENV INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+          for stage in TEST_BLOB VENV INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; original raw preserved"
               tail -40 "$e/${stage}_RAW.log" 2>/dev/null || true
