@@ -118,7 +118,10 @@ class JefF1F5OperatorTests(unittest.TestCase):
                     self.r.cfg[field] = value
                     with self.assertRaisesRegex(ValueError, "AGE0_RECORD_ONLY_REQUIRED"):
                         self.op.run(self.cmd(event, policy, sheet))
-                    self.r.cfg[field] = original[field]
+                    if field in original:
+                        self.r.cfg[field] = original[field]
+                    else:
+                        self.r.cfg.pop(field, None)
         finally:
             self.r.cfg.clear()
             self.r.cfg.update(original)
