@@ -12,3 +12,9 @@ Owner: GPT-6 isolated review branch `codex/v13-hb1b-c3-format-native-review-2026
 ## Next
 
 Wait for corrected source-only CI exact head, independently verify original artifact and parent PR #1055 source CI. Only then create/run the separate pinned 24-call native workflow. Native result remains unknown. All gates remain Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, V13 INCOMPLETE; Redmi unmeasured.
+
+## Source-only attempt 1b — RED during atomic repin window
+
+- Run `40838036522`, exact head `c805bfec6241c02fb476a09e30cfc2019242d576`, artifact `12880814826`, ZIP SHA256 `fadb140da55e6c1c8511b68d9fcedf59733a84c52008ea073599b90fee57a29f`.
+- The test file had been corrected but the workflow still pinned its previous blob. Source admission stopped before dependency installation/tests; **zero model calls**. The following commit `43321c26b77d26655ec286fb465ab434252613d8` updated the workflow pin. This intermediate RED was not overwritten.
+- Original ZIP CRC CLEAN, **2/2 SHA256SUMS verified**. Private Library backup `/V13/RawEvidence/HB1B_40838036522_stale_workflow_pin_RED.zip` rematerialized byte-identical.
