@@ -1,0 +1,96 @@
+name: V13 Run137 Age evidence-id preflight SOFTWARE-only review
+on:
+  push:
+    branches: [codex/age-evidence-id-preflight-20261029]
+permissions:
+  contents: read
+concurrency:
+  group: v13-run137-age-evidence-id-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify exact sources, Age corruption counterexamples, full suite and privacy
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run137-age"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            observed="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$observed" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$observed" = "$1" ]
+          }
+          check e8da3fa027a959b7e0f7556a3a126da85fba915e v13/code/docs/proofs/continuation-20261029/AGE_STATE_QUARANTINE_RUN132_PREREG.md || source_ok=1
+          check 8143c5995ab04e4c08e87dfa76d3345570dede22 v13/code/scripts/age_state_quarantine_candidate.py || source_ok=1
+          check eab41fbe046d167530f2ed5187c78ce52e142b4b v13/code/tests/test_age_state_quarantine_candidate.py || source_ok=1
+          check d4c38ae344746811fedecff706a9affe9cf8b375 v13/code/v13/age.py || source_ok=1
+          check 42ada155c675f8d9d5a6a151d805ab0ebe747ad7 v13/code/docs/proofs/continuation-20261029/RUN137_AGE_EVIDENCE_ID_PREREG.md || source_ok=1
+          check 5ef987673ac10f1f790306bab47b9ef310a6a5de v13/code/scripts/age_evidence_id_preflight_candidate.py || source_ok=1
+          check a2b577f5841137494dadf8a546aa2fba30dd9669 v13/code/tests/test_age_evidence_id_preflight_candidate.py || source_ok=1
+          check 6f10566fb141e618111efa3102929d8f078f0f9b v13/code/scripts/age_evidence_finite_candidate.py || source_ok=1
+          check d11d0ac1aac63a13c5c394c40bb82caa369cb8e8 v13/code/tests/test_age_evidence_finite_candidate.py || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/age_state_quarantine_candidate.py v13/code/tests/test_age_state_quarantine_candidate.py v13/code/scripts/age_evidence_finite_candidate.py v13/code/tests/test_age_evidence_finite_candidate.py v13/code/scripts/age_evidence_id_preflight_candidate.py v13/code/tests/test_age_evidence_id_preflight_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_age_evidence_id_preflight_candidate tests.test_age_evidence_finite_candidate tests.test_age_state_quarantine_candidate tests.test_age tests.test_age_rights) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run137-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run137-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first="$?"
+          if [ "$first" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            first="$?"
+          fi
+          if [ "$first" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            first="$?"
+          fi
+          echo "$first" > "$e/INSTALL_EXIT.txt"
+          if [ "$first" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_DEPENDENCY_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fe36d3be24256c380c81812ec9f7f8ba1f585740 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check fe36d3be24256c380c81812ec9f7f8ba1f585740 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve all original software evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run137-age-evidence-id-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run137-age/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only acceptance
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run137-age"
+          for n in SOURCE COMPILE FOCUSED INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw retained; no runtime integration or Age promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN137_AGE_EVIDENCE_ID_SOFTWARE_ONLY_NO_AGE_PROMOTION
