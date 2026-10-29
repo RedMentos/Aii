@@ -54,7 +54,8 @@ class BoolNumberAttributionTests(unittest.TestCase):
     def test_numeric_to_numeric_keeps_tolerance_and_residual(self):
         p = {"value": 1.0, "tolerance": 0.25}
         self.assertEqual(S._match(p, 1), (True, 0.0))
-        self.assertEqual(S._match(p, 1.2), (True, 0.19999999999999996))
+        self.assertTrue(S._match(p, 1.2)[0])
+        self.assertAlmostEqual(S._match(p, 1.2)[1], 0.2)
         self.assertEqual(observe(p, 1)["class"], "SELF")
 
     def test_wildcard_boolean_still_matches(self):
