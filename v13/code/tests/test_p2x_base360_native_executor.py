@@ -83,6 +83,20 @@ class Base360Tests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "OVERRIDE"):
                     native.check_age0(cfg, d)
 
+    def test_archive_and_extracted_binary_pins_distinct(self):
+        self.assertNotEqual(native.scorer.RUNTIME_SHA, native.RUNNER_BINARY_SHA)
+        with tempfile.TemporaryDirectory() as d:
+            binary = Path(d) / "bin/llama-server"
+            binary.parent.mkdir()
+            binary.write_bytes(b"synthetic")
+            with patch.object(native.native, "file_sha",
+                              return_value=native.RUNNER_BINARY_SHA):
+                self.assertEqual(native.check_runtime_identity(d), binary)
+            with patch.object(native.native, "file_sha",
+                              return_value="0" * 64):
+                with self.assertRaisesRegex(ValueError, "BINARY_PIN"):
+                    native.check_runtime_identity(d)
+
     def test_cli_requires_frozen_validation_and_out(self):
         with self.assertRaises(SystemExit) as caught:
             native.main(["--home", "/missing"])
