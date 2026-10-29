@@ -1,0 +1,73 @@
+{
+  "schema": "v13.review_build_state.c3_bilingual_native.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only C3 Linux-native observation pilot, child of PR1135, no production merge",
+  "owner": {
+    "branch": "codex/v13-c3-native-bilingual-source-20261029-auto10v",
+    "parent_pr": 1135,
+    "parent_commit": "32e6f4846ef03f3d8934f3824f809ff43763a70d",
+    "source_commit": "19a2195546e4b5c0fa2e871c3bc69fa3277181ff",
+    "owned_paths": [
+      "v13/code/scripts/current_c3_native_bilingual_source_probe_20261029.py",
+      "v13/code/tests/test_current_c3_native_bilingual_source_probe_20261029.py",
+      ".github/workflows/v13-current-c3-bilingual-native-20261029.yml",
+      "v13/code/docs/C3_NATIVE_BILINGUAL_SOURCE_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_C3_NATIVE_BILINGUAL_20261029.json"
+    ]
+  },
+  "canon": {
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "source_blobs": {
+    "probe": "1b4760c00425ab9c69e091eacc9d567615f6b4d9",
+    "tests": "e881cc062ef0744ae9a60d77bf541b617a96ee33",
+    "prereg": "bba46a1aea7967175e0e025c14fb87189b0d003c",
+    "workflow": "b4ff79577679f9dd11a495d41b63f86ad0a71895",
+    "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+    "model_manager": "bd035cf8029850cce00b179edf533e53bf24358a"
+  },
+  "model": {
+    "id": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "license": "LFM Open License 1.0",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "bytes": 219312832
+  },
+  "runner": {
+    "tag": "b10964",
+    "tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "bytes": 16825086
+  },
+  "native_run": {
+    "run": 40939274639,
+    "source_head": "19a2195546e4b5c0fa2e871c3bc69fa3277181ff",
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "expected_rows": 6,
+    "scoring": "UNSCORED_NATIVE_OBSERVATION",
+    "claim_limit": "Only actual pinned Linux C3 generation; no semantic utility/JEPA/Redmi/whole-system gate"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Close Actions raw artifact, verify CRC and SHA256SUMS, private backup byte-exact",
+    "If actual native raw exposes a reliable generated-only delimiter, preregister a separate fixed-oracle scorer before inspecting semantic answers",
+    "Do not count prompt echoes as semantic success",
+    "Independent full software review Actions 40938719557 still running"
+  ],
+  "next_commands": [
+    "Fetch GitHub Actions 40939274639 status, jobs and artifact when completed",
+    "Preserve any RED and exact source/model/runner hashes; do not overwrite original attempts",
+    "Update BUILD_STATE with exact outcome and draft PR child of PR1135",
+    "Continue functional utility work on independent package; native and Redmi are distinct"
+  ],
+  "checkpoint_reason": "Pinned public native C3 pilot launched; source/tests/workflow committed remotely before long run; remaining budget UNKNOWN"
+}
