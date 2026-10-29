@@ -11,8 +11,12 @@ import re
 from scripts import context_option_reference_candidate as parent
 
 
-LABEL = re.compile(r"\bproject\s+([A-Za-z][A-Za-z0-9_-]{0,63})\s*(?=[.:;])", re.I)
-HEADER = re.compile(r"^\s*project\s+([A-Za-z][A-Za-z0-9_-]{0,63})\s*(?=[.:;])", re.I)
+# Canonical exact source uses both "Project Atlas." and bounded headers
+# such as "Project Atlas supplier data sheet". Do not guess arbitrary
+# multiword project names; unsupported header continuations abstain.
+TAIL = r"(?:\s*[.:;]|\s+(?:kickoff|supplier|status|revision|rules|notes|brief|policy|update)\b)"
+LABEL = re.compile(r"\bproject\s+([A-Za-z][A-Za-z0-9_-]{0,63})(?=" + TAIL + r")", re.I)
+HEADER = re.compile(r"^\s*project\s+([A-Za-z][A-Za-z0-9_-]{0,63})(?=" + TAIL + r")", re.I)
 AMBIGUOUS = object()
 
 
