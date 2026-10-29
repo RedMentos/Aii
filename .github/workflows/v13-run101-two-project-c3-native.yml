@@ -39,7 +39,7 @@ jobs:
           check ea7fab53b759770040590f2582739fdabbf5af63 v13/code/docs/proofs/continuation-20261028/RUN101_TWO_PROJECT_C3_NATIVE_PREREG.md || source_ok=1
           check 7e88453ab462183ddb0ebaad44b403d347dce16a v13/code/docs/proofs/continuation-20261028/RUN101_PREIMPLEMENTATION_KEY_AMENDMENT.md || source_ok=1
           check c0cb959855068c3b344567c214dbfb5dccfc2c97 v13/code/scripts/run101_two_project_c3_native.py || source_ok=1
-          check 94e04f6d355f3087f92c367a7d5f7bbdb7d3f51a v13/code/tests/test_run101_two_project_c3_native.py || source_ok=1
+          check 7c9d71fd404eef15eb5576484366ac9828b5fcc5 v13/code/tests/test_run101_two_project_c3_native.py || source_ok=1
           check 7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02 v13/code/scripts/run93_source_c3_native_e2e.py || source_ok=1
           check 75ca7f3f197665f665d9582b7f5c2efb1f598235 v13/code/scripts/ask_verified_budget.py || source_ok=1
           check 4b73842be25e784f70ade4f6c4ced3fe2dcb9eab v13/code/v13/source_consumer.py || source_ok=1
