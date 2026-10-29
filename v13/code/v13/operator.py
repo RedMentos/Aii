@@ -31,7 +31,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback world observe --learn (abgeschlossenes eigenes Action-Outcome)
 :feedback retrieval <Memory-ID> relevant|irrelevant [--learn]
 :source budget <ProjectName> <WholeEuroAmount> [--confirm] (user-authored F1/F5 fact, no model or prior answer)\n:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
-:verified <Frage> (nur quellengebundene F1/F5-Vorprüfung; kein Modellaufruf)
+:verified <Frage> | :verified exact <Frage> (F1/F5-Vorprüfung oder genaue Quellantwort; keine C3-Generierung)
 :jefsource <Event-ID> <PolicyMemory-ID> <SheetMemory-ID> (nur lokale F1/F5-SHADOW-Diagnose, keine Live-Antwort)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
@@ -104,10 +104,14 @@ class Operator:
             if (not args or args[0].casefold()=='native'
                     or any(x.casefold()=='--native' for x in args)):
                 raise ValueError(':verified <Frage> (nur F1/F5-Vorprüfung, kein natives Modell)')
-            question=' '.join(args).strip()
+            exact=bool(args and args[0].casefold()=='exact')
+            question=' '.join(args[1:] if exact else args).strip()
             if not question or len(question.encode('utf-8'))>r.cfg['input_bytes']:
                 raise ValueError(':verified Frage fehlt oder zu lang')
             r.require_idle()
+            if exact:
+                from scripts.ask_verified_budget import exact_source
+                return dumps(exact_source(r,question,session=r.session))
             from scripts.ask_verified_budget import query as verified_budget_query
             return dumps(verified_budget_query(r,question,session=r.session,native=False))
         if cmd in {'sleep','scheduler'}:
