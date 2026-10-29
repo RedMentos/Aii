@@ -33,7 +33,7 @@ class EuroAliasEquivalenceTests(unittest.TestCase):
         sources = [
             self.add("Project Elyra budget", "615 Euro"),
             self.add("Project Elyra budgets", "615 EUR"),
-            self.add("Project Elyra etat", "615 €"),
+            self.add("Projekt Elyra budget", "615 €"),
         ]
         got = admit(self.query, self.runtime.session, sources, self.runtime.memory)
         self.assertEqual(got["status"], "ADMITTED")
