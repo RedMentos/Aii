@@ -35,10 +35,10 @@ jobs:
           mkdir -p "$e" "$work" "$home"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          7eb2a42a7fc6eaab95ab66a4778426af7d2d5b13 v13/code/scripts/p2x_base360_native_executor.py
-          6f78f300faa8b6c251cbcb344cf4fe296ea9b25a v13/code/scripts/p2x_base360_native_verifier.py
-          989319886ff9ece4bfd8edaea18369d4db2a3356 v13/code/tests/test_p2x_base360_native_executor.py
-          de67afa886d63f6b1a730ba6c9cef24b44d328e4 v13/code/tests/test_p2x_base360_native_verifier.py
+          1b3afb183ef2a1cb2542dac7ef32f71905169232 v13/code/scripts/p2x_base360_native_executor.py
+          eeebf85e33e214e7648fd182f7023f3723d922d4 v13/code/scripts/p2x_base360_native_verifier.py
+          a667d84a6a462215809dba1057dd195b9deae047 v13/code/tests/test_p2x_base360_native_executor.py
+          79f2c2e08377aaa6ce3f582d1f0523fd8477fbd5 v13/code/tests/test_p2x_base360_native_verifier.py
           8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
           c9509e299510540af4e43ebbc397f2e5a144142d v13/code/scripts/p2x_native_receiver_eval_scorer.py
           9791ad1a7b10692d4e75810856bd93fc4dcb44ea v13/code/scripts/hb1b_c3_format_native_executor.py
