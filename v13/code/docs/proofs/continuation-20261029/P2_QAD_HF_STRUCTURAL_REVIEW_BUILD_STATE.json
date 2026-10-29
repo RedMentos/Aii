@@ -55,11 +55,11 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Inspect Actions run 40849200975, download original raw artifact, verify ZIP SHA256/CRC/all SHA256SUMS and stage exits; inspect VALUE_RESULT.json. Preserve RED, no parity promotion. Then independently preregister QAD tokenizer/native logit/LoRA transfer checks, never overwrite ordinary HF evidence.",
+  "next_command": "Inspect GitHub Actions 40850029535, download original artifact and independently check ZIP CRC, SHA256SUMS, stage exits, RESULT.json and 8 token-ID arrays; preserve RED. Then preregister QAD FP32 vs deployed GGUF native greedy/logit probes before any AG6-gated adapter training.",
   "open_questions": [
-    "Native QAD FP32→GGUF dequant value distribution and RoPE q/k layout",
-    "QAD tokenizer/chat-template and runtime prompt-ID equivalence",
-    "LoRA adapter export/merge and QAD GGUF transfer utility",
+    "Deployed GGUF tokenizer IDs vs pinned QAD FP32 tokenizer under eight synthetic prompts",
+    "Native QAD FP32 vs deployed QAD GGUF logit/greedy and q/k layout equivalence",
+    "AG6-gated LoRA adapter export/merge/utility, LP3 causal-state and P0X source-use utility",
     "JEF/Context OS/B1-B2/World/JEPA/Dream and Redmi acceptance remain required"
   ],
   "remaining_platform_budget": "UNKNOWN",
@@ -75,8 +75,36 @@
     "value_audit_source_only_run": 40849094848,
     "value_audit_source_only_status": "PASS",
     "value_audit_native_run": 40849200975,
-    "value_audit_native_status": "IN_PROGRESS_NO_RESULT",
+    "value_audit_native_status": "VALUES_MEASURED_PARITY_UNPROVEN",
     "value_audit_workflow_head_sha": "ca5985370d0d94d7d9158c605dfc23de84c1ba8d",
-    "training_approved": false
+    "training_approved": false,
+    "value_audit_native_zip_sha256": "e82ac7853f6f83f05174092bc826405c804d87f5f85cbe3d008bf5e000ca0bce",
+    "value_audit_tensor_count": 148,
+    "value_audit_cosine_min": 0.994176105,
+    "value_audit_cosine_median": 0.9959973905,
+    "value_audit_nrmse_max": 0.108174465
+  },
+  "qad_template": {
+    "native_run": 40849577007,
+    "status": "TEMPLATE_BYTES_EQUAL_TOKEN_IDS_UNPROVEN",
+    "zip_sha256": "6bbd49a92669debdc463bb5fe02638cd7399f15b9c1b8912dffecfaf5199b90e",
+    "template_sha256": "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6",
+    "bytes": 5487
+  },
+  "qad_vs_hf_tokenizer": {
+    "source_only_run": 40849657373,
+    "source_only_zip_sha256": "a51d34497becb61527a636a37d22f19b2c804f8e900a4d74899f38bae2a05f5e",
+    "probes": 8,
+    "input_id_equal": 8,
+    "skip_special_decode_equal": 4,
+    "native_gguf_token_ids_proven": false
+  },
+  "native_qad_tokenizer_probe": {
+    "prereg_commit": "8980957687e0c2d42dec54014a08f22d1898ae5e",
+    "source_only_run": 40849924730,
+    "source_only_status": "PASS",
+    "native_run": 40850029535,
+    "native_status": "PENDING_OR_IN_PROGRESS",
+    "head_sha": "2d59a6d452a889dba0a4831accdd44982ed90a95"
   }
 }
