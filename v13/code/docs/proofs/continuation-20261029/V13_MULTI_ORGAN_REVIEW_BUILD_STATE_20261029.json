@@ -1,0 +1,145 @@
+{
+  "schema": "v13-review-checkpoint-20261029-v1",
+  "scope": "BRANCH_SCOPED_SOFTWARE_ONLY_NOT_MAIN",
+  "owner": "GPT-6 isolated ContextOS/SelfWorld/Sleep review chain",
+  "parent_prs": [
+    {
+      "pr": 1083,
+      "head": "48a58ca8ca49c0b908509e04081cf9fc132017fd",
+      "full_regression_run": 40865117927,
+      "conclusion": "SUCCESS"
+    },
+    {
+      "pr": 1084,
+      "head_at_dependency_repair": "c80e855030b77c5b146918d5a3304ab368724039"
+    },
+    {
+      "pr": 1085,
+      "head_at_dependency_repair": "52d8acc7b6706a78e1dd5e8fbc46a25e3e24cf3f"
+    }
+  ],
+  "current_pr": 1086,
+  "current_head": "3225756b6ad41222ea58623c148778d168a07735",
+  "packages": {
+    "context_os": {
+      "pr": 1084,
+      "source_blob": "d28036f8ede96d031ec38a608c76549936c21eea",
+      "test_blob": "a7271a41e6b8fec7c8aeffa3c174f4de18e86363",
+      "status": "GREEN_37_FOCUSED_3115_FULL_11_SKIPPED_SOFTWARE_ONLY",
+      "red_first_run": 40866038357,
+      "full_dependency_red_run": 40866180445,
+      "isolated_dependency_retry": 40866812715,
+      "green_run": 40866812715,
+      "green_head": "c80e855030b77c5b146918d5a3304ab368724039",
+      "artifact_sha256": "6884b2cdbd4495d9518eed8ae38d1b91408184da4fb8f497c04e4a334a4182f8",
+      "artifact_id": 12893529245
+    },
+    "self_world": {
+      "pr": 1085,
+      "source_blob": "072ae59d75c97d972433fedd3830002d2c8530ad",
+      "test_blob": "3fc2068087861f1e044cd39101addae23cb68634",
+      "status": "GREEN_28_FOCUSED_3123_FULL_11_SKIPPED_SOFTWARE_ONLY",
+      "red_first_run": 40866385792,
+      "isolated_dependency_retry": 40866860307,
+      "green_run": 40866860307,
+      "green_head": "52d8acc7b6706a78e1dd5e8fbc46a25e3e24cf3f",
+      "artifact_sha256": "d7011c9db572fd5b51a2863db6209a904cbcf50cc4954bd5a0f82da96563517c",
+      "artifact_id": 12894676804
+    },
+    "sleep_dream": {
+      "pr": 1086,
+      "source_blob": "3f6c91b1ab4ac02624a86049373957ff7bd93fd2",
+      "test_blob": "da3e97bfd9ca8808ec2208d21ac6c1b76236fa84",
+      "status": "GREEN_39_FOCUSED_3130_FULL_11_SKIPPED_SOFTWARE_ONLY",
+      "red_first_run": 40866677801,
+      "isolated_dependency_retry": 40866865992,
+      "green_run": 40866865992,
+      "green_head": "3225756b6ad41222ea58623c148778d168a07735",
+      "artifact_sha256": "adcc91b3e9658962115309bd8fc47a13a86e8a8088db962e9279cba91bbee458",
+      "artifact_id": 12894432063
+    }
+  },
+  "raw_backups": [
+    {
+      "run": 40866038357,
+      "zip_sha256": "756145c2a0c646a5bab2eb16fce0b5d0ffb249fefbe0b5250f61861e71c7a09d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_RED_40866038357_sha756145c2.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866180445,
+      "zip_sha256": "b7ae9aec4cbe17182f92eb88d086053cd63dda71b0dc9745d41da7669204205b",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_FULL_DEP_RED_40866180445_shab7ae9aec.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866385792,
+      "zip_sha256": "c926fb58df11583b1366bad6e0a0620157e3421e4b6288ab10d2067cd1e4b69d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SELF_BOOL_RED_40866385792_shac926fb58.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866677801,
+      "zip_sha256": "2f065672901a2ce197ca88860bf425325e9f3661452ab37baf5dd70f577d8f1d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_RED_40866677801_sha2f065672.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866865992,
+      "zip_sha256": "adcc91b3e9658962115309bd8fc47a13a86e8a8088db962e9279cba91bbee458",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_GREEN_40866865992_shaadcc91b3.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866812715,
+      "zip_sha256": "6884b2cdbd4495d9518eed8ae38d1b91408184da4fb8f497c04e4a334a4182f8",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_GREEN_40866812715_sha6884b2cd.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866860307,
+      "zip_sha256": "d7011c9db572fd5b51a2863db6209a904cbcf50cc4954bd5a0f82da96563517c",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SELF_BOOL_GREEN_40866860307_shad7011c9d.zip",
+      "byte_verified": true
+    }
+  ],
+  "prerequisites": [
+    "Exact branch source pin, private synthetic evidence only",
+    "Isolated CPU torch/transformers full-suite dependencies",
+    "Do not run native/model jobs while unrelated active owners exist",
+    "Redmi device unavailable; no device claim"
+  ],
+  "next_command": "gh run view 40867462246 --repo RedMentos/Aii --json status,conclusion,headSha; download exact original raw, audit SHA256SUMS/privacy/stage exits and private backup; then pursue disjoint P2 receiver native learning/Redmi prerequisites without gate promotion.",
+  "open_questions": [
+    "Three isolated organs GREEN software only; cross-organ integration PR #1087 run 40867462246 pending",
+    "No real C3 source-composition utility improvement demonstrated",
+    "No Redmi native sustained thermal/RSS/energy evidence",
+    "PRs draft review branches, not production merged"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}

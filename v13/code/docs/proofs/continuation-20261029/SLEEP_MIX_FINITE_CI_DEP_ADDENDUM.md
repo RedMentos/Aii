@@ -1,0 +1,5 @@
+# Sleep/Dream full-suite dependency prerepair — 2026-10-29
+
+This package's first source-bound workflow installed numpy/psutil/PyYAML/Pillow/prompt-toolkit but not torch. An independent full V13 run on Context OS PR #1084, [Actions 40866180445](https://github.com/RedMentos/Aii/actions/runs/40866180445), proved the same shared full-suite prerequisite is necessary: 37/37 focused tests PASS, 3,089 full tests with four torch import errors. That original RED and all original raw are preserved. This is a **prospective workflow dependency-only change** for this branch, not a retroactive edit of any previous run or a claim that this branch's own CI already succeeded.
+
+Pin the known isolated CPU dependency set from existing V13 full workflows: torch 2.14.1 from the official PyTorch CPU index; transformers 5.20.2, tokenizers 0.23.1, safetensors 0.8.0, peft 0.21.2, gguf 0.19.0, Jinja2 3.1.6, MarkupSafe 3.0.3; retain original base deps. Record install exits, pip freeze/check, focused and full test logs, hashes and privacy. No model downloads, native calls, source/seed/cohort changes or gate promotion.
