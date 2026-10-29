@@ -21,8 +21,8 @@ class HB1BFormatSoftware(unittest.TestCase):
     def build_mock(self, root):
         raw = (root / "RAW.json").read_bytes()
         score = (root / "SCORE.json").read_bytes()
-        with patch.object(hb1b, "PARENT_RAW_SHA256", hb1.sha(raw)), \\
-             patch.object(hb1b, "PARENT_SCORE_SHA256", hb1.sha(score)):
+        with (patch.object(hb1b, "PARENT_RAW_SHA256", hb1.sha(raw)),
+              patch.object(hb1b, "PARENT_SCORE_SHA256", hb1.sha(score))):
             return hb1b.build(root)
 
     def make_records(self, plan):
