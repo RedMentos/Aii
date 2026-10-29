@@ -20,7 +20,16 @@
     "source_blob": "4c233aaade91e55d00fa152c934de0e03e26d58f",
     "test_blob": "c6ae8c8f7447cede21caebddda81de1f5beae034",
     "software_actions": 40812995696,
-    "status": "IN_PROGRESS_ORIGINAL_RAW_NOT_YET_AUDITED"
+    "status": "GREEN_INDEPENDENT_RAW",
+    "software_status": "GREEN_INDEPENDENT_RAW",
+    "original_zip_sha256": "73a6ea834d0d9adef041542b63f5ce4c7e1c5887a949f820e5d0fa4ca25777fb",
+    "crc_clean": true,
+    "inner_hashes": "16/16",
+    "focused_tests": 13,
+    "full_tests": 2758,
+    "full_skipped": 3,
+    "privacy": "CLEAN",
+    "private_backup_byte_identical": true
   },
   "run128": {
     "static_actions_initial": 40813255472,
@@ -33,10 +42,19 @@
     "zip_crc_clean": true,
     "inner_hashes_verified": "11/11",
     "private_backup_byte_identical": true,
-    "current_exact_head_software": "PENDING_AFTER_AUDIT_RECEIPT_COMMIT",
+    "current_exact_head_software": "DOC_ONLY_CHECKPOINT_PUSH_PENDING",
     "native_workflow_manual_only": true,
     "native_owner_release_receipt": "ABSENT",
-    "native_calls": 0
+    "native_calls": 0,
+    "last_verified_head": "7f0cd8d551ec5bda992b91f3e3888356a9297221",
+    "last_verified_actions": 40813525733,
+    "last_verified_status": "GREEN_INDEPENDENT_RAW",
+    "last_verified_zip_sha256": "42c85553ea3115801a6532214d54a626c1bcff4637274b50a0844f00cc8ddd15",
+    "last_verified_crc_clean": true,
+    "last_verified_inner_hashes": "11/11",
+    "last_verified_focused_tests": 13,
+    "last_verified_privacy": "CLEAN",
+    "last_verified_private_backup_byte_identical": true
   },
   "parent_run126_software": {
     "actions": 40812183190,
@@ -54,7 +72,18 @@
     "full_tests": 2745,
     "full_skipped": 3,
     "privacy": "CLEAN",
-    "private_backup_byte_identical": true
+    "private_backup_byte_identical": true,
+    "independent_quote_transport": {
+      "source_ref_span_hashes_verified": "42/42",
+      "injected_exact_B2_only": 30,
+      "unchanged_controls": 12,
+      "oracle_payload_keys_absent": true,
+      "consumer_payload_keys": [
+        "analysts",
+        "current_source"
+      ],
+      "mismatches": 0
+    }
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -72,13 +101,12 @@
     "Will any treatment arm produce wrong committed action?",
     "When can a separate owner verify native resource admission and release?"
   ],
-  "next_command": "gh run view 40813493182 --json status,conclusion,headSha && gh run view 40812995696 --json status,conclusion,headSha; download ORIGINAL raw artifacts, independently verify ZIP CRC/SHA256SUMS/exits/privacy and private byte-identical backups; only then separately preregister native-owner release if truly idle; do not dispatch native before owner receipt and fresh resource gate.",
+  "next_command": "Check new doc-only exact-head Run128 static CI after BUILD_STATE commit; independently audit original ZIP CRC/SHA256SUMS/exit/privacy; verify owner release receipt remains ABSENT; then continue another independent canonical package or, only with verified idle native owner, preregister separate owner release and manually launch guarded 84-call native.",
   "prerequisites": [
-    "Current exact-head Run128 software original raw GREEN",
-    "Run127 full-suite software original raw GREEN",
-    "Separate native owner release receipt (currently absent)",
-    "Serial Linux cgroup resource preflight",
-    "Original source, model, runner, library hashes and frozen seed unchanged"
+    "Current doc-only exact-head Run128 static CI GREEN and original raw independently audited",
+    "Run127 2758 full-suite original raw GREEN already audited",
+    "Native owner release receipt currently ABSENT",
+    "Serial Linux resource admission and original pinned models/runner/source/seed unchanged"
   ],
   "no_main_merge": true,
   "no_native_launched": true
