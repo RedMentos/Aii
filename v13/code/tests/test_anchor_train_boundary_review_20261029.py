@@ -47,7 +47,7 @@ class TrainingBoundaryReview(unittest.TestCase):
         self.assertEqual(result["status"], "ANCHOR_INVALID")
         self.assertEqual(trainer.calls, 0)
         self.assertEqual(trainer.cfg["targets"], ("w1", "w2", "w3"))
-        self.assertNotIn("trainer", result)
+        self.assertIsNone(result["trainer"])
         self.assertEqual(w.batch(bid)["status"], "ANCHOR_INVALID")
         with self.assertRaises(ValueError):
             w.train(bid)
