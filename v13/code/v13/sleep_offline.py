@@ -64,23 +64,34 @@ def digest(store,checkpoint=None):
             "WHERE session_id=? AND id>? ORDER BY id LIMIT ?",
             (sess,d['until'],2*TURNS_MAX))
         highwater=d['until']
-        for i in range(0,len(scanned)-1,2):
-            u,a=scanned[i:i+2]
-            # Never pass an incomplete/streaming answer; it may become FINAL.
-            # Settled failures and revoked sources can be skipped, but not
-            # promoted to digest entries (native_history validates lineage).
-            if (u['role']!='user' or a['role']!='assistant'
-                    or u['event_id']!=a['event_id']
-                    or u['status']!='FINAL'
+        # Completion can be interleaved: U1,U2,A2,A1 is two settled turns,
+        # not adjacent (user,assistant) rows. Group within the same bounded
+        # scan, then advance only across complete events in first-user order.
+        groups={};order=[]
+        for row in scanned:
+            eid=row['event_id']
+            if eid not in groups:groups[eid]=[];order.append(eid)
+            groups[eid].append(row)
+        for eid in order:
+            pair=groups[eid]
+            if len(pair)!=2:break
+            users=[row for row in pair if row['role']=='user']
+            answers=[row for row in pair if row['role']=='assistant']
+            if len(users)!=1 or len(answers)!=1:break
+            u,a=users[0],answers[0]
+            # Never pass incomplete/streaming or duplicate messages. A
+            # settled failed answer advances the scan but is not a fact;
+            # native_history still revalidates all source/rule lineage.
+            if (u['id']>=a['id'] or u['status']!='FINAL'
                     or a['status'] not in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED')):
                 break
-            highwater=a['id']
+            highwater=max(highwater,a['id'])
         if highwater<=d['until']:continue
         recs,_=native_history(store,sess,'',TURNS_MAX,after_id=d['until'])
         pairs={}
         for m in recs:pairs.setdefault(m['event_id'],{})[m['role']]=m
         new=[p for p in pairs.values() if p['assistant']['id']<=highwater]
-        for p in sorted(new,key=lambda p:p['assistant']['id']):
+        for p in sorted(new,key=lambda p:p['user']['id']):
             u,us,uok=compress(p['user']['text'],TURN_CAP);a,as_,aok=compress(p['assistant']['text'],TURN_CAP)
             d['entries'].append({'event_id':p['user']['event_id'],'user':u if uok or len(u)<=TURN_CAP*2 else u[:TURN_CAP*2],'answer':a if aok or len(a)<=TURN_CAP*2 else a[:TURN_CAP*2],
                                  'exact':us+as_,'msg':p['assistant']['id']})
