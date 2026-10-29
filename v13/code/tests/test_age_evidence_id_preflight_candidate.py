@@ -30,13 +30,16 @@ class Run137AgeEvidenceIdPreflight(unittest.TestCase):
         self.store.close()
         self.temp.cleanup()
 
-    def test_original_finite_wrapper_accepts_bool_id_and_corrupts_diagnostic(self):
-        # Isolated Store only: preserve the original defect as negative evidence.
-        finite.record(self.controller, "system", GOOD, evidence_id=True)
-        stored, _ = self.controller.state()
-        self.assertIn(True, stored["seen_evidence"])
+    def test_original_bool_id_corruption_is_blocked_by_direct_age_record(self):
+        # Run137's original RED remains in PR #1037 and its raw artifacts.
+        # The later direct AgeControl.record candidate closes that historical
+        # bypass even when the original finite-only wrapper is called.
+        before = self.controller.state()
+        with self.assertRaisesRegex(ValueError, "AGE_EVIDENCE_ID_INVALID"):
+            finite.record(self.controller, "system", GOOD, evidence_id=True)
+        self.assertEqual(self.controller.state(), before)
         self.assertEqual(quarantine.snapshot(self.controller)["status"],
-                         "QUARANTINED_DIAGNOSTIC_ONLY")
+                         "VALID_DIAGNOSTIC_ONLY")
         self.assertFalse(quarantine.snapshot(self.controller)["runtime_enforced"])
         self.assertEqual(self.controller.system_stage(), 0)
 
