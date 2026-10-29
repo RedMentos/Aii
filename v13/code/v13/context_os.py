@@ -401,8 +401,11 @@ class ContextOS:
         ratio=cached/(cached+prompt) if valid else None
         rejected=bool(supplied and not valid)
         def fn(st):
-            for mid in memory_ids:st['warm'][str(mid)]=1.
-            if len(st['warm'])>WARM_MAX:st['warm']=dict(sorted(st['warm'].items(),key=lambda kv:-kv[1])[:WARM_MAX])
+            # Activity-silent reactivation is a state update: an interrupted,
+            # failed or provisional answer must not refresh its memory traces.
+            if status=='FINAL':
+                for mid in memory_ids:st['warm'][str(mid)]=1.
+                if len(st['warm'])>WARM_MAX:st['warm']=dict(sorted(st['warm'].items(),key=lambda kv:-kv[1])[:WARM_MAX])
             last=st['last'].get(role)
             matches=bool(last and last.get('event_id')==event_id)
             # One current FINAL result per role/event. CAS in _mutate makes
@@ -420,7 +423,8 @@ class ContextOS:
         if self.n is not None and outcome['credited'] and outcome['applied']:
             try:self.n.signal(event_id,path=PATH,source_class='real_deterministic_outcome',cost_error=1-ratio)
             except Exception:pass
-        return {'reuse_ratio':ratio if outcome['credited'] else None,'warm':list(memory_ids),
+        return {'reuse_ratio':ratio if outcome['credited'] else None,
+                'warm':list(memory_ids) if status=='FINAL' else [],
                 'cache_rejected':rejected or bool(ratio is not None and not outcome['credited'])}
     def outcome(self,event_id,utility,source_class='internal_crosscheck'):
         """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
