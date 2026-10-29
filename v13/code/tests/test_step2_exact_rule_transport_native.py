@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -63,6 +64,17 @@ class Run126MatchedC3NativeExecutorSoftware(unittest.TestCase):
         report = native.summarize(rows, fixtures)
         self.assertEqual(sum(v["wrong_committed"]
                              for v in report["treatment"].values()), 42)
+
+    def test_original_runner_provenance_when_supplied(self):
+        path = os.environ.get("V13_RUN116_SOURCE_REPORT")
+        if not path:
+            self.skipTest("original source report not supplied")
+        source = preflight.load_original(Path(path))
+        self.assertEqual(source["installed_artifacts"]["model_sha256"],
+                         native.MODEL_HASHES)
+        self.assertEqual(source["installed_artifacts"]["runner_sha256"],
+                         "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39")
+        self.assertTrue(source["installed_artifacts"]["runner_runtime_libraries_sha256"])
 
     def test_missing_preflight_refused(self):
         with tempfile.TemporaryDirectory() as tmp:

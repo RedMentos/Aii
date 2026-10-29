@@ -40,8 +40,9 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check f98caa025a8ba28e8ecdb5d3f29660937913ffed v13/code/docs/proofs/continuation-20261029/STEP2_RULE_TRANSPORT_NATIVE_EXECUTOR_PREREG.md || source_ok=1
-          check 35b4fbbe52a977e61159e1672b7a39006d0181cd v13/code/scripts/step2_exact_rule_transport_native.py || source_ok=1
-          check 3374d6ba88affd732b4b2283a55af9f87eaaddc4 v13/code/tests/test_step2_exact_rule_transport_native.py || source_ok=1
+          check 69bbcb22f448c258bf147dfabf181a9909c90207 v13/code/docs/proofs/continuation-20261029/STEP2_RULE_TRANSPORT_BRANCH_BUILD_STATE.json || source_ok=1
+          check 9b43ce0721213775ef7067169ec4bd6f0b1e0f0e v13/code/scripts/step2_exact_rule_transport_native.py || source_ok=1
+          check a4d28951e80ca034d752f4d030d4196ec4f70904 v13/code/tests/test_step2_exact_rule_transport_native.py || source_ok=1
           check b7044736bb0ffec0b577c7720169257f3970f9e8 v13/code/docs/proofs/continuation-20261029/STEP2_EXACT_RULE_NATIVE_REPLAY_PREREG.md || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
           check 454d7bff84f074338364facbe6afd9e26209484e v13/code/tests/test_step2_exact_rule_native_replay_preflight.py || source_ok=1

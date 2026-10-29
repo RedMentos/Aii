@@ -103,6 +103,9 @@ def run(installed_home, source_path, prepared_path, evidence_dir):
     source, prepared = verify_input(source_path, prepared_path)
     before = tp.pinned_models(installed_home)
     require(before == MODEL_HASHES, "PINNED_MODEL_HASH_DRIFT")
+    installed_before = step2.installed_artifacts(installed_home)
+    require(installed_before == source.get("installed_artifacts"),
+            "PINNED_RUNNER_LIBRARY_OR_MODEL_REVISION_DRIFT")
     require(tool.SEED == C3_SEED and len(prepared["rows"]) == 42
             and source["fixture_sha256"] == preflight.ORIGINAL_FIXTURE_SHA256,
             "FROZEN_C3_SEED_OR_FIXTURE_DRIFT")
@@ -115,6 +118,7 @@ def run(installed_home, source_path, prepared_path, evidence_dir):
         "preflight_report_sha256": file_hash(prepared_path),
         "fixture_sha256": preflight.ORIGINAL_FIXTURE_SHA256,
         "model_hashes_before": before,
+        "installed_artifacts_before": installed_before,
         "body_source_seed": BODY_SOURCE_SEED, "c3_seed": C3_SEED,
         "native_scope": "LINUX_C3_42_MATCHED_PAIRS_84_CALLS",
         "rows": 0, "canonical_gate_pass": False,
@@ -127,14 +131,14 @@ def run(installed_home, source_path, prepared_path, evidence_dir):
     save()
     cfg = dict(source["config"])
     home = evidence_dir / "fresh-home"
-    initialize(home)
-    save_config(home, cfg)
-    step2.installed_links(home, installed_home)
     runtime = None
     raw = {"schema": "v13.step2.exact_rule_transport_native_rows.v1",
            "status": "RUNNING", "rows": [], "row_sha256": {},
            "canonical_gate_pass": False, "phone_measured": False}
     try:
+        initialize(home)
+        save_config(home, cfg)
+        step2.installed_links(home, installed_home)
         runtime = Runtime(home)
         runner = runtime.pool.get("C3_LANGUAGE")
         fixtures = {f["id"]: f for f in source["fixtures"]}
@@ -200,6 +204,9 @@ def run(installed_home, source_path, prepared_path, evidence_dir):
         receipt["model_hashes_after"] = tp.pinned_models(installed_home)
         require(receipt["model_hashes_after"] == before,
                 "PINNED_MODEL_BYTES_CHANGED")
+        receipt["installed_artifacts_after"] = step2.installed_artifacts(installed_home)
+        require(receipt["installed_artifacts_after"] == installed_before,
+                "PINNED_RUNNER_LIBRARY_OR_MODEL_REVISION_CHANGED")
         raw["status"] = ("PASS_SCOPED_NATIVE_TRANSPORT_NO_GATE" if wrong == 0
                          else "FAIL_SCOPED_WRONG_COMMITTED_NO_GATE")
         atomic_write(rows_path, dumps(raw))
