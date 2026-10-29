@@ -24,3 +24,16 @@ Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; 
 ## Next command
 
 Inspect exact run and its original raw: `gh run view 40836705747 --repo RedMentos/Aii --json status,conclusion,headSha`; after completion `gh run download 40836705747 --repo RedMentos/Aii -D <fresh-private-review-dir>`, independently check every `SHA256SUMS.txt` entry and all stage exit codes. No user/private data in public artifacts.
+
+## Attempt 2 — GREEN Linux-native diagnostic, independently checked
+
+- Exact execution HEAD `f7db8dcfa3297061c1cdc9d234f3097c6a417e96`, Actions run `40836705747` **SUCCESS**; original artifact `12881321580`, ZIP SHA256 `7d180436ab64165f867a80902add7b23f8dae19cbbfd72b8b266ac48c47b4552`.
+- Independently downloaded original ZIP: CRC CLEAN, **50/50 SHA256SUMS matched**; all 14 stage exits = 0, source/parent artifact checks GREEN, 16 focused tests PASS, privacy CLEAN, no model-weight bytes in artifact.
+- **Real Linux x86_64 model calls:** B1_DETAIL 18, B2_GIST 6, C3_LANGUAGE 30 = **54/54 FINAL**. All three pinned GGUF hashes and llama-server SHA unchanged before/after, process reaped, Age0 RECORD_ONLY, no training/adapter activation.
+- Raw SHA256 `abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1`; score SHA256 `b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44`. Private Library backup `/V13/RawEvidence/HB1A_40836705747_54call_linux_native_exact_head_raw.zip` rematerialized and byte-verified against ZIP SHA.
+- **Diagnostic exact actions out of 6 per arm:** C3-only **2**, both-exact **0**, both-native **2**, single-body-native **2**, shuffled-native **2**. All 24 generated-offer-arm C3 outputs were `NONE`; both-exact produced `B` twice and `NONE` four times. Thus no observed B1/B2-generated-offer utility improvement on this small public synthetic cohort, and no demonstrated foreign-source rejection. Do not rescore original data or promote gates.
+- Detailed hash-bound result: `HB1A_NATIVE_54CALL_REVIEW_RESULT.json`. **No Redmi measurement, no independent 150-row holdout, no STEP2/B3/Body-JEPA/LP3/whole-system promotion.**
+
+## Next substantive package
+
+Source-only preregistered 150-row independent held-out model-native complementarity/receiver diagnostic with genuine oracle headroom, plus a separate C3 receiver-format/training ablation if evidence supports it. Avoid altering the original six-row registered cohort or its negative score. The native runner is now idle; no heavy process ownership remains from this workflow.
