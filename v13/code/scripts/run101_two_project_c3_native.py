@@ -29,7 +29,7 @@ def _preflight_ok(value, expected):
     return (isinstance(value, dict) and value.get("status") == expected
             and value.get("native_calls") == 0
             and value.get("model_called") is False
-            and (expected == "READY" or not re.search(r"\\d", str(value.get("answer") or ""))))
+            and (expected == "READY" or not re.search(r"\d", str(value.get("answer") or ""))))
 
 
 def _native_ok(value, project, amount, ref):
@@ -45,10 +45,10 @@ def _native_ok(value, project, amount, ref):
     if not isinstance(answer, str):
         return False
     expected_number = amount.split(" ", 1)[0]
-    numbers = re.findall(r"(?<!\\w)\\d+(?!\\w)", answer)
+    numbers = re.findall(r"(?<!\w)\d+(?!\w)", answer)
     return (numbers == [expected_number]
-            and bool(re.search(r"\\bProject\\s+" + re.escape(project) + r"\\b", answer, re.I))
-            and bool(re.search(r"\\b(?:Euro|Euros|EUR)\\b|€", answer, re.I)))
+            and bool(re.search(r"\bProject\s+" + re.escape(project) + r"\b", answer, re.I))
+            and bool(re.search(r"\b(?:Euro|Euros|EUR)\b|€", answer, re.I)))
 
 
 def _age0(cfg):
