@@ -40,8 +40,8 @@ jobs:
           check 0eb04d40b4c90d9d8c06dc6525b60145bca52449 v13/code/docs/proofs/continuation-20261029/PROJECT_SOURCE_SCOPE_REVIEW_PREREG.md || source_ok=1
           check 7f13f5d01f4df2919e27a0ac24ce89f347a2d328 v13/code/scripts/context_option_reference_candidate.py || source_ok=1
           check 073425903636593401d12210cbf9003257f76f29 v13/code/tests/test_context_option_reference_candidate.py || source_ok=1
-          check 54c18086c53ba89dad559c2b3df19ec449b17302 v13/code/scripts/context_option_project_scope_candidate.py || source_ok=1
-          check f248d2ab6877f6ae18f263efcac773a4a23c1da8 v13/code/tests/test_context_option_project_scope_candidate.py || source_ok=1
+          check 02d98c9223c4eaee8c3f65a40dcdfaacd50d7fa9 v13/code/scripts/context_option_project_scope_candidate.py || source_ok=1
+          check 376c55c7820e3f80142ca61318ebd54b3c1a299a v13/code/tests/test_context_option_project_scope_candidate.py || source_ok=1
           check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_ok=1
           check c9b9c1694cba016ccf0059da7f78585694a31327 v13/code/scripts/step2_option_quote_consistency_candidate.py || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
