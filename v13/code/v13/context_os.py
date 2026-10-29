@@ -55,6 +55,7 @@ LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
 QUOTE=re.compile(r'"[^"]+"|„[^“]+“')  # bounded by SPAN_CHARS/RAW fallback, not silent truncation
+SINGLE_QUOTE=re.compile(r"(?<!\w)'(?:[^'\n]|(?<=\w)'(?=\w)){1,400}'(?!\w)")
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
@@ -74,7 +75,7 @@ def empty():
 def exact_spans(text):
     """Spans that must survive any compression verbatim (exact-span pinning, §8.5)."""
     out=[]
-    for rx in (CODE,URL,QUOTE,NUMBER):
+    for rx in (CODE,URL,QUOTE,SINGLE_QUOTE,NUMBER):
         for m in rx.finditer(text):
             s=m.group(0).strip()
             if s and not any(s in o for o in out):out.append(s)
@@ -111,10 +112,30 @@ def _unsafe_backticks(text):
     return mode is not None
 
 
+
+def _unsafe_single_quotes(text):
+    """Preserve delimiter-style single quotes; ignore intra-word apostrophes.
+
+    Unmatched or overlong quoted text stays RAW. A contraction inside a
+    balanced quoted literal is not a second delimiter.
+    """
+    matches=list(SINGLE_QUOTE.finditer(text))
+    boundaries={i for m in matches for i in (m.start(),m.end()-1)}
+    for m in re.finditer("'",text):
+        i=m.start()
+        if i in boundaries:
+            continue
+        if (i>0 and i+1<len(text) and
+                text[i-1].isalnum() and text[i+1].isalnum()):
+            continue
+        return True
+    return False
+
+
 def compress(text,cap):
     """Extractive, deterministic, never invents content. Returns (text, spans, ok). ok=False keeps RAW."""
     spans=exact_spans(text)
-    if _unsafe_backticks(text):return text,spans,False
+    if _unsafe_backticks(text) or _unsafe_single_quotes(text):return text,spans,False
     # An unmatched quote can span an unknown literal; never silently compress it.
     if text.count('"')%2 or text.count('„')!=text.count('“'):return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
