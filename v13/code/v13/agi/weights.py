@@ -264,11 +264,26 @@ class WeightConsolidation:
                        'kl_to_base':kl,'learned_recall':learned,
                        'retention_max_delta':delta,'drift_max':DRIFT_MAX}
             if drift is not None:
-                b['drift']={k:(None if k in ('value','cap') and
-                                     (type(v) not in (int,float) or
-                                      not math.isfinite(float(v))) else v)
-                            for k,v in drift.items()
-                            if k in ('component','measure','value','cap','n','probes_sha256','passed','error')}
+                # The drift report is evidence, not a bypass around strict JSON
+                # persistence. Invalid values are represented by null, never
+                # by NaN/Infinity or arbitrary caller-supplied objects.
+                safe={}
+                for key in ('component','measure','value','cap','n','probes_sha256','passed','error'):
+                    if key not in drift:continue
+                    value=drift[key]
+                    if key in ('value','cap'):
+                        try:
+                            value=(float(value) if type(value) in (int,float)
+                                   and math.isfinite(float(value)) and value>=0 else None)
+                        except (OverflowError,TypeError,ValueError):value=None
+                    elif key=='n':
+                        value=value if type(value) is int and value>=0 else None
+                    elif key=='passed':
+                        value=value if type(value) is bool else False
+                    else:
+                        value=value if isinstance(value,str) else None
+                    safe[key]=value
+                b['drift']=safe
             if ok:
                 b['request_id']=self.s.request('WEIGHT_CONSOLIDATION',{'batch_id':bid,'base_generation':b['base_generation'],
                     'artifact_hash':b['trainer']['hash'],'items':len(b['items']),'gate':b['gate']})
