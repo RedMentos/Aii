@@ -76,7 +76,7 @@ class HB1BNativeMock(unittest.TestCase):
             self.assertEqual(CapturingPool.config["temperature"], .1)
             self.assertEqual(CapturingPool.config["threads"], 2)
             score = json.loads((root / "evidence/SCORE.json").read_bytes())
-            self.assertEqual(score["per_arm"]["exact_schema"]["exact"], 2)
+            self.assertEqual(score["per_arm"]["exact_schema"]["unknown"], 6)  # FakePool returns JSON UNKNOWN
             self.assertEqual(score["per_arm"]["exact_plain"]["unparseable"], 6)
             self.assertEqual(score["per_arm"]["native_plain"]["unparseable"], 6)
             self.assertFalse(score["canonical_gate_pass"])
