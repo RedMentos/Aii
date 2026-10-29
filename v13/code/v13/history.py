@@ -4,12 +4,25 @@ from .common import dumps
 from .inputs import looks_like_terminal_log
 
 
-def native_history(store, session, event_id, turns):
+def native_history(store, session, event_id, turns, after_id=None):
+    """Source-valid complete turns. Optional after_id pages oldest-first for S7 backlog.
+
+    Existing callers keep latest-first-window behavior. The paged path never
+    chooses the latest rows of an oversized backlog, so a digest high-water
+    mark cannot silently skip older source-valid turns.
+    """
+    if after_id is not None and (type(after_id) is not int or after_id<0):
+        raise ValueError('history after_id must be a nonnegative message id')
     from .output_policy import validate_rules,QUERY_KIND,ANSWER_KIND
     with store.mutex:
         active=validate_rules(store,store.rules())
         approved={dumps(item['entry'][key]) for item in active for key in ('query_ref','answer_ref')}
-    records=store.history(session,2*turns+2) if turns else []
+    if after_id is None:
+        records=store.history(session,2*turns+2) if turns else []
+    else:
+        records=store.rows(
+            "SELECT * FROM messages WHERE session_id=? AND id>? ORDER BY id LIMIT ?",
+            (session,after_id,2*turns)) if turns else []
     groups={}
     for row in records:
         if row['event_id']!=event_id and row['role'] in {'user','assistant'}:
@@ -49,7 +62,7 @@ def native_history(store, session, event_id, turns):
                     raise ValueError('History depends on a removed or replaced fixed-answer source')
         except (ValueError,KeyError,TypeError,OSError):continue
         valid.extend(rows);dependencies[eid]=refs
-    selected=valid[-2*turns:]
+    selected=(valid[:2*turns] if after_id is not None else valid[-2*turns:])
     # Keep complete pairs when the bounded query begins inside an old turn.
     selected=[row for row in selected if sum(x['event_id']==row['event_id'] for x in selected)==2]
     refs=list({dumps(ref):ref for row in selected for ref in dependencies[row['event_id']]}.values())
