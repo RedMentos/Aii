@@ -102,6 +102,16 @@ def digest(store,checkpoint=None):
                     or a['status'] not in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED')):
                 break
             settled.append(u)
+        if len(settled)<len(users):
+            # Preserve the original conservative interleaving barrier:
+            # a later unfinished user row cannot be crossed by an earlier
+            # assistant completion. The user cursor would not lose it, but
+            # existing S7 acceptance requires waiting for that predecessor.
+            barrier=users[len(settled)]['id']
+            if any(any(row['role']=='assistant' and row['id']>=barrier
+                       for row in groups.get(u['event_id'],[]))
+                   for u in settled):
+                continue
         if not settled:continue
         # Source/rule revocation, exact source bytes, event session, answer
         # lineage and duplicate-row counts remain enforced by native_history.
