@@ -1,0 +1,53 @@
+{
+  "schema": "v13.run129.project_identity_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation, review-only, no native owner",
+  "branch": "assistant/v13-step2-project-identity-binding-20261029",
+  "pr": 1029,
+  "parent": "93bc908d5f36d313ec610b0e4399834661799627",
+  "prereg_commit": "31e167613115ed65fcf1b8e7a94c1eb937532281",
+  "source_blob": "2878ea7c67e017a35feff0fdd48ae3c76ae02b73",
+  "test_blob": "fbc827f1b5483090b63b96caa36e97ca5e7b63f8",
+  "original_native": {
+    "run116_actions": 40805361392,
+    "source_report_sha256": "c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f",
+    "tool_report_sha256": "e90c23fd909dc0e138312f6802a05a3377f451f6675a496c1d4b1f1b19847ac0",
+    "rows": 42,
+    "source_identity_display_aliases": 40,
+    "original_full_json_exact": 0,
+    "exploratory_format_only_exact_gain": 6,
+    "both_exact_full_json_exact_exploratory": "0/6 to 2/6",
+    "both_exact_utility_exploratory": "0.6250 to 0.7083",
+    "no_new_native_calls": true
+  },
+  "software_ci": {
+    "run_id": 40813956965,
+    "status": "PENDING_ORIGINAL_RAW_AUDIT",
+    "focused_tests": 8,
+    "full_suite": "PENDING"
+  },
+  "scope": "ISOLATED_CANDIDATE_OFFLINE_ONLY",
+  "open_questions": [
+    "How should trusted Context OS SourceRef project ID be supplied in live C3 tool output?",
+    "Should source-bound literal alias normalization be used only after independent paired utility tests?",
+    "Can B1 exact quote option-field disagreements (7/36 historical rows) be rejected or repaired deterministically without masking true B1/B2 complementarity?"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "gh run view 40813956965 --json status,conclusion,headSha; download original ZIP, independently verify CRC/SHA256SUMS, source/tool SHA, 42 row coverage, focused/full/PROBE/privacy exits; save byte-identical private backup; keep native-owner release absent.",
+  "prerequisites": [
+    "Original Run116 source/tool bytes exact",
+    "No native model calls",
+    "Original row hashes and original scores unchanged",
+    "Current exact-head CI and independent raw audit GREEN before any candidate integration"
+  ],
+  "no_main_merge": true
+}
