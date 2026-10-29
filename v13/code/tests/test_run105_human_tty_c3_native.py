@@ -27,10 +27,6 @@ class HumanSourceNativeValidation(unittest.TestCase):
         ):
             with self.subTest(key=key, replacement=replacement):
                 changed = dict(value, **{key: replacement})
-                # Negative amount requires separate guard; source-answer's
-                # frozen _answer_uses_euro_source already rejects it.
-                if replacement == "Project Elyra has -615 Euros.":
-                    continue
                 self.assertFalse(_native_ok(changed, REF))
 
     def test_negative_preflight_must_not_expose_numbers_or_call_model(self):
