@@ -145,8 +145,15 @@ class WeightConsolidation:
             def bad(st,b):b['data_mix']=mix;self._move(b,'DATA_MIX_FAIL')
             return self._set(bid,bad)
         try:
-            from ..anchor import for_batch
+            from ..anchor import for_batch,AnchorAdmissionError
             anchor,override=for_batch(self.s,b['items'],self.trainer)  # WP-U5 §69: anchor strength from novelty/stability
+        except AnchorAdmissionError:
+            # A numerical policy failure is not an unavailable optional
+            # diagnostic. Never pass the original unsafe coefficient to fit.
+            def invalid(st,b):
+                b['anchor']={'error':'AnchorAdmissionError','reason':'NUMERIC_ADMISSION_RED'}
+                self._move(b,'ANCHOR_INVALID')
+            return self._set(bid,invalid)
         except Exception as exc:anchor,override={'error':type(exc).__name__},None
         saved=dict(self.trainer.cfg) if override else None
         try:
