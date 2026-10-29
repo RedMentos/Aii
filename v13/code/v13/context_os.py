@@ -85,9 +85,36 @@ def first_sentence(text,cap):
     m=re.search(r'(.+?[.!?])(\s|$)',t);s=(m.group(1) if m else t)
     return s if len(s)<=cap else s[:cap-1].rstrip()+'…'
 
+def _unsafe_backticks(text):
+    """Fail closed if Markdown code cannot be fully pinned by CODE regex.
+
+    Only paired single-backtick inline spans and properly closed triple-fenced
+    blocks are compressible. Double/multi-backtick syntax, an unclosed span,
+    an ambiguous fence delimiter or multiline inline code stays RAW rather
+    than silently losing literal source text.
+    """
+    mode=None
+    for line in text.splitlines(keepends=True):
+        for match in re.finditer(r'`+',line):
+            width=len(match.group())
+            if width not in (1,3):return True
+            if mode is None:
+                mode='fence' if width==3 else 'inline'
+            elif mode=='inline':
+                if width!=1:return True
+                mode=None
+            elif width==3:
+                # A fence closes on its own line, never inside a code string.
+                if line[:match.start()].strip() or line[match.end():].strip():return True
+                mode=None
+        if mode=='inline' and line.endswith(('\n','\r')):return True
+    return mode is not None
+
+
 def compress(text,cap):
     """Extractive, deterministic, never invents content. Returns (text, spans, ok). ok=False keeps RAW."""
     spans=exact_spans(text)
+    if _unsafe_backticks(text):return text,spans,False
     # An unmatched quote can span an unknown literal; never silently compress it.
     if text.count('"')%2 or text.count('„')!=text.count('“'):return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
