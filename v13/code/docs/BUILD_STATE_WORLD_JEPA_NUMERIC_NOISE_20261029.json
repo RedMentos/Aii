@@ -1,0 +1,126 @@
+{
+  "schema": "v13.review_build_state.world_jepa_numeric_noise.v1",
+  "date_utc": "2026-10-29",
+  "scope": "review-only child PR1130 of PR1129; no production merge",
+  "owner": {
+    "branch": "codex/v13-worldjepa-numeric-noise-20261029-auto10p",
+    "pr": 1130,
+    "parent_pr": 1129,
+    "parent_commit": "ec7f4e42c1af8bc081e839a03588661678eb0a12",
+    "owned_paths": [
+      "v13/code/v13/world_jepa.py (child only)",
+      "v13/code/tests/test_world_jepa_numeric_noise_20261029.py",
+      "v13/code/tests/test_world_jepa_collapse_rank_20261029.py",
+      ".github/workflows/v13-world-jepa-numeric-noise-20261029.yml",
+      "v13/code/docs/WORLD_JEPA_NUMERIC_NOISE_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_WORLD_JEPA_NUMERIC_NOISE_20261029.json"
+    ]
+  },
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "prereg": {
+    "commit": "21fb175c9b34d240c2e695fc742ea13fee5a99cd",
+    "path": "v13/code/docs/WORLD_JEPA_NUMERIC_NOISE_PREREG_20261029.md"
+  },
+  "original_red": {
+    "run": 40927776227,
+    "head": "80ab87d5418ebead1afb60263664851d41ad19b6",
+    "tests": "29 total; 3 FAIL 26 PASS",
+    "cause": [
+      "parent bitwise-float equality test invalid on runner",
+      "deterministic 2-ULP jitter returned effective_rank=1.03156",
+      "identical input rows returned effective_rank=1.75043"
+    ],
+    "artifact": 12921960770,
+    "zip_sha256": "556de8d48ebd5626d2bddaeedd0df9b70fed28604f8a8f656a5a1f98bf2e48fa",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-Numeric-Noise/RAW_40927776227_sha556DE8.zip",
+    "private_readback": "byte-exact"
+  },
+  "focused_green": {
+    "run": 40927920982,
+    "head": "92ca1c3b1fc281c2650ca8c2ff60caf054a75ce4",
+    "tests": "29/29 PASS",
+    "source_blob": "99a686a131a1bdc89efe0d0cf9610ec54cbd853b",
+    "original_test_blob": "af91a19864b01e960f9fb4a7221b7497ebfb2697",
+    "new_test_blob": "6cf9f0b84d5871c576fb64bf586e74a2931bd0a3",
+    "artifact": 12919959575,
+    "zip_sha256": "c2e687ca8e7715d795022f17629fba3b363928e5ba0f707efbd3d09ff45a38c0",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-Numeric-Noise/RAW_40927920982_shaC2E687.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "parent_full_red": {
+    "run": 40926454164,
+    "head": "ec7f4e42c1af8bc081e839a03588661678eb0a12",
+    "tests": "3234 total; 1 collapse test FAIL; 2 inherited Run34/Run37 source preflight ERROR; 11 skips",
+    "artifact": 12920439064,
+    "zip_sha256": "7c96deb16e21710b4d4e14ca285315f3d54d8f142b4c3c50315d50377d1b438d",
+    "crc": true,
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-Numeric-Noise/PARENT_FULL_RED_40926454164_sha7C96DE.zip",
+    "private_readback": "byte-exact",
+    "full_green_claimed": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "world_jepa_utility": "UNPROVEN",
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Finite floating-point collapse diagnostic only, not learning or World-JEPA utility",
+    "No model, training, weights, EMA, confidence, action permission, registered source/model/seed/cohort changes",
+    "No native weights or Redmi; inherited frozen-source preflight RED preserved"
+  ],
+  "open_questions": [
+    "Full 3237-case suite remains RED only on inherited Run34/Run37 frozen-source preflight: native_source_or_catalog_changed; do not rewrite registered source/catalog pins to force GREEN",
+    "Numerical roundoff floor 64*eps*max(1,abs(z)) is conservative; require cross-review for very-small genuine signals",
+    "World-JEPA runtime consumer/native causal utility, retention and rollback unproven"
+  ],
+  "next_commands": [
+    "Preserve full Actions 40928180620 inherited Run34/Run37 RED; pursue independent native source recovery without changing frozen cohort pins",
+    "Run source-pinned full child software regression, preserve raw ZIP and all exits; inherited Run34/Run37 failures remain RED",
+    "Independent review of diagnostic threshold with deterministic tiny genuine signal and exact constant controls",
+    "Continue functional World-JEPA consumer/telemetry and native causal gain proof without authority promotion"
+  ],
+  "checkpoint_reason": "Intermediate verified RED->GREEN software package; continue independent roadmap work; runtime budget UNKNOWN",
+  "child_full_red": {
+    "run": 40928180620,
+    "head": "e15f46a5212dceeeac4361a68ba982bcb00419a4",
+    "tests": "3237 total, 2 inherited Run34/Run37 frozen-source preflight ERROR, 11 skipped, no new collapse failure",
+    "artifact": 12921438598,
+    "zip_sha256": "49e5ccc2800df138b23b99e733f226559916311279305e92d7ce16efd3686773",
+    "crc": true,
+    "inner_sha256": "17/17",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-Numeric-Noise/CHILD_FULL_RED_40928180620_sha49E5CC.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "PIP_CHECK": 0,
+      "FULL": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "full_green_claimed": false
+  }
+}

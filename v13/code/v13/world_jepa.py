@@ -297,7 +297,15 @@ class WorldJEPA:
         min_std = float(zt.std(0).min())
         if not np.isfinite(min_std):
             raise ValueError('Nonfinite WorldJEPA collapse evidence')
-        if np.all(np.ptp(zt, axis=0) == 0):
+        # A 64-wide float64 encoder can produce a few ULPs of row-wise
+        # variation for mathematically identical latents on different BLAS
+        # kernels. Below the conservative floating-point resolution floor,
+        # effective rank is not measurable: do not invent positive rank.
+        # A real resolvable change remains visible to the eigenvalue path.
+        span = np.ptp(zt, axis=0)
+        roundoff = (64. * np.finfo(np.float64).eps
+                    * np.maximum(1., np.max(np.abs(zt), axis=0)))
+        if np.all(span <= roundoff):
             return {'effective_rank': 0., 'min_std': 0., 'collapsed': True}
         ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None)
         total = float(ev.sum())

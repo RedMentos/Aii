@@ -40,7 +40,8 @@ class WorldJEPACollapseRank(unittest.TestCase):
         model = self._fit(X)
         probe = np.repeat(X[0:1], 7, axis=0)
         latent = model.latent(probe)
-        self.assertTrue(np.array_equal(latent, np.repeat(latent[0:1], 7, axis=0)))
+        np.testing.assert_allclose(latent, np.repeat(latent[0:1], 7, axis=0),
+                                   rtol=0., atol=1e-12)
         self.assertGreater(float(np.abs(latent).max()), 0.)
         stats = model.collapse_stats(probe)
         self.assertEqual(stats["effective_rank"], 0.0)
