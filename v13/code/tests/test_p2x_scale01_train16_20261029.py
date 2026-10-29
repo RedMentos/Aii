@@ -56,6 +56,7 @@ class Scale01TrainingOnly(unittest.TestCase):
         result = M.score(rows, p, a)
         self.assertEqual(result["correct_strict_in_sample"], {"0":16,"1":16})
         self.assertEqual(result["paired_action_changes"], 0)
+        self.assertEqual(json.loads(json.dumps(result)), result)
         self.assertEqual(result["native_calls"], 32)
         self.assertEqual(result["step2_status"], "UTILITY_FAIL")
         self.assertFalse(result["whole_system_complete"])
