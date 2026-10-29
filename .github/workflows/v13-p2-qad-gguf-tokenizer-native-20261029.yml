@@ -1,0 +1,124 @@
+name: V13 P2 pinned QAD GGUF native tokenizer eight-probe parity
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-qad-gguf-tokenizer-native-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-fp32-real-value-serial-20261029
+  cancel-in-progress: false
+jobs:
+  native-tokenize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify pinned runtime and model, tokenize only on loopback
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2-native-tokenize-evidence"
+          w="$RUNNER_TEMP/v13-p2-native-tokenize-work"
+          mkdir -p "$e" "$w/runtime"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'tokenizers==0.22.1' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            curl -fL --retry 2 --connect-timeout 20 --max-time 300 \
+              'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' \
+              -o "$w/runtime.tar.gz" > "$e/RUNTIME_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443' "$w/runtime.tar.gz" | sha256sum -c > "$e/RUNTIME_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_SHA_EXIT.txt"
+            curl -fL --retry 2 --connect-timeout 20 --max-time 180 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/qad/tokenizer.json?download=true' \
+              -o "$w/qad-tokenizer.json" > "$e/TOKENIZER_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/TOKENIZER_DOWNLOAD_EXIT.txt"
+            curl -fL --retry 2 --connect-timeout 20 --max-time 600 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf?download=true' \
+              -o "$w/QAD.gguf" > "$e/GGUF_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/GGUF_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' \
+              'df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd' "$w/qad-tokenizer.json" \
+              '3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d' "$w/QAD.gguf" \
+              | sha256sum -c > "$e/SOURCE_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/SOURCE_SHA_EXIT.txt"
+          else
+            for s in RUNTIME_DOWNLOAD RUNTIME_SHA TOKENIZER_DOWNLOAD GGUF_DOWNLOAD SOURCE_SHA; do echo SKIPPED > "$e/${s}_EXIT.txt"; done
+          fi
+          if [ "$(cat "$e/SOURCE_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/RUNTIME_SHA_EXIT.txt")" = 0 ]; then
+            tar -xzf "$w/runtime.tar.gz" -C "$w/runtime" > "$e/EXTRACT_RAW.log" 2>&1
+            bin=$(find "$w/runtime" -type f -name llama-server -print -quit)
+            echo "$bin" > "$e/SERVER_BINARY.txt"
+            if [ -n "$bin" ]; then
+              chmod +x "$bin"
+              export LD_LIBRARY_PATH="$(dirname "$bin"):${LD_LIBRARY_PATH:-}"
+              "$bin" --model "$w/QAD.gguf" --host 127.0.0.1 --port 8080 \
+                --ctx-size 512 --threads 2 --n-gpu-layers 0 --no-warmup \
+                > "$e/SERVER_RAW.log" 2>&1 &
+              server_pid=$!
+              ready=1
+              for i in $(seq 1 90); do
+                curl -fsS --max-time 2 http://127.0.0.1:8080/health > "$e/HEALTH_RAW.json" 2>/dev/null
+                if [ "$?" = 0 ]; then ready=0; break; fi
+                if ! kill -0 "$server_pid" 2>/dev/null; then break; fi
+                sleep 1
+              done
+              echo "$ready" > "$e/SERVER_READY_EXIT.txt"
+              if [ "$ready" = 0 ]; then
+                timeout --signal=TERM --kill-after=10s 120s \
+                  "$w/venv/bin/python" v13/code/scripts/p2_qad_gguf_tokenize_probe.py \
+                  --tokenizer-json "$w/qad-tokenizer.json" --output "$e/RESULT.json" \
+                  > "$e/AUDIT_RAW.log" 2>&1
+                echo "$?" > "$e/AUDIT_EXIT.txt"
+              else echo SKIPPED_SERVER_RED > "$e/AUDIT_RAW.log"; echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+              kill "$server_pid" 2>/dev/null
+              wait "$server_pid" 2>/dev/null
+            else echo 1 > "$e/SERVER_READY_EXIT.txt"; echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+          else echo SKIPPED > "$e/SERVER_READY_EXIT.txt"; echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 100268d45a70ab7ad62757e55367bd0dbe147fb6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 100268d45a70ab7ad62757e55367bd0dbe147fb6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve native tokenizer raw and original RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2-qad-native-tokenize-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2-native-tokenize-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce narrow eight-ID equality only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2-native-tokenize-evidence"
+          for s in VENV DEPS RUNTIME_DOWNLOAD RUNTIME_SHA TOKENIZER_DOWNLOAD GGUF_DOWNLOAD SOURCE_SHA SERVER_READY AUDIT PRIVACY DIFF; do
+            test "$(cat "$e/${s}_EXIT.txt")" = 0
+          done
+          python3 - "$e/RESULT.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['schema']=='v13.p2.qad_gguf_native_tokenizer_ids.v1'
+          assert x['status']=='EIGHT_TOKEN_IDS_EQUAL_NATIVE_NO_LOGIT_PARITY'
+          assert x['equal_count']==x['probe_count']==8
+          assert x['model_forward_calls']==0 and x['training'] is False
+          assert x['full_tokenizer_chat_logit_utility_parity_proven'] is False
+          print('EIGHT_NATIVE_QAD_TOKEN_IDS_EQUAL_NO_MODEL_INFERENCE_OR_UTILITY_PROMOTION')
+          PY
