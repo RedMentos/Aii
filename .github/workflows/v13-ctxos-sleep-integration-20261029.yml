@@ -2,7 +2,7 @@ name: V13 Context OS x Sleep S7 exact-source integration software review
 on:
   push:
     branches: [codex/v13-context-sleep-integrated-review-20261029-auto10]
-    paths: ['.github/workflows/v13-ctxos-sleep-integration-20261029.yml']
+    paths: ['.github/workflows/v13-ctxos-sleep-integration-20261029.yml', 'v13/code/tests/test_contextos_sleep_source_integration_20261029.py', 'v13/code/docs/CTXOS_SLEEP_INTEGRATION_HANDOFF_20261029.md']
 permissions:
   contents: read
 jobs:
