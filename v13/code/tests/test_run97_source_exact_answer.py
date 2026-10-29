@@ -31,10 +31,6 @@ class SourceExactTests(unittest.TestCase):
             runtime.close()
         self.context = BudgetContext(self.home)
 
-    def tearDown(self):
-        self.context.close()
-        self.tmp.cleanup()
-
     def test_real_source_exact_answer_without_model(self):
         with patch.object(self.context.pool, "get", side_effect=AssertionError("NATIVE_CALLED")):
             result = source_exact.query_exact(self.context, QUERY)
