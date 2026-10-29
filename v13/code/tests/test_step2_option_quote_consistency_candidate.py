@@ -104,6 +104,56 @@ class Run130QuoteConsistency(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DUPLICATE_OPTION_ENTITY"):
             candidate.repair(dumps(x), row, fixture)
 
+    def test_same_policy_dual_two_identical_b1_quotes_repair(self):
+        row, fixture, raw = case()
+        row["variant"] = "same_policy_dual"
+        u = json.loads(row["consumer_messages"][1]["content"])
+        u["analysts"].append(deepcopy(u["analysts"][0]))
+        row["consumer_messages"][1]["content"] = dumps(u)
+        fixed, status, changed = candidate.repair(raw, row, fixture)
+        self.assertEqual((status, changed), ("SOURCE_EXACT_OPTIONS_REPAIRED", 1))
+        self.assertTrue(json.loads(fixed)["options"][0]["local"])
+
+    def test_duplicate_b1_rejected_outside_same_policy_control(self):
+        row, fixture, raw = case()
+        row["variant"] = "b1_only"
+        u = json.loads(row["consumer_messages"][1]["content"])
+        u["analysts"].append(deepcopy(u["analysts"][0]))
+        row["consumer_messages"][1]["content"] = dumps(u)
+        with self.assertRaisesRegex(ValueError, "DUPLICATE_B1_ANALYST"):
+            candidate.repair(raw, row, fixture)
+
+    def test_same_policy_conflicting_verified_quote_lists_rejected(self):
+        row, fixture, raw = case()
+        row["variant"] = "same_policy_dual"
+        alt = "Option A: cost 61 euros, duration 3 days, local true."
+        fixture["history"].append(alt)
+        row["source_evidence"].append({"source_ref": {
+            "sha256": hashlib.sha256(alt.encode()).hexdigest(),
+            "char_start": 0, "char_end": len(alt), "source_id": "Atlas-h1"},
+            "text": alt})
+        u = json.loads(row["consumer_messages"][1]["content"])
+        u["analysts"].append({"role": "B1_DETAIL", "verified_quotes": [alt]})
+        row["consumer_messages"][1]["content"] = dumps(u)
+        with self.assertRaisesRegex(ValueError, "SAME_POLICY_B1_QUOTES_CONFLICT"):
+            candidate.repair(raw, row, fixture)
+
+    def test_same_policy_missing_or_extra_b1_rejected(self):
+        for quote_mode in ("one", "empty", "three"):
+            row, fixture, raw = case()
+            row["variant"] = "same_policy_dual"
+            u = json.loads(row["consumer_messages"][1]["content"])
+            if quote_mode != "one":
+                u["analysts"].append(deepcopy(u["analysts"][0]))
+            if quote_mode == "empty":
+                u["analysts"][1]["verified_quotes"] = []
+            if quote_mode == "three":
+                u["analysts"].append(deepcopy(u["analysts"][0]))
+            row["consumer_messages"][1]["content"] = dumps(u)
+            with self.subTest(quote_mode=quote_mode), self.assertRaisesRegex(
+                    ValueError, "SAME_POLICY_B1_(COUNT|QUOTES_MISSING)"):
+                candidate.repair(raw, row, fixture)
+
     def test_original_native_42_rows_when_supplied(self):
         src = os.environ.get("V13_RUN116_SOURCE_REPORT")
         tool = os.environ.get("V13_RUN116_TOOL_REPORT")

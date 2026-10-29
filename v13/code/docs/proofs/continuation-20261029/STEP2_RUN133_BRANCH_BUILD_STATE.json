@@ -1,0 +1,80 @@
+{
+  "schema": "v13.run133.same_policy_b1_multiplicity_review_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation; review-only, no native/model owner",
+  "branch": "assistant/v13-run133-b1-control-multiplicity-review-20261029",
+  "pr": 1033,
+  "parent_pr": 1030,
+  "parent_sha": "62055340446318d5c7f58d2feadff4ccb0e4413d",
+  "prereg_commit": "744405e05f250c78cb2fad835578329035f58ca6",
+  "source_blob": "c9b9c1694cba016ccf0059da7f78585694a31327",
+  "test_blob": "a3c2e7ce30a969cb86080be4709b87df058dc354",
+  "workflow_blob": "9a85d8d31eb7ea595634b90d2e29f21583db781b",
+  "source_test_commit": "3ea24fe52dfd9442719393e799b53372f75e3e7e",
+  "workflow_head_before_this_checkpoint": "bf808cd0968b5852570ad572d840de32d5c18487",
+  "software_ci": {
+    "run_id": 40816037258,
+    "status": "IN_PROGRESS_OR_UNAUDITED",
+    "focused": "PENDING",
+    "original_native_replay": "PENDING",
+    "full": "PENDING",
+    "privacy": "PENDING",
+    "raw_zip": "PENDING",
+    "native_calls": 0
+  },
+  "historical_red": [
+    {
+      "run_id": 40814345451,
+      "reason": "DUPLICATE_B1_ANALYST on same_policy_dual",
+      "preserved": true
+    },
+    {
+      "run_id": 40814412776,
+      "reason": "DUPLICATE_B1_ANALYST on same_policy_dual",
+      "preserved": true
+    }
+  ],
+  "independent_original_raw": {
+    "artifact_id": 12872031695,
+    "zip_sha256": "4e9f52df6f33003009d8dcb43dcce220699d31235eeec64e8fb8f1d5ce194fd7",
+    "crc": "CLEAN",
+    "rows": 42,
+    "b1_multiplicity": {
+      "0": 6,
+      "1": 30,
+      "2": 6
+    },
+    "two_b1_variant": "same_policy_dual",
+    "identical_verified_quote_lists": 6,
+    "preflight": "PASS_SOFTWARE_SOURCE_INSPECTION_ONLY"
+  },
+  "changes": [
+    "Allow exactly two B1 analysts only in same_policy_dual, with identical nonempty quote lists.",
+    "Reject duplicate B1 in other variants and conflicting/missing/extra same-policy records.",
+    "Preserve original source-ref verification and frozen 42-row denominator; no runtime/model changes."
+  ],
+  "open_questions": [
+    "Does original frozen 42-row replay now complete without wrong committed action?",
+    "Does the Run133 exact-head CI independently close original raw/full/privacy GREEN?",
+    "Can Run130 owner integrate this reviewed fix without overwriting other siblings?",
+    "How do source-bound project aliases Run129 and option quote correction interact under new preregistration?"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Inspect GitHub Actions run 40816037258 at exact head bf808cd0968b5852570ad572d840de32d5c18487; download original ZIP, verify CRC/SHA256SUMS/HEAD, 42-row replay, focused/full/privacy/DIFF exits and wrong-committed gate. Preserve RED and fix on owned branch if necessary; update PR/BUILD_STATE and rerun exact-head CI.",
+  "prerequisites": [
+    "Frozen Run116 original source/tool SHA256 unchanged",
+    "No new native calls or native owner release",
+    "No production runtime edit, no canonical gate promotion",
+    "Do not merge main or overwrite Run130 owner"
+  ],
+  "no_main_merge": true
+}

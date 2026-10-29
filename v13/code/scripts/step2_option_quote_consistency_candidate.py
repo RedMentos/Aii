@@ -54,7 +54,18 @@ def verified_b1_quotes(source_row, fixture):
     need(spans, "SOURCE_EVIDENCE_MISSING")
     user = json.loads(source_row["consumer_messages"][1]["content"], object_pairs_hook=unique)
     analysts = [a for a in user["analysts"] if a.get("role") == "B1_DETAIL"]
-    need(len(analysts) <= 1, "DUPLICATE_B1_ANALYST")
+    # Frozen same_policy_dual deliberately contains two identical B1 policy
+    # records. Preserve that negative control, but never pick one of two
+    # conflicting records or accept duplicate B1 in another variant.
+    if source_row.get("variant") == "same_policy_dual":
+        need(len(analysts) == 2, "SAME_POLICY_B1_COUNT")
+        need(all(type(a.get("verified_quotes")) is list and a["verified_quotes"]
+                 and all(type(q) is str and q for q in a["verified_quotes"])
+                 for a in analysts), "SAME_POLICY_B1_QUOTES_MISSING")
+        need(analysts[0]["verified_quotes"] == analysts[1]["verified_quotes"],
+             "SAME_POLICY_B1_QUOTES_CONFLICT")
+    else:
+        need(len(analysts) <= 1, "DUPLICATE_B1_ANALYST")
     quotes = []
     for analyst in analysts:
         for q in analyst["verified_quotes"]:

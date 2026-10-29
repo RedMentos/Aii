@@ -1,0 +1,118 @@
+name: V13 Run133 same-policy B1 multiplicity repair SOFTWARE-only native replay
+on:
+  push:
+    branches: [assistant/v13-run133-b1-control-multiplicity-review-20261029]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run133-b1-multiplicity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Original frozen raw, source-only candidate, tests and privacy
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run133-project"
+          mkdir -p "$e/original" "$e/experiment"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            observed="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$observed" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$observed" = "$1" ]
+          }
+          check 7278b9244dbfde450cc856d64a5e51dfddc42489 v13/code/docs/proofs/continuation-20261029/STEP2_RUN133_B1_MULTIPLICITY_PREREG.md || source_ok=1
+          check c9b9c1694cba016ccf0059da7f78585694a31327 v13/code/scripts/step2_option_quote_consistency_candidate.py || source_ok=1
+          check a3c2e7ce30a969cb86080be4709b87df058dc354 v13/code/tests/test_step2_option_quote_consistency_candidate.py || source_ok=1
+          check f4a92dab9c4a40761d64394cdca1c052e9a76bfd v13/code/v13/utility.py || source_ok=1
+          check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_ok=1
+          check e8d8c87de2474a764e4bbc28b4fe028413a316e1 v13/code/scripts/step2_tool_replay.py || source_ok=1
+          check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          gh run download 40805361392 -n run116-sixfixture-cqp20-native-40805361392-4a6473afbe7404be5cf74f24d20a47d2d99fd0f6 -D "$e/original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          python3 - "$e/original" > "$e/ORIGINAL_VERIFY_RAW.log" 2>&1 <<'PY'
+          from pathlib import Path
+          import hashlib,sys
+          d=Path(sys.argv[1])
+          assert hashlib.sha256((d/'STEP2_RAW.json').read_bytes()).hexdigest()=='c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f'
+          assert hashlib.sha256((d/'TOOL_RAW.json').read_bytes()).hexdigest()=='e90c23fd909dc0e138312f6802a05a3377f451f6675a496c1d4b1f1b19847ac0'
+          lines=(d/'SHA256SUMS.txt').read_text().splitlines()
+          assert len(lines)==29
+          for line in lines:
+              h,p=line.split('  ',1)
+              assert hashlib.sha256((d/p.removeprefix('./')).read_bytes()).hexdigest()==h,p
+          print('ORIGINAL_RUN116_29_HASHES_SOURCE_AND_TOOL_SHA_OK')
+          PY
+          echo "$?" > "$e/ORIGINAL_VERIFY_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/step2_option_quote_consistency_candidate.py v13/code/tests/test_step2_option_quote_consistency_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_ok" = 0 ] && [ "$(cat "$e/ORIGINAL_VERIFY_EXIT.txt")" = 0 ]; then
+            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/original/STEP2_RAW.json" V13_RUN116_TOOL_REPORT="$e/original/TOOL_RAW.json" timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_step2_option_quote_consistency_candidate) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s python3 -m scripts.step2_option_quote_consistency_candidate --source-report "$e/original/STEP2_RAW.json" --tool-report "$e/original/TOOL_RAW.json" --out "$e/experiment/report.json") > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+          else
+            for n in FOCUSED PROBE; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-run133-venv"
+          py="$RUNNER_TEMP/v13-run133-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first="$?"
+          if [ "$first" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            first="$?"
+          fi
+          if [ "$first" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            first="$?"
+          fi
+          echo "$first" > "$e/INSTALL_EXIT.txt"
+          if [ "$first" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_DEPENDENCY_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 62055340446318d5c7f58d2feadff4ccb0e4413d --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 62055340446318d5c7f58d2feadff4ccb0e4413d HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original software raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run133-b1-multiplicity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run133-project/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce no-native software acceptance
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run133-project"
+          for n in SOURCE DOWNLOAD ORIGINAL_VERIFY COMPILE FOCUSED PROBE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw preserved; STEP2 UTILITY_FAIL"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN133_B1_MULTIPLICITY_SOFTWARE_ONLY_NO_GATE
