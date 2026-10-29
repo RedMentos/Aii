@@ -1,0 +1,42 @@
+{
+  "schema": "v13.run118.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run118-rule-pointer-choice-candidate-20261029",
+  "base_head": "5eb9b45ef742c0e100fb6d04f461a43666b62650",
+  "base_pr": 1020,
+  "prereg_first_commit": "48b8773ad0c4313a69ae3c8a0bb8afa0e613b811",
+  "parent_software": {
+    "run_id": 40804765978,
+    "status": "PENDING_ORIGINAL_RAW_INDEPENDENT_AUDIT",
+    "head": "5eb9b45ef742c0e100fb6d04f461a43666b62650"
+  },
+  "source_git_blob": "6068849a19f53ad1bdbd200739b95731f8a1fb20",
+  "tests_git_blob": "98f6f13c7e6c57bb794aa1bfd52596859264d91b",
+  "prereg_git_blob": "a9d13e78ff6f4a5f73e28653ea95038a4c60d359",
+  "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+  "scope": "SOFTWARE_ONLY_EXACT_SOURCE_REF_BOUND_PRIOR_FIRST_QUOTE_CHOICES_CAP24",
+  "status": "IMPLEMENTED_NOT_CI_VERIFIED_WAIT_PARENT_RUN117_ORIGINAL_RAW",
+  "negative_gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "blocked": [
+    "Run117 parent software original raw not independently GREEN yet",
+    "Run116 native owner active; no overlapping native inference",
+    "No production cognition mutation; separate preregistered ablation required"
+  ],
+  "next_command": "After Run117 original raw independently GREEN and private byte-identical backup: add pinned Run118 software CI on this branch; audit original ZIP, then consider native A/B after Run116 owner release.",
+  "prerequisites": [
+    "parent Run117 source test GREEN and original raw hash verified",
+    "Run118 source/test/prereg Git blobs exact",
+    "frozen quote_choices and fixture hashes unchanged",
+    "full suite and privacy clean"
+  ]
+}
