@@ -1,0 +1,20 @@
+# Sleep S7 bounded pending-session fairness — 2026-10-29
+
+## Lineage and scope
+- Parent review PR #1111 head `b02c7161524b515a78aad08741922c527e4efdd7`, based on PR #1110 and exact PR #1109 Context OS donor. Parent integrated full-suite proof pending at time of creation; this is a review-only child, not a production merge.
+- Prereg committed and remotely verified first: `95b685f8f54dba37ce708498cc55d1b1d95e64f7`. Source `sleep_offline.py` only, plus synthetic Store tests, CI and this handoff. No change to `history.py`, `context_os.py`, Canon, models, cohorts or seed hashes.
+- Original pending-session starvation: SQL selected latest eight sessions *before* checking per-session high-water; ninth never processed. Test-only original RED GitHub Actions `40902905723` at `ff45d8fefb758d1be372df52ccdcc2ca3ef38123`: 3/3 focused tests failed exactly as expected; artifact `12910750517`, ZIP SHA256 `07f78b11735ef33c0a1efd444c61b005b4d98bd4dd2a23ecc33504884e1f1797`, ZIP CRC and internal SHA256SUMS verified, privacy CLEAN.
+- First candidate `a1740fb8eded48a4c5a34fe4a582c4b4ad34f95d` enumerated pending sessions and prioritized oldest high-water. New independent stalled-session counterexample (eight blocked older sessions and one valid ninth) failed; original RED2 Actions `40903221235` at `7d9ea71e45b525a639ffbf8b8cc7b96892009e92`: 2/4 failed, 2/4 passed, ZIP artifact `12910287257`, SHA256 `13786a50d29cf7ee6bc7724582feb0dc16f31cbdf546a13458ce6f2f73ee93be`, CRC verified, privacy CLEAN.
+- Follow-up fix `4ff7af3737bc5444c74f1a4abd6ae2a3fe5d6d4d` uses least-recently-attempted pending sessions before oldest high-water; preserves per-run eight-session/64-turn caps and source-validation path. Only still-pending attempts retained; no new fact authority. Test correction `f8189c06510df426b9635555a7f8b0d975f6de6e` asserts total eight source-valid digests rather than imposing a particular fair scheduling order. All original failures retained.
+- Exact-head focused/full CI workflow `v13-sleep-session-fairness-source-20261029.yml` committed `a93877ccdce62cebc78635737975f3b236402826`; outcome pending. Do not claim GREEN until exact-head raw artifact verified.
+
+## Follow-up and negative gates
+1. Inspect newest GitHub Actions run for this branch. Verify FOCUSED/FULL/COMPILE/PRIVACY/DIFF exit files, closed ZIP SHA256SUMS and exact HEAD. Preserve any failures and fix only after reproducing them.
+2. Independently review the scheduler for many sessions, stalled/late FINAL, cross-session source revocation, state persistence/restart, resource bounds and concurrent sleep conflicts. The separate out-of-order assistant completion issue may require event-aware scanning; do not claim it solved here.
+3. Keep review branch unmerged pending independent review. Continue next canonical package; no device/native inference was run in this change.
+4. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi sustained proof absent; V13 incomplete.
+
+
+## First full-source CI result and inherited correction
+- First exact-head full workflow `40903493539` at `ccb46a3350c9344515ba2272d782451af4771381` was RED: 18 focused tests, 1 failed; 3199 full tests, 1 failed and 11 skipped. All four new S7 fairness regressions PASS. Only failure was the already diagnosed inherited foreign-session test expectation from parent #1111 (a second FINAL assistant caused two sessions to digest). DEPS/COMPILE/PRIVACY/DIFF all exit0. Original raw ZIP `12910457860` SHA256 `eed11c076699aae02f1ccde1f6e56b9f9bddfaddba10717833b8cc59c405ac80`, CRC and internal SHA256SUMS verified.
+- Imported exact parent test-only correction `ecf81a6a37cf0630100e2bebcad615f74827dc60`, new test blob `37619a487643544a18681bf6ea2c6a61ac643ff2`. No S7 source change, no frozen cohort modification. Rerun exact-head full software CI required; no GREEN claimed from old RED.

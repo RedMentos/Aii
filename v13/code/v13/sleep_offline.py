@@ -36,9 +36,24 @@ def digest(store,checkpoint=None):
     """Extractive day digest per session; only turns newer than the last digest."""
     from .history import native_history
     st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0}
-    rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
-    for r in rows:
-        sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
+    # Select *pending* sessions before applying the per-run budget. The
+    # former latest-eight SQL LIMIT could permanently starve older sessions
+    # even when all eight selected sessions had already been digested.
+    candidates=store.rows(
+        "SELECT session_id,MAX(id) AS last FROM messages "
+        "WHERE role='assistant' AND status='FINAL' GROUP BY session_id")
+    pending=[r for r in candidates
+             if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)]
+    # Least-recently-attempted first, then oldest undigested high-water.
+    # Otherwise eight sessions stalled on incomplete turns can monopolize
+    # every cycle and starve a ninth valid session forever.
+    attempts=st.setdefault('session_attempts',{})
+    pending.sort(key=lambda r:(attempts.get(r['session_id'],-1),
+                               st['sessions'].get(r['session_id'],{}).get('until',0),
+                               r['last'],r['session_id']))
+    for r in pending[:SESSIONS_MAX]:
+        sess=r['session_id'];attempts[sess]=st['runs']
+        d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
         if checkpoint:checkpoint()
         # Process the oldest bounded window *after* the durable assistant
@@ -71,6 +86,12 @@ def digest(store,checkpoint=None):
                                  'exact':us+as_,'msg':p['assistant']['id']})
             out['turns']+=1;out['compressed']+=int(uok)+int(aok)
         d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=highwater;out['sessions']+=1
+    # Persist only attempts that are still pending; completed sessions do
+    # not accumulate an unbounded scheduling map across repeated sleeps.
+    st['session_attempts']={
+        r['session_id']:attempts[r['session_id']] for r in pending
+        if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)
+        and r['session_id'] in attempts}
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 
