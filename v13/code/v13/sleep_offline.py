@@ -112,6 +112,33 @@ def digest(store,checkpoint=None):
                        for row in groups.get(u['event_id'],[]))
                    for u in settled):
                 continue
+        elif len(users)==TURNS_MAX:
+            # A pending predecessor can sit just beyond the 64-user page.
+            # If an assistant from this page finished after that user row,
+            # the original barrier still applies. Check the crossed interval
+            # in SQLite, without materializing unbounded source text/history.
+            latest=max(row['id'] for u in settled
+                       for row in groups[u['event_id']]
+                       if row['role']=='assistant')
+            # One grouped pass over this session, not a correlated per-user
+            # scan (which is quadratic without a messages(event_id) index).
+            # The CTE includes assistants beyond 'latest' so an already
+            # settled crossed user is never mistaken for a pending one.
+            crossed=store.one(
+                "WITH event_counts AS ("
+                "SELECT event_id,COUNT(*) AS n,"
+                "SUM(CASE WHEN role='assistant' AND status IN "
+                "('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') "
+                "THEN 1 ELSE 0 END) AS terminal,"
+                "MIN(CASE WHEN role='assistant' THEN id END) AS assistant_id "
+                "FROM messages WHERE session_id=? AND role IN ('user','assistant') "
+                "GROUP BY event_id) "
+                "SELECT u.id FROM messages u JOIN event_counts e ON e.event_id=u.event_id "
+                "WHERE u.session_id=? AND u.role='user' AND u.id>? AND u.id<=? "
+                "AND (u.status!='FINAL' OR e.n!=2 OR e.terminal!=1 "
+                "OR e.assistant_id<=u.id) ORDER BY u.id LIMIT 1",
+                (sess,sess,users[-1]['id'],latest))
+            if crossed:continue
         if not settled:continue
         # Source/rule revocation, exact source bytes, event session, answer
         # lineage and duplicate-row counts remain enforced by native_history.
