@@ -1,0 +1,41 @@
+{
+  "schema": "v13.run114.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run114-atlas-cqp20-native-execution-20261029",
+  "base_pr": 1017,
+  "base_head": "7dd2ef1a3e187187aeb2d2ebb955291798c37356",
+  "prereg_first_commit": "f59bb8094e5b4ce8e9ce74fdd030686c4a014f36",
+  "run112_owner": {
+    "run": 40802227224,
+    "head": "13724b6ae51a62d0968460ba88367ce297c12dee",
+    "status": "COMPLETED_SUCCESS; NO_ACTIVE_NATIVE_OWNER",
+    "zip_sha256": "fc42883753fe696dc8b18840d4c25b332dd551bee73f521d1d31a3e5155e9a0b",
+    "crc": "CLEAN",
+    "inner_hashes": "20/20",
+    "exits": "9/9 ZERO",
+    "focused": "54 PASS",
+    "full": "2697 PASS one skipped",
+    "native": "PINNED_C3_LINUX_FINAL",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run112-Age0-STEP2-Integrated-C3/RAW_40802227224_shaFC428837.zip",
+    "private_byte_match": true
+  },
+  "run113_software": {
+    "run": 40802603213,
+    "head": "7dd2ef1a3e187187aeb2d2ebb955291798c37356",
+    "status": "CI_IN_PROGRESS; ORIGINAL_RAW_PENDING"
+  },
+  "status": "PREREG_FIRST; RUN112_NATIVE_OWNER_RELEASED; RUN113_SOFTWARE_ORIGINAL_RAW_PENDING; NO_RUN114_NATIVE_LAUNCH",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Independently audit Run113 original CI raw (ZIP CRC, all inner SHA256SUMS/exits/tests), private byte-identical backup. If GREEN and no other native owner active, pin and launch Run114 Atlas CQP20 Linux-native source+tool pilot serially; preserve raw failures. If RED, fix software only and rerun, no native.",
+  "remaining_execution_budget": "UNKNOWN"
+}
