@@ -37,6 +37,16 @@ class PairScopeReview(unittest.TestCase):
         self.assertTrue(guarded.ambiguous_typed_pair(text))
         self.assertIsNone(guarded.read_fixed_pair_scope(text, [INDIVIDUAL])["options"])
 
+    def test_guard_refuses_versus_joint_values(self):
+        text = "Option A versus Option B: cost 70 euros, duration 4 days, local false."
+        self.assertTrue(guarded.ambiguous_typed_pair(text))
+        self.assertIsNone(guarded.read_fixed_pair_scope(text, [INDIVIDUAL])["options"])
+
+    def test_guard_refuses_semicolon_cross_option_value_leakage(self):
+        text = "Option A: cost 60 euros; Option B: cost 85 euros, duration 4 days, local false."
+        self.assertTrue(guarded.ambiguous_typed_pair(text))
+        self.assertIsNone(guarded.read_fixed_pair_scope(text, [INDIVIDUAL])["options"])
+
     def test_pure_pair_reference_recovers_prior_distinct_options(self):
         self.assertFalse(guarded.ambiguous_typed_pair(REFERENCE))
         got = guarded.read_fixed_pair_scope(REFERENCE, [RULES, INDIVIDUAL])
