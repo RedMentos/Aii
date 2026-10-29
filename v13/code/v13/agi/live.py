@@ -161,9 +161,12 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
     if kind=='route':  # WP-T6: a route correction on a skill-routed turn reopens the skill (back to the full path)
         try:
             from ..skilllive import on_route_correction
-            on_route_correction(store,event_id,value)
-            from ..jefoutcome import on_route_correction as outcome_route_correction
-            outcome_route_correction(store,event_id,value)  # WP-U1: skill outcome label flips to none
+            reopened=on_route_correction(store,event_id,value)
+            # Only a *disagreeing* correction that actually reopens the skill
+            # can invalidate JEF's positive outcome self-label.
+            if reopened:
+                from ..jefoutcome import on_route_correction as outcome_route_correction
+                outcome_route_correction(store,event_id,value)
         except Exception as exc:store.log('agi_live_unavailable',event_id,{'stage':'skill_reopen','error':type(exc).__name__})
     if kind in {'preference','style'}:
         try:UserModel(store).observe(kind if kind=='preference' else 'style',(key or '*')[:80],value[:200],evidence_ref or memory_id)
