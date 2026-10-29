@@ -7,6 +7,7 @@ queue (store.accepted_turns) and always preempt background work; here they
 only reset the idle clock. Rules, Age rights, quiet/idle policy and resource
 limits stay binding for every background event.
 """
+import math
 import time
 from .common import uid,dumps
 
@@ -65,7 +66,20 @@ class EventScheduler:
         if kind=='USER_INPUT' and origin!='USER':
             raise ValueError('USER_INPUT benötigt origin USER')
         dumps(payload or {})
-        st,v=self._load();now=self.clock()
+        # Validate durable timing before dedup, capacity eviction or any save.
+        # Nonfinite floats cannot represent an actionable queue deadline.
+        now=float(self.clock())
+        if not math.isfinite(now):
+            raise ValueError('Scheduler clock must be finite')
+        due=now if due is None else float(due)
+        if not math.isfinite(due):
+            raise ValueError('Scheduler due must be finite')
+        if ttl is not None:
+            ttl=float(ttl)
+            if not math.isfinite(ttl) or ttl<0 or not math.isfinite(now+ttl):
+                raise ValueError('Scheduler TTL must be finite and nonnegative')
+        expires=None if ttl is None else now+ttl
+        st,v=self._load()
         if dedup and any(e['dedup']==dedup and e['status'] in {'PENDING','DISPATCHED','HELD_AGE'} for e in st['events']):
             self._count(st,'deduplicated');self._save(st,v);return None
         if sum(e['status'] in {'PENDING','HELD_AGE','DISPATCHED'} for e in st['events'])>=MAX_PENDING:
@@ -76,7 +90,7 @@ class EventScheduler:
             victims[0]['status']='DROPPED_CAPACITY';self._count(st,'dropped_capacity')
         st['sequence']+=1
         e={'id':uid('wake'),'seq':st['sequence'],'kind':kind,'origin':origin,'priority':PRIORITY[kind],'created':now,
-           'due':now if due is None else float(due),'expires':None if ttl is None else now+float(ttl),'action':action,
+           'due':due,'expires':expires,'action':action,
            'payload':payload or {},'dedup':dedup,'status':'PENDING','attempts':0,'result':None}
         st['events'].append(e);self._count(st,'posted');self._retire(st);self._save(st,v)
         self.s.log('scheduler_post',None,{'kind':kind,'priority':e['priority']})
