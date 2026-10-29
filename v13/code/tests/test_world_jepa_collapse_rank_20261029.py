@@ -35,6 +35,17 @@ class WorldJEPACollapseRank(unittest.TestCase):
         self.assertGreater(stats["min_std"], 0.0)
         self.assertIs(stats["collapsed"], False)
 
+    def test_constant_nonzero_latents_have_zero_rank_despite_roundoff(self):
+        X = np.array([[0., 0.], [1., 0.], [0., 1.], [1., 1.]])
+        model = self._fit(X)
+        probe = np.repeat(X[0:1], 7, axis=0)
+        latent = model.latent(probe)
+        self.assertTrue(np.array_equal(latent, np.repeat(latent[0:1], 7, axis=0)))
+        self.assertGreater(float(np.abs(latent).max()), 0.)
+        stats = model.collapse_stats(probe)
+        self.assertEqual(stats["effective_rank"], 0.0)
+        self.assertIs(stats["collapsed"], True)
+
     def test_singleton_probe_rejected_as_unmeasurable(self):
         X = np.zeros((4, 2))
         model = self._fit(X)
