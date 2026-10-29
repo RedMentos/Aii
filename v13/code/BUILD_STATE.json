@@ -2944,5 +2944,54 @@
     "next_prerequisites": "Independent full software review; future pinned real C3 native negative-answer cohort; continue canonical roadmap.",
     "report": "docs/proofs/continuation-20261029/C3_BUDGET_OUTPUT_CONTRADICTION_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_c3_native_stream_bounds_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_FAKE_NATIVE_C3_STREAM",
+    "owner_branch": "codex/v13-c3-native-stream-bounds-20261029-auto10ah",
+    "parent_pr": 1145,
+    "parent_sha": "71fe7978d5dca6a134ced0c645346b291b97d92c",
+    "prereg_head": "ddbc17b7b7e2ed5601317a808eeca8a4ed284282",
+    "red": {
+      "run": 40955251916,
+      "head": "ddbc17b7b7e2ed5601317a808eeca8a4ed284282",
+      "tests": "40 RUN / 1 FAIL + 3 ERROR",
+      "zip_sha256": "bd62dee396a7efe8a651430c197ab9f83f2a353206092b59c017feed86dbead7"
+    },
+    "green": {
+      "run": 40955357530,
+      "head": "f7725a3ea47ae5fb8c566cb6ec98b882b596e071",
+      "tests": "40/40 PASS",
+      "zip_sha256": "2a5c8ec3d138c089710e54531e42202791be1c182db82d042bb9c40b8fd60ede",
+      "source_blob": "ae0260b4fb6ec51998cbe08326c430d0f2b8cc88",
+      "inner_hashes": "18/18",
+      "privacy": "CLEAN"
+    },
+    "full_suite": {
+      "run": 40955400194,
+      "head": "ac7fdfcec7a5967fc67b57475761a9d61c7801cf",
+      "status": "RED_6_FAIL_43_ERROR_28_SKIPPED",
+      "tests": 3266,
+      "zip_sha256": "0de0ebb0e161ae6b965a480f120ece072f757b92dfb6155543eb3a13b34baea6",
+      "inner_hashes": "18/18",
+      "private_backup_byte_exact": true,
+      "causes": "27 RUN50_INVALID_RECORD_COUNT, 8 missing events table, 4 torch unavailable, 2 frozen Run34/Run37 pins; other original failures retained"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-C3StreamBounds/",
+    "private_backup_red_green_byte_exact": true,
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "native_c3_evidence": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_c3_stream_bounds_20261029 tests.test_c3_budget_output_guard_20261029 tests.test_ask_verified_budget tests.test_verified_exact_standalone_cli_20261029 tests.test_verified_exact_budget_20261029 tests.test_source_consumer_admission",
+    "next_prerequisites": "Close independent full-suite raw and historical frozen errors; continue next canonical package, no gate promotion.",
+    "report": "docs/proofs/continuation-20261029/C3_STREAM_BOUNDS_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
