@@ -1,0 +1,51 @@
+name: V13 AG6 staged source original RED witness
+on:
+  push:
+    branches: [codex/v13-ag6-staged-source-recheck-20261029-auto10k]
+    paths: ['.github/workflows/v13-ag6-staged-source-original-red-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  original-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture original staged-source revocation counterexamples
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/ag6-staged-source-original-red"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_staged_source_revocation_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_ag6_staged_source_revocation_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base edcbb279dc1503ee0c7f7f556a0d24714eef4972 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check edcbb279dc1503ee0c7f7f556a0d24714eef4972 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-ag6-staged-source-original-red-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag6-staged-source-original-red/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Assert genuine original failure
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/ag6-staged-source-original-red"
+          cat "$e/FOCUSED_RAW.log"
+          test "$(cat "$e/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$e/DIFF_EXIT.txt")" = 0
+          test "$(cat "$e/FOCUSED_EXIT.txt")" != 0
+          grep -q 'FAIL:' "$e/FOCUSED_RAW.log"
