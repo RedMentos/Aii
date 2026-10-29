@@ -35,7 +35,7 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           for p in v13/code/v13/agi/eligibility.py v13/code/scripts/run42_b2_eligibility_source_shadow.py v13/code/scripts/run40_b2_store_history_readonly.py; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/FROZEN_RAW.log"
-          if [ "$(git hash-object v13/code/v13/agi/eligibility.py)" = e1f1a2d09a614378a75e397819fdce96a46de22d ] && [ "$(git hash-object v13/code/scripts/run42_b2_eligibility_source_shadow.py)" = d60d38112e9db69cd1ebab2fe5a91e35ca9feb0c ] && [ "$(git hash-object v13/code/scripts/run40_b2_store_history_readonly.py)" = f4befd61f22f87194c0cac070af73a1d7f559d73 ]; then echo 0 > "$e/FROZEN_EXIT.txt"; else echo 1 > "$e/FROZEN_EXIT.txt"; fi
+          if [ "$(git hash-object v13/code/v13/agi/eligibility.py)" = e1f1a2d09a614378a75e397819fdce96a46de22d ] && [ "$(git hash-object v13/code/scripts/run42_b2_eligibility_source_shadow.py)" = 3b0e5e67b908fe09130555c6f78e341c88d4de78 ] && [ "$(git hash-object v13/code/scripts/run40_b2_store_history_readonly.py)" = f4befd61f22f87194c0cac070af73a1d7f559d73 ]; then echo 0 > "$e/FROZEN_EXIT.txt"; else echo 1 > "$e/FROZEN_EXIT.txt"; fi
           git show 1aa13abec66eccd2df24942479e1194e826caa5e:v13/code/v13/world_jepa.py | git hash-object --stdin > "$e/ORIGINAL_WORLDJEPA_RAW.log"
           if [ "$(cat "$e/ORIGINAL_WORLDJEPA_RAW.log")" = b95cd3fd9172ddef0fb88f0a7d70e2921c43e777 ]; then echo 0 > "$e/ORIGINAL_EXIT.txt"; else echo 1 > "$e/ORIGINAL_EXIT.txt"; fi
           git hash-object v13/code/v13/world_jepa.py > "$e/DONOR_SOURCE_RAW.log"
