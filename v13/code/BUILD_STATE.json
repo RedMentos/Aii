@@ -3180,5 +3180,48 @@
     "next_command": "Review Actions 40958983649 full raw, verify archive SHA256SUMS and categorize all errors; no waiver; then select independent canonical implementation package.",
     "next_prerequisites": "Retain frozen Run34/Run37 source/model pin failures; preserve historical raw and exact HEAD; do not infer whole-system PASS.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_full_suite_peft_20261029": {
+    "scope": "REVIEW_ONLY_LINUX_SOFTWARE_FULL_SUITE_PEFT_DEPENDENCY",
+    "owner_branch": "codex/v13-full-suite-peft-review-20261029-auto10an",
+    "parent_pr": 1151,
+    "parent_sha": "abb1c978409d613f814154580c5ff8b621d335d4",
+    "prereg_commit": "4b073ea404afb4e96848ee5b0d54cbcfea41e372",
+    "original_full_suite": {
+      "run": 40957012351,
+      "tests": "3285 RUN / 6 ERROR / 11 SKIPPED",
+      "missing_transformers": 3,
+      "missing_peft": 1,
+      "frozen_source_pin_errors": 2,
+      "original_zip_sha256": "c3abbd38acc66b12f4bb495849dd3faccbdca74e93286f6d4e3c6102e5dc826d",
+      "original_zip_crc_clean": true,
+      "inner_hashes": "22/22",
+      "private_backup_byte_exact": true
+    },
+    "parent_transformers_run": {
+      "run": 40958983649,
+      "status": "IN_PROGRESS_NO_RESULT_CLAIM"
+    },
+    "peft_prereg": {
+      "torch": "2.5.1+cpu",
+      "transformers": "4.44.2",
+      "peft": "0.13.2",
+      "numpy": "2.2.6",
+      "full_unfiltered_suite": true,
+      "workflow": "NOT_TRIGGERED_UNTIL_PARENT_HEAVY_SUITE_COMPLETES"
+    },
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "After Actions 40958983649 completes and original raw is closed, create pinned PEFT Actions workflow on this branch, run full unfiltered suite, preserve and hash all results.",
+    "next_prerequisites": "Do not run overlapping CPU-heavy full suites; retain historical Run34/Run37 source pins and all original negative gates.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
