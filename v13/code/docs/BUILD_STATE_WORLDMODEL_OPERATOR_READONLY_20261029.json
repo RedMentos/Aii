@@ -1,0 +1,75 @@
+{
+  "schema": "v13.review_build_state.worldmodel_operator_readonly.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1141 child of PR1140; no production merge",
+  "owner": {
+    "branch": "codex/v13-worldmodel-operator-readonly-20261029-auto10ac",
+    "pr": 1141,
+    "parent_pr": 1140,
+    "parent_sha": "35330b85f21aa837ed754eed6b879909e5b8364b"
+  },
+  "canon": {
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "source": {
+    "operator_before": "4823a811820070e944b916691d0e1e2dde98c0da",
+    "operator_candidate": "6083841a92e25886febc766439237ac43e213471",
+    "world_model_from_parent": "54f26960645f234fe655e5cb68c31a3a009ac8ce",
+    "test_operator": "121417ecb084dc0275254c1a53e2f1727688379d",
+    "test_realstore": "05bc33d5e914dd435fba1afbc0455f191164cd71",
+    "feature": "TTY-only :worldmodel status/event with selected-session check, read-only HYPOTHESIS output; existing :world unchanged"
+  },
+  "software": {
+    "original_red": "4 cases: 2 ERROR and 2 FAIL for absent command, 1 real Store test passed; exact original operator blob verified",
+    "exact_green": "19/19 PASS on Linux local using exact GitHub source/test blobs; 12 original WorldModel + 3 inverse baseline + 3 operator + 1 Store integration",
+    "native_inference": false,
+    "redmi": false
+  },
+  "source_export": {
+    "actions": 40943786309,
+    "head": "c2bd13bc35f82993f100fdcd12c71378069a7313",
+    "artifact_sha256": "afc77d49de600439c8202aef30c2a497537f97bce2e20205d7787938146fd2a7",
+    "zip_crc": true,
+    "inner_sha256": "4/4",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-Operator/EXACT_PATCH_SOURCE_40943786309_shaAFC77D49.zip",
+    "private_readback": "byte-exact"
+  },
+  "full_software_ci": {
+    "workflow": ".github/workflows/v13-worldmodel-operator-full-review-20261029.yml",
+    "status": "IN_PROGRESS_OR_QUEUED_AT_CHECKPOINT",
+    "historical_expected": "Two inherited Run34/Run37 frozen scorer source pin preflight errors, not waived"
+  },
+  "parent_ci": {
+    "focused_green_actions": 40942944401,
+    "sha256": "98e99a86cdf716bbaac7094d644cd6f2e53477bc4b90bda94ba0818e984e2c03",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-InverseBaseline/RAW_FOCUSED_GREEN_40942944401_sha98E99A86.zip",
+    "privacy": "CLEAN",
+    "diff": "0",
+    "full_actions": 40943197761,
+    "full_status": "IN_PROGRESS_AT_CHECKPOINT"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Close both parent and child full-suite raw, preserve original historical preflight errors and detect new regressions",
+    "No production merge while SourceHandoff runtime Python is frozen; candidate only",
+    "Operator World-Model shows digital own-transition hypotheses, not causal/world utility or native/Redmi evidence",
+    "Continue another substantive canonical organ package after verified checkpoint"
+  ],
+  "next_commands": [
+    "Fetch PR1141 latest head and full Actions workflow run",
+    "Download raw ZIP; verify CRC, SHA256SUMS, source head and stage exits; private Library backup and byte-exact readback",
+    "Check new failures without rewriting historical Run34/Run37 pins",
+    "Continue independent blueprint implementation on fresh branch; no silent gate promotions"
+  ],
+  "remaining_platform_budget": "UNKNOWN"
+}

@@ -12,7 +12,7 @@ def obsched_names():
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
-:self / :world / :native / :knobs / :components / :objectives / :plasticity [component]
+:self / :world / :worldmodel [status|event <Event-ID> simple|detail|gist|both] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -241,6 +241,16 @@ class Operator:
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
         if cmd=='world':return dumps(r.world.world_state())
+        if cmd=='worldmodel':
+            from . import world_model as wm
+            if not args or args==['status']:
+                return dumps(wm.report(s))
+            if len(args)==3 and args[0]=='event' and args[2] in wm.ACTIONS:
+                row=s.one('SELECT session_id FROM events WHERE id=?',(args[1],))
+                if row is None or row['session_id']!=r.session:
+                    raise ValueError('Event nicht im aktuellen Chat')
+                return dumps(wm.for_event(s,args[1],args[2]))
+            raise ValueError(':worldmodel [status|event <Event-ID> simple|detail|gist|both]')
         if cmd in {'components','objectives'}:
             from .verification import component_registry,objective_registry
             return dumps(component_registry() if cmd=='components' else objective_registry(r))
