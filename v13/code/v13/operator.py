@@ -30,7 +30,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback alignment observe --learn (A3 Raw/Encoder-Paar, keine Faktenfreigabe)
 :feedback world observe --learn (abgeschlossenes eigenes Action-Outcome)
 :feedback retrieval <Memory-ID> relevant|irrelevant [--learn]
-:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
+:source budget <ProjectName> <WholeEuroAmount> [--confirm] (user-authored F1/F5 fact, no model or prior answer)\n:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
 :verified <Frage> (nur quellengebundene F1/F5-Vorprüfung; kein Modellaufruf)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
@@ -93,6 +93,9 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd=='source':
+            from .source_record import operator_command
+            return operator_command(r,args)
         if cmd=='verified':
             if (not args or args[0].casefold()=='native'
                     or any(x.casefold()=='--native' for x in args)):
