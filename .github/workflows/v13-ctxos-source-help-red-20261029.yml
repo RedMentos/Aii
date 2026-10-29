@@ -1,0 +1,44 @@
+name: V13 Context OS source operator help prereg RED
+on:
+  push:
+    branches: [codex/v13-ctxos-source-help-review-20261029-auto10]
+    paths: ['.github/workflows/v13-ctxos-source-help-red-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  original-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run preregistered Store-only regression before source fix
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-ctxos-source-help-red"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_ctxos_source_help_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e0f247a159c5acfcc5104f1f5c1154e6a494a53c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw before enforcement
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-sleep-session-fairness-original-red-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-ctxos-source-help-red/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original result
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-ctxos-source-help-red"
+          test "$(cat "$e/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$e/FOCUSED_EXIT.txt")" = 0
