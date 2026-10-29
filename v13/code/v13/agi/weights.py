@@ -163,7 +163,7 @@ class WeightConsolidation:
         h=digest(dumps([[i['memory_id'],i['target']] for i in items]))
         def put(st):
             for b in st['batches'].values():
-                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL','ANCHOR_INVALID'}:return dict(b,deduplicated=True)
+                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL','ANCHOR_INVALID','SOURCE_INVALID'}:return dict(b,deduplicated=True)
             stem='g6b_'+h[:16]+'_'+str(int(self.clock()))
             bid=stem
             suffix=1
@@ -189,6 +189,33 @@ class WeightConsolidation:
     def train(self,bid,cancel=None,deadline=None):
         b=self.batch(bid)
         if b['status']!='STAGED':raise ValueError('Nur STAGED-Batches werden trainiert')
+        # Source revocation may happen after STAGED and before fit. A stored
+        # SourceRef is not a perpetual permission to train; veto the entire
+        # immutable batch rather than silently changing its dataset hash.
+        checked=0
+        try:
+            if type(b.get('items')) is not list or not b['items']:
+                raise ValueError('Invalid staged item list')
+            for item in b['items']:
+                if type(item) is not dict:
+                    raise ValueError('Invalid staged item')
+                ref=item.get('source_ref')
+                if (type(ref) is not dict or
+                        type(ref.get('source_id')) is not str or
+                        type(ref.get('sha256')) is not str or
+                        type(ref.get('char_start')) is not int or
+                        type(ref.get('char_end')) is not int or
+                        ref.get('modality')!='text'):
+                    raise ValueError('Invalid staged SourceRef')
+                self.s.read_source(ref)
+                checked+=1
+        except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
+            reason=type(exc).__name__
+            def source_invalid(st,b):
+                b['source_check']={'status':'INVALID','checked_before_failure':checked,
+                                   'reason':reason}
+                self._move(b,'SOURCE_INVALID')
+            return self._set(bid,source_invalid)
         from ..guards import mix_for_training
         kept,mix=mix_for_training(b['items'])
         if len(kept)!=len(b['items']) or not mix['check']['pass']:  # defence in depth: a batch staged before the mix rule or edited later
