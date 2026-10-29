@@ -301,6 +301,13 @@ def operator_command(r,args):
         row=r.store.one("SELECT 1 FROM events WHERE id=? AND session_id=?",
                         (args[1],r.session))
         if row is None:raise ValueError('JEF_OUTCOME_CURRENT_SESSION_EVENT_REQUIRED')
+        # Unlike a provisional or failed turn, a delivered FINAL answer is
+        # eligible for explicit human utility feedback (same gate as :note).
+        final=r.store.one(
+            "SELECT 1 FROM messages WHERE event_id=? AND session_id=? "
+            "AND role='assistant' AND status='FINAL' LIMIT 1",
+            (args[1],r.session))
+        if final is None:raise ValueError('JEF_OUTCOME_FINAL_ANSWER_REQUIRED')
         try:utility=float(args[2])
         except (ValueError,OverflowError):
             raise ValueError('JEF_OUTCOME_FINITE_0_TO_1_REQUIRED') from None
