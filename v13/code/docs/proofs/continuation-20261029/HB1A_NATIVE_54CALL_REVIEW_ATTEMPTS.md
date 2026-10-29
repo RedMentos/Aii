@@ -7,6 +7,7 @@ Owner: GPT-6 isolated review branch `codex/v13-hb1a-native-54call-review-2026102
 - Exact workflow commit: `6cc70df41a4857db05a2a660933391fb7905c2ae`
 - GitHub Actions run: `40836608947` (completed **failure**, 2026-10-29 07:37 UTC).
 - Original raw artifact: `12881141167`, ZIP SHA256 `c928799624fec5b16b249089dcbdfecd1f61a99cdc180aa5bfa04217dd0ac172`; retained in GitHub Actions, no model weights.
+- Independent artifact download: ZIP CRC CLEAN, **47/47 internal SHA256SUMS matched**, stage exits SOURCE/PARENT_SOURCE_DOWNLOAD/PARENT_EXECUTOR_DOWNLOAD/PARENT_VERIFY/RESOURCE/DEPS/COMPILE/FOCUSED/PRIVACY/DIFF = 0; INSTALL = 1, NATIVE/VERIFY = SKIPPED_RED. Original ZIP SHA256 matched GitHub artifact digest. Permitted private Library backup `/V13/RawEvidence/HB1A_40836608947_install_home_missing_RED.zip` uploaded and rematerialized, SHA256 byte-identical.
 - All earlier source/parent/resource/dependency/focused stages reached the install step. **INSTALL RED before model download/inference**: `FileNotFoundError` at `shutil.disk_usage(home)` in `hb1a_native_executor.admit` because workflow had not created its fresh isolated `$home` directory. This is an orchestration prerequisite, not a native model failure. Do not count any real B1/B2/C3 call or claim model compatibility from this attempt.
 - Corrective workflow-only commit: `f7db8dcfa3297061c1cdc9d234f3097c6a417e96`; creates `$home` before invoking the unchanged pinned executor. No force-push, no source-pin alteration.
 
