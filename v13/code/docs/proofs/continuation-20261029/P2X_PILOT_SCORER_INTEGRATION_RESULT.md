@@ -1,0 +1,11 @@
+# P2X integrated token-safe pilot + paired scorer full software closure — 2026-10-29
+
+Owner GPT-6 isolated review branch, PR #1077. **No production merge, model calls or adapter activation in this integration proof.**
+
+Prospective integration prereg commit `ee29ef03767c1251f6b60b6265b56f9ec69596fa` preceded exact donor Git blob import. Parent token-safe pilot PR #1075 exact `ea82d7b9f0955e590b4dd7fe8d1babdb33e67088`, donor paired scorer PR #1076 exact `ed617fa463bff191c3767077a8abb57b1821e622`. Integrated exact source commit `642e35989a9937f03c0c6daaf32d9b6ddc7b9d5f`, donor scorer blob `c9509e299510540af4e43ebbc397f2e5a144142d`, corrected pilot blob `41b61ba3d196fc8d624e586c0f31e740002bd469`, Canon unchanged `218464b12a2d27d92524c751922fa8e1c3fb0ea7`.
+
+**Original Actions [40856249467](https://github.com/RedMentos/Aii/actions/runs/40856249467), exact workflow head `ce31554c37e27b4fad9ca62ecc55b830e283267e`, completed GREEN.** Independently downloaded original artifact ZIP SHA256 `4390a6b117edbafee2e0ecb0e226adfb5cecdc6a0b4478202eb1f6e00f05a09c`, CRC CLEAN, **19/19** internal SHA256SUMS, **8/8** stage exits zero (BLOBS, VENV, INSTALL, FOCUSED, FULL, COMPILE, PRIVACY, DIFF), exact source/Canon blobs verified, privacy CLEAN, diff CLEAN. **37/37 focused tests PASS** (14 token-safe pilot, 5 tokenizer probe, 18 paired scorer); **3,043 full V13 software tests PASS, 11 skipped**, in 364.605s. The full suite ran with pinned isolated CPU dependencies, no native model inference. Original raw ZIP privately backed up at `/V13/RawEvidence/2026-10-29/P2X/integration_fullsuite_40856249467_sha4390a6b1.zip`, re-materialized byte-identical SHA256 verified.
+
+This proves the two independent source-only packages coexist with the existing V13 software suite. It **does not** prove QAD adapter compatibility, paired model utility, P0X holdout, Redmi performance, JEPA weight training, STEP2 pass or production integration.
+
+Next: separately preregistered base-only native P2X 360-call validation on PR #1078; original RED and archive-vs-binary hash provenance fix retained. Do not activate adapter without AG6 approval. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi unmeasured; V13 INCOMPLETE.
