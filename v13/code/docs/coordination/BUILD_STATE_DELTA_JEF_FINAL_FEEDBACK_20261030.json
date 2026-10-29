@@ -1,0 +1,56 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:17:45Z",
+  "branch": "codex/v13-jef-final-feedback-gate-20261030-auto11d",
+  "pr": 1170,
+  "base_pr": 1168,
+  "sibling_fullsuite_pr": 1169,
+  "base_commit": "44ccc360a1ddd0cb6168b6e7deb945b404392995",
+  "verified_ci_commit": "1475523d57fc3048dc2a6eb4c54cda6d41cf3529",
+  "ci_run": 40972101226,
+  "ci_conclusion": "success",
+  "focused_tests": 34,
+  "raw_artifact_id": 12940741989,
+  "raw_zip_sha256": "22812a7d9752838ffdee8f4a23f7fe37f20e24db0d18d351b564dd2f3a5dd5ee",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 18,
+  "source_blobs": {
+    "v13/code/v13/jefbridge.py": "a44d0f783516514507a86617a9bb68653b7004b2",
+    "v13/code/tests/test_jef_final_feedback_20261030.py": "0df14acf6459b63e8d3259906b733190baf2b70d",
+    "v13/code/tests/test_jef_operator_session_20261030.py": "6f1d8f4abca29a3e837927c4eb8771b1ea700072",
+    "v13/code/tests/test_jef_feedback_dedupe_20261030.py": "be49294c8648dabe714f44f0afbfbdfe9af24881"
+  },
+  "feature": "Explicit JEF human feedback now requires current-session persisted assistant FINAL, never provisional/failed output",
+  "checks": {
+    "focused_unittest": "PASS",
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-jef-final-feedback-gate-20261030-auto11d",
+  "open_questions": [
+    "Full unfiltered suite PR1169 is sibling from same parent and does not yet include this FINAL guard; after its evidence closes, rerun/merge review in a child without changing registered cohorts.",
+    "JEF online changed-rating correction is not exact gradient replacement; only identical repeats are deduped.",
+    "No native JEF/C2 or Redmi acceptance."
+  ],
+  "next_command": "Check PR1169 full-suite raw; if inherited Run34/37 failures only, preserve them. Then preregister and run full unfiltered software replay on PR1170 source. Add a real restart test for JEF receipt persistence without native calls.",
+  "prerequisites": [
+    "Fresh remote head and owner check",
+    "No rewriting historical frozen Run34/37",
+    "No gate promotion from software-only tests"
+  ]
+}
