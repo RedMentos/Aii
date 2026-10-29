@@ -26,3 +26,12 @@ Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAI
 5. Focused command: `cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_ag6_approval_source_revocation_20261029 tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029 tests.test_weight_approval_atomic tests.test_agi_trainers`.
 
 Remaining platform budget: UNKNOWN. No native model execution or Redmi access in this package.
+
+
+## Inherited full-suite repair in parent/child (2026-10-29)
+
+Parent #1125 full `40920238606` exposed **three additional regressions**, not just inherited run34/run37 pinned-source RED. Source admission ran before data-mix veto (wrong status on a poisoned batch), and two historical software tests used fake/unbound SourceRefs. The parent corrected precedence and bound test fixtures to real Store sources. Child #1126 independently carried identical test fixture blobs `22400f3be6d316db4a06a2d9306ef76cd474d8ee` (`test_lora_trainer.py`) and `718bbf78f2c52e8829a413ab53d2229ec2037606` (`test_neuromod.py`), and retained the approval guard in `weights.py` source blob `d86846ec1845f51d052e63066c6be510c782c52c`. This does not weaken the new source checks. PR #1126 remains mergeable against the updated parent.
+
+Fast source-only recheck without numpy gave an environment import ERROR on `test_learning_invariants`, not a behavior failure; parent and child now install pinned `numpy==2.2.6` in isolated venv for this targeted suite. Child numpy-focused Actions `40921562230` pending; full corrected child Actions `40921467726` pending. Earlier child full `40920821646` remains a separate immutable run and must be reviewed, not overwritten.
+
+**Next:** verify exact original raw of these three runs (HEAD, stage exits, ZIP SHA/CRC/internal SHA256SUMS), report every new error, update PR #1126. No AG6 authority or native/Redmi promotion.
