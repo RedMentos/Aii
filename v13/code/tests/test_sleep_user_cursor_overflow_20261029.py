@@ -68,6 +68,16 @@ class UserCursorOverflow(unittest.TestCase):
         self.assertEqual([x["event_id"] for x in self.entries()],
                          [e["event_id"] for e in events])
 
+    def test_malformed_one_cached_entry_does_not_hide_other_exact_sources(self):
+        events = self.events(3)
+        for i, event in enumerate(events):
+            self.answer(event, i)
+        self.assertEqual(S.digest(self.r.store)["turns"], 3)
+        state, version = self.r.store.state(S.KEY)
+        state["sessions"][self.session]["entries"][0] = None
+        self.r.store.set_state(S.KEY, state, expected=version)
+        self.assertEqual(S.view(self.r.store, self.session, cap=100000)["entries"], 2)
+
     def test_deleted_source_stays_excluded_without_blocking_backlog(self):
         events = self.events(65)
         for i in reversed(range(65)):
