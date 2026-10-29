@@ -11,12 +11,14 @@ from pathlib import Path
 
 from scripts import hb1a_two_body_native_pilot as hb1
 from scripts import hb1b_c3_format_native_executor as native
+from scripts import hb1b_c3_format_followup as hb1b
 from scripts import p2x_native_receiver_eval_scorer as scorer
 
 SCHEMA = "v13.p2x.base360_native.v1"
 CALL_SECONDS = 90
 OVERALL_SECONDS = 2400
 MAX_TOKENS = 48
+RUNNER_BINARY_SHA = hb1b.RUNNER_SHA256
 
 
 def need(ok, reason):
@@ -62,6 +64,20 @@ def record_call(prompt, output, duration, metrics):
     }
 
 
+
+def check_runtime_identity(home):
+    """Separate release archive pin from extracted executable SHA256."""
+    spec = json.loads((Path(__file__).resolve().parents[1] /
+                       "specs/models.json").read_text())
+    archive_sha = spec["runner"]["linux_binaries"]["linux-x86_64"]["sha256"]
+    need(archive_sha == scorer.RUNTIME_SHA,
+         "P2X_BASE360_RUNTIME_ARCHIVE_PIN_RED")
+    binary = Path(home) / "bin/llama-server"
+    need(binary.is_file() and native.file_sha(binary) == RUNNER_BINARY_SHA,
+         "P2X_BASE360_RUNNER_BINARY_PIN_RED")
+    return binary
+
+
 def install(home):
     return native.install(home)
 
@@ -95,9 +111,7 @@ def run_native(home, validation_dir, out):
          hb1.MODEL_REVISIONS["C3_LANGUAGE"]
          and native.file_sha(manager.path_for("C3_LANGUAGE")) == scorer.MODEL_SHA,
          "P2X_BASE360_MODEL_PIN_RED")
-    binary = home / "bin/llama-server"
-    need(binary.is_file() and native.file_sha(binary) == scorer.RUNTIME_SHA,
-         "P2X_BASE360_RUNTIME_PIN_RED")
+    binary = check_runtime_identity(home)
     out.mkdir(mode=0o700)
     atomic_write(out / "INPUTS.json", scorer.canonical(plan).decode("utf-8"))
     atomic_write(out / "ANSWERS.json", scorer.canonical(answers).decode("utf-8"))
@@ -109,6 +123,7 @@ def run_native(home, validation_dir, out):
         "validation_answers_sha256": scorer.ANSWER_SHA,
         "model_sha256_before": scorer.MODEL_SHA,
         "runtime_sha256_before": scorer.RUNTIME_SHA,
+        "runner_binary_sha256_before": RUNNER_BINARY_SHA,
         "adapter_sha256": None,
         "seed": scorer.SEED, "max_tokens": MAX_TOKENS,
         "c3_sampling": "off", "expected_calls": 360,
@@ -145,9 +160,9 @@ def run_native(home, validation_dir, out):
         pool = None
         need(released.get("process_reaped") is True,
              "P2X_BASE360_PROCESS_REAP_RED")
-        need(native.file_sha(manager.path_for("C3_LANGUAGE")) == scorer.MODEL_SHA
-             and native.file_sha(binary) == scorer.RUNTIME_SHA,
-             "P2X_BASE360_MODEL_OR_RUNTIME_CHANGED_RED")
+        need(native.file_sha(manager.path_for("C3_LANGUAGE")) == scorer.MODEL_SHA,
+             "P2X_BASE360_MODEL_CHANGED_RED")
+        check_runtime_identity(home)
         score = scorer.score(records, plan, answers, adapter_sha256=None)
         scorer._validate_score_snapshot(score)
         atomic_write(out / "SCORE.json", scorer.canonical(score).decode("utf-8"))
@@ -156,6 +171,7 @@ def run_native(home, validation_dir, out):
         receipt["process_reaped"] = True
         receipt["model_sha256_after"] = scorer.MODEL_SHA
         receipt["runtime_sha256_after"] = scorer.RUNTIME_SHA
+        receipt["runner_binary_sha256_after"] = RUNNER_BINARY_SHA
         for name, key in (("RAW.json", "raw_sha256"),
                           ("SCORE.json", "score_sha256"),
                           ("INPUTS.json", "inputs_sha256"),
