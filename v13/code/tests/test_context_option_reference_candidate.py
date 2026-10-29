@@ -56,6 +56,11 @@ class Run141OptionReference(unittest.TestCase):
         self.assertIsNone(candidate.read_fixed_reference(
             current, [PRIOR_RULES, PRIOR_OPTIONS])["options"])
 
+    def test_unpaired_untyped_update_blocks_even_with_pair_elsewhere(self):
+        current = REFERENCE + " Option A is preferred."
+        self.assertIsNone(candidate.read_fixed_reference(
+            current, [PRIOR_RULES, PRIOR_OPTIONS])["options"])
+
     def test_no_prior_options_is_unknown(self):
         got = candidate.read_fixed_reference(REFERENCE, [PRIOR_RULES])
         self.assertIsNone(got["options"])

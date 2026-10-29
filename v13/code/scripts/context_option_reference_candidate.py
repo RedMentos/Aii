@@ -25,7 +25,7 @@ def need(ok, reason):
 
 
 def _clauses(entity, text):
-    return re.findall(r"\boption\s+" + re.escape(entity) + r"\b[^.]*", text, re.I)
+    return re.finditer(r"\boption\s+" + re.escape(entity) + r"\b[^.]*", text, re.I)
 
 
 def _parse(entity, clause):
@@ -38,18 +38,21 @@ def _parse(entity, clause):
 
 
 def _from_text(entity, text):
-    clauses = _clauses(entity, text)
+    clauses = list(_clauses(entity, text))
     if not clauses:
         return "ABSENT", None
     complete = []
-    for clause in clauses:
+    for match in clauses:
+        clause = match.group(0)
         parsed = _parse(entity, clause)
         if parsed is not None:
             complete.append(parsed)
             continue
         # A reference without any typed field is only skippable when it
         # explicitly names the A/B pair. Numeric/partial updates block.
-        if OPTION_WORDS.search(clause) or not PAIR.search(text):
+        if OPTION_WORDS.search(clause) or not any(
+            p.start() <= match.start() < p.end() for p in PAIR.finditer(text)
+        ):
             return "BLOCKED_PARTIAL", None
     if complete:
         keys = {(x["cost"], x["days"], x["local"]) for x in complete}

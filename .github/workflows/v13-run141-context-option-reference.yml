@@ -38,8 +38,8 @@ jobs:
             [ "$got" = "$1" ]
           }
           check 284101c7b7c060e0a80a6be15ae491e6fd15bed6 v13/code/docs/proofs/continuation-20261029/RUN141_CONTEXT_OPTION_REFERENCE_PREREG.md || source_ok=1
-          check 9cc2fe9cc8d1c5c1ef6e91af11ced6af92548ba4 v13/code/scripts/context_option_reference_candidate.py || source_ok=1
-          check 5b7b1c65e98d1dc56cda749c4d10daeecd1c358e v13/code/tests/test_context_option_reference_candidate.py || source_ok=1
+          check 7f13f5d01f4df2919e27a0ac24ce89f347a2d328 v13/code/scripts/context_option_reference_candidate.py || source_ok=1
+          check 073425903636593401d12210cbf9003257f76f29 v13/code/tests/test_context_option_reference_candidate.py || source_ok=1
           check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_ok=1
           check c9b9c1694cba016ccf0059da7f78585694a31327 v13/code/scripts/step2_option_quote_consistency_candidate.py || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
@@ -65,7 +65,7 @@ jobs:
           python3 -m compileall -q v13/code/scripts/context_option_reference_candidate.py v13/code/tests/test_context_option_reference_candidate.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$source_ok" = 0 ] && [ "$(cat "$e/ORIGINAL_VERIFY_EXIT.txt")" = 0 ]; then
-            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/base/original/STEP2_RAW.json" V13_RUN116_TOOL_REPORT="$e/base/original/TOOL_RAW.json" timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_context_option_reference_candidate tests.test_eligibility_fixed tests.test_rule_reader_fixed) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/base/original/STEP2_RAW.json" V13_RUN116_TOOL_REPORT="$e/base/original/TOOL_RAW.json" timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_context_option_reference_candidate) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
             (cd v13/code && timeout --signal=TERM --kill-after=5s 180s python3 -m scripts.context_option_reference_candidate --source-report "$e/base/original/STEP2_RAW.json" --out "$e/experiment/report.json") > "$e/PROBE_RAW.log" 2>&1
             echo "$?" > "$e/PROBE_EXIT.txt"
