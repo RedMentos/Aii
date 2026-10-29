@@ -35,7 +35,7 @@ jobs:
           work="$RUNNER_TEMP/v13-hb1a-54call-work"
           home="$RUNNER_TEMP/v13-hb1a-54call-home"
           pin="73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b"
-          mkdir -p "$e/parent-source" "$e/parent-executor" "$work"
+          mkdir -p "$e/parent-source" "$e/parent-executor" "$work" "$home"
           git rev-parse HEAD > "$e/HEAD.txt"
           source_red=0
           check() {
