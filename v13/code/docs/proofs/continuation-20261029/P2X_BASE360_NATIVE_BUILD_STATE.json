@@ -1,0 +1,53 @@
+{
+  "schema": "v13.p2x.base360_native_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2X base-only native validation",
+  "branch": "assistant/v13-p2x-base360-native-20261029",
+  "parent_pr": 1077,
+  "parent_sha": "77429f4f13e9df60b0b98142567babaccd0afa03",
+  "review_pr": 1078,
+  "prereg_commit": "94ba9cdda1f685665bca2bc6b2069eb7aaf3b904",
+  "native_workflow_head": "7ef8240e74239327054320a4f2f28245967ef1e4",
+  "source_blobs": {
+    "executor": "7eb2a42a7fc6eaab95ab66a4778426af7d2d5b13",
+    "verifier": "6f78f300faa8b6c251cbcb344cf4fe296ea9b25a",
+    "scorer": "c9509e299510540af4e43ebbc397f2e5a144142d",
+    "generator": "8135fa2792df2c541dc1719e49d941c775703697",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "source_only": {
+    "run": 40856681595,
+    "head": "d037f2d8491699532fd398bc16816959c36015b2",
+    "zip_sha256": "022de66ecaf4df5ec378e64a8188d825f4682b498b3c0f548e365f6d4f5bff87",
+    "zip_crc": "CLEAN",
+    "hashes": "9/9",
+    "stage_exits": "4/4",
+    "tests": "13/13 PASS",
+    "privacy": "CLEAN"
+  },
+  "native": {
+    "run": 40856847507,
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "expected_calls": 360,
+    "adapter_sha256": null,
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runtime_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "fixture_sha256": "cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a",
+    "validation_inputs_sha256": "a7f2d70d463305a43ec03bbd758a61cc91129a411094ed60e5503d4ffe0894cf",
+    "validation_answers_sha256": "d1cbe570ae3caa2a80177f861ba5751c93208ffccc98f8d12d90578c59555e9a"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Inspect Actions 40856847507. On completion download original raw artifact, verify ZIP CRC/SHA256SUMS, all stage exits, exact workflow head, 360 real calls, process reaped, base-only adapter null, scorer replay and private byte-verified backup. Preserve any RED and continue other organs. Also inspect fullsuite integration Actions 40856249467.",
+  "remaining_platform_budget": "UNKNOWN"
+}
