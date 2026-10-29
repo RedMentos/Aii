@@ -32,6 +32,8 @@ def write_evidence(root):
         "model_sha256_after": v.scorer.MODEL_SHA,
         "runtime_sha256_before": v.scorer.RUNTIME_SHA,
         "runtime_sha256_after": v.scorer.RUNTIME_SHA,
+        "runner_binary_sha256_before": v.native.hb1b.RUNNER_SHA256,
+        "runner_binary_sha256_after": v.native.hb1b.RUNNER_SHA256,
         "adapter_sha256": None, "seed": 13, "c3_sampling": "off",
         "expected_calls": 360, "recorded_calls": 360,
         "process_reaped": True, "weight_updates": False,
@@ -89,6 +91,17 @@ class Base360VerifyTests(unittest.TestCase):
             (root / "RECEIPT.json").write_text(json.dumps(receipt))
             with patch.object(v.scorer, "load_validation", return_value=(plan, answers)):
                 with self.assertRaisesRegex(ValueError, "GATE"):
+                    v.verify(root, root)
+
+    def test_executable_sha_forgery_red(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            plan, answers = write_evidence(root)
+            receipt = json.loads((root / "RECEIPT.json").read_text())
+            receipt["runner_binary_sha256_after"] = v.scorer.RUNTIME_SHA
+            (root / "RECEIPT.json").write_text(json.dumps(receipt))
+            with patch.object(v.scorer, "load_validation", return_value=(plan, answers)):
+                with self.assertRaisesRegex(ValueError, "RECEIPT"):
                     v.verify(root, root)
 
     def test_missing_score_red(self):
