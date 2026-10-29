@@ -3226,5 +3226,44 @@
     "next_command": "After Actions 40958983649 completes and original raw is closed, create pinned PEFT Actions workflow on this branch, run full unfiltered suite, preserve and hash all results.",
     "next_prerequisites": "Do not run overlapping CPU-heavy full suites; retain historical Run34/Run37 source pins and all original negative gates.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_bodyjepa_derangement_bound_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_BODYJEPA_DERANGEMENT_FAIL_CLOSED",
+    "owner_branch": "codex/v13-bodyjepa-bounded-derangement-20261029-auto10ao",
+    "parent_pr": 1152,
+    "parent_sha": "e5e054c7059181952ff2919789c2652e7ce97c45",
+    "source_parent_blob": "b935884d41d398ce2f5e513466fafd5821d60104",
+    "source_candidate_blob": "fe912d908868d5e923297fa52b44e09f1e39bf1f",
+    "red": {
+      "run": 40960457232,
+      "head": "1c1bb0a4143f10114e87782f788a6af683f495e7",
+      "tests": "4 RUN / 2 FAIL",
+      "zip_sha256": "c5b345eeb47d26313f9ce9766d8bd519f54b04b5aa2b8d45dadfe10714621a4b",
+      "inner_hashes": "11/11",
+      "private_byte_exact": true
+    },
+    "green": {
+      "run": 40960607664,
+      "head": "635f57c8f3416a039a9b2bf1084994043716e7b2",
+      "tests": "4/4 PASS",
+      "zip_sha256": "64e36d13a172e8f8de598c7c90acb8526d784328c9fb2a92eeb33d3d077d0131",
+      "inner_hashes": "11/11",
+      "private_byte_exact": true,
+      "privacy": "CLEAN"
+    },
+    "report": "docs/proofs/continuation-20261029/BODYJEPA_DERANGEMENT_BOUND_RESULT_20261029.md",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_bodyjepa_derangement_bound_20261029 tests.test_body_jepa tests.test_body_jepa_checkpoint_fit",
+    "next_prerequisites": "After pinned torch/Transformers/PEFT full suite 40960222503 finishes, run this branch's existing BJ1 regression tests in isolated deps, retain frozen cohort/seed evidence and negative gates.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
