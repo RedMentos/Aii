@@ -1,0 +1,60 @@
+{
+  "schema": "v13.run116.prelaunch_evidence.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "software_actions_run_id": 40804769829,
+  "software_head": "3f92987f1fd8ea056dd64604bed5016522080ab6",
+  "software_artifact_id": 12867009550,
+  "software_artifact_name": "run115-sixfixture-software-40804769829-3f92987f1fd8ea056dd64604bed5016522080ab6",
+  "software_zip_sha256": "4bd447eaa122b8aa290241856ce8c3f34531a6acecf08555581287527432a223",
+  "zip_crc": "CLEAN",
+  "inner_sha256sums": "18/18",
+  "exit_files": "8/8 ZERO",
+  "source_hashes": "ALL PINNED GIT BLOBS MATCH",
+  "focused_tests": "35 PASS",
+  "full_tests": "2702 PASS 1 SKIP",
+  "probe": "PREPARED_NOT_NATIVE_REGISTERED",
+  "privacy": "CLEAN",
+  "diff": "CLEAN",
+  "native_calls": 0,
+  "private_backup": "/V13-Checkpoints/2026-10-29/Run115-SixFixture-CQP20-Software/RAW_40804769829_sha4BD447EA.zip",
+  "private_backup_rematerialized_sha256": "4bd447eaa122b8aa290241856ce8c3f34531a6acecf08555581287527432a223",
+  "original_failed_software_attempt": {
+    "run_id": 40804290155,
+    "status": "FAIL_RAW_UPLOAD_PATH_MISMATCH",
+    "original_zip": "NONE",
+    "promoted": false
+  },
+  "native_owner_check": {
+    "time_utc": "2026-10-29T02:15:00Z",
+    "active_native_workflows": 0,
+    "other_active_workflow": "Run117 software-only; no native owner"
+  },
+  "native_scope": {
+    "arm": "CQP",
+    "seed": 20,
+    "source_rows": 42,
+    "tool_rows": 42,
+    "model_hashes": "PINNED_UNCHANGED",
+    "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1"
+  },
+  "negative_gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "status": "SOFTWARE_ORIGINAL_RAW_INDEPENDENTLY_GREEN_NATIVE_NOT_YET_EXECUTED",
+  "next_command": "Commit hash-bound Run116 native workflow to this branch, verify remote bytes and workflow Actions start; run serial native 42+42, audit original ZIP and preserve negative evidence.",
+  "prerequisites": [
+    "GitHub no active native owner",
+    "Run115 original software artifact SHA verified and private byte-identical",
+    "models pinned",
+    "resource admission",
+    "no canonical gate promotion"
+  ]
+}
