@@ -23,7 +23,9 @@
     "stage_exits": "4/4",
     "tests": "18/18 PASS",
     "privacy": "CLEAN",
-    "diff": "CLEAN"
+    "diff": "CLEAN",
+    "private_backup": "/V13/RawEvidence/2026-10-29/P2X/scorer_integrity_40855708481_sha61065879.zip",
+    "byte_identical": true
   },
   "native_model_calls": 0,
   "proof_level": "SOFTWARE_SOURCE_ONLY",
