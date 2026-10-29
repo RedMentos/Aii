@@ -19,7 +19,7 @@ import math
 import numpy as np
 from .common import now
 
-KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v2'  # v1 stored held-out states in coverage; fail closed until refit
+KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v3'  # v1 leaked heldout support; v2 accepted provisional C5 predictions; refit required
 ACTIONS=('simple','detail','gist','both')
 TARGETS=('log_duration','success','log_chars')
 RIDGE=1e-2;ENSEMBLE=5;MIN_FIT=8;MAX_ROWS=2048
@@ -60,16 +60,27 @@ def transitions(store,limit=MAX_ROWS):
                     or not _finite_nonnegative(r['created'])):continue
             resource=fc.get('resource_state','NORMAL')
             if type(resource) is not str:continue
-            # A later selection must never rewrite the route of an action that
-            # already dispatched. Two pre-dispatch selections are ambiguous:
-            # refuse that training row instead of silently choosing the latest.
-            sel=store.rows("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=? ORDER BY created DESC LIMIT 2",
+            # C5 can emit provisional PREDICTION packets before its COMMIT.
+            # Only a unique committed (or legacy unstaged) selection may label
+            # an actual action. Preserve the dispatch-time and generation
+            # binding; reject saturated scans rather than hiding an ambiguity.
+            sel=store.rows("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=? ORDER BY created DESC LIMIT 17",
                            (r['event_id'],r['generation_id'],r['created']))
-            if len(sel)!=1:continue
-            payload=json.loads(sel[0]['payload'])
-            if (type(payload) is not dict or payload.get('event_id')!=r['event_id']
-                    or payload.get('brain_generation_id')!=r['generation_id']):
-                continue
+            if len(sel)>=17:continue
+            committed=[]
+            for candidate in sel:
+                selected=json.loads(candidate['payload'])
+                if (type(selected) is not dict
+                        or selected.get('event_id')!=r['event_id']
+                        or selected.get('brain_generation_id')!=r['generation_id']):
+                    raise ValueError('INVALID_ACTION_SELECTION_SOURCE')
+                stage=selected.get('stage')
+                if stage not in (None,'PREDICTION','COMMIT'):
+                    raise ValueError('UNKNOWN_ACTION_SELECTION_STAGE')
+                if stage!='PREDICTION':
+                    committed.append(selected)
+            if len(committed)!=1:continue
+            payload=committed[0]
             route=payload.get('route_hint')
             if route not in ACTIONS:continue
             hour=(r['created']%86400)/3600
