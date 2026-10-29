@@ -1,7 +1,7 @@
-name: V13 STEP2 source-exact matched C3 replay preflight software only
+name: V13 STEP2 matched C3 native executor SOFTWARE guard (no native)
 on:
   push:
-    branches: [assistant/v13-step2-exact-rule-native-replay-prereg-20261029]
+    branches: [assistant/v13-step2-native-rule-transport-20261029]
 permissions:
   contents: read
   actions: read
@@ -38,6 +38,9 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check b7044736bb0ffec0b577c7720169257f3970f9e8 v13/code/docs/proofs/continuation-20261029/STEP2_EXACT_RULE_NATIVE_REPLAY_PREREG.md || source_ok=1
+          check f98caa025a8ba28e8ecdb5d3f29660937913ffed v13/code/docs/proofs/continuation-20261029/STEP2_RULE_TRANSPORT_NATIVE_EXECUTOR_PREREG.md || source_ok=1
+          check 35b4fbbe52a977e61159e1672b7a39006d0181cd v13/code/scripts/step2_exact_rule_transport_native.py || source_ok=1
+          check 3374d6ba88affd732b4b2283a55af9f87eaaddc4 v13/code/tests/test_step2_exact_rule_transport_native.py || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
           check 454d7bff84f074338364facbe6afd9e26209484e v13/code/tests/test_step2_exact_rule_native_replay_preflight.py || source_ok=1
           check 4065d3453eefcbd35c2de502d1c3c219bf20c63a v13/code/scripts/step2_rule_revision_ambiguity_candidate.py || source_ok=1
@@ -75,21 +78,21 @@ jobs:
             deps_rc="$?"
           fi
           echo "$deps_rc" > "$e/INSTALL_EXIT.txt"
-          python3 -m compileall -q v13/code/scripts/step2_exact_rule_native_replay_preflight.py v13/code/tests/test_step2_exact_rule_native_replay_preflight.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/step2_exact_rule_native_replay_preflight.py v13/code/tests/test_step2_exact_rule_native_replay_preflight.py v13/code/scripts/step2_exact_rule_transport_native.py v13/code/tests/test_step2_exact_rule_transport_native.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$source_ok" = 0 ] && [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ] && [ "$(cat "$e/ORIGINAL_VERIFY_EXIT.txt")" = 0 ] && [ "$deps_rc" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
             (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m scripts.step2_exact_rule_native_replay_preflight --source-report "$e/original/STEP2_RAW.json" --out "$e/experiment/pairs.json") > "$e/PROBE_RAW.log" 2>&1
             echo "$?" > "$e/PROBE_EXIT.txt"
-            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/original/STEP2_RAW.json" timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_step2_exact_rule_native_replay_preflight tests.test_step2_rule_revision_ambiguity_candidate tests.test_run118_step2_rule_pointer_choice_candidate tests.test_run117_step2_rule_source_candidate) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/original/STEP2_RAW.json" timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_step2_exact_rule_transport_native tests.test_step2_exact_rule_native_replay_preflight tests.test_step2_rule_revision_ambiguity_candidate tests.test_run118_step2_rule_pointer_choice_candidate tests.test_run117_step2_rule_source_candidate) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
             (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
             echo "$?" > "$e/FULL_EXIT.txt"
           else
             for n in PROBE FOCUSED FULL; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
           fi
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7fc3589f19bd973cdf766f2c659f8d64a951fd74 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8d3e9e4ef87b9b47fa03ff12628ea63bdcd71cb1 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
-          git diff --check 7fc3589f19bd973cdf766f2c659f8d64a951fd74 HEAD > "$e/DIFF_RAW.log" 2>&1
+          git diff --check 8d3e9e4ef87b9b47fa03ff12628ea63bdcd71cb1 HEAD > "$e/DIFF_RAW.log" 2>&1
           echo "$?" > "$e/DIFF_EXIT.txt"
           (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
           exit 0
@@ -112,4 +115,4 @@ jobs:
               exit 1
             fi
           done
-          echo STEP2_EXACT_RULE_REPLAY_PREFLIGHT_SOFTWARE_ONLY_NO_NATIVE
+          echo STEP2_NATIVE_EXECUTOR_SOFTWARE_GUARD_ONLY_NO_NATIVE
