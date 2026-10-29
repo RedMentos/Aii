@@ -1,0 +1,38 @@
+{
+  "schema": "v13.run113.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run113-step2-atlas-cqp-native-pilot-20261029",
+  "base_pr": 1015,
+  "base_head": "159988cc0a42949b0b028b3e68e1152c49304449",
+  "prereg_first": "481f271abf3a54bde37f8f30e47064f16c06db2d",
+  "prereg_blob": "d4066bb72cb4423b2f3114057362b530b14b6556",
+  "script_blob": "3d1ddbd7b45a46d4b9332466f4ac8a6122d4af89",
+  "test_blob": "0e9f9434771f67713872049f53054fa125ed3084",
+  "parent_raw": {
+    "run": 40802048043,
+    "head": "159988cc0a42949b0b028b3e68e1152c49304449",
+    "zip_sha256": "eba7c39d75d8daa66f57b54970598d1e368b1d2553b8969868d5b7ec485509cf",
+    "crc": "CLEAN",
+    "inner_hashes": "18/18",
+    "exits": "8/8 ZERO",
+    "focused": "20 PASS",
+    "full": "2687 PASS one skipped",
+    "registration_sha256": "8e0844a3020306f0feb59ebcab3bc6ae9d65211ad3918df699e5dc892c6faed4",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run111-STEP2-Native-Preflight/RAW_40802048043_shaEBA7C39D.zip",
+    "private_byte_match": true
+  },
+  "status": "PREREG_FIRST; SOURCE_AND_TEST_STAGED; SOFTWARE_CI_PENDING; NATIVE_BLOCKED_UNTIL_RUN112_OWNER_RELEASE",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Run software-only Run113 focused/full CI, independently audit original ZIP and private backup. After Run112 native 40802227224 fully completes, verify native owner/cgroup, then separately launch pinned Run113 Atlas CQP20 one-fixture Linux native pilot (7 source + 7 tool), retain raw failures and negative gates.",
+  "remaining_execution_budget": "UNKNOWN"
+}
