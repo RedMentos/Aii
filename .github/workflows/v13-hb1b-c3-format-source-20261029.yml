@@ -1,0 +1,67 @@
+name: V13 HB1b C3 JSON/plain source-only preregistered preflight
+on:
+  push:
+    branches: [codex/v13-hb1b-c3-format-review-20261029]
+    paths:
+      - '.github/workflows/v13-hb1b-c3-format-source-20261029.yml'
+      - 'v13/code/scripts/hb1b_c3_format_followup.py'
+      - 'v13/code/tests/test_hb1b_c3_format_followup.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hb1b-source-only
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Source pins, focused and full software regression, privacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb1b-format-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          check() { [ "$(git hash-object "$2")" = "$1" ]; }
+          {
+            check 16f328584fb9678a034ee8fa9234460f4fbcfc4e v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_SOURCE_PREREG.md
+            check fb1fb31945026427b197fc907640ec2f37ffaf2d v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_SOURCE_BUILD_STATE.json
+            check cb5ac831b9675dc3b71c8757fc0742881db7e5d2 v13/code/scripts/hb1b_c3_format_followup.py
+            check bd34b3039495748081fe9e30abbe0912afd3cab7 v13/code/tests/test_hb1b_c3_format_followup.py
+            check 033ea9c8c3e6f9ff631b84136afa1f74dd7e627c v13/code/scripts/hb1a_two_body_native_pilot.py
+            check b79abbfa0bcd16e115acd89383885e5d228660d7 v13/code/scripts/hb1a_independent_native_verifier.py
+            check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py
+            check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+            git merge-base --is-ancestor cb36ffec3b56b1cb6a13bfcfb38b93fa6c90fc1b HEAD
+            echo HB1B_SOURCE_PINS_OK
+          } > "$e/SOURCE_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/v13-hb1b-format-venv"
+          py="$RUNNER_TEMP/v13-hb1b-format-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/hb1b_c3_format_followup.py v13/code/tests/test_hb1b_c3_format_followup.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_hb1b_c3_format_followup tests.test_hb1a_independent_native_verifier tests.test_hb1a_two_body_native_pilot) > "$e/FOCUSED_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=10s 12m "$py" -m unittest discover -s tests -q) > "$e/FULL_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base cb36ffec3b56b1cb6a13bfcfb38b93fa6c90fc1b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check cb36ffec3b56b1cb6a13bfcfb38b93fa6c90fc1b HEAD
+          echo HB1B_SOURCE_ONLY_NO_NATIVE_NO_GATE > "$e/STATUS.txt"
+      - name: Preserve source-only raw and RED attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb1b-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb1b-format-source/
+          if-no-files-found: error
+          retention-days: 30
