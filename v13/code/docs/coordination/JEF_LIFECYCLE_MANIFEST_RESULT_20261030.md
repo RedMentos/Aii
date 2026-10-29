@@ -1,0 +1,14 @@
+# WP-U1 lifecycle exact update provenance — verified checkpoint 2026-10-30
+
+Parent review PR #1175 head `e19cafa81b7ddc658e1da39d5591bfc9d0dc5df4`; new review PR #1176. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged. All work is branch-scoped software only.
+
+- **Defect:** `jefoutcome.lifecycle` attributed `updates.manifest` by substring of a feedback source ID anywhere in serialized JSON. Arbitrary notes, longer IDs, wrong-typed `source_ids` and invalid JSON could invent L4/L5/L7/L11 update progress. It was read-only but its status was false.
+- Preregistration first: `8556a48c84d5967cd5da45ef1b9b77cdfa96dc70`. Test-only `d6732e159abe64c73493dfb72fab25b091974e4f`; original **RED** Actions `40974910596` on head `c60d11f6d8cc4120f39eea7f068053b49c67fe6f`: 20 tests, 3 expected failures, no import/setup errors. Raw artifact `12941778275`, ZIP SHA256 `7a37da224275a3779a999093b52fb2ab232079958a445ccd4e99d96fe006d4f1`, CRC clean, 18/18 inner hashes.
+- Fix commit `9b5a77e72efd60be49ae7924a2440ad89dd588d4`, source blob `795dca336395a58185bc084ca62fb1a5a733e013`: parse JSON; require a dict and `source_ids` list with exact matching string IDs; fail closed on malformed manifests. No status logic or writes changed.
+- Exact-source **GREEN** Actions `40974944908`: 20/20 PASS, no skips. Canon, venv, dependencies, pip check, focused tests, compile, privacy, diff all exit 0. Raw artifact `12940939367`, ZIP SHA256 `73d6c2f87b06cabcfccfb634e4f66ea2d21d275edf271234306ce5cb5d9653fc`, CRC clean, 18/18 inner hashes, privacy CLEAN.
+- Counterexamples covered: note-only ID, longer source ID, string-typed IDs, malformed JSON, exact positive source ID, L9 not falsely promoted, SQLite restart, current-session isolation inherited from #1175.
+- Parent #1174 unfiltered full suite 3360 tests with two preserved frozen Run34/Run37 source-preflight errors (11 skips). Neither focused suite makes the full suite GREEN; no native/Redmi or STEP2/B3/JEPA/jepa_weight/whole-system gate promotion.
+
+**Next independent functional package:** WP-U1/SkillLive route correction currently calls JEF skill self-label invalidation even when the user correction agrees with the trusted skill's route. Compare against the actual SkillLive reopen result before invalidating JEF labels; preregister a real Store/SkillLibrary/feedback integration test. Owner GPT-6 review branch; do not touch other owner branches or force-push.
+
+**Resume:** `git fetch origin; git switch -c review-jef-manifest origin/codex/v13-jef-lifecycle-manifest-20261030-auto11j; cd v13/code; PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jefoutcome_manifest_20261030 tests.test_jefoutcome_session_20261030 tests.test_jefoutcome tests.test_jef_operator_session_20261030 tests.test_contextos_operator_session_20261029`. Dependencies: NumPy 2.2.6, psutil, PyYAML, Pillow, prompt-toolkit 3.0.52. For unfiltered full suite additionally torch 2.5.1+cpu, Transformers 4.44.2, PEFT 0.13.2.
