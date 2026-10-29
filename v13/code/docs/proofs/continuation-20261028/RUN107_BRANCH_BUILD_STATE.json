@@ -27,5 +27,5 @@
   "next_command": "Verify Run105/106 original raw GREEN first; then import exact source blobs and run this staged integration test, pinned full/native CI, close raw and private backup.",
   "remaining_execution_budget": "UNKNOWN",
   "test_commit": "1989046461cda4cc5cc08bebe47e791d4d36bc46",
-  "test_blob": "PENDING_FETCH"
+  "test_blob": "eea594c35079632028f14fb261776399afa3209c"
 }
