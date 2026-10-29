@@ -4,6 +4,7 @@ Creates an isolated brain; reads installed immutable models/binaries.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import shutil
 import sys
@@ -21,6 +22,30 @@ def wait(r,timeout=120):
     if not r.idle():r.cancel();raise RuntimeError('Test wait timeout')
 def ask(r,text):
     r.submit(text);wait(r);m=r.last_answer();return {'text':m['text'],'status':m['status'],'metadata':json.loads(m['metadata'])}
+def _pid_alive(pid):
+    """An existing or inaccessible process is not proof of cancellation."""
+    try:os.kill(pid,0)
+    except ProcessLookupError:return False
+    except PermissionError:return True
+    return True
+
+def cancelled_worker_stopped(runner,pool_pids,is_alive=None):
+    """Require exact canceled native PID reaped, absent from pool and OS.
+
+    Unrelated resident C2/B model PIDs do not invalidate a canceled worker.
+    A missing PID, failed reap, malformed evidence or live process fails closed.
+    """
+    if not isinstance(runner,dict) or runner.get('status')!='CANCELLED':return False
+    release=runner.get('interruption_unload')
+    if not isinstance(release,dict) or release.get('process_reaped') is not True:return False
+    before=release.get('before')
+    if not isinstance(before,dict):return False
+    pid=before.get('resolved_proc_pid',before.get('pid'))
+    if type(pid) is not int or pid<=0:return False
+    if not isinstance(pool_pids,(list,tuple)) or any(type(p) is not int or p<=0 for p in pool_pids):return False
+    if pid in pool_pids:return False
+    return not (is_alive or _pid_alive)(pid)
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('--installed-home',required=True);p.add_argument('--out',required=True);a=p.parse_args();installed=Path(a.installed_home).resolve();report={'device':device(),'uses_real_weights':True,'history_turns':0,'phone_measured':device()['android'],'source_hashes':{str(p.relative_to(APP)):file_hash(p) for p in list((APP/'v13').glob('*.py'))+[Path(__file__).resolve()]}}
     with tempfile.TemporaryDirectory(prefix='v13-real-') as d:
@@ -40,7 +65,13 @@ def main():
                 m=r.store.one("SELECT * FROM messages WHERE session_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",(r.session,))
                 if m and m['status']=='STREAMING' and len(m['text'])>30:break
                 time.sleep(.02)
-            start=time.monotonic();r.cancel();wait(r);m=r.last_answer();partial=m['text'];mid=m['id'];report['cancel']={'status':m['status'],'characters':len(partial),'text':partial,'stop_s':time.monotonic()-start,'runner':json.loads(m['metadata']).get('runner',{}),'native_process_stopped':not r.pool.pids()}
+            start=time.monotonic();r.cancel();wait(r);m=r.last_answer();partial=m['text'];mid=m['id']
+            runner_metrics=json.loads(m['metadata']).get('runner',{})
+            pool_pids_after=r.pool.pids()
+            report['cancel']={'status':m['status'],'characters':len(partial),'text':partial,
+                              'stop_s':time.monotonic()-start,'runner':runner_metrics,
+                              'pool_pids_after':pool_pids_after,
+                              'native_process_stopped':cancelled_worker_stopped(runner_metrics,pool_pids_after)}
             r.close();r=Runtime(h);saved=r.store.one('SELECT * FROM messages WHERE id=?',(mid,));report['cancel']['restart_preserved']=saved['text']==partial and saved['status']=='CANCELLED'
             r.cfg.update(observer_mode='off',route_override='simple',deadline_seconds=.01);report['deadline']=ask(r,'Erkläre die Relativitätstheorie.')
             report['integrity_errors']=r.store.integrity(True)
