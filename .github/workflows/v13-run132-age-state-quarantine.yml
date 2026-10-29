@@ -35,8 +35,8 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check e8da3fa027a959b7e0f7556a3a126da85fba915e v13/code/docs/proofs/continuation-20261029/AGE_STATE_QUARANTINE_RUN132_PREREG.md || source_ok=1
-          check ae40d11f07487a0b39941cd69a66e9f3e72d8bd8 v13/code/scripts/age_state_quarantine_candidate.py || source_ok=1
-          check ec94e0b3a63404fa00453e0f96cd982665657bcd v13/code/tests/test_age_state_quarantine_candidate.py || source_ok=1
+          check 8143c5995ab04e4c08e87dfa76d3345570dede22 v13/code/scripts/age_state_quarantine_candidate.py || source_ok=1
+          check eab41fbe046d167530f2ed5187c78ce52e142b4b v13/code/tests/test_age_state_quarantine_candidate.py || source_ok=1
           check d4c38ae344746811fedecff706a9affe9cf8b375 v13/code/v13/age.py || source_ok=1
           echo "$source_ok" > "$e/SOURCE_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/age_state_quarantine_candidate.py v13/code/tests/test_age_state_quarantine_candidate.py > "$e/COMPILE_RAW.log" 2>&1
