@@ -1,0 +1,45 @@
+{
+  "revision": "s7-user-cursor-overflow-review-v1",
+  "date_utc": "2026-10-29",
+  "owner": "codex/v13-s7-user-cursor-overflow-20261029-auto10d",
+  "parent_pr": 1113,
+  "parent_sha": "f21e965cba76f314ecc8444d23cd2e67e759f567",
+  "review_pr": 1118,
+  "scope": "Sleep S7 >64 interleaved user-event cursor; source-validated bounded event_ids",
+  "original_red": {
+    "run_id": 40909086524,
+    "head_sha": "05c21f21f7c9e09ff2c6097198a8d7a92d73c4d6",
+    "artifact_id": 12913380462,
+    "sha256": "452e10bbd6b68bf0cbed16bb7013bef5edc659c213e3289d16c999214442ae0b",
+    "crc": "PASS",
+    "sha256sums": "5/5 PASS",
+    "focused": "3 FAIL (all returned 0 turns after interleaved FINAL answers)",
+    "privacy": "PASS"
+  },
+  "candidate": {
+    "history_commit": "20256768658bf62534a84422e5e689f031108fab",
+    "sleep_commit": "ddef564e46d4266c3a4c6d28c670b369cbcbb842",
+    "ci_run_id": 40909329351,
+    "ci_status": "PENDING_AT_CHECKPOINT",
+    "evidence_level": "SOFTWARE_STORE_ONLY"
+  },
+  "gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Does 130-turn reverse FINAL paging pass focused tests and full suite?",
+    "Is user_until migration from assistant high-water source-safe on legacy snapshots?",
+    "Does 8-session fairness remain valid under user cursor?",
+    "Independent review of corrupted duplicate events and exact SourceRefs"
+  ],
+  "next_command": "Fetch GitHub Actions run 40909329351 and verify raw evidence; correct focused regressions, preserve original RED and negative gates.",
+  "production_integrated": false
+}
