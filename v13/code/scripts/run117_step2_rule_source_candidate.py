@@ -52,6 +52,9 @@ def select(sources, project, cap=CAP):
                 and (source[len(prefix)].isalnum()
                      or source[len(prefix)] in "_-")):
             continue
+        mentioned = re.findall(r"\bProject\s+([A-Za-z][A-Za-z0-9_-]*)\b", source)
+        if any(name != project for name in mentioned):
+            raise ValueError("CROSS_PROJECT_SOURCE_AMBIGUOUS")
         matches = list(RULE.finditer(source))
         keys = list(RULE_KEY.finditer(source))
         if len(matches) > 1:
