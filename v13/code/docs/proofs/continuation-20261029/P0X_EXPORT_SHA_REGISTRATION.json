@@ -1,0 +1,28 @@
+{
+  "schema": "v13.p0x.export_hash_registration.v1",
+  "date_utc": "2026-10-29",
+  "source_pr": 1058,
+  "original_fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "original_generator_git_blob": "7ec4e877ad5ea3eed1c60102dac3baa15391dd2b",
+  "independent_source_audit_green_run": 40839803881,
+  "independent_source_audit_green_head": "6b3fcff3a9388c096d0dd5cea700338caec9fdcd",
+  "independent_source_audit_raw_zip_sha256": "4859377d332d6158b8a96cb033149907aab0f57517ec276d95d9be1073e0f581",
+  "inputs_jsonl_sha256": "0b74a504ca7dae7b0aae5c8f6843be73111ac626aef175290b873361c2137efa",
+  "answers_jsonl_sha256": "0d6ba9cd5d8581c079b68728f21cd8d8a5b2d22f8801f24cfc72aa2122b019a1",
+  "rows": 150,
+  "model_prompts": 750,
+  "raw_artifact_id": 12882475949,
+  "raw_library_backup": "/V13/RawEvidence/P0X_EXPORT_AUDIT_40839803881_source_13tests_GREEN.zip",
+  "raw_library_backup_rematerialized_byte_identical": true,
+  "scope": "Pinned source-only exported inputs and answers. Not a native run or independent real-world holdout. Pins fixed before any P0X native inference in this branch.",
+  "native_calls": 0,
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE"
+  }
+}
