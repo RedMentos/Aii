@@ -244,7 +244,7 @@ def run_native(home, out, fixture_sha256):
             receipt["process_reaped"] = True
             receipt["model_sha256_after"] = MODEL_SHA
             receipt["runner_sha256_after"] = file_hash(binary)
-            receipt["raw_sha256"] = sha(canonical({"status": "RUNNING", "rows": records,
+            receipt["raw_sha256"] = sha(canonical({"status": receipt["status"], "rows": records,
                               "model_sha256": MODEL_SHA, "fixture_sha256": fixture_sha256}))
             receipt["score_sha256"] = file_hash(out / "SCORE.json")
             persist()
