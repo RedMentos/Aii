@@ -1,0 +1,185 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-29",
+  "title": "Automation10 cross-chain review checkpoint; not production integrated",
+  "owner": "GPT-6 review branches only; no ownership of parent branches",
+  "latest_active_discovery": {
+    "main_is_not_integration_source": true,
+    "parents": [
+      {
+        "pr": 1117,
+        "head": "7bab483e8e92916f3aa74a51102dc54ffd02235c",
+        "scope": "AG6 gate request"
+      },
+      {
+        "pr": 1118,
+        "head": "4a6326c316042270a57da0b12869cc314b9f70d2",
+        "scope": "Sleep S7 user cursor"
+      },
+      {
+        "pr": 871,
+        "head": "e719910f02b4d4af50ac245cd8175cef287dff4b",
+        "scope": "isolated historical Run11 acceptance only"
+      }
+    ]
+  },
+  "packages": [
+    {
+      "pr": 1119,
+      "branch": "codex/v13-ag6-reject-atomic-review-20261029-auto10e",
+      "head": "33139aeaab7732663e731149413a8eb766ee7d72",
+      "source_blob": "8ff8c274c77944ae72699932fe99980d25cba22e",
+      "original_red": {
+        "run": 40912917273,
+        "artifact": 12914547443,
+        "zip_sha256": "638d9d940159d3f91d8135c79f822b3cd755a86005fc7a08950b13ae3a3fbeac",
+        "failures": 2
+      },
+      "candidate": {
+        "run": 40913021744,
+        "artifact": 12914493095,
+        "zip_sha256": "e27416a69a067116f05d8ea7b724507563741cdf6b4d9d05ac5e3a3d5581c2fb",
+        "focused": "36 PASS",
+        "full": "3201 tests, 2 inherited frozen-source errors, 11 skipped",
+        "compile_privacy_diff": "PASS"
+      },
+      "state": "FOCUSED_GREEN_FULL_RED_REVIEW_ONLY",
+      "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_ag6_reject_request_atomic_20261029 tests.test_ag6_gate_request_atomic_20261029 tests.test_weight_approval_atomic"
+    },
+    {
+      "pr": 1120,
+      "branch": "codex/v13-ag6-rated-source-revocation-20261029-auto10f",
+      "head": "bfcb3861ee023a893b3b2a4a5f4df588f64b730a",
+      "source_blob": "c78dab5765bd23305cb0443c065762bd1adec628",
+      "original_red": {
+        "run": 40913412590,
+        "artifact": 12914183176,
+        "zip_sha256": "028b35a60f1df3abaf6e5dfb6da273fcd1e436bc98a828e20126d9034c257726",
+        "failures": 4
+      },
+      "failed_candidate_preserved": {
+        "run": 40913488163,
+        "artifact": 12915477080,
+        "zip_sha256": "7ffc8a07c5979b02de11f8aac7c65db069a0f523a48487903c354a376234169c",
+        "reason": "unmerged ContextOS.source import"
+      },
+      "candidate": {
+        "run": 40914692178,
+        "artifact": 12915862427,
+        "zip_sha256": "0e9ea45dfc885ceaf939bcfde48366702e3689d55e448cb5a49bbe0f3572b4fd",
+        "focused": "37 PASS",
+        "full": "3205 tests, 2 inherited frozen-source errors, 11 skipped",
+        "compile_privacy_diff": "PASS"
+      },
+      "state": "FOCUSED_GREEN_FULL_RED_REVIEW_ONLY",
+      "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_ag6_rated_source_admission_20261029 tests.test_ag6_reject_request_atomic_20261029 tests.test_weight_approval_atomic"
+    },
+    {
+      "pr": 1121,
+      "branch": "codex/v13-s7-crosspage-pending-barrier-20261029-auto10g",
+      "head": "921216707854437017e2f8bfc8a05e80fea368b1",
+      "source_blob": "5f04e1e5abee914d1b43c359f37554fef686a0b9",
+      "original_red": {
+        "run": 40913815200,
+        "artifact": 12913934916,
+        "zip_sha256": "133a27063e37bd2982a580f3ae85c4485ee838431ff8a62af9e0179f03fe472e",
+        "failures": 2
+      },
+      "first_candidate_green": {
+        "run": 40913912042,
+        "artifact": 12914848436,
+        "zip_sha256": "da9b872a5176206ad6c16442afac8a2c56362028a5f0e35556b858723d12f1db",
+        "full": "3211 PASS 11 skipped"
+      },
+      "optimized_candidate": {
+        "run": 40914601589,
+        "artifact": 12915403608,
+        "zip_sha256": "2d5fdce22b12ed1c792621a5b1e183f4131d5886a43375bb56fd6fb818eca587",
+        "focused": "30 PASS",
+        "full": "3211 PASS 11 skipped",
+        "compile_privacy_diff": "PASS"
+      },
+      "state": "FULL_SOFTWARE_GREEN_REVIEW_ONLY",
+      "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_sleep_crosspage_pending_barrier_20261029 tests.test_sleep_user_cursor_overflow_20261029 tests.test_sleep_interleaved_final_20261029"
+    },
+    {
+      "pr": 1122,
+      "branch": "codex/v13-native-cancel-process-identity-20261029-auto10h",
+      "head": "00c33007dbe4e4ddae1f8ec25840e5b6827ad894",
+      "source_blob": "f35d36ceab9acd473abebc8c59958aa6b784e42d",
+      "original_red": {
+        "run": 40915366700,
+        "artifact": 12915004245,
+        "zip_sha256": "ee3021274a97890bc21c4bfaa389b54e117c9d9fdd24168fc2d252a2255f2152"
+      },
+      "software": {
+        "run": 40915467786,
+        "artifact": 12916021716,
+        "zip_sha256": "361c6f43691a1bc20580153013b8bc998d3312967a355ceb2259c987e32c75e9",
+        "focused": "27 PASS",
+        "full": "2266 PASS 1 skipped"
+      },
+      "new_native": {
+        "run": 40916463645,
+        "status_at_checkpoint": "IN_PROGRESS",
+        "source": "new review cohort 24 exact pinned blobs; serial group v13-run11-age0-native-endtoend",
+        "native_authority": "NO_PROMOTION_UNTIL_CLOSED"
+      },
+      "state": "SOFTWARE_GREEN_NATIVE_PENDING_REVIEW_ONLY",
+      "next_command": "Inspect Actions 40916463645, download raw ZIP, verify exact 24 blobs, deep model hashes, native runner process PID, CRC/SHA256SUMS, and private Library byte-exact backup"
+    }
+  ],
+  "historical_native_acceptance": {
+    "pr": 871,
+    "run": 40649812006,
+    "artifact": 12800785500,
+    "zip_sha256": "5d496cc71fe72a8b79aa5a099019b5872c5c6f9dbec064e7f8cea662966228fb",
+    "crc": true,
+    "internal_hashes_verified": "75/75",
+    "private_readback_byte_exact": true,
+    "device": "Linux x86_64 (not Redmi)",
+    "result": "15 PASS / 5 FAIL",
+    "failed_stages": [
+      "readouts:halt gate",
+      "control-calibration:support",
+      "memory-retrieval:two native source-use checks",
+      "output-adapter:calibration and first-token accuracy",
+      "cancel-restart:global pool emptiness check false; canceled worker process_reaped true"
+    ],
+    "original_negative_evidence_preserved": true
+  },
+  "private_backup": {
+    "folder": "/V13-Checkpoints/2026-10-29/GPT6-Auto10-PR1119-1121",
+    "type": "private Library, no rejected public Drive destination",
+    "raw_zips": "all original RED and completed candidate evidence, plus 20-stage native final",
+    "readback": "all completed pre-native artifacts byte-exact where checked"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "ag6_human_approval": false,
+    "redmi_measured": false,
+    "canonical_complete": false
+  },
+  "open_questions": [
+    "Independent review of all four PRs and crosschain ownership; no merges yet",
+    "AG6 parent chain has two historical frozen-source test errors; do not edit registered cohort",
+    "Native cancel new cohort pending; do not reinterpret historical 15/5 run",
+    "Other four Linux-native failed stages require separate pinned technical repair/research",
+    "Actual Redmi hardware test and whole-system acceptance remain unproven"
+  ],
+  "prerequisites": [
+    "GitHub Actions artifact and public model availability",
+    "Serial native concurrency group and active owner respect",
+    "No paid provisioning, no unauthorized communications or private data publication",
+    "All safety/age/approval gates retained"
+  ],
+  "current_owner": "Each review PR owns only its own branch; original authors retain parents",
+  "next_global_command": "Inspect GitHub Actions 40916463645; verify closed raw and private backup, then select next highest-priority independent canonical package",
+  "platform_remaining_budget": "UNKNOWN",
+  "integration_state": "NO_MAIN_MERGE_NO_AGI_CLAIM"
+}
