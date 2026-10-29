@@ -96,7 +96,11 @@ def fit(store,rng_seed=0):
     base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
     Xi=np.hstack([np.ones((n,1)),S,Y]);Wi=ridge(Xi[tr],A[tr])
     inv_acc=float((np.argmax(Xi[te]@Wi,1)==np.argmax(A[te],1)).mean()) if te else None
-    major=max(st['counts'].values())/n
+    # Freeze the majority action using training labels only, then score that
+    # one fixed classifier on held-out actions. The all-row frequency leaks
+    # held-out labels into the baseline and is not comparable to inv_acc.
+    train_majority=max(ACTIONS,key=lambda a:sum(T[i]['a']==a for i in tr))
+    major=sum(T[i]['a']==train_majority for i in te)/len(te)
     align={'status':'UNAVAILABLE','reason':'no learned latent world prediction stored with these actions'}
     L=[t['latent'] for t in T];dims={len(l) for l in L if l}
     if all(l is not None for l in L) and len(dims)==1:

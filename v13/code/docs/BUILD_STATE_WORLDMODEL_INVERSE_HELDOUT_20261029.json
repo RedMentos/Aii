@@ -1,0 +1,76 @@
+{
+  "schema": "v13.review_build_state.inverse_heldout_baseline.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1140 child of PR1139; no production merge",
+  "owner": {
+    "branch": "codex/v13-worldmodel-inverse-heldout-baseline-20261029-auto10z",
+    "pr": 1140,
+    "parent_pr": 1139,
+    "parent_sha": "20363b1f3052276254d23878feeb2f92adeff2ca"
+  },
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "source": {
+    "old_blob": "20aa8e9a2d1f2388edf91891602960be5da69a45",
+    "candidate_blob": "54f26960645f234fe655e5cb68c31a3a009ac8ce",
+    "test_blob": "b66b01c9ffc10af5011a8e0e34b76dfb24deec07",
+    "change": "Train-selected majority action scored on heldout action labels; inverse accuracy and forward fit untouched"
+  },
+  "original_red": {
+    "actions": 40942193024,
+    "head": "b07405207083421e20f48c6a8f8b52186f2c32fd",
+    "result": "3 tests: 2 FAIL, 1 PASS; old majority baseline .7292 vs 0, .875 vs .5385",
+    "zip_sha256": "9aab1121c21a80a941759d662e6e5b1f6f7f3446787ce69346d86573c5529a88",
+    "crc_clean": true,
+    "inner_sha256": "14/14",
+    "note": "Original RED workflow shallow checkout caused separate PRIVACY_EXIT=2, DIFF_EXIT=128; fixed in later workflow, not waived",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-InverseBaseline/RAW_RED_40942193024_sha9AAB1121.zip",
+    "private_readback": "byte-exact"
+  },
+  "exact_source_green": {
+    "source_export_actions": 40942713969,
+    "head": "b4b3f10c2512bd2f3c1763948d87ec0a939ca25b",
+    "zip_sha256": "7f0cb7a86d4caa6fc39a1572b2bfadb48bdaf58876921ec0697c5bd5330e2157",
+    "tests": "3/3 PASS local Linux software",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-InverseBaseline/EXACT_SOURCE_40942713969_sha7F0CB7A8.zip",
+    "private_readback": "byte-exact"
+  },
+  "integration_green": {
+    "source_export_actions": 40943050036,
+    "head": "2701787a54ad9cb5aaf0e110417c1c86bfe2a0ba",
+    "zip_sha256": "de7cc95944fedfcecbf2947ed0aec678cc8155e3a9a7190d3a5f5db541006215",
+    "tests": "15/15 PASS original WorldModel + inverse witness, local Linux software only"
+  },
+  "pr1139_full_review": {
+    "actions": 40940769318,
+    "tests": "3262, two inherited Run34/Run37 errors, 11 skips, no new ablation failure",
+    "zip_sha256": "ac15ae22bccbc01a33dee5afc9691ceee596129b14e9eb0988845b315824f55d",
+    "private_readback": "byte-exact"
+  },
+  "pr1138_c3_independent": {
+    "actions": 40940312940,
+    "score": "3/6 total; English 3/3, German 0/3",
+    "zip_sha256": "458629d91f41d7aa2fd371d070a8b434e1281ec82ccb29851b3250b264d87ca7",
+    "raw_oracle_replayed": true
+  },
+  "pending": {
+    "focused_ci": 40942944401,
+    "full_ci": "new workflow v13-inverse-full-review-20261029.yml"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_commands": [
+    "Verify latest PR1140 branch head and immutable Canon/source blobs",
+    "Close focused/full Actions raw ZIP CRC/inner SHA256SUMS, backup privately and readback",
+    "Retain Run34/Run37 historical source preflight errors without pin rewrite",
+    "Continue independent substantive canonical implementation from freshest owner-verified state"
+  ],
+  "runtime_budget_remaining": "UNKNOWN"
+}
