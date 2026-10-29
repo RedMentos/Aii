@@ -63,7 +63,7 @@ class SourceAnswerCliTests(unittest.TestCase):
         self.assertEqual((outside_code, outside["status"], outside["native_calls"]),
                          (0, "NOT_APPLICABLE", 0))
         self.assertNotIn("615 Euro", wrong.get("answer", ""))
-        self.assertNotIn("answer", outside)
+        self.assertEqual(outside.get("answer", ""), "")  # frozen query emits an empty refusal field
 
     def test_native_is_explicit_and_bounds_forwarded_without_substitution(self):
         fake = {"status": "FINAL", "answer": "Project Elyra has 615 Euro.",
