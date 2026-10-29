@@ -36,9 +36,10 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check 9248e46e199a4227c296d538e6a2ef969e8e10cb v13/code/v13/__main__.py || source_ok=1
-          check 89be3e303c6890f02fa78d858328148ec7576470 v13/code/tests/test_run94_source_answer_cli.py || source_ok=1
+          check 81a73a59c2df95fe3757229c486a505fc70335f7 v13/code/tests/test_run94_source_answer_cli.py || source_ok=1
           check 252144055ffeaed5516c930e0cdf86ea64396f2d v13/code/docs/SOURCE_ANSWER_CLI_REVIEW.md || source_ok=1
           check be30dfb1f7e3fda06cd2bea7e606e29d215717ce v13/code/docs/proofs/continuation-20261028/RUN94_SOURCE_ANSWER_CLI_PREREG.md || source_ok=1
+          check 3974cd7d25ac6c660a356550f3642b986012b625 v13/code/docs/proofs/continuation-20261028/RUN94_ORIGINAL_RED_AMENDMENT.md || source_ok=1
           check 75ca7f3f197665f665d9582b7f5c2efb1f598235 v13/code/scripts/ask_verified_budget.py || source_ok=1
           check 4b73842be25e784f70ade4f6c4ced3fe2dcb9eab v13/code/v13/source_consumer.py || source_ok=1
           check 68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py || source_ok=1
@@ -49,7 +50,20 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/v13-run94-venv"
           py="$RUNNER_TEMP/v13-run94-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
-          echo "$?" > "$e/INSTALL_EXIT.txt"
+          base_rc="$?"
+          if [ "$base_rc" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            torch_rc="$?"
+            if [ "$torch_rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+              deps_rc="$?"
+            else
+              deps_rc=1
+            fi
+          else
+            deps_rc=1
+          fi
+          echo "$deps_rc" > "$e/INSTALL_EXIT.txt"
           python3 -m compileall -q v13/code/v13/__main__.py v13/code/tests/test_run94_source_answer_cli.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$source_ok" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
