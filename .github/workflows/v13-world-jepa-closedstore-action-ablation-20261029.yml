@@ -28,6 +28,14 @@ jobs:
           echo "$?" > "$e/DEPS_EXIT.txt"
           (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest -v tests.test_world_jepa_closedstore_heldout_action_probe_20261029 tests.test_world_jepa_heldout_action_readout_20261028 tests.test_world_jepa_readonly_store tests.test_world_jepa_closedstore_private_pipeline_20261028 tests.test_world_jepa_numeric_noise_20261029) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
+          # Exercise the actual operator CLI with a synthetic closed SQLite file.
+          # The private fixture DB stays outside the uploaded raw evidence.
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -c 'import sys; from tests.test_world_jepa_readonly_store import fixture; fixture(sys.argv[1], n=64)' "$RUNNER_TEMP/fixture.sqlite") > "$e/FIXTURE_RAW.log" 2>&1
+          echo "$?" > "$e/FIXTURE_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m scripts.world_jepa_closedstore_heldout_action_probe_20261029 --db "$RUNNER_TEMP/fixture.sqlite" --ack-closed-store --ack-shadow-fit --steps 20) > "$e/OPERATOR_RAW.json" 2>&1
+          echo "$?" > "$e/OPERATOR_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["scope"]=="CLOSED_STORE_FIXED_READOUT_DIGITAL_SHADOW"; assert r["steps"]==20 and r["n"]==64 and len(r["per_seed"])==2; assert r["readout_frozen_for_heldout_controls"] is True; assert r["utility_proven"] is False and r["tool_authority"] is False and r["age_authority"]==0; assert "synthetic-action-" not in json.dumps(r)' "$e/OPERATOR_RAW.json" > "$e/OPERATOR_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/OPERATOR_CHECK_EXIT.txt"
           "$RUNNER_TEMP/venv/bin/python" -m compileall -q v13/code/scripts/world_jepa_closedstore_heldout_action_probe_20261029.py v13/code/tests/test_world_jepa_closedstore_heldout_action_probe_20261029.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base e15f46a5212dceeeac4361a68ba982bcb00419a4 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
@@ -48,6 +56,6 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/world-jepa-closedstore-action"
-          for n in VENV DEPS FOCUSED COMPILE PRIVACY DIFF; do
+          for n in VENV DEPS FOCUSED FIXTURE OPERATOR OPERATOR_CHECK COMPILE PRIVACY DIFF; do
             test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n failed"; exit 1; }
           done
