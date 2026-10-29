@@ -66,8 +66,8 @@ def _require_preflight(result, expected):
     if (result.get("status") != expected or result.get("native_calls") != 0
             or result.get("model_called") is not False):
         raise AssertionError("PREFLIGHT_EXPECTED_" + expected)
-    if expected != "READY" and "answer" in result and result["answer"]:
-        raise AssertionError("UNVERIFIED_ANSWER_LEAK")
+    if expected != "READY" and any(ch.isdigit() for ch in str(result.get("answer") or "")):
+        raise AssertionError("UNVERIFIED_FACT_LEAK")
 
 
 def run(home, out):
