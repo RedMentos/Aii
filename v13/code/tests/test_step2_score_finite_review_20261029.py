@@ -44,7 +44,7 @@ class PairedScoreIntegrityReview(unittest.TestCase):
         bad_values = (float("nan"), float("inf"), -float("inf"), 10 ** 10000, True,
                       "1", -0.01, 1.01, None)
         for bad in bad_values:
-            with self.subTest(value=repr(bad)):
+            with self.subTest(value='huge-int' if type(bad) is int and bad.bit_length() > 1000 else repr(bad)):
                 rows = complementary_rows()
                 rows[6]["score"]["utility"] = bad
                 report = paired_utility(rows, FIXTURES)
