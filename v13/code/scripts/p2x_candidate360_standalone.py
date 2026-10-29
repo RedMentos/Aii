@@ -71,7 +71,7 @@ class LocalServer:
         with socket.socket() as s:
             s.bind(("127.0.0.1", 0))
             self.port = s.getsockname()[1]
-        cmd = [str(binary), "-m", str(model), "--lora-scaled", str(adapter), "1",
+        cmd = [str(binary), "-m", str(model), "--lora-scaled", str(adapter) + ":1",
                "--host", "127.0.0.1", "--port", str(self.port), "-c", str(CONTEXT),
                "-np", "1", "-t", "2", "-tb", "2", "-b", "128", "-ub", "128",
                "-ngl", "0", "--cache-ram", "128", "--ctx-checkpoints", "6",
