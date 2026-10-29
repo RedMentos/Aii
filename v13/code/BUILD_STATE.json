@@ -3205,13 +3205,15 @@
     "parent_transformers_original_zip_sha256": "5be46cb9fc6c73570475bd937692e06748f8267492013033c0e6519e2845d47f",
     "parent_transformers_original_raw": "CRC_CLEAN_26_OF_26_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
     "peft_workflow_head": "552626808b6fbdff9dc9a5b19c1ff9e946f2b368",
+    "result_report": "docs/proofs/continuation-20261029/FULL_SUITE_PEFT_RESULT_20261029.md",
+    "full_peft_run": {"run": 40960222503, "head": "552626808b6fbdff9dc9a5b19c1ff9e946f2b368", "status": "RED", "tests": "3304 RUN / 2 ERROR / 11 SKIPPED", "errors": "FROZEN_RUN34_RUN37_NATIVE_SOURCE_OR_CATALOG_CHANGED", "artifact_id": 12935267907, "zip_sha256": "518e5bc842c73e483f38c05dcabe2ea8b3b57556ae709f454047d399258787f1", "inner_hashes": "30/30", "crc_clean": true, "private_byte_exact": true, "non_full_stage_exits": "13/13 ZERO", "pip_check": "PASS"},
     "peft_prereg": {
       "torch": "2.5.1+cpu",
       "transformers": "4.44.2",
       "peft": "0.13.2",
       "numpy": "2.2.6",
       "full_unfiltered_suite": true,
-      "workflow": "ACTIONS_40960222503_QUEUED_NO_RESULT_CLAIM"
+      "workflow": "ACTIONS_40960222503_COMPLETED_FAILURE_3304_TESTS_2_FROZEN_ERRORS_11_SKIPPED"
     },
     "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
     "age0": "RECORD_ONLY",
