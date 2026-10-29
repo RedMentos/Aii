@@ -17,3 +17,8 @@
 - Next: run a full software regression on this exact review branch with the same isolated dependencies as PR #1097 and compare source-freeze tests without modifying frozen pins. Preserve original raw ZIP, SHA256SUMS, and failed tests if any. Then independent review and integration through the PR chain, not direct main mutation.
 - Relevant command from repo root after isolated dependencies: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py' -q`; focused command: `PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_skilllive tests.test_agi_live tests.test_skilllive_multistep_route_review_20261029 tests.test_skilllive_crossskill_conflict_20261029`.
 - Do not overclaim: bypass safety was repaired, not full WP-T6 or V13 acceptance. Remaining execution budget UNKNOWN; this is an intermediate checkpoint.
+
+## Full software regression closed
+- Exact-head Actions `40885625890` on `fcf9f20a438ac4607595bccfd4e0cdbc95dea97c` **GREEN**: 22 focused PASS, **3164 full tests OK (11 skipped)**, PIN/VENV/DEPS/FOCUSED/COMPILE/INSTALL/PIP_CHECK/FULL/PRIVACY/DIFF all exit 0; privacy scan CLEAN. No native model calls.
+- Original artifact `12903455084`, ZIP SHA256 `aaa371cc5b749c3592151ba9acd5b40be8f0724b0ead7aa1e1274b35be8a5c15`, CRC clean, 23/23 internal SHA256SUMS. Privately backed up as `/V13-Checkpoints/2026-10-29/GPT6-Review-Raw/V13_SKILLLIVE_CROSSSKILL_FULLSUITE_40885625890.zip`, re-materialized byte-identical.
+- This closes the parent software regression needed by the independent cross-organ integration prereg. Still no native C2/Redmi or gate promotion.
