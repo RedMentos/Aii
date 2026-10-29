@@ -1,0 +1,197 @@
+name: V13 HB1a pinned 54-call three-organ Linux-native diagnostic (review only)
+on:
+  push:
+    branches: [codex/v13-hb1a-native-54call-review-20261029]
+    paths: ['.github/workflows/v13-hb1a-native-54call-review-20261029.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-hb1a-54call-native-review
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pinned source, parent artifacts, resource admission, serial native, closed raw
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-hb1a-54call-native"
+          work="$RUNNER_TEMP/v13-hb1a-54call-work"
+          home="$RUNNER_TEMP/v13-hb1a-54call-home"
+          pin="73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b"
+          mkdir -p "$e/parent-source" "$e/parent-executor" "$work"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_red=0
+          check() {
+            got="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$got" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$got" = "$1" ]
+          }
+          check 14d9103419c27e50439fafe8473aa5d5e7812dd3 v13/code/docs/proofs/continuation-20261029/HB1A_NATIVE_54CALL_REVIEW_BUILD_STATE.json || source_red=1
+          check 9d6652e99ac9aa0de7898f15eeb8a54d598c49e6 v13/code/docs/proofs/continuation-20261029/HB1A_TWO_BODY_NATIVE_PREREG.md || source_red=1
+          check b02d2961a2ed42801b8caa30417f7eb9925e4cc9 v13/code/docs/proofs/continuation-20261029/HB1A_NATIVE_EXECUTION_BUILD_STATE.json || source_red=1
+          check 033ea9c8c3e6f9ff631b84136afa1f74dd7e627c v13/code/scripts/hb1a_two_body_native_pilot.py || source_red=1
+          check 6a2f2feb5a15dc59ea1905b4ecbfadbfeb0fbac0 v13/code/tests/test_hb1a_two_body_native_pilot.py || source_red=1
+          check 56306009d69554419bd9c024173ba9e56f32f56c v13/code/scripts/hb1a_native_executor.py || source_red=1
+          check 3801a552ebd8a1d59a42a9a6ce078310e0b34221 v13/code/tests/test_hb1a_native_executor.py || source_red=1
+          check 902860ab7c952857e45c9c1c7c847dec157702df v13/code/tests/test_hb1a_native_executor_mock.py || source_red=1
+          check b79abbfa0bcd16e115acd89383885e5d228660d7 v13/code/scripts/hb1a_independent_native_verifier.py || source_red=1
+          check 41d17e2a5b3c49ad86497214d3c3fbfbd52bfaa0 v13/code/tests/test_hb1a_independent_native_verifier.py || source_red=1
+          check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py || source_red=1
+          check 8d6f5b9f0830540d2de72cc624778ff03e7b90ec v13/code/scripts/hb0_arm_export.py || source_red=1
+          check 7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02 v13/code/scripts/run93_source_c3_native_e2e.py || source_red=1
+          check efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py || source_red=1
+          check bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py || source_red=1
+          check dc23e192bcd01589475692666ebb6568c80d078b v13/code/v13/bootstrap.py || source_red=1
+          check 546b97946a5036b7006fb741376e5ca42c7e1440 v13/code/v13/config.py || source_red=1
+          check 8efd950c7bc221fbdae3fca200610cb383286001 v13/code/v13/common.py || source_red=1
+          check 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json || source_red=1
+          check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md || source_red=1
+          git merge-base --is-ancestor 15fc02a214380d178ff857ee50c2a11b6640704f HEAD || source_red=1
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          if [ "$source_red" = 0 ]; then echo SOURCE_PINS_MATCH > "$e/SOURCE_STATUS.txt"; fi
+          gh run download 40834623613 -n v13-hb1a-preflight-40834623613-fcb1f6054f1b4e96538b4bebe5d07e49fc5c4646 -D "$e/parent-source" > "$e/PARENT_SOURCE_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_SOURCE_DOWNLOAD_EXIT.txt"
+          gh run download 40835890491 -n v13-hb1a-native-source-40835890491-15fc02a214380d178ff857ee50c2a11b6640704f -D "$e/parent-executor" > "$e/PARENT_EXECUTOR_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_EXECUTOR_DOWNLOAD_EXIT.txt"
+          python3 - "$e/parent-source" "$e/parent-executor" > "$e/PARENT_VERIFY_RAW.log" 2>&1 <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          expected=[
+              ('fcb1f6054f1b4e96538b4bebe5d07e49fc5c4646','HB1A_SOFTWARE_ONLY_NO_NATIVE_NO_GATE',('SOURCE_RAW.log','FOCUSED_RAW.log','FULL_RAW.log','PRIVACY_RAW.log')),
+              ('15fc02a214380d178ff857ee50c2a11b6640704f','HB1A_NATIVE_EXECUTOR_SOFTWARE_ONLY_NO_GATE',('SOURCE_RAW.log','FOCUSED_RAW.log','PRIVACY_RAW.log'))
+          ]
+          for root, (head,status,required) in zip(map(Path,sys.argv[1:]),expected):
+              assert (root/'HEAD.txt').read_text().strip()==head, 'PARENT_HEAD_RED'
+              assert (root/'STATUS.txt').read_text().strip()==status, 'PARENT_STATUS_RED'
+              lines=(root/'SHA256SUMS.txt').read_text().splitlines()
+              assert len(lines)>=len(required)+2, 'PARENT_MANIFEST_SHORT'
+              listed=set()
+              for line in lines:
+                  digest,rel=line.split('  ',1)
+                  path=(root/rel.removeprefix('./')).resolve()
+                  assert path.is_relative_to(root.resolve()) and path.is_file(), 'PARENT_PATH_RED'
+                  assert hashlib.sha256(path.read_bytes()).hexdigest()==digest, 'PARENT_SHA_RED:'+rel
+                  listed.add(path.name)
+              assert set(required).issubset(listed), 'PARENT_MISSING_RAW'
+              assert 'OK' in (root/'FOCUSED_RAW.log').read_text(), 'PARENT_FOCUSED_RED'
+              assert 'CLEAN' in (root/'PRIVACY_RAW.log').read_text(), 'PARENT_PRIVACY_RED'
+              assert 'HB1A_' in (root/'SOURCE_RAW.log').read_text(), 'PARENT_SOURCE_RED'
+          assert 'OK' in (Path(sys.argv[1])/'FULL_RAW.log').read_text(), 'PARENT_FULL_RED'
+          print('PARENT_PR1052_AND_PR1053_EXACT_HEAD_RAW_SHA256_OK')
+          PY
+          echo "$?" > "$e/PARENT_VERIFY_EXIT.txt"
+          python3 - "$work" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import json,platform,shutil,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          info={'platform':platform.platform(),'machine':platform.machine(),
+                'disk_free_bytes':shutil.disk_usage(root).free}
+          for line in Path('/proc/meminfo').read_text().splitlines():
+              if line.startswith(('MemAvailable:','MemTotal:')):
+                  key,value,*_=line.split()
+                  info[key.rstrip(':')]=int(value)*1024
+          limit=Path('/sys/fs/cgroup/memory.max')
+          current=Path('/sys/fs/cgroup/memory.current')
+          info['cgroup_memory_max']=limit.read_text().strip() if limit.exists() else 'UNAVAILABLE'
+          info['cgroup_memory_current']=int(current.read_text()) if current.exists() else None
+          print(json.dumps(info,sort_keys=True))
+          assert platform.system()=='Linux' and platform.machine()=='x86_64'
+          assert info['disk_free_bytes']>=4_000_000_000
+          assert info.get('MemAvailable',0)>=3_500_000_000
+          cap=info['cgroup_memory_max']
+          assert cap in ('max','UNAVAILABLE') or int(cap)>=3_000_000_000
+          if cap.isdecimal() and info['cgroup_memory_current'] is not None:
+              assert int(cap)-info['cgroup_memory_current']>=2_000_000_000
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-hb1a-54call-venv"
+          py="$RUNNER_TEMP/v13-hb1a-54call-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/hb1a_native_executor.py v13/code/scripts/hb1a_independent_native_verifier.py v13/code/scripts/hb1a_two_body_native_pilot.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/PARENT_VERIFY_EXIT.txt")" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 180s "$py" -m unittest -v tests.test_hb1a_two_body_native_pilot tests.test_hb1a_native_executor tests.test_hb1a_native_executor_mock tests.test_hb1a_independent_native_verifier) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQUISITE_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 28m "$py" -m scripts.hb1a_native_executor --home "$home" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            python3 - "$home" > "$e/ADMISSION_RAW.log" 2>&1 <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          home=Path(sys.argv[1])
+          assert not os.environ.get('V13_LLAMA_SERVER'),'BINARY_OVERRIDE_RED'
+          for name in ('config/lora-active.json','config/memory-server.json'):
+              path=home/name
+              if path.exists():
+                  assert json.loads(path.read_text()) in ({},{'active':{}}),'ACTIVE_ADAPTER_RED'
+          assert (home/'bin/llama-server').is_file(),'RUNNER_MISSING_RED'
+          print('HB1A_FRESH_AGE0_NO_ADAPTERS_OR_BINARY_OVERRIDE')
+          PY
+            echo "$?" > "$e/ADMISSION_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/ADMISSION_RAW.log"; echo SKIPPED_RED > "$e/ADMISSION_EXIT.txt"
+          fi
+          if [ "$(cat "$e/ADMISSION_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=25s 52m "$py" -m scripts.hb1a_native_executor --home "$home" --out "$work/evidence" --fixture-sha256 "$pin") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_ADMISSION_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -d "$work/evidence" ]; then cp -a "$work/evidence" "$e/evidence"; fi
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && "$py" -m scripts.hb1a_independent_native_verifier --evidence-dir "$e/evidence" --fixture-sha256 "$pin") > "$e/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_RED > "$e/VERIFY_RAW.log"; echo SKIPPED_RED > "$e/VERIFY_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 15fc02a214380d178ff857ee50c2a11b6640704f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 15fc02a214380d178ff857ee50c2a11b6640704f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve closed raw and all RED attempts (never model weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb1a-54call-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb1a-54call-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce every native prerequisite and raw verification
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb1a-54call-native"
+          for n in SOURCE PARENT_SOURCE_DOWNLOAD PARENT_EXECUTOR_DOWNLOAD PARENT_VERIFY RESOURCE DEPS COMPILE FOCUSED INSTALL ADMISSION NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no native acceptance or gate promotion"
+              tail -50 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo HB1A_54_REAL_LINUX_NATIVE_CALLS_RECORD_CONSISTENT_NO_STEP2_B3_JEPA_REDMI_GATE
