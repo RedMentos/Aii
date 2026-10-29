@@ -1,0 +1,7 @@
+# P2 first-token native dependency correction addendum 2 — before third attempt
+
+Second native workflow `40851169183`, exact head `4309b9306d235865624944b24227e014ad5bc49b`, **RED before model inference**. Original artifact ID `12887296566`, independently downloaded ZIP SHA256 `56f16af2c01ee09a51b8dec1fda09c0889a5dfc71be36994ef5f6a44aef96442`, ZIP CRC CLEAN. `TORCH_EXIT=0`, `DEPS_EXIT=1`, `AUDIT_EXIT=SKIPPED`. Exact observed pip resolver error: `transformers==5.20.2` requires `safetensors>=0.8.0`, incompatible with prior workflow `safetensors==0.7.0`. This is distinct from first RED `40850998235` (tokenizers incompatibility). Preserve both raw RED ZIPs and stage exits; no model-forward call occurred.
+
+**Prospective compatibility correction before third run:** update only `safetensors==0.7.0` to `safetensors==0.8.0`. Keep `torch==2.14.1`, `transformers==5.20.2`, `tokenizers==0.23.1`, all source/model/runtime SHA256 pins, prompts, weights, no training, no P0X exposure and all negative gates unchanged. Do not retry repeatedly if further unresolved dependency constraints emerge; perform source-only dependency metadata preflight and continue independent canonical packages. This is not posthoc model scoring or an approval to train. Eight original tokenizer input-ID arrays must still match the frozen 40850029535 receipt.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi unmeasured; V13 INCOMPLETE.
