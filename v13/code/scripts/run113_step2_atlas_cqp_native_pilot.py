@@ -175,6 +175,10 @@ def run(installed_home, evidence_dir):
                 source_path = evidence_dir / "STEP2_RAW.json"
                 source = step2.run_locked(arm_home, source_path, fixture_limit=1)
                 counts = dict(patch.count)
+        # Match the frozen Z2b source-report wire metadata; no row alteration.
+        source["wire_arm"] = {"arm": "w1", "note": "live wire"}
+        source["z2b_queried_offers"] = counts
+        atomic_write(source_path, dumps(source))
         receipt["source_report_sha256"] = file_hash(source_path)
         receipt["source_guard"] = verify_source(source, counts, model_before)
         receipt["queried_offers"] = counts
