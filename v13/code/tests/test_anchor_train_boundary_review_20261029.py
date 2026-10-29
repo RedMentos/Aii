@@ -32,10 +32,10 @@ class TrainingBoundaryReview(unittest.TestCase):
         self.r.close()
         self.tmp.cleanup()
 
-    def stage(self, trainer):
+    def stage(self, trainer, clock=None):
         w = WeightConsolidation(
             self.r.store, self.r.cfg | {"learning_mode": "SHADOW_UPDATE"},
-            trainer=trainer)
+            trainer=trainer, **({"clock": clock} if clock is not None else {}))
         row = w.stage(require_replay_pass=False)
         self.assertIn(row["status"], ("STAGED", "STAGED_SHADOW"))
         return w, row["batch_id"]
@@ -54,8 +54,7 @@ class TrainingBoundaryReview(unittest.TestCase):
 
     def test_corrected_restaging_keeps_original_failed_attempt(self):
         trainer = SpyTrainer(float("nan"))
-        w, bid = self.stage(trainer)
-        w.clock = lambda: 1000.0
+        w, bid = self.stage(trainer, clock=lambda: 1000.0)
         self.assertEqual(w.train(bid)["status"], "ANCHOR_INVALID")
         trainer.cfg["anchor_weight"] = 8.
         new_stage = w.stage(require_replay_pass=False)
