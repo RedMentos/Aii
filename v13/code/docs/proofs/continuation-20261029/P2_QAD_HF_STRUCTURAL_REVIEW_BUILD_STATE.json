@@ -1,0 +1,56 @@
+{
+  "schema": "v13.p2.qad_hf_structural_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 structural audit",
+  "branch": "codex/v13-p2-structural-tensor-audit-20261029",
+  "parent_pr": 1068,
+  "review_pr": 1069,
+  "parent_head_sha": "100268d45a70ab7ad62757e55367bd0dbe147fb6",
+  "source_only_tests": {
+    "count": 12,
+    "status": "PASS",
+    "run": 40847599915,
+    "head_sha": "0d3c5d0edb4ddbb344b91180072ec00d51eba792"
+  },
+  "hf_metadata": {
+    "source_repo": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "source_receipt_run": 40847683959,
+    "source_receipt_zip_sha256": "f9e4491afb82c637a8b85b561e0e019cb9468ff9e4b7be46a4e3a011d67bbbd3",
+    "independent_byte_run": 40847869855,
+    "independent_zip_sha256": "90220d9bff41ff0e6024c618756c7eb4a2b38cdc25b1779460a5309a8ec08468",
+    "verified_bytes": true,
+    "config_sha256": "720b43d6ddc2ed25be23eed355aefcf342434a176dedad23dbe0a5e3ac24bbb8",
+    "tokenizer_sha256": "2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da",
+    "tokenizer_config_sha256": "3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+  },
+  "deployed_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "real_source_structural": {
+    "prereg_commit": "81e58d0d1bd3434aa5f1279521adabde5af57a6c",
+    "initial_run": 40848183523,
+    "corrected_source_run": 40848210830,
+    "status": "IN_PROGRESS_NO_RESULT",
+    "no_model_inference": true,
+    "no_training": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Inspect GitHub Actions run 40848210830 and download original raw artifact; independently verify ZIP CRC, SHA256SUMS, source hashes, stage exits and STRUCTURAL_RESULT.json; record any RED, then preregister separate non-heldout native parity if mapping verified.",
+  "open_questions": [
+    "Whether pinned GGUF b10964 name map covers all HF tensors without shape/orientation exceptions",
+    "Whether QAD weights are value-compatible with the instruction HF master",
+    "Whether tokenizer/chat template and q/k RoPE transformations are compatible",
+    "No evidence of LP3 causal-state utility, C3 source-use gain, or Redmi behavior"
+  ],
+  "remaining_platform_budget": "UNKNOWN"
+}
