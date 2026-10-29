@@ -86,10 +86,31 @@ class WeightConsolidation:
             # deleted input or to train from mutable/cross-session chat text.
             q=self.s.one("SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='user' ORDER BY id LIMIT 1",
                          (r['event_id'],ev['session_id']))
-            a=self.s.one("SELECT text FROM messages WHERE event_id=? AND session_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",
-                         (r['event_id'],ev['session_id']))
-            if not q or not a:continue
+            answers=self.s.rows("SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='assistant' AND status='FINAL' ORDER BY id LIMIT 2",
+                                (r['event_id'],ev['session_id']))
+            # A human rating belongs to one exact answer, not the latest of
+            # multiple conflicting FINAL rows for the same event.
+            if not q or len(answers)!=1:continue
+            a=answers[0]
             try:
+                # Rated-answer lineage is revocable independently of the
+                # user's original prompt. Do not train on an answer whose
+                # declared supporting sources have since been deleted.
+                answer_meta=json.loads(a['metadata'])
+                if type(answer_meta) is not dict:continue
+                dependencies=answer_meta.get('context_source_refs')
+                if dependencies is not None:
+                    if type(dependencies) is not list or len(dependencies)>128:continue
+                    for dep in dependencies:
+                        if (type(dep) is not dict or
+                                set(dep)!={'source_id','sha256','char_start','char_end','modality'} or
+                                type(dep['source_id']) is not str or
+                                type(dep['sha256']) is not str or
+                                type(dep['char_start']) is not int or
+                                type(dep['char_end']) is not int or
+                                dep['modality']!='text'):
+                            raise ValueError('Malformed rated-answer dependency')
+                        self.s.read_source(dep)
                 # This AG6 branch does not contain the separate ContextOS
                 # source-restore PR. Validate the immutable event/source
                 # binding directly instead of importing a foreign chain.
