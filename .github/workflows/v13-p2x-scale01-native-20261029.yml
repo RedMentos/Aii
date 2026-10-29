@@ -39,8 +39,8 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           c374d2cd1d2b87046cff7157d552bfd2d5f7282f v13/code/docs/coordination/P2X_SCALE01_TRAIN16_PREREG_20261029.md
-          2cf8eaa892ae26f0f54afb03e850a302ec493d3f v13/code/scripts/p2x_scale01_train16.py
-          95782dbafa46a4da1cda5eb500187862d83bc556 v13/code/tests/test_p2x_scale01_train16_20261029.py
+          f60afc69f5a6b88a40f76c26c03df74acfbe54b5 v13/code/scripts/p2x_scale01_train16.py
+          6d268508b15b2b7abcca73f2fdf8b71f99e760e9 v13/code/tests/test_p2x_scale01_train16_20261029.py
           457aa932ffe3235034ef51da84b9ac9015d5ddb8 v13/code/scripts/p2x_schema_toggle_train16.py
           c5fb3ca3d56ed73e7fc301137f0585f71666e67e v13/code/scripts/p2x_json_train16_eval.py
           f9182daef9611544efb7a0e2346177b05612be6b v13/code/scripts/p2x_c3_json_target_fourstep.py
