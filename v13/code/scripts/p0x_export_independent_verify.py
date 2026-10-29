@@ -131,6 +131,10 @@ def verify(directory, expected_fixture_sha256):
         require(key not in grouped, "DUPLICATE_ARM")
         grouped[key] = message
     require(len(grouped) == 750, "ARM_COUNT")
+    exact_sources = {}
+    for project in answer_map:
+        _, _, b1, _ = parse_both(grouped[(project, "both_exact")], project)
+        exact_sources[project] = b1
     for project, answer in answer_map.items():
         both = grouped[(project, "both_exact")]
         observed, current, b1, b2 = parse_both(both, project)
@@ -145,6 +149,8 @@ def verify(directory, expected_fixture_sha256):
                 "SHUFFLED_POLICY")
         require(source_id(foreign) is not None and source_id(foreign) != project
                 and foreign != b1, "SHUFFLED_FOREIGN")
+        require(source_id(foreign) in exact_sources
+                and foreign == exact_sources[source_id(foreign)], "SHUFFLED_COHORT")
     return {"schema": SCHEMA, "status": "INDEPENDENT_SOFTWARE_ONLY_NO_NATIVE",
             "fixture_sha256": expected_fixture_sha256,
             "inputs_sha256": manifest["sha256"]["inputs.jsonl"],
