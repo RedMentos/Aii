@@ -52,7 +52,7 @@ _active = False
 
 
 def _blob_sha(raw: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
 def _canonical_sha(value) -> str:
@@ -165,7 +165,7 @@ def main(argv=None):
         if path.exists():
             raise FileExistsError("FRESH_EVIDENCE_FILE_REQUIRED")
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(report, sort_keys=True, indent=2) + "\\n",
+        path.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n",
                         encoding="utf-8")
     print(json.dumps({"status": report["status"],
                       "registration_sha256": report["registration_sha256"],
