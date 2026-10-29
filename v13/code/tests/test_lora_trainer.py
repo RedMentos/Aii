@@ -72,9 +72,10 @@ class LoraGlue(unittest.TestCase):
         """WP-S5 SDFT in AG6: corrections join the batch with an empty target; only a self-teaching trainer receives them."""
         from unittest import mock
         from v13.drift import Drift
+        ref=self.s.source('It is Canberra.','HUMAN_CORRECTION')
         row={'item_id':'sdft:fb1','event_id':'evt_x','kind':'fact','student_prompt':'What is the capital of Australia?','teacher_prompt':'Q + It is Canberra.',
              'target':None,'correction':'It is Canberra.','target_policy':'SELF_TEACHER_IN_CONTEXT','origin':'human_replay',
-             'source_ref':{'source_id':1,'sha256':'h','modality':'text','label':'HUMAN_CORRECTION'}}
+             'source_ref':dict(ref,label='HUMAN_CORRECTION')}
         w=self.wc(cand={'overall':.8,'unseen':.75,'forgetting':{'rate':0.}})
         with mock.patch.object(Drift,'sdft_dataset',return_value=[row]):
             self.assertEqual(w.stage(require_replay_pass=False)['items'],1)  # off unless asked
