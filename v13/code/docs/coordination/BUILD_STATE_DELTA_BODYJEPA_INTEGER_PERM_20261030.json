@@ -1,0 +1,56 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:25:00Z",
+  "branch": "codex/v13-bodyjepa-integer-permutation-20261030-auto11g",
+  "pr": 1173,
+  "base_pr": 1171,
+  "base_commit": "0a153ec51a1ca13e84eb54b27e7974b9899868ae",
+  "verified_ci_commit": "f5875b0722568a3fe2eac882f8bfb768ca7e4300",
+  "ci_run": 40972911016,
+  "ci_conclusion": "success",
+  "focused_tests": 22,
+  "raw_artifact_id": 12940982752,
+  "raw_zip_sha256": "76e9e3bae5b0c0d2988c295928819ce57b5911f583517165846c86b2d4b72be3",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 30,
+  "source_blobs": {
+    "v13/code/v13/body_jepa.py": "be022258cd46cc11e460dd7438563c0d0cc4a0eb",
+    "v13/code/tests/test_bodyjepa_integer_permutation_20261030.py": "ee154ba3511d724117bfa91eee0353cf5e30e6d2",
+    ".github/workflows/v13-bodyjepa-integer-permutation-20261030.yml": "c80c75786ee0b7feee4122bea952d0841be80270"
+  },
+  "feature": "Body-JEPA shuffled-target derangement now rejects coerced fractional floats/strings/bools while accepting exact NumPy integer scalars",
+  "checks": {
+    "focused_tiny_torch": "PASS",
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS",
+    "torch_import": "PASS",
+    "transformers_import": "PASS",
+    "peft_import": "PASS"
+  },
+  "evidence_level": "tiny_torch_software_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "NO_SIGNAL_UNCHANGED",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-bodyjepa-integer-permutation-20261030-auto11g",
+  "open_questions": [
+    "Full unfiltered suite on this Body-JEPA candidate has not been replayed; JEF latest fullsuite PR1172 is sibling and does not include this source change.",
+    "Native B1/B2 Body-JEPA utility still NO_SIGNAL; BP2a/BP2b learning work is separate and not promoted."
+  ],
+  "next_command": "After PR1172 fullsuite evidence closes, preregister full unfiltered cross-review on this Body-JEPA candidate or integrate via review branch with exact source hashes. Do not change registered Body-JEPA cohorts.",
+  "prerequisites": [
+    "Fresh remote heads and owner check",
+    "Pinned torch/PEFT tiny tests are software-only",
+    "No gate promotion"
+  ]
+}
