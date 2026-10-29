@@ -15,6 +15,8 @@ import re
 SCHEMA = "v13.p0x.paired_source_analysis.v1"
 SEED = 2026102919
 BOOTSTRAPS = 5000
+CLUSTER_SEED = 2026102920
+FIXTURE_SHA = "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e"
 N = 150
 ARMS = ("b1_only", "b2_only", "both_exact", "shuffled")
 CONTRASTS = ("c3_only", "b1_only", "b2_only", "shuffled")
@@ -76,6 +78,43 @@ def parse_details(score, arm):
     return result
 
 
+def frozen_family_map():
+    from scripts import p0x_independent_source_holdout as p0x
+    rows = p0x.fixtures()
+    require(p0x.sha(p0x.canonical(rows)) == FIXTURE_SHA,
+            "FAMILY_FIXTURE_PIN")
+    result = {}
+    families = {}
+    for row in rows:
+        if row["partition"] != "holdout":
+            continue
+        key = sha(row["id"].encode())
+        require(key not in result and type(row["family"]) is int,
+                "FAMILY_IDENTITY")
+        result[key] = row["family"]
+        families[row["family"]] = families.get(row["family"], 0) + 1
+    require(len(result) == N and len(families) == 30
+            and all(count == 5 for count in families.values()),
+            "FAMILY_COVERAGE")
+    return result
+
+
+def cluster_ci(a, b, family_map, rng):
+    require(set(a) == set(b) == set(family_map), "CLUSTER_IDENTITY")
+    groups = {}
+    for id_, family in family_map.items():
+        require(a[id_][1] == b[id_][1], "CLUSTER_ORACLE")
+        delta = int(a[id_][0] == a[id_][1]) - int(b[id_][0] == b[id_][1])
+        groups.setdefault(family, []).append(delta)
+    require(len(groups) == 30 and all(len(x) == 5 for x in groups.values()),
+            "CLUSTER_SIZE")
+    sums = [sum(groups[f]) for f in sorted(groups)]
+    samples = sorted(sum(sums[rng.randrange(30)] for _ in range(30)) / N
+                     for _ in range(BOOTSTRAPS))
+    return [samples[int(.025 * BOOTSTRAPS)],
+            samples[min(BOOTSTRAPS - 1, int(.975 * BOOTSTRAPS))]]
+
+
 def mcnemar_exact(wins, losses):
     discordant = wins + losses
     if discordant == 0:
@@ -120,7 +159,7 @@ def holm(p_values):
     return adjusted
 
 
-def analyze(baseline, arms):
+def analyze(baseline, arms, family_map=None):
     require(baseline.get("schema") == "v13.p0x.c3_150_baseline.v1.score.v1"
             and baseline.get("status") == "P0X_NATIVE_C3_ONLY_HEADROOM_DIAGNOSTIC_NO_GATE"
             and baseline.get("rows") == N and baseline.get("c3_native_calls") == N,
@@ -137,11 +176,18 @@ def analyze(baseline, arms):
             "ARM_IDENTITY_COVERAGE")
     require(all(data[id_][1] == base[id_][1] for data in by_arm.values()
                 for id_ in base), "ARM_ORACLE_MATCH")
+    family_map = frozen_family_map() if family_map is None else family_map
+    require(set(family_map) == set(base), "FAMILY_MATCH")
     rng = random.Random(SEED)
+    cluster_rng = random.Random(CLUSTER_SEED)
     comparisons = {}
     for arm in CONTRASTS:
-        comparisons[arm] = paired(by_arm["both_exact"],
-                                  base if arm == "c3_only" else by_arm[arm], rng)
+        control = base if arm == "c3_only" else by_arm[arm]
+        comparisons[arm] = paired(by_arm["both_exact"], control, rng)
+        comparisons[arm]["cluster_bootstrap_seed"] = CLUSTER_SEED
+        comparisons[arm]["cluster_bootstrap_replicates"] = BOOTSTRAPS
+        comparisons[arm]["family_cluster_ci_95"] = cluster_ci(
+            by_arm["both_exact"], control, family_map, cluster_rng)
     adjusted = holm({arm: c["mcnemar_exact_p_two_sided"]
                      for arm, c in comparisons.items()})
     for arm, p in adjusted.items():
