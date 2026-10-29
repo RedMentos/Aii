@@ -3138,5 +3138,52 @@
     "next_prerequisites": "Close isolated CPU torch full-suite raw, continue canonical cross-organ utility; no gate promotion.",
     "report": "docs/proofs/continuation-20261029/C3_STREAM_FINALIZER_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_full_suite_transformers_20261029": {
+    "scope": "REVIEW_ONLY_LINUX_SOFTWARE_FULL_UNFILTERED_SUITE",
+    "owner_branch": "codex/v13-full-suite-torch-transformers-20261029-auto10am",
+    "parent_sha": "cdf5f48c5bacbca494674a2554e96bf1e4e8dc2b",
+    "prereg_commit": "2a2f6fcf88d601009b9be6c6d371f11dcad3f466",
+    "workflow_commit": "3d78cebfbea84ba5b21ee1c77fc2c3a3cfa1ddcb",
+    "raw_reclassification": "docs/proofs/continuation-20261029/FULL_SUITE_TORCH_ERROR_CLASSIFICATION_CORRECTION_20261029.md",
+    "original_raw_independently_verified": "ZIP_SHA256_MATCH_CRC_CLEAN_22_OF_22_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
+    "previous_red": {
+      "run": 40957012351,
+      "head": "12c3c152a5a183f7dd3899761a62d964854f0a97",
+      "tests": "3285 RUN / 6 ERROR / 11 SKIPPED",
+      "errors": "3 missing-transformers imports; 1 missing-peft import; 2 frozen Run34/Run37 native_source_or_catalog_changed",
+      "artifact_id": 12933534420,
+      "actions_zip_sha256": "c3abbd38acc66b12f4bb495849dd3faccbdca74e93286f6d4e3c6102e5dc826d"
+    },
+    "result_report": "docs/proofs/continuation-20261029/FULL_SUITE_TRANSFORMERS_RESULT_20261029.md",
+    "original_artifact_id": 12935131558,
+    "original_zip_sha256": "5be46cb9fc6c73570475bd937692e06748f8267492013033c0e6519e2845d47f",
+    "original_zip_verified": "CRC_CLEAN_26_OF_26_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
+    "errors": "2 missing-peft BJ1 (direct import and unavailable fit) plus 2 frozen Run34/Run37 source pins; no waivers",
+    "current_run": {
+      "run": 40958983649,
+      "head": "3d78cebfbea84ba5b21ee1c77fc2c3a3cfa1ddcb",
+      "status": "COMPLETED_FAILURE_3304_TESTS_4_ERROR_11_SKIPPED",
+      "dependencies": [
+        "torch==2.5.1+cpu",
+        "transformers==4.44.2",
+        "numpy==2.2.6"
+      ],
+      "full_suite_unfiltered": true
+    },
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "native_model_proof": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "Review Actions 40958983649 full raw, verify archive SHA256SUMS and categorize all errors; no waiver; then select independent canonical implementation package.",
+    "next_prerequisites": "Retain frozen Run34/Run37 source/model pin failures; preserve historical raw and exact HEAD; do not infer whole-system PASS.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
