@@ -5,6 +5,8 @@ on:
     paths:
       - 'v13/code/scripts/p2x_base360_native_executor.py'
       - 'v13/code/tests/test_p2x_base360_native_executor.py'
+      - 'v13/code/scripts/p2x_base360_native_verifier.py'
+      - 'v13/code/tests/test_p2x_base360_native_verifier.py'
       - 'v13/code/docs/proofs/continuation-20261029/P2X_BASE360_*'
       - '.github/workflows/v13-p2x-base360-source-20261029.yml'
 permissions:
@@ -28,9 +30,9 @@ jobs:
           e="$RUNNER_TEMP/v13-p2x-base360-source"
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
-          python3 -m py_compile v13/code/scripts/p2x_base360_native_executor.py v13/code/tests/test_p2x_base360_native_executor.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/p2x_base360_native_executor.py v13/code/tests/test_p2x_base360_native_executor.py v13/code/scripts/p2x_base360_native_verifier.py v13/code/tests/test_p2x_base360_native_verifier.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
-          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_base360_native_executor) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_base360_native_executor tests.test_p2x_base360_native_verifier) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 77429f4f13e9df60b0b98142567babaccd0afa03 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
