@@ -14,7 +14,7 @@
 | same_policy_dual | 0/6 | 0/6 | 6/6 | 0/6 | 0.5000 |
 | prompt_only_dual | 0/6 | 0/6 | 6/6 | 0/6 | 0.3750 |
 
-All six `both_exact` oracles require action A. Atlas, Borealis and Cygnus returned UNKNOWN because both option `remaining` and `eligible` values were null despite correct costs/days/locality. Delta and Epsilon selected A and had correct option fields but scored 0.9167 each (project/action field issue in original scorer must be inspected before any broader claim). Fornax returned UNKNOWN; it also inverted locality for option A and left remaining/eligible null. This is **not** evidence of a two-body causal utility win: 0/6 fully exact and canonical STEP2 remains UTILITY_FAIL.
+All six `both_exact` oracles require action A. Atlas, Borealis and Cygnus returned UNKNOWN because both option `remaining` and `eligible` values were null despite correct costs/days/locality. Delta and Epsilon selected A and had correct option fields but scored 0.9167 each (the original scorer identifies only the `project` field as incorrect; action and both options match). Fornax returned UNKNOWN; it also inverted locality for option A and left remaining/eligible null. This is **not** evidence of a two-body causal utility win: 0/6 fully exact and canonical STEP2 remains UTILITY_FAIL.
 
 ## New software-only quote transport integrity (no native inference)
 
