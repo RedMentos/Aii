@@ -77,12 +77,18 @@ class JEFRestartE2ETests(unittest.TestCase):
 
         self.r = Runtime(self.home)
         self.r.sleep.cycle.set_policy("enabled", "off")
-        self.assertNotEqual(self.r.session, old_session)
+        # Runtime intentionally resumes the previous chat across restart.
+        self.assertEqual(self.r.session, old_session)
         self.assertEqual(self.r.store.state(J.KEY)[0], old_state)
         self.assertEqual(J.controller(self.r).outcome(eid, 0.8),
                          {"updated_offers": 0})
         self.assertEqual(self.r.store.state(J.KEY)[0], old_state)
         op = Operator(self.r)
+        self.assertEqual(json.loads(op.run(":jef last"))["event_id"], eid)
+        self.assertEqual(json.loads(op.run(f":jef outcome {eid} 0.8")),
+                         {"updated_offers": 0})
+        new_session = op.run(":new")
+        self.assertNotEqual(new_session, old_session)
         self.assertIsNone(json.loads(op.run(":jef last")))
         with self.assertRaisesRegex(ValueError, "CURRENT_SESSION_EVENT_REQUIRED"):
             op.run(f":jef outcome {eid} 0.8")
