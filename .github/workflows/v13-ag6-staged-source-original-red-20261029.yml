@@ -2,7 +2,7 @@ name: V13 AG6 staged source original RED witness
 on:
   push:
     branches: [codex/v13-ag6-staged-source-recheck-20261029-auto10k]
-    paths: ['.github/workflows/v13-ag6-staged-source-original-red-20261029.yml']
+    paths: ['.github/workflows/v13-ag6-staged-source-original-red-20261029.yml', 'v13/code/tests/test_ag6_staged_source_revocation_20261029.py']
 permissions:
   contents: read
 jobs:
