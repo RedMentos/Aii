@@ -2,7 +2,7 @@ name: V13 Sleep S7 user cursor overflow software review
 on:
   push:
     branches: [codex/v13-s7-user-cursor-overflow-20261029-auto10d]
-    paths: ['.github/workflows/v13-s7-user-cursor-overflow-source-20261029.yml', 'v13/code/v13/sleep_offline.py', 'v13/code/tests/test_sleep_user_cursor_overflow_20261029.py', 'v13/code/docs/SLEEP_INTERLEAVED_FINAL_HANDOFF_20261029.md']
+    paths: ['.github/workflows/v13-s7-user-cursor-overflow-source-20261029.yml', 'v13/code/v13/history.py', 'v13/code/v13/sleep_offline.py', 'v13/code/tests/test_sleep_user_cursor_overflow_20261029.py']
 permissions:
   contents: read
 jobs:
