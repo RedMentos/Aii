@@ -4,20 +4,31 @@ from .common import dumps
 from .inputs import looks_like_terminal_log
 
 
-def native_history(store, session, event_id, turns, after_id=None):
-    """Source-valid complete turns. Optional after_id pages oldest-first for S7 backlog.
+def native_history(store, session, event_id, turns, after_id=None, event_ids=None):
+    """Source-valid complete turns, with bounded chronological or event-ID paging.
 
-    Existing callers keep latest-first-window behavior. The paged path never
-    chooses the latest rows of an oversized backlog, so a digest high-water
-    mark cannot silently skip older source-valid turns.
+    Existing callers keep their original window behavior. S7 may request up
+    to 64 exact event IDs to validate delayed assistants outside the earliest
+    message-ID window; this never bypasses source/rule lineage validation.
     """
     if after_id is not None and (type(after_id) is not int or after_id<0):
         raise ValueError('history after_id must be a nonnegative message id')
+    if event_ids is not None:
+        if (after_id is not None or type(event_ids) not in (list,tuple)
+                or type(turns) is not int or not 0<=len(event_ids)<=min(64,turns)
+                or len(set(event_ids))!=len(event_ids)
+                or any(type(e) is not str or not e for e in event_ids)):
+            raise ValueError('history event_ids must be a bounded distinct event list')
     from .output_policy import validate_rules,QUERY_KIND,ANSWER_KIND
     with store.mutex:
         active=validate_rules(store,store.rules())
         approved={dumps(item['entry'][key]) for item in active for key in ('query_ref','answer_ref')}
-    if after_id is None:
+    if event_ids is not None:
+        placeholders=','.join('?' for _ in event_ids)
+        records=store.rows(
+            "SELECT * FROM messages WHERE session_id=? AND event_id IN ("+placeholders+") ORDER BY id",
+            (session,*event_ids)) if event_ids else []
+    elif after_id is None:
         records=store.history(session,2*turns+2) if turns else []
     else:
         records=store.rows(
@@ -62,7 +73,7 @@ def native_history(store, session, event_id, turns, after_id=None):
                     raise ValueError('History depends on a removed or replaced fixed-answer source')
         except (ValueError,KeyError,TypeError,OSError):continue
         valid.extend(rows);dependencies[eid]=refs
-    selected=(valid[:2*turns] if after_id is not None else valid[-2*turns:])
+    selected=(valid[:2*turns] if after_id is not None or event_ids is not None else valid[-2*turns:])
     # Keep complete pairs when the bounded query begins inside an old turn.
     selected=[row for row in selected if sum(x['event_id']==row['event_id'] for x in selected)==2]
     refs=list({dumps(ref):ref for row in selected for ref in dependencies[row['event_id']]}.values())
