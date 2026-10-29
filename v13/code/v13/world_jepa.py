@@ -265,6 +265,11 @@ class WorldJEPA:
             conf[valid] = np.clip(
                 cover/(1+spread[finite]/SPREAD_REF)
                 * np.minimum(1., OOD_SUPPORT/np.maximum(ood[finite], 1e-9)), 0., 1.)
+        # One predictor has zero ensemble spread by construction, not
+        # measured certainty. Keep the read/calibration path above intact so
+        # confidence and concurrent refit still share a consistent snapshot.
+        if self.ensemble < 2 or len(self.preds) < 2:
+            return np.zeros_like(conf), ['SIMULATION_UNCERTAIN'] * len(conf)
         return conf, ['MODEL_SIMULATION' if c >= CF_MIN else 'SIMULATION_UNCERTAIN' for c in conf]
 
     @_read_locked
