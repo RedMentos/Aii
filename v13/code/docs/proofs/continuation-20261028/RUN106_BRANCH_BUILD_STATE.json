@@ -5,7 +5,7 @@
   "branch": "assistant/v13-run106-cli-recovery-before-init-20261029",
   "base_pr": 1008,
   "base_head": "4ddf364e127dd274884338835d2cf0407b2944d6",
-  "parent_condition": "Run104 original raw GREEN before CI execution",
+  "parent_condition": "SATISFIED: Run104 exact 4ddf364e127dd274884338835d2cf0407b2944d6 Actions 40798330349 GREEN original artifact 12864947497, ZIP SHA256 6ca61ada8441247df80e1a8cac73d552a5e6f3a16578a285c7fda945107dd845, CRC 15/15 inner, focused 15 OK, full 2668 OK (1 skipped), privacy CLEAN, private rematerialization byte-identical",
   "prereg_first_commit": "9be99a0a327fbb9fe1105e3701f5d0f2fd272d38",
   "source_commit": "512c752f644eb106ab7f69756635e4a5f13330f7",
   "test_commit": "1fcf0a30953fb9a0462e1a843fa0cd55dd53d197",
@@ -16,7 +16,7 @@
     "backup_frozen": "409c4e13ba0754364d708e4dbe803bd740954b69",
     "source_consumer_frozen": "4b73842be25e784f70ade4f6c4ced3fe2dcb9eab"
   },
-  "status": "PREREG_AND_SOURCE_STAGED; PARENT_RUN104_CI_PENDING; NO_TEST_EXECUTION_YET",
+  "status": "PARENT_RAW_GREEN_VERIFIED; CI_WORKFLOW_NEXT; NO_NEW_NATIVE_RESULT",
   "native_calls": 0,
   "negative_gates": {
     "Age0": "RECORD_ONLY",
@@ -28,6 +28,6 @@
     "Redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "next_command": "Verify Run104 original artifact; if GREEN add Run106 pinned software CI, inspect raw, compare with Run103 shared BudgetContext fix, integrate only after independent evidence.",
+  "next_command": "Create source-bound Run106 software workflow, verify original raw and compare with Run103; no main merge.",
   "remaining_execution_budget": "UNKNOWN"
 }
