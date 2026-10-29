@@ -148,17 +148,24 @@ MAX_NATIVE_OUTPUT_CHARS = 32768
 
 
 def _collect_bounded_output(chunks):
-    """Return text only for finite, string-only native output within the cap."""
+    """Return bounded text; finalize a retained native iterator on every exit."""
     parts = []
     length = 0
-    for chunk in chunks:
-        if not isinstance(chunk, str):
-            return None
-        length += len(chunk)
-        if length > MAX_NATIVE_OUTPUT_CHARS:
-            return None
-        parts.append(chunk)
-    return "".join(parts)
+    try:
+        for chunk in chunks:
+            if not isinstance(chunk, str):
+                return None
+            length += len(chunk)
+            if length > MAX_NATIVE_OUTPUT_CHARS:
+                return None
+            parts.append(chunk)
+        return "".join(parts)
+    finally:
+        # LlamaRunner.generate owns a sampler/audit finally block. A rejected
+        # stream must release it now, not depend on Python GC/refcount timing.
+        close = getattr(chunks, "close", None)
+        if callable(close):
+            close()
 
 
 def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):

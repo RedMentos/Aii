@@ -1,0 +1,22 @@
+# V13 Run10 chained review handoff — 2026-10-29
+
+## Latest verified integration ownership
+- Active review-only chain: PR #1145 -> #1146 -> #1147 -> #1148 -> #1149 -> #1150. `main` is not the active integration source. No PR in this chain has been merged to production by this run. Do not resume historical `codex/continuation-20261024`.
+- Current owner branch: `codex/v13-c3-stream-finalizer-20261029-auto10al`. Last source/test checkpoint head before source-export workflow: `e0c508dc7343df8fb56cf73c13d546960d1600be`; later source-export-only commit `f641d11a7ade09593f7ccfdb40c48943efa8b60d`. Recheck remote HEAD and newer Claude/Codex branches before further writes.
+- Binding Canon `V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` Git blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged. All organs/learning/context/age/safety gates remain binding.
+
+## Verified packages and closed raw
+1. PR #1146: C3 generated source-budget output collector bounded to 32,768 chars; non-string/oversized streams cannot be `FINAL`. RED `40955251916` 40 tests 1 FAIL+3 ERROR; GREEN `40955357530` 40/40 PASS. Raw SHA256 RED `bd62dee396a7efe8a651430c197ab9f83f2a353206092b59c017feed86dbead7`, GREEN `2a5c8ec3d138c089710e54531e42202791be1c182db82d042bb9c40b8fd60ede`.
+2. PR #1147: World-Model C5 `PREDICTION` vs `COMMIT` evidence, unique committed pre-dispatch packet, v2→v3 persisted fit invalidation. RED `40955871401` 30/3 FAIL, second RED `40955999349` 31/4 FAIL; GREEN `40956045664` 31/31 PASS. Green raw SHA256 `4dae72e526fb5b8e2cd240b9e09b3f30dfcff04ea28d4b38cd85c119f7d36673`.
+3. PR #1148: World-JEPA 128-row fake Store and 64-row SQLite synthetic fixture restored matching event/generation/C5 committed provenance, original action values frozen SHA256 `04285e5717551ecf00ef4bd18267b7dba07a0fe34a49d428df5f1093b985cb92` and `b3cc29df39e21415f7fc835e6eb383e78b4df5804be04c54c453bffcc1f51fca`. RED `40956563864` 55/7 FAIL+30 ERROR; intermediate REDs retained; GREEN `40956654461` 55/55 PASS. Green raw SHA256 `868eb6db55143d22b9d26abcc6febf31cd3b6019e2ffd7603f48d4217f93559e`.
+4. PR #1149: unfiltered full cross-organ software review with isolated pinned CPU torch `2.5.1+cpu` from official index, Actions `40957012351` **PENDING at this handoff**. Previous full suite `40955400194` on older chain was RED: 3266 tests, 6 FAIL, 43 ERROR, 28 skipped; raw ZIP SHA256 `0de0ebb0e161ae6b965a480f120ece072f757b92dfb6155543eb3a13b34baea6`, byte-exact private backup. No waiver or inferred green.
+5. PR #1150: C3 bounded generator explicit `close()` from `finally` on every exit, including retained iterator over-limit/non-string abort. RED `40957164177` 43/2 FAIL; GREEN `40957211669` 43/43 PASS. Green source blob `22d479e83478fd8a7581f26732301fa272edecc2`, raw ZIP SHA256 `ed26d6f800b8735b1555bb4359ec2a1de6784ae09e9128dfbaaa71d8e3034d37`.
+
+All cited focused ZIPs were CRC clean with 18/18 inner SHA256SUMS. Private Library backups and original RED/GREEN byte-exact readbacks exist in `/V13-Checkpoints/2026-10-29/Run10-C3StreamBounds/`, `Run10-WorldModelStage/`, `Run10-WorldJepaFixtures/`, `Run10-C3Finalizer/`. Public repo contains source, tests, prereg and aggregate evidence only; no private raw exported to public git.
+
+## Frozen negative gates and next commands
+- Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; Redmi UNMEASURED; V13 INCOMPLETE. Software/synthetic/Linux-host evidence never promotes native or whole-system claims.
+- Next exact independent command after current run: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'` with compatible isolated dependencies and `torch==2.5.1+cpu`. Preserve frozen Run34/Run37 source pin failures; do not alter registered cohort hashes to force green.
+- Current review job: Actions `40957012351` (full torch). Public tracked source export Actions `40957682512` launched on latest branch for local independent review; verify its artifact hash and source bytes before use.
+- After closing both, choose the highest-priority remaining canonical organ/utility package; run meaningful tests and independent review, then append new BUILD_STATE and proof, private backup, verify remote bytes, continue. If a native/Redmi prerequisite is blocked, proceed on another organ.
+- Remaining platform budget visibility: UNKNOWN. Do not claim an enforced timeout or full V13 acceptance without observed evidence.

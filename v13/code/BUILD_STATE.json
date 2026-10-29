@@ -3096,5 +3096,47 @@
     "next_prerequisites": "Rerun full suite with compatible isolated torch and classify remaining failures; preserve frozen source/model pins, no gate promotion.",
     "report": "docs/proofs/continuation-20261029/WORLDJEPA_FIXTURE_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_c3_stream_generator_finalizer_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_C3_GENERATOR_FINALIZATION",
+    "owner_branch": "codex/v13-c3-stream-finalizer-20261029-auto10al",
+    "parent_sha": "12c3c152a5a183f7dd3899761a62d964854f0a97",
+    "prereg_head": "bfc37848701dad1ab5690d466e8688e07b432e0a",
+    "red": {
+      "run": 40957164177,
+      "head": "bfc37848701dad1ab5690d466e8688e07b432e0a",
+      "tests": "43 RUN / 2 FAIL",
+      "zip_sha256": "605bd37243cc20f85f773f35b90a2129632e79db32e37a1879ab22c83dc8e57c"
+    },
+    "green": {
+      "run": 40957211669,
+      "head": "e13facf1a3b71e9542f17dd2b9e8e5790af2df5a",
+      "tests": "43/43 PASS",
+      "zip_sha256": "ed26d6f800b8735b1555bb4359ec2a1de6784ae09e9128dfbaaa71d8e3034d37",
+      "source_blob": "22d479e83478fd8a7581f26732301fa272edecc2",
+      "inner_hashes": "18/18",
+      "privacy": "CLEAN"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-C3Finalizer/",
+    "private_backup_byte_exact": true,
+    "full_suite_torch": {
+      "run": 40957012351,
+      "status": "PENDING_NOT_CLAIMED"
+    },
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "native_c3_evidence": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_c3_generator_finalizer_20261029 tests.test_c3_stream_bounds_20261029 tests.test_c3_budget_output_guard_20261029 tests.test_ask_verified_budget tests.test_verified_exact_standalone_cli_20261029 tests.test_verified_exact_budget_20261029 tests.test_source_consumer_admission",
+    "next_prerequisites": "Close isolated CPU torch full-suite raw, continue canonical cross-organ utility; no gate promotion.",
+    "report": "docs/proofs/continuation-20261029/C3_STREAM_FINALIZER_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
