@@ -1,0 +1,69 @@
+name: V13 P0X C3 150-call baseline executor software-only preflight
+on:
+  push:
+    branches: [codex/v13-p0x-c3-150baseline-20261029]
+    paths:
+      - '.github/workflows/v13-p0x-c3-150baseline-source-20261029.yml'
+      - 'v13/code/scripts/p0x_c3_150_baseline.py'
+      - 'v13/code/scripts/p0x_c3_150_native_executor.py'
+      - 'v13/code/scripts/p0x_c3_150_native_verifier.py'
+      - 'v13/code/tests/test_p0x_c3_150_baseline.py'
+      - 'v13/code/tests/test_p0x_c3_150_native_mock.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p0x-c3-baseline-source
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Exact prereg and fixture, native mocks, tamper, privacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-c3-baseline-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          check() { [ "$(git hash-object "$2")" = "$1" ]; }
+          {
+            check 0a3ab620497299f9580357e858a04db5b20d1b5f v13/code/docs/proofs/continuation-20261029/P0X_C3_150_BASELINE_PREREG.md
+            check b877d163deb9d225d84303555f61d77e09c3de9d v13/code/docs/proofs/continuation-20261029/P0X_C3_150_BASELINE_BUILD_STATE.json
+            check e85b0d636c75d6c6cf0cdd7f45a18609c2c4b04b v13/code/docs/proofs/continuation-20261029/P0X_150_SOURCE_HOLDOUT_REGISTRATION.json
+            check 7ec4e877ad5ea3eed1c60102dac3baa15391dd2b v13/code/scripts/p0x_independent_source_holdout.py
+            check a51cb76937febb0016d5a4bd71ccf08b164bead5 v13/code/scripts/p0x_c3_150_baseline.py
+            check a6fa2b0cd10dbb0c4c74466636737d57e0e9d353 v13/code/scripts/p0x_c3_150_native_executor.py
+            check e3b1c7818f06896a7ad8b0cee406b59a091cd799 v13/code/scripts/p0x_c3_150_native_verifier.py
+            check 2cc4e9f81a3d9af93c430a71a93fd298ba828d59 v13/code/tests/test_p0x_c3_150_baseline.py
+            check 6b60191bf2ac99e2c196afe646f7354f8cf36d58 v13/code/tests/test_p0x_c3_150_native_mock.py
+            check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+            git merge-base --is-ancestor cd2d1d76c08a8b4f09f83b99d33e8effab140d26 HEAD
+            echo P0X_BASELINE_SOURCE_PINS_OK
+          } > "$e/SOURCE_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/v13-p0x-baseline-venv"
+          py="$RUNNER_TEMP/v13-p0x-baseline-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/p0x_c3_150_baseline.py v13/code/scripts/p0x_c3_150_native_executor.py v13/code/scripts/p0x_c3_150_native_verifier.py v13/code/tests/test_p0x_c3_150_baseline.py v13/code/tests/test_p0x_c3_150_native_mock.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 240s "$py" -m unittest -v tests.test_p0x_independent_source_holdout tests.test_p0x_c3_150_baseline tests.test_p0x_c3_150_native_mock) > "$e/FOCUSED_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base cd2d1d76c08a8b4f09f83b99d33e8effab140d26 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check cd2d1d76c08a8b4f09f83b99d33e8effab140d26 HEAD
+          echo P0X_C3_BASELINE_SOFTWARE_ONLY_NO_NATIVE_NO_GATE > "$e/STATUS.txt"
+      - name: Preserve original raw and RED attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-c3-baseline-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-c3-baseline-source/
+          if-no-files-found: error
+          retention-days: 30
