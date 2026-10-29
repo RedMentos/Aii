@@ -1,0 +1,43 @@
+name: V13 P2 independent HF metadata byte recheck
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-hf-metadata-byte-recheck-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-hf-metadata-byte-recheck-20261029
+  cancel-in-progress: false
+jobs:
+  independent-public-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Independently retrieve and hash pinned public HF metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision='120bf032c36dd1273de754669da040dba7ad4982'
+          mkdir -p source
+          cd source
+          printf '%s  %s\n' \
+            '720b43d6ddc2ed25be23eed355aefcf342434a176dedad23dbe0a5e3ac24bbb8' config.json \
+            '2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da' tokenizer.json \
+            '3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc' tokenizer_config.json \
+            > SHA256SUMS
+          for name in config.json tokenizer.json tokenizer_config.json; do
+            url="https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/${revision}/${name}?download=true"
+            curl --fail --location --silent --show-error --retry 2 --connect-timeout 20 --max-time 180 "$url" -o "$name"
+            test -s "$name"
+          done
+          sha256sum -c SHA256SUMS
+          printf 'repo=LiquidAI/LFM2.5-350M\nrevision=%s\n' "$revision" > SOURCE_PIN.txt
+          cat SOURCE_PIN.txt SHA256SUMS
+      - name: Preserve original public metadata bytes for independent audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: v13-p2-independent-hf-metadata-bytes
+          path: source/
+          retention-days: 30
+          if-no-files-found: error

@@ -1,0 +1,110 @@
+{
+  "schema": "v13.p2.qad_hf_structural_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 structural audit",
+  "branch": "codex/v13-p2-structural-tensor-audit-20261029",
+  "parent_pr": 1068,
+  "review_pr": 1069,
+  "parent_head_sha": "100268d45a70ab7ad62757e55367bd0dbe147fb6",
+  "source_only_tests": {
+    "count": 16,
+    "status": "PASS",
+    "run": 40848450346,
+    "head_sha": "fbbf79771b8b9384bea8b2581924649ed7864c2a"
+  },
+  "hf_metadata": {
+    "source_repo": "LiquidAI/LFM2.5-350M",
+    "revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "source_receipt_run": 40847683959,
+    "source_receipt_zip_sha256": "f9e4491afb82c637a8b85b561e0e019cb9468ff9e4b7be46a4e3a011d67bbbd3",
+    "independent_byte_run": 40847869855,
+    "independent_zip_sha256": "90220d9bff41ff0e6024c618756c7eb4a2b38cdc25b1779460a5309a8ec08468",
+    "verified_bytes": true,
+    "config_sha256": "720b43d6ddc2ed25be23eed355aefcf342434a176dedad23dbe0a5e3ac24bbb8",
+    "tokenizer_sha256": "2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da",
+    "tokenizer_config_sha256": "3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+  },
+  "deployed_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "real_source_structural": {
+    "prereg_commit": "cc4e04c57916fcf759c1f6dc56e924685c86b0b2",
+    "original_red_runs": [
+      40848183523,
+      40848210830
+    ],
+    "verified_green_run": 40848575587,
+    "green_head_sha": "442699c9afb181b57f71ebd9245d016fd7dd318b",
+    "green_zip_sha256": "8864e5d2db428e46ca5355ec82f2ce0a72eaddcff9685e4d948fb093afb4757a",
+    "status": "STRUCTURE_MATCH_PARITY_UNPROVEN",
+    "hf_count": 148,
+    "gguf_count": 148,
+    "matched_exact": 138,
+    "approved_shortconv_squeeze": 10,
+    "other_mismatches": 0,
+    "no_model_inference": true,
+    "no_training": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Inspect GitHub Actions 40850029535, download original artifact and independently check ZIP CRC, SHA256SUMS, stage exits, RESULT.json and 8 token-ID arrays; preserve RED. Then preregister QAD FP32 vs deployed GGUF native greedy/logit probes before any AG6-gated adapter training.",
+  "open_questions": [
+    "Deployed GGUF tokenizer IDs vs pinned QAD FP32 tokenizer under eight synthetic prompts",
+    "Native QAD FP32 vs deployed QAD GGUF logit/greedy and q/k layout equivalence",
+    "AG6-gated LoRA adapter export/merge/utility, LP3 causal-state and P0X source-use utility",
+    "JEF/Context OS/B1-B2/World/JEPA/Dream and Redmi acceptance remain required"
+  ],
+  "remaining_platform_budget": "UNKNOWN",
+  "qad_fp32_source": {
+    "source_repo": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "subfolder": "qad",
+    "master_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+    "size_bytes": 1417952352,
+    "source_metadata_run": 40848748542,
+    "source_metadata_zip_sha256": "216abc4c90fb7ded57581d9c4064e28914a4cc43851ed91c43677b161bef07df",
+    "source_metadata_verified_bytes": true,
+    "value_audit_source_only_run": 40849094848,
+    "value_audit_source_only_status": "PASS",
+    "value_audit_native_run": 40849200975,
+    "value_audit_native_status": "VALUES_MEASURED_PARITY_UNPROVEN",
+    "value_audit_workflow_head_sha": "ca5985370d0d94d7d9158c605dfc23de84c1ba8d",
+    "training_approved": false,
+    "value_audit_native_zip_sha256": "e82ac7853f6f83f05174092bc826405c804d87f5f85cbe3d008bf5e000ca0bce",
+    "value_audit_tensor_count": 148,
+    "value_audit_cosine_min": 0.994176105,
+    "value_audit_cosine_median": 0.9959973905,
+    "value_audit_nrmse_max": 0.108174465
+  },
+  "qad_template": {
+    "native_run": 40849577007,
+    "status": "TEMPLATE_BYTES_EQUAL_TOKEN_IDS_UNPROVEN",
+    "zip_sha256": "6bbd49a92669debdc463bb5fe02638cd7399f15b9c1b8912dffecfaf5199b90e",
+    "template_sha256": "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6",
+    "bytes": 5487
+  },
+  "qad_vs_hf_tokenizer": {
+    "source_only_run": 40849657373,
+    "source_only_zip_sha256": "a51d34497becb61527a636a37d22f19b2c804f8e900a4d74899f38bae2a05f5e",
+    "probes": 8,
+    "input_id_equal": 8,
+    "skip_special_decode_equal": 4,
+    "native_gguf_token_ids_proven": false
+  },
+  "native_qad_tokenizer_probe": {
+    "prereg_commit": "8980957687e0c2d42dec54014a08f22d1898ae5e",
+    "source_only_run": 40849924730,
+    "source_only_status": "PASS",
+    "native_run": 40850029535,
+    "native_status": "PENDING_OR_IN_PROGRESS",
+    "head_sha": "2d59a6d452a889dba0a4831accdd44982ed90a95"
+  }
+}

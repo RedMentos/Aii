@@ -1,0 +1,29 @@
+name: V13 P2 QAD FP32 value-audit source-only tests
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - 'v13/code/scripts/p2_qad_fp32_value_audit.py'
+      - 'v13/code/tests/test_p2_qad_fp32_value_audit.py'
+      - '.github/workflows/v13-p2-qad-fp32-value-source-only-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-fp32-value-source-only-20261029
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Pin minimal isolated numerical dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/p2-qad-value-venv"
+          "$RUNNER_TEMP/p2-qad-value-venv/bin/python" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6'
+      - name: Compile and run ten adversarial source-only checks
+        run: |
+          "$RUNNER_TEMP/p2-qad-value-venv/bin/python" -m py_compile v13/code/scripts/p2_qad_fp32_value_audit.py v13/code/tests/test_p2_qad_fp32_value_audit.py
+          "$RUNNER_TEMP/p2-qad-value-venv/bin/python" -m unittest discover -s v13/code/tests -p 'test_p2_qad_fp32_value_audit.py' -v

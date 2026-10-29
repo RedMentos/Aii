@@ -1,0 +1,51 @@
+name: V13 P2 official QAD FP32 metadata source pin
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-qad-fp32-source-metadata-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-fp32-source-metadata-20261029
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Download eight pinned official public QAD metadata files, no weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision='657e078c94084481950a2d555a941481f715536b'
+          mkdir -p qad-metadata
+          cd qad-metadata
+          for name in README.md LICENSE provenance.json config.json tokenizer.json tokenizer_config.json chat_template.jinja generation_config.json; do
+            curl --fail --location --silent --show-error --retry 2 --connect-timeout 20 --max-time 180 \
+              "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/${revision}/qad/${name}?download=true" -o "$name"
+            test -s "$name"
+          done
+          sha256sum README.md LICENSE provenance.json config.json tokenizer.json tokenizer_config.json chat_template.jinja generation_config.json > SHA256SUMS
+          printf 'repo=LiquidAI/LFM2.5-350M-GGUF\nrevision=%s\nsubfolder=qad\n' "$revision" > SOURCE_PIN.txt
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          p=json.loads(pathlib.Path('provenance.json').read_text())
+          c=json.loads(pathlib.Path('config.json').read_text())
+          assert p['safetensors_sha256']=='1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079'
+          assert p['qad_gguf_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          assert p['chat_template_sha256']=='ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6'
+          assert hashlib.sha256(pathlib.Path('chat_template.jinja').read_bytes()).hexdigest()==p['chat_template_sha256']
+          assert c['model_type']=='lfm2' and c['dtype']=='float32'
+          assert c['num_hidden_layers']==16 and c['vocab_size']==65536
+          assert 'LFM' in pathlib.Path('LICENSE').read_text()
+          print('QAD_FP32_PUBLIC_SOURCE_METADATA_PINS_PASS_NO_WEIGHTS_NO_TRAINING')
+          PY
+          cat SOURCE_PIN.txt SHA256SUMS
+      - name: Preserve public QAD metadata bytes for independent source audit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2-qad-fp32-source-metadata
+          path: qad-metadata/
+          retention-days: 30
+          if-no-files-found: error
