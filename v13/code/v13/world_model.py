@@ -39,8 +39,16 @@ def _finite_nonnegative(v):
 
 def _finite_vector(v,dim):
     if not isinstance(v,(list,tuple,np.ndarray)) or len(v)!=dim:return False
-    return all(not isinstance(x,(bool,np.bool_)) and isinstance(x,(int,float,np.number))
-               and math.isfinite(float(x)) for x in v)
+    for x in v:
+        # NumPy complex scalars may silently discard their imaginary part on
+        # float conversion; only finite real evidence may reach a model.
+        if isinstance(x,(bool,np.bool_,complex,np.complexfloating)) or not isinstance(x,(int,float,np.number)):
+            return False
+        try:
+            if not math.isfinite(float(x)):return False
+        except (TypeError,ValueError,OverflowError):
+            return False
+    return True
 
 def transitions(store,limit=MAX_ROWS):
     """Observed own transitions; malformed or nonfinite legacy rows cannot poison a fit."""
