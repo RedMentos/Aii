@@ -119,7 +119,13 @@ def _answer_uses_euro_source(answer, source):
     # This is a conservative veto, not a general semantic truth verifier.
     if ("?" in answer or re.search(
             r"\b(?:not|no|never|wrong|incorrect|unverified|unknown|uncertain|"
-            r"cannot|nicht|kein(?:e|en|er|es)?|falsch|unbekannt|unbestätigt)\b",
+            r"cannot|false|refuted|rejected|disputed|doubt(?:s|ed|ful)?|"
+            r"unconfirmed|hypothetical|allegedly|perhaps|maybe|possibly|probably|"
+            r"might|may|could|if|isn['’]?t|aren['’]?t|wasn['’]?t|"
+            r"weren['’]?t|doesn['’]?t|didn['’]?t|won['’]?t|"
+            r"can['’]?t|couldn['’]?t|wouldn['’]?t|"
+            r"nicht|kein(?:e|en|er|es)?|falsch|unbekannt|unbestätigt|"
+            r"vielleicht|vermutlich|angeblich)\b",
             answer, flags=re.I)
             or re.search(
                 r"(?<!\w)(?:dollars?|USD|CAD|pounds?|GBP|yen|JPY|CHF|francs?)(?!\w)|[$£¥]",

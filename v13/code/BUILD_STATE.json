@@ -3267,5 +3267,44 @@
     "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_bodyjepa_derangement_bound_20261029 tests.test_body_jepa tests.test_body_jepa_checkpoint_fit",
     "next_prerequisites": "After pinned torch/Transformers/PEFT full suite 40960222503 finishes, run this branch's existing BJ1 regression tests in isolated deps, retain frozen cohort/seed evidence and negative gates.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_c3_hedge_veto_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_C3_F1F5_BUDGET_HEDGE_VETO",
+    "owner_branch": "codex/v13-c3-hedge-veto-20261029-auto10ap",
+    "parent_pr": 1153,
+    "parent_sha": "c5052795070ccf36b5273b4907562fd3220f51a0",
+    "source_parent_blob": "22d479e83478fd8a7581f26732301fa272edecc2",
+    "source_candidate_blob": "704b2a0c0dc90f06a842d5a828984b7e72692ae2",
+    "red": {
+      "run": 40961347313,
+      "head": "91b98095d7bb47aba53c36fe9d2bb5725e19871f",
+      "tests": "42 RUN / 12 FAIL",
+      "zip_sha256": "f577db756c8e7a02108aa2626b6a5ffe3bb1e594885a25737da36bd3906b94bc",
+      "inner_hashes": "18/18",
+      "private_byte_exact": true
+    },
+    "green": {
+      "run": 40961608754,
+      "head": "dedc2b41315a615d1e79ac88ad9a6f0e64baded1",
+      "tests": "42/42 PASS",
+      "zip_sha256": "f8ed06b06c8a8bff845191b71bd0acc7299027b2a467b99211adbbf3ab99d867",
+      "inner_hashes": "18/18",
+      "private_byte_exact": true,
+      "privacy": "CLEAN"
+    },
+    "report": "docs/proofs/continuation-20261029/C3_HEDGE_VETO_RESULT_20261029.md",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "Run PR1155 full unfiltered 3311-test cross-organ PEFT software suite after C3 focused raw closure, preserve Run34/Run37 frozen errors and no gate promotion.",
+    "next_prerequisites": "Pinned CPU torch/Transformers/PEFT isolated dependencies; historical source/model/seed/cohort hashes unchanged; no native/Redmi claims.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
