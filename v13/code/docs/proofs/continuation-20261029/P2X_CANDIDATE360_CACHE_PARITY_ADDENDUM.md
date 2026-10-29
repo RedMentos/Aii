@@ -1,0 +1,7 @@
+# P2X candidate360 baseline-cache parity review addendum (2026-10-29, before fix)
+
+Independent code review of candidate360 standalone runner (PR #1090) found an execution-parity gap **before any candidate native call**: `v13.runners.LlamaRunner._load_validated` appends `native_cache_args(cfg)`, and the frozen Age0 default is `--cache-ram 128 --ctx-checkpoints 6` (see `v13/code/v13/config.py` KNOBS). The first standalone candidate draft omitted both flags, so b10964 would use its larger native defaults (8192/32). This changes resource envelope and prevents an exact baseline launch comparison.
+
+Prospective narrow fix: add only those two baseline cache flags to standalone `LocalServer` launch command and a no-model subprocess-mocked regression verifying the exact owned command, loopback binding, pinned model/adapter and bounded cache values. No change to frozen cohort, model/source hashes, sampling seed, output grammar, native learning, age or approvals. Existing source-only Actions run 40870742172 belongs to the **pre-fix** commit and must be preserved as such. New source-only CI must pin new source/test blobs. No candidate native execution is authorized by this addendum; it remains conditional on original 16×4 adapter proof and serialized owner. Streaming transport remains a separately recorded comparability limitation.
+
+No AG6 activation, STEP2/B3/JEPA/Redmi promotion or production merge.
