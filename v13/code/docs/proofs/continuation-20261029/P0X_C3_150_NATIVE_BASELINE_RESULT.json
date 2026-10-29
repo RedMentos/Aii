@@ -1,0 +1,84 @@
+{
+  "schema": "v13.p0x.c3_150_native_baseline_review_result.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated native review",
+  "review_pr": 1060,
+  "parent_pr": 1059,
+  "prereg_commit": "0c29060578fb0d4a1f4e5732fb159a9ae28613df",
+  "prereg_blob": "0a3ab620497299f9580357e858a04db5b20d1b5f",
+  "fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "run": {
+    "id": 40840179920,
+    "head_sha": "577366b0059d8367f5c5446afc62b0d524d35768",
+    "status": "GREEN_CLOSED_LINUX_NATIVE_C3_ONLY_HEADROOM_NO_GATE",
+    "artifact_id": 12882088542,
+    "zip_sha256": "f115796e45e14d1fd1ff86b241222666ab8023b734a391dfa244ae26ccf833c4",
+    "zip_crc_clean": true,
+    "internal_sha256sums_verified": 47,
+    "stage_exit_zero": [
+      "SOURCE",
+      "PARENT_SOURCE_DOWNLOAD",
+      "PARENT_MOCK_DOWNLOAD",
+      "PARENT_VERIFY",
+      "RESOURCE",
+      "DEPS",
+      "COMPILE",
+      "FOCUSED",
+      "INSTALL",
+      "NATIVE",
+      "VERIFY",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "focused_tests": 15,
+    "private_backup": "/V13/RawEvidence/P0X_40840179920_C3_150native_exact_head_raw.zip",
+    "backup_rematerialized_sha256": "f115796e45e14d1fd1ff86b241222666ab8023b734a391dfa244ae26ccf833c4"
+  },
+  "native_evidence": {
+    "kind": "LINUX_NATIVE_C3_ONLY_P0X_PUBLIC_SYNTHETIC",
+    "c3_native_calls": 150,
+    "seed": 13,
+    "c3_sampling": "off",
+    "model_sha256_before_after": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_sha256_before_after": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "raw_sha256": "79be6584d465b0fc3ccd33294d882a41bb1990920f3098ed39203b7aef7d18a1",
+    "score_sha256": "7c603158c6d821592d5777d46bb4723503f74c063c5c30fcc0f72fe2720b836e",
+    "inputs_sha256": "f8ddddb51bc92a73cf3224489073f21a101f0ec61e1a665a26497097ae9abbf5",
+    "answers_sha256": "9c6f32638ee455e083467ed04201f5f9ddf657105977066907ba1cf93efe2a71",
+    "process_reaped": true,
+    "weight_updates": false
+  },
+  "score": {
+    "c3_only": {
+      "exact": 50,
+      "wrong_committed": 100,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "output_labels": {
+      "A": 0,
+      "B": 0,
+      "NONE": 150,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "oracle_software_exact": 150,
+    "oracle_headroom": 100,
+    "headroom_minimum": 15,
+    "headroom_sufficient": true
+  },
+  "interpretation": "On 150 prospective public synthetic heldout rows with no B1/B2 source in the prompt, frozen C3 committed NONE in every call; 50/150 happen to match oracle NONE, 100/150 are wrong committed. Deterministic full-source oracle is 150/150; preregistered headroom >=15 satisfied by 100, so independently preregistered exact/single/foreign source-arm comparison may proceed. This baseline alone does NOT demonstrate source complementarity or safe abstention, and is not a blind external holdout.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_package": "Proceed with previously preregistered P0X C3 600-call source-arm ablation (PR #1062), only after its source-only CI and new native preflight; compare to this exact baseline SHA, preserve original score and all RED.",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

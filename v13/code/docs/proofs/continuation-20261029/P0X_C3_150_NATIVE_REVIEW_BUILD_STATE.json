@@ -1,0 +1,59 @@
+{
+  "schema": "v13.p0x.c3_150_native_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated native baseline",
+  "branch": "codex/v13-p0x-c3-150native-20261029",
+  "parent_pr": 1059,
+  "parent_head_sha": "f1ebd717a7377e3176e21065043d7ef381d2c839",
+  "prereg_commit": "0c29060578fb0d4a1f4e5732fb159a9ae28613df",
+  "prereg_blob": "0a3ab620497299f9580357e858a04db5b20d1b5f",
+  "p0x_source": {
+    "pr": 1058,
+    "run_id": 40839417533,
+    "head": "9cd2a432193232d9ee807f26604bda1efd323d45",
+    "artifact_id": 12881818398,
+    "zip_sha256": "4a6d00bb7a5adc849a5cf9d795805b1f4ca210745585ed932769f13b793a56dc",
+    "tests": 20
+  },
+  "baseline_mock": {
+    "run_id": 40839928788,
+    "head": "f1ebd717a7377e3176e21065043d7ef381d2c839",
+    "artifact_id": 12882621075,
+    "zip_sha256": "e3363057b5dfa5e3726f4dc9686e6e275cb8e9ec005f91f19a2058e63bbcb46b",
+    "tests": 15
+  },
+  "fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "fixture_registration_blob": "e85b0d636c75d6c6cf0cdd7f45a18609c2c4b04b",
+  "expected_native_calls": 150,
+  "seed": 13,
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "status": "PRE_NATIVE_C3_ONLY_HEADROOM_NO_CALLS",
+  "native_started": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "Rehash P0X 20-test source and 15-test mock raw artifacts",
+    "Fresh Linux x86_64 home with 2.5GB MemAvailable, 3GB disk",
+    "No other heavy native owner",
+    "Pinned C3 model/runner before/after",
+    "150 serial native calls, closed raw, independent verifier, preserve RED"
+  ],
+  "exact_next_command": "python -m scripts.p0x_c3_150_native_executor --home \"$HOME_DIR\" --install; python -m scripts.p0x_c3_150_native_executor --home \"$HOME_DIR\" --out \"$FRESH_EVIDENCE\"; python -m scripts.p0x_c3_150_native_verifier --evidence-dir \"$FRESH_EVIDENCE\"",
+  "private_backup": "Permitted private Library /V13/RawEvidence; no rejected Drive",
+  "open_questions": [
+    "Native C3-only exact/headroom unmeasured",
+    "Both-exact/native complementarity pending",
+    "No Redmi or training evidence"
+  ],
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
