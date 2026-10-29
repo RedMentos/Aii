@@ -16,6 +16,10 @@ SHADOW (default): the policy is recorded in the batch, training uses the measure
 import math
 from .common import dumps
 
+class AnchorAdmissionError(ValueError):
+    """Numerical U5 admission failure; AG6 must not call trainer.fit."""
+
+
 KEY='U5_ANCHOR';REVISION='u5-anchor-v1'
 ANCHOR={'pretrained_geometry_weight':.25,'protected_old_skill_weight':.60,'new_domain_relaxation':.55,'shared_layer_priority':.75}  # §69 BOOT, not measured
 MAX_MULT=2.  # BOOT
@@ -39,13 +43,13 @@ def stability(store,path='weights'):
 def _unit_signal(value,name):
     if (not isinstance(value,(int,float)) or isinstance(value,bool)
             or not 0. <= value <= 1.):
-        raise ValueError(name+' must be a finite [0,1] numeric signal')
+        raise AnchorAdmissionError(name+' must be a finite [0,1] numeric signal')
     try:
         result=float(value)
     except (ValueError,OverflowError):
-        raise ValueError(name+' must be finite') from None
+        raise AnchorAdmissionError(name+' must be finite') from None
     if not math.isfinite(result):
-        raise ValueError(name+' must be finite')
+        raise AnchorAdmissionError(name+' must be finite')
     return result
 
 def policy(nov,stab,shared=True):
@@ -75,16 +79,16 @@ def for_batch(store,items,trainer):
     p['base_anchor_weight']=base
     if base is not None:
         if not isinstance(base,(int,float)) or isinstance(base,bool) or base < 0:
-            raise ValueError('anchor_weight must be a finite nonnegative number')
+            raise AnchorAdmissionError('anchor_weight must be a finite nonnegative number')
         try:
             base_float=float(base)
         except (ValueError,OverflowError):
-            raise ValueError('anchor_weight outside finite numeric range') from None
+            raise AnchorAdmissionError('anchor_weight outside finite numeric range') from None
         if not math.isfinite(base_float):
-            raise ValueError('anchor_weight must be finite')
+            raise AnchorAdmissionError('anchor_weight must be finite')
         proposed=base_float*p['multiplier']
         if not math.isfinite(proposed):
-            raise ValueError('proposed anchor_weight must be finite')
+            raise AnchorAdmissionError('proposed anchor_weight must be finite')
         p['proposed_anchor_weight']=round(proposed,4)
         if p['mode']=='ACTIVE':p['applied']=True;return p,{'anchor_weight':p['proposed_anchor_weight']}
     p['applied']=False;return p,None
