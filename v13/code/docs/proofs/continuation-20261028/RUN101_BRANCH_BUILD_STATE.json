@@ -1,0 +1,65 @@
+{
+  "schema": "v13.run101.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29T00:44:00Z",
+  "owner": "GPT-6 scheduled continuation; review-only independent cohort",
+  "branch": "assistant/v13-run101-two-project-c3-native-20261029",
+  "base_pr": 1000,
+  "base_head": "896a4087acc0dcf7427e6860b5a0bc04cd7057cb",
+  "prereg_commit_first": "b27d99848e543576c686bd644e91cc33dbe8cdf4",
+  "preimplementation_amendment_commit": "5549155d376348831640774f2b19fc7dfce39fe3",
+  "original_script_commit": "06bae5957951e103d262401b29b7e2a4cf036fbf",
+  "corrected_script_commit": "1c712969b586377b64b01415b40cc81301421e48",
+  "workflow_head_before_this_note": "118b840aefa18ac4d44211b19cc016d388ad0a71",
+  "source_blobs": {
+    "script": "c0cb959855068c3b344567c214dbfb5dccfc2c97",
+    "tests": "7c9d71fd404eef15eb5576484366ac9828b5fcc5",
+    "prereg": "ea7fab53b759770040590f2582739fdabbf5af63",
+    "preimplementation_amendment": "7e88453ab462183ddb0ebaad44b403d347dce16a",
+    "workflow": "c7bfac4826cd6ae56bf6158c55dd7c27ff2fce4b"
+  },
+  "status": "PUSHED_REVIEW_BRANCH; ACTIONS_ORIGINAL_RAW_NOT_YET_AUDITED",
+  "scope": "two synthetic persisted F1/F5 project facts Dovan 731, Mira 942; two serial native C3 answers and missing/conflict/forget controls",
+  "pinned_model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "seed": 13,
+  "max_tokens": 64,
+  "timeout_s": 90,
+  "native_evidence_this_run": "NOT_YET_OBSERVED",
+  "tests_this_run": "UNIT_SOURCE_CREATED_NOT_EXECUTED_LOCALLY; GitHub Actions workflow requested via branch push; pending",
+  "frozen_runtime_changed": false,
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "independent_parent_raw": {
+    "run93": {
+      "actions": 40793940915,
+      "sha256": "302f89a9ae849e199b54abfa2f7dd9f4fc76c273751a2df823d6a8abffce58f7",
+      "inner_hashes": "20/20",
+      "private_backup": "/V13-Checkpoints/2026-10-29/Run93-Native-Independent/V13_Run93_GREEN_40793940915.zip",
+      "byte_verified": true
+    },
+    "run92": {
+      "actions": 40787487265,
+      "sha256": "4786a00e052ee79fff21e51b696cf66bf5636e22a72ba8d1669ef908c3957b74",
+      "inner_hashes": "51/51",
+      "private_backup": "/V13-Checkpoints/2026-10-29/Run92-Native-Independent/V13_Run92_NATIVE_40787487265.zip",
+      "byte_verified": true
+    }
+  },
+  "open_questions": [
+    "Does two-project native C3 pass strict exact-source gate for both authored sources?",
+    "Can conflict after two native turns revoke one project without affecting other?",
+    "Is GitHub Actions raw ZIP SHA/HEAD/inner hashes and privacy clean?"
+  ],
+  "next_command": "Fetch newest PR #1005 head, inspect GitHub Actions push workflow v13-run101-two-project-c3-native.yml for exact head; download ORIGINAL artifact, verify ZIP SHA256, CRC, SHA256SUMS, nine exit files, report and source hashes. Preserve original RED before any correction. If GREEN, private Library backup and independent review; then choose next non-operator Canon package.",
+  "remaining_execution_budget": "UNKNOWN",
+  "main_integrated": false,
+  "test_expansion_commit": "da1f8f728c49c87874f5052fa26532ecd8c48aba",
+  "test_expansion": "Added actual two-source model-free Runtime/Operator/Store/Memory restart, independent conflict and selective forget regression; not run locally"
+}
