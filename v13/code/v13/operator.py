@@ -93,7 +93,10 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
-        if cmd=='source':\n            from .source_record import operator_command\n            return operator_command(r,args)\n        if cmd=='verified':
+        if cmd=='source':
+            from .source_record import operator_command
+            return operator_command(r,args)
+        if cmd=='verified':
             if (not args or args[0].casefold()=='native'
                     or any(x.casefold()=='--native' for x in args)):
                 raise ValueError(':verified <Frage> (nur F1/F5-Vorprüfung, kein natives Modell)')
