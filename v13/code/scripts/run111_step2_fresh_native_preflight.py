@@ -27,6 +27,7 @@ VARIANTS = ("b1_only", "b2_only", "both_none", "both_exact",
             "both_control", "same_policy_dual", "prompt_only_dual")
 EXPECTED_PROJECTS = ("Atlas", "Borealis", "Cygnus", "Delta", "Epsilon", "Fornax")
 CATALOG_BLOB = "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+FIXTURE_SHA256 = "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1"
 FROZEN_BLOBS = {
     "scripts/run109_step2_fresh_fixtures.py": "6cc3d52524e8c9122710eae2a908d024f0f44f24",
     "scripts/step2_z2_timescale.py": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7",
@@ -126,6 +127,8 @@ def dry_run():
         if not all(checks.values()) or _canonical_sha(cases) != corpus.inspect()["fixture_sha256"]:
             raise ValueError("FIXTURE_ORACLE_OR_CONTENT_DRIFT")
         fixture_sha = _canonical_sha(cases)
+        if fixture_sha != FIXTURE_SHA256:
+            raise ValueError("FROZEN_FIXTURE_SHA_DRIFT")
         arms = {name: {"body": spec["body"], "query": True,
                        "pointer": spec["pointer"], "settings_by_seed":
                            {str(seed): settings(name, seed) for seed in SEEDS}}
