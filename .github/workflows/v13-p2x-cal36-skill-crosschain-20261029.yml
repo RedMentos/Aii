@@ -1,0 +1,98 @@
+name: V13 P2X CAL36 and WP-T6 full software crosschain
+
+on:
+  push:
+    branches: [codex/v13-p2x-cal36-skill-chain-integration-20261029]
+    paths: ['.github/workflows/v13-p2x-cal36-skill-crosschain-20261029.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-p2x-cal36-skill-crosschain-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Closed full software and privacy evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-cal36-skill-crosschain"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/skilllive.py > "$e/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_p2x_cal36_transport_20261029.py > "$e/TEST_BLOB.txt"
+          if [ "$(cat "$e/SOURCE_BLOB.txt")" = 928fe5d6da5f75d02be0c677a9103278ccc58992 ] &&
+             [ "$(git hash-object v13/code/scripts/p2x_candidate360_standalone.py)" = 29fa99031862f534afe835a3a997ecb62b9b1752 ] &&
+             [ "$(git hash-object v13/code/scripts/p2x_cal36_transport.py)" = 8b8634375c37c40f804907120951d308ddb15a7f ] &&
+             [ "$(git hash-object v13/code/tests/test_p2x_cal36_transport_20261029.py)" = 3232ce1ab9f483ec16b85e52da4ab06e63175f6a ]; then echo 0 > "$e/PIN_EXIT.txt"; else echo 1 > "$e/PIN_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-p2x-cal36-skill-crosschain-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-p2x-cal36-skill-crosschain-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 180s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v               tests.test_p2x_candidate360_standalone tests.test_p2x_lora_scaled_cli_review tests.test_p2x_cal36_transport_20261029 tests.test_skilllive_crossskill_conflict_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/scripts/p2x_candidate360_standalone.py v13/code/scripts/p2x_cal36_transport.py v13/code/tests/test_p2x_cal36_transport_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+              "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+              echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else echo 1 > "$e/INSTALL_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; echo SKIPPED > "$e/FULL_EXIT.txt"; fi
+          else for n in INSTALL PIP_CHECK FULL; do echo SKIPPED > "$e/${n}_EXIT.txt"; done; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 46ba21b13cd7801713a2c5616f16f61d4b4441cd --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 46ba21b13cd7801713a2c5616f16f61d4b4441cd HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original full RED or GREEN evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-cal36-skill-crosschain-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-cal36-skill-crosschain/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software regression and privacy
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-cal36-skill-crosschain"
+          for n in PIN VENV DEPS FOCUSED COMPILE INSTALL PIP_CHECK FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw preserved; no gate promotion"
+              tail -45 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo P2X_CAL36_SKILL_CROSSCHAIN_SOFTWARE_ONLY_PASS_NO_NATIVE_CLAIM
