@@ -20,10 +20,20 @@
   "integration_ci": {
     "run": 40856249467,
     "workflow_head": "ce31554c37e27b4fad9ca62ecc55b830e283267e",
-    "status": "IN_PROGRESS_AT_CHECKPOINT",
-    "focused_expected": 37,
-    "full_expected": "ALL_SOFTWARE_TESTS",
-    "native_calls": 0
+    "status": "VERIFIED_GREEN_SOURCE_ONLY",
+    "zip_sha256": "4390a6b117edbafee2e0ecb0e226adfb5cecdc6a0b4478202eb1f6e00f05a09c",
+    "zip_crc": "CLEAN",
+    "hashes": "19/19",
+    "stage_exits": "8/8",
+    "focused": "37/37 PASS",
+    "full": "3043 PASS",
+    "skipped": 11,
+    "full_seconds": 364.605,
+    "privacy": "CLEAN",
+    "diff": "CLEAN",
+    "native_calls": 0,
+    "private_backup": "/V13/RawEvidence/2026-10-29/P2X/integration_fullsuite_40856249467_sha4390a6b1.zip",
+    "byte_identical": true
   },
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -37,6 +47,6 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Inspect Actions 40856249467; download original raw artifact and independently verify ZIP CRC, all SHA256SUMS, 8 stage exits, exact head, focused 37 tests, full suite result and privacy. Preserve RED and diagnose only observed cause. Then checkpoint verified result, private backup and continue other canonical organ work.",
+  "next_command": "Continue separately preregistered P2X C3 base-only 360-call Linux-native run PR #1078; original native RED preserved, archive-vs-binary pin fix preregistered. Independently audit native raw and no-adapter receipt. Then pursue other canonical organs and real Redmi TESTEN.sh when device available.",
   "remaining_platform_budget": "UNKNOWN"
 }
