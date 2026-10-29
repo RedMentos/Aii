@@ -1,0 +1,40 @@
+{
+  "schema": "v13.p0x.150_source_holdout_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P0X cohort review",
+  "branch": "codex/v13-p0-independent-150-cohort-20261029",
+  "parent_pr": 1057,
+  "parent_head_sha": "d089f08fbf4ee7c3d3d1c9b6789320974f99731b",
+  "prereg_first_commit": "e18a892ca1e1ca503fe99f377a0a8127064b40b6",
+  "prereg_blob": "312f8cb0acd591fe9c17a3e87a299f21d92465fd",
+  "generator_blob": "7ec4e877ad5ea3eed1c60102dac3baa15391dd2b",
+  "tests_blob": "edb1ed639261bcaedaf2885f58baa42c5f55f620",
+  "seed": 2026102907,
+  "domains": 5,
+  "families": 30,
+  "calibration_rows": 30,
+  "heldout_rows": 150,
+  "model_inputs_source_only": 750,
+  "status": "SOURCE_ONLY_P0X_TESTS_PENDING_CI",
+  "native_started": false,
+  "external_fixture_sha256": "PENDING_INDEPENDENT_SOFTWARE_GENERATION_AND_REGISTRATION_BEFORE_NATIVE",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "exact_next_command": "python -m unittest -v tests.test_p0x_independent_source_holdout; python -m scripts.p0x_independent_source_holdout; after verified GREEN, register fixture SHA and generator blob externally before native",
+  "open_questions": [
+    "Software oracle headroom must pass",
+    "C3-only actual headroom unmeasured",
+    "No independent model-native holdout or P2 training yet"
+  ],
+  "private_backup": "Permitted private Library /V13/RawEvidence, no rejected Drive",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
