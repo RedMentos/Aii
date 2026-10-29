@@ -1,0 +1,36 @@
+{
+  "schema": "v13.run104.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run104-human-source-clarify-contract-20261029",
+  "base_head": "a915fb92a1968a7712bd858416a329180e17926f",
+  "base_pr": 1004,
+  "prereg_first_commit": "d1f429d35d80c94aba59b2b6ea6344d1917ac1ab",
+  "test_commit": "ee3fbff49106b10cee80226ac7e1bf50ac09bb9d",
+  "test_blob": "8e28fb0168465a85a2066666538e03b0ac33f548",
+  "prereg_blob": "5117856b255796c081dda171d62bcebb86ab0729",
+  "original_red": {
+    "run_id": 40794194803,
+    "artifact_id": 12862479183,
+    "sha256": "5d01de45308aa2f5a9aba8ad7200f87eba141204215e1dd9366c5a74bfdbe6fa",
+    "focused": "15 tests FAILED (1)",
+    "full": "2668 tests FAILED (1 skipped)",
+    "reason": "CLARIFY nonfactual question was incorrectly asserted empty",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run96-Crosschain-RED/V13_Run96_RED_40794194803.zip"
+  },
+  "status": "SOURCE_TEST_PATCH_PUSHED; PINNED_RUN104_CI_PENDING",
+  "scope": "Test-only post-RED contract correction; original Run96 prereg NOT retroactively satisfied",
+  "native_calls": 0,
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Fetch original Run104 Actions artifact, verify HEAD/source hashes, ZIP SHA256/CRC/inner SHA256SUMS and focused/full/privacy/diff exits; independently review exact source. Do not claim original Run96 passed or merge main.",
+  "remaining_execution_budget": "UNKNOWN"
+}
