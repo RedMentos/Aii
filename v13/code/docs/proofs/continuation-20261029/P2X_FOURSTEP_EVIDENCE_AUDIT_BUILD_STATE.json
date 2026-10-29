@@ -1,0 +1,80 @@
+{
+  "schema": "v13.p2x.fourstep_evidence_audit_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 independent offline P2X fourstep auditor",
+  "branch": "assistant/v13-p2x-fourstep-evidence-review-20261029",
+  "review_pr": 1089,
+  "parent_pr": 1088,
+  "parent_sha": "c4243164f8d100dc826f3e1ee2d7d169228cd649",
+  "prereg_commit": "1df670a9c7d539581f4d4092391d1aef687740cb",
+  "native_red_repair_prereg_commit": "f881eefc4506ef8caae3627900991dc44674157c",
+  "native_repair_commit": "1cf5230c3c33527005e82ea317b9dd0f1c3e8d49",
+  "source_only": {
+    "run": 40870114704,
+    "head": "95bb1da99cfc8f5c35fc434bec7af3b0809db73d",
+    "status": "GREEN",
+    "focused_tests": 19,
+    "full_tests": 3150,
+    "full_skipped": 11,
+    "raw_zip_sha256": "21d9b7988225f4ed5ae320bc9cba94824123ac097f8310117d7ba55ee7cde802",
+    "internal_hashes": "21/21",
+    "private_backup_verified": true
+  },
+  "native_original_red": {
+    "run": 40870114898,
+    "head": "95bb1da99cfc8f5c35fc434bec7af3b0809db73d",
+    "workflow_status": "FAILURE_FINAL_SCHEMA_ASSERTION_ONLY",
+    "training_stage_exit": 0,
+    "independent_audit_exit": 0,
+    "raw_zip_sha256": "0c00bae349613c085776b4ecb5e658100c586c26431e78854172ede0b003c952",
+    "internal_hashes": "43/43",
+    "private_backup_verified": true,
+    "adapter_gguf_sha256": "f5c25f7ea1c0ae727229bbd280857eb145ed01950ca640c800bd51d64fc9aebe",
+    "adapter_safetensors_sha256": "0ecceccc43559a2c749ef23721ce5176d5e3b3832de8cac91d1ae748e642c6f3"
+  },
+  "native_replay_green": {
+    "run": 40870919737,
+    "head": "1cf5230c3c33527005e82ea317b9dd0f1c3e8d49",
+    "workflow_status": "SUCCESS",
+    "raw_zip_sha256": "c86ef27fc5a8abe4419888329286d271d971a2a6b63f9fd6c1d8ed704cf81a09",
+    "internal_hashes": "43/43",
+    "stage_exits": "16/16 ZERO",
+    "private_backup_verified": true,
+    "adapter_gguf_sha256": "062c20d796c59169579529f4a069f77693a847123f599d00f374bd01a8618e92",
+    "adapter_safetensors_sha256": "f30558ff9e237ccf829eb203f1991206dcf96a0d80c98c640820503c8da20729",
+    "examples": 16,
+    "optimizer_steps_reported": 4,
+    "trainable_params": 83968,
+    "loss_history_ce": [
+      2.18928,
+      1.86136,
+      1.60192,
+      1.41532
+    ],
+    "in_sample_recall": 0.375,
+    "heldout_evaluated": false,
+    "redmi_measured": false
+  },
+  "reproducibility": {
+    "bitwise_identical": false,
+    "fp32_changed_values": 57405,
+    "fp32_total_values": 83968,
+    "max_abs_difference": 0.0000039674341678619385,
+    "relative_l2_difference": 0.0000014571381803356478,
+    "root_cause": "UNISOLATED"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "production_activation": false,
+    "redmi_measured": false,
+    "v13_complete": false
+  },
+  "next_command": "Review candidate360 source-only CI on PR #1090 after cache parity fix; bind exact GREEN adapter GGUF SHA256 062c20d7... to one preregistered isolated P2X 360-call heldout native evaluation after serialized owner is free; download original raw and independently verify CRC/SHA/exits/privacy; never tune on heldout or promote partial gates.",
+  "remaining_platform_budget": "UNKNOWN"
+}
