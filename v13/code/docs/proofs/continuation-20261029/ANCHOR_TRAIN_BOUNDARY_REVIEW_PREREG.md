@@ -14,3 +14,6 @@ The parent U5 numeric guard rejects invalid `anchor_weight` at `anchor.for_batch
 
 ## Claim limits
 Software training-boundary containment only. Does not prove AG6 retention, native learning, STEP2 utility, B3, JEPA or complete V13. Age0 RECORD_ONLY, jepa_weight=0 and all original negative gates remain unchanged.
+
+## Integration addendum: preserve failed attempts on same-second restaging
+The original AG6 `stage` deduplicates all statuses except a fixed failure set, and constructs IDs as `dataset_hash + int(clock())`. Adding `ANCHOR_INVALID` without adding it to the failure exclusion set would make a corrected restage reuse the failed batch. A same-second retry could also overwrite the failed attempt. The RED-first extension requires that a corrected restage creates a distinct STAGED batch even with a fixed clock, while the original ANCHOR_INVALID batch and its history remain available. This is a source-only persistence contract, not a model or learning promotion.
