@@ -47,7 +47,7 @@ jobs:
             (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_age0_jef_f1f5_crossorgan_20261029 tests.test_jef_f1f5_operator tests.test_jef_f1f5_source_admission tests.test_age0_source_context_world_sleep_integration_20261029 tests.test_verified_exact_budget_20261029) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
           else echo SKIPPED > "$e/FOCUSED_EXIT.txt"; echo SKIPPED > "$e/FOCUSED_RAW.log"; fi
-          "$py" -m py_compile v13/code/v13/context_os.py v13/code/tests/test_age0_jef_f1f5_crossorgan_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m py_compile v13/code/v13/jef_f1f5_operator.py v13/code/v13/jef_f1f5_source_admission.py v13/code/tests/test_age0_jef_f1f5_crossorgan_20261029.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 3efc1e5d0b2832ecdee1edc2fd5965b2514e8baf --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
