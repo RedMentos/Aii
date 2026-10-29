@@ -1,0 +1,8 @@
+# Context OS × Sleep S7 cross-organ integration handoff — 2026-10-29
+
+- Parent PR #1110 exact `8fe501dbf38d25e66d3141ff771d9c36fa25c448`; donor PR #1109 exact `e93f49455b1db4b7dd606582d155e5e4fc85e06b`. Prereg remotely verified at `d8004cddb129939aea1cc2147184d5139daf4193`.
+- Six PR #1109 donor files imported with exact matching Git blob SHA; donor `context_os.py` `acb86c61d59e422a8395f3144d297eca7934b33a`. PR #1110 `history.py` and `sleep_offline.py` unchanged.
+- Original cross-organ focused/full software CI `40902535508` at `b02c7161524b515a78aad08741922c527e4efdd7`: focused 48 tests, one failed; full 3195 tests, one failed and 11 skipped. Source/compile/privacy/diff/deps all passed. Closed ZIP artifact `12910531951` SHA256 `b374eadc301f2d5890ebe235fdf916cb58c3bed56a1ae8038161923aad9af9c5`, CRC and internal SHA256SUMS verified.
+- Failure was test-only: the foreign-session negative control created a second FINAL assistant, so S7 correctly digested *two sessions*, while the test incorrectly expected one. Changed only `tests/test_contextos_sleep_source_integration_20261029.py` at `65637ce3e39e54133e8db0b82cd538bebfc23dc1` to leave foreign source without a FINAL answer. Foreign-session source restoration denial remains tested. No guard weakened, no donor source changed.
+- Next: rerun exact-head focused/full source-only CI, preserve raw ZIP with SHA256 verification, independently review integration before merge. Keep separate review-only child PR #1112 synchronized with corrected test before claiming its own full-suite result.
+- No native inference/Redmi proof or learned utility. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight0, AG6 unapproved, V13 incomplete.
