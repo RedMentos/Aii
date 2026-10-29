@@ -44,7 +44,7 @@ def _finite_vector(v,dim):
 
 def transitions(store,limit=MAX_ROWS):
     """Observed own transitions; malformed or nonfinite legacy rows cannot poison a fit."""
-    rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created FROM actions a WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
+    rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created,e.generation_id FROM actions a JOIN events e ON e.id=a.event_id WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
         try:
@@ -60,9 +60,17 @@ def transitions(store,limit=MAX_ROWS):
                     or not _finite_nonnegative(r['created'])):continue
             resource=fc.get('resource_state','NORMAL')
             if type(resource) is not str:continue
-            sel=store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(r['event_id'],))
-            payload=json.loads(sel['payload']) if sel else {}
-            route=payload.get('route_hint') if type(payload) is dict else None
+            # A later selection must never rewrite the route of an action that
+            # already dispatched. Two pre-dispatch selections are ambiguous:
+            # refuse that training row instead of silently choosing the latest.
+            sel=store.rows("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=? ORDER BY created DESC LIMIT 2",
+                           (r['event_id'],r['generation_id'],r['created']))
+            if len(sel)!=1:continue
+            payload=json.loads(sel[0]['payload'])
+            if (type(payload) is not dict or payload.get('event_id')!=r['event_id']
+                    or payload.get('brain_generation_id')!=r['generation_id']):
+                continue
+            route=payload.get('route_hint')
             if route not in ACTIONS:continue
             hour=(r['created']%86400)/3600
             lat=(fc.get('learned_latent_prediction') or {})
