@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 import unittest
 
 from scripts import hb1a_two_body_native_pilot as hb1
@@ -17,6 +18,13 @@ class HB1BFormatSoftware(unittest.TestCase):
         mock.run_with_mocks(home, root / "parent")
         return root / "parent"
 
+    def build_mock(self, root):
+        raw = (root / "RAW.json").read_bytes()
+        score = (root / "SCORE.json").read_bytes()
+        with patch.object(hb1b, "PARENT_RAW_SHA256", hb1.sha(raw)), \\
+             patch.object(hb1b, "PARENT_SCORE_SHA256", hb1.sha(score)):
+            return hb1b.build(root)
+
     def make_records(self, plan):
         return [
             {"id": p["id"], "arm": p["arm"],
@@ -31,7 +39,7 @@ class HB1BFormatSoftware(unittest.TestCase):
 
     def test_four_source_matched_arms_no_oracle(self):
         with TemporaryDirectory() as tmp:
-            plan = hb1b.build(self.make_parent(Path(tmp)))
+            plan = self.build_mock(self.make_parent(Path(tmp)))
             self.assertEqual(len(plan), 24)
             self.assertEqual([p["arm"] for p in plan[:4]], list(hb1b.ARMS))
             self.assertEqual(sum(p["schema"] is not None for p in plan), 12)
@@ -51,11 +59,11 @@ class HB1BFormatSoftware(unittest.TestCase):
             raw["body_rows"][0]["output"] = "CORRUPTED"
             raw_path.write_text(json.dumps(raw))
             with self.assertRaisesRegex(ValueError, "HB1A_VERIFY_HASH_RED"):
-                hb1b.build(root)
+                self.build_mock(root)
 
     def test_score_is_negative_gate_and_strict(self):
         with TemporaryDirectory() as tmp:
-            plan = hb1b.build(self.make_parent(Path(tmp)))
+            plan = self.build_mock(self.make_parent(Path(tmp)))
             records = self.make_records(plan)
             score = hb1b.score(records, plan)
             self.assertEqual(score["rows"], 24)
@@ -71,7 +79,7 @@ class HB1BFormatSoftware(unittest.TestCase):
 
     def test_input_schema_identity_and_nonfinite_refused(self):
         with TemporaryDirectory() as tmp:
-            plan = hb1b.build(self.make_parent(Path(tmp)))
+            plan = self.build_mock(self.make_parent(Path(tmp)))
             records = self.make_records(plan)
             records[0]["input_sha256"] = "0" * 64
             with self.assertRaisesRegex(ValueError, "HB1B_RAW_BINDING_RED"):
