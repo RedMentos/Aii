@@ -1,8 +1,8 @@
 # Private durable evidence backup manifest — 2026-10-30
 
-The eight exact GitHub Actions RED/GREEN raw ZIP artifacts for review PRs #1175–#1178 were copied to the user's **private ChatGPT Library** folder `/V13/automation-evidence/20261030/`. This is **not** the rejected anyone-writable Drive destination; no public source, data or model artifacts were added to it.
+The eight exact GitHub Actions RED/GREEN raw ZIP artifacts for review PRs #1175–#1178 and one unfiltered full-suite ZIP for PR #1179 were copied to the user's **private ChatGPT Library** folder `/V13/automation-evidence/20261030/`. This is **not** the rejected anyone-writable Drive destination; no public source, data or model artifacts were added to it.
 
-Every upload succeeded, was independently listed from Library, then rematerialized **from Library** and compared byte-for-byte via SHA256 against the downloaded original GitHub artifact ZIP. **8/8 match**, ZIP CRC **8/8 clean**, and each ZIP's 18/18 internal `SHA256SUMS` were previously checked. GitHub Actions artifacts have 30-day retention; the private Library copies preserve these raw files separately.
+Every upload succeeded, was independently listed from Library, then rematerialized **from Library** and compared byte-for-byte via SHA256 against the downloaded original GitHub artifact ZIP. **9/9 match**, ZIP CRC **9/9 clean**. The eight focused ZIPs have 18/18 internal `SHA256SUMS` each; the full-suite ZIP has 30/30. GitHub Actions artifacts have 30-day retention; the private Library copies preserve these raw files separately.
 
 | Review | ZIP filename | SHA256 (remote Library re-read) |
 | --- | --- | --- |
@@ -14,5 +14,6 @@ Every upload succeeded, was independently listed from Library, then rematerializ
 | 1177 GREEN | `github-actions-artifact-12941529278.zip` | `0227a76a1fde31bf53fef4a2e9a50545c1a128f97a3b525861cf9645a80ecc69` |
 | 1178 RED | `github-actions-artifact-12942113235.zip` | `0ad0148bfdc3ba63085db63b1784921946e5c98fbee180d8777939237dde65a1` |
 | 1178 GREEN | `github-actions-artifact-12941947640.zip` | `af8e464a567f26cb3eb10ddafbac07ccc4128724f48a52ec3cb84c8f4c0fb45a` |
+| 1179 unfiltered FULL RED (frozen Run34/Run37 only) | `github-actions-artifact-12942567969.zip` | `9052c4f4df15cd3cb45cdd578bf924361522aac59b8c07584d791c5a0ae44cd5` |
 
-Original GitHub artifact IDs remain recorded in each package's `*_RESULT_20261030.md` and build-state delta. This public manifest exposes only generic names and digests, not private Library IDs or contents. The full unfiltered combined suite PR #1179 is running independently; its raw will receive the same treatment once complete. No whole-system/Redmi/native/gate promotion.
+Original GitHub artifact IDs remain recorded in each package's `*_RESULT_20261030.md` and build-state delta. This public manifest exposes only generic names and digests, not private Library IDs or contents. The full unfiltered combined suite PR #1179 finished: 3372 tests, 2 preserved frozen Run34/Run37 source-preflight errors, 11 skips, no new errors. Its raw ZIP was uploaded to the same private folder and byte-verified. No source pin or negative gate was changed. No whole-system/Redmi/native/gate promotion.
