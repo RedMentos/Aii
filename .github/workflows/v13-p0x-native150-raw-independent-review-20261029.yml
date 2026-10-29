@@ -1,0 +1,83 @@
+name: V13 P0X independent original 150-call native raw audit
+on:
+  push:
+    branches: [codex/v13-p0x-native150-raw-independent-review-20261029]
+    paths:
+      - '.github/workflows/v13-p0x-native150-raw-independent-review-20261029.yml'
+      - 'v13/code/scripts/p0x_native150_raw_independent_audit.py'
+      - 'v13/code/tests/test_p0x_native150_raw_independent_audit.py'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-p0x-native150-independent-raw-review
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Original native artifact, independent verifier, tamper tests and privacy
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p0x-native150-independent"
+          mkdir -p "$e/original"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/scripts/p0x_native150_raw_independent_audit.py)" = 825526e77cb0c63ed462d9c1598c87c56e446485
+            test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+            git merge-base --is-ancestor 577366b0059d8367f5c5446afc62b0d524d35768 HEAD
+          } > "$e/PINS_RAW.log" 2>&1
+          echo "$?" > "$e/PINS_EXIT.txt"
+          gh run download 40840179920 -n v13-p0x-c3-150native-40840179920-577366b0059d8367f5c5446afc62b0d524d35768 -D "$e/original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/p0x_native150_raw_independent_audit.py v13/code/tests/test_p0x_native150_raw_independent_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (cd v13/code && python3 -m scripts.p0x_native150_raw_independent_audit --root "$e/original") > "$e/VERIFY_RAW.json" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+            (cd v13/code && P0X_ORIGINAL_EVIDENCE="$e/original" python3 -m unittest -v tests.test_p0x_native150_raw_independent_audit) > "$e/TESTS_RAW.log" 2>&1
+            echo "$?" > "$e/TESTS_EXIT.txt"
+          else
+            echo SKIPPED_DOWNLOAD_RED > "$e/VERIFY_RAW.json"; echo SKIPPED_RED > "$e/VERIFY_EXIT.txt"
+            echo SKIPPED_DOWNLOAD_RED > "$e/TESTS_RAW.log"; echo SKIPPED_RED > "$e/TESTS_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 577366b0059d8367f5c5446afc62b0d524d35768 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 577366b0059d8367f5c5446afc62b0d524d35768 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Retain original raw and review evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-native150-independent-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-native150-independent/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce independent review gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-native150-independent"
+          for n in PINS DOWNLOAD COMPILE VERIFY TESTS PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED, original raw retained"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          echo P0X_NATIVE150_INDEPENDENT_ORIGINAL_RAW_RECHECK_NO_GATE
