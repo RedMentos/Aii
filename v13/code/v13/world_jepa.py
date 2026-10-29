@@ -274,5 +274,37 @@ class WorldJEPA:
 
     @_read_locked
     def collapse_stats(self, X2):
-        zt = self.latent(X2); ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None); p = ev/ev.sum()
-        return {'effective_rank': float(np.exp(-(p[p > 0]*np.log(p[p > 0])).sum())), 'min_std': float(zt.std(0).min())}
+        """Finite diagnostic only: zero covariance has no measurable effective rank.
+
+        This is not a learning/utility gate. A degenerate or invalid probe
+        cannot silently become rank one through a 0/0 probability vector.
+        """
+        if not hasattr(self, 'mu'):
+            raise ValueError('WorldJEPA must be fitted before collapse stats')
+        try:
+            X2 = np.asarray(X2, dtype=float)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Invalid WorldJEPA collapse probe') from exc
+        if (X2.ndim != 2 or len(X2) < 2 or X2.shape[1] != len(self.mu)
+                or not np.isfinite(X2).all()):
+            raise ValueError('Invalid WorldJEPA collapse probe')
+        zt = self.latent(X2)
+        if zt.ndim != 2 or len(zt) != len(X2) or not np.isfinite(zt).all():
+            raise ValueError('Invalid WorldJEPA target latents')
+        # Exact constant rows can produce tiny positive covariance from
+        # floating mean rounding (e.g. 3 or 7 identical nonzero latents).
+        # Detect the actual zero-information condition before eigendecomp.
+        min_std = float(zt.std(0).min())
+        if not np.isfinite(min_std):
+            raise ValueError('Nonfinite WorldJEPA collapse evidence')
+        if np.all(np.ptp(zt, axis=0) == 0):
+            return {'effective_rank': 0., 'min_std': 0., 'collapsed': True}
+        ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None)
+        total = float(ev.sum())
+        if not np.isfinite(total):
+            raise ValueError('Nonfinite WorldJEPA collapse evidence')
+        if total == 0.:
+            return {'effective_rank': 0., 'min_std': min_std, 'collapsed': True}
+        p = ev[ev > 0]/total
+        return {'effective_rank': float(np.exp(-(p*np.log(p)).sum())),
+                'min_std': min_std, 'collapsed': False}
