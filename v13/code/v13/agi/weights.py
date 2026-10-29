@@ -127,7 +127,8 @@ class WeightConsolidation:
                 continue
             ref=dict(ref,label='HUMAN_QUALITY_LABEL_NOT_FACT')
             out.append({'memory_id':'rating:'+r['event_id'],'event_id':r['event_id'],'kind':'rated_answer','prompt':q['text'],'target':a['text'],
-                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':ref})
+                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':ref,
+                        'source_dependencies':[dict(dep) for dep in (dependencies or [])]})
         return out
     def sdft_candidates(self):
         """WP-S5 SDFT: human corrections marked `learn`. The target stays empty here; a self-teaching trainer
@@ -186,6 +187,38 @@ class WeightConsolidation:
         return self.box.mutate(go)
     def _move(self,b,status):b['status']=status;b['history'].append([status,self.clock()])
     # -- training + gate -------------------------------------------------------------------------------
+    def _check_item_sources(self,item):
+        """Recheck direct and explicitly declared rated-answer lineage at use time.
+
+        Older staged rated-answer batches without a dependency snapshot cannot
+        silently acquire learning/approval authority; restage from live sources.
+        """
+        if type(item) is not dict:
+            raise ValueError('Invalid staged item')
+        ref=item.get('source_ref')
+        if (type(ref) is not dict or
+                type(ref.get('source_id')) is not str or
+                type(ref.get('sha256')) is not str or
+                type(ref.get('char_start')) is not int or
+                type(ref.get('char_end')) is not int or
+                ref.get('modality')!='text'):
+            raise ValueError('Invalid staged SourceRef')
+        self.s.read_source(ref)
+        if item.get('kind')=='rated_answer':
+            deps=item.get('source_dependencies')
+            if type(deps) is not list or len(deps)>128:
+                raise ValueError('Missing or invalid rated-answer dependency snapshot')
+            for dep in deps:
+                if (type(dep) is not dict or
+                        set(dep)!={'source_id','sha256','char_start','char_end','modality'} or
+                        type(dep['source_id']) is not str or
+                        type(dep['sha256']) is not str or
+                        type(dep['char_start']) is not int or
+                        type(dep['char_end']) is not int or
+                        dep['modality']!='text'):
+                    raise ValueError('Invalid rated-answer dependency')
+                self.s.read_source(dep)
+
     def train(self,bid,cancel=None,deadline=None):
         b=self.batch(bid)
         if b['status']!='STAGED':raise ValueError('Nur STAGED-Batches werden trainiert')
@@ -202,17 +235,7 @@ class WeightConsolidation:
             if type(b.get('items')) is not list or not b['items']:
                 raise ValueError('Invalid staged item list')
             for item in b['items']:
-                if type(item) is not dict:
-                    raise ValueError('Invalid staged item')
-                ref=item.get('source_ref')
-                if (type(ref) is not dict or
-                        type(ref.get('source_id')) is not str or
-                        type(ref.get('sha256')) is not str or
-                        type(ref.get('char_start')) is not int or
-                        type(ref.get('char_end')) is not int or
-                        ref.get('modality')!='text'):
-                    raise ValueError('Invalid staged SourceRef')
-                self.s.read_source(ref)
+                self._check_item_sources(item)
                 checked+=1
         except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
             reason=type(exc).__name__
@@ -446,17 +469,7 @@ class WeightConsolidation:
                 if type(b.get('items')) is not list or not b['items']:
                     raise ValueError('Invalid approval items')
                 for item in b['items']:
-                    if type(item) is not dict:
-                        raise ValueError('Invalid approval item')
-                    ref=item.get('source_ref')
-                    if (type(ref) is not dict or
-                            type(ref.get('source_id')) is not str or
-                            type(ref.get('sha256')) is not str or
-                            type(ref.get('char_start')) is not int or
-                            type(ref.get('char_end')) is not int or
-                            ref.get('modality')!='text'):
-                        raise ValueError('Invalid approval SourceRef')
-                    self.s.read_source(ref)
+                    self._check_item_sources(item)
             except (ValueError,KeyError,TypeError,OSError,UnicodeError):
                 raise ValueError('Freigabe gesperrt: Quelle widerrufen oder beschädigt') from None
             from ..drift import gate as drift_gate
