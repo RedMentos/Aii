@@ -28,11 +28,26 @@
       "bd22e2cdf81ecd92f8a2dd58e2370a3f23614bd5",
       "ef77208c4312a6deb7a8d5e3da9705902ba2381b",
       "422bea2a25ec49f0289c3750cc764bfd98d8b544",
-      "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3"
+      "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3",
+      "5aa0c6504e5efa8c421162cb5e18765426de5a94"
     ],
-    "latest_source_test_commit": "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3",
-    "latest_ci_status": "PENDING_AFTER_SOURCE_REVIEW",
-    "additional_scope": "Exact bounded event-ID revalidation for all retained digest entries; malformed cache rows do not suppress unrelated valid source"
+    "latest_source_test_commit": "5aa0c6504e5efa8c421162cb5e18765426de5a94",
+    "latest_ci_status": "PENDING_AFTER_INTERLEAVED_BARRIER_FIX",
+    "additional_scope": "Exact bounded event-ID revalidation for all retained digest entries; malformed cache rows do not suppress unrelated valid source",
+    "latest_ci_run_id": 40910808056,
+    "first_source_red": {
+      "run_id": 40909329351,
+      "head_sha": "ef7b6bc811a14b1dad744d2c00cac8373f3cb7ad",
+      "artifact_id": 12913337053,
+      "sha256": "46e253da0245445e3aeac765115576b62ce35205f33eaade0666c9f45fc00a4e",
+      "focused": "25/26 PASS, 1 inherited pending-user barrier FAIL",
+      "full": "3207 tests; 11 skipped; 1 same failure",
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0,
+      "crc": "PASS",
+      "sha256sums": "15/15 PASS"
+    }
   },
   "gates": {
     "age": "RECORD_ONLY",
@@ -50,7 +65,8 @@
     "Is user_until migration from assistant high-water source-safe on legacy snapshots?",
     "Does 8-session fairness remain valid under user cursor?",
     "Independent review of corrupted duplicate events and exact SourceRefs",
-    "Verify latest exact-head 96-entry source view and malformed cache-row focused tests; do not rely on older CI heads."
+    "Verify latest exact-head 96-entry source view and malformed cache-row focused tests; do not rely on older CI heads.",
+    "Verify latest exact-head 40910808056 pending-user barrier and 96-source view; no GREEN until raw closure."
   ],
   "next_command": "Fetch GitHub Actions run 40909329351 and verify raw evidence; correct focused regressions, preserve original RED and negative gates.",
   "production_integrated": false
