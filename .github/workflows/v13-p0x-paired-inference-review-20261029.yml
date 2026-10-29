@@ -1,0 +1,57 @@
+name: V13 P0X preregistered independent paired statistics software review
+on:
+  push:
+    branches: [codex/v13-p0x-paired-inference-review-20261029]
+    paths:
+      - '.github/workflows/v13-p0x-paired-inference-review-20261029.yml'
+      - 'v13/code/scripts/p0x_paired_source_analysis.py'
+      - 'v13/code/tests/test_p0x_paired_source_analysis.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p0x-paired-inference-source-only
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Fixed prereg and deterministic synthetic paired controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-paired-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/docs/proofs/continuation-20261029/P0X_PAIRED_SOURCE_ANALYSIS_PREREG.md)" = 3665aaaf69ac3386cf48858a1d8e08bd5658226d
+            test "$(git hash-object v13/code/scripts/p0x_paired_source_analysis.py)" = c4b51e581962479a0d9d8e2b9028e51dccb5aa86
+            test "$(git hash-object v13/code/tests/test_p0x_paired_source_analysis.py)" = 7869cb769036fe46430d38683b8e184ae183dd75
+            test "$(git hash-object v13/code/scripts/p0x_independent_source_holdout.py)" = 7ec4e877ad5ea3eed1c60102dac3baa15391dd2b
+            test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+            git merge-base --is-ancestor a86405e9ee897db09cb046f269ca59529ccbd604 HEAD
+            echo P0X_PAIRED_SOURCE_PINS_OK
+          } > "$e/PINS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/p0x_paired_source_analysis.py v13/code/tests/test_p0x_paired_source_analysis.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 120s python3 -m unittest -v tests.test_p0x_paired_source_analysis tests.test_p0x_independent_source_holdout) > "$e/TESTS_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a86405e9ee897db09cb046f269ca59529ccbd604 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check a86405e9ee897db09cb046f269ca59529ccbd604 HEAD
+          echo P0X_PAIRED_SYNTHETIC_ONLY_NO_NATIVE_NO_GATE > "$e/STATUS.txt"
+      - name: Retain source-only raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-paired-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-paired-source/
+          if-no-files-found: error
+          retention-days: 30
