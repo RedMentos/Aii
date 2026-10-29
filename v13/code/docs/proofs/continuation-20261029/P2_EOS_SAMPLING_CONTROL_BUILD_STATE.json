@@ -14,10 +14,20 @@
     "tests": 9
   },
   "native": {
-    "run": 40852205487,
-    "head": "d32c867b7d7e2c5d067ca3e38c62f0bbb35dc526",
-    "status": "QUEUED_AT_CHECKPOINT",
-    "artifact": null
+    "run": 40852391277,
+    "head": "9fe4b2dc60a2f58d081687abf934850a96b8aecc",
+    "status": "GREEN_DESCRIPTIVE_EOS_CONTROL",
+    "artifact": 12887567185,
+    "zip_sha256": "a02e3e9026a2b5a2de9c5dfc279c46306b5851ac9fcbc2e5077e95a93a3272af",
+    "manifest_entries": 29,
+    "stage_exits_zero": 12,
+    "gguf_calls": 8,
+    "hf_calls": 0,
+    "original_hf_vs_generated": 3,
+    "control_hf_vs_generated": 7,
+    "original_native_sampler_disagreements": 5,
+    "control_native_sampler_disagreements": 0,
+    "top5_arrays_identical": 8
   },
   "reference": {
     "run": 40851408574,
@@ -45,6 +55,18 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Inspect Actions 40852205487 exact head d32c867b7d7e2c5d067ca3e38c62f0bbb35dc526, download original ZIP and independently audit CRC/SHA256SUMS/12 stage exits/reference ZIP+RESULT hash and 8 control rows; preserve RED or record descriptive GREEN; private Library backup and byte verify; continue substantive P2X/JEF/Context OS/JEPA work.",
-  "remaining_platform_budget": "UNKNOWN"
+  "next_command": "Continue P2X source-disjoint receiver training/validation cohort PR1072, verify source-only tests and freeze exported hashes; then separately preregister AG6-gated default-off C3 LoRA training/evaluation on pinned QAD FP32 without P0X training leakage. Keep one remaining HF-vs-GGUF top-logprob disagreement open and all negative gates.",
+  "remaining_platform_budget": "UNKNOWN",
+  "original_red": {
+    "run": 40852205487,
+    "head": "d32c867b7d7e2c5d067ca3e38c62f0bbb35dc526",
+    "status": "RED_ARTIFACT_AUTH_REDIRECT_NO_MODEL_CALLS",
+    "artifact": 12887727228,
+    "zip_sha256": "5b4be60cecc0e800daa9273ce44c2ec481264ab90d991f0137511a77d801f6f0"
+  },
+  "private_backup": {
+    "location": "/V13/RawEvidence/2026-10-29/P2-firsttoken/",
+    "green_and_red_saved_and_byte_reverified": true
+  },
+  "independent_result": "P2_EOS_SAMPLING_CONTROL_NATIVE_RESULT.md"
 }
