@@ -2808,5 +2808,51 @@
       "private_backup": "/V13-Checkpoints/2026-10-28/Run11-TP27-70-Native-Audit/RUN12B_INITIAL_FOCUSED_RED_40695085585_sha65A37B0E.zip",
       "status": "PRESERVED_RED_NOT_OVERWRITTEN"
     }
+  },
+  "review_verified_exact_cli_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_STANDALONE_F1F5_EXACT",
+    "owner_branch": "codex/v13-verified-cli-exact-20261029-auto10ae",
+    "parent_pr": 1142,
+    "parent_sha": "4824f0c82e012959c5e16dfcc802079b1503f921",
+    "prereg_commit": "55b34123c759c04674fedef77aebe217c2255749",
+    "original_red": {
+      "run": 40947384724,
+      "head": "8ac0721f3ad0066186a1580311ab6ac641b98174",
+      "tests": "31 RUN / 1 FAIL + 3 ERROR",
+      "artifact_sha256": "981d7cb3a0dff82e1fd4fbdb8335c6e9e36edab5f7e1bde6e08592b919bd72dd"
+    },
+    "candidate_red": {
+      "run": 40947474919,
+      "head": "feee80401cbe277e399e048cf2ae2ce190cc5993",
+      "tests": "31 RUN / 1 FAIL optional semantic_keys AttributeError",
+      "artifact_sha256": "3068e85cb9e1c3db2510ea228d7a2acdb71045ec30a4c0fab90f2c45121d7e"
+    },
+    "green": {
+      "run": 40947778042,
+      "head": "d6e07acb6d59faeb1b5e7c051ebd7c057e64aeb2",
+      "tests": "31/31 PASS",
+      "artifact_sha256": "2adc29c2d306322e8d8345d887cac9c78085e357695d8511a4841e2f324e9104",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "source_blob": "2286771a8636302ada63d46959201f6b3f4c6ed0",
+      "test_blob": "23afaf8d9fa473a4508f9b3704df8b63ba8816a0"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-VerifiedExactCLI/",
+    "private_backup_byte_exact": true,
+    "full_suite": "PENDING_OR_IN_PROGRESS_NOT_CLAIMED",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_verified_exact_standalone_cli_20261029 tests.test_verified_exact_budget_20261029 tests.test_ask_verified_budget tests.test_source_consumer_admission",
+    "next_prerequisites": "Audit exact-head full software raw; independent review of native answer contradiction guard; continue canonical roadmap without promoting negative gates.",
+    "report": "docs/proofs/continuation-20261029/VERIFIED_EXACT_CLI_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
