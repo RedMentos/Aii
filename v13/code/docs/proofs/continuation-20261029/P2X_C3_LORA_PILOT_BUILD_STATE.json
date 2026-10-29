@@ -1,0 +1,71 @@
+{
+  "schema": "v13.p2x.c3_lora_pilot_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2X C3 LoRA pilot",
+  "branch": "codex/v13-p2x-lora-c3-pilot-20261029",
+  "parent_pr": 1072,
+  "review_pr": 1073,
+  "parent_sha": "9a5184df4d06d0adc7deed5c3ff183ef8657fc42",
+  "prereg_commit": "7891a5159d797942a73001b70bb1cda9c9e94a1a",
+  "source_only": {
+    "run": 40853521343,
+    "head": "8c4a2f2167472132d20f04122c57de929299b214",
+    "status": "PASS",
+    "tests": 10,
+    "privacy": "CLEAN",
+    "original_red_run": 40853448604,
+    "original_red_reason": "synthetic tokenizer test mock not callable, no model calls"
+  },
+  "native": {
+    "run": 40853624892,
+    "head": "5038c58a21d6fd3df431c0d9e2a1cbbbacdf0415",
+    "status": "QUEUED_AT_CHECKPOINT",
+    "artifact": null,
+    "raw_zip_sha256": null
+  },
+  "dataset": {
+    "fixture_sha256": "cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a",
+    "train_sha256": "af191c087d872a42924f2d2d465a3f26f6c323bf48c5c0682b30094b9d666cf1",
+    "selected": 8,
+    "labels": {
+      "A": 2,
+      "B": 2,
+      "NONE": 2,
+      "UNKNOWN": 2
+    },
+    "p0x_used_for_training": false
+  },
+  "model": {
+    "source": "LiquidAI/LFM2.5-350M-GGUF/qad",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "model_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+    "trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc"
+  },
+  "cfg": {
+    "rank": 2,
+    "alpha": 4,
+    "lr": 0.0003,
+    "max_steps": 1,
+    "seed": 2026102922,
+    "jepa_weight": 0,
+    "targets": [
+      "v_proj",
+      "out_proj"
+    ],
+    "max_tokens": 512
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "production_activation": false,
+    "redmi_measured": false,
+    "v13_complete": false
+  },
+  "next_command": "Check Actions 40853624892 exact head 5038c58a21d6fd3df431c0d9e2a1cbbbacdf0415. Download original raw artifact, audit all stage exits/model hashes/8 selected records/LoRA adapter hashes/license/base immutability, preserve any RED, private backup byte-verify, then continue P2X disjoint validation and frozen P0X holdout evaluation. No AG6 activation.",
+  "remaining_platform_budget": "UNKNOWN"
+}
