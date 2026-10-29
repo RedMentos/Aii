@@ -1,0 +1,41 @@
+{
+  "schema": "v13.p2.qad_hf_master_parity_prereg_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 parity prereg",
+  "branch": "codex/v13-p2-qad-hf-parity-prereg-20261029",
+  "parent_pr": 1066,
+  "parent_head_sha": "a585b0185cfd2995ccb5a963bec66da9be3538d8",
+  "prereg_commit": "068df8db0101f2483e5605373aa123b1444768d8",
+  "prereg_blob": "0de7f1dbb51253c635b5737a1958a93b6bd5083a",
+  "p0x_600_native_run": 40841374171,
+  "p0x_600_raw_sha256": "41712a41467349069fd8af0b418624636bc3ab122604c611f95d3745ba188332",
+  "p0x_600_score_sha256": "c03e2ad145b17a5aa34f0552db6944516b1310ca14861d83e05ba98bdc5767f7",
+  "p0x_600_exact_source_improvement": 2,
+  "p0x_600_required_improvement": 15,
+  "p0x_600_step2": "UTILITY_FAIL",
+  "existing_lora_trainer_blob": "49a752879ae5d19391963742a0f042e740edb2cc",
+  "roadmap_blob": "7e377bfa0e4bd06c8fbf13bab28e7a5b40f693eb",
+  "c3_qad_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "hf_instruction_master_revision": "NOT_YET_REGISTERED_NO_DOWNLOAD_AUTHORIZED_BY_THIS_CHECKPOINT",
+  "status": "PREREG_ONLY_NO_MODEL_CALLS_NO_TRAINING",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "exact_next_command": "Resolve official LiquidAI/LFM2.5-350M HF instruction master commit/config/tokenizer/safetensors hashes and license; commit immutable source-pin addendum BEFORE downloading or testing, then audit existing LoraTrainer._load_gguf_weights tensor coverage in source-only CI",
+  "open_questions": [
+    "QAD GGUF to HF master full tensor mapping unproven",
+    "Native logits/tokenizer parity unproven",
+    "No new disjoint P2 training corpus or LP3 causal state utility"
+  ],
+  "private_backup": "Use permitted private /V13/RawEvidence for raw model proof; no rejected Drive",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
