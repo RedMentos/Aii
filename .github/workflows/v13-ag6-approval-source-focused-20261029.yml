@@ -1,0 +1,60 @@
+name: V13 AG6 approval source recheck focused software review
+on:
+  push:
+    branches: [codex/v13-ag6-approval-source-recheck-20261029-auto10l]
+    paths: ['.github/workflows/v13-ag6-approval-source-focused-20261029.yml', 'v13/code/v13/agi/weights.py', 'v13/code/tests/test_lora_trainer.py', 'v13/code/tests/test_neuromod.py', 'v13/code/tests/test_learning_invariants.py']
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Test real Store stage-to-fit revocation and inherited AG6 controls
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/ag6-approval-source-focused"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_approval_source_revocation_20261029.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest -v tests.test_ag6_approval_source_revocation_20261029 tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029 tests.test_weight_approval_atomic tests.test_agi_trainers tests.test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught tests.test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path tests.test_learning_invariants.DataMixBeforeTraining.test_weight_consolidation_refuses_self_only_and_trims_mixed) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_approval_source_revocation_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c2347b437c07faae7273577742219eaefdbea107 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c2347b437c07faae7273577742219eaefdbea107 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw focused outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-ag6-approval-source-focused-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag6-approval-source-focused/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce scoped checks
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/ag6-approval-source-focused"
+          for n in VENV DEPS FOCUSED COMPILE PRIVACY DIFF; do
+            printf '%s %s\n' "$n" "$(cat "$e/${n}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              tail -100 "$e/${n}_RAW.log"
+              exit 1
+            fi
+          done
+          echo AG6_APPROVAL_SOURCE_FOCUSED_SOFTWARE_ONLY

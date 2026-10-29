@@ -1,0 +1,88 @@
+name: V13 AG6 approval source recheck full software review
+on:
+  push:
+    branches: [codex/v13-ag6-approval-source-recheck-20261029-auto10l]
+    paths: ['.github/workflows/v13-ag6-approval-source-full-20261029.yml', 'v13/code/v13/agi/weights.py', 'v13/code/tests/test_ag6_approval_source_revocation_20261029.py', 'v13/code/tests/test_lora_trainer.py', 'v13/code/tests/test_neuromod.py', 'v13/code/tests/test_learning_invariants.py']
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Exact-head dependency and full regression with raw logs
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/ag6-approval-source-full"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_approval_source_revocation_20261029.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            rc=$?
+            if [ "$rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/DEPS_RAW.log" 2>&1
+              rc=$?
+            fi
+            echo "$rc" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else
+            echo SKIPPED > "$e/DEPS_EXIT.txt"
+            echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_ag6_approval_source_revocation_20261029 tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029 tests.test_ag6_reject_request_atomic_20261029 tests.test_weight_approval_atomic tests.test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught tests.test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path tests.test_learning_invariants.DataMixBeforeTraining.test_weight_consolidation_refuses_self_only_and_trims_mixed) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+            "$py" -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_approval_source_revocation_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+          else
+            for n in FOCUSED FULL COMPILE; do echo SKIPPED > "$e/${n}_EXIT.txt"; echo SKIPPED > "$e/${n}_RAW.log"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c2347b437c07faae7273577742219eaefdbea107 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c2347b437c07faae7273577742219eaefdbea107 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw candidate outcomes including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-ag6-approval-source-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag6-approval-source-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software checks without relabeling inherited failures
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/ag6-approval-source-full"
+          for n in VENV DEPS PIP_CHECK FOCUSED FULL COMPILE PRIVACY DIFF; do
+            printf '%s %s\n' "$n" "$(cat "$e/${n}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              tail -80 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo AG6_APPROVAL_SOURCE_SOFTWARE_ONLY_NO_AUTHORITY
