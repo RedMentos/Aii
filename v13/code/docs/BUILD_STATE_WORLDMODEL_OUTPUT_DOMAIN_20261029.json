@@ -1,0 +1,104 @@
+{
+  "schema": "v13.review_build_state.worldmodel_output_domain.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1135 child of PR1134; no production merge",
+  "owner": {
+    "branch": "codex/v13-worldmodel-output-domain-20261029-auto10u",
+    "pr": 1135,
+    "parent_pr": 1134,
+    "parent_commit": "7160d03393510e47db8f2587ade0d4c9b810b101",
+    "owned_paths": [
+      "v13/code/v13/world_model.py (counterfactual domain only)",
+      "v13/code/tests/test_world_model_output_domain_20261029.py",
+      ".github/workflows/v13-worldmodel-output-domain-20261029.yml",
+      ".github/workflows/v13-run10-full-review-20261029.yml",
+      "v13/code/docs/WORLDMODEL_OUTPUT_DOMAIN_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_WORLDMODEL_OUTPUT_DOMAIN_20261029.json"
+    ]
+  },
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "prereg": {
+    "commit": "a48f5797956cc084f75fc1184b05b87213573c79",
+    "path": "v13/code/docs/WORLDMODEL_OUTPUT_DOMAIN_PREREG_20261029.md"
+  },
+  "original_red": {
+    "run": 40938381792,
+    "head": "da215f2e72e0d302682978c00d2fc4f1a38c41c4",
+    "tests": "17 total, 4 FAIL, 13 PASS; negative duration, negative output chars, success below zero and above one",
+    "artifact": 12926211052,
+    "zip_sha256": "001b50d01aafd7bb3e091bdc3b4244942f808e376a55b46f2bb4c3ca58bbfd49",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-Domain/RAW_RED_40938381792_sha001B50.zip",
+    "private_readback": "byte-exact"
+  },
+  "intermediate_red": {
+    "run": 40938525702,
+    "head": "1896545a4f88d3d7e267ab193aa4d9d92ca8d088",
+    "tests": "17 total, 1 inherited test ERROR: OOD uncertainty lost coverage diagnostic; 16 PASS",
+    "artifact": 12925553308,
+    "zip_sha256": "b8cd0f0896214c5b36f8adc2b709cffbb672a484a101d68b993d4d1ed4d48b7a",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-Domain/RAW_INTERMEDIATE_RED_40938525702_shaB8CD0F.zip",
+    "private_readback": "byte-exact"
+  },
+  "focused_green": {
+    "run": 40938663739,
+    "head": "e9cb14139989eb3d9a99a5cd9b7a33a459185409",
+    "tests": "17/17 PASS including original World-Model suite",
+    "source_blob": "20aa8e9a2d1f2388edf91891602960be5da69a45",
+    "artifact": 12926361413,
+    "zip_sha256": "bb98a7a4117afefeb86a055c95c7c3270b649c66b0eab1ee4addc24b04af64ea",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldModel-Domain/RAW_GREEN_40938663739_shaBB98A7.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "full_review": {
+    "run": 40938719557,
+    "source_head": "0094f990f788a1916fe3cb3644d8fbacc3a1170a",
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "expected_inherited": "Run34/Run37 historical frozen utility.py mismatch, no rewrite of pins",
+    "next_action": "Fetch raw artifact after run completes, verify CRC/SHA256SUMS, back up privately, record actual tests and any new failures; never guess"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Software synthetic FITTED-state and real Store regression tests, no native model or Redmi evidence",
+    "No training weights, fit algorithm, cohorts, thresholds, model pins, production authority or age changes",
+    "World-Model counterfactual confidence is not calibrated real-world causal utility",
+    "Full review result pending; prior AG6 parent 3244 tests 2 inherited errors archived privately"
+  ],
+  "open_questions": [
+    "Review full-suite exact source for any new failures; preserve original frozen Run34/Run37 failures",
+    "Implement substantive canonical Body/C3/STEP2 utility next, not endless isolated output guards",
+    "Observed private World-JEPA heldout needs an actual closed operator Store and separate registered cohort"
+  ],
+  "next_commands": [
+    "Verify this BUILD_STATE remote blob and PR1135 draft head",
+    "Close full review raw from Actions 40938719557 when completed, back up private byte-exact",
+    "Continue independent canonical functional package with no gate promotion; original pins unchanged"
+  ],
+  "checkpoint_reason": "Second verified RED->GREEN package with original and intermediate failures retained; full review in progress; platform budget UNKNOWN"
+}
