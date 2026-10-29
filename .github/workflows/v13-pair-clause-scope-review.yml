@@ -1,0 +1,122 @@
+name: V13 independent pair-clause scope review SOFTWARE-only
+on:
+  push:
+    branches: [codex/v13-pair-clause-ambiguity-review-20261029]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-pair-scope-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Frozen raw, typed pair-scope review tests, full suite and privacy
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-pair-scope"
+          mkdir -p "$e/base" "$e/experiment"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            got="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$got" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$got" = "$1" ]
+          }
+          check 16b30834410854b3621490b71be83637bb5bd73c v13/code/docs/proofs/continuation-20261029/PAIR_CLAUSE_SCOPE_REVIEW_PREREG.md || source_ok=1
+          check 7f13f5d01f4df2919e27a0ac24ce89f347a2d328 v13/code/scripts/context_option_reference_candidate.py || source_ok=1
+          check 073425903636593401d12210cbf9003257f76f29 v13/code/tests/test_context_option_reference_candidate.py || source_ok=1
+          check c92a3e36fe76588a7e6b78dc2fa57e84c651d74c v13/code/scripts/context_option_pair_scope_candidate.py || source_ok=1
+          check 78f4a157682870f65ff5d5a03f08d7a765ce41ab v13/code/tests/test_context_option_pair_scope_candidate.py || source_ok=1
+          check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_ok=1
+          check c9b9c1694cba016ccf0059da7f78585694a31327 v13/code/scripts/step2_option_quote_consistency_candidate.py || source_ok=1
+          check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          gh run download 40820205991 -n run138-crosschain-40820205991-61b498ae2f7499740acdf32ebb6935b64469b474 -D "$e/base" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          python3 - "$e/base" > "$e/ORIGINAL_VERIFY_RAW.log" 2>&1 <<'PY'
+          from pathlib import Path
+          import hashlib,sys
+          p=Path(sys.argv[1])
+          assert (p/'HEAD.txt').read_text().strip()=='61b498ae2f7499740acdf32ebb6935b64469b474'
+          for folder,n in ((p,51),(p/'original',29)):
+              lines=(folder/'SHA256SUMS.txt').read_text().splitlines()
+              assert len(lines)==n,(len(lines),n)
+              for line in lines:
+                  h,rel=line.split('  ',1)
+                  assert hashlib.sha256((folder/rel.removeprefix('./')).read_bytes()).hexdigest()==h,rel
+          assert hashlib.sha256((p/'original/STEP2_RAW.json').read_bytes()).hexdigest()=='c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f'
+          assert hashlib.sha256((p/'original/TOOL_RAW.json').read_bytes()).hexdigest()=='e90c23fd909dc0e138312f6802a05a3377f451f6675a496c1d4b1f1b19847ac0'
+          print('RUN138_51_AND_ORIGINAL_29_SHA256SUMS_OK')
+          PY
+          echo "$?" > "$e/ORIGINAL_VERIFY_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/context_option_reference_candidate.py v13/code/tests/test_context_option_reference_candidate.py v13/code/scripts/context_option_pair_scope_candidate.py v13/code/tests/test_context_option_pair_scope_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_ok" = 0 ] && [ "$(cat "$e/ORIGINAL_VERIFY_EXIT.txt")" = 0 ]; then
+            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/base/original/STEP2_RAW.json" V13_RUN116_TOOL_REPORT="$e/base/original/TOOL_RAW.json" timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_context_option_pair_scope_candidate tests.test_context_option_reference_candidate) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s python3 -m scripts.context_option_reference_candidate --source-report "$e/base/original/STEP2_RAW.json" --out "$e/experiment/report.json") > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+          else
+            for n in FOCUSED PROBE; do echo SKIPPED_PREREQ_RED > "$e/$n""_RAW.log"; echo SKIPPED_RED > "$e/$n""_EXIT.txt"; done
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-pair-scope-venv"
+          py="$RUNNER_TEMP/v13-pair-scope-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          install_ok="$?"
+          if [ "$install_ok" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            install_ok="$?"
+          fi
+          if [ "$install_ok" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            install_ok="$?"
+          fi
+          echo "$install_ok" > "$e/INSTALL_EXIT.txt"
+          if [ "$install_ok" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_DEPENDENCY_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 130f8424f4cc993e4287c7cfb94c4e58e551ac07 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 130f8424f4cc993e4287c7cfb94c4e58e551ac07 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve complete software raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pair-scope-review-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-pair-scope/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact-head no-native acceptance
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-pair-scope"
+          for n in SOURCE DOWNLOAD ORIGINAL_VERIFY COMPILE FOCUSED PROBE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/$n""_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw preserved; no gate promotion"
+              tail -40 "$e/$n""_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo PAIR_CLAUSE_SCOPE_SOFTWARE_CONTROL_NO_GATE
