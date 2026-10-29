@@ -12,7 +12,7 @@ The ObjectiveAdapter field set is the one from GPT Run38 (codex/body-jepa-micro-
 this module is its first use on real body weights. Torch is imported lazily; nothing here is active in the runtime.
 """
 from dataclasses import dataclass
-import json,math,time
+import json,math,time,operator
 
 MODES=('ema','base','shuffled')
 
@@ -58,8 +58,16 @@ def derangement(n,rng):
     # Preserve the existing RNG sequence for successful draws. An adversarial
     # or broken RNG must never hang a shuffled-target training arm indefinitely.
     for _ in range(64):  # BOOT fail-closed attempt cap, not a tuned optimum
-        p=[int(v) for v in rng.permutation(n)]
-        if len(p)!=n or sorted(p)!=expected:
+        raw=rng.permutation(n)
+        try:
+            if len(raw)!=n:raise ValueError('invalid RNG permutation')
+            p=[]
+            for v in raw:
+                if isinstance(v,bool):raise ValueError('invalid RNG permutation')
+                p.append(operator.index(v))  # NumPy integers OK; floats/strings never truncated
+        except (TypeError,ValueError,OverflowError):
+            raise ValueError('invalid RNG permutation') from None
+        if sorted(p)!=expected:
             raise ValueError('invalid RNG permutation')
         if all(p[i]!=i for i in range(n)):return p
     raise ValueError('derangement attempts exhausted')
