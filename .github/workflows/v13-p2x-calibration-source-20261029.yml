@@ -6,6 +6,8 @@ on:
       - '.github/workflows/v13-p2x-calibration-source-20261029.yml'
       - 'v13/code/scripts/p2x_calibration_instruction.py'
       - 'v13/code/tests/test_p2x_calibration_instruction.py'
+      - 'v13/code/scripts/p2x_calibration_native_executor.py'
+      - 'v13/code/tests/test_p2x_calibration_native_executor.py'
       - 'v13/code/docs/proofs/continuation-20261029/P2X_CALIBRATION_*'
 permissions:
   contents: read
@@ -43,9 +45,9 @@ jobs:
             if [ "$want" != "$got" ]; then source_red=1; fi
           done < "$e/EXPECTED_BLOBS.txt"
           echo "$source_red" > "$e/SOURCE_EXIT.txt"
-          python3 -m py_compile v13/code/scripts/p2x_calibration_instruction.py v13/code/tests/test_p2x_calibration_instruction.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/p2x_calibration_instruction.py v13/code/tests/test_p2x_calibration_instruction.py v13/code/scripts/p2x_calibration_native_executor.py v13/code/tests/test_p2x_calibration_native_executor.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
-          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_calibration_instruction) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_calibration_instruction tests.test_p2x_calibration_native_executor) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base f8e05e6245fa8c221a89babacc41cd7b76668c23 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
