@@ -57,6 +57,8 @@ def verify_source(report, counts, model_hashes):
         and report.get("distinct_bodies") is True
         and report.get("fixture_sha256") == FIXTURE_SHA256
         and len(report.get("fixtures", [])) == 6
+        and pre._canonical_sha(report["fixtures"]) == FIXTURE_SHA256
+        and tuple(f["id"] for f in report["fixtures"]) == pre.EXPECTED_PROJECTS
         and len(report.get("preparations", [])) == 1
         and report["preparations"][0].get("fixture") == FIXTURE_ID
         and report["preparations"][0].get("status") == "RECORDED"
@@ -95,6 +97,7 @@ def private_tool_replay():
                 and report.get("canonical_gate_pass") is False
                 and report.get("fixture_sha256") == FIXTURE_SHA256
                 and len(report.get("rows", [])) == len(VARIANTS)
+                and pre._canonical_sha(report.get("fixtures", [])) == FIXTURE_SHA256
                 and {r.get("fixture") for r in report["rows"]} == {FIXTURE_ID}
                 and {r.get("variant") for r in report["rows"]} == set(VARIANTS)
                 and report.get("wire_arm", {}).get("arm") == "w1",
@@ -117,6 +120,8 @@ def verify_tool(source, tool):
             and tool.get("phone_measured") is False
             and tool.get("installed_artifacts_unchanged") is True
             and len(tool.get("rows", [])) == len(VARIANTS)
+            and {(r.get("fixture"), r.get("variant")) for r in tool["rows"]}
+                == {(FIXTURE_ID, v) for v in VARIANTS}
             and tool.get("paired_tool", {}).get("complete") is False,
             "RUN113_TOOL_STRUCTURAL_FAIL")
     by_variant = {r["variant"]: r for r in source["rows"]}
