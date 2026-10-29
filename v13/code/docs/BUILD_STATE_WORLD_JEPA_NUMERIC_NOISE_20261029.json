@@ -91,14 +91,36 @@
     "No native weights or Redmi; inherited frozen-source preflight RED preserved"
   ],
   "open_questions": [
-    "Full child source-pinned software suite not yet run",
+    "Full 3237-case suite remains RED only on inherited Run34/Run37 frozen-source preflight: native_source_or_catalog_changed; do not rewrite registered source/catalog pins to force GREEN",
     "Numerical roundoff floor 64*eps*max(1,abs(z)) is conservative; require cross-review for very-small genuine signals",
     "World-JEPA runtime consumer/native causal utility, retention and rollback unproven"
   ],
   "next_commands": [
+    "Preserve full Actions 40928180620 inherited Run34/Run37 RED; pursue independent native source recovery without changing frozen cohort pins",
     "Run source-pinned full child software regression, preserve raw ZIP and all exits; inherited Run34/Run37 failures remain RED",
     "Independent review of diagnostic threshold with deterministic tiny genuine signal and exact constant controls",
     "Continue functional World-JEPA consumer/telemetry and native causal gain proof without authority promotion"
   ],
-  "checkpoint_reason": "Intermediate verified RED->GREEN software package; continue independent roadmap work; runtime budget UNKNOWN"
+  "checkpoint_reason": "Intermediate verified RED->GREEN software package; continue independent roadmap work; runtime budget UNKNOWN",
+  "child_full_red": {
+    "run": 40928180620,
+    "head": "e15f46a5212dceeeac4361a68ba982bcb00419a4",
+    "tests": "3237 total, 2 inherited Run34/Run37 frozen-source preflight ERROR, 11 skipped, no new collapse failure",
+    "artifact": 12921438598,
+    "zip_sha256": "49e5ccc2800df138b23b99e733f226559916311279305e92d7ce16efd3686773",
+    "crc": true,
+    "inner_sha256": "17/17",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-Numeric-Noise/CHILD_FULL_RED_40928180620_sha49E5CC.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "PIP_CHECK": 0,
+      "FULL": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "full_green_claimed": false
+  }
 }
