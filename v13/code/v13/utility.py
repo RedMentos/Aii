@@ -50,7 +50,7 @@ def _row_utility(row):
     if 'utility' not in score:
         return 0.
     value=score['utility']
-    if type(value) not in (int,float) or not math.isfinite(value) or not 0. <= value <= 1.:
+    if type(value) not in (int,float) or not 0. <= value <= 1. or not math.isfinite(value):
         raise ValueError('utility must be a finite number in [0,1], not bool')
     return float(value)
 
