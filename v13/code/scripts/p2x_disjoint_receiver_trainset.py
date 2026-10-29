@@ -179,7 +179,7 @@ def validate(rows):
         group = [r for r in rows if r["family"] == family]
         need(len(group) == 6 and all(sum(r["oracle_action"] == a for r in group) == 2
                                      for a in ("A", "B", "NONE")), "P2X_FAMILY_BALANCE_RED")
-    from scripts import p0x_independent_source_holdout as p0x
+    import p0x_independent_source_holdout as p0x
     old = p0x.fixtures()
     old_ids = {r["id"] for r in old}
     old_sources = {s for r in old for s in (r["current"], r["b1_source"], r["b2_source"])}
