@@ -81,9 +81,12 @@ class PilotTests(unittest.TestCase):
                 pilot.read_frozen(p)
 
     def test_token_length_truncation_red(self):
-        fake = types.SimpleNamespace(
-            apply_chat_template=lambda *args, **kwargs: [1] * 512,
-            __call__=lambda *args, **kwargs: {"input_ids": [2, 3]})
+        class FakeTokenizer:
+            def apply_chat_template(self, *args, **kwargs):
+                return [1] * 512
+            def __call__(self, *args, **kwargs):
+                return {"input_ids": [2, 3]}
+        fake = FakeTokenizer()
         with patch.dict(sys.modules, {"transformers": types.SimpleNamespace(
                 AutoTokenizer=types.SimpleNamespace(from_pretrained=lambda *args, **kwargs: fake))}):
             with self.assertRaisesRegex(ValueError, "truncation"):
