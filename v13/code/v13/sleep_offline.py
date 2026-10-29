@@ -120,17 +120,24 @@ def digest(store,checkpoint=None):
             latest=max(row['id'] for u in settled
                        for row in groups[u['event_id']]
                        if row['role']=='assistant')
+            # One grouped pass over this session, not a correlated per-user
+            # scan (which is quadratic without a messages(event_id) index).
+            # The CTE includes assistants beyond 'latest' so an already
+            # settled crossed user is never mistaken for a pending one.
             crossed=store.one(
-                "SELECT u.id FROM messages u "
+                "WITH event_counts AS ("
+                "SELECT event_id,COUNT(*) AS n,"
+                "SUM(CASE WHEN role='assistant' AND status IN "
+                "('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') "
+                "THEN 1 ELSE 0 END) AS terminal,"
+                "MIN(CASE WHEN role='assistant' THEN id END) AS assistant_id "
+                "FROM messages WHERE session_id=? AND role IN ('user','assistant') "
+                "GROUP BY event_id) "
+                "SELECT u.id FROM messages u JOIN event_counts e ON e.event_id=u.event_id "
                 "WHERE u.session_id=? AND u.role='user' AND u.id>? AND u.id<=? "
-                "AND (u.status!='FINAL' OR "
-                "(SELECT COUNT(*) FROM messages p WHERE p.session_id=u.session_id "
-                "AND p.event_id=u.event_id AND p.role IN ('user','assistant'))!=2 OR "
-                "NOT EXISTS (SELECT 1 FROM messages a WHERE a.session_id=u.session_id "
-                "AND a.event_id=u.event_id AND a.role='assistant' AND a.id>u.id "
-                "AND a.status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'))) "
-                "ORDER BY u.id LIMIT 1",
-                (sess,users[-1]['id'],latest))
+                "AND (u.status!='FINAL' OR e.n!=2 OR e.terminal!=1 "
+                "OR e.assistant_id<=u.id) ORDER BY u.id LIMIT 1",
+                (sess,sess,users[-1]['id'],latest))
             if crossed:continue
         if not settled:continue
         # Source/rule revocation, exact source bytes, event session, answer
