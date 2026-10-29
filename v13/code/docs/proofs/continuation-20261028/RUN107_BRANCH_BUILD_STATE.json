@@ -1,0 +1,29 @@
+{
+  "schema": "v13.run107.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run107-source-cli-native-integrated-20261029",
+  "base_head": "e56753ffe8fc3b78e341659a19e7af02302d9bb8",
+  "base_pr": 1009,
+  "prereg_first_commit": "9dde65f9e638d326197d9b1971e437d5960e3a08",
+  "parent_conditions": {
+    "Run105": "PENDING Actions 40799108504; must verify original raw GREEN",
+    "Run106": "PENDING Actions 40799129300; must verify original raw GREEN",
+    "Run103": "GREEN Actions 40796986858 original ZIP c4916be506d14b5f8d2d1d60870d4e95271322fdc4e0bf69af27ee8858edea2c",
+    "Run97": "GREEN Actions 40793807136"
+  },
+  "status": "PREREG_ONLY; DO_NOT_IMPORT_OR_EXECUTE_UNTIL_RUN105_AND_RUN106_RAW_GREEN",
+  "native_calls_observed": 0,
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Fetch Run105 and Run106 original ZIPs when complete; independently SHA256/CRC/inner/HEAD/source/test/privacy audit and private byte-identical backup. Only if both GREEN import exact source blobs from Run106/Run103/Run97; run focused/full/native integration CI; no main merge.",
+  "remaining_execution_budget": "UNKNOWN"
+}
