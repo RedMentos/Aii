@@ -15,7 +15,14 @@ def main(argv=None):
     doctor=sub.add_parser('doctor');doctor.add_argument('--full',action='store_true');probe_parser=sub.add_parser('probe');probe_parser.add_argument('mode',nargs='?',choices=['native','jef-modes','step12','body-state','sustained'],default='native');probe_parser.add_argument('--cycles',type=int,default=12);sub.add_parser('selftest')
     dl=sub.add_parser('download');dl.add_argument('model',nargs='?',default='all')
     restorep=sub.add_parser('restore');restorep.add_argument('path');restorep.add_argument('--confirm',action='store_true')
-    a=p.parse_args(argv);home=home_path(a.home);initialize(home)
+    sourced=sub.add_parser('source-answer',help='offline verified F1/F5 budget preflight; --native explicitly runs pinned C3')
+    sourced.add_argument('text');sourced.add_argument('--native',action='store_true')
+    sourced.add_argument('--session');sourced.add_argument('--timeout',type=float,default=120.)
+    sourced.add_argument('--max-tokens',type=int,default=64)
+    a=p.parse_args(argv);home=home_path(a.home)
+    if a.command=='source-answer' and not (home/'config/settings.json').is_file():
+        p.error('source-answer requires an existing V13 home; no new memory or session is created')
+    initialize(home)
     if a.command=='selftest':
         suite=unittest.defaultTestLoader.discover(str(APP/'tests'),pattern='test_*.py');result=unittest.TextTestRunner(verbosity=2).run(suite)
         return 0 if result.testsRun>0 and result.wasSuccessful() else 1
@@ -24,6 +31,20 @@ def main(argv=None):
     if a.command=='restore':
         if not a.confirm:p.error('Restore ersetzt den aktiven Speicher: --confirm erforderlich (automatisches Sicherheitsbackup).')
         print('Wiederhergestellt. Sicherheitsbackup: '+str(restore(home,Path(a.path).expanduser())));return 0
+    if a.command=='source-answer':
+        from scripts.ask_verified_budget import BudgetContext,query as source_query
+        context=None
+        try:
+            context=BudgetContext(home)  # Store lock refuses a concurrently running chat
+            result=source_query(context,a.text,a.session,native=a.native,
+                                timeout_s=a.timeout,max_tokens=a.max_tokens)
+            print(json.dumps(result,ensure_ascii=False,sort_keys=True))
+            return 0 if result.get('status') in {'READY','FINAL','CLARIFY','NOT_APPLICABLE'} else 2
+        except Exception as exc:
+            print(json.dumps({'status':'ERROR','reason':type(exc).__name__},sort_keys=True))
+            return 2
+        finally:
+            if context is not None:context.close()
     from .runtime import Runtime
     r=Runtime(home,lambda x:print('[V13] '+safe_text(x),file=sys.stderr,flush=True))
     try:
