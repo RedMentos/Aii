@@ -1,0 +1,66 @@
+name: V13 HB1b C3 format native executor software-only preflight
+on:
+  push:
+    branches: [codex/v13-hb1b-c3-format-native-review-20261029]
+    paths:
+      - '.github/workflows/v13-hb1b-c3-format-native-source-20261029.yml'
+      - 'v13/code/scripts/hb1b_c3_format_native_executor.py'
+      - 'v13/code/scripts/hb1b_c3_format_native_verifier.py'
+      - 'v13/code/tests/test_hb1b_c3_format_native_mock.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hb1b-native-source-only
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Source pins, mock native, independent verifier and privacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb1b-native-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          check() { [ "$(git hash-object "$2")" = "$1" ]; }
+          {
+            check 16f328584fb9678a034ee8fa9234460f4fbcfc4e v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_SOURCE_PREREG.md
+            check e43c748f4822434365e11de6e0132bf36ff694b3 v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_PREREG_ADDENDUM.md
+            check 81c6c549ce485c2bd5ce36f9324861760a26968d v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_NATIVE_BUILD_STATE.json
+            check cb5ac831b9675dc3b71c8757fc0742881db7e5d2 v13/code/scripts/hb1b_c3_format_followup.py
+            check 9791ad1a7b10692d4e75810856bd93fc4dcb44ea v13/code/scripts/hb1b_c3_format_native_executor.py
+            check 535fbd5b1b6c16d88e6d4f5edc979e86117e0788 v13/code/scripts/hb1b_c3_format_native_verifier.py
+            check 4ff90b7b0282507dcf634b73f38b574849237fe6 v13/code/tests/test_hb1b_c3_format_native_mock.py
+            check efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+            check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+            git merge-base --is-ancestor 136be8933f99962bcae6d1d41fb46a66f465f541 HEAD
+            echo HB1B_NATIVE_SOURCE_PINS_OK
+          } > "$e/SOURCE_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/v13-hb1b-native-source-venv"
+          py="$RUNNER_TEMP/v13-hb1b-native-source-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/hb1b_c3_format_native_executor.py v13/code/scripts/hb1b_c3_format_native_verifier.py v13/code/tests/test_hb1b_c3_format_native_mock.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_hb1b_c3_format_followup tests.test_hb1b_c3_format_native_mock tests.test_hb1a_independent_native_verifier) > "$e/FOCUSED_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 136be8933f99962bcae6d1d41fb46a66f465f541 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check 136be8933f99962bcae6d1d41fb46a66f465f541 HEAD
+          echo HB1B_NATIVE_EXECUTOR_SOFTWARE_ONLY_NO_GATE > "$e/STATUS.txt"
+      - name: Preserve raw source-only and RED attempts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb1b-native-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb1b-native-source/
+          if-no-files-found: error
+          retention-days: 30
