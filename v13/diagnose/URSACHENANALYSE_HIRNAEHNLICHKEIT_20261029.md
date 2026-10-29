@@ -10,7 +10,7 @@ Was Beleg ist und was meine Deutung ist, steht jeweils dabei.
 
 ## 0. Kurzfassung
 
-Ein Hirn ist ein System, in dem die Teile **zusammen gewachsen** sind, ständig **Vorhersagen** austauschen und **am Ergebnis** lernen.
+Ein Hirn ist (als grobe Analogie, nicht als Messlatte) ein System, in dem die Teile **zusammen gewachsen** sind, ständig **Vorhersagen** austauschen und **am Ergebnis** lernen.
 V13 ist heute eine **Steuerung um eingefrorene, fremde Modelle**. Sie sprechen nur über kurzen Text miteinander,
 und kein Lernsignal sagt ihnen, ob das Zusammenspiel genutzt hat.
 
@@ -53,13 +53,13 @@ Der Blueprint verlangt es so: Körper "eingefroren oder fast eingefroren", erst 
 Die Verbindung läuft deshalb über Text (Zitate, Angebote) oder über eine kleine nachträglich gelernte Brücke (B3).
 Die B3-Brücke besteht seit Versuch 7 ihre erste Stufe, ist aber nicht besser als eine einzelne Zahl (SCALAR). Latent bringt also bisher keinen Mehrwert gegenüber "sag dem anderen eine Zahl".
 
-**Vergleich mit dem Hirn.** Zwischen den Hirnhälften, Arealen und Sinnen gibt es keine Übersetzer. Sie sind in der Entwicklung gemeinsam gewachsen (Ko-Adaption, kritische Phasen).
-Der Sender lernt, das zu senden, was der Empfänger braucht, und der Empfänger lernt, das zu lesen. V13 trainiert nur einen der beiden Enden, und das nur klein.
+**Vergleich mit dem Hirn (Analogie).** Hirnareale haben keine eingebauten Übersetzer wie ein fertiges Fremdmodell, auch wenn Verbindungen zwischen Arealen Darstellungen durchaus umformen und die neuronalen Codes nicht gleich sein müssen. Areale entwickeln sich gemeinsam (Ko-Adaption, kritische Phasen).
+Sender und Empfänger passen sich dabei gegenseitig an. V13 trainiert nur einen der beiden Enden, und das nur klein.
 
-**Meine Deutung (nicht bewiesen).** Eingefrorene Teile mit nachträglicher Brücke erreichen höchstens das, was der Empfänger schon ohne Brücke versteht.
+**Meine Deutung (nicht bewiesen).** Die Messungen trennen "fehlendes gemeinsames Training" nicht von zu wenig Spielraum in den Aufgaben, schlechter Darstellung der Eingaben, verrauschter Bewertung oder zu kleiner Modellgröße. Fehlendes gemeinsames Training ist eine plausible Erklärung unter mehreren. Eingefrorene Teile mit nachträglicher Brücke erreichen höchstens das, was der Empfänger schon ohne Brücke versteht.
 Dass LATENT gleich SCALAR ist, kann auch heißen: Die Aufgabe braucht nur eine Zahl. Dann prüft der Test den Wert des Latents gar nicht (siehe G).
 
-**Prüfbare Änderung.** P1 und P6 unten.
+**Prüfbare Änderung.** P1 unten, P6 nur als Kontrolle.
 
 ### B. Der Empfänger (C3, 350M) verwertet die Funde nicht
 
@@ -80,7 +80,7 @@ Ein Werkzeug vor C3 (feste Regeln) entscheidet fehlerfrei (strict: 0 falsch). Da
 - Z6k: Modulatoren pro Beispiel schlagen das Pfad-Tor (+.16 bis +.21), erreichen aber nur .52 bis .56 gegen eine saubere Decke von .82. Der Lerner schwankt sogar mit sauberen Labels zwischen .63 und .98 (Z6j).
 - Die Wake-Entscheidung hat keine nützlichen Lernmerkmale: 6 von 7 Signalen waren konstant, der Kopf weckt nie (R4).
 
-**Vergleich mit dem Hirn.** Dopamin und verwandte Systeme melden "besser oder schlechter als erwartet" am Ergebnis, und genau dieses Signal steuert, was sich festigt.
+**Vergleich mit dem Hirn (Analogie).** Dopamin und verwandte Systeme tragen nach gängiger Vorstellung ein Signal "besser oder schlechter als erwartet", das mit Festigung zusammenhängt. Das ist eine vereinfachte Hypothese, kein genaues Gesetz und kein direktes "richtig/falsch"-Signal.
 V13 hat die Modulator-Bauteile, aber das Signal kommt aus Ersatzgrößen oder aus wenigen Menschenurteilen (KL-Serie: bei 8 Korrekturen kein sicheres Tor).
 
 **Prüfbare Änderung.** P1 (Ergebnis als Trainingsziel) und P7.
@@ -93,7 +93,7 @@ V13 hat die Modulator-Bauteile, aber das Signal kommt aus Ersatzgrößen oder au
 - BP7: Schlaf-Prüfliste, Rückbildung und Wochen-Simulation laufen (PASS), aber nur als Software mit Kunstdaten. Ein Training mit echten Gewichten über Wochen gibt es nicht.
 - BP8: Die Plastizitäts-Steuerung (Age) hat kein unabhängiges Rauschsignal, zwei Versuche FAIL.
 
-**Vergleich mit dem Hirn.** Das Hirn nutzt zwei Lernsysteme: Der Hippocampus lernt sofort, der Neokortex langsam, und im Schlaf wird abwechselnd (verschränkt) wiederholt, damit Neues Altes nicht überschreibt.
+**Vergleich mit dem Hirn (Analogie, Theorie komplementärer Lernsysteme).** Das Hirn nutzt nach dieser Theorie zwei Lernsysteme: Der Hippocampus lernt sofort, der Neokortex langsam, und im Schlaf wird abwechselnd (verschränkt) wiederholt, damit Neues Altes nicht überschreibt.
 V13 hat den schnellen Teil (Fast Memory, funktioniert), aber der langsame Teil mit verschränkter Wiederholung ist nur als Simulation da.
 
 **Prüfbare Änderung.** P5.
@@ -110,7 +110,7 @@ V13 hat den schnellen Teil (Fast Memory, funktioniert), aber der langsame Teil m
 
 **Beleg.** Alle Körper arbeiten vorwärts: Prompt hinein, Text heraus. JEPA-Vorhersage gibt es nur als externen kleinen Prädiktor (Action-JEPA, NumPy, Z12c auf Slots). BJ1 (JEPA-Term auf dem B1-Adapter): NO_SIGNAL. Die Aufgabe war schon mit normalem Training bei 1.00, also nicht aussagekräftig. Das World-JEPA ist nicht in den Antwortpfad verdrahtet.
 
-**Vergleich mit dem Hirn.** Im Kortex laufen mindestens so viele Verbindungen von oben nach unten (Vorhersagen) wie von unten nach oben. Nur der Vorhersagefehler wird weitergegeben. Das spart Energie und liefert das Lernsignal gleich mit.
+**Vergleich mit dem Hirn (Analogie).** Im Kortex gibt es viele Rückwärtsverbindungen, und "Predictive Coding" beschreibt, dass vor allem Vorhersagefehler weitergegeben werden. Wie stark und wie genau das gilt, ist umstritten. Hier dient es nur als Denkrichtung.
 
 **Meine Deutung.** Das ist wohl nachrangig. Erst muss die Kopplung (A bis C) funktionieren, sonst bleibt die Rückkopplung auch ohne Nutzen. BJ1 zeigt: Ohne eine Aufgabe, die das Problem wirklich hat, ist kein Signal messbar.
 
@@ -152,14 +152,15 @@ Alle Zahlen sind Vorschläge und gehören vor dem Lauf vorregistriert.
 
 **P1. Brücke und Empfänger zusammen am Ergebnis trainieren.**
 - Idee: B1/B2 eingefroren, aber ein kleiner Quer-Aufmerksamkeits-Adapter beziehungsweise Prefix (der L2-Prefix, nach B3-L1-Replikation wieder freigegeben) **und** die C3-LoRA gemeinsam mit dem Verlust auf der Antwort. Nicht mit einem Ersatzziel (LP2).
-- Kontrollen: Prefix aus vertauschten Angeboten, nur SCALAR als Nachricht, nur C3-LoRA ohne Brücke.
+- Kontrollen: Prefix aus vertauschten Angeboten, nur SCALAR als Nachricht, nur C3-LoRA ohne Brücke, jeweils auf frischen vorregistrierten Gruppen. Das Training bleibt getrennt vom Age-0-Produktivpfad (RECORD_ONLY). Dass B3 L1 auf zwei Aufgaben besteht, gibt L2 noch keine Freigabe; die Negativ-Tore bleiben bestehen.
 - Erfolg: gemeinsam > C3-LoRA allein und > SCALAR, jeweils über Rauschband, auf frischen Saaten.
 - Vorprüfung: P0-Aufgaben, die eine Zahl nicht tragen kann (sonst gleich B3-Problem), und P2 als Basislinie.
 
-**P6. Weniger Fremdmodelle: ein Körper, zwei Zeitskalen, gemeinsam trainiert.**
+**P6. Kontrolle: ein Körper, zwei Zeitskalen, gemeinsam trainiert (kein Ersatz der Zwei-Körper-Architektur).**
+- Verbindlich bleibt die Nutzerentscheidung vom 2026-10-09 (`NUTZER_ENTSCHEIDUNGEN.md`, Punkt 1): B1 und B2 sollen echt verschiedene Bodies sein. P6 ist deshalb nur eine Vergleichs- und Speicherkontrolle für STEP2. Eine Übernahme als Standard bräuchte eine neue ausdrückliche Entscheidung des Nutzers und gemessene Gleichwertigkeit.
 - Beleg dafür: Z2l (ein Körper mit zwei Zuständen reicht), und Hirnhälften teilen denselben Grundstoff.
 - Idee: ein Backbone, zwei Adapter ("fein" und "grob"), gemeinsam mit Callosum-Verlust trainiert. Spart auch Speicher (ein Modell statt zwei, wichtig bei der 8-GB-Frage).
-- Erfolg: STEP2 (Komplementarität) besteht und Arbeitsspeicher sinkt.
+- Erfolg (nur als Kontrolle gelesen): zeigt, ob zwei echte Bodies gegenüber einem Körper mit zwei Zuständen etwas leisten; Arbeitsspeicher wird mitgemessen.
 - Vorprüfung: P0 und BP2a (Leck-Fix) als Trainingsbasis.
 
 **P5. Zwei Lernsysteme wirklich machen.**
@@ -197,6 +198,9 @@ Ein Handy-Paket erst, wenn P0 bis P2 geklärt sind. Ein Gewinn auf dem Cloud-Rec
 - Die Neurowissenschaft hier ist Allgemeinwissen (Ko-Adaption, Vorhersage-Verarbeitung, komplementäre Lernsysteme, Aufmerksamkeit als Wettbewerb, Dopamin als Vorhersagefehler), keine neue Literaturrecherche. Aktuelle Quellen stehen in `research/FORSCHUNG_2026-10-27.md`.
 
 ## 6. Abstimmung mit laufender Arbeit
+
+- Gegenprüfung durch den Nutzer-Account (Kommentar auf PR #1045) ist eingearbeitet: P6 nur Kontrolle, Hirn-Aussagen als Analogien, Ursache als Hypothese, Negativ-Tore und Isolation von Age 0 ausdrücklich.
+- Parallel ist Software-Vorarbeit zu P0 in PR #1047 und #1048 (150 Aufgaben mit getrennten Quellen, ohne Modell). Sie ergänzt die Modellmessung WP-HB0 in diesem PR (lange Texte, echte Modelle) und ersetzt sie nicht; beide sind kein Blueprint-Umbau.
 
 - Der Langtest im Thread "Offene Zielprüfungen grün machen" (Branch 8pfwut) wird nicht berührt. Diese Analyse ändert keinen Code.
 - BP2 (Leck-Fix, Branch tfzd6v), BP7/BP8/BP10 (a667fm) und Z6i2 (h02m13) sind Grundlage für P5 und P7, nicht zu doppeln.
