@@ -103,6 +103,8 @@ def compare(hf, gguf_tensors, mapper):
 def audit(master, gguf_path):
     master, gguf_path = Path(master), Path(gguf_path)
     weight = master / 'model.safetensors'
+    if master.is_symlink() or not master.is_dir() or weight.is_symlink() or gguf_path.is_symlink():
+        raise ValueError('symlinked or missing model source')
     if sha256(weight) != MASTER_SHA or sha256(gguf_path) != GGUF_SHA:
         raise ValueError('immutable master/GGUF SHA256 mismatch')
     import gguf  # optional, lazy; only after source hashes pass
@@ -137,7 +139,13 @@ def main(argv=None):
                   'error': type(exc).__name__ + ': ' + str(exc)}
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+    if out.is_symlink():
+        raise ValueError('refusing symlinked audit receipt')
+    with out.open('x', encoding='utf-8') as stream:
+        stream.write(json.dumps(result, sort_keys=True, indent=2) + '\n')
+        stream.flush()
+        import os
+        os.fsync(stream.fileno())
     return 0 if result['status'] == 'STRUCTURE_MATCH_PARITY_UNPROVEN' else 2
 
 
