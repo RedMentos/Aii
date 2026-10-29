@@ -80,6 +80,8 @@ def action(text):
 def score(records, rows, expected_sha256):
     plan_rows = plan(rows, expected_sha256)
     expected = [(p["id"], p["arm"]) for p in plan_rows]
+    input_hashes = {(p["id"], p["arm"]): sha(canonical(p["messages"]))
+                    for p in plan_rows}
     require(type(records) is list and len(records) == 24, "HB0C_RAW_COUNT_RED")
     require([(r.get("id"), r.get("arm")) for r in records] == expected,
             "HB0C_RAW_IDENTITY_RED")
@@ -94,8 +96,10 @@ def score(records, rows, expected_sha256):
                 and record.get("native_calls") == 1
                 and record.get("seed") == SEED
                 and record.get("model_sha256") == MODEL_SHA
-                and type(record.get("input_sha256")) is str
-                and len(record["input_sha256"]) == 64,
+                and record.get("input_sha256")
+                    == input_hashes[(record["id"], record["arm"])]
+                and type(record.get("metrics")) is dict
+                and record["metrics"].get("status") == "FINAL",
                 "HB0C_NATIVE_ROW_INVALID")
         duration = record.get("duration_s")
         require(type(duration) in (int, float) and math.isfinite(duration)
