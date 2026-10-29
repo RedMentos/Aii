@@ -1,0 +1,42 @@
+{
+  "package": "SKILLLIVE_JEF_ROUTE_CORRECTION_20261030",
+  "parent_pr": 1176,
+  "review_pr": 1177,
+  "base_sha": "7c940cd385fbb9cfc5c6eb5e961c0ad3209bea3d",
+  "prereg_commit": "34eb11c91dcf394d5559e6d9ccce224ede563075",
+  "source_commit": "91fbb91887554bb1910333283d31c05208fa04c3",
+  "source_blob": "124f3c418b98694d090efd799541198db6e57e2d",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "red": {
+    "run": 40975193028,
+    "head": "1c18d6a2aecf285fa59899438b7ea5d230e7d6ac",
+    "tests": 26,
+    "failures": 2,
+    "artifact": 12941707780,
+    "zip_sha256": "2be4336982a3b25719bca0bc84ca96205b9c2be6cc7894dde424423bc03c6ed7",
+    "inner_hashes_ok": 18,
+    "crc_ok": true
+  },
+  "green": {
+    "run": 40975229568,
+    "head": "91fbb91887554bb1910333283d31c05208fa04c3",
+    "tests": 26,
+    "passed": 26,
+    "artifact": 12941529278,
+    "zip_sha256": "0227a76a1fde31bf53fef4a2e9a50545c1a128f97a3b525861cf9645a80ecc69",
+    "inner_hashes_ok": 18,
+    "crc_ok": true,
+    "privacy": "CLEAN",
+    "stage_exits_all_zero": true
+  },
+  "full_suite_parent": {
+    "run": 40973462353,
+    "tests": 3360,
+    "errors": 2,
+    "skipped": 11,
+    "status": "RED_FROZEN_RUN34_RUN37"
+  },
+  "claim_limit": "software-only, no native/Redmi or model/age/JEPA/whole-system promotion",
+  "next": "JEF self-outcome FINAL retry idempotency with preserved correction labels",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_skilllive_jef_route_correction_20261030 tests.test_skilllive tests.test_jefoutcome_session_20261030 tests.test_jefoutcome tests.test_jef_operator_session_20261030 tests.test_contextos_operator_session_20261029"
+}
