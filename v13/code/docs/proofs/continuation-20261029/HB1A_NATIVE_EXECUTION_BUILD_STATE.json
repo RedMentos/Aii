@@ -1,12 +1,12 @@
 {
   "schema": "v13.hb1a.native_execution_build_state.v1",
-  "recorded_utc": "2026-10-29T07:18:00Z",
+  "recorded_utc": "2026-10-29T07:31:00Z",
   "owner": "GPT-6 automation, isolated review branch",
   "branch": "codex/v13-hb1a-native-execution-20261029",
   "base_branch": "codex/v13-hb1-two-body-native-pilot-20261029",
-  "base_head_sha": "73e6343e3b7e5370cddf912d5023080a29ea9e4a",
+  "base_head_sha": "fcb1f6054f1b4e96538b4bebe5d07e49fc5c4646",
   "parent_pr": 1052,
-  "status": "SOURCE_ONLY_PREREGISTERED_WAITING_EXACT_HEAD_SOFTWARE_CI",
+  "status": "SOURCE_AND_INDEPENDENT_SOFTWARE_PREFLIGHT_GREEN_READY_FOR_PINNED_NATIVE",
   "native_execution_started": false,
   "source_pins": {
     "prereg_blob": "9d6652e99ac9aa0de7898f15eeb8a54d598c49e6",
@@ -15,7 +15,10 @@
     "fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
     "body_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
     "gist_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
-    "c3_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+    "c3_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "executor_blob": "56306009d69554419bd9c024173ba9e56f32f56c",
+    "independent_verifier_blob": "b79abbfa0bcd16e115acd89383885e5d228660d7",
+    "independent_tests_blob": "41d17e2a5b3c49ad86497214d3c3fbfbd52bfaa0"
   },
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -28,12 +31,43 @@
     "redmi_measured": false
   },
   "prerequisites": [
-    "PR1052 exact-head software CI GREEN and artifact SHA256SUMS verified",
-    "No active heavy native owner",
-    "Linux x86_64 cgroup>=3GB and disk>=4GB",
-    "Pinned B1/B2/C3 and runner installed and deep SHA verified"
+    "Exact-head PR1052 software CI GREEN (run 40834623613)",
+    "Independent executor/verifier software CI GREEN (run 40835612868)",
+    "Linux x86_64 isolated runner cgroup>=3GB and disk>=4GB",
+    "Pinned B1/B2/C3 and native binary deep SHA verify before inference"
   ],
-  "exact_next_command": "After prerequisites, implement isolated hb1a_native_executor.py, focused tests and source-pinned native Actions workflow; retain all RED; never promote Canon gates.",
+  "exact_next_command": "In isolated GitHub Actions after source/parent admission: python -m scripts.hb1a_native_executor --home \"$HOME_DIR\" --install; python -m scripts.hb1a_native_executor --home \"$HOME_DIR\" --out \"$FRESH_EVIDENCE\" --fixture-sha256 73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b; python -m scripts.hb1a_independent_native_verifier --evidence-dir \"$FRESH_EVIDENCE\"",
   "remaining_platform_budget": "UNKNOWN",
-  "production_merge": false
+  "production_merge": false,
+  "verified_software_runs": [
+    {
+      "run_id": 40834623613,
+      "head_sha": "fcb1f6054f1b4e96538b4bebe5d07e49fc5c4646",
+      "artifact_id": 12880053598,
+      "artifact_zip_sha256": "b2b4d9b923364edee0ff8006ace75ff85e056db89cbcf449b09cf39cfbf0eb7a",
+      "focused_tests": 22,
+      "full_tests": 2894,
+      "skipped": 11,
+      "privacy": "CLEAN"
+    },
+    {
+      "run_id": 40835612868,
+      "head_sha": "8d44d8ed8cac4062a72df236e46c3c209580f93e",
+      "artifact_id": 12881000068,
+      "artifact_zip_sha256": "09e4be83d66e39a8e63a89b91d176e81660ed9ada3e3087523c9fe332b6efbe9",
+      "focused_tests": 16,
+      "privacy": "CLEAN"
+    }
+  ],
+  "open_questions": [
+    "Will pinned Qwen3.5 0.8B run under b10964 on Linux?",
+    "Will B1/B2 generated offers preserve project identity?",
+    "Will C3 JSON schema produce valid action commitments?",
+    "No Redmi thermal/RSS/energy evidence",
+    "No independent 150-row native holdout"
+  ],
+  "private_backups": [
+    "/V13/RawEvidence/HB1A_40834623613_2894tests_software_GREEN.zip",
+    "/V13/RawEvidence/HB1A_40835612868_independent_verifier_16tests_GREEN.zip"
+  ]
 }
