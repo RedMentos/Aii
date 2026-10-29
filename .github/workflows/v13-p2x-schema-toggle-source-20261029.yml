@@ -32,7 +32,12 @@ jobs:
           py="$RUNNER_TEMP/venv/bin/python"
           if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
             "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
-            echo "$?" > "$e/DEPS_EXIT.txt"
+            deps_rc=$?
+            if [ "$deps_rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+              deps_rc=$?
+            fi
+            echo "$deps_rc" > "$e/DEPS_EXIT.txt"
           else echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
           if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
             (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_p2x_schema_toggle_train16_20261029 tests.test_p2x_json_train16_eval_20261029) > "$e/FOCUSED_RAW.log" 2>&1
