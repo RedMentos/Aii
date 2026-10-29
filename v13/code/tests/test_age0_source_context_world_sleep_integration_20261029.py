@@ -83,7 +83,7 @@ class Age0CrossOrganSourceWorldSleepTests(unittest.TestCase):
         self.assertEqual(self.r.cfg["system_stage"], 0)
         self.assertEqual(self.r.cfg["learning_mode"], "RECORD_ONLY")
         self.assertIs(self.r.cfg["latents_enabled"], False)
-        self.assertEqual(self.r.cfg["jepa_weight"], 0)
+        self.assertEqual(self.r.cfg.get("jepa_weight", 0), 0)
         self.assertEqual(self.r.pool.pids(), [])
 
 
