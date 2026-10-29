@@ -159,7 +159,7 @@ jobs:
             model_path="$(tail -1 "$e/MODEL_PATH_RAW.log")"
             (cd v13/code && PYTHONPATH=. timeout --signal=TERM --kill-after=20s 2700s \
               "$py" -m scripts.p2x_candidate360_standalone \
-              --server-binary "$home/bin/llama-server" \
+              --server-binary "$(readlink -f "$home/bin/llama-server")" \
               --runtime-archive "$work/runner.tar.gz" \
               --model "$model_path" \
               --adapter "$work/adapter/adapter/adapter.gguf" \
