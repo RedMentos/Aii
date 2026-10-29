@@ -19,11 +19,15 @@ CHANGE = re.compile(
     r"\b(?:new|updated|revised|superseded|changed)\s+(?:project\s+)?rules?\b"
     r"|\brules?\s+(?:were\s+|have\s+been\s+|has\s+been\s+)?"
     r"(?:changed|updated|revised|superseded)\b"
-    r"|\bbudget\s+(?:changed|updated|revised)\b",
+    r"|\b(?:budget|deadline|local-only\s+requirement|rules?|policy)\s+"
+    r"(?:(?:has|have)\s+(?:been\s+)?|(?:is|are|was|were)\s+)?"
+    r"(?:now\s+|changed\b|updated\b|revised\b|superseded\b)"
+    r"|\bnew\s+policy\b",
     re.IGNORECASE,
 )
 NO_CHANGE = re.compile(
-    r"\bno\s+(?:project\s+)?rules?\s+(?:have\s+|has\s+)?changed\b",
+    r"\bno\s+(?:project\s+)?rules?\s+"
+    r"(?:(?:have|has)\s+(?:been\s+)?)?changed\b",
     re.IGNORECASE,
 )
 

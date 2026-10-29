@@ -109,6 +109,34 @@ class Step2RuleRevisionAmbiguity(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DUPLICATE_SOURCE_ID"):
             guarded.build(current, history, "Atlas")
 
+    def test_natural_language_rule_updates_refused(self):
+        _, history = self.records(corpus.fixtures()[0])
+        for text in (
+            "Project Atlas. The budget has changed to 50 euros.",
+            "Project Atlas. The deadline is now 2 days.",
+            "Project Atlas. Local-only requirement is now false.",
+            "Project Atlas. The rule has changed.",
+            "Project Atlas. A new policy applies.",
+        ):
+            with self.subTest(text=text):
+                current = pointer.make_record(text, "now")
+                with self.assertRaisesRegex(
+                        ValueError, "CURRENT_MESSAGE_RULE_UPDATE_UNRESOLVED"):
+                    guarded.build(current, history, "Atlas")
+
+    def test_explicit_negative_rule_change_is_not_positive(self):
+        current, history = self.records(corpus.fixtures()[0])
+        history.append(pointer.make_record(
+            "Project Atlas. No project rule has been changed.", "unchanged"))
+        self.assertTrue(guarded.build(current, history, "Atlas")["candidate_covered"])
+
+    def test_later_natural_language_rule_change_refused(self):
+        current, history = self.records(corpus.fixtures()[0])
+        history.append(pointer.make_record(
+            "Meeting for Project Atlas: the deadline is now 2 days.", "later"))
+        with self.assertRaisesRegex(ValueError, "UNRESOLVED_LATER_PROJECT_RULE_SOURCE"):
+            guarded.build(current, history, "Atlas")
+
     def test_bad_project_and_cap_refused(self):
         current, history = self.records(corpus.fixtures()[0])
         for project in ("", "Atlas/Zenith", None):

@@ -1,0 +1,7 @@
+# STEP2 rule-change phrase extension — prereg 2026-10-29
+
+Base exact `5035e31eaac7d6d559942d7c72c953999670a5f7`, child of draft review #1023; its initial software CI Actions 40810192764 remains independently in progress and must not be cancelled or silently replaced. No production mutation, model calls or cohort change.
+
+Observed static false-negative in isolated candidate CHANGE regex: it does not detect natural-language same-project updates without numeric rule triplet, such as `The budget has changed to 50 euros`, `The deadline is now 2 days`, `Local-only requirement is now false`, `The rule has changed`, `A new policy applies`. A later source or current turn using such language can leave an obsolete historical rule exposed. Explicit `No project rule has been changed` is a negative assertion and should not be treated as a positive change. Supplier `revision 3` is not itself a project-rule revision.
+
+Plan: extend only isolated `scripts/step2_rule_revision_ambiguity_candidate.py` regex and its tests; retain frozen Run109 SHA256 `b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1` and Run117/118 original blobs. Focused tests must refuse five natural-language changes, accept explicit no-change and supplier-sheet revision, and preserve all six frozen fixtures. New software-only CI on child branch, closed raw, full suite and privacy scan. No native run, no gate promotion: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 FAIL, Body-JEPA unavailable, LP3 FAIL, jepa_weight=0, Redmi unmeasured, whole system incomplete.

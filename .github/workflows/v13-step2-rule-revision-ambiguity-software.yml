@@ -1,12 +1,12 @@
 name: V13 STEP2 revision ambiguity software-only review
 on:
   push:
-    branches: [assistant/v13-step2-rule-ambiguity-guard-20261029]
+    branches: [assistant/v13-step2-rule-change-phrases-20261029]
 permissions:
   contents: read
 concurrency:
-  group: v13-revision-guard
-  cancel-in-progress: true
+  group: v13-revision-guard-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   software:
     runs-on: ubuntu-24.04
@@ -35,8 +35,9 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check 612eaf4a12bfb347a3d8a97ebde664a0c183f92e v13/code/docs/proofs/continuation-20261029/STEP2_RULE_REVISION_AMBIGUITY_PREREG.md || source_ok=1
-          check 2e08c253d4acab60621ea0664462faa898e4f98a v13/code/scripts/step2_rule_revision_ambiguity_candidate.py || source_ok=1
-          check e531db03df867891e237863d062ac42d9817ff94 v13/code/tests/test_step2_rule_revision_ambiguity_candidate.py || source_ok=1
+          check 11f9dd6f6ccaac3f49737623f8278e066946b562 v13/code/docs/proofs/continuation-20261029/STEP2_RULE_CHANGE_PHRASES_PREREG.md || source_ok=1
+          check 4065d3453eefcbd35c2de502d1c3c219bf20c63a v13/code/scripts/step2_rule_revision_ambiguity_candidate.py || source_ok=1
+          check baaec075ed0fa6cc0d2e0783e26586137e4beafb v13/code/tests/test_step2_rule_revision_ambiguity_candidate.py || source_ok=1
           check 6068849a19f53ad1bdbd200739b95731f8a1fb20 v13/code/scripts/run118_step2_rule_pointer_choice_candidate.py || source_ok=1
           check 959cc898e2fd6386d999443b914a5b7c6701386d v13/code/scripts/run117_step2_rule_source_candidate.py || source_ok=1
           check 6cc3d52524e8c9122710eae2a908d024f0f44f24 v13/code/scripts/run109_step2_fresh_fixtures.py || source_ok=1
