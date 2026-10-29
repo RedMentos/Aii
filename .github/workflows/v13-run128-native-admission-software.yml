@@ -37,7 +37,8 @@ jobs:
           assert '40812183190' in text and '7f25f3b0d0d8b7167817420240d0475f57f0a538' in text
           assert '-m scripts.step2_exact_rule_transport_verify --source-report' in text
           assert 'STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json' in text
-          assert not Path('v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json').exists()
+          assert 'NATIVE_OWNER_RELEASE_MISSING_NO_NATIVE' in text
+          assert not Path('v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_NATIVE_OWNER_RELEASE.json').exists()
           for name, expected in {
               'v13/code/scripts/step2_exact_rule_transport_native.py':'9b43ce0721213775ef7067169ec4bd6f0b1e0f0e',
               'v13/code/scripts/step2_exact_rule_transport_verify.py':'4c233aaade91e55d00fa152c934de0e03e26d58f',
