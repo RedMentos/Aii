@@ -1,0 +1,95 @@
+name: V13 STEP2 revision ambiguity software-only review
+on:
+  push:
+    branches: [assistant/v13-step2-rule-ambiguity-guard-20261029]
+permissions:
+  contents: read
+concurrency:
+  group: v13-revision-guard
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run pinned source checks, focused and full tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-revision-guard"
+          mkdir -p "$e/experiment"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            observed="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$observed" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$observed" = "$1" ]
+          }
+          check 612eaf4a12bfb347a3d8a97ebde664a0c183f92e v13/code/docs/proofs/continuation-20261029/STEP2_RULE_REVISION_AMBIGUITY_PREREG.md || source_ok=1
+          check 2e08c253d4acab60621ea0664462faa898e4f98a v13/code/scripts/step2_rule_revision_ambiguity_candidate.py || source_ok=1
+          check e531db03df867891e237863d062ac42d9817ff94 v13/code/tests/test_step2_rule_revision_ambiguity_candidate.py || source_ok=1
+          check 6068849a19f53ad1bdbd200739b95731f8a1fb20 v13/code/scripts/run118_step2_rule_pointer_choice_candidate.py || source_ok=1
+          check 959cc898e2fd6386d999443b914a5b7c6701386d v13/code/scripts/run117_step2_rule_source_candidate.py || source_ok=1
+          check 6cc3d52524e8c9122710eae2a908d024f0f44f24 v13/code/scripts/run109_step2_fresh_fixtures.py || source_ok=1
+          check 1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-revision-venv"
+          py="$RUNNER_TEMP/v13-revision-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          deps_rc="$?"
+          if [ "$deps_rc" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            deps_rc="$?"
+          fi
+          if [ "$deps_rc" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            deps_rc="$?"
+          fi
+          echo "$deps_rc" > "$e/INSTALL_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/step2_rule_revision_ambiguity_candidate.py v13/code/tests/test_step2_rule_revision_ambiguity_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_ok" = 0 ] && [ "$deps_rc" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m scripts.step2_rule_revision_ambiguity_candidate --out "$e/experiment/report.json") > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_step2_rule_revision_ambiguity_candidate tests.test_run118_step2_rule_pointer_choice_candidate tests.test_run117_step2_rule_source_candidate) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            for n in PROBE FOCUSED FULL; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3531b6f20e8d0acffe246605bdfdf00ebfc62ecf --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3531b6f20e8d0acffe246605bdfdf00ebfc62ecf HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: step2-revision-guard-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-revision-guard/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software acceptance without gate promotion
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-revision-guard"
+          for n in SOURCE INSTALL COMPILE PROBE FOCUSED FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw retained; STEP2 remains UTILITY_FAIL"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo STEP2_REVISION_GUARD_SOFTWARE_ONLY_NO_NATIVE_NO_GATE_PROMOTION
