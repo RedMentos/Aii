@@ -52,6 +52,18 @@ class TrainingBoundaryReview(unittest.TestCase):
         with self.assertRaises(ValueError):
             w.train(bid)
 
+    def test_corrected_restaging_keeps_original_failed_attempt(self):
+        trainer = SpyTrainer(float("nan"))
+        w, bid = self.stage(trainer)
+        w.clock = lambda: 1000.0
+        self.assertEqual(w.train(bid)["status"], "ANCHOR_INVALID")
+        trainer.cfg["anchor_weight"] = 8.
+        new_stage = w.stage(require_replay_pass=False)
+        self.assertEqual(new_stage["status"], "STAGED")
+        self.assertFalse(new_stage.get("deduplicated", False))
+        self.assertNotEqual(new_stage["batch_id"], bid)
+        self.assertEqual(w.batch(bid)["status"], "ANCHOR_INVALID")
+
     def test_nonfinite_stability_vetoes_fit(self):
         trainer = SpyTrainer(8.)
         w, bid = self.stage(trainer)
