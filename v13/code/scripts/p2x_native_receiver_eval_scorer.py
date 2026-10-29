@@ -119,7 +119,69 @@ def score(records, plan, answers, adapter_sha256=None):
             "whole_system_complete": False}
 
 
+
+def _validate_score_snapshot(snapshot):
+    """Rebuild every published aggregate from fixed-order detail rows."""
+    if (type(snapshot) is not dict
+            or snapshot.get("schema") != SCHEMA + ".score.v1"
+            or snapshot.get("status") != "P2X_NATIVE_RECEIVER_DIAGNOSTIC_NO_GATE"
+            or snapshot.get("fixture_sha256") != FIXTURE_SHA
+            or snapshot.get("model_sha256") != MODEL_SHA
+            or snapshot.get("runtime_sha256") != RUNTIME_SHA
+            or type(snapshot.get("rows")) is not int or snapshot["rows"] != 360
+            or type(snapshot.get("native_calls")) is not int
+            or snapshot["native_calls"] != 360
+            or snapshot.get("step2_status") != "UTILITY_FAIL"
+            or snapshot.get("b3_status") != "FAIL"
+            or snapshot.get("body_jepa_status") != "UNAVAILABLE"
+            or type(snapshot.get("jepa_weight")) is not int
+            or snapshot["jepa_weight"] != 0
+            or snapshot.get("redmi_measured") is not False
+            or snapshot.get("whole_system_complete") is not False):
+        raise ValueError("P2X paired snapshot metadata/gate integrity RED")
+    details = snapshot.get("details")
+    if type(details) is not list or len(details) != 360:
+        raise ValueError("P2X paired snapshot detail coverage RED")
+    counts = {arm: {kind: 0 for kind in
+              ("exact", "wrong_committed", "unknown", "unparseable")} for arm in ARMS}
+    seen_ids = set()
+    for start in range(0, 360, len(ARMS)):
+        group = details[start:start + len(ARMS)]
+        if any(type(d) is not dict or set(d) !=
+               {"id_sha256", "arm", "parsed", "expected", "kind"} for d in group):
+            raise ValueError("P2X paired snapshot detail schema RED")
+        group_id = group[0]["id_sha256"]
+        if (type(group_id) is not str
+                or not re.fullmatch(r"[0-9a-f]{64}", group_id)
+                or group_id in seen_ids
+                or any(d["id_sha256"] != group_id for d in group)):
+            raise ValueError("P2X paired snapshot duplicate/invalid ID RED")
+        seen_ids.add(group_id)
+        for arm, detail in zip(ARMS, group):
+            parsed, expected = detail["parsed"], detail["expected"]
+            if (detail["arm"] != arm
+                    or type(parsed) is not str
+                    or parsed not in ACTIONS + ("UNPARSEABLE",)
+                    or type(expected) is not str
+                    or (expected not in ("A", "B", "NONE")
+                        if arm == "both_exact" else expected != "UNKNOWN")):
+                raise ValueError("P2X paired snapshot arm/action/oracle RED")
+            kind = ("exact" if parsed == expected else
+                    "wrong_committed" if parsed in ("A", "B", "NONE") else
+                    "unknown" if parsed == "UNKNOWN" else "unparseable")
+            if detail["kind"] != kind:
+                raise ValueError("P2X paired snapshot forged row kind RED")
+            counts[arm][kind] += 1
+    if len(seen_ids) != 72 or snapshot.get("per_arm") != counts:
+        raise ValueError("P2X paired snapshot forged aggregate/coverage RED")
+    return [(d["id_sha256"], d["arm"], d["expected"]) for d in details]
+
+
 def compare(base, candidate):
+    base_pairs = _validate_score_snapshot(base)
+    candidate_pairs = _validate_score_snapshot(candidate)
+    if base_pairs != candidate_pairs:
+        raise ValueError("P2X paired snapshot cross-arm/oracle identity RED")
     if (base.get("schema") != SCHEMA + ".score.v1"
             or candidate.get("schema") != SCHEMA + ".score.v1"
             or base.get("adapter_sha256") is not None
