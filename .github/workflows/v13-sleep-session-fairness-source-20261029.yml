@@ -2,7 +2,7 @@ name: V13 Sleep S7 bounded pending-session fairness software review
 on:
   push:
     branches: [codex/v13-sleep-session-fairness-review-20261029-auto10]
-    paths: ['.github/workflows/v13-sleep-session-fairness-source-20261029.yml', 'v13/code/v13/sleep_offline.py', 'v13/code/tests/test_sleep_digest_session_fairness_20261029.py', 'v13/code/docs/SLEEP_SESSION_FAIRNESS_HANDOFF_20261029.md']
+    paths: ['.github/workflows/v13-sleep-session-fairness-source-20261029.yml', 'v13/code/v13/sleep_offline.py', 'v13/code/tests/test_sleep_digest_session_fairness_20261029.py', 'v13/code/tests/test_contextos_sleep_source_integration_20261029.py', 'v13/code/docs/SLEEP_SESSION_FAIRNESS_HANDOFF_20261029.md']
 permissions:
   contents: read
 jobs:
