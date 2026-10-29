@@ -42,6 +42,9 @@ jobs:
           check f98caa025a8ba28e8ecdb5d3f29660937913ffed v13/code/docs/proofs/continuation-20261029/STEP2_RULE_TRANSPORT_NATIVE_EXECUTOR_PREREG.md || source_ok=1
           check 69bbcb22f448c258bf147dfabf181a9909c90207 v13/code/docs/proofs/continuation-20261029/STEP2_RULE_TRANSPORT_BRANCH_BUILD_STATE.json || source_ok=1
           check 9b43ce0721213775ef7067169ec4bd6f0b1e0f0e v13/code/scripts/step2_exact_rule_transport_native.py || source_ok=1
+          check 4c233aaade91e55d00fa152c934de0e03e26d58f v13/code/scripts/step2_exact_rule_transport_verify.py || source_ok=1
+          check c6ae8c8f7447cede21caebddda81de1f5beae034 v13/code/tests/test_step2_exact_rule_transport_verify.py || source_ok=1
+          check b2c5679ffff632f4c1ebdd0bc673b474ea092530 v13/code/docs/proofs/continuation-20261029/STEP2_NATIVE_VERIFY_ADMISSION_PREREG.md || source_ok=1
           check a4d28951e80ca034d752f4d030d4196ec4f70904 v13/code/tests/test_step2_exact_rule_transport_native.py || source_ok=1
           check b7044736bb0ffec0b577c7720169257f3970f9e8 v13/code/docs/proofs/continuation-20261029/STEP2_EXACT_RULE_NATIVE_REPLAY_PREREG.md || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
@@ -57,6 +60,29 @@ jobs:
           check 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json || source_ok=1
           check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md || source_ok=1
           echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          # Native dispatch must not bypass exact-head software GREEN + separate raw audit.
+          # No receipt is committed yet: missing audit always blocks inference.
+          gh run view 40812183190 --json headSha,status,conclusion > "$e/ADMISSION_RUN_RAW.json" 2> "$e/ADMISSION_QUERY_RAW.log"
+          echo "$?" > "$e/ADMISSION_QUERY_EXIT.txt"
+          python3 - "$e/ADMISSION_RUN_RAW.json" "v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json" > "$e/ADMISSION_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          from pathlib import Path
+          run=Path(sys.argv[1]);proof=Path(sys.argv[2])
+          assert run.is_file(), 'EXACT_HEAD_CI_QUERY_MISSING'
+          r=json.loads(run.read_text())
+          assert r.get('headSha')=='7f25f3b0d0d8b7167817420240d0475f57f0a538', 'EXACT_HEAD_MISMATCH'
+          assert r.get('status')=='completed' and r.get('conclusion')=='success', 'EXACT_HEAD_CI_NOT_GREEN'
+          assert proof.is_file(), 'INDEPENDENT_ORIGINAL_RAW_AUDIT_MISSING_NO_NATIVE'
+          a=json.loads(proof.read_text())
+          assert a.get('schema')=='v13.step2.run126.exact_head_software_independent_audit.v1'
+          assert a.get('run_id')==40812183190 and a.get('head_sha')==r['headSha']
+          assert a.get('status')=='GREEN_INDEPENDENT_RAW'
+          assert a.get('crc_clean') is True and a.get('all_inner_sha256_verified') is True
+          assert a.get('software_only') is True and a.get('native_calls')==0
+          assert isinstance(a.get('original_zip_sha256'),str) and len(a['original_zip_sha256'])==64
+          print('EXACT_HEAD_CI_AND_SEPARATE_ORIGINAL_RAW_AUDIT_ADMITTED')
+          PY
+          echo "$?" > "$e/ADMISSION_EXIT.txt"
           python3 - "$e" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
           import json,platform,shutil,sys
           from pathlib import Path
@@ -96,10 +122,10 @@ jobs:
           py="$RUNNER_TEMP/v13-rule-native-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
           echo "$?" > "$e/INSTALL_EXIT.txt"
-          python3 -m compileall -q v13/code/scripts/step2_exact_rule_transport_native.py v13/code/tests/test_step2_exact_rule_transport_native.py v13/code/scripts/step2_exact_rule_native_replay_preflight.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/step2_exact_rule_transport_native.py v13/code/tests/test_step2_exact_rule_transport_native.py v13/code/scripts/step2_exact_rule_native_replay_preflight.py v13/code/scripts/step2_exact_rule_transport_verify.py v13/code/tests/test_step2_exact_rule_transport_verify.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           if [ "$source_ok" = 0 ] && [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ] && [ "$(cat "$e/ORIGINAL_VERIFY_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
-            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/original/STEP2_RAW.json" timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_step2_exact_rule_transport_native tests.test_step2_exact_rule_native_replay_preflight tests.test_step2_rule_revision_ambiguity_candidate) > "$e/FOCUSED_RAW.log" 2>&1
+            (cd v13/code && V13_RUN116_SOURCE_REPORT="$e/original/STEP2_RAW.json" timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_step2_exact_rule_transport_native tests.test_step2_exact_rule_transport_verify tests.test_step2_exact_rule_native_replay_preflight tests.test_step2_rule_revision_ambiguity_candidate) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
             (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m scripts.step2_exact_rule_native_replay_preflight --source-report "$e/original/STEP2_RAW.json" --out "$work/pairs.json") > "$e/PREFLIGHT_RAW.log" 2>&1
             echo "$?" > "$e/PREFLIGHT_EXIT.txt"
@@ -107,7 +133,7 @@ jobs:
             for n in FOCUSED PREFLIGHT; do echo SKIPPED_PREREQ_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
           fi
           export V13_HOME="$RUNNER_TEMP/v13-exact-rule-native-installed"
-          if [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
+          if [ "$(cat "$e/ADMISSION_EXIT.txt")" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
             timeout --signal=TERM --kill-after=15s 20m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
             echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
           else
@@ -123,25 +149,7 @@ jobs:
             if [ -f "$work/evidence/$f" ]; then cp "$work/evidence/$f" "$e/$f"; fi
           done
           if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests "$py" - "$e" <<'PY'
-          import hashlib,json,sys
-          from pathlib import Path
-          from scripts import step2_exact_rule_transport_native as n
-          e=Path(sys.argv[1]);r=json.loads((e/'RECEIPT.json').read_text())
-          raw=(e/'NATIVE_ROWS.json').read_bytes();j=json.loads(raw)
-          assert r['status']=='PASS_SCOPED_NATIVE_TRANSPORT_NO_GATE'
-          assert r['rows']==84 and len(j['rows'])==84
-          assert r['native_rows_sha256']==hashlib.sha256(raw).hexdigest()
-          assert r['model_hashes_before']==r['model_hashes_after']==n.MODEL_HASHES
-          assert r['c3_seed']==13 and r['body_source_seed']==20
-          assert r['canonical_gate_pass'] is False and r['whole_system_complete'] is False
-          assert r['jepa_weight']==0 and r['redmi_measured'] is False
-          assert len(j['row_sha256'])==84
-          assert all(x['status']=='RECORDED' and x['consumer_metrics']['status']=='FINAL' and not x['oracle_visible_to_native'] for x in j['rows'])
-          assert r['treatment_wrong_committed']==0
-          print('EXACT_RULE_TRANSPORT_84_NATIVE_C3_CALLS_SCOPED_ONLY_NO_GATE')
-          PY
-            ) > "$e/VERIFY_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 240s env PYTHONPATH=.:tests "$py" -m scripts.step2_exact_rule_transport_verify --source-report "$e/original/STEP2_RAW.json" --preflight-report "$work/pairs.json" --native-rows "$e/NATIVE_ROWS.json" --receipt "$e/RECEIPT.json") > "$e/VERIFY_RAW.log" 2>&1
             echo "$?" > "$e/VERIFY_EXIT.txt"
           else
             echo SKIPPED_NATIVE_RED > "$e/VERIFY_RAW.log"; echo SKIPPED_RED > "$e/VERIFY_EXIT.txt"
@@ -179,7 +187,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-exact-rule-native"
-          for n in SOURCE RESOURCE DOWNLOAD ORIGINAL_VERIFY INSTALL COMPILE FOCUSED PREFLIGHT BOOTSTRAP NATIVE VERIFY FULL_INSTALL FULL PRIVACY DIFF; do
+          for n in SOURCE ADMISSION RESOURCE DOWNLOAD ORIGINAL_VERIFY INSTALL COMPILE FOCUSED PREFLIGHT BOOTSTRAP NATIVE VERIFY FULL_INSTALL FULL PRIVACY DIFF; do
             if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
               echo "$n RED; original raw retained; STEP2 remains UTILITY_FAIL"
               tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
