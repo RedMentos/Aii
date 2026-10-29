@@ -161,7 +161,8 @@ def score(records, prompts, answers):
             "adapter_sha256": ADAPTER_SHA,
             "runner_binary_sha256": candidate.BINARY_SHA,
             "seed": scorer.SEED, "training_examples": 16,
-            "native_calls": EXPECTED, "per_label": counts,
+            "native_calls": EXPECTED,
+            "per_label": {str(s): counts[s] for s in SCALES},
             "correct_strict_in_sample": {str(s): sum(v["correct"] for v in counts[s].values())
                                          for s in SCALES},
             "paired_action_changes": sum(
