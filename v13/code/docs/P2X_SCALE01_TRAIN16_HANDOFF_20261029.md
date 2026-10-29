@@ -19,3 +19,9 @@
 
 ## Negative gates
 Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi unmeasured; V13 incomplete.
+
+## Pinned native closure (2026-10-29)
+- Fresh native Actions `40899022720` **SUCCESS for execution/replay, not model utility** at exact head `addd8c819411c7055c57012fa91772eeb8314219`. Artifact `12907219785` ZIP SHA256 `9ea10f75a31a774e29845262ec41c30f06df8ccbbbffabdde42653a5e7f20d2c`; CRC clean, 46/46 SHA256SUMS, 18/18 exit stages 0, 32/32 FINAL, servers reaped. Independent stdlib replay verified all 16 paired completion requests and launch flags identical except LoRA scale 0 vs 1 and ephemeral port.
+- **Measured negative:** scale0 emitted `{"action":"NONE"}` on all 16 rows. Scale1 emitted the same parsed action on all 16 rows (14 exact formatting, 2 whitespace variants). Correct structured actions 4/16 for each (only NONE class); 0/4 A, 0/4 B, 0/4 UNKNOWN. Paired parsed-action changes **0/16**. This rules out an observable action-output improvement from this 4-step adapter at this seed/decoder/training cohort; it does not prove the adapter has zero effect on logits or all inputs.
+- Private Library raw `/V13-Checkpoints/2026-10-29/P2X_SCALE01_NATIVE_RAW_40899022720_SHA9ea10f75.zip` re-materialized and SHA256 byte-verified; independent audit JSON alongside. Original failed test-only run remains preserved separately. Source-only full CI rerun `40899042923` still pending at this update; do not call full software GREEN until exact-head results are reviewed.
+- Next quality package: preregister a small bounded per-token probability/logit diagnostic using pinned llama.cpp `n_probs` / `post_sampling_probs=false`, comparing scale0/scale1 at the first action-value token for the same training-only examples. If available, measure label-token logprob margins without decoding or changing weights. Do not touch heldout or promote any gate.
