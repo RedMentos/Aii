@@ -90,11 +90,17 @@ def verify_state(state):
     return state
 
 
+def _raw_stored_state(controller):
+    """AgeControl.state() masks persisted falsy values; inspect the real row."""
+    state, version = controller.s.state(age.STATE_KEY, None)
+    return (age.default_state(), version) if version == 0 else (state, version)
+
+
 def snapshot(controller):
     """Diagnostic only: corrupt state produces no stage/rights/budget assertion."""
     if not isinstance(controller, age.AgeControl):
         raise ValueError("AGE_CONTROLLER_INVALID")
-    state, version = controller.state()
+    state, version = _raw_stored_state(controller)
     try:
         verify_state(state)
     except AgeStateIntegrityError as exc:
@@ -123,6 +129,6 @@ def guarded_view(controller):
     """Raise on corruption before using the existing, unchanged view method."""
     if not isinstance(controller, age.AgeControl):
         raise ValueError("AGE_CONTROLLER_INVALID")
-    state, _ = controller.state()
+    state, _ = _raw_stored_state(controller)
     verify_state(state)
     return controller.view()
