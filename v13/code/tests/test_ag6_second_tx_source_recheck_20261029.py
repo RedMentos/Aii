@@ -79,5 +79,48 @@ class AG6SecondTransactionSourceRecheck(unittest.TestCase):
         self.assertNotIn('C3_LANGUAGE', AdapterRegistry(self.s).report()['active'])
 
 
+    def test_external_final_change_after_activating_commit_vetoes_approval(self):
+        w = WeightConsolidation(self.s, self.cfg, trainer=self.trainer)
+        staged = w.stage(require_replay_pass=False, include_rated=True)
+        self.assertEqual(staged['status'], 'STAGED')
+        bid = staged['batch_id']
+        gated = w.train_and_gate(bid)
+        self.assertEqual(gated['status'], 'PENDING_USER')
+        rid = gated['request_id']
+        original_tx = self.s.tx
+        tx_count = 0
+
+        # The event ID is captured by the staged rated item, and the external
+        # writer must alter that same FINAL, not an unrelated answer.
+        rated = next(i for i in w.batch(bid)['items']
+                     if i['kind'] == 'rated_answer')
+        event_id = rated['event_id']
+
+        @contextmanager
+        def targeted_change():
+            nonlocal tx_count
+            tx_count += 1
+            if tx_count == 2:
+                with sqlite3.connect(self.home / 'data/db/brain.sqlite3') as other:
+                    other.execute(
+                        "UPDATE messages SET text=? WHERE event_id=? "
+                        "AND role='assistant' AND status='FINAL'",
+                        ('Changed externally', event_id))
+            with original_tx() as c:
+                yield c
+
+        with patch.object(self.s, 'tx', targeted_change):
+            with self.assertRaisesRegex(ValueError, 'Quelle|Source'):
+                w.approve(bid)
+        self.assertGreaterEqual(tx_count, 2)
+        self.assertEqual(self.s.one(
+            "SELECT text FROM messages WHERE event_id=? AND role='assistant' "
+            "AND status='FINAL'", (event_id,))['text'], 'Changed externally')
+        self.assertEqual(w.batch(bid)['status'], 'PENDING_USER')
+        self.assertEqual(self.s.one('SELECT status FROM requests WHERE id=?',
+                                    (rid,))['status'], 'PENDING')
+        self.assertNotIn('C3_LANGUAGE', AdapterRegistry(self.s).report()['active'])
+
+
 if __name__ == '__main__':
     unittest.main()
