@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          e="$RUNNER_TEMP/v13-run113"
+          e="$RUNNER_TEMP/v13-run117"
           mkdir -p "$e/experiment"
           git rev-parse HEAD > "$e/HEAD.txt"
           source_ok=0
@@ -88,7 +88,7 @@ jobs:
       - name: Enforce software-only acceptance without gate promotion
         run: |
           set -euo pipefail
-          e="$RUNNER_TEMP/v13-run113"
+          e="$RUNNER_TEMP/v13-run117"
           for n in SOURCE INSTALL COMPILE PROBE FOCUSED FULL PRIVACY DIFF; do
             if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
               echo "$n RED; original raw retained; STEP2 remains UTILITY_FAIL"
