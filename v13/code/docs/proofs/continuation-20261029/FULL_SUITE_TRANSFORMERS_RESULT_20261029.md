@@ -3,7 +3,7 @@
 ## Exact experiment and evidence
 - Draft PR #1151, review-only child of #1150, source/CI exact HEAD `3d78cebfbea84ba5b21ee1c77fc2c3a3cfa1ddcb`. No runtime/model/seed/cohort/Canon changes.
 - GitHub Actions `40958983649` **completed FAILURE**, original artifact ID `12935131558`, ZIP SHA256 `5be46cb9fc6c73570475bd937692e06748f8267492013033c0e6519e2845d47f`.
-- Downloaded the exact original ZIP: CRC clean, **26/26** inner `SHA256SUMS` verified; all 12 stages `CANON/VENV/DEPS/TORCH/TRANSFORMERS/PIP_CHECK/TORCH_IMPORT/TRANSFORMERS_IMPORT/COMPILE/PRIVACY/DIFF` exit0; `FULL` exit1. Original raw ZIP retained unchanged and backed up privately at `/V13-Checkpoints/2026-10-29/Run10-FullTransformers-Independent/v13-full-transformers-40958983649.zip`, byte-exact re-materialization SHA256 matched.
+- Downloaded the exact original ZIP: CRC clean, **26/26** inner `SHA256SUMS` verified; all 11 non-FULL stages `CANON/VENV/DEPS/TORCH/TRANSFORMERS/PIP_CHECK/TORCH_IMPORT/TRANSFORMERS_IMPORT/COMPILE/PRIVACY/DIFF` exit0; `FULL` exit1. Original raw ZIP retained unchanged and backed up privately at `/V13-Checkpoints/2026-10-29/Run10-FullTransformers-Independent/v13-full-transformers-40958983649.zip`, byte-exact re-materialization SHA256 matched.
 - Installed imports confirmed `torch 2.5.1+cpu`, `transformers 4.44.2`, no CUDA. All installed package versions are recorded in original `PIP_FREEZE_RAW.log`.
 - **Full unfiltered** `unittest discover`: **3304 tests, 4 ERROR, 11 skipped**. No test exclusions or waivers.
 
