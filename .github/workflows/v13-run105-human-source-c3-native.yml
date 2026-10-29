@@ -1,0 +1,125 @@
+name: V13 Run105 operator-command source to offline C3 Linux native E2E
+on:
+  push:
+    branches: [assistant/v13-run105-human-source-c3-native-20261029]
+permissions:
+  contents: read
+concurrency:
+  group: v13-run105-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native_source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture exact source, native experiment, software suite and original closed evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run105"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            local observed
+            observed="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$observed" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$observed" = "$1" ]
+          }
+          check cb32022d03caa004139633819f635243905a095a v13/code/docs/proofs/continuation-20261028/RUN105_HUMAN_SOURCE_C3_NATIVE_PREREG.md || source_ok=1
+          check 54d477f5a9ec750b7131ebd38cef38845a35ed76 v13/code/docs/proofs/continuation-20261028/RUN105_PREEXEC_OPERATOR_SCOPE_AMENDMENT.md || source_ok=1
+          check b8f5a7f1e702f00867585b61b9532ae64d5e1589 v13/code/docs/proofs/continuation-20261028/RUN101_103_RAW_INDEPENDENT_REVIEW.md || source_ok=1
+          check 11dc644199bd8fc315686031281756d887903f77 v13/code/docs/proofs/continuation-20261028/RUN105_BRANCH_BUILD_STATE.json || source_ok=1
+          check 7c43e14778546860e601bd42dc60e82e0f882630 v13/code/scripts/run105_human_tty_c3_native.py || source_ok=1
+          check fb882c98b5c4061e3e510a17c99b08ee9b8c8e78 v13/code/tests/test_run105_human_tty_c3_native.py || source_ok=1
+          check 7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02 v13/code/scripts/run93_source_c3_native_e2e.py || source_ok=1
+          check 9248e46e199a4227c296d538e6a2ef969e8e10cb v13/code/v13/__main__.py || source_ok=1
+          check ef3cdd5913a47b8e6e35bbaebf97a8325ecf13cb v13/code/v13/operator.py || source_ok=1
+          check 53048dd477af945a75dd0f6825e4b81d057742a2 v13/code/v13/source_record.py || source_ok=1
+          check 8e28fb0168465a85a2066666538e03b0ac33f548 v13/code/tests/test_run96_human_source_cli_crosschain.py || source_ok=1
+          check 75ca7f3f197665f665d9582b7f5c2efb1f598235 v13/code/scripts/ask_verified_budget.py || source_ok=1
+          check 4b73842be25e784f70ade4f6c4ced3fe2dcb9eab v13/code/v13/source_consumer.py || source_ok=1
+          check 53dc948d0d360f94743ad996eb83ea0e85c2dd0b v13/code/v13/memory.py || source_ok=1
+          check 68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py || source_ok=1
+          check bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py || source_ok=1
+          check dc23e192bcd01589475692666ebb6568c80d078b v13/code/v13/bootstrap.py || source_ok=1
+          check 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json || source_ok=1
+          check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run105-venv"
+          py="$RUNNER_TEMP/v13-run105-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/BASE_INSTALL_RAW.log" 2>&1
+          base_rc="$?"
+          if [ "$base_rc" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/BASE_INSTALL_RAW.log" 2>&1
+            torch_rc="$?"
+            if [ "$torch_rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/BASE_INSTALL_RAW.log" 2>&1
+              deps_rc="$?"
+            else
+              deps_rc=1
+            fi
+          else
+            deps_rc=1
+          fi
+          echo "$deps_rc" > "$e/BASE_INSTALL_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/run105_human_tty_c3_native.py v13/code/tests/test_run105_human_tty_c3_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          export V13_HOME="$RUNNER_TEMP/v13-run105-home"
+          if [ "$source_ok" = 0 ] && [ "$(cat "$e/BASE_INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=15s 22m "$py" -m scripts.run105_human_tty_c3_native --home "$V13_HOME" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=15s 10m "$py" -m scripts.run105_human_tty_c3_native --home "$V13_HOME" --out "$e/experiment") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BASE_INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_run105_human_tty_c3_native tests.test_ask_verified_budget tests.test_source_consumer_recall_integration tests.test_run83_age0_backup_restore_e2e tests.test_verified_operator_preflight) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+            echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4ddf364e127dd274884338835d2cf0407b2944d6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4ddf364e127dd274884338835d2cf0407b2944d6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original Run105 raw evidence, no model bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run105-human-source-c3-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run105/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact source, native answer, focused/full tests and privacy
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run105"
+          for n in SOURCE BASE_INSTALL COMPILE INSTALL NATIVE FOCUSED FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED: original evidence retained; no gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN105_OPERATOR_COMMAND_C3_NATIVE_LINUX_ONLY
