@@ -1,0 +1,64 @@
+{
+  "schema": "v13.run130.option_quote_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation, review-only, no native owner",
+  "branch": "assistant/v13-step2-option-quote-c3-guard-20261029",
+  "pr": 1030,
+  "parent": "93bc908d5f36d313ec610b0e4399834661799627",
+  "prereg_commit": "a165e295a2f44e5374d4dd5ea809437be9f6bbd3",
+  "source_blob": "736fc62dce75a783ef24155515d59aeeb8b2b7d0",
+  "test_blob": "89c9a083346977fd2c814a0aa26d2fa219008f4a",
+  "software_ci": {
+    "run_id": 40814345451,
+    "status": "IN_PROGRESS_ORIGINAL_RAW_NOT_YET_AUDITED",
+    "focused_tests": 9,
+    "full_suite": "PENDING"
+  },
+  "original_native": {
+    "run116_actions": 40805361392,
+    "source_sha256": "c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f",
+    "tool_sha256": "e90c23fd909dc0e138312f6802a05a3377f451f6675a496c1d4b1f1b19847ac0",
+    "source_evidence_spans_verified": "162/162",
+    "b1_quotes_with_source_ref": "49/49",
+    "b1_option_quote_rows": 36,
+    "c3_quote_mismatch_rows": 7,
+    "c3_mismatched_fields": {
+      "cost": 8,
+      "days": 8,
+      "local": 9
+    },
+    "scope": "EXPLORATORY_POSTHOC_ORIGINAL_LINUX_NATIVE_NOT_NEW_INFERENCE"
+  },
+  "candidate": {
+    "runtime_changes": 0,
+    "native_calls": 0,
+    "learning_updates": 0,
+    "default_off": true,
+    "independent_source_ref_validation": true,
+    "oracle_used_only_for_offline_scoring": true
+  },
+  "open_questions": [
+    "Does deterministic B1 source quote repair improve action exact without any wrong committed action?",
+    "How should source quote conflict/refusal be surfaced in live Context OS/JEF without replacing canonical STEP2 proof?",
+    "How do project identity binding Run129 and option quote repair Run130 interact in a new preregistered comparison?",
+    "Native owner release receipt remains absent; do not launch 84-call Run126 without it."
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "gh run view 40814345451 --json status,conclusion,headSha; download original ZIP; independently verify CRC/SHA256SUMS/source/tool SHA/42 rows/PROBE/FOCUSED/FULL/privacy; retain original failed attempts and private byte-identical backup. If wrong committed RED, do not integrate and analyze trace.",
+  "prerequisites": [
+    "Original source/tool bytes pinned",
+    "All 162 source evidence refs and 49 B1 quotes source-verified",
+    "Software-only raw audit GREEN before any use",
+    "No native owner release; no manual native dispatch"
+  ],
+  "no_main_merge": true
+}
