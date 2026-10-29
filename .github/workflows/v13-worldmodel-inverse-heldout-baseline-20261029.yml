@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - codex/v13-worldmodel-inverse-heldout-baseline-20261029-auto10z
+    paths:
+      - v13/code/v13/world_model.py
+      - v13/code/tests/test_worldmodel_inverse_heldout_baseline_20261029.py
+      - .github/workflows/v13-worldmodel-inverse-heldout-baseline-20261029.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,6 +20,8 @@ jobs:
       OMP_NUM_THREADS: "2"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 50
       - name: Run focused witness, retain original failure
         shell: bash
         run: |
