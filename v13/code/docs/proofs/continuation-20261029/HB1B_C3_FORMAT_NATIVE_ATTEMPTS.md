@@ -18,3 +18,9 @@ Wait for corrected source-only CI exact head, independently verify original arti
 - Run `40838036522`, exact head `c805bfec6241c02fb476a09e30cfc2019242d576`, artifact `12880814826`, ZIP SHA256 `fadb140da55e6c1c8511b68d9fcedf59733a84c52008ea073599b90fee57a29f`.
 - The test file had been corrected but the workflow still pinned its previous blob. Source admission stopped before dependency installation/tests; **zero model calls**. The following commit `43321c26b77d26655ec286fb465ab434252613d8` updated the workflow pin. This intermediate RED was not overwritten.
 - Original ZIP CRC CLEAN, **2/2 SHA256SUMS verified**. Private Library backup `/V13/RawEvidence/HB1B_40838036522_stale_workflow_pin_RED.zip` rematerialized byte-identical.
+
+## Source-only attempt 2 — GREEN, independently verified
+
+- GitHub Actions run `40838049061`, exact source head `43321c26b77d26655ec286fb465ab434252613d8`, artifact `12881158513`, ZIP SHA256 `edb3871558ff709d4aff75b4eb3b8fcd1e205a52e9c890d746975efe201fd903`.
+- **18/18 focused tests PASS** (source-pair, strict JSON/plain parse, native mock 24-call orchestration, anti-echo off, failure retention, independent verifier). Privacy CLEAN; compilation and source pins GREEN. Original ZIP CRC CLEAN and **7/7 internal SHA256SUMS independently verified**.
+- Private Library backup `/V13/RawEvidence/HB1B_40838049061_native_source_mock_GREEN.zip` uploaded and rematerialized byte-identical. This is SOFTWARE/MOCK evidence only; **zero new HB1b native model calls**.
