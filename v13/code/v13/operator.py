@@ -32,6 +32,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback retrieval <Memory-ID> relevant|irrelevant [--learn]
 :source budget <ProjectName> <WholeEuroAmount> [--confirm] (user-authored F1/F5 fact, no model or prior answer)\n:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
 :verified <Frage> (nur quellengebundene F1/F5-Vorprüfung; kein Modellaufruf)
+:jefsource <Event-ID> <PolicyMemory-ID> <SheetMemory-ID> (nur lokale F1/F5-SHADOW-Diagnose, keine Live-Antwort)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
@@ -93,6 +94,9 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd=='jefsource':
+            from .jef_f1f5_operator import operator_command
+            return operator_command(r,args)
         if cmd=='source':
             from .source_record import operator_command
             return operator_command(r,args)
