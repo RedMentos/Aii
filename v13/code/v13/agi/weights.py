@@ -438,6 +438,27 @@ class WeightConsolidation:
         with self.s.tx() as c:
             proxy,st,v=self._approval_state(c);b=st['batches'].get(bid)
             if not b or b['status']!='PENDING_USER':raise ValueError('Freigabe nur für PENDING_USER')
+            # A source can be revoked after training but before explicit
+            # approval. This check shares the Store's write mutex with the
+            # activation journal, so local source revocation cannot interleave
+            # between the admission decision and the commit.
+            try:
+                if type(b.get('items')) is not list or not b['items']:
+                    raise ValueError('Invalid approval items')
+                for item in b['items']:
+                    if type(item) is not dict:
+                        raise ValueError('Invalid approval item')
+                    ref=item.get('source_ref')
+                    if (type(ref) is not dict or
+                            type(ref.get('source_id')) is not str or
+                            type(ref.get('sha256')) is not str or
+                            type(ref.get('char_start')) is not int or
+                            type(ref.get('char_end')) is not int or
+                            ref.get('modality')!='text'):
+                        raise ValueError('Invalid approval SourceRef')
+                    self.s.read_source(ref)
+            except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                raise ValueError('Freigabe gesperrt: Quelle widerrufen oder beschädigt') from None
             from ..drift import gate as drift_gate
             bad=drift_gate({'drift':b['drift']} if b.get('drift') else {},self.cfg)
             if bad:raise ValueError('Freigabe gesperrt: '+', '.join(bad))
