@@ -21,7 +21,18 @@
     "sleep_commit": "ddef564e46d4266c3a4c6d28c670b369cbcbb842",
     "ci_run_id": 40909329351,
     "ci_status": "PENDING_AT_CHECKPOINT",
-    "evidence_level": "SOFTWARE_STORE_ONLY"
+    "evidence_level": "SOFTWARE_STORE_ONLY",
+    "followup_commits": [
+      "11d4ac333fc6d2808e75d33baffd71d7a7bba357",
+      "a4863db0cbd76b3b11dc110ffdb27a05456cf5b6",
+      "bd22e2cdf81ecd92f8a2dd58e2370a3f23614bd5",
+      "ef77208c4312a6deb7a8d5e3da9705902ba2381b",
+      "422bea2a25ec49f0289c3750cc764bfd98d8b544",
+      "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3"
+    ],
+    "latest_source_test_commit": "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3",
+    "latest_ci_status": "PENDING_AFTER_SOURCE_REVIEW",
+    "additional_scope": "Exact bounded event-ID revalidation for all retained digest entries; malformed cache rows do not suppress unrelated valid source"
   },
   "gates": {
     "age": "RECORD_ONLY",
@@ -38,7 +49,8 @@
     "Does 130-turn reverse FINAL paging pass focused tests and full suite?",
     "Is user_until migration from assistant high-water source-safe on legacy snapshots?",
     "Does 8-session fairness remain valid under user cursor?",
-    "Independent review of corrupted duplicate events and exact SourceRefs"
+    "Independent review of corrupted duplicate events and exact SourceRefs",
+    "Verify latest exact-head 96-entry source view and malformed cache-row focused tests; do not rely on older CI heads."
   ],
   "next_command": "Fetch GitHub Actions run 40909329351 and verify raw evidence; correct focused regressions, preserve original RED and negative gates.",
   "production_integrated": false
