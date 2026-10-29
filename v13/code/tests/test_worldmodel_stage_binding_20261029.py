@@ -86,6 +86,13 @@ class WorldModelStageBindingTests(unittest.TestCase):
         self.before([p], started)
         self.assertEqual(wm.transitions(self.r.store), [])
 
+    def test_prior_v2_fit_cannot_be_loaded_after_stage_semantics_change(self):
+        # Old v2 fits may include provisional PREDICTION rows. Do not reuse
+        # those persisted weights as if they were stage-bound observations.
+        self.r.store.set_state(wm.KEY, {"revision": "t8-world-model-v2",
+                                        "status": "FITTED"})
+        self.assertIsNone(wm.load(self.r.store))
+
     def test_bounded_packet_scan_never_silently_selects_one(self):
         e = self.make_event()
         packets = [self.select(e, "detail", "PREDICTION") for _ in range(17)]
