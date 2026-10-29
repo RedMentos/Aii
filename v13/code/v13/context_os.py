@@ -55,7 +55,7 @@ LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
 QUOTE=re.compile(r'"[^"]+"|„[^“]+“')  # bounded by SPAN_CHARS/RAW fallback, not silent truncation
-SINGLE_QUOTE=re.compile(r"(?<!\\w)'(?:[^'\\n]|(?<=\\w)'(?=\\w)){1,400}'(?!\\w)")
+SINGLE_QUOTE=re.compile(r"(?<!\w)'(?:[^'\n]|(?<=\w)'(?=\w)){1,400}'(?!\w)")
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
