@@ -1,0 +1,15 @@
+# AG6 gate request atomicity handoff — 2026-10-29
+
+## Lineage, evidence and ownership
+- Parent PR #1116 exact `a68fb7ffd25d4e92e68389fa9ddc723478259680`, child of PR #1114. Review-only; no production merge. Owns `agi/weights.py`, new atomic test, prereg, workflow, handoff and branch-scoped BUILD_STATE only.
+- Prereg `e9f6613d852621d8a41c0664353fde5997dba1c5` remotely saved before test `9bad5848c05265e73a8bd6f2c8397a100ef248ab`.
+- Original SQLite abort RED Actions `40908230221`, exact `e708beee596e2b7eca20f843344f367f5e6a9750`: one test FAIL as expected, orphan `WEIGHT_CONSOLIDATION` request count **1** after state-write trigger abort (expected 0). Raw artifact `12911978583`, ZIP SHA256 `a50d2e7927359ba78feddf192b58677af93174f7edfe1610dae96f70ab1e3309`, CRC and 5/5 internal SHA256SUMS verified; privacy exit0.
+- Private Library backup `/V13-Checkpoints/2026-10-29/Automation10-Review/AG6_GATE_ATOMIC_ORIGINAL_RED_40908230221_SHAa50d2e.zip` re-materialized and byte SHA verified.
+- Candidate `93f66ebba5838a886df3225e05b20969654c273e`: request insertion and gate-state update now share `Store.tx()` transaction with current TRAINED state recheck; rollback on injected write abort must remove both. Existing numeric admission of PR #1116 unchanged. No native weights/Redmi, no authority promotion.
+- Source-only CI Actions `40908318232` at `0541ac86a64cd075aa22a493f16ac8078a9f5ed5` pending at handoff. Parent PR #1116 Actions `40907705671` also pending. Parent #1114 full suite previously RED on two frozen-source identity checks (run34/run37); preserve those failures.
+
+## Exact next commands
+1. Fetch run `40908318232` jobs/artifacts; verify HEAD, stage exits, ZIP SHA256, CRC and internal SHA256SUMS. Focused: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_ag6_gate_finite_review_20261029 tests.test_ag6_gate_request_atomic_20261029 tests.test_score_anchor_train_crosschain_20261029 tests.test_anchor_train_boundary_review_20261029 tests.test_weight_approval_atomic tests.test_agi_trainers`; full `python -m unittest discover -s tests`.
+2. If focused failure, correct and rerun. Preserve original RED and exact frozen pins. Independent review should inject a concurrent state change and ensure no orphan/duplicate request, inspect approval state and restart, and compare code against PR #1116.
+3. Keep PR #1117 draft until reviewed. Continue other blueprint packages independently.
+4. Negative gates: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight0, AG6 unapproved, V13 incomplete.
