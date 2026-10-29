@@ -1,0 +1,39 @@
+{
+  "schema": "v13.run103.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29T00:53:32Z",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run103-budgetcontext-restore-20261029",
+  "pr": 1007,
+  "base_pr": 1003,
+  "base_head": "8dcec32c4da3c992ebca9d038fabba3009bdda8b",
+  "prereg_first": "a73ca46521daba8b9d6f220a9efb210319df1953",
+  "source_commit": "399955b619a96baccb74ab95242fe6b2102661b8",
+  "test_commit": "c443635d7f3ce2633789e73ea53b778a7b516dc9",
+  "workflow_commit": "e6954c491d2e925f82e5a6c57cc233823e1b4ff2",
+  "blobs": {
+    "source": "ea869ee800adc80ae5dc6ab281ce8b8a1c299ec7",
+    "tests": "9dddd752ad0e3cb0b31eaccc247d9da1a6425043",
+    "prereg": "84be7b96d3d59a08de597dc81aa9fc01808f8132",
+    "workflow": "c1b413e69ee1d9796e58a232c80d954fa7352fdd",
+    "backup_frozen": "409c4e13ba0754364d708e4dbe803bd740954b69",
+    "store_frozen": "0779d986fb8aee8aa01c5df5f656889d4bd56348"
+  },
+  "status": "PUSHED_REVIEW_BRANCH; ACTIONS_ORIGINAL_RAW_PENDING",
+  "local_tests": "NOT_EXECUTED; GitHub-hosted workflow pending",
+  "native_calls": 0,
+  "scope": "BudgetContext shared recovery before Store; direct and two standalone source entrypoints",
+  "alternative_pr": 1006,
+  "alternative_relationship": "sibling; do not combine or claim both needed until independent review",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect newest PR #1007 head and GitHub Actions v13-run103-budgetcontext-restore.yml; fetch original artifact, verify SHA256/CRC/inner SHA256SUMS, HEAD, SOURCE/INSTALL/COMPILE/FOCUSED/FULL/PRIVACY/DIFF exit files. Preserve RED if any. If GREEN, privately back up raw and independently review; compare against Run102 to choose one minimal shared recovery fix, do not merge main prematurely.",
+  "remaining_execution_budget": "UNKNOWN"
+}
