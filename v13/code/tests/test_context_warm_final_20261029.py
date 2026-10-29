@@ -20,16 +20,18 @@ class WarmMemoryFinalStatusTests(Base):
     def test_cancelled_observation_does_not_warm_but_final_does(self):
         mid = self.remember('garden shed passphrase', 'indigo owl')
         event = self.ev('cancelled memory answer')
-        self.c.observe(event, 'C3_LANGUAGE', {}, status='CANCELLED',
-                       memory_ids=[mid])
+        cancelled = self.c.observe(event, 'C3_LANGUAGE', {},
+                                   status='CANCELLED', memory_ids=[mid])
+        self.assertEqual(cancelled['warm'], [])
         self.assertEqual(self.c._load()[0]['warm'], {})
         self.assertEqual(self.c.warm('garden shed passphrase',
                                      self.r.session, [])['ids'], [])
 
         # A successful answer can still warm an authorized memory without a
         # ContextPlan (e.g. a conservative plan fallback).
-        self.c.observe(event, 'C3_LANGUAGE', {}, status='FINAL',
-                       memory_ids=[mid])
+        delivered = self.c.observe(event, 'C3_LANGUAGE', {},
+                                   status='FINAL', memory_ids=[mid])
+        self.assertEqual(delivered['warm'], [mid])
         self.assertEqual(self.c.warm('garden shed passphrase',
                                      self.r.session, [])['ids'], [mid])
 
