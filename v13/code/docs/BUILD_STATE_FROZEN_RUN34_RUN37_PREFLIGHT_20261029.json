@@ -1,0 +1,88 @@
+{
+  "schema": "v13.review_build_state.frozen_run34_run37_preflight.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1137 sibling of PR1136, parent PR1135; no production source changes",
+  "owner": {
+    "branch": "codex/v13-frozen-run34-run37-preflight-20261029-auto10w",
+    "pr": 1137,
+    "parent_pr": 1135,
+    "parent_commit": "32e6f4846ef03f3d8934f3824f809ff43763a70d",
+    "owned_paths": [
+      ".github/workflows/v13-run34-run37-frozen-preflight-20261029.yml",
+      "v13/code/docs/RUN34_RUN37_FROZEN_PREFLIGHT_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_FROZEN_RUN34_RUN37_PREFLIGHT_20261029.json"
+    ]
+  },
+  "canon": {
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "paired_proof": {
+    "run": 40939557701,
+    "head": "0b63b62576b99ff0cec11a34a1c32fa9a901ceb0",
+    "current_source": "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53",
+    "historical_source": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd",
+    "historical_commit": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+    "current_tests": "11 tests, 2 expected ERROR, 9 PASS; native_source_or_catalog_changed",
+    "frozen_tests": "11/11 PASS, temporary worktree only",
+    "other_registered_blobs": {
+      "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+      "run33": "b1d58d7e0c3937787cf15dd801e278de25845879",
+      "runners": "efda7aa1aa5729e974d0d641870d4da05d21c961"
+    },
+    "artifact": 12925288925,
+    "zip_sha256": "b849c4a732ddd1b176a8b0db839bd0c207446860f8fa7555741d578094c3b396",
+    "crc": true,
+    "inner_sha256": "22/22",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-Frozen-Preflight/RAW_PAIRED_40939557701_shaB849C4.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "CURRENT": 1,
+      "FETCH": 0,
+      "WORKTREE": 0,
+      "FROZEN_RESTORE": 0,
+      "FROZEN": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "full_review": {
+    "run": 40938719557,
+    "head": "0094f990f788a1916fe3cb3644d8fbacc3a1170a",
+    "tests": "3257 total, 3 ERROR (two inherited historical source pins, one new world-model confidence ablation invalid output), 11 skipped",
+    "artifact": 12925428868,
+    "zip_sha256": "b095dc55d48add692bcff5ade22c454a25e0e996a76af7b0ebe76c869c479741",
+    "crc": true,
+    "inner_sha256": "17/17",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-Run10-Full/RAW_FULL_RED_40938719557_shaB095DC.zip",
+    "private_readback": "byte-exact",
+    "claim_limit": "Current source full suite still RED; do not hide or waive errors"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Software-only historical prereg reproduction; no native Run34/Run37 proof",
+    "Current production scorer unchanged; no registered cohort or source pin rewritten",
+    "Full current suite remains RED, with additional world-model ablation consumer regression requiring separate fix"
+  ],
+  "open_questions": [
+    "Repair ablation_world_model_confidence.py to handle invalid counterfactual output without inventing metrics or changing registered synthetic query cohorts",
+    "New heldout C3 native fixed-oracle pilot runs separately, not proof of JEF/B1/B2/JEPA"
+  ],
+  "next_commands": [
+    "Verify remote BUILD_STATE and PR1137 head",
+    "Start independent ablation consumer fail-closed patch on separate child branch from PR1135",
+    "Preserve exact full suite failure raw and rerun focused tests then full suite"
+  ],
+  "checkpoint_reason": "Paired current RED / frozen 11/11 software GREEN proven; raw private backup byte-exact; remaining platform budget UNKNOWN"
+}

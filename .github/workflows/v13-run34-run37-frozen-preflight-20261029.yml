@@ -1,0 +1,92 @@
+name: V13 Run34 Run37 historical frozen-source preflight (isolated)
+on:
+  push:
+    branches: [codex/v13-frozen-run34-run37-preflight-20261029-auto10w]
+    paths: ['.github/workflows/v13-run34-run37-frozen-preflight-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  paired-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Preserve current RED and isolated exact historical scorer preflight
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-frozen-run34-run37"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/utility.py > "$e/CURRENT_UTILITY_BLOB.txt"
+          git hash-object v13/code/specs/models.json v13/code/scripts/run33_b2_c3_counterfactual_envelopes.py v13/code/v13/runners.py > "$e/OTHER_SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run34_c3_native_quote_intervention_pilot tests.test_run37_c3_rule_use_native_pilot) > "$e/CURRENT_RAW.log" 2>&1
+            echo "$?" > "$e/CURRENT_EXIT.txt"
+          else
+            echo SKIPPED_DEPS_RED > "$e/CURRENT_RAW.log"
+            echo SKIPPED > "$e/CURRENT_EXIT.txt"
+          fi
+          git fetch --no-tags --depth=1 origin a895487f1b8edda600dcd8098cb7f6a92bfbecfa > "$e/FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          if [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ]; then
+            git worktree add --detach "$RUNNER_TEMP/v13-run34-frozen-worktree" HEAD > "$e/WORKTREE_RAW.log" 2>&1
+            echo "$?" > "$e/WORKTREE_EXIT.txt"
+          else
+            echo SKIPPED_FETCH_RED > "$e/WORKTREE_RAW.log"
+            echo SKIPPED > "$e/WORKTREE_EXIT.txt"
+          fi
+          if [ "$(cat "$e/WORKTREE_EXIT.txt")" = 0 ]; then
+            git show a895487f1b8edda600dcd8098cb7f6a92bfbecfa:v13/code/v13/utility.py > "$RUNNER_TEMP/v13-run34-frozen-worktree/v13/code/v13/utility.py" 2> "$e/FROZEN_RESTORE_RAW.log"
+            echo "$?" > "$e/FROZEN_RESTORE_EXIT.txt"
+            git hash-object "$RUNNER_TEMP/v13-run34-frozen-worktree/v13/code/v13/utility.py" > "$e/FROZEN_UTILITY_BLOB.txt"
+          else
+            echo SKIPPED_WORKTREE_RED > "$e/FROZEN_RESTORE_RAW.log"
+            echo SKIPPED > "$e/FROZEN_RESTORE_EXIT.txt"
+            echo SKIPPED > "$e/FROZEN_UTILITY_BLOB.txt"
+          fi
+          if [ "$(cat "$e/FROZEN_RESTORE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd "$RUNNER_TEMP/v13-run34-frozen-worktree/v13/code" && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run34_c3_native_quote_intervention_pilot tests.test_run37_c3_rule_use_native_pilot) > "$e/FROZEN_RAW.log" 2>&1
+            echo "$?" > "$e/FROZEN_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FROZEN_RAW.log"
+            echo SKIPPED > "$e/FROZEN_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 32e6f4846ef03f3d8934f3824f809ff43763a70d --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 32e6f4846ef03f3d8934f3824f809ff43763a70d HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve both original current-source RED and frozen preflight raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run34-run37-frozen-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-frozen-run34-run37/
+          if-no-files-found: error
+      - name: Enforce exact paired evidence without rewriting frozen pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-frozen-run34-run37"
+          for n in VENV DEPS FETCH WORKTREE FROZEN_RESTORE FROZEN PRIVACY DIFF; do
+            test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n failed; raw preserved"; exit 1; }
+          done
+          test "$(cat "$e/CURRENT_UTILITY_BLOB.txt")" = ff16ab6012b2865e0f3abde2a289aaf00e9aaa53
+          test "$(cat "$e/FROZEN_UTILITY_BLOB.txt")" = f4a92dab9c4a40761d64394cdca1c052e9a76bfd
+          test "$(cat "$e/CURRENT_EXIT.txt")" != 0
+          test "$(grep -c native_source_or_catalog_changed "$e/CURRENT_RAW.log")" -ge 2
+          echo 'HISTORICAL_FROZEN_SOFTWARE_PREFLIGHT_ONLY_NO_NATIVE_OR_GATE_PROMOTION'
