@@ -82,6 +82,20 @@ class P0XIndependentExportAudit(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DOMAIN_IDENTITY|B2_ARM"):
             audit.verify(self.root, PIN)
 
+
+    def test_forged_foreign_project_not_in_cohort_rejected(self):
+        inputs = [json.loads(line) for line in
+                  (self.root / "inputs.jsonl").read_text().splitlines()]
+        index = next(i for i, p in enumerate(inputs) if p["arm"] == "shuffled")
+        message = inputs[index]["messages"][0]["content"]
+        prefix, foreign = message.split("\\n\\nFOREIGN B1 source:\\n", 1)
+        import re
+        foreign = re.sub(r"^Project P0X[0-9A-F]{16}", "Project P0XFFFFFFFFFFFFFFFF", foreign)
+        inputs[index]["messages"][0]["content"] = prefix + "\\n\\nFOREIGN B1 source:\\n" + foreign
+        rewrite(self.root, "inputs.jsonl", inputs)
+        with self.assertRaisesRegex(ValueError, "SHUFFLED_COHORT"):
+            audit.verify(self.root, PIN)
+
     def test_unmodified_hash_mismatch(self):
         with (self.root / "inputs.jsonl").open("ab") as handle:
             handle.write(b"\n")
