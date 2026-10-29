@@ -77,6 +77,22 @@ class WorldModelActionSelectionBindingTests(unittest.TestCase):
         self.set_created(b, started - 1)
         self.assertEqual(wm.transitions(self.r.store), [])
 
+    def test_mismatched_packet_generation_cannot_relabel_action(self):
+        e = self.event()
+        first = self.selection(e, "simple")
+        _, started = self.action(e)
+        self.set_created(first, started - 2)
+        mismatched = self.selection(e, "detail")
+        self.set_created(mismatched, started - 1)
+        # A corrupted packet-row generation is not an eligible C5 selection
+        # for the event's actual brain generation.
+        with self.r.store.tx() as c:
+            c.execute("UPDATE packets SET generation_id=? WHERE id=?",
+                      ("gen_foreign_generation", mismatched["packet_id"]))
+        got = wm.transitions(self.r.store)
+        self.assertEqual(len(got), 1)
+        self.assertEqual(got[0]["a"], "simple")
+
 
 if __name__ == "__main__":
     unittest.main()
