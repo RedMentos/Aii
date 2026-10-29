@@ -46,7 +46,7 @@ class VerifiedExactStandaloneCliTests(unittest.TestCase):
     def test_exact_source_is_executable_without_native_or_learning(self):
         self.source()
         code, got = self.invoke("--exact")
-        self.assertEqual(code, 0)
+        self.assertEqual(code, 0, got)
         self.assertEqual(got["status"], "FINAL_SOURCE_EXACT")
         self.assertEqual(got["answer"], "Project Elyra: 615 Euro.")
         self.assertEqual(got["authority"], "EXACT_SOURCE")
