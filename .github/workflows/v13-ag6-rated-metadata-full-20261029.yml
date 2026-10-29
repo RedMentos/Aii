@@ -1,0 +1,54 @@
+name: V13 AG6 rated metadata lifecycle full software review
+on:
+  push:
+    branches: [codex/v13-ag6-rated-metadata-recheck-20261029-auto10n]
+    paths: ['.github/workflows/v13-ag6-rated-metadata-full-20261029.yml', 'v13/code/v13/agi/weights.py', 'v13/code/tests/test_ag6_rated_metadata_lifecycle_20261029.py']
+permissions:
+  contents: read
+jobs:
+  full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Execute source-pinned full software regression and preserve all raw results
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/ag6-rated-metadata-full"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_metadata_lifecycle_20261029.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest discover -s tests) > "$e/FULL_RAW.log" 2>&1
+          echo "$?" > "$e/FULL_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_metadata_lifecycle_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 784e5ea92bc55107482400cb39d9d6a95b6afc1b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 784e5ea92bc55107482400cb39d9d6a95b6afc1b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original full-suite RED if inherited errors remain
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ag6-rated-metadata-full-${{ github.sha }}
+          path: ${{ runner.temp }}/ag6-rated-metadata-full/
+          if-no-files-found: error
+      - name: Enforce all checks without relabeling inherited failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/ag6-rated-metadata-full"
+          for n in VENV DEPS FULL COMPILE PRIVACY DIFF; do
+            test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n failed"; exit 1; }
+          done
+          echo AG6_SOURCE_ONLY_NO_AUTHORITY
