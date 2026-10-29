@@ -96,6 +96,23 @@ class P0XIndependentExportAudit(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SHUFFLED_COHORT"):
             audit.verify(self.root, PIN)
 
+
+    def test_exact_export_pins_and_rehashed_mutation(self):
+        input_pin = "0b74a504ca7dae7b0aae5c8f6843be73111ac626aef175290b873361c2137efa"
+        answer_pin = "0d6ba9cd5d8581c079b68728f21cd8d8a5b2d22f8801f24cfc72aa2122b019a1"
+        report = audit.verify(self.root, PIN, inputs_sha256=input_pin,
+                              answers_sha256=answer_pin)
+        self.assertTrue(report["external_export_pins_verified"])
+        inputs = [json.loads(line) for line in
+                  (self.root / "inputs.jsonl").read_text().splitlines()]
+        inputs[0]["messages"][0]["content"] += " "
+        rewrite(self.root, "inputs.jsonl", inputs)
+        with self.assertRaisesRegex(ValueError, "EXTERNAL_EXPORT_PIN"):
+            audit.verify(self.root, PIN, inputs_sha256=input_pin,
+                         answers_sha256=answer_pin)
+        with self.assertRaisesRegex(ValueError, "PARTIAL_EXPORT_PIN"):
+            audit.verify(self.root, PIN, inputs_sha256=input_pin)
+
     def test_unmodified_hash_mismatch(self):
         with (self.root / "inputs.jsonl").open("ab") as handle:
             handle.write(b"\n")

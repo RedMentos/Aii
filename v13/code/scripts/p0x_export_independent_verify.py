@@ -75,7 +75,7 @@ def parse_both(message, project):
     return (min(eligible)[2] if eligible else "NONE"), current, b1, b2
 
 
-def verify(directory, expected_fixture_sha256):
+def verify(directory, expected_fixture_sha256, *, inputs_sha256=None, answers_sha256=None):
     root = Path(directory)
     require(root.is_dir() and not root.is_symlink(), "DIRECTORY")
     require(re.fullmatch(r"[0-9a-f]{64}", expected_fixture_sha256) is not None,
@@ -91,6 +91,14 @@ def verify(directory, expected_fixture_sha256):
             and manifest["redmi_measured"] is False
             and manifest["step2_status"] == "UTILITY_FAIL"
             and manifest["jepa_weight"] == 0, "NEGATIVE_GATES")
+    require((inputs_sha256 is None) == (answers_sha256 is None), "PARTIAL_EXPORT_PIN")
+    if inputs_sha256 is not None:
+        require(re.fullmatch(r"[0-9a-f]{64}", inputs_sha256) is not None
+                and re.fullmatch(r"[0-9a-f]{64}", answers_sha256) is not None,
+                "EXPORT_PIN_FORMAT")
+        require(manifest["sha256"]["inputs.jsonl"] == inputs_sha256
+                and manifest["sha256"]["answers.jsonl"] == answers_sha256,
+                "EXTERNAL_EXPORT_PIN")
     require(manifest["model_inputs"] == 750 and manifest["answers"] == 150
             and manifest["holdout_rows"] == 150 and manifest["calibration_rows"] == 30,
             "COUNTS")
@@ -156,7 +164,9 @@ def verify(directory, expected_fixture_sha256):
             "inputs_sha256": manifest["sha256"]["inputs.jsonl"],
             "answers_sha256": manifest["sha256"]["answers.jsonl"],
             "checked_prompts": 750, "checked_answers": 150,
-            "oracle_matches": 150, "canonical_gate_pass": False,
+            "oracle_matches": 150,
+            "external_export_pins_verified": inputs_sha256 is not None,
+            "canonical_gate_pass": False,
             "step2_status": "UTILITY_FAIL", "whole_system_complete": False}
 
 
@@ -164,8 +174,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--directory", required=True, type=Path)
     parser.add_argument("--fixture-sha256", required=True)
+    parser.add_argument("--inputs-sha256", required=True)
+    parser.add_argument("--answers-sha256", required=True)
     args = parser.parse_args(argv)
-    print(json.dumps(verify(args.directory, args.fixture_sha256), sort_keys=True))
+    print(json.dumps(verify(args.directory, args.fixture_sha256,
+                            inputs_sha256=args.inputs_sha256,
+                            answers_sha256=args.answers_sha256), sort_keys=True))
     return 0
 
 
