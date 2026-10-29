@@ -47,6 +47,8 @@ jobs:
           echo "$?" > "$e/COMPILE_EXIT.txt"
           (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_calibration_instruction tests.test_p2x_calibration_native_executor tests.test_p2x_calibration_independent_audit) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m scripts.p2x_calibration_independent_audit --help) > "$e/CLI_RAW.log" 2>&1
+          echo "$?" > "$e/CLI_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 7174040ad6ab005f5a75704d796ce194a0bd2fe6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check 7174040ad6ab005f5a75704d796ce194a0bd2fe6 HEAD > "$e/DIFF_RAW.log" 2>&1
@@ -67,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-p2x-calibration-independent"
-          for stage in SOURCE COMPILE TEST PRIVACY DIFF; do
+          for stage in SOURCE COMPILE TEST CLI PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED, raw retained"
               tail -35 "$e/${stage}_RAW.log" 2>/dev/null || true
