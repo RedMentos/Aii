@@ -1,12 +1,12 @@
-name: V13 Run130 source-bound project identity SOFTWARE-only native replay
+name: V13 Run130 source-exact B1 option quote consistency SOFTWARE-only native replay
 on:
   push:
-    branches: [assistant/v13-step2-option-quote-binding-20261029]
+    branches: [assistant/v13-step2-option-quote-c3-guard-20261029]
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: v13-run130-project-binding-${{ github.ref }}
+  group: v13-run130-option-quote-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   software:
