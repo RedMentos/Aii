@@ -163,6 +163,9 @@ def counterfactual(store,s,a,st=None):
     if not np.isfinite(preds).all():return _invalid_numeric(a)
     mean=preds.mean(0);spread=float(preds.std(0).mean())
     if not np.isfinite(mean).all() or not math.isfinite(spread):return _invalid_numeric(a)
+    # Training targets are log1p(nonnegative duration/chars) and binary success.
+    # A finite ridge extrapolation outside that domain is not a valid forecast.
+    if mean[0]<0 or mean[2]<0 or not 0<=mean[1]<=1:return _invalid_numeric(a)
     ood=cov['ood_distance'] if cov['ood_distance'] is not None else 1e9
     conf=(1-math.exp(-cov['samples']/COVER_N))*math.exp(-max(0.,ood-OOD_SUPPORT))/(1+spread/SPREAD_REF)
     if not math.isfinite(conf):return _invalid_numeric(a)
