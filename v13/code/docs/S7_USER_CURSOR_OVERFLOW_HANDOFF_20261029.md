@@ -12,3 +12,7 @@
 2. Correct any focused failures; review old `until` migration, revoked source handling, assistant duplicates, session fairness and restart. Never weaken native_history source/rule validation or fabricate native evidence. Preserve all failed attempts.
 3. Keep PR #1118 draft. No merge without review and exact-head verification. Continue independent blueprint work.
 4. Negative gates: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight0, AG6 unapproved, V13 incomplete.
+
+## Follow-on source integrity review (CI pending)
+- Source `11d4ac333fc6d2808e75d33baffd71d7a7bba357` revalidates all 96 retained digest entries in bounded event-ID batches rather than a latest-message window that loses old users under reverse FINAL ordering. `422bea2a25ec49f0289c3750cc764bfd98d8b544` preserves valid unrelated entries if one cached row is malformed. `bd22e2cdf81ecd92f8a2dd58e2370a3f23614bd5` fixes malformed selector input handling. New tests `a4863db0cbd76b3b11dc110ffdb27a05456cf5b6`, `72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3` require 96 source-valid visible entries and malformed-entry isolation. Workflow `ef77208c4312a6deb7a8d5e3da9705902ba2381b` includes history.py trigger.
+- Several source-only CI runs were triggered by sequential review commits. The original `40909329351` tests an earlier source snapshot; only a run whose exact HEAD contains the final test commit can verify the final candidate. No source-only GREEN claim until raw checks close. Preserve all intermediate raw results and negative gates.
