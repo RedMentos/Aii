@@ -50,7 +50,7 @@ class Run135AgeStep2Crosschain(unittest.TestCase):
     def test_invalid_finite_evidence_does_not_mutate_age(self):
         before = self.age.state()
         bad = dict(GOOD, competence=True)
-        with self.assertRaisesRegex(ValueError, "AGE_EVIDENCE_COMPETENCE_NOT_FINITE_UNIT"):
+        with self.assertRaisesRegex(ValueError, "AGE_METRIC_INVALID:competence"):
             finite.record(self.age, "system", bad, evidence_id="run135-invalid")
         self.assertEqual(self.age.state(), before)
         self.assertEqual(quarantine.snapshot(self.age)["status"], "VALID_DIAGNOSTIC_ONLY")
