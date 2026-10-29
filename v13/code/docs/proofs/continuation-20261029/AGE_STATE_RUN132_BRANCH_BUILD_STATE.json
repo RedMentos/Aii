@@ -1,0 +1,81 @@
+{
+  "schema": "v13.run132.age_persisted_state_quarantine_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation, review-only; no native/production Age owner",
+  "branch": "assistant/v13-age-state-quarantine-run132-20261029",
+  "pr": 1032,
+  "base_pr": 1031,
+  "base_commit": "556de380b4e09690b3de9016495178a5baa130ec",
+  "prereg_commit": "9490893b9cd9ef2243678b894318ebaa853ab465",
+  "original_age_blob": "d4c38ae344746811fedecff706a9affe9cf8b375",
+  "source_blob": "8143c5995ab04e4c08e87dfa76d3345570dede22",
+  "test_blob": "eab41fbe046d167530f2ed5187c78ce52e142b4b",
+  "ci_workflow_blob": "683a19e260a562b93d2d2dd4e39cae361bc66fa9",
+  "source_and_test_commit": "cc0bbb6780d436dab7bfea7a405e00b642a2f45a",
+  "ci_head_before_this_checkpoint": "1254fccba0f9ca54ca47b900aecfb40e1d8703ab",
+  "software_ci": {
+    "original_run_id": 40815599318,
+    "original_status": "RUNNING_OR_UNAUDITED",
+    "current_head_run_id": 40815670246,
+    "current_head_status": "QUEUED_OR_UNAUDITED",
+    "focused": "PENDING_EXACT_HEAD",
+    "full": "PENDING_EXACT_HEAD",
+    "privacy": "PENDING_EXACT_HEAD",
+    "original_raw": "PENDING_EXACT_HEAD",
+    "not_native": true
+  },
+  "changes": [
+    "Read-only stored Age state validation of stages, maturity/noise, counters, mandatory capabilities and evidence shape.",
+    "Diagnostic-only quarantine with no rights/budgets and no stored-state mutation.",
+    "Persisted falsy JSON row detection; AgeControl.state() masks {} / null / [] / 0 / false as default.",
+    "Store restart and corruption counterexamples; Age0 build ceiling remains zero."
+  ],
+  "limitations": [
+    "No production v13/age.py or operator wiring; candidate does not protect live runtime.",
+    "No genuine native/Redmi evidence, no Age advancement.",
+    "Original successful JSON writes use allow_nan=False, so NaN/Inf persisted corruption requires external/imported/corrupt state; finite invalid persisted values are reproducible."
+  ],
+  "cross_reviews": [
+    {
+      "pr": 1029,
+      "artifact": 12871797552,
+      "zip_sha256": "88bcf72b157a703d579a2821c6e0d442ef3ebebc364cb9de03b72e02fc2f362d",
+      "result": "51/51 SHA, 10/10 exits zero, 2766 full, offline 42 rows, no STEP2 promotion"
+    },
+    {
+      "pr": 1030,
+      "artifact": 12872031695,
+      "zip_sha256": "4e9f52df6f33003009d8dcb43dcce220699d31235eeec64e8fb8f1d5ce194fd7",
+      "result": "RED original native replay: six same_policy_dual rows have two identical B1 analysts; guard rejected legitimate control"
+    },
+    {
+      "pr": 1031,
+      "artifact": 12871917942,
+      "zip_sha256": "aaca13f299c59b903bb7fb2f2de76bd083139c5a16fd1ed9bd8354109ff1f07b",
+      "result": "Earlier head 466364c focused 27, full 2768 (3 skipped), privacy clean, 16/16 hashes; current head pending"
+    }
+  ],
+  "open_questions": [
+    "Can Run132 exact-head software CI and original raw audit be independently closed GREEN?",
+    "Should guarded read validation be integrated into production only after source freeze and cross-organ review?",
+    "How should a corrupt persisted Age state be safely repaired by a human without losing provenance/history?",
+    "Native-owner release receipt for separate STEP2 84-call experiment remains absent."
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Check GitHub Actions run 40815670246 (exact head 1254fccba0f9ca54ca47b900aecfb40e1d8703ab); download its original ZIP; independently verify HEAD, CRC, SHA256SUMS, SOURCE/FOCUSED/FULL/PRIVACY/DIFF exits and negative gates. Then run current-head CI for this doc-only checkpoint or mark scope explicitly; update this branch-scoped BUILD_STATE and PR without overwriting sibling owners.",
+  "prerequisites": [
+    "Do not merge to main or alter frozen production Age until reviewed.",
+    "No Redmi, native owner or model job claimed.",
+    "No unauthorized Drive write or private data publication."
+  ],
+  "no_main_merge": true
+}
