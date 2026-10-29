@@ -47,8 +47,8 @@
       "full": 2672
     }
   ],
-  "precondition": "Run110 exact f918ce2c2474678c99f44f8816fec27909c0d604 original Actions 40801220110 must be independently GREEN before import or Run112 execution",
-  "status": "PREREG_FIRST_AND_TEST_STAGED_ONLY; DONOR_RAW_GREEN; TARGET_RUN110_RAW_PENDING; NO_IMPORT; NO_RUN112_EXECUTION",
+  "precondition": "Run110 independently GREEN Actions 40801220110 original ZIP 3e40efb6188d0721196eaccf14ec86b0d5a34d6a816ccca66e0bd836818a98a2 CRC CLEAN 18/18 SHA256SUMS 8/8 exits 19 focused 2681 full; private byte-identical backup",
+  "status": "RUN110_RAW_GREEN; EXACT_SIX_BLOB_IMPORT_VERIFIED; RUN112_CI_PENDING; NO_NEW_NATIVE_YET",
   "negative_gates": {
     "Age0": "RECORD_ONLY",
     "STEP2": "UTILITY_FAIL",
@@ -59,6 +59,20 @@
     "Redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "next_command": "Wait for exact Run110 CI original raw artifact, audit ZIP CRC+inner hashes+all exits+fixture SHA and private backup. Only if GREEN, create exact six-blob atomic import from Run107, run focused+full+native C3 on integrated head with closed raw, independent review and remote verification.",
-  "remaining_execution_budget": "UNKNOWN"
+  "next_command": "Run focused/full crosschain software and exact pinned C3 native with closed raw, audit original artifact and private backup, then proceed to Run111 B1/B2 native pilot if independently GREEN.",
+  "remaining_execution_budget": "UNKNOWN",
+  "target_raw": {
+    "run": 40801220110,
+    "artifact_id": 12866052866,
+    "zip_sha256": "3e40efb6188d0721196eaccf14ec86b0d5a34d6a816ccca66e0bd836818a98a2",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run110-STEP2-Fresh-Fixtures/RAW_40801220110_sha3E40EFB6.zip",
+    "byte_match": true
+  },
+  "atomic_import": {
+    "commit": "4a57d7517e0faa981a903e0a13fb54f131cac7c2",
+    "tree": "621aec5520877b81dc4b953442d7d47f8a58c788",
+    "six_donor_blobs_verified": true,
+    "three_run109_and_canon_blobs_unchanged": true,
+    "force_push": false
+  }
 }
