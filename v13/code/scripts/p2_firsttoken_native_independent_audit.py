@@ -20,7 +20,7 @@ PROMPTS = ("Hello.", "2 + 2 = ?", "<|tool_call_start|>python<|tool_call_end|>",
 STAGES = ("RESOURCE", "VENV", "TORCH", "DEPS", "RUNTIME_DOWNLOAD", "RUNTIME_SHA",
           "MASTER_DOWNLOAD", "GGUF_DOWNLOAD", "MODEL_SHA", "SERVER_READY",
           "AUDIT", "PRIVACY", "DIFF")
-MANIFEST = re.compile(r"([0-9a-f]{64})  \\./([^\\n]+)\\Z")
+MANIFEST = re.compile(r"([0-9a-f]{64})  \./([^\n]+)\Z")
 
 
 def sha256(data):
