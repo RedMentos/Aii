@@ -81,8 +81,9 @@ def verify(root, expected_fixture_sha=hb1.FIXTURE):
          and score.get("redmi_measured") is False
          and score.get("whole_system_complete") is False,
          "HB1A_VERIFY_NEGATIVE_GATES_RED")
-    return {"schema": SCHEMA, "status": "VERIFIED_LINUX_NATIVE_DIAGNOSTIC_ONLY_NO_GATE",
+    return {"schema": SCHEMA, "status": "CLOSED_RECORD_CONSISTENT_NO_NATIVE_ATTESTATION_NO_GATE",
             "body_rows": 24, "c3_rows": 30, "fixture_sha256": expected_fixture_sha,
+            "evidence_kind": "RECORD_CONSISTENCY_ONLY_EXTERNAL_NATIVE_WITNESS_REQUIRED",
             "raw_sha256": raw_hash, "score_sha256": score_hash,
             "per_arm": score["per_arm"], "canonical_gate_pass": False,
             "step2_status": "UTILITY_FAIL", "b3_status": "FAIL",
