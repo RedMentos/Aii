@@ -49,6 +49,8 @@ def checked_record(record):
 
 
 def build(current, history, project, cap=CAP):
+    require(isinstance(project, str) and span.PROJECT.fullmatch(project) is not None,
+            "INVALID_PROJECT")
     require(type(cap) is int and 3 <= cap <= CAP, "INVALID_OR_INSUFFICIENT_CAP")
     require(isinstance(history, (list, tuple)) and history, "INVALID_HISTORY")
     current = checked_record(current)
