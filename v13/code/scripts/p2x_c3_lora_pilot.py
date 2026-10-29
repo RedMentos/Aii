@@ -138,17 +138,29 @@ def resource_admission(work):
 
 
 def token_admission(master, selected):
+    """Match LoraTrainer._encode exactly; never measure a tokenizer container's len."""
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(str(master), local_files_only=True)
     lengths = []
     for r in selected:
-        ids = tok.apply_chat_template(
-            r["messages"], add_generation_prompt=True, tokenize=True)
+        # LoraTrainer._encode uses tokenize=False followed by tok(text). Measuring
+        # len(apply_chat_template(tokenize=True)) is NOT necessarily token count:
+        # tokenizer APIs may return a mapping with only two keys.
+        rendered = tok.apply_chat_template(
+            r["messages"], add_generation_prompt=True, tokenize=False)
+        if type(rendered) is not str or not rendered:
+            raise ValueError("P2X pilot malformed rendered prompt RED")
+        prompt = tok(rendered, add_special_tokens=False)["input_ids"]
         target = tok(str(r["target_action"]) + "<|im_end|>",
                      add_special_tokens=False)["input_ids"]
-        if len(ids) + len(target) > CFG["max_tokens"] or not target:
+        if (type(prompt) is not list or type(target) is not list
+                or not prompt or not target
+                or any(type(t) is not int or t < 0 for t in prompt + target)):
+            raise ValueError("P2X pilot malformed/empty token IDs RED")
+        count = len(prompt) + len(target)
+        if count > CFG["max_tokens"]:
             raise ValueError("P2X pilot token truncation/empty target RED")
-        lengths.append(len(ids) + len(target))
+        lengths.append(count)
     return lengths
 
 

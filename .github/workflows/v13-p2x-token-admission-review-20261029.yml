@@ -1,0 +1,59 @@
+name: V13 P2X independent token admission source review
+on:
+  push:
+    branches: [assistant/v13-p2x-token-boundary-review-20261029]
+    paths:
+      - 'v13/code/scripts/p2x_c3_lora_pilot.py'
+      - 'v13/code/tests/test_p2x_c3_lora_pilot.py'
+      - 'v13/code/scripts/p2x_token_admission_native_probe.py'
+      - 'v13/code/tests/test_p2x_token_admission_native_probe.py'
+      - 'v13/code/docs/proofs/continuation-20261029/P2X_TOKEN_ADMISSION_*'
+      - '.github/workflows/v13-p2x-token-admission-review-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve original focused review exits and raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-token-review-evidence"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m py_compile v13/code/scripts/p2x_c3_lora_pilot.py v13/code/tests/test_p2x_c3_lora_pilot.py v13/code/scripts/p2x_token_admission_native_probe.py v13/code/tests/test_p2x_token_admission_native_probe.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2x_c3_lora_pilot.py' -v > "$e/TEST_RAW.log" 2>&1
+          first_rc="$?"
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2x_token_admission_native_probe.py' -v >> "$e/TEST_RAW.log" 2>&1
+          second_rc="$?"
+          if [ "$first_rc" = 0 ] && [ "$second_rc" = 0 ]; then echo 0 > "$e/TEST_EXIT.txt"; else echo 1 > "$e/TEST_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 41b20ad7f65dc65c7cacb23b6ef5579779c94251 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 41b20ad7f65dc65c7cacb23b6ef5579779c94251 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Upload closed original source-only review raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-token-review-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-token-review-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all focused source-only gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-token-review-evidence"
+          for stage in COMPILE TEST PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done

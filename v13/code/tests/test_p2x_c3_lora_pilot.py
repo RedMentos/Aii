@@ -80,16 +80,64 @@ class PilotTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "manifest"):
                 pilot.read_frozen(p)
 
-    def test_token_length_truncation_red(self):
+    @staticmethod
+    def token_fake(prompt_ids, target_ids=None, rendered="RENDERED"):
+        if target_ids is None:
+            target_ids = [2, 3]
         class FakeTokenizer:
-            def apply_chat_template(self, *args, **kwargs):
-                return [1] * 512
-            def __call__(self, *args, **kwargs):
-                return {"input_ids": [2, 3]}
-        fake = FakeTokenizer()
-        with patch.dict(sys.modules, {"transformers": types.SimpleNamespace(
-                AutoTokenizer=types.SimpleNamespace(from_pretrained=lambda *args, **kwargs: fake))}):
+            def __init__(self):
+                self.calls = []
+            def apply_chat_template(self, messages, **kwargs):
+                self.calls.append(("template", kwargs))
+                if kwargs.get("tokenize") is True:
+                    # A two-key mapping is not a two-token prompt.
+                    return {"input_ids": [1] * 600, "attention_mask": [1] * 600}
+                return rendered
+            def __call__(self, value, **kwargs):
+                self.calls.append(("encode", kwargs))
+                return {"input_ids": prompt_ids if value == "RENDERED" else target_ids}
+        return FakeTokenizer()
+
+    @staticmethod
+    def with_fake_tokenizer(fake):
+        return patch.dict(sys.modules, {"transformers": types.SimpleNamespace(
+            AutoTokenizer=types.SimpleNamespace(from_pretrained=lambda *args, **kwargs: fake))})
+
+    def test_token_length_truncation_red(self):
+        fake = self.token_fake([1] * 511)
+        with self.with_fake_tokenizer(fake):
             with self.assertRaisesRegex(ValueError, "truncation"):
+                pilot.token_admission("/synthetic", pilot.select_pilot(fake_records()))
+
+    def test_token_length_exact_512_boundary(self):
+        fake = self.token_fake([1] * 510)
+        with self.with_fake_tokenizer(fake):
+            self.assertEqual(pilot.token_admission("/synthetic",
+                pilot.select_pilot(fake_records())), [512] * 8)
+
+    def test_token_length_uses_trainer_rendered_text_not_mapping_len(self):
+        fake = self.token_fake([1] * 600)
+        with self.with_fake_tokenizer(fake):
+            with self.assertRaisesRegex(ValueError, "truncation"):
+                pilot.token_admission("/synthetic", pilot.select_pilot(fake_records()))
+        self.assertTrue(all(call[1].get("tokenize") is False for call in fake.calls
+                            if call[0] == "template"))
+        self.assertTrue(all(call[1].get("add_special_tokens") is False for call in fake.calls
+                            if call[0] == "encode"))
+
+    def test_token_admission_rejects_empty_or_malformed_ids(self):
+        for prompt, target in (([], [2]), ([1], []), ([[1, 2]], [3]),
+                               ([1, True], [2]), ([1, -1], [2]), ([1], [None])):
+            with self.subTest(prompt=prompt, target=target):
+                fake = self.token_fake(prompt, target)
+                with self.with_fake_tokenizer(fake):
+                    with self.assertRaisesRegex(ValueError, "malformed/empty"):
+                        pilot.token_admission("/synthetic", pilot.select_pilot(fake_records()))
+
+    def test_token_admission_rejects_malformed_render(self):
+        fake = self.token_fake([1], rendered={"input_ids": [1]})
+        with self.with_fake_tokenizer(fake):
+            with self.assertRaisesRegex(ValueError, "malformed rendered"):
                 pilot.token_admission("/synthetic", pilot.select_pilot(fake_records()))
 
     def test_main_red_and_exclusive_output(self):

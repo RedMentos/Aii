@@ -1,0 +1,9 @@
+# P2X tokenizer-only native dependency addendum — before retry (2026-10-29)
+
+Owner GPT-6 independent reviewer. Original prereg `P2X_TOKEN_ADMISSION_NATIVE_PREREG.md` remains binding. **Original RED must never be rewritten**.
+
+Original native tokenizer-only Actions run `40855436052`, exact workflow source head `f7c32fb91b96d9a9d69e6f69fce97237177deb67`, completed FAILURE. Original ZIP SHA256 `7f499d04824c6083b1fcc1111ce49a83e319a7752d7adc510edc09c4320e30db`, CRC CLEAN, 23/23 SHA256SUMS, 9/10 stage exits 0; `PROBE_EXIT=2`, `RESULT.status=TOKENIZER_ONLY_RED_PRESERVED`. Exact exception: `ImportError: apply_chat_template requires jinja2 to be installed. Please install it using pip install jinja2`. This occurred **before any token-length comparison**; no model weights, model calls or training. Frozen P2X 3/3 export SHA and exact QAD tokenizer 4/4 source SHA passed. Privacy/diff CLEAN. Original raw ZIP privately backed up at `/V13/RawEvidence/2026-10-29/P2X/tokenizer_probe_RED_40855436052_sha7f499d04.zip` and re-materialized byte-identical.
+
+**Only authorized retry change:** install `Jinja2==3.1.6` and `MarkupSafe==3.0.3` into isolated tokenizer-only venv, versions independently recovered from the successful original QAD FP32 pilot's `PIP_FREEZE_RAW.log`. Keep all original `transformers==5.20.2`, `tokenizers==0.23.1`, `safetensors==0.8.0`, QAD tokenizer four SHA pins, cohort/seed/source and proof conditions unchanged. No change to scoring logic or posthoc threshold. If retry fails, retain raw and diagnose independently. No adapter activation or utility promotion.
+
+Next command: amend only native workflow dependency installation, trigger fresh exact-head run, independently audit original ZIP and preserve private backup. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; AG6 unapproved; Redmi unmeasured; V13 INCOMPLETE.
