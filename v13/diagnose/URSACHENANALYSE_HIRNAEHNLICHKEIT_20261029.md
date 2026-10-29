@@ -40,6 +40,7 @@ Das ist das typische Zeichen für fehlende gemeinsame Anpassung, und es passt zu
 | Z6g | Block mit Hypothesen ausblenden: C3 41, mit Block schlechter | der Block selbst stört |
 | Z5, Z5e Fokus | Koalition 181, feste Slots 183, kein Kontext 169 | Auswahl bringt nichts gegenüber einfachen Slots |
 | B3 L1 (Versuch 7, 2 Saaten) | Latent schlägt "Attribut-Wörter" (+2,6 bis +6,8), **Latent = SCALAR (±0,4)** | Die Brücke trägt nicht mehr als eine Zahl |
+| B3 Stufe 2 (Einspeisen ins Modell, 29.10.) | Nachricht hilft: Eskalieren 69,0 auf 82,3 %, Entschuldigen 65,6 auf 83,8 %; einfache Wort-Stufen 87,7 und 92,1 %; 11 bis 12 Punkte unter der direkten Auslese aus Stufe 1 | Der Empfänger nutzt die eingespeiste Nachricht schlechter als ein Wort, also fehlt Verwertung, nicht Information (Beleg für B und A) |
 | Z2d STEP2 | zwei Körper .88 gegen ein Körper .58 (+.30), aber **ein Körper mit zwei Zuständen** reicht (Z2l) | Vorteil kommt aus der Kombination von Sichten, nicht aus zwei verschiedenen Modellen |
 
 Gegenbeispiele, die zeigen, dass die Teile einzeln arbeiten: Zweiter Versuch besser (24.1), Z12c World-JEPA auf Slots (.95 gegen .14 auf neue Kombinationen), Z6i2 Routenkopf lernt neue Hinweise (3 von 3 frische Saaten), BP2a Leck-Fix (.75 auf .19), Z2d Zeiger-Zitat (.17 auf .97).
@@ -55,6 +56,8 @@ Die B3-Brücke besteht seit Versuch 7 ihre erste Stufe, ist aber nicht besser al
 
 **Vergleich mit dem Hirn (Analogie).** Hirnareale haben keine eingebauten Übersetzer wie ein fertiges Fremdmodell, auch wenn Verbindungen zwischen Arealen Darstellungen durchaus umformen und die neuronalen Codes nicht gleich sein müssen. Areale entwickeln sich gemeinsam (Ko-Adaption, kritische Phasen).
 Sender und Empfänger passen sich dabei gegenseitig an. V13 trainiert nur einen der beiden Enden, und das nur klein.
+
+**Neuer Beleg (29.10., Stufe 2 der Brücke, B3 L2).** Das Einspeisen der Nachricht ins Modell hilft gegenüber ohne (Eskalieren 69,0 auf 82,3 %, Entschuldigen 65,6 auf 83,8 %), ist aber schlechter als einfache Wort-Stufen (87,7 und 92,1 %) und liegt 11 bis 12 Punkte unter der direkten Auslese aus Stufe 1. L2 ist damit durchgefallen. Die Information kommt an, der Empfänger verwertet sie schlecht. Das passt zu Ursache B, schließt aber die anderen Erklärungen unten nicht aus.
 
 **Meine Deutung (nicht bewiesen).** Die Messungen trennen "fehlendes gemeinsames Training" nicht von zu wenig Spielraum in den Aufgaben, schlechter Darstellung der Eingaben, verrauschter Bewertung oder zu kleiner Modellgröße. Fehlendes gemeinsames Training ist eine plausible Erklärung unter mehreren. Eingefrorene Teile mit nachträglicher Brücke erreichen höchstens das, was der Empfänger schon ohne Brücke versteht.
 Dass LATENT gleich SCALAR ist, kann auch heißen: Die Aufgabe braucht nur eine Zahl. Dann prüft der Test den Wert des Latents gar nicht (siehe G).
