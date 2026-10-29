@@ -59,8 +59,11 @@ class HumanSourceCliCrosschain(unittest.TestCase):
                              (0, "CLARIFY", 0))
             self.assertEqual((outside_code, outside["status"], outside["native_calls"]),
                              (0, "NOT_APPLICABLE", 0))
-            self.assertFalse(wrong.get("answer"))
-            self.assertFalse(outside.get("answer"))
+            # CLARIFY deliberately returns a question, not a sourced budget.
+            self.assertTrue(wrong.get("answer", "").startswith(
+                "I don\'t have a verified budget for Project"))
+            self.assertNotIn("615 Euro", wrong.get("answer", ""))
+            self.assertEqual(outside.get("answer", ""), "")
 
             # Even with an authorized source, native must not run when C3 is absent.
             native_code, absent = self.cli(home, QUESTION, "--native")
@@ -92,7 +95,9 @@ class HumanSourceCliCrosschain(unittest.TestCase):
             self.assertEqual(revoked_code, 0)
             self.assertEqual(revoked["status"], "CLARIFY")
             self.assertEqual(revoked["native_calls"], 0)
-            self.assertFalse(revoked.get("answer"))
+            self.assertTrue(revoked.get("answer", "").startswith(
+                "I don\'t have a verified budget for Project"))
+            self.assertNotIn("615 Euro", revoked.get("answer", ""))
 
 
 if __name__ == "__main__":
