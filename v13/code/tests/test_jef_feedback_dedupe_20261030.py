@@ -41,6 +41,8 @@ class JEFHumanReceiptTests(unittest.TestCase):
             {"coalition": [{"item_id": offer["packet_id"]}],
              "inquisition": [], "decision": "INCORPORATE_A"},
             [offer["packet_id"]])
+        self.r.store.message(self.r.session, eid, "assistant",
+                             text, status="FINAL")
         return eid
 
     def test_exact_duplicate_is_noop_and_survives_new_controller(self):
