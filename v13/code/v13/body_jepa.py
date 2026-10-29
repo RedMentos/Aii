@@ -52,11 +52,17 @@ def effective_rank(x,eps=1e-12):
     p=s/t;p=p[p>0];return float(np.exp(-(p*np.log(p)).sum()))
 
 def derangement(n,rng):
-    """Permutation without fixed points (shuffled-target control); n>=2."""
+    """Bounded valid permutation without fixed points; no fabricated negative control."""
     if n<2:raise ValueError('need two experiences for a shuffled target')
-    while True:
+    expected=list(range(n))
+    # Preserve the existing RNG sequence for successful draws. An adversarial
+    # or broken RNG must never hang a shuffled-target training arm indefinitely.
+    for _ in range(64):  # BOOT fail-closed attempt cap, not a tuned optimum
         p=[int(v) for v in rng.permutation(n)]
+        if len(p)!=n or sorted(p)!=expected:
+            raise ValueError('invalid RNG permutation')
         if all(p[i]!=i for i in range(n)):return p
+    raise ValueError('derangement attempts exhausted')
 
 class EmaAdapter:
     """EMA copy of the trainable adapter tensors only (§13.4). swap() temporarily loads the EMA values into the live
