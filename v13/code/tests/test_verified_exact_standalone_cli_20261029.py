@@ -53,6 +53,7 @@ class VerifiedExactStandaloneCliTests(unittest.TestCase):
         self.assertEqual(got["native_calls"], 0)
         self.assertFalse(got["model_called"])
         self.assertFalse(got["learned"])
+        self.assertFalse(got["semantic_encoder_may_run"])
 
     def test_missing_source_refuses_exact_answer(self):
         code, got = self.invoke("--exact")
