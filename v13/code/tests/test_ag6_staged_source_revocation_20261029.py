@@ -43,7 +43,7 @@ class StagedSourceRecheck(unittest.TestCase):
     def _stage(self):
         batch = self.w.stage(require_replay_pass=False)
         self.assertEqual(batch["status"], "STAGED", batch)
-        return batch
+        return self.w.batch(batch["batch_id"])
 
     def _revoke(self, ref):
         with self.s.tx() as conn:
@@ -72,7 +72,7 @@ class StagedSourceRecheck(unittest.TestCase):
         # preserved with its original dataset hash and source set.
         newer = self.w.stage(require_replay_pass=False)
         self.assertEqual(newer["status"], "STAGED")
-        self.assertNotEqual(newer["id"], batch["id"])
+        self.assertNotEqual(newer["batch_id"], batch["id"])
         self.assertEqual(self.w.batch(batch["id"])["status"], "SOURCE_INVALID")
 
     def test_valid_staged_source_still_calls_trainer(self):
