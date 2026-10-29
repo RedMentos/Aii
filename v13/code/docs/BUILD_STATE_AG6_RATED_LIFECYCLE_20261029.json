@@ -41,8 +41,23 @@
       "private_readback": "byte-exact"
     },
     "full": {
-      "run": 40923444400,
-      "status": "pending at checkpoint; inherited Run34/37 source pin errors expected, not promoted"
+      "run": 40924683606,
+      "source_head": "2d5c3ff9d76dd2e78519ac00c42c04eb3c84f3b5",
+      "status": "RED_INHERITED_RUN34_RUN37_ONLY",
+      "tests": "3222, 2 errors, 11 skips",
+      "zip_sha256": "3b04c2234a14fdfb9c94f9cf100f11a83a84583a14ab7cf557af1de00f68bbb6",
+      "crc": true,
+      "inner_sha256": "17/17",
+      "private_readback": "byte-exact",
+      "exits": {
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "FULL": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      }
     }
   },
   "package2": {
@@ -69,8 +84,23 @@
       "private_readback": "byte-exact"
     },
     "full": {
-      "run": 40923957328,
-      "status": "pending at checkpoint"
+      "run": 40924690206,
+      "source_head": "1e1bf1bce2cdccb3c327957b682ebc2d654a57ea",
+      "status": "RED_INHERITED_RUN34_RUN37_ONLY",
+      "tests": "3229, 2 errors, 11 skips",
+      "zip_sha256": "647ff04a8e24aef3beda56b6404167423699e244ae31d8c7a06a00ffe1df6885",
+      "crc": true,
+      "inner_sha256": "17/17",
+      "private_readback": "byte-exact",
+      "exits": {
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "FULL": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      }
     }
   },
   "gates": {
@@ -90,14 +120,15 @@
     "No atomicity with independent cross-process SQLite writers during fit",
     "No native model or Redmi execution in these packages",
     "Inherited Run34/Run37 frozen-source preflight errors remain; never modify frozen pins to manufacture GREEN",
-    "Post-approval source revocation policy and user message mutation still require separate review"
+    "Post-approval source revocation policy and user message mutation still require separate review",
+    "Earlier full runs with numpy-only venv yielded four extra torch import errors; raw preserved and corrected pinned dependency reruns separately verified"
   ],
   "next_commands": [
-    "gh run view 40923444400 --repo RedMentos/Aii --log",
-    "gh run view 40923957328 --repo RedMentos/Aii --log",
+    "Review exact raw FULL_RAW.log in Actions 40924683606 (two inherited frozen-source errors only)",
+    "Review exact raw FULL_RAW.log in Actions 40924690206 (two inherited frozen-source errors only)",
     "Download exact artifacts; verify SHA256 ZIP, CRC, every SHA256SUMS, stage exit files; private Library readback",
     "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_ag6_rated_metadata_lifecycle_20261029 tests.test_ag6_rated_dependency_lifecycle_20261029",
     "Cross-review PR1128 against PR1127 and inspect unchanged original negative gates; do not merge without owner review"
   ],
-  "stop_condition": "checkpoint only; full suite pending; execution budget remaining UNKNOWN"
+  "stop_condition": "checkpoint only; source-only full suites closed with inherited Run34/37 RED; no platform hard-limit observed; remaining budget UNKNOWN"
 }
