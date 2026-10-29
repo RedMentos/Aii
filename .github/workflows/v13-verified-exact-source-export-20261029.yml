@@ -1,0 +1,31 @@
+name: V13 verified exact-source candidate export
+on:
+  push:
+    branches:
+      - codex/v13-verified-exact-budget-20261029-auto10ad
+    paths:
+      - .github/workflows/v13-verified-exact-source-export-20261029.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Export exact source and witness
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/verified-exact-export"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git archive --format=tar HEAD v13/code/v13/operator.py v13/code/scripts/ask_verified_budget.py v13/code/tests/test_verified_exact_budget_20261029.py > "$e/EXACT_PATCH_SOURCE.tar"
+          sha256sum "$e/EXACT_PATCH_SOURCE.tar" > "$e/EXACT_PATCH_SOURCE_SHA256.txt"
+          git hash-object v13/code/v13/operator.py v13/code/scripts/ask_verified_budget.py v13/code/tests/test_verified_exact_budget_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-verified-exact-source-${{ github.sha }}
+          path: ${{ runner.temp }}/verified-exact-export/
+          if-no-files-found: error
