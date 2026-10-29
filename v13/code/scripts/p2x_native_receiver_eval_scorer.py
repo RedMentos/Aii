@@ -124,10 +124,11 @@ def compare(base, candidate):
             or candidate.get("schema") != SCHEMA + ".score.v1"
             or base.get("adapter_sha256") is not None
             or not isinstance(candidate.get("adapter_sha256"), str)
-            or base.get("fixture_sha256") != candidate.get("fixture_sha256") != FIXTURE_SHA
+            or base.get("fixture_sha256") != FIXTURE_SHA
+            or candidate.get("fixture_sha256") != FIXTURE_SHA
             or base.get("model_sha256") != MODEL_SHA
             or candidate.get("model_sha256") != MODEL_SHA
-            or base.get("rows") != candidate.get("rows") != 360):
+            or base.get("rows") != 360 or candidate.get("rows") != 360):
         raise ValueError("P2X paired native base/candidate identity mismatch")
     return {"schema": SCHEMA + ".paired.v1",
             "status": "P2X_PAIRED_NATIVE_DIAGNOSTIC_NO_GATE",
