@@ -19,14 +19,11 @@ spec.loader.exec_module(pilot)
 def fake_records():
     train = []
     for label in pilot.LABELS:
-        for i in range(3):
+        for i in range(126):
             arm = "both_exact" if label != "UNKNOWN" else "b1_only"
-            train.append({"id": "P2X" + format(100 + 10 * pilot.LABELS.index(label) + i, "016X"),
+            train.append({"id": "P2X" + format(100 + 1000 * pilot.LABELS.index(label) + i, "016X"),
                           "arm": arm, "target_action": label,
                           "messages": [{"role": "user", "content": "Synthetic B1/B2 source text"}]})
-    train = train * 42
-    for i in range(504-len(train)):
-        train.append(dict(train[i]))
     val = [{"id": "P2X" + format(10000 + i, "016X"),
             "arm": "both_exact", "messages": [{"role": "user", "content": "val"}]}
            for i in range(360)]
