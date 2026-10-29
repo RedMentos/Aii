@@ -59,9 +59,16 @@ def validate_policy(p):
         if isinstance(d,int) and not isinstance(v,int):raise ValueError(k+' muss ganzzahlig sein')
     if not isinstance(p['enabled'],bool):raise ValueError('enabled true|false')
     q=p['quiet_hours']
-    if q is not None and not (isinstance(q,list) and len(q)==2 and all(isinstance(h,int) and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
+    if q is not None and not (isinstance(q,list) and len(q)==2 and all(type(h) is int and 0<=h<=23 for h in q)):raise ValueError('quiet_hours [Start,Ende] in Stunden')
     m=p['mix']
-    if set(m)!=set(MIX) or any(isinstance(v,bool) or not isinstance(v,(int,float)) or v<0 for v in m.values()) or sum(m.values())<=0:raise ValueError('mix recent/protected_old/failure >=0')
+    try:
+        total=sum(m.values()) if type(m) is dict and set(m)==set(MIX) else None
+        valid=(total is not None
+               and all(type(v) in (int,float) and math.isfinite(v) and v>=0 for v in m.values())
+               and math.isfinite(total) and total>0)
+    except (OverflowError,TypeError,ValueError):
+        valid=False
+    if not valid:raise ValueError('mix recent/protected_old/failure: finite nonnegative weights, total >0')
     for k,v in LOCKED.items():
         if p.get(k)!=v:raise ValueError(k+' ist gesperrt')
     return p
