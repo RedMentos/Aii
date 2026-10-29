@@ -1,0 +1,61 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:30:00Z",
+  "branch": "codex/v13-fullsuite-jef-final-restart-20261030-auto11f",
+  "pr": 1172,
+  "base_pr": 1171,
+  "base_commit": "0a153ec51a1ca13e84eb54b27e7974b9899868ae",
+  "verified_ci_commit": "59cf1d5a7b6c77bf77b5354d5bd5c2ec9e1b9f3f",
+  "ci_run": 40972859001,
+  "ci_conclusion": "failure",
+  "full_unfiltered_tests": 3355,
+  "errors": 2,
+  "skipped": 11,
+  "raw_artifact_id": 12940164837,
+  "raw_zip_sha256": "fcfba02324e50df1c6f05d34cedc4c98f8f1d17c6a1e4a1a4aadc0cffba1b641",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 30,
+  "failed_tests": [
+    "test_run34_c3_native_quote_intervention_pilot.Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates",
+    "test_run37_c3_rule_use_native_pilot.Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates"
+  ],
+  "failure_reason": "native_source_or_catalog_changed on frozen historical Run34/Run37 source identity; inherited and deliberately not waived",
+  "new_regressions_observed": 0,
+  "source_blobs": {
+    ".github/workflows/v13-fullsuite-jef-final-restart-20261030.yml": "c9d6c6d50b47b6b60b254434d55670bff7016e3b"
+  },
+  "checks": {
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS",
+    "torch_import": "PASS",
+    "transformers_import": "PASS",
+    "peft_import": "PASS",
+    "full_unfiltered_unittest": "RED_INHERITED_TWO_ERRORS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "NO_SIGNAL_UNCHANGED",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-fullsuite-jef-final-restart-20261030-auto11f",
+  "open_questions": [
+    "Body-JEPA exact integer permutation candidate PR1173 is sibling from PR1171 and is not in this full-suite source; combined fullsuite must be run separately.",
+    "Historical Run34/Run37 native preflight remains RED; do not rewrite frozen source hashes."
+  ],
+  "next_command": "Execute preregistered combined JEF + Body-JEPA unfiltered fullsuite from codex/v13-fullsuite-jef-bodyjepa-20261030-auto11h after verifying branch base PR1173.",
+  "prerequisites": [
+    "Pinned isolated torch/Transformers/PEFT",
+    "No exclusions or waivers",
+    "No gate promotion"
+  ]
+}
