@@ -49,7 +49,12 @@ jobs:
           py="$RUNNER_TEMP/v13-sleep-mix-venv/bin/python"
           if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
             "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
-            echo "$?" > "$e/DEPS_EXIT.txt"
+            first="$?"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+            second="$?"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'gguf==0.19.0' 'Jinja2==3.1.6' 'MarkupSafe==3.0.3' >> "$e/DEPS_RAW.log" 2>&1
+            third="$?"
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/DEPS_EXIT.txt"; else echo 1 > "$e/DEPS_EXIT.txt"; fi
             "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
             "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
             echo "$?" > "$e/PIP_CHECK_EXIT.txt"
