@@ -41,7 +41,7 @@ class PairedScoreIntegrityReview(unittest.TestCase):
         self.assertEqual(report["mean_utility"]["both_exact"], 1.0)
 
     def test_bad_explicit_utility_cannot_be_a_valid_pair(self):
-        bad_values = (float("nan"), float("inf"), -float("inf"), True,
+        bad_values = (float("nan"), float("inf"), -float("inf"), 10 ** 10000, True,
                       "1", -0.01, 1.01, None)
         for bad in bad_values:
             with self.subTest(value=repr(bad)):
