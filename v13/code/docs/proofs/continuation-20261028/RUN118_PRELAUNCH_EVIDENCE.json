@@ -1,0 +1,49 @@
+{
+  "schema": "v13.run118.prelaunch_evidence.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "parent_run117": {
+    "actions_run_id": 40804765978,
+    "head": "5eb9b45ef742c0e100fb6d04f461a43666b62650",
+    "artifact_id": 12867534046,
+    "zip_sha256": "209993502ccd1943ec287b0cebc281a55b4f7e6c21764f46dc472ce9ae8b33d7",
+    "crc": "CLEAN",
+    "inner_sha256sums": "18/18",
+    "exits": "8/8 ZERO",
+    "focused": "32 PASS",
+    "full": "2704 PASS 1 SKIP",
+    "candidate_rule_span_coverage": "6/6",
+    "legacy_first240_coverage": "3/6",
+    "privacy": "CLEAN",
+    "diff": "CLEAN",
+    "native_calls": 0,
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run117-ExactRuleSource-Software/RAW_40804765978_sha20999350.zip",
+    "private_backup_rematerialized_sha256": "209993502ccd1943ec287b0cebc281a55b4f7e6c21764f46dc472ce9ae8b33d7"
+  },
+  "run118": {
+    "status": "SOURCE_TESTS_PREREGISTERED_NOT_YET_CI_EXECUTED",
+    "prereg_first_commit": "48b8773ad0c4313a69ae3c8a0bb8afa0e613b811",
+    "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+    "candidate_scope": "prior-first cap24 verified original source refs, software only",
+    "source_git_blob": "6068849a19f53ad1bdbd200739b95731f8a1fb20",
+    "tests_git_blob": "98f6f13c7e6c57bb794aa1bfd52596859264d91b"
+  },
+  "native_owner": "Run116 Actions 40805361392 active; Run118 must NOT launch native",
+  "negative_gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Commit pinned Run118 software-only workflow, run focused/full/privacy/diff, independently verify original ZIP and private byte-identical backup. No native until Run116 owner release and new prereg.",
+  "prerequisites": [
+    "Run117 original raw GREEN and private backup exact",
+    "source/test blobs exact",
+    "no production cognition changes",
+    "software-only"
+  ]
+}
