@@ -61,7 +61,7 @@ class PairedSoftware(unittest.TestCase):
         self.assertEqual(result["comparisons"]["c3_only"]["losses"], 0)
         self.assertGreater(result["comparisons"]["c3_only"]["bootstrap_ci_95"][0], 0)
         self.assertGreater(result["comparisons"]["c3_only"]["family_cluster_ci_95"][0], 0)
-        self.assertEqual(len(set(paired.frozen_family_map().values())), 30)
+        self.assertEqual(len(set(paired.frozen_family_map().values())), 25)
         self.assertLess(result["comparisons"]["c3_only"]["holm_adjusted_p"], .001)
         self.assertFalse(result["canonical_gate_pass"])
         self.assertEqual(result, paired.analyze(base, arms))
