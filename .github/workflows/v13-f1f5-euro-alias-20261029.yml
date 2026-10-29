@@ -1,12 +1,13 @@
 name: V13 F1F5 verified Euro source aliases software review
 on:
   push:
-    branches: [codex/v13-f1f5-euro-alias-20261029-auto10as]
+    branches: [codex/v13-f1f5-euro-alias-20261029-auto10as, codex/v13-f1f5-euro-alias-revocation-20261029-auto10at]
     paths:
       - '.github/workflows/v13-f1f5-euro-alias-20261029.yml'
       - 'v13/code/v13/source_consumer.py'
       - 'v13/code/tests/test_f1f5_euro_alias_equivalence_20261029.py'
       - 'v13/code/docs/proofs/continuation-20261029/F1F5_EURO_ALIAS_PREREG_20261029.md'
+      - 'v13/code/docs/proofs/continuation-20261029/F1F5_EURO_ALIAS_CROSSORGAN_NEGATIVE_PREREG_20261029.md'
 permissions:
   contents: read
 jobs:
