@@ -2,7 +2,7 @@
 
 Die folgenden Befehle funktionieren in der lokalen Termux-Konsole von V13, **nicht** als normale Chatfrage. Sie verändern keine Regeln, trainieren kein Modell und starten keine Werkzeuge.
 
-` :worldmodel status ` (ohne Leerzeichen direkt nach dem ersten `):worldmodel status`) zeigt, ob das kleine Weltmodell schon aus beobachteten **eigenen V13-Aktionen** angepasst wurde. `NOT_FITTED` bedeutet: Es gibt noch kein solches Modell. `FITTED` bedeutet **nicht**, dass seine Vorhersagen zuverlässig sind.
+`:worldmodel status` zeigt, ob das kleine Weltmodell schon aus beobachteten **eigenen V13-Aktionen** angepasst wurde. `NOT_FITTED` bedeutet: Es gibt noch kein solches Modell. `FITTED` bedeutet **nicht**, dass seine Vorhersagen zuverlässig sind.
 
 `:worldmodel event <Event-ID> detail` fragt: *Was würde das Weltmodell für die Route „detail“ bei diesem bereits gespeicherten Ereignis erwarten?* Erlaubte Routen: `simple`, `detail`, `gist`, `both`. Die Event-ID muss zum aktuell geöffneten Chat gehören. Fehlende und fremde IDs werden gleich abgelehnt.
 
