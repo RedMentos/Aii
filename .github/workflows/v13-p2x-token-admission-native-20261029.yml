@@ -1,0 +1,98 @@
+name: V13 P2X pinned QAD tokenizer-only native admission proof
+on:
+  push:
+    branches: [assistant/v13-p2x-token-boundary-review-20261029]
+    paths:
+      - '.github/workflows/v13-p2x-token-admission-native-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2x-tokenizer-only-native-20261029
+  cancel-in-progress: false
+jobs:
+  pinned-tokenizer-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture frozen tokenizer-only native evidence without model weights
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-token-native-evidence"
+          w="$RUNNER_TEMP/v13-p2x-token-native-work"
+          mkdir -p "$e" "$w/master"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 v13/code/scripts/p2x_disjoint_receiver_trainset.py --out "$w/cohort" --fixture-sha256 cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a > "$e/COHORT_RAW.json" 2>&1
+          echo "$?" > "$e/COHORT_EXIT.txt"
+          if [ "$(cat "$e/COHORT_EXIT.txt")" = 0 ]; then
+            printf '%s  %s\n' 'af191c087d872a42924f2d2d465a3f26f6c323bf48c5c0682b30094b9d666cf1' "$w/cohort/train.jsonl" 'a7f2d70d463305a43ec03bbd758a61cc91129a411094ed60e5503d4ffe0894cf' "$w/cohort/validation_inputs.jsonl" 'd1cbe570ae3caa2a80177f861ba5751c93208ffccc98f8d12d90578c59555e9a' "$w/cohort/validation_answers.jsonl" | sha256sum -c > "$e/COHORT_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/COHORT_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/COHORT_SHA_EXIT.txt"; fi
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$w/venv/bin/python" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$w/venv/bin/python" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/COHORT_SHA_EXIT.txt")" = 0 ]; then
+            for name in config.json tokenizer.json tokenizer_config.json chat_template.jinja; do
+              curl -fL --retry 2 --connect-timeout 20 --max-time 240 "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/qad/$name?download=true" -o "$w/master/$name" >> "$e/TOKENIZER_DOWNLOAD_RAW.log" 2>&1 || break
+            done
+            test -f "$w/master/chat_template.jinja"
+            echo "$?" > "$e/TOKENIZER_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '884c7b2b936f296dd448bfca18a14fd9bc903be7d3bff1303ac62bbb43f641d6' "$w/master/config.json" 'df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd' "$w/master/tokenizer.json" 'b99856c5bdc9f88cc30a7ffff78bfc7768427e0b1216d0c196b27e5d55043455' "$w/master/tokenizer_config.json" 'ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6' "$w/master/chat_template.jinja" | sha256sum -c > "$e/TOKENIZER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/TOKENIZER_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/TOKENIZER_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/TOKENIZER_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/TOKENIZER_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code timeout --signal=TERM --kill-after=5s 180s "$w/venv/bin/python" v13/code/scripts/p2x_token_admission_native_probe.py --cohort "$w/cohort" --master "$w/master" --output "$e/RESULT.json" > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+          else echo SKIPPED > "$e/PROBE_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 41b20ad7f65dc65c7cacb23b6ef5579779c94251 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 41b20ad7f65dc65c7cacb23b6ef5579779c94251 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Upload original raw even if RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-token-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-token-native-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce exact pinned tokenizer-only proof and negative gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-token-native-evidence"
+          for stage in COHORT COHORT_SHA VENV DEPS PIP_CHECK TOKENIZER_DOWNLOAD TOKENIZER_SHA PROBE PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
+          python3 - "$e/RESULT.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='v13.p2x.token_admission_native.v1'
+          assert r['status']=='PINNED_TOKENIZER_ONLY_DIAGNOSTIC_NO_GATE'
+          assert r['selected']==8 and len(r['rows'])==8
+          assert r['original_old_totals']==[4,4,4,4,5,5,6,6]
+          assert all(x['corrected_total']==x['trainer_full_total'] and x['truncation'] is False for x in r['rows'])
+          assert r['native_model_calls']==0 and r['training_steps']==0
+          assert r['step2_status']=='UTILITY_FAIL' and r['jepa_weight']==0
+          assert r['production_activation'] is False and r['whole_system_complete'] is False
+          print('PINNED_TOKENIZER_ONLY_PROOF_NO_UTILITY_OR_ACTIVATION')
+          PY
