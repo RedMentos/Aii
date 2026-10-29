@@ -1,0 +1,63 @@
+{
+  "schema": "v13.run96.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "state": "IMPORT_STAGED_PENDING_RUN96_EVIDENCE",
+  "branch": "assistant/v13-run96-human-source-cli-crosschain-20261029",
+  "base_verified_sha": "58eb54a05532a5b9d25bd9713faf3bec1d55baff",
+  "parent_prs": [
+    {
+      "pr": 1001,
+      "head": "ba70be403b24898ec6d4a1aa7609acbbc4cebaa3",
+      "action": 40793294571,
+      "artifact": 12862741984,
+      "zip_sha256": "da48441cbaa0aef22869842c6211e0c52b550d0d94b695e258e3b0e4f0d6a17e",
+      "inner_sha256_verified": "15/15",
+      "focused": "25/25",
+      "full": "2660 OK (1 skipped)",
+      "kind": "SOFTWARE"
+    },
+    {
+      "pr": 1002,
+      "head": "30f4c33df62049cb0206c80baf408ed651446cd2",
+      "action": 40793223323,
+      "artifact": 12861814967,
+      "zip_sha256": "5b1b8c6679d7663c57727bc718782c3b097258dbaae58395eef86f6775a62baf",
+      "inner_sha256_verified": "15/15",
+      "focused": "22/22",
+      "full": "2660 OK (1 skipped)",
+      "kind": "SOFTWARE"
+    }
+  ],
+  "imported_exact_git_blobs": {
+    "v13/code/v13/__main__.py": "9248e46e199a4227c296d538e6a2ef969e8e10cb",
+    "v13/code/tests/test_run94_source_answer_cli.py": "81a73a59c2df95fe3757229c486a505fc70335f7",
+    "v13/code/docs/SOURCE_ANSWER_CLI_REVIEW.md": "252144055ffeaed5516c930e0cdf86ea64396f2d",
+    "v13/code/docs/proofs/continuation-20261028/RUN94_SOURCE_ANSWER_CLI_PREREG.md": "be30dfb1f7e3fda06cd2bea7e606e29d215717ce",
+    "v13/code/docs/proofs/continuation-20261028/RUN94_ORIGINAL_RED_AMENDMENT.md": "3974cd7d25ac6c660a356550f3642b986012b625",
+    "v13/code/v13/operator.py": "ef3cdd5913a47b8e6e35bbaebf97a8325ecf13cb",
+    "v13/code/v13/source_record.py": "53048dd477af945a75dd0f6825e4b81d057742a2",
+    "v13/code/tests/test_run95_human_budget_source.py": "946ab53726b5ed0ae4ac0b9a776a4f81c1d6e8fd",
+    "v13/code/docs/HUMAN_BUDGET_SOURCE_REVIEW.md": "d865b964c26492147dc4d63938683768dad1dcfd",
+    "v13/code/docs/proofs/continuation-20261028/RUN95_HUMAN_BUDGET_SOURCE_PREREG.md": "83954474e7b2adfa2a7b44e3152ac4ab877da7e2",
+    "v13/code/docs/proofs/continuation-20261028/RUN95_ORIGINAL_RED_AMENDMENT.md": "a93a472212aa3ec77985525686e973590d81856e"
+  },
+  "run96_prereg_blob": "f1e2a8a5572cbd536ea07f50bfd2906a125ace48",
+  "run96_test_blob": "e8005fc120e82aeebb181a3a25f684bd55e072a7",
+  "raw_evidence": "Run94 and Run95 GREEN + original RED retained privately in /V13-Checkpoints/2026-10-29; original GitHub Actions artifacts retained 30 days.",
+  "claim_limits": [
+    "SOFTWARE_ONLY",
+    "AGE0_RECORD_ONLY",
+    "NO_NATIVE_C3",
+    "NO_STEP2",
+    "NO_B3",
+    "NO_BODY_JEPA",
+    "NO_LP3",
+    "NO_REDMI",
+    "NO_WHOLE_V13"
+  ],
+  "blocked": [
+    "Current Redmi sustained/thermal/energy and actual STEP2 complementary utility require separate evidence"
+  ],
+  "next_command": "cd v13/code && python -m unittest -v tests.test_run96_human_source_cli_crosschain tests.test_run94_source_answer_cli tests.test_run95_human_budget_source; then full suite with pinned CPU torch 2.14.1/transformers 5.20.2/peft 0.21.2; close raw SHA256SUMS, privacy/diff, verify artifact ZIP and private backup."
+}
