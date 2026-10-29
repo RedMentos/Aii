@@ -27,6 +27,7 @@ class Run111PreflightTests(unittest.TestCase):
         self.assertEqual(reg["seeds"], [20, 21, 22])
         self.assertEqual(set(reg["arms"]), {"CQP", "DQP", "CQ"})
         self.assertEqual(reg["fixture_sha256"], corpus.inspect()["fixture_sha256"])
+        self.assertEqual(reg["fixture_sha256"], pre.FIXTURE_SHA256)
         self.assertEqual(reg["source_git_blobs"], pre.FROZEN_BLOBS)
         self.assertEqual(reg["catalog_git_blob"], pre.CATALOG_BLOB)
 
