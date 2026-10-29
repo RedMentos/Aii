@@ -38,7 +38,8 @@ jobs:
           }
           check a974e91419e3891f5745627c296c6f81806423c5 v13/code/docs/proofs/continuation-20261028/RUN93_SOURCE_C3_NATIVE_E2E_PREREG.md || source_ok=1
           check f70ef656f878281d136c3993963b8cf8c55e0ac0 v13/code/docs/proofs/continuation-20261028/RUN93_ORIGINAL_RED_AMENDMENT.md || source_ok=1
-          check 669df77605274aa0a827d7675ffe8ab4320133e9 v13/code/scripts/run93_source_c3_native_e2e.py || source_ok=1
+          check f4e722682c8503ca6d93259cc57ed1f1e9c13b3c v13/code/docs/proofs/continuation-20261028/RUN93_SECOND_RED_AMENDMENT.md || source_ok=1
+          check 7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02 v13/code/scripts/run93_source_c3_native_e2e.py || source_ok=1
           check 75ca7f3f197665f665d9582b7f5c2efb1f598235 v13/code/scripts/ask_verified_budget.py || source_ok=1
           check 4b73842be25e784f70ade4f6c4ced3fe2dcb9eab v13/code/v13/source_consumer.py || source_ok=1
           check 53dc948d0d360f94743ad996eb83ea0e85c2dd0b v13/code/v13/memory.py || source_ok=1
