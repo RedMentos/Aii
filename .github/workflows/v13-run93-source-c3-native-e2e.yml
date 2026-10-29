@@ -37,6 +37,7 @@ jobs:
             [ "$observed" = "$1" ]
           }
           check a974e91419e3891f5745627c296c6f81806423c5 v13/code/docs/proofs/continuation-20261028/RUN93_SOURCE_C3_NATIVE_E2E_PREREG.md || source_ok=1
+          check f70ef656f878281d136c3993963b8cf8c55e0ac0 v13/code/docs/proofs/continuation-20261028/RUN93_ORIGINAL_RED_AMENDMENT.md || source_ok=1
           check 669df77605274aa0a827d7675ffe8ab4320133e9 v13/code/scripts/run93_source_c3_native_e2e.py || source_ok=1
           check 75ca7f3f197665f665d9582b7f5c2efb1f598235 v13/code/scripts/ask_verified_budget.py || source_ok=1
           check 4b73842be25e784f70ade4f6c4ced3fe2dcb9eab v13/code/v13/source_consumer.py || source_ok=1
@@ -52,18 +53,31 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/v13-run93-venv"
           py="$RUNNER_TEMP/v13-run93-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/BASE_INSTALL_RAW.log" 2>&1
-          echo "$?" > "$e/BASE_INSTALL_EXIT.txt"
+          base_rc="$?"
+          if [ "$base_rc" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/BASE_INSTALL_RAW.log" 2>&1
+            torch_rc="$?"
+            if [ "$torch_rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/BASE_INSTALL_RAW.log" 2>&1
+              deps_rc="$?"
+            else
+              deps_rc=1
+            fi
+          else
+            deps_rc=1
+          fi
+          echo "$deps_rc" > "$e/BASE_INSTALL_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/run93_source_c3_native_e2e.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           export V13_HOME="$RUNNER_TEMP/v13-run93-home"
           if [ "$source_ok" = 0 ] && [ "$(cat "$e/BASE_INSTALL_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=15s 22m "$py" scripts/run93_source_c3_native_e2e.py --home "$V13_HOME" --install) > "$e/INSTALL_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=15s 22m "$py" -m scripts.run93_source_c3_native_e2e --home "$V13_HOME" --install) > "$e/INSTALL_RAW.log" 2>&1
             echo "$?" > "$e/INSTALL_EXIT.txt"
           else
             echo SKIPPED_PREREQ_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
           fi
           if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=15s 10m "$py" scripts/run93_source_c3_native_e2e.py --home "$V13_HOME" --out "$e/experiment") > "$e/NATIVE_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=15s 10m "$py" -m scripts.run93_source_c3_native_e2e --home "$V13_HOME" --out "$e/experiment") > "$e/NATIVE_RAW.log" 2>&1
             echo "$?" > "$e/NATIVE_EXIT.txt"
           else
             echo SKIPPED_INSTALL_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
