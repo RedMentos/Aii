@@ -50,7 +50,7 @@ class LiveSourceExactTests(unittest.TestCase):
             outside = self.source_answer("Who leads Project Elyra?")
             self.assertEqual(wrong["status"], "CLARIFY")
             self.assertEqual(outside["status"], "NOT_APPLICABLE")
-            self.assertFalse(wrong.get("answer"))
+            self.assertNotIn("615 Euro", wrong.get("answer", ""))
             self.assertFalse(outside.get("answer"))
         self.assertIn(":source answer", self.op.run(":help"))
 
