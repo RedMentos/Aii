@@ -39,7 +39,7 @@ class FakeReadOnlyView:
             match = next((row for row in self._rows
                           if row['event_id'] == event_id
                           and row['generation_id'] == generation_id
-                          and row['created'] > action_created - 1), None)
+                          and row['created'] - 0.5 <= action_created), None)
             if match is None:
                 return []
             return [{'payload': json.dumps({
