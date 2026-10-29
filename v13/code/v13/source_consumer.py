@@ -99,7 +99,11 @@ def admit(query, session, memories, memory):
                           "match": "LEXICAL"})
         except (KeyError, ValueError, TypeError, OSError):
             continue
-    values = {x["value"] for x in valid}
+    # All admitted values already match BUDGET_VALUE: Euro, EUR and € are
+    # lexical aliases of the same currency. Distinct spellings of the same
+    # integer amount must not manufacture a contradictory human correction.
+    # Preserve the exact chosen SourceRef/text; never normalize the evidence.
+    values = {int(x["value"].split(" ", 1)[0]) for x in valid}
     if len(values) != 1:
         return {"status": "CLARIFY", "reason": "NO_AUTHORIZED_SOURCE" if not values else "CONFLICTING_AUTHORIZED_SOURCES",
                 "answer": abstain, "model_allowed": False, "admitted_count": 0}
