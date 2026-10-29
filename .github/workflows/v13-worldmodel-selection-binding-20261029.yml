@@ -6,6 +6,7 @@ on:
       - '.github/workflows/v13-worldmodel-selection-binding-20261029.yml'
       - 'v13/code/v13/world_model.py'
       - 'v13/code/tests/test_worldmodel_selection_binding_20261029.py'
+      - 'v13/code/tests/test_world_model.py'
       - 'v13/code/docs/proofs/continuation-20261029/WORLDMODEL_ACTION_SELECTION_BINDING_PREREG_20261029.md'
 permissions:
   contents: read
