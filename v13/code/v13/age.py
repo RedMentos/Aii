@@ -82,11 +82,14 @@ def _admit_record_evidence(metrics, evidence_id):
     if 'experience' in metrics and (
             type(metrics['experience']) is not int or metrics['experience'] < 0):
         raise ValueError('AGE_EVIDENCE_EXPERIENCE_INVALID')
-    if 'regression_pass' in metrics and type(metrics['regression_pass']) is not bool:
+    if ('regression_pass' in metrics and metrics['regression_pass'] is not None
+            and type(metrics['regression_pass']) is not bool):
         raise ValueError('AGE_EVIDENCE_REGRESSION_INVALID')
     for name in METRICS:
         if name in metrics:
             value = metrics[name]
+            if value is None:  # genuinely unmeasured: no EMA or gate credit
+                continue
             # Check range before isfinite to avoid float-conversion overflow
             # for arbitrarily large Python integers.
             if (type(value) not in (int, float) or not 0 <= value <= 1
@@ -137,7 +140,9 @@ class AgeControl:
         if isinstance(metrics.get('competence'),(int,float)) and isinstance(metrics.get('safe_self_control'),(int,float)):
             m['trust']=round((1-EMA)*m['trust']+EMA*min(metrics['competence'],metrics['safe_self_control']),6)
         out={'subject':subject,'evidence_id':eid,'stage':sub['stage'],'change':None}
-        severe=metrics.get('regression_pass') is False and metrics.get('retention',1)<GATES['retention'][max(sub['stage'],1)]-BAND
+        retention=metrics.get('retention',1)
+        severe=(metrics.get('regression_pass') is False and retention is not None
+                and retention<GATES['retention'][max(sub['stage'],1)]-BAND)
         if sub['stage']>0 and (severe or not gate_pass(metrics,sub['stage'],BAND)):
             if noise_aware and within_noise and not severe:  # a drop inside the measured noise band is not evidence of lost competence
                 sub['pass_streak']=[];out['noise']='FAIL_WITHIN_NOISE_BAND';out['stage']=sub['stage'];self._save(st,v);return out
