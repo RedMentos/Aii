@@ -3040,5 +3040,61 @@
     "next_prerequisites": "Independent cross-organ synthetic fixture provenance repair, preserve registered arrays and original negative gates; no promotion.",
     "report": "docs/proofs/continuation-20261029/WORLDMODEL_STAGE_BINDING_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_worldjepa_fixture_provenance_20261029": {
+    "scope": "REVIEW_ONLY_LINUX_SOFTWARE_SYNTHETIC_WORLDJEPA_FIXTURES",
+    "owner_branch": "codex/v13-worldjepa-fixture-provenance-20261029-auto10aj",
+    "parent_pr": 1147,
+    "parent_sha": "b3d130833f30d5ea2f68a76bffec8cdf9109a3a2",
+    "prereg_head": "159c84b933888b9774ee56f27f04f1325e8b2725",
+    "red": {
+      "run": 40956563864,
+      "head": "159c84b933888b9774ee56f27f04f1325e8b2725",
+      "tests": "55 RUN / 7 FAIL + 30 ERROR",
+      "zip_sha256": "6fe2ff695cd8fc0fdeb9daa298d1a7162f283b1d33f45ba2dc23bd1381c6d171"
+    },
+    "candidate_red": [
+      {
+        "run": 40956631183,
+        "tests": "55 RUN / 4 FAIL + 7 ERROR",
+        "zip_sha256": "2bf5427ef5fa98bdfcee041de00a408b852e14d1ad6833ba925dc6327b8da7b6"
+      },
+      {
+        "run": 40956629903,
+        "tests": "55 RUN / 4 FAIL + 7 ERROR",
+        "zip_sha256": "214f17841ada57aa38ded7eb2ffe462828f0b5660ed5739ec8a29676e0fd87e7"
+      }
+    ],
+    "green": {
+      "run": 40956654461,
+      "head": "a51ee298484ef342036b009cdf83349b852a0f98",
+      "tests": "55/55 PASS",
+      "zip_sha256": "868eb6db55143d22b9d26abcc6febf31cd3b6019e2ffd7603f48d4217f93559e",
+      "fixture_fake_blob": "c2f547c47787cd1e55d883ae7faaf13ee4f7e00c",
+      "fixture_sqlite_blob": "25148fb1883d209d3846009cb076388fb1a6bbf9",
+      "inner_hashes": "18/18",
+      "privacy": "CLEAN"
+    },
+    "frozen_fake128_projection_sha256": "04285e5717551ecf00ef4bd18267b7dba07a0fe34a49d428df5f1093b985cb92",
+    "frozen_sqlite64_projection_sha256": "b3cc29df39e21415f7fc835e6eb383e78b4df5804be04c54c453bffcc1f51fca",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-WorldJepaFixtures/",
+    "private_backup_original_red_green_byte_exact": true,
+    "full_suite": "PARENT_CROSSORGAN_RED_3266_TESTS_6_FAIL_43_ERROR_28_SKIPPED_RECHECK_REQUIRED",
+    "world_model_source_blob": "ed35f24e0d407d38a8750edbc8bbef82fe710192",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "native_proof": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_worldjepa_fixture_provenance_20261029 tests.test_run50_world_jepa_action_outcome_adapter tests.test_run51_world_jepa_shadow_fit tests.test_run54_world_jepa_synthetic_outcome_baselines tests.test_run55_world_jepa_synthetic_predicted_latent_readout tests.test_world_jepa_readonly_store tests.test_world_jepa_incremental_closedstore tests.test_world_jepa_closedstore_private_pipeline_20261028 tests.test_world_jepa_closedstore_heldout_action_probe_20261029 tests.test_worldmodel_stage_binding_20261029",
+    "next_prerequisites": "Rerun full suite with compatible isolated torch and classify remaining failures; preserve frozen source/model pins, no gate promotion.",
+    "report": "docs/proofs/continuation-20261029/WORLDJEPA_FIXTURE_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }

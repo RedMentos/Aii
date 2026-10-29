@@ -16,16 +16,24 @@ from v13 import world_model as wm
 def fixture(path, n=64):
     db = sqlite3.connect(path)
     db.execute('CREATE TABLE actions(id TEXT,event_id TEXT,status TEXT,expected TEXT,outcome TEXT,created REAL)')
-    db.execute('CREATE TABLE packets(kind TEXT,event_id TEXT,payload TEXT)')
+    db.execute('CREATE TABLE events(id TEXT PRIMARY KEY,generation_id TEXT NOT NULL)')
+    db.execute('CREATE TABLE packets(kind TEXT,event_id TEXT,generation_id TEXT,payload TEXT,created REAL)')
     for i in range(n):
         event = 'synthetic-event-' + str(i)
+        generation = 'synthetic-generation-' + str(i)
         route = wm.ACTIONS[i % len(wm.ACTIONS)]
+        db.execute('INSERT INTO events VALUES(?,?)', (event, generation))
         exp = json.dumps({'forecast': {'input_chars': 100+i, 'resource_state': 'NORMAL'}})
         outcome = json.dumps({'action_duration_s': .2 + i*.01, 'characters': 50+i})
         db.execute('INSERT INTO actions VALUES(?,?,?,?,?,?)',
                    ('synthetic-action-'+str(i), event, 'FINAL', exp, outcome, 1720000000.+i))
-        db.execute('INSERT INTO packets VALUES(?,?,?)',
-                   ('ActionSelection', event, json.dumps({'route_hint': route})))
+        db.execute('INSERT INTO packets VALUES(?,?,?,?,?)',
+                   ('ActionSelection', event, generation,
+                    json.dumps({'event_id': event,
+                                'brain_generation_id': generation,
+                                'stage': 'COMMIT',
+                                'route_hint': route}),
+                    1720000000. + i - 0.5))
     db.commit()
     db.close()
 
