@@ -1,0 +1,11 @@
+# Run132 prereg — read-only persisted Age-state integrity quarantine (2026-10-29)
+
+Base: exact PR #1031 review head `556de380b4e09690b3de9016495178a5baa130ec`; independent of Run129/130 STEP2 siblings. Registration committed **before** candidate source, tests and workflow. This is a separate Age §17/§95 state-read diagnostic, not a replacement for Run131's evidence-ingress validation.
+
+Problem: `AgeControl.state()` accepts stored JSON without checking the full stage/maturity structure. A syntactically valid but semantically corrupt persisted stage, maturity or noise estimate may flow into `AgeControl.view()`, budgets, plasticity or rights. A rejected invalid evidence record is not sufficient to prove that old/imported/corrupt persisted states are safe. `v13.common.dumps` explicitly rejects NaN/Infinity on normal writes; nonfinite persisted states therefore require external/corrupt import or an abnormal source, **not** a claimed normal successful `AgeControl.record` write.
+
+Implement a **read-only, default-off diagnostic candidate** `scripts/age_state_quarantine_candidate.py` and focused tests. Check persisted schema revision, stage exact integer range, bool flags, finite [0,1] maturity/noise values, evidence counters, bounded/distinct streaks, mandatory capabilities, and structural shape before calling unsafe age-view computations. Corrupt state yields a typed diagnostic quarantine and no rights/budgets; never silently repairs, drops evidence, raises stages or edits DB. Validate in-memory NaN/Inf counterexamples and **persisted finite-but-invalid** state through actual Store/restart, verify bytes/state version/telemetry unchanged. Check valid default, valid repeated evidence, valid dynamic capability, frozen and build ceiling0. Synthetic/software only, not Redmi or native model proof.
+
+No production `v13/age.py` changes; do not hook into runtime or claim actual runtime containment. A separate reviewed integration is needed before it protects `:age` and other consumers. Do not alter any frozen cohort/model/seed/source hash, canonical gates or user rights. No main merge.
+
+Negative gates remain Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; whole system INCOMPLETE.
