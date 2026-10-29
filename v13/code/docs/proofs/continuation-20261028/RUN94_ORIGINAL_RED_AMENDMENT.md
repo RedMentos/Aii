@@ -1,0 +1,9 @@
+# Run94 original RED — independent observed corrections before rerun (2026-10-29)
+
+Prereg FIRST `9f202d929043e671aeb4672e2a4710c43751a44d`. Original exact workflow head `91c614b34606bf577b581cb6dd74b896cff9f1af`, Actions `40792671411` FAILED. Original artifact ID `12862626453`, ZIP SHA256 `7454647cc1d2edf24ac20e980b0619692b6d3629fb29ad4d4801800a90975811`, CRC clean, 15/15 inner SHA256SUMS verified, SOURCE/INSTALL/COMPILE/PRIVACY/DIFF exits 0. FOCUSED 25 tests, **1 FAIL**; FULL 2634 tests, **1 FAIL + 4 import ERROR**, 18 skipped. Private backup `/V13-Checkpoints/2026-10-29/Run94-Source-Answer-CLI/V13_Run94_ORIGINAL_RED_40792671411.zip`.
+
+**Actual failure 1 (test expectation, not source leak):** `test_wrong_project_and_out_of_scope_refuse_without_native` asserted that an out-of-scope `NOT_APPLICABLE` response lacks the `answer` key. The unchanged frozen `ask_verified_budget.query` deliberately includes `answer: ""` for this refusal; `model_called=false`, `native_calls=0`, no fact leaked. Correct only this test assertion to require an **empty** answer string. Do not change source semantics or weaken the no-nonempty-answer requirement.
+
+**Actual failure 2 (test environment):** four unrelated PyTorch test imports failed (`ModuleNotFoundError: torch`) because the initial workflow installed base packages only. Correct workflow to install pinned CPU `torch==2.14.1`, `transformers==5.20.2`, `peft==0.21.2` as in independently GREEN Run91 #998, before original unchanged full suite. No model weights/native runner are needed for this software package.
+
+Original RED remains durable. Corrected CI must produce a separate original ZIP, source/exit/inner hashes and privacy evidence; no Age/STEP2/B3/Body-JEPA/LP3/jepa_weight/Redmi/whole-system promotion.
