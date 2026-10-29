@@ -1,0 +1,78 @@
+{
+  "schema": "v13.run116.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run116-sixfixture-cqp20-native-execution-20261029",
+  "base_pr": 1019,
+  "base_head": "3f92987f1fd8ea056dd64604bed5016522080ab6",
+  "prereg_first_commit": "b8d10b41e070cffafa083bd4fdf3934487e129f5",
+  "prereg_git_blob": "d1b0f61c6142292466ce27aa7dff9ddac8fdd2d7",
+  "software_parent": {
+    "run_id": 40804769829,
+    "head": "3f92987f1fd8ea056dd64604bed5016522080ab6",
+    "status": "PENDING_INDEPENDENT_ORIGINAL_RAW_AUDIT",
+    "first_failed_run": 40804290155,
+    "first_failed_reason": "RAW_UPLOAD_PATH_MISMATCH; NO_ORIGINAL_ZIP; DO_NOT_PROMOTE"
+  },
+  "run114_original": {
+    "run_id": 40803179849,
+    "artifact_id": 12866744283,
+    "zip_sha256": "2bfd768a12ff54298ee5d56809e1afa8b28c5763b1fdc765bda87ba473f24e2d",
+    "head": "12b0e3ad0d1876de83e2ecc38216cc9e268e26ea",
+    "crc": "CLEAN",
+    "inner": "29/29",
+    "exits": "12/12 ZERO",
+    "focused": "16 PASS",
+    "full": "2692 PASS 1 SKIP",
+    "private_backup_verified": true
+  },
+  "cohort": {
+    "arm": "CQP",
+    "seed": 20,
+    "fixtures": [
+      "Atlas",
+      "Borealis",
+      "Cygnus",
+      "Delta",
+      "Epsilon",
+      "Fornax"
+    ],
+    "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+    "source_rows": 42,
+    "tool_rows": 42,
+    "script_blob": "07e81269560fc72b3c0d27533119fc31a140888d",
+    "tests_blob": "470617ed8db41ef70bf6b0144bda2a94317b7f7f",
+    "model_pins_unchanged": true,
+    "runner_pin": "b10964"
+  },
+  "status": "PRE_REGISTERED_NOT_EXECUTED_WAIT_ORIGINAL_SOFTWARE_GREEN_AND_OWNER_RELEASE",
+  "negative_gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Will 42-row source utility improve over identical-body and prompt-only controls?",
+    "Will guarded tool abstain or commit wrong actions on revised/long rules?",
+    "Will paired utility gate show complementary B1/B2 errors?",
+    "Can source-span candidate Run117 recover exact latest rules without oracle leakage?"
+  ],
+  "blocked": [
+    "No Run116 native execution until original Run115 software CI ZIP audited GREEN and private byte-identical backup",
+    "No parallel native owner",
+    "No Redmi measurements"
+  ],
+  "next_command": "After Run115 software Actions 40804769829 independently raw GREEN: commit prelaunch raw evidence SHA ledger and pinned Run116 workflow on this branch, run serial native, audit original ZIP, preserve all failures.",
+  "prerequisites": [
+    "GitHub workflow status success and exact head",
+    "ZIP CRC and SHA256SUMS clean",
+    "focused/full/privacy/diff exits zero",
+    "private Library backup byte-identical",
+    "native resource admission and no competing owner"
+  ]
+}
