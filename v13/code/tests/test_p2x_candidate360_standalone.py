@@ -122,6 +122,33 @@ class Candidate360Tests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "FRESH_OUTPUT"):
                 M.preflight(root, root, root, root, "a" * 64, root, base, out)
 
+    def test_owned_launch_matches_baseline_cache_and_loopback(self):
+        class FakeProc:
+            terminated = False
+            def poll(self):
+                return None
+            def terminate(self):
+                self.terminated = True
+            def wait(self, timeout):
+                return 0
+        proc = FakeProc()
+        with tempfile.TemporaryDirectory() as d:
+            with (patch.object(M.subprocess, "Popen", return_value=proc) as popen,
+                  patch.object(M.LocalServer, "request",
+                               return_value={"status": "ok"})):
+                server = M.LocalServer("pinned-binary", "pinned-model",
+                                       "synthetic-adapter", Path(d) / "server.log")
+            args = popen.call_args.args[0]
+            self.assertEqual(args[0], "pinned-binary")
+            self.assertEqual(args[args.index("--host") + 1], "127.0.0.1")
+            self.assertEqual(args[args.index("--cache-ram") + 1], "128")
+            self.assertEqual(args[args.index("--ctx-checkpoints") + 1], "6")
+            self.assertEqual(args[args.index("--lora-scaled") + 1],
+                             "synthetic-adapter")
+            self.assertEqual(args[args.index("--lora-scaled") + 2], "1")
+            server.close()
+            self.assertTrue(proc.terminated)
+
     def test_unowned_server_is_never_killed(self):
         server = object.__new__(M.LocalServer)
         server.proc = None
