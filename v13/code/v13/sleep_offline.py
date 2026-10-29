@@ -161,10 +161,19 @@ def _checked_digest_entries(store,session,entries):
     if not isinstance(entries,list):return []
     ents=entries[-ENTRIES_MAX:]
     if not ents:return []
-    recs,_=native_history(store,session,'',max(TURNS_MAX,len(ents)+1))
+    # A latest-message window drops older user rows when many FINAL answers
+    # arrive in reverse order. Revalidate each retained event by exact ID,
+    # still using native_history's source/rule/answer checks and bounded batches.
+    ids=[e.get('event_id') for e in ents if isinstance(e,dict)]
+    if (len(ids)!=len(ents) or any(type(eid) is not str or not eid for eid in ids)
+            or len(ids)!=len(set(ids))):
+        return []
     pairs={}
-    for m in recs:
-        pairs.setdefault(m['event_id'],{})[m['role']]=m
+    for offset in range(0,len(ids),TURNS_MAX):
+        batch=ids[offset:offset+TURNS_MAX]
+        recs,_=native_history(store,session,'',len(batch),event_ids=batch)
+        for m in recs:
+            pairs.setdefault(m['event_id'],{})[m['role']]=m
     def packed(text):
         value,_,ok=compress(text,TURN_CAP)
         return value if ok or len(value)<=TURN_CAP*2 else value[:TURN_CAP*2]
