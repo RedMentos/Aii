@@ -124,6 +124,12 @@ def compare(base, candidate):
             or candidate.get("schema") != SCHEMA + ".score.v1"
             or base.get("adapter_sha256") is not None
             or not isinstance(candidate.get("adapter_sha256"), str)
+            or not re.fullmatch(r"[0-9a-f]{64}", candidate["adapter_sha256"])
+            or base.get("status") != "P2X_NATIVE_RECEIVER_DIAGNOSTIC_NO_GATE"
+            or candidate.get("status") != "P2X_NATIVE_RECEIVER_DIAGNOSTIC_NO_GATE"
+            or base.get("runtime_sha256") != RUNTIME_SHA
+            or candidate.get("runtime_sha256") != RUNTIME_SHA
+            or base.get("native_calls") != 360 or candidate.get("native_calls") != 360
             or base.get("fixture_sha256") != FIXTURE_SHA
             or candidate.get("fixture_sha256") != FIXTURE_SHA
             or base.get("model_sha256") != MODEL_SHA
