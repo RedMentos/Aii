@@ -22,6 +22,14 @@ def main(argv=None):
     a=p.parse_args(argv);home=home_path(a.home)
     if a.command=='source-answer' and not (home/'config/settings.json').is_file():
         p.error('source-answer requires an existing V13 home; no new memory or session is created')
+    if a.command=='source-answer':
+        # An interrupted offline restore must be reconciled before initialize
+        # can touch a partially restored config or SQLite state.
+        from .backup import recover_startup
+        try:recover_startup(home)
+        except Exception as exc:
+            print(json.dumps({'status':'ERROR','reason':type(exc).__name__},sort_keys=True))
+            return 2
     initialize(home)
     if a.command=='selftest':
         suite=unittest.defaultTestLoader.discover(str(APP/'tests'),pattern='test_*.py');result=unittest.TextTestRunner(verbosity=2).run(suite)
