@@ -1,0 +1,31 @@
+{
+  "schema": "v13.p0x.native150_posthoc_independent_review_scope.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 independent raw auditor",
+  "parent_pr": 1060,
+  "parent_sha": "577366b0059d8367f5c5446afc62b0d524d35768",
+  "original_native_run": 40840179920,
+  "original_native_artifact": 12882088542,
+  "original_zip_sha256": "f115796e45e14d1fd1ff86b241222666ab8023b734a391dfa244ae26ccf833c4",
+  "original_source_fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "original_model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "original_runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "original_raw_sha256": "79be6584d465b0fc3ccd33294d882a41bb1990920f3098ed39203b7aef7d18a1",
+  "original_score_sha256": "7c603158c6d821592d5777d46bb4723503f74c063c5c30fcc0f72fe2720b836e",
+  "original_receipt_inputs_sha256": "f8ddddb51bc92a73cf3224489073f21a101f0ec61e1a665a26497097ae9abbf5",
+  "original_receipt_answers_sha256": "9c6f32638ee455e083467ed04201f5f9ddf657105977066907ba1cf93efe2a71",
+  "review_scope": "Posthoc independent read-only audit of ORIGINAL 150 native rows, stage exit logs, parent SHA256SUMS, receipt, source-only prompts and strict JSON outcomes; no rerun, no model or native execution, no gate promotion.",
+  "observed_initial_negative": "All 150 outputs are NONE; 50 exact by NONE class, 100 wrong committed for A/B. This is not source-use evidence.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_command": "Implement stdlib-only verifier, run on extracted original artifact, run mock tamper tests and isolated CI; preserve original RED attempts and backup",
+  "production_merge": false
+}
