@@ -1,0 +1,53 @@
+{
+  "schema": "v13.hb0c.native_execution_review_build_state.v1",
+  "recorded_utc": "2026-10-29T06:23:00Z",
+  "owner": "GPT-6 scheduled continuation; isolated GitHub review branch",
+  "branch": "codex/v13-hb0c-native-execution-20261029",
+  "base_branch": "codex/v13-hb0-c3-receiver-native-pilot-20261029",
+  "base_head_sha": "e7bc434ed68f726d14907695963b6070c0597094",
+  "parent_pr": 1049,
+  "status": "PREREGISTERED_WAITING_EXACT_HEAD_SOFTWARE_PREFLIGHT",
+  "native_execution_started": false,
+  "source_pins": {
+    "prereg_blob": "ea933b53af8503f5e37d64560e50272ed69288d5",
+    "pilot_blob": "41e388c7d34074dfcb86f3cb4f5423ab4b9c8af6",
+    "pilot_test_blob": "d6d8afc7cc51debefe6f5af05eba404f80e6c5d2",
+    "hb0_blob": "329153aaa73df009fdc433523994e372e0fd2c95",
+    "arm_export_blob": "8d6f5b9f0830540d2de72cc624778ff03e7b90ec",
+    "fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "model_revision": "657e078c94084481950a2d555a941481f715536b",
+    "runner_tag": "b10964",
+    "runner_source_sha256": "4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe"
+  },
+  "verified_software_evidence": {
+    "hb0_run": 40827440554,
+    "hb0_artifact": 12877821670,
+    "hb0_zip_sha256": "ca38f07bab012b44bab06189741df8b34c010bc1bb72055756b0f6926efe1444",
+    "hb0b_run": 40827742335,
+    "hb0b_artifact": 12877468007,
+    "hb0b_zip_sha256": "125c157d4154eb3bcbdd7bfe711a497dbb7de5bb73af7cb8a2b962bdad9e199c",
+    "hb0c_software_run": 40828297267,
+    "hb0c_software_status_at_registration": "IN_PROGRESS"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "Exact-head HB0c software CI 40828297267 GREEN and raw SHA256SUMS independently verified",
+    "No active heavy native owner",
+    "Linux x86_64 resource admission",
+    "Pinned C3 and runner download/verify"
+  ],
+  "exact_next_command": "After prerequisites: add source-pinned .github/workflows/v13-hb0c-c3-native-execution-20261029.yml to this branch; inspect GitHub Actions run and closed raw artifact; never promote Canon gates.",
+  "remaining_platform_budget": "UNKNOWN",
+  "overwrite_other_owner": false,
+  "production_merge": false
+}
