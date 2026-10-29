@@ -1,0 +1,80 @@
+name: V13 U5 AG6 invalid anchor trainer boundary review
+on:
+  push:
+    branches: [codex/v13-anchor-train-boundary-review-20261029]
+    paths:
+      - '.github/workflows/v13-anchor-train-boundary-review-20261029.yml'
+      - 'v13/code/v13/anchor.py'
+      - 'v13/code/v13/agi/weights.py'
+      - 'v13/code/tests/test_anchor_train_boundary_review_20261029.py'
+      - 'v13/code/docs/proofs/continuation-20261029/ANCHOR_TRAIN_BOUNDARY_REVIEW_PREREG.md'
+permissions:
+  contents: read
+jobs:
+  ag6-anchor-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-only AG6 real-store RED-first regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-anchor-train-boundary"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for f in v13/code/v13/anchor.py v13/code/v13/agi/weights.py v13/code/tests/test_anchor_train_boundary_review_20261029.py v13/code/docs/proofs/continuation-20261029/ANCHOR_TRAIN_BOUNDARY_REVIEW_PREREG.md; do
+            git hash-object "$f" | xargs -I{} echo "{} $f"
+          done > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-anchor-train-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-anchor-train-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_anchor tests.test_agi_trainers tests.test_anchor_train_boundary_review_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED > "$e/FOCUSED_RAW.log"; echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/anchor.py v13/code/v13/agi/weights.py v13/code/tests/test_anchor_train_boundary_review_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3f4f0f46bed1b30ca1ad19f6e0d40e54f571e0dc --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3f4f0f46bed1b30ca1ad19f6e0d40e54f571e0dc HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-anchor-train-boundary-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-anchor-train-boundary/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce AG6 numeric training boundary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-anchor-train-boundary"
+          for stage in VENV DEPS PIP_CHECK FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'AG6_ANCHOR_BOUNDARY_SOFTWARE_ONLY_NO_GATE'
