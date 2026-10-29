@@ -1,0 +1,49 @@
+{
+  "schema": "v13.run131.age_evidence_finite_branch_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation, review-only, no Age promotion authority",
+  "branch": "assistant/v13-age-evidence-finite-gate-20261029",
+  "pr": 1031,
+  "parent": "93bc908d5f36d313ec610b0e4399834661799627",
+  "prereg_commit": "267d095ce7363f69cad109899ca015add945a6a8",
+  "source_blob": "6f10566fb141e618111efa3102929d8f078f0f9b",
+  "test_blob": "d11d0ac1aac63a13c5c394c40bb82caa369cb8e8",
+  "original_age_blob": "d4c38ae344746811fedecff706a9affe9cf8b375",
+  "software_ci": {
+    "status": "PENDING_ORIGINAL_RAW_AUDIT",
+    "focused_tests": 10,
+    "full_suite": "PENDING"
+  },
+  "observed_original_issue": "Original gate_pass allows bool metrics and +inf to satisfy promotion thresholds; BUILD_CEILING=0 prevents live Age>0 but invalid evidence can enter persisted maturity in simulated higher-stage environments.",
+  "candidate": {
+    "default_off": true,
+    "runtime_age_py_unchanged": true,
+    "requires_finite_bounded_typed_metrics": true,
+    "invalid_evidence_before_mutation": true,
+    "age_build_ceiling": 0,
+    "rights_added": 0
+  },
+  "open_questions": [
+    "Should future AgeControl.record integrate preflight at the public method boundary after review?",
+    "How should missing metrics be handled for diagnostic-only shadow evidence without promotion?",
+    "Does the current full suite pass with this isolated candidate and unchanged Age ceiling?"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Find Run131 Actions run on assistant/v13-age-evidence-finite-gate-20261029; check exact head, download original ZIP, verify CRC/SHA256SUMS/source/FOCUSED/FULL/privacy; retain private byte-identical backup; if RED, fix candidate on owned review branch only; never raise BUILD_CEILING.",
+  "prerequisites": [
+    "No production age.py edit",
+    "No stage/rights promotion",
+    "Full software CI and independent original raw audit GREEN",
+    "No native inference"
+  ],
+  "no_main_merge": true
+}
