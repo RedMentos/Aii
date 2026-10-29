@@ -1,0 +1,9 @@
+# P2X source-only pilot + scorer integration prereg — 2026-10-29
+
+Owner: GPT-6 isolated integration reviewer. New branch `assistant/v13-p2x-pilot-scorer-integration-20261029`, exact parent **PR #1075** `ea82d7b9f0955e590b4dd7fe8d1babdb33e67088`, source pilot + corrected tokenizer-only native proof. Donor **PR #1076** exact `ed617fa463bff191c3767077a8abb57b1821e622`, building on #1074 `c0ee5b389fafb9adc11929f8b942bea6a0679b5a`. No production merge or changes to frozen P2X/P0X cohorts, model/seed/license, learning/age/approval gates.
+
+Purpose: ensure the separately verified P2X one-step pilot token-admission fix and 360-call paired scorer integrity guard coexist on one exact review source tree. This is a **source-only integration**, not training/evaluation or permission to activate adapters. The donor's scorer and source-only workflow/prereg/test files will be imported by exact Git blob SHA without editing, preserving independent donor provenance; do not import any private raw ZIP or adapter binaries. Then run focused pilot (14), tokenizer probe (5) and scorer (18) tests, full V13 software regression suite, compile/privacy/diff, with original raw and SHA256SUMS, no native/model calls. All stages must pass; preserve RED attempts.
+
+The integration branch must preserve the full Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, all existing organ code and all negative gates: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, AG6 unapproved, Redmi unmeasured, V13 INCOMPLETE. No force-push or production merge. If broad suite fails, record exact failure and continue independent work rather than relabeling.
+
+Next command: import donor blobs via Git tree based on exact integration branch head, run exact-head source-only CI, independently audit original raw. Remaining platform budget UNKNOWN.

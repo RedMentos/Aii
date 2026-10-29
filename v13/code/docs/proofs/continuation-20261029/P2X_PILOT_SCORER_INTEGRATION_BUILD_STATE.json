@@ -1,0 +1,52 @@
+{
+  "schema": "v13.p2x.pilot_scorer_integration_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated integration reviewer",
+  "branch": "assistant/v13-p2x-pilot-scorer-integration-20261029",
+  "parent_pr": 1075,
+  "parent_sha": "ea82d7b9f0955e590b4dd7fe8d1babdb33e67088",
+  "donor_pr": 1076,
+  "donor_sha": "ed617fa463bff191c3767077a8abb57b1821e622",
+  "review_pr": 1077,
+  "prereg_commit": "ee29ef03767c1251f6b60b6265b56f9ec69596fa",
+  "import_commit": "642e35989a9937f03c0c6daaf32d9b6ddc7b9d5f",
+  "imported_exact_blobs": 7,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "expected_source_blobs": {
+    "pilot": "41b61ba3d196fc8d624e586c0f31e740002bd469",
+    "scorer": "c9509e299510540af4e43ebbc397f2e5a144142d",
+    "tokenizer_probe": "8d4683a25d7ddd2530c1e72bf33015f2b1303f6b"
+  },
+  "integration_ci": {
+    "run": 40856249467,
+    "workflow_head": "ce31554c37e27b4fad9ca62ecc55b830e283267e",
+    "status": "VERIFIED_GREEN_SOURCE_ONLY",
+    "zip_sha256": "4390a6b117edbafee2e0ecb0e226adfb5cecdc6a0b4478202eb1f6e00f05a09c",
+    "zip_crc": "CLEAN",
+    "hashes": "19/19",
+    "stage_exits": "8/8",
+    "focused": "37/37 PASS",
+    "full": "3043 PASS",
+    "skipped": 11,
+    "full_seconds": 364.605,
+    "privacy": "CLEAN",
+    "diff": "CLEAN",
+    "native_calls": 0,
+    "private_backup": "/V13/RawEvidence/2026-10-29/P2X/integration_fullsuite_40856249467_sha4390a6b1.zip",
+    "byte_identical": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Continue separately preregistered P2X C3 base-only 360-call Linux-native run PR #1078; original native RED preserved, archive-vs-binary pin fix preregistered. Independently audit native raw and no-adapter receipt. Then pursue other canonical organs and real Redmi TESTEN.sh when device available.",
+  "remaining_platform_budget": "UNKNOWN"
+}

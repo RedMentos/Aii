@@ -1,0 +1,54 @@
+name: V13 P2X independent paired scorer integrity review
+on:
+  push:
+    branches: [assistant/v13-p2x-score-integrity-review-20261029]
+    paths:
+      - 'v13/code/scripts/p2x_native_receiver_eval_scorer.py'
+      - 'v13/code/tests/test_p2x_native_receiver_eval_scorer.py'
+      - 'v13/code/docs/proofs/continuation-20261029/P2X_SCORE_INTEGRITY_*'
+      - '.github/workflows/v13-p2x-score-integrity-review-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve exact-head adversarial scorer review raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-score-integrity-evidence"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m py_compile v13/code/scripts/p2x_native_receiver_eval_scorer.py v13/code/tests/test_p2x_native_receiver_eval_scorer.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2x_native_receiver_eval_scorer.py' -v > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c0ee5b389fafb9adc11929f8b942bea6a0679b5a --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c0ee5b389fafb9adc11929f8b942bea6a0679b5a HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Upload closed original source-only review raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-score-integrity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-score-integrity-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all focused review gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-score-integrity-evidence"
+          for stage in COMPILE TEST PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
