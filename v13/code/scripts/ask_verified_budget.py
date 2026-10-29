@@ -214,7 +214,7 @@ def exact_source(r, text, session=None):
     if name is None or not BUDGET_VALUE.fullmatch(value):
         return {"status": "CLARIFY", "reason": "SOURCE_FORMAT_CHANGED",
                 "model_called": False, "native_calls": 0}
-    german = bool(re.search(r"\\bprojekt\\b|wie hoch|finanzrahmen", text, re.I))
+    german = bool(re.search(r"projekt|wie hoch|finanzrahmen", text, re.I))
     answer = ("Projekt " if german else "Project ") + name.group(1) + ": " + value + "."
     second, second_packet = _preflight(r, text, session)
     if (second_packet is None or second["status"] != "READY"
