@@ -1,0 +1,27 @@
+name: V13 P2X disjoint receiver trainset source-only tests
+on:
+  push:
+    branches: [codex/v13-p2x-disjoint-receiver-trainset-20261029]
+    paths:
+      - 'v13/code/scripts/p2x_disjoint_receiver_trainset.py'
+      - 'v13/code/tests/test_p2x_disjoint_receiver_trainset.py'
+      - '.github/workflows/v13-p2x-disjoint-receiver-source-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Compile, eleven source-only adversarial tests, fixture SHA and privacy
+        run: |
+          set -euo pipefail
+          python3 -m py_compile v13/code/scripts/p2x_disjoint_receiver_trainset.py v13/code/tests/test_p2x_disjoint_receiver_trainset.py
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2x_disjoint_receiver_trainset.py' -v
+          python3 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9be1c524d1ab813be97b80873b0ba223372f7fd0 --head HEAD --no-worktree
+          git diff --check 9be1c524d1ab813be97b80873b0ba223372f7fd0 HEAD
