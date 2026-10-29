@@ -41,7 +41,7 @@ jobs:
           python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
           echo "$?" > "$e/VENV_EXIT.txt"
           if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
-            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' > "$e/DEPS_RAW.log" 2>&1
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'Jinja2==3.1.6' 'MarkupSafe==3.0.3' > "$e/DEPS_RAW.log" 2>&1
             echo "$?" > "$e/DEPS_EXIT.txt"
             "$w/venv/bin/python" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
             "$w/venv/bin/python" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
