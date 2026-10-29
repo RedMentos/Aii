@@ -112,5 +112,10 @@ jobs:
           x=json.load(open(sys.argv[1]))
           assert x['schema']=='v13.p2.qad_hf_tensor_structural_audit.v1'
           assert x['status']=='STRUCTURE_MATCH_PARITY_UNPROVEN'
-          print('STRUCTURE_ONLY_NO_WEIGHT_LOGIT_OR_UTILITY_PARITY')
+          assert x['hf_count']==x['gguf_count']==148
+          assert x['matched_count']==138
+          assert len(x['approved_shape_transforms'])==10
+          assert all(t['transform']=='LFM2_SHORTCONV_SQUEEZE1' for t in x['approved_shape_transforms'])
+          assert not any(x[k] for k in ('missing','shape_mismatch','unmapped_hf','collisions','unaccounted_gguf'))
+          print('PINNED_138_EXACT_PLUS_10_EXPLAINED_STRUCTURAL_ONLY_NO_WEIGHT_LOGIT_OR_UTILITY_PARITY')
           PY
