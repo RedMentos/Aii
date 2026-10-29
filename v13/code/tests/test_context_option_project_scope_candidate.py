@@ -81,6 +81,10 @@ class ProjectSourceScope(unittest.TestCase):
         self.assertIsNone(scoped.project_key(unheaded))
         self.assertIsNone(scoped.read_project_scoped(BETA_TASK, [unheaded])["options"])
 
+    def test_generic_project_rules_is_not_second_project_identity(self):
+        current = "Project Beta. Decide from the earlier project rules. Option A and Option B."
+        self.assertEqual(scoped.project_key(current), "beta")
+
     def test_canonical_supplier_header_is_recognized(self):
         self.assertEqual(scoped.project_key("Project Atlas supplier data sheet, revision 3."), "atlas")
         self.assertEqual(scoped.project_key("Project Delta revision note."), "delta")
