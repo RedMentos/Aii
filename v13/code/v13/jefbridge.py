@@ -269,10 +269,27 @@ def operator_command(r,args):
     j=controller(r)
     if not args or args==['status']:return dumps(j.report())
     if args==['last']:
-        row=r.store.one("SELECT payload FROM packets WHERE kind='JEFBridgeTurn' ORDER BY created DESC LIMIT 1")
+        # A JEFBridgeTurn is scoped to its source event's chat, not to the
+        # process-global packet timeline. Never expose another chat's turn.
+        row=r.store.one(
+            "SELECT p.payload FROM packets p "
+            "JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='JEFBridgeTurn' AND e.session_id=? "
+            "ORDER BY p.rowid DESC LIMIT 1", (r.session,))
         return row['payload'] if row else dumps(None)
     if args==['shadow']:return dumps({'mode':j.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':j.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args==['query']:return dumps(j.recommend_query({}))
-    if len(args)==3 and args[0]=='outcome':return dumps(j.outcome(args[1],float(args[2])))
+    if len(args)==3 and args[0]=='outcome':
+        # Human operator feedback must not train on a foreign chat event.
+        # This check must precede outcome(), whose state write is global.
+        row=r.store.one("SELECT 1 FROM events WHERE id=? AND session_id=?",
+                        (args[1],r.session))
+        if row is None:raise ValueError('JEF_OUTCOME_CURRENT_SESSION_EVENT_REQUIRED')
+        try:utility=float(args[2])
+        except (ValueError,OverflowError):
+            raise ValueError('JEF_OUTCOME_FINITE_0_TO_1_REQUIRED') from None
+        if not math.isfinite(utility) or not 0.<=utility<=1.:
+            raise ValueError('JEF_OUTCOME_FINITE_0_TO_1_REQUIRED')
+        return dumps(j.outcome(args[1],utility))
     raise ValueError(USAGE)
