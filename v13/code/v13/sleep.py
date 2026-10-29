@@ -621,7 +621,15 @@ class SleepRuntime:
         return out
     def request(self,mode='full',delay_s=0.):
         action={'full':'sleep_full','wake':'wake_replay','a':'sleep_a','b':'sleep_b','c':'sleep_c'}[mode]
-        eid=self.scheduler.post('TIMER',origin='USER',due=self.clock()+max(0.,float(delay_s)),action=action)
+        delay=float(delay_s)
+        # NaN silently became zero under max(0., nan), scheduling an immediate
+        # user timer. Reject invalid or negative intent before posting/ticking.
+        if not math.isfinite(delay) or delay<0:
+            raise ValueError('Sleep delay must be finite and nonnegative')
+        due=self.clock()+delay
+        if not math.isfinite(due):
+            raise ValueError('Sleep due time must be finite')
+        eid=self.scheduler.post('TIMER',origin='USER',due=due,action=action)
         self.tick(force=True);return eid
 
 def operator_command(r,cmd,args):
