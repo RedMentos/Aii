@@ -36,6 +36,8 @@ def verify(evidence, validation_dir):
          and receipt.get("model_sha256_after") == scorer.MODEL_SHA
          and receipt.get("runtime_sha256_before") == scorer.RUNTIME_SHA
          and receipt.get("runtime_sha256_after") == scorer.RUNTIME_SHA
+         and receipt.get("runner_binary_sha256_before") == native.hb1b.RUNNER_SHA256
+         and receipt.get("runner_binary_sha256_after") == native.hb1b.RUNNER_SHA256
          and receipt.get("adapter_sha256") is None
          and receipt.get("seed") == scorer.SEED
          and receipt.get("c3_sampling") == "off"
