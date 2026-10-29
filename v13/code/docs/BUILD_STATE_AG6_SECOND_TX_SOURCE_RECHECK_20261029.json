@@ -78,9 +78,47 @@
     "Native adapter quality/retention and device proof still absent"
   ],
   "next_commands": [
+    "For Run34/Run37 frozen preflight use isolated source with original utility.py blob f4a92...; do not change the registered pin to current ff16... merely to make full tests green",
     "Run source-pinned full software regression with closed raw and preserve inherited Run34/Run37 failures",
     "Independent review of second transaction recheck and approval mirror ordering; do not claim cross-domain atomicity",
     "Continue other canonical functional packages; do not promote gates"
   ],
-  "checkpoint_reason": "Third verified RED->GREEN software package, review-only, runtime budget UNKNOWN"
+  "checkpoint_reason": "Third verified RED->GREEN software package, review-only, runtime budget UNKNOWN",
+  "green_extended": {
+    "run": 40930097608,
+    "head": "4bb586b0001180446b159d1fa543f69f1f30c6f4",
+    "tests": "46/46 PASS; new external FINAL mutation between approval transactions also vetoed",
+    "artifact": 12922975463,
+    "zip_sha256": "2ed58ca776e5d5262a0c9bd2f67ec79affe0d37830e4ab02653bf1f7f3df0766",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-AG6-Second-Tx/RAW_GREEN46_40930097608_sha2ED58C.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "native_frozen_preflight_forensics": {
+    "scope": "READONLY_DIAGNOSTIC_NO_PIN_CHANGE",
+    "run34_run37_error": "native_source_or_catalog_changed",
+    "registered_git_blobs": {
+      "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+      "run33": "b1d58d7e0c3937787cf15dd801e278de25845879",
+      "runners": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+      "utility": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd"
+    },
+    "observed_git_blobs": {
+      "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+      "run33": "b1d58d7e0c3937787cf15dd801e278de25845879",
+      "runners": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+      "utility": "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53"
+    },
+    "finding": "Only current utility.py differs from Run34 pinned source among four immediate checked blobs; Run37 inherits Run34 prereg; do not rewrite registered pins. Use exact frozen source in isolated historical cohort if needed.",
+    "native_executed": false
+  }
 }
