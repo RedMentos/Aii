@@ -223,10 +223,14 @@ def exact_source(r, text, session=None):
             or second["messages_sha256"] != first["messages_sha256"]):
         return {"status": "CLARIFY", "reason": "SOURCE_CHANGED_BEFORE_EXACT_OUTPUT",
                 "model_called": False, "native_calls": 0}
+    # The standalone BudgetContext deliberately does not attach a semantic
+    # encoder; Runtime may attach one. Do not require an optional organ to
+    # deliver a deterministic lexical source copy.
+    keys = getattr(r.memory, "semantic_keys", None)
     return {"status": "FINAL_SOURCE_EXACT", "answer": answer,
             "source_ref": source["source_ref"], "authority": "EXACT_SOURCE",
             "model_called": False, "native_calls": 0, "learned": False,
-            "semantic_encoder_may_run": r.memory.semantic_keys.mode() != "off"}
+            "semantic_encoder_may_run": keys is not None and keys.mode() != "off"}
 
 
 def main(argv=None):
