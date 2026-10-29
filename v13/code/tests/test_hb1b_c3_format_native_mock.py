@@ -19,6 +19,8 @@ class CapturingPool(FakePool):
     def __init__(self, home, models, cfg):
         type(self).config = dict(cfg)
         super().__init__(home, models, cfg)
+        FakePool.calls = []  # FakePool.get appends to its base-class call ledger
+        FakePool.closed = False
 
 
 class HB1BNativeMock(unittest.TestCase):
@@ -67,7 +69,7 @@ class HB1BNativeMock(unittest.TestCase):
             result = self.run_mock(home, root / "evidence", parent)
             self.assertEqual(result["recorded_calls"], 24)
             self.assertTrue(result["process_reaped"])
-            self.assertTrue(FakePool.closed)
+            self.assertTrue(CapturingPool.closed)
             self.assertEqual(len(FakePool.calls), 24)
             self.assertEqual(sum(schema is not None for _, _, _, schema in FakePool.calls), 12)
             self.assertEqual(CapturingPool.config["c3_sampling"], "off")
