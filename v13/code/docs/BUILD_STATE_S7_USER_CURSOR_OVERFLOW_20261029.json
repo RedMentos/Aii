@@ -1,0 +1,73 @@
+{
+  "revision": "s7-user-cursor-overflow-review-v1",
+  "date_utc": "2026-10-29",
+  "owner": "codex/v13-s7-user-cursor-overflow-20261029-auto10d",
+  "parent_pr": 1113,
+  "parent_sha": "f21e965cba76f314ecc8444d23cd2e67e759f567",
+  "review_pr": 1118,
+  "scope": "Sleep S7 >64 interleaved user-event cursor; source-validated bounded event_ids",
+  "original_red": {
+    "run_id": 40909086524,
+    "head_sha": "05c21f21f7c9e09ff2c6097198a8d7a92d73c4d6",
+    "artifact_id": 12913380462,
+    "sha256": "452e10bbd6b68bf0cbed16bb7013bef5edc659c213e3289d16c999214442ae0b",
+    "crc": "PASS",
+    "sha256sums": "5/5 PASS",
+    "focused": "3 FAIL (all returned 0 turns after interleaved FINAL answers)",
+    "privacy": "PASS"
+  },
+  "candidate": {
+    "history_commit": "20256768658bf62534a84422e5e689f031108fab",
+    "sleep_commit": "ddef564e46d4266c3a4c6d28c670b369cbcbb842",
+    "ci_run_id": 40909329351,
+    "ci_status": "PENDING_AT_CHECKPOINT",
+    "evidence_level": "SOFTWARE_STORE_ONLY",
+    "followup_commits": [
+      "11d4ac333fc6d2808e75d33baffd71d7a7bba357",
+      "a4863db0cbd76b3b11dc110ffdb27a05456cf5b6",
+      "bd22e2cdf81ecd92f8a2dd58e2370a3f23614bd5",
+      "ef77208c4312a6deb7a8d5e3da9705902ba2381b",
+      "422bea2a25ec49f0289c3750cc764bfd98d8b544",
+      "72db6ef710f5ab03d5f53b1b4de74ac84eacb7a3",
+      "5aa0c6504e5efa8c421162cb5e18765426de5a94"
+    ],
+    "latest_source_test_commit": "5aa0c6504e5efa8c421162cb5e18765426de5a94",
+    "latest_ci_status": "PENDING_AFTER_INTERLEAVED_BARRIER_FIX",
+    "additional_scope": "Exact bounded event-ID revalidation for all retained digest entries; malformed cache rows do not suppress unrelated valid source",
+    "latest_ci_run_id": 40910808056,
+    "first_source_red": {
+      "run_id": 40909329351,
+      "head_sha": "ef7b6bc811a14b1dad744d2c00cac8373f3cb7ad",
+      "artifact_id": 12913337053,
+      "sha256": "46e253da0245445e3aeac765115576b62ce35205f33eaade0666c9f45fc00a4e",
+      "focused": "25/26 PASS, 1 inherited pending-user barrier FAIL",
+      "full": "3207 tests; 11 skipped; 1 same failure",
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0,
+      "crc": "PASS",
+      "sha256sums": "15/15 PASS"
+    }
+  },
+  "gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Does 130-turn reverse FINAL paging pass focused tests and full suite?",
+    "Is user_until migration from assistant high-water source-safe on legacy snapshots?",
+    "Does 8-session fairness remain valid under user cursor?",
+    "Independent review of corrupted duplicate events and exact SourceRefs",
+    "Verify latest exact-head 96-entry source view and malformed cache-row focused tests; do not rely on older CI heads.",
+    "Verify latest exact-head 40910808056 pending-user barrier and 96-source view; no GREEN until raw closure."
+  ],
+  "next_command": "Fetch GitHub Actions run 40909329351 and verify raw evidence; correct focused regressions, preserve original RED and negative gates.",
+  "production_integrated": false
+}

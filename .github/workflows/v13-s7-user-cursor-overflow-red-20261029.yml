@@ -1,0 +1,44 @@
+name: V13 S7 user cursor overflow original RED
+on:
+  push:
+    branches: [codex/v13-s7-user-cursor-overflow-20261029-auto10d]
+    paths: ['.github/workflows/v13-s7-user-cursor-overflow-red-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  original-red:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run preregistered 130-turn Store-only counterexample
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-s7-user-cursor-original-red"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_sleep_user_cursor_overflow_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f21e965cba76f314ecc8444d23cd2e67e759f567 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original RED raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-s7-user-cursor-original-red-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-s7-user-cursor-original-red/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce original result
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-s7-user-cursor-original-red"
+          test "$(cat "$e/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$e/FOCUSED_EXIT.txt")" = 0
