@@ -16,8 +16,8 @@ def native_history(store, session, event_id, turns, after_id=None, event_ids=Non
     if event_ids is not None:
         if (after_id is not None or type(event_ids) not in (list,tuple)
                 or type(turns) is not int or not 0<=len(event_ids)<=min(64,turns)
-                or len(set(event_ids))!=len(event_ids)
-                or any(type(e) is not str or not e for e in event_ids)):
+                or any(type(e) is not str or not e for e in event_ids)
+                or len(set(event_ids))!=len(event_ids)):
             raise ValueError('history event_ids must be a bounded distinct event list')
     from .output_policy import validate_rules,QUERY_KIND,ANSWER_KIND
     with store.mutex:
