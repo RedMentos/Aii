@@ -58,6 +58,10 @@ def main(argv=None):
         return 2
     context = None
     try:
+        # A half-completed offline restore must be reconciled under the
+        # coordinator lock before Store opens or migrates any SQLite data.
+        from v13.backup import recover_startup
+        recover_startup(home)
         context = BudgetContext(home)
         result = query_exact(context, args.query, args.session)
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
