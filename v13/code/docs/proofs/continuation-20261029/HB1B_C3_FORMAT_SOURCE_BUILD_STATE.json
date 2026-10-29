@@ -1,0 +1,52 @@
+{
+  "schema": "v13.hb1b.c3_format_source_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated review",
+  "branch": "codex/v13-hb1b-c3-format-review-20261029",
+  "parent_pr": 1054,
+  "parent_head_sha": "cb36ffec3b56b1cb6a13bfcfb38b93fa6c90fc1b",
+  "prereg_commit": "4b4978c4ed55b0397ca03ff930bf06477f8d5137",
+  "prereg_blob": "16f328584fb9678a034ee8fa9234460f4fbcfc4e",
+  "source_blob": "cb5ac831b9675dc3b71c8757fc0742881db7e5d2",
+  "tests_blob": "bd34b3039495748081fe9e30abbe0912afd3cab7",
+  "status": "SOURCE_ONLY_PLAN_TESTS_PENDING_CI",
+  "native_execution_started": false,
+  "parent_raw_sha256": "abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1",
+  "parent_score_sha256": "b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44",
+  "source_fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
+  "arms": [
+    "exact_schema",
+    "exact_plain",
+    "native_schema",
+    "native_plain"
+  ],
+  "expected_calls": 24,
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "Exact parent raw hash and independent verifier GREEN",
+    "Source-only focused CI GREEN",
+    "Fresh Linux x86_64 resource admission and pinned C3 install",
+    "Separate native review workflow only after source CI"
+  ],
+  "exact_next_command": "python -m unittest -v tests.test_hb1b_c3_format_followup; then implement separately pinned native runner, no registered HB1a raw edits",
+  "private_backup": "Use permitted private /V13/RawEvidence; never retry rejected anyone-writable Drive",
+  "open_questions": [
+    "Does strict schema force NONE compared with plain action token?",
+    "Does exact source help under either format?",
+    "Can generated offers be consumed after receiver training?",
+    "Independent 150-row native holdout still missing"
+  ],
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
