@@ -118,8 +118,13 @@ class WeightConsolidation:
         h=digest(dumps([[i['memory_id'],i['target']] for i in items]))
         def put(st):
             for b in st['batches'].values():
-                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL'}:return dict(b,deduplicated=True)
-            bid='g6b_'+h[:16]+'_'+str(int(self.clock()))
+                if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL','ANCHOR_INVALID'}:return dict(b,deduplicated=True)
+            stem='g6b_'+h[:16]+'_'+str(int(self.clock()))
+            bid=stem
+            suffix=1
+            while bid in st['batches']:
+                bid=stem+'_'+str(suffix)
+                suffix+=1
             b={'id':bid,'status':'STAGED','origin':origin,'created':self.clock(),'base_generation':self.s.generation_id,'dataset_hash':h,
                'items':items,'trainer':None,'gate':None,'request_id':None,'history':[['STAGED',self.clock()]],'neuromodulation':nm,'data_mix':mix,'admission':admission}
             st['batches'][bid]=b;st['order']=(st['order']+[bid])
