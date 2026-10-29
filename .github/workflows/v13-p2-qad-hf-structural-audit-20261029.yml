@@ -1,0 +1,23 @@
+name: V13 P2 QAD/HF structural audit source-only
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - 'v13/code/scripts/p2_qad_hf_tensor_audit.py'
+      - 'v13/code/tests/test_p2_qad_hf_tensor_audit.py'
+      - '.github/workflows/v13-p2-qad-hf-structural-audit-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-hf-structural-audit-20261029
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile audit source
+        run: python -m py_compile v13/code/scripts/p2_qad_hf_tensor_audit.py v13/code/tests/test_p2_qad_hf_tensor_audit.py
+      - name: Ten fail-closed unit checks
+        run: python -m unittest discover -s v13/code/tests -p 'test_p2_qad_hf_tensor_audit.py' -v
