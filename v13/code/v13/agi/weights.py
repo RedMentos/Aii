@@ -74,15 +74,30 @@ class WeightConsolidation:
             from ..inputs import ratings
             rows=ratings(self.s)
         except Exception:return []
+        from ..context_os import ContextOS
+        source_audit=ContextOS(self.s,self.cfg)
         done=set(self.box.load()[0]['consolidated']);out=[]
         for r in rows:
             if r.get('origin')!='EXPLICIT_NOTE' or r['score']<min_score or 'rating:'+r['event_id'] in done:continue
-            q=self.s.one("SELECT text FROM messages WHERE event_id=? AND role='user' ORDER BY id LIMIT 1",(r['event_id'],))
-            a=self.s.one("SELECT text FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",(r['event_id'],))
-            ev=self.s.one("SELECT source_id FROM events WHERE id=?",(r['event_id'],))
-            if not q or not a or not ev:continue
+            ev=self.s.one("SELECT session_id FROM events WHERE id=?",(r['event_id'],))
+            if not ev:continue
+            # A rating is a human quality signal, not permission to revive
+            # deleted input or to train from mutable/cross-session chat text.
+            q=self.s.one("SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='user' ORDER BY id LIMIT 1",
+                         (r['event_id'],ev['session_id']))
+            a=self.s.one("SELECT text FROM messages WHERE event_id=? AND session_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",
+                         (r['event_id'],ev['session_id']))
+            if not q or not a:continue
+            try:
+                original=source_audit.source(r['event_id'],ev['session_id'])
+                if (q['text']!=original['text'] or
+                        json.loads(q['metadata']).get('source_ref')!=original['source_ref']):
+                    continue
+            except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                continue
+            ref=dict(original['source_ref'],label='HUMAN_QUALITY_LABEL_NOT_FACT')
             out.append({'memory_id':'rating:'+r['event_id'],'event_id':r['event_id'],'kind':'rated_answer','prompt':q['text'],'target':a['text'],
-                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':{'source_id':ev['source_id'],'modality':'text','label':'HUMAN_QUALITY_LABEL_NOT_FACT'}})
+                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':ref})
         return out
     def sdft_candidates(self):
         """WP-S5 SDFT: human corrections marked `learn`. The target stays empty here; a self-teaching trainer
