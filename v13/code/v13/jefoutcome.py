@@ -104,8 +104,8 @@ def report(r):
 STAGES=('L0_CAPTURE','L1_SEGMENT_TAG','L2_COMPARE','L3_CREDIT','L4_UPDATE_PROPOSAL','L5_SHADOW_LEARN','L7_VALIDATE','L9_PROMOTE','L11_REOPEN')
 
 def lifecycle(r,event_id):
-    s=r.store;ev=s.one('SELECT id,source_id FROM events WHERE id=?',(event_id,))
-    if not ev:raise ValueError('Unbekanntes Ereignis')
+    s=r.store;ev=s.one('SELECT id,source_id FROM events WHERE id=? AND session_id=?',(event_id,r.session))
+    if not ev:raise ValueError('CURRENT_SESSION_EVENT_REQUIRED')
     has=lambda kind:bool(s.one('SELECT 1 FROM packets WHERE kind=? AND event_id=? LIMIT 1',(kind,event_id)))
     reached={'L0_CAPTURE':has('ExperienceRecord')}
     reached['L1_SEGMENT_TAG']=reached['L0_CAPTURE'] and bool(s.one("SELECT 1 FROM telemetry WHERE kind IN ('episode_boundary','episode_observed') AND event_id=? LIMIT 1",(event_id,)))
@@ -125,7 +125,7 @@ def lifecycle(r,event_id):
             'note':'L6 replay/counterfactual, L8 canary and L10 consolidate have no per-experience trace yet'}
 
 def lifecycle_summary(r,limit=200):
-    rows=r.store.rows("SELECT event_id FROM packets WHERE kind='ExperienceRecord' ORDER BY rowid DESC LIMIT ?",(limit,));counts={}
+    rows=r.store.rows("SELECT p.event_id FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='ExperienceRecord' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",(r.session,limit));counts={}
     for x in rows:
         st=lifecycle(r,x['event_id'])['stage'];counts[st]=counts.get(st,0)+1
     return {'experiences':len(rows),'by_stage':counts}
