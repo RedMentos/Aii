@@ -20,7 +20,8 @@ class P2XLoraScaledCliReview(unittest.TestCase):
             i=argv.index("--lora-scaled")
             self.assertEqual(argv[i+1],"synthetic-adapter:1")
             self.assertEqual(argv[i+2],"--host")
-            self.assertNotIn("1",argv)
+            # Other flags legitimately use the standalone value "1" (-np).
+            # Only the immediate LoRA option boundary must be single-token.
             self.assertEqual(argv[argv.index("--host")+1],"127.0.0.1")
             server.close()
 
