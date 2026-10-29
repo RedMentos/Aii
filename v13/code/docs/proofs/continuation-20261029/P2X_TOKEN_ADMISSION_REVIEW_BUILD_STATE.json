@@ -53,7 +53,9 @@
     "internal_hashes": "9/9",
     "stage_exits": "4/4",
     "privacy": "CLEAN",
-    "diff": "CLEAN"
+    "diff": "CLEAN",
+    "private_backup": "/V13/RawEvidence/2026-10-29/P2X/token_source_40855383465_sha9a9c998c.zip",
+    "byte_identical": true
   },
   "tokenizer_only_native": {
     "original_red": {
