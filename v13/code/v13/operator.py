@@ -12,7 +12,7 @@ def obsched_names():
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
-:self / :world / :worldmodel [status|event <Event-ID> simple|detail|gist|both] / :native / :knobs / :components / :objectives / :plasticity [component]
+:self / :world / :worldmodel [status|event <Event-ID> simple|detail|gist|both|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -254,7 +254,17 @@ class Operator:
                 if row is None or row['session_id']!=r.session:
                     raise ValueError('Event nicht im aktuellen Chat')
                 return dumps(wm.for_event(s,args[1],args[2]))
-            raise ValueError(':worldmodel [status|event <Event-ID> simple|detail|gist|both]')
+            if len(args)==2 and args[0]=='compare':
+                row=s.one('SELECT session_id FROM events WHERE id=?',(args[1],))
+                if row is None or row['session_id']!=r.session:
+                    raise ValueError('Event nicht im aktuellen Chat')
+                # Display only: no winner, automatic routing, fit or authority.
+                return dumps({'status':'READ_ONLY_COUNTERFACTUALS',
+                              'event_id':args[1], 'authority':'HYPOTHESIS',
+                              'cause':'SELF_CAUSED', 'decision_authority':False,
+                              'ranked':False,
+                              'routes':{a:wm.for_event(s,args[1],a) for a in wm.ACTIONS}})
+            raise ValueError(':worldmodel [status|event <Event-ID> simple|detail|gist|both|compare <Event-ID>]')
         if cmd in {'components','objectives'}:
             from .verification import component_registry,objective_registry
             return dumps(component_registry() if cmd=='components' else objective_registry(r))
