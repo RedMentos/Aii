@@ -101,6 +101,79 @@ class NativeEvalTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "identity"):
             s.compare(base,cand)
 
+    def test_paired_forged_aggregate_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        cand["per_arm"]["both_exact"]["exact"] = 999
+        with self.assertRaisesRegex(ValueError, "aggregate"):
+            s.compare(base,cand)
+
+    def test_paired_duplicate_id_group_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        for j in range(5,10):
+            cand["details"][j]["id_sha256"]=cand["details"][0]["id_sha256"]
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            s.compare(base,cand)
+
+    def test_paired_reordered_candidate_groups_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        cand["details"][:10] = cand["details"][5:10]+cand["details"][:5]
+        with self.assertRaisesRegex(ValueError, "cross-arm"):
+            s.compare(base,cand)
+
+    def test_paired_oracle_substitution_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        row=cand["details"][3]
+        self.assertEqual(row["arm"], "both_exact")
+        row["expected"]="B" if row["expected"]=="A" else "A"
+        row["parsed"]=row["expected"]
+        row["kind"]="exact"
+        with self.assertRaisesRegex(ValueError, "cross-arm"):
+            s.compare(base,cand)
+
+    def test_paired_kind_or_negative_gate_forgery_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        cand["details"][0]["kind"]="wrong_committed"
+        with self.assertRaisesRegex(ValueError, "kind"):
+            s.compare(base,cand)
+        cand=s.score(r2,p2,a2,"c"*64)
+        cand["redmi_measured"]=True
+        with self.assertRaisesRegex(ValueError, "gate"):
+            s.compare(base,cand)
+
+    def test_paired_missing_detail_red(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        cand=s.score(r2,p2,a2,"c"*64)
+        cand["details"].pop()
+        with self.assertRaisesRegex(ValueError, "coverage"):
+            s.compare(base,cand)
+
+    def test_paired_unparseable_record_is_descriptive(self):
+        p,a,r=fixture()
+        base=s.score(r,p,a)
+        p2,a2,r2=fixture("c"*64)
+        r2[0]["output"]="not-json"
+        cand=s.score(r2,p2,a2,"c"*64)
+        x=s.compare(base,cand)
+        self.assertEqual(x["both_exact_delta"],0)
+        self.assertEqual(cand["per_arm"]["c3_only"]["unparseable"],1)
+
     def test_main_fail_closed_and_exclusive(self):
         with tempfile.TemporaryDirectory() as d:
             out=Path(d)/"score.json"
