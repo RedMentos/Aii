@@ -1,7 +1,7 @@
-name: V13 Run135 Age0 plus STEP2 crosschain SOFTWARE-only review
+name: V13 Run135 independent error-contract correction review
 on:
   push:
-    branches: [assistant/v13-run135-age-step2-crosschain-software-20261029]
+    branches: [codex/run135-age-error-contract-review-20261029]
 permissions:
   contents: read
   actions: read
@@ -51,7 +51,7 @@ jobs:
           check fbc827f1b5483090b63b96caa36e97ca5e7b63f8 v13/code/tests/test_step2_project_identity_binding_candidate.py || source_ok=1
           check 4dbe04813d3dfa3d982d14ad695af5b7fb9250fe v13/code/docs/proofs/continuation-20261029/STEP2_PROJECT_IDENTITY_PREREG.md || source_ok=1
           check cfd55e143f5bbcb10617ca2a31d5848aa0c00c8e v13/code/docs/proofs/continuation-20261029/RUN135_AGE_STEP2_CROSSCHAIN_PREREG.md || source_ok=1
-          check 7d466fef05c3c35306786a7488bacdfef67be644 v13/code/tests/test_run135_age_step2_crosschain.py || source_ok=1
+          check db272249cef1e531fd6a7337ea3810fe696fe455 v13/code/tests/test_run135_age_step2_crosschain.py || source_ok=1
           check 6f10566fb141e618111efa3102929d8f078f0f9b v13/code/scripts/age_evidence_finite_candidate.py || source_ok=1
           check d11d0ac1aac63a13c5c394c40bb82caa369cb8e8 v13/code/tests/test_age_evidence_finite_candidate.py || source_ok=1
           check c1a3039b6bb4df4b7c8c2c5f577d7a3cd232735f v13/code/docs/proofs/continuation-20261029/AGE_EVIDENCE_FINITE_PREREG.md || source_ok=1
@@ -105,9 +105,9 @@ jobs:
           else
             echo SKIPPED_DEPENDENCY_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
           fi
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 58dad4b349719104a1db227c6f01360891466e8b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c716263d4f1e047f8ce716b9f65ac34ee4fce3fd --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
-          git diff --check 58dad4b349719104a1db227c6f01360891466e8b HEAD > "$e/DIFF_RAW.log" 2>&1
+          git diff --check c716263d4f1e047f8ce716b9f65ac34ee4fce3fd HEAD > "$e/DIFF_RAW.log" 2>&1
           echo "$?" > "$e/DIFF_EXIT.txt"
           (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
           exit 0
