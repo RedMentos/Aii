@@ -27,3 +27,12 @@ Negative gates remain: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JE
 5. For the fast reproducible software check: `cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029 tests.test_weight_approval_atomic tests.test_agi_trainers`.
 
 Remaining platform budget: UNKNOWN. No Redmi access in this run.
+
+
+## Correction after first full-suite RED (2026-10-29, preserve evidence)
+
+The first full run `40920238606` was **not** only the two inherited pinned-source errors: 3213 tests, **1 FAIL + 4 ERROR + 11 skips**, including three new regressions. New: SDFT and neuromod synthetic tests used deliberately unbound fake SourceRefs, which the new fail-closed gate correctly rejected; data-mix poisoning was classified SOURCE_INVALID before DATA_MIX_FAIL. ZIP artifact `12917623119`, SHA256 `10d5bb71f6d7dab85518d52a41ccbb24dbc68095c10cc1341b30eb39f5cc0dbf`, CRC/19 inner hashes verified and private Library re-materialized byte-exact.
+
+Corrective code commit `87fd08ffe7677938be269facd65f06d3ad3a0653` restores DATA_MIX_FAIL precedence **before** source validation; source refusal still occurs before fit. SDFT fixture commit `8a67f4bb47a40d072f795397c50cd4c2759d9f43` now uses a real Store correction SourceRef; neuromod fixture commit `173c6498b7e82b6a9e82e5fbd9719b33af2f992c` uses a real Store human source. These are software-test fixture corrections, not source/model/seed cohort changes. Fast recheck `40921307265` verified both repaired fixtures and source tests but had an **environment ERROR**: `test_learning_invariants` requires numpy, absent from stock Python. Original log preserved; no fake PASS. Pinned numpy venv added at `05e88a984018a5e319b6578b2d4029d9020beac3`, recheck pending. Full pinned rerun `40921336476` at `e3f6e052fca2e79a0f5045843ff0c4455c220ad4` pending.
+
+Do not claim a full-suite pass. Next exact checks: inspect `40921542715` (numpy-focused), `40921336476` (full), verify ZIP/CRC/internal SHA256SUMS and all errors, then update PR #1125. Original frozen run34/run37 RED must remain visible. Child PR #1126 contains identical fixture bytes plus separate approval source guard; verify mergeability before integration.
