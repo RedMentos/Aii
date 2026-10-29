@@ -19,8 +19,23 @@
   "candidate": {
     "source_commit": "d20454e224d1d3793b704b2160b0135de5febeb3",
     "ci_run_id": 40907705671,
-    "ci_status": "PENDING_AT_CHECKPOINT",
-    "evidence_level": "SOFTWARE_STORE_ONLY"
+    "ci_status": "FOCUSED_GREEN_FULL_RED",
+    "evidence_level": "SOFTWARE_STORE_ONLY",
+    "focused": "33/33 PASS",
+    "full": "3197 tests; 11 skipped; two inherited frozen-source identity errors in run34/run37",
+    "artifact_id": 12912327545,
+    "artifact_sha256": "625ed325b80702d5f99373eba2f8002286d8e9c1061769fc1bceae75812561f3",
+    "raw_verified": "CRC and 19/19 SHA256SUMS PASS",
+    "stage_exits": {
+      "venv": 0,
+      "deps": 0,
+      "pip_check": 0,
+      "focused": 0,
+      "full": 1,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    }
   },
   "gates": {
     "age": "RECORD_ONLY",
