@@ -1,0 +1,98 @@
+name: V13 Run139 WP-UI1 widget path quoting RED-first software review
+on:
+  push:
+    branches: [codex/wp-ui1-widget-path-quoting-review-20261029]
+permissions:
+  contents: read
+concurrency:
+  group: v13-run139-widget-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture exact source, focused widget regression, full suite and privacy
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run139-widget"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_ok=0
+          check() {
+            observed="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$observed" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$observed" = "$1" ]
+          }
+          check 73c43485f929a81add056e0b0d0c8a3a0136cab0 v13/code/KNOEPFE_EINRICHTEN.sh || source_ok=1
+          check 5557cebf1911d8c962d3f050c4bd39ba5d1532c4 v13/code/tests/test_wp_ui1_widget_path_quoting_review.py || source_ok=1
+          check 300019dfdcaa3c84242af9fdcf58a0df351b0e31 v13/code/docs/proofs/continuation-20261029/WP_UI1_WIDGET_PATH_QUOTING_PREREG.md || source_ok=1
+          echo "$source_ok" > "$e/SOURCE_EXIT.txt"
+          bash -n v13/code/KNOEPFE_EINRICHTEN.sh > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_ok" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 90s python3 -m unittest -v tests.test_wp_ui1_widget_path_quoting_review) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SOURCE_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$RUNNER_TEMP/v13-run139-venv"
+            py="$RUNNER_TEMP/v13-run139-venv/bin/python"
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first="$?"
+            if [ "$first" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+              first="$?"
+            fi
+            if [ "$first" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+              first="$?"
+            fi
+            echo "$first" > "$e/INSTALL_EXIT.txt"
+            if [ "$first" = 0 ]; then
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo DEPENDENCY_RED > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            echo FOCUSED_RED_NO_INSTALL > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+            echo FOCUSED_RED_NO_FULL > "$e/FULL_RAW.log"; echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 61297975a215f284ca86044a54e306b6f1174ec9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 61297975a215f284ca86044a54e306b6f1174ec9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original RED or GREEN raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run139-widget-quote-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run139-widget/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only acceptance
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run139-widget"
+          for n in SOURCE COMPILE FOCUSED INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw preserved; no WP-UI1 native/phone promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN139_WIDGET_PATH_SOFTWARE_ONLY_NO_PHONE_PROMOTION
