@@ -516,6 +516,17 @@ class WeightConsolidation:
                     raise ValueError('Freigabeversuch veraltet')
                 if self._approval_input_hash(b)!=b['approval_attempt']['input_hash']:
                     raise ValueError('Freigabedaten verändert')
+                # A foreign SQLite writer can revoke a source after the first
+                # transaction committed ACTIVATING. Recheck in this final
+                # BEGIN IMMEDIATE transaction, before any registry/mirror side
+                # effect; the write lock then prevents an intervening commit.
+                try:
+                    if type(b.get('items')) is not list or not b['items']:
+                        raise ValueError('Invalid approval items')
+                    for item in b['items']:
+                        self._check_item_sources(item)
+                except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                    raise ValueError('Freigabe gesperrt: Quelle widerrufen oder beschädigt') from None
                 t=b.get('trainer') or {};dep=(t.get('metrics') or {}).get('deployed') or {}
                 if required:
                     from ..lora_trainer import AdapterRegistry
