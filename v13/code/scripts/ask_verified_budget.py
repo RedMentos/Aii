@@ -142,6 +142,25 @@ def _answer_uses_euro_source(answer, source):
                for name in PROJECT.findall(answer))
 
 
+# An independent consumer bound protects against a misbehaving streaming
+# generator even when the native token limit is already configured.
+MAX_NATIVE_OUTPUT_CHARS = 32768
+
+
+def _collect_bounded_output(chunks):
+    """Return text only for finite, string-only native output within the cap."""
+    parts = []
+    length = 0
+    for chunk in chunks:
+        if not isinstance(chunk, str):
+            return None
+        length += len(chunk)
+        if length > MAX_NATIVE_OUTPUT_CHARS:
+            return None
+        parts.append(chunk)
+    return "".join(parts)
+
+
 def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
     """Return a bounded decision; native execution requires explicit opt-in."""
     session = r.session if session is None else session
@@ -176,9 +195,10 @@ def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
             return {"status": "CLARIFY", "reason": "SOURCE_CHANGED_BEFORE_DISPATCH",
                     "model_called": False, "native_calls": 0}
         calls = 1
-        output = "".join(runner.generate(second["messages"], threading.Event(),
-                                         time.monotonic() + float(timeout_s),
-                                         max_tokens=int(max_tokens), seed=13))
+        output = _collect_bounded_output(runner.generate(
+            second["messages"], threading.Event(),
+            time.monotonic() + float(timeout_s),
+            max_tokens=int(max_tokens), seed=13))
         metrics = dict(runner.last_metrics)
     finally:
         if runner is not None:
