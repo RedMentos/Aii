@@ -1,4 +1,5 @@
 name: V13 P2X LoRA scale0 scale1 training16 source-only review
+# Revision: explicit JSON round-trip score keys after original synthetic RED.
 
 on:
   push:
