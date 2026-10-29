@@ -1,0 +1,56 @@
+name: V13 P0X 600 native independent raw audit source-only preflight
+on:
+  push:
+    branches: [codex/v13-p0x-native600-independent-review-20261029]
+    paths:
+      - '.github/workflows/v13-p0x-native600-independent-source-20261029.yml'
+      - 'v13/code/scripts/p0x_native600_raw_independent_audit.py'
+      - 'v13/code/tests/test_p0x_native600_raw_independent_audit.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p0x-native600-independent-source
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Independent source pins, parser and tamper software preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p0x-native600-audit-source"
+          mkdir -p "$e"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/scripts/p0x_native600_raw_independent_audit.py)" = 07c047ddcee76db20a81564626ec50537688cb6c
+            test "$(git hash-object v13/code/tests/test_p0x_native600_raw_independent_audit.py)" = 9245d83061d6a9a0870c9d9430ed1552ccfae4f5
+            test "$(git hash-object v13/code/docs/proofs/continuation-20261029/P0X_NATIVE600_INDEPENDENT_REVIEW_SCOPE.md)" = 2cff1961405af66dec5142eb1fa38e04034ddf99
+            test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+            git merge-base --is-ancestor 4a98235e7e17c0dfd0e9a9cc3cb8478f99d9abac HEAD
+            echo P0X_600_INDEPENDENT_SOURCE_PINS_OK
+          } > "$e/PINS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/p0x_native600_raw_independent_audit.py v13/code/tests/test_p0x_native600_raw_independent_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          (cd v13/code && python3 -m unittest -v tests.test_p0x_native600_raw_independent_audit) > "$e/TESTS_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4a98235e7e17c0dfd0e9a9cc3cb8478f99d9abac --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check 4a98235e7e17c0dfd0e9a9cc3cb8478f99d9abac HEAD
+          echo P0X_600_AUDIT_SOFTWARE_ONLY_NO_NATIVE_NO_GATE > "$e/STATUS.txt"
+      - name: Preserve source-only raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p0x-native600-independent-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p0x-native600-audit-source/
+          if-no-files-found: error
+          retention-days: 30
