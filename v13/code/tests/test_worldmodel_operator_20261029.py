@@ -99,4 +99,38 @@ class WorldModelOperatorTests(unittest.TestCase):
         self.assertEqual(self.r.pool.pids(),[])
 
 
+    def test_recent_event_discovery_is_bounded_session_only_and_readonly(self):
+        empty=json.loads(self.op.run(':worldmodel recent'))
+        self.assertEqual(empty['events'],[])
+        self.assertEqual(empty['status'],'READ_ONLY_EVENTS')
+        foreign=self.r.store.new_session()
+        own=set()
+        others=set()
+        for i in range(12):
+            session=foreign if i in (3,9) else self.r.session
+            e=self.r.store.event(session,'PRIVATE_EVENT_PAYLOAD_'+str(i))
+            aid=self.r.store.start_action(
+                e['event_id'],e['brain_generation_id'],
+                forecast={'input_chars':30+i,'resource_state':'NORMAL'})
+            self.r.store.finish_action(
+                aid,'FINAL',{'action_duration_s':1.,'characters':40})
+            (others if session==foreign else own).add(e['event_id'])
+        before_state=self.r.store.state(WM.KEY)
+        before_packets=self.r.store.one('SELECT COUNT(*) AS n FROM packets')['n']
+        before_actions=self.r.store.one('SELECT COUNT(*) AS n FROM actions')['n']
+        result=json.loads(self.op.run(':worldmodel recent'))
+        self.assertEqual(result['status'],'READ_ONLY_EVENTS')
+        self.assertFalse(result['decision_authority'])
+        self.assertEqual(len(result['events']),8)
+        self.assertEqual(len(set(result['events'])),8)
+        self.assertTrue(set(result['events'])<=own)
+        self.assertFalse(set(result['events'])&others)
+        self.assertNotIn('PRIVATE_EVENT_PAYLOAD',json.dumps(result))
+        self.assertEqual(self.r.store.state(WM.KEY),before_state)
+        self.assertEqual(self.r.store.one('SELECT COUNT(*) AS n FROM packets')['n'],before_packets)
+        self.assertEqual(self.r.store.one('SELECT COUNT(*) AS n FROM actions')['n'],before_actions)
+        self.assertEqual(self.r.cfg['learning_mode'],'RECORD_ONLY')
+        self.assertEqual(self.r.pool.pids(),[])
+
+
 if __name__=='__main__':unittest.main()

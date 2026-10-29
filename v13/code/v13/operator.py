@@ -12,7 +12,7 @@ def obsched_names():
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
 :help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
-:self / :world / :worldmodel [status|event <Event-ID> simple|detail|gist|both|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
+:self / :world / :worldmodel [status|recent|event <Event-ID> <route>|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
 :notaus [aus|status] (stoppt sofort jedes Werkzeug und jede Freigabe) / :stillstand [aus|status] (hält alles an: Werkzeuge, Aufgaben, Lernen, Hintergrund, Alterung) / :organ [list|status <Rolle>|snapshot <Rolle>|check <ID>|restore <ID>] (Sicherung je Modell-Organ) / :verbot [liste|werkzeug <Name>|art <Risiko>|unumkehrbar|alles|weg <V-Nr>|ansage an|aus] (feste Verbote, kein Modell entscheidet)
 :pause selfedit|traum|training|budget N / :resume <Klasse> / :note 1-10 [Text] / :ratings / :context
@@ -249,6 +249,19 @@ class Operator:
             from . import world_model as wm
             if not args or args==['status']:
                 return dumps(wm.report(s))
+            if args==['recent']:
+                # Discover bounded completed observations only in this chat.
+                # No source text, route decision, model call or state mutation.
+                rows=s.rows("SELECT a.event_id, MAX(a.created) AS last_created "
+                            "FROM actions a JOIN events e ON e.id=a.event_id "
+                            "WHERE e.session_id=? AND a.outcome IS NOT NULL "
+                            "AND a.expected LIKE ? GROUP BY a.event_id "
+                            "ORDER BY last_created DESC LIMIT 8",
+                            (r.session,'%"forecast"%'))
+                return dumps({'status':'READ_ONLY_EVENTS',
+                              'events':[row['event_id'] for row in rows],
+                              'authority':'OBSERVED_METADATA_ONLY',
+                              'decision_authority':False})
             if len(args)==3 and args[0]=='event' and args[2] in wm.ACTIONS:
                 row=s.one('SELECT session_id FROM events WHERE id=?',(args[1],))
                 if row is None or row['session_id']!=r.session:
