@@ -5,6 +5,8 @@ on:
     paths:
       - 'v13/code/scripts/p2x_c3_lora_pilot.py'
       - 'v13/code/tests/test_p2x_c3_lora_pilot.py'
+      - 'v13/code/scripts/p2x_token_admission_native_probe.py'
+      - 'v13/code/tests/test_p2x_token_admission_native_probe.py'
       - 'v13/code/docs/proofs/continuation-20261029/P2X_TOKEN_ADMISSION_*'
       - '.github/workflows/v13-p2x-token-admission-review-20261029.yml'
 permissions:
@@ -25,9 +27,10 @@ jobs:
           e="$RUNNER_TEMP/v13-p2x-token-review-evidence"
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
-          python3 -m py_compile v13/code/scripts/p2x_c3_lora_pilot.py v13/code/tests/test_p2x_c3_lora_pilot.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/p2x_c3_lora_pilot.py v13/code/tests/test_p2x_c3_lora_pilot.py v13/code/scripts/p2x_token_admission_native_probe.py v13/code/tests/test_p2x_token_admission_native_probe.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 -m unittest discover -s v13/code/tests -p 'test_p2x_c3_lora_pilot.py' -v > "$e/TEST_RAW.log" 2>&1
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2x_token_admission_native_probe.py' -v >> "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 41b20ad7f65dc65c7cacb23b6ef5579779c94251 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
