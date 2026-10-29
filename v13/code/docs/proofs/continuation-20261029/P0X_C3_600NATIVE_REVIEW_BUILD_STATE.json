@@ -1,0 +1,69 @@
+{
+  "schema": "v13.p0x.c3_600native_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated source-arm native review",
+  "branch": "codex/v13-p0x-c3-600native-20261029",
+  "parent_pr": 1062,
+  "parent_head_sha": "a86405e9ee897db09cb046f269ca59529ccbd604",
+  "prereg_first_commit": "6f76921f434b769394958c9d05768629e471a060",
+  "prereg_blob": "27074170ff9e6474e3e181afbd648005ca50a22c",
+  "source_plan_blob": "e159e7636362b6cee82dc5cd9d01d214f54d1850",
+  "source_tests_blob": "f24f54f2e0c629e0fa2f4d34c158a1f412a64adb",
+  "source_ci": {
+    "run_id": 40840507009,
+    "head": "a86405e9ee897db09cb046f269ca59529ccbd604",
+    "artifact_id": 12882686796,
+    "zip_sha256": "b83e1ca1b8f947a81d5fcb5e243607c20cfa4e49e72e50ce2f0939d62549f4b7",
+    "tests": 12
+  },
+  "baseline_native": {
+    "run_id": 40840179920,
+    "head": "577366b0059d8367f5c5446afc62b0d524d35768",
+    "artifact_id": 12882088542,
+    "zip_sha256": "f115796e45e14d1fd1ff86b241222666ab8023b734a391dfa244ae26ccf833c4",
+    "raw_sha256": "79be6584d465b0fc3ccd33294d882a41bb1990920f3098ed39203b7aef7d18a1",
+    "score_sha256": "7c603158c6d821592d5777d46bb4723503f74c063c5c30fcc0f72fe2720b836e",
+    "exact": 50,
+    "oracle_headroom": 100,
+    "headroom_sufficient": true
+  },
+  "fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "expected_native_calls": 600,
+  "arms": [
+    "b1_only",
+    "b2_only",
+    "both_exact",
+    "shuffled"
+  ],
+  "seed": 13,
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "status": "PRE_NATIVE_SOURCE_ABLATION_NO_NEW_CALLS",
+  "native_started": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "Independently verify exact baseline native raw and score and 100>=15 headroom",
+    "Rehash source-only 12-test artifact",
+    "Fresh Linux x86_64 with pinned C3 model/runner, 2.5GB memory and 3GB disk",
+    "No concurrent heavy native owner",
+    "600 serial C3 calls, per-call raw and independent verifier"
+  ],
+  "exact_next_command": "Implement default-off 600-call C3 source-arm runner and independent verifier with frozen baseline hash; software tests then separate exact-head native workflow",
+  "open_questions": [
+    "Both-exact source effect vs C3-only unknown",
+    "Single-source and shuffled false commitments unknown",
+    "No B1/B2-generated offer utility or P2 learning yet"
+  ],
+  "private_backup": "Permitted private Library /V13/RawEvidence, no rejected Drive",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
