@@ -38,7 +38,7 @@
   },
   "native": {
     "run": 40862592051,
-    "status": "QUEUED_AT_CHECKPOINT",
+    "status": "VERIFIED_GREEN_EXECUTION_NEGATIVE_UTILITY",
     "expected_calls": 360,
     "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
     "runner_archive_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
@@ -49,7 +49,37 @@
     "source_arms": 5,
     "prompt_variants": 2,
     "cohort": "CALIBRATION_ONLY_NOT_VALIDATION",
-    "native_calls_verified": 0
+    "native_calls_verified": 360,
+    "workflow_head": "977d1b3bd8b1d54bd672ae30948a14e734e4463c",
+    "zip_sha256": "0cef7a72655ba4e58c15ca52b0189e2bdd0b90c3f58daa69e22da2b12259d9d9",
+    "zip_crc": "CLEAN",
+    "sha256sums": "29/29 MATCH",
+    "stage_exits": "11/11 ZERO",
+    "raw_sha256": "cc8221f33fb5d30515aafcb9bbd4312e00f820f89c5ee1d3ef78123eac4c3bc8",
+    "score_sha256": "9436147589763695881b764b340b0d8881c3962c30816b5b8d985c8884d13ed6",
+    "inputs_sha256": "f78d99713325f318fd296f3d1e53132066b591b37318277f771852e558816602",
+    "mean_linux_call_seconds": 0.577,
+    "max_linux_call_seconds": 0.858,
+    "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/NATIVE_GREEN_40862592051_sha0cef7a72.zip",
+    "private_backup_byte_verified": true,
+    "per_arm_exact": {
+      "original": {
+        "c3_only": 0,
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_exact": 12,
+        "shuffled": 0
+      },
+      "instructed": {
+        "c3_only": 36,
+        "b1_only": 36,
+        "b2_only": 36,
+        "both_exact": 0,
+        "shuffled": 36
+      }
+    },
+    "instructed_all_unknown": true,
+    "utility": "NO_SOURCE_SENSITIVE_DISCRIMINATION"
   },
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -63,6 +93,15 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Wait for Actions 40862592051 completion, fetch original artifact, verify CRC/SHA256SUMS/all exits and replay 360 native outputs; private-backup exact ZIP bytes; record descriptive paired 36-ID result and do not promote any gate. If RED preserve original and repair via prereg addendum. Then continue independent JEF/Context OS or Body-JEPA Canon package.",
-  "remaining_platform_budget": "UNKNOWN"
+  "next_command": "Audit PR1080 corrected original raw replay after standalone import-path addendum; verify original ZIP/independent counters. Audit full software run 40862737502 and preserve private raw. Then implement independent typed JEF/Context OS source-use utility or trainable C3 receiver, with new prospective cohort and all gates unchanged.",
+  "remaining_platform_budget": "UNKNOWN",
+  "independent_audit": {
+    "pr": 1080,
+    "source_only_run": 40863066134,
+    "source_only_tests": "24/24 PASS",
+    "native_raw_review": "PENDING_FINAL_REPLAY",
+    "original_red_run": 40863315508,
+    "red_reason": "standalone CLI PYTHONPATH omitted scripts; original ZIP and all hashes passed",
+    "red_preserved": true
+  }
 }
