@@ -50,6 +50,18 @@ class WorldModelOperatorTests(unittest.TestCase):
         self.assertEqual(result['authority'],'HYPOTHESIS')
         self.assertEqual(result['cause'],'SELF_CAUSED')
         self.assertIsNotNone(result['prediction'])
+        compared=json.loads(self.op.run(':worldmodel compare '+event))
+        self.assertEqual(compared['status'],'READ_ONLY_COUNTERFACTUALS')
+        self.assertEqual(compared['authority'],'HYPOTHESIS')
+        self.assertFalse(compared['decision_authority'])
+        self.assertFalse(compared['ranked'])
+        self.assertNotIn('selection',compared)
+        self.assertEqual(set(compared['routes']),set(WM.ACTIONS))
+        self.assertEqual(compared['routes']['simple'],result)
+        for route,forecast in compared['routes'].items():
+            self.assertEqual(forecast['action'],route)
+            self.assertEqual(forecast['authority'],'HYPOTHESIS')
+            self.assertEqual(forecast['cause'],'SELF_CAUSED')
         self.assertEqual(self.r.store.state(WM.KEY),state_before)
         self.assertEqual(self.r.store.one('SELECT COUNT(*) AS n FROM packets')['n'],packets_before)
         self.assertEqual(self.r.store.one('SELECT COUNT(*) AS n FROM actions')['n'],actions_before)
@@ -62,8 +74,29 @@ class WorldModelOperatorTests(unittest.TestCase):
         for eid in ('not-an-event',e['event_id']):
             with self.subTest(eid=eid),self.assertRaisesRegex(ValueError,'aktuellen Chat'):
                 self.op.run(':worldmodel event '+eid+' detail')
+            with self.subTest(eid=eid),self.assertRaisesRegex(ValueError,'aktuellen Chat'):
+                self.op.run(':worldmodel compare '+eid)
         with self.assertRaises(ValueError):self.op.run(':worldmodel event '+e['event_id']+' bad')
         with self.assertRaises(ValueError):self.op.run(':worldmodel nope')
+
+
+    def test_unfitted_same_session_comparison_never_invents_support(self):
+        e=self.r.store.event(self.r.session,'Observed but not trained')
+        aid=self.r.store.start_action(
+            e['event_id'],e['brain_generation_id'],
+            forecast={'input_chars':25,'resource_state':'NORMAL'})
+        self.r.store.finish_action(
+            aid,'FINAL',{'action_duration_s':1.0,'characters':40})
+        before=self.r.store.state(WM.KEY)
+        result=json.loads(self.op.run(':worldmodel compare '+e['event_id']))
+        self.assertEqual(set(result['routes']),set(WM.ACTIONS))
+        for cf in result['routes'].values():
+            self.assertEqual(cf['reason'],'NO_WORLD_MODEL')
+            self.assertEqual(cf['label'],'SIMULATION_UNCERTAIN')
+            self.assertIsNone(cf['prediction'])
+            self.assertEqual(cf['confidence'],0.)
+        self.assertEqual(self.r.store.state(WM.KEY),before)
+        self.assertEqual(self.r.pool.pids(),[])
 
 
 if __name__=='__main__':unittest.main()
