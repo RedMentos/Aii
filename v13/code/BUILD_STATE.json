@@ -3096,5 +3096,42 @@
     "next_prerequisites": "Rerun full suite with compatible isolated torch and classify remaining failures; preserve frozen source/model pins, no gate promotion.",
     "report": "docs/proofs/continuation-20261029/WORLDJEPA_FIXTURE_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_full_software_cpu_torch_20261029": {
+    "scope": "REVIEW_ONLY_UNFILTERED_LINUX_SOFTWARE_CPU_TORCH",
+    "owner_branch": "codex/v13-full-suite-torch-review-20261029-auto10ak",
+    "parent_pr": 1148,
+    "parent_sha": "4f85688c2be9f0680db67f909a2c0815ba09829d",
+    "run": 40957012351,
+    "head": "12c3c152a5a183f7dd3899761a62d964854f0a97",
+    "result": "RED_3285_TESTS_0_FAIL_6_ERROR_11_SKIPPED",
+    "errors": {
+      "missing_peft": 1,
+      "missing_transformers": 3,
+      "frozen_run34_run37_pins": 2
+    },
+    "torch_version": "2.5.1+cpu",
+    "torch_cuda": false,
+    "torch_install": "OFFICIAL_CPU_INDEX_EXIT0",
+    "stages": "CANON/VENV/DEPS/TORCH/PIP_CHECK/TORCH_IMPORT/COMPILE/PRIVACY/DIFF exit0; FULL exit1",
+    "zip_sha256": "c3abbd38acc66b12f4bb495849dd3faccbdca74e93286f6d4e3c6102e5dc826d",
+    "inner_hashes": "22/22",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-FullSuiteTorch/",
+    "private_backup_byte_exact": true,
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "native_proof": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+    "next_prerequisites": "Fresh isolated pinned transformers+peft plus CPU torch, preserve Run34/Run37 frozen source pins; no gate promotion.",
+    "report": "docs/proofs/continuation-20261029/FULL_SUITE_TORCH_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
