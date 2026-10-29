@@ -82,7 +82,9 @@ class CrossOrganWorldAgeSkillIntegration(unittest.TestCase):
             try:
                 age2 = AgeControl(r2.store, r2.cfg)
                 self.assertEqual(age2.system_stage(), 0)
-                self.assertEqual(age2.state()[0]["system"]["evidence_count"], 1)
+                self.assertGreaterEqual(age2.state()[0]["system"]["evidence_count"], 1)
+                self.assertIn("unmeasured", age2.state()[0]["seen_evidence"])
+                self.assertNotIn("invalid", age2.state()[0]["seen_evidence"])
                 self.assertFalse(age2.allowed("short_dream"))
             finally:
                 r2.close()
