@@ -86,6 +86,29 @@ class RatedDependencyLifecycle(unittest.TestCase):
         self.assertEqual(w.approve(bid)["status"], "APPROVED")
         self.assertIn("C3_LANGUAGE", AdapterRegistry(self.s).report()["active"])
 
+    def test_removed_dependency_snapshot_vetoes_fit(self):
+        trainer = CountingTrainer()
+        w, bid = self._stage(trainer)
+        def corrupt(st):
+            rated = next(i for i in st["batches"][bid]["items"]
+                         if i["memory_id"] == self.rated_id)
+            rated.pop("source_dependencies")
+        w.box.mutate(corrupt)
+        self.assertEqual(w.train(bid)["status"], "SOURCE_INVALID")
+        self.assertEqual(trainer.calls, [])
+
+    def test_removed_dependency_snapshot_vetoes_approval(self):
+        w, bid = self._stage(self._fake_lora())
+        self.assertEqual(w.train_and_gate(bid)["status"], "PENDING_USER")
+        def corrupt(st):
+            rated = next(i for i in st["batches"][bid]["items"]
+                         if i["memory_id"] == self.rated_id)
+            rated.pop("source_dependencies")
+        w.box.mutate(corrupt)
+        with self.assertRaisesRegex(ValueError, "Quelle|Source"):
+            w.approve(bid)
+        self.assertEqual(w.batch(bid)["status"], "PENDING_USER")
+
     def test_staged_rated_item_preserves_declared_dependency(self):
         w, bid = self._stage(CountingTrainer())
         rated = next(i for i in w.batch(bid)["items"] if i["memory_id"] == self.rated_id)
