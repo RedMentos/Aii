@@ -60,6 +60,7 @@ def compare(hf, gguf_tensors, mapper):
     mapper: existing gguf.get_tensor_name_map(...).get_name callable.
     """
     matched, missing, shape_mismatch, unmapped, collision = [], [], [], [], []
+    approved_shape_transforms = []
     seen = set()
     for name in sorted(hf):
         if not name.endswith('.weight'):
@@ -80,7 +81,13 @@ def compare(hf, gguf_tensors, mapper):
             continue
         expected = list(hf[name]['shape'])
         actual = list(reversed(rec['shape']))
-        if actual != expected:
+        if (actual != expected and name.endswith('.conv.conv.weight')
+                and len(expected) == 3 and expected[1] == 1
+                and actual == [expected[0], expected[2]]):
+            approved_shape_transforms.append({'hf': name, 'gguf': key,
+                'hf_shape': expected, 'gguf_decoded_shape': actual,
+                'transform': 'LFM2_SHORTCONV_SQUEEZE1', 'source': 'llama.cpp/b10964/conversion/lfm2.py:60-65'})
+        elif actual != expected:
             shape_mismatch.append({'hf': name, 'gguf': key,
                                    'hf_shape': expected, 'gguf_decoded_shape': actual})
         else:
@@ -92,6 +99,7 @@ def compare(hf, gguf_tensors, mapper):
             'status': 'STRUCTURE_MATCH_PARITY_UNPROVEN' if clean else 'STRUCTURE_RED',
             'hf_count': len(hf), 'gguf_count': len(gguf_tensors),
             'matched_count': len(matched), 'matched': matched,
+            'approved_shape_transforms': approved_shape_transforms,
             'missing': missing, 'shape_mismatch': shape_mismatch,
             'unmapped_hf': unmapped, 'collisions': collision,
             'unaccounted_gguf': extras,
