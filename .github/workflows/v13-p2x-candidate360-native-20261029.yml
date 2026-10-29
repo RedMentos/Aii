@@ -149,8 +149,9 @@ jobs:
           if [ "$(cat "$e/ADAPTER_GGUF_SHA_EXIT.txt")" = 0 ]; then
             PYTHONPATH=v13/code "$py" - "$home" > "$e/MODEL_PATH_RAW.log" 2>&1 <<'PY'
           import sys
+          from pathlib import Path
           from v13.models import ModelManager
-          print(ModelManager(sys.argv[1]).path_for("C3_LANGUAGE"))
+          print(ModelManager(Path(sys.argv[1])).path_for("C3_LANGUAGE"))
           PY
             echo "$?" > "$e/MODEL_PATH_EXIT.txt"
           else echo SKIPPED > "$e/MODEL_PATH_EXIT.txt"; fi
