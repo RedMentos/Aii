@@ -1,0 +1,180 @@
+name: V13 HB1b pinned 24-call C3 JSON/plain Linux-native diagnostic
+on:
+  push:
+    branches: [codex/v13-hb1b-c3-format-24native-20261029]
+    paths: ['.github/workflows/v13-hb1b-c3-format-24native-20261029.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-hb1b-24call-native-review
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Three parent artifacts, pinned source, native C3 and closed evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-hb1b-24native"
+          work="$RUNNER_TEMP/v13-hb1b-24work"
+          home="$RUNNER_TEMP/v13-hb1b-home"
+          mkdir -p "$e/parent-hb1a" "$e/parent-source" "$e/parent-mock" "$work" "$home"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_red=0
+          check() {
+            got="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$got" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$got" = "$1" ]
+          }
+          check 06b3764318baf0caf27ad93b5c136570ad4a63ce v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_24NATIVE_REVIEW_BUILD_STATE.json || source_red=1
+          check 16f328584fb9678a034ee8fa9234460f4fbcfc4e v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_SOURCE_PREREG.md || source_red=1
+          check e43c748f4822434365e11de6e0132bf36ff694b3 v13/code/docs/proofs/continuation-20261029/HB1B_C3_FORMAT_PREREG_ADDENDUM.md || source_red=1
+          check cb5ac831b9675dc3b71c8757fc0742881db7e5d2 v13/code/scripts/hb1b_c3_format_followup.py || source_red=1
+          check 9791ad1a7b10692d4e75810856bd93fc4dcb44ea v13/code/scripts/hb1b_c3_format_native_executor.py || source_red=1
+          check 535fbd5b1b6c16d88e6d4f5edc979e86117e0788 v13/code/scripts/hb1b_c3_format_native_verifier.py || source_red=1
+          check d1fb8312fddb45d25a0db0a6114026138e0082e9 v13/code/tests/test_hb1b_c3_format_native_mock.py || source_red=1
+          check bd34b3039495748081fe9e30abbe0912afd3cab7 v13/code/tests/test_hb1b_c3_format_followup.py || source_red=1
+          check 033ea9c8c3e6f9ff631b84136afa1f74dd7e627c v13/code/scripts/hb1a_two_body_native_pilot.py || source_red=1
+          check b79abbfa0bcd16e115acd89383885e5d228660d7 v13/code/scripts/hb1a_independent_native_verifier.py || source_red=1
+          check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py || source_red=1
+          check 7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02 v13/code/scripts/run93_source_c3_native_e2e.py || source_red=1
+          check efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py || source_red=1
+          check bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py || source_red=1
+          check 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json || source_red=1
+          check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md || source_red=1
+          git merge-base --is-ancestor 4446c3fc82b857745fec0d04673f2307f2b43559 HEAD || source_red=1
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          gh run download 40836705747 -n v13-hb1a-54call-native-40836705747-f7db8dcfa3297061c1cdc9d234f3097c6a417e96 -D "$e/parent-hb1a" > "$e/PARENT_HB1A_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_HB1A_DOWNLOAD_EXIT.txt"
+          gh run download 40837513227 -n v13-hb1b-source-40837513227-47945604cb21b442108b131d1b7c160bd7c79202 -D "$e/parent-source" > "$e/PARENT_SOURCE_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_SOURCE_DOWNLOAD_EXIT.txt"
+          gh run download 40838049061 -n v13-hb1b-native-source-40838049061-43321c26b77d26655ec286fb465ab434252613d8 -D "$e/parent-mock" > "$e/PARENT_MOCK_DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/PARENT_MOCK_DOWNLOAD_EXIT.txt"
+          python3 - "$e/parent-hb1a" "$e/parent-source" "$e/parent-mock" > "$e/PARENT_VERIFY_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          roots=list(map(Path,sys.argv[1:]))
+          specs=[
+              ('f7db8dcfa3297061c1cdc9d234f3097c6a417e96',None,('SOURCE_RAW.log','NATIVE_RAW.log','VERIFY_RAW.log','PRIVACY_RAW.log')),
+              ('47945604cb21b442108b131d1b7c160bd7c79202','HB1B_SOURCE_ONLY_NO_NATIVE_NO_GATE',('SOURCE_RAW.log','FOCUSED_RAW.log','FULL_RAW.log','PRIVACY_RAW.log')),
+              ('43321c26b77d26655ec286fb465ab434252613d8','HB1B_NATIVE_EXECUTOR_SOFTWARE_ONLY_NO_GATE',('SOURCE_RAW.log','FOCUSED_RAW.log','PRIVACY_RAW.log'))]
+          for root,(head,status,required) in zip(roots,specs):
+              assert (root/'HEAD.txt').read_text().strip()==head,'PARENT_HEAD_RED'
+              if status: assert (root/'STATUS.txt').read_text().strip()==status,'PARENT_STATUS_RED'
+              lines=(root/'SHA256SUMS.txt').read_text().splitlines()
+              listed=set()
+              for line in lines:
+                  digest,rel=line.split('  ',1)
+                  path=(root/rel.removeprefix('./')).resolve()
+                  assert path.is_relative_to(root.resolve()) and path.is_file(),'PARENT_PATH_RED'
+                  assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,'PARENT_HASH_RED:'+rel
+                  listed.add(path.name)
+              assert set(required).issubset(listed),'PARENT_MISSING_RAW'
+              assert 'CLEAN' in (root/'PRIVACY_RAW.log').read_text(),'PARENT_PRIVACY_RED'
+          a=roots[0]/'evidence'
+          raw=(a/'RAW.json').read_bytes();score=(a/'SCORE.json').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1'
+          assert hashlib.sha256(score).hexdigest()=='b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44'
+          receipt=json.loads((a/'RECEIPT.json').read_text())
+          assert receipt['status']=='RECORDED_LINUX_NATIVE_THREE_ORGAN_DIAGNOSTIC_NO_GATE'
+          assert receipt['body_recorded']==24 and receipt['c3_recorded']==30
+          assert receipt['process_reaped'] is True and receipt['canonical_gate_pass'] is False
+          assert 'Ran 2911 tests' in (roots[1]/'FULL_RAW.log').read_text()
+          assert 'OK' in (roots[1]/'FULL_RAW.log').read_text()
+          assert 'Ran 18 tests' in (roots[2]/'FOCUSED_RAW.log').read_text()
+          assert 'OK' in (roots[2]/'FOCUSED_RAW.log').read_text()
+          print('HB1A_PARENT_AND_HB1B_SOURCE_2911_PLUS_MOCK_18_SHA256_OK')
+          PY
+          echo "$?" > "$e/PARENT_VERIFY_EXIT.txt"
+          python3 - "$work" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import json,platform,shutil,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          info={'platform':platform.platform(),'machine':platform.machine(),
+                'disk_free_bytes':shutil.disk_usage(root).free}
+          for line in Path('/proc/meminfo').read_text().splitlines():
+              if line.startswith(('MemAvailable:','MemTotal:')):
+                  key,value,*_=line.split()
+                  info[key.rstrip(':')]=int(value)*1024
+          c=Path('/sys/fs/cgroup/memory.max')
+          info['cgroup_memory_max']=c.read_text().strip() if c.exists() else 'UNAVAILABLE'
+          print(json.dumps(info,sort_keys=True))
+          assert platform.system()=='Linux' and platform.machine()=='x86_64'
+          assert info['disk_free_bytes']>=3_000_000_000
+          assert info.get('MemAvailable',0)>=2_500_000_000
+          assert info['cgroup_memory_max'] in ('max','UNAVAILABLE') or int(info['cgroup_memory_max'])>=2_000_000_000
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-hb1b-native-venv"
+          py="$RUNNER_TEMP/v13-hb1b-native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/hb1b_c3_format_followup.py v13/code/scripts/hb1b_c3_format_native_executor.py v13/code/scripts/hb1b_c3_format_native_verifier.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/PARENT_VERIFY_EXIT.txt")" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_hb1b_c3_format_followup tests.test_hb1b_c3_format_native_mock) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQUISITE_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 25m "$py" -m scripts.hb1b_c3_format_native_executor --home "$home" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/INSTALL_RAW.log"; echo SKIPPED_RED > "$e/INSTALL_EXIT.txt"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 32m "$py" -m scripts.hb1b_c3_format_native_executor --home "$home" --out "$work/evidence" --parent-evidence-dir "$e/parent-hb1a/evidence") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/NATIVE_RAW.log"; echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -d "$work/evidence" ]; then cp -a "$work/evidence" "$e/evidence"; fi
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && "$py" -m scripts.hb1b_c3_format_native_verifier --evidence-dir "$e/evidence" --parent-evidence-dir "$e/parent-hb1a/evidence") > "$e/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_RED > "$e/VERIFY_RAW.log"; echo SKIPPED_RED > "$e/VERIFY_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4446c3fc82b857745fec0d04673f2307f2b43559 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4446c3fc82b857745fec0d04673f2307f2b43559 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve all original raw and RED attempts (exclude installed model weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb1b-24native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb1b-24native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source, parent, native and privacy gates
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb1b-24native"
+          for n in SOURCE PARENT_HB1A_DOWNLOAD PARENT_SOURCE_DOWNLOAD PARENT_MOCK_DOWNLOAD PARENT_VERIFY RESOURCE DEPS COMPILE FOCUSED INSTALL NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw retained; no acceptance or gate promotion"
+              tail -50 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo HB1B_24_REAL_C3_LINUX_NATIVE_FORMAT_DIAGNOSTIC_ONLY_NO_STEP2_B3_JEPA_REDMI_GATE
