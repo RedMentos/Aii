@@ -93,8 +93,8 @@ def frozen_family_map():
                 "FAMILY_IDENTITY")
         result[key] = row["family"]
         families[row["family"]] = families.get(row["family"], 0) + 1
-    require(len(result) == N and len(families) == 30
-            and all(count == 5 for count in families.values()),
+    require(len(result) == N and len(families) == 25
+            and all(count == 6 for count in families.values()),
             "FAMILY_COVERAGE")
     return result
 
@@ -106,10 +106,10 @@ def cluster_ci(a, b, family_map, rng):
         require(a[id_][1] == b[id_][1], "CLUSTER_ORACLE")
         delta = int(a[id_][0] == a[id_][1]) - int(b[id_][0] == b[id_][1])
         groups.setdefault(family, []).append(delta)
-    require(len(groups) == 30 and all(len(x) == 5 for x in groups.values()),
+    require(len(groups) == 25 and all(len(x) == 6 for x in groups.values()),
             "CLUSTER_SIZE")
     sums = [sum(groups[f]) for f in sorted(groups)]
-    samples = sorted(sum(sums[rng.randrange(30)] for _ in range(30)) / N
+    samples = sorted(sum(sums[rng.randrange(25)] for _ in range(25)) / N
                      for _ in range(BOOTSTRAPS))
     return [samples[int(.025 * BOOTSTRAPS)],
             samples[min(BOOTSTRAPS - 1, int(.975 * BOOTSTRAPS))]]
