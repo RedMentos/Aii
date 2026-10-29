@@ -12,6 +12,7 @@ from scripts import context_option_reference_candidate as parent
 
 
 LABEL = re.compile(r"\bproject\s+([A-Za-z][A-Za-z0-9_-]{0,63})\s*(?=[.:;])", re.I)
+HEADER = re.compile(r"^\s*project\s+([A-Za-z][A-Za-z0-9_-]{0,63})\s*(?=[.:;])", re.I)
 AMBIGUOUS = object()
 
 
@@ -19,9 +20,12 @@ def project_key(source):
     if type(source) is not str:
         raise ValueError("PROJECT_SCOPE_SOURCE_INVALID")
     names = {m.group(1).casefold() for m in LABEL.finditer(source)}
-    if not names:
-        return None
-    return next(iter(names)) if len(names) == 1 else AMBIGUOUS
+    if len(names) > 1:
+        return AMBIGUOUS
+    # A later mention may be a quotation about a different project. Only
+    # the explicit leading project header establishes historical scope.
+    header = HEADER.match(source)
+    return header.group(1).casefold() if header else None
 
 
 def read_project_scoped(current, earlier=()):
