@@ -1,0 +1,163 @@
+name: V13 P2X train16 JSON schema ON OFF pinned native diagnostic
+
+on:
+  push:
+    branches: [codex/v13-p2x-schema-toggle-train16-review-20261029-auto10]
+    paths: ['.github/workflows/v13-p2x-schema-toggle-native-20261029.yml']
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v13-p2-qad-fp32-real-value-serial-20261029
+  cancel-in-progress: false
+
+jobs:
+  train16-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Pinned native training-only 16x2 paired comparison and raw closure
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-schema-toggle-native-evidence"
+          w="$RUNNER_TEMP/v13-p2x-schema-toggle-native-work"
+          home="$RUNNER_TEMP/v13-p2x-schema-toggle-native-home"
+          mkdir -p "$e" "$w" "$home"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          39c9c9e543cddf6ec37e9574fa68ce0e2292a29c v13/code/docs/coordination/P2X_SCHEMA_TOGGLE_TRAIN16_PREREG_20261029.md
+          457aa932ffe3235034ef51da84b9ac9015d5ddb8 v13/code/scripts/p2x_schema_toggle_train16.py
+          172ce69b45e202dd92d2fe20777c0d2632c10341 v13/code/tests/test_p2x_schema_toggle_train16_20261029.py
+          c5fb3ca3d56ed73e7fc301137f0585f71666e67e v13/code/scripts/p2x_json_train16_eval.py
+          f9182daef9611544efb7a0e2346177b05612be6b v13/code/scripts/p2x_c3_json_target_fourstep.py
+          29fa99031862f534afe835a3a997ecb62b9b1752 v13/code/scripts/p2x_candidate360_standalone.py
+          8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          c9509e299510540af4e43ebbc397f2e5a144142d v13/code/scripts/p2x_native_receiver_eval_scorer.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          source_red=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then source_red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 - "$w" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import sys
+          sys.path.insert(0, "v13/code/scripts")
+          from p2x_c3_lora_pilot import resource_admission
+          print(resource_admission(sys.argv[1]))
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          if [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+            echo "$?" > "$e/VENV_EXIT.txt"
+          else echo SKIPPED > "$e/VENV_EXIT.txt"; fi
+          py="$w/venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_p2x_schema_toggle_train16_20261029 tests.test_p2x_json_train16_eval_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 1500s "$py" -m scripts.p2x_base360_native_executor --home "$home" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else echo SKIPPED > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            curl -fLsS --retry 2 --connect-timeout 20 --max-time 240 'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' -o "$w/runner.tar.gz" > "$e/RUNTIME_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443' "$w/runner.tar.gz" | sha256sum -c > "$e/RUNTIME_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/RUNTIME_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/RUNTIME_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/RUNTIME_SHA_EXIT.txt")" = 0 ]; then
+            curl -fLsS --retry 2 --connect-timeout 20 --max-time 240 -H "Authorization: Bearer $GITHUB_TOKEN" -H 'Accept: application/vnd.github+json' 'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12903629059/zip' -o "$w/json.zip" > "$e/JSON_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/JSON_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' 'e6dee701b5a0ec839e3019f6ba08b9de6d8cdffa6b094007e489105c66a247fa' "$w/json.zip" | sha256sum -c > "$e/JSON_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/JSON_SHA_EXIT.txt"
+            if [ "$(cat "$e/JSON_SHA_EXIT.txt")" = 0 ]; then
+              mkdir -p "$w/json"
+              unzip -q "$w/json.zip" -d "$w/json" > "$e/JSON_UNZIP_RAW.log" 2>&1
+              echo "$?" > "$e/JSON_UNZIP_EXIT.txt"
+              printf '%s  %s\n' '7a9e04377607045e86ce8d45260caa762648745260ffacad853626353c408ca6' "$w/json/adapter/adapter.gguf" | sha256sum -c > "$e/JSON_GGUF_SHA_RAW.log" 2>&1
+              echo "$?" > "$e/JSON_GGUF_SHA_EXIT.txt"
+            else echo SKIPPED > "$e/JSON_UNZIP_EXIT.txt"; echo SKIPPED > "$e/JSON_GGUF_SHA_EXIT.txt"; fi
+          else
+            for n in JSON_DOWNLOAD JSON_SHA JSON_UNZIP JSON_GGUF_SHA; do echo SKIPPED > "$e/${n}_EXIT.txt"; done
+          fi
+          if [ "$(cat "$e/JSON_GGUF_SHA_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$home" > "$e/MODEL_PATH_RAW.log" 2>&1 <<'PY'
+          import sys
+          from pathlib import Path
+          from v13.models import ModelManager
+          print(ModelManager(Path(sys.argv[1])).path_for("C3_LANGUAGE"))
+          PY
+            echo "$?" > "$e/MODEL_PATH_EXIT.txt"
+          else echo SKIPPED > "$e/MODEL_PATH_EXIT.txt"; fi
+          if [ "$(cat "$e/MODEL_PATH_EXIT.txt")" = 0 ]; then
+            model_path="$(tail -1 "$e/MODEL_PATH_RAW.log")"
+            (cd v13/code && PYTHONPATH=.:scripts timeout --signal=TERM --kill-after=20s 2100s "$py" -m scripts.p2x_schema_toggle_train16 --server-binary "$(readlink -f "$home/bin/llama-server")" --runtime-archive "$w/runner.tar.gz" --model "$model_path" --adapter "$w/json/adapter/adapter.gguf" --out "$w/schema-toggle") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          if [ -d "$w/schema-toggle" ]; then cp -a "$w/schema-toggle" "$e/evidence"; fi
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:scripts "$py" -m scripts.p2x_schema_toggle_train16 --verify "$e/evidence") > "$e/VERIFY_RAW.json" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo SKIPPED > "$e/VERIFY_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9e22b688c124ed2435d191d81e7a8bb512c127af --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check f507460bb545f074018f6dbec0d19d9bf7a6ccd0 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw including failed calls before enforcing
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-schema-toggle-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-schema-toggle-native-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact pinned 32-call training-only diagnostic
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-schema-toggle-native-evidence"
+          for n in SOURCE RESOURCE VENV DEPS PIP_CHECK FOCUSED INSTALL RUNTIME_DOWNLOAD RUNTIME_SHA JSON_DOWNLOAD JSON_SHA JSON_UNZIP JSON_GGUF_SHA MODEL_PATH NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; original raw preserved; no gate promotion"
+              tail -50 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/VERIFY_RAW.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x["status"]=="TRAINING_ONLY_SCHEMA_ABLATION_NO_GATE"
+          assert x["training_examples"]==16 and x["native_calls"]==32
+          assert x["train_only"] is True
+          assert x["calibration_rows_used"]==0 and x["validation_rows_used"]==0
+          assert x["step2_status"]=="UTILITY_FAIL"
+          assert x["jepa_weight"]==0 and x["ag6_approved"] is False
+          assert x["whole_system_complete"] is False
+          print("P2X_SCHEMA_TOGGLE_NATIVE_TRAINING_ONLY_NO_UTILITY_OR_ACTIVATION")
+          PY
