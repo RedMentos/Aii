@@ -45,6 +45,16 @@ class HB0SplitInformationCohort(unittest.TestCase):
         self.assertEqual(heldout, set(range(5, 25)))
         self.assertFalse(calibration & heldout)
 
+    def test_project_names_do_not_encode_counterfactual_axes(self):
+        # Original draft exposed F<family>S<sheet>R<rule> in the prompt.
+        # That leaked both axes to the C3-only control.
+        for row in self.rows:
+            self.assertNotRegex(row["current"], r"HB0F\\d+S\\d+R\\d+")
+            self.assertTrue(row["id"].startswith("HB0"))
+            self.assertEqual(len(row["id"]), 17)
+            self.assertNotIn("Budget ", row["current"])
+            self.assertNotIn("Option A:", row["current"])
+
     def test_single_source_views_abstain_and_full_source_control(self):
         for row in self.rows:
             with self.subTest(row=row["id"]):
