@@ -1,0 +1,88 @@
+{
+  "schema": "v13.hb1a.native_54call_review_build_state.v1",
+  "recorded_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation, isolated native review branch",
+  "branch": "codex/v13-hb1a-native-54call-review-20261029",
+  "parent_pr": 1053,
+  "parent_branch": "codex/v13-hb1a-native-execution-20261029",
+  "parent_head_sha": "15fc02a214380d178ff857ee50c2a11b6640704f",
+  "parent_software_green": {
+    "run_id": 40835890491,
+    "head_sha": "15fc02a214380d178ff857ee50c2a11b6640704f",
+    "artifact_id": 12880975628,
+    "artifact_zip_sha256": "11e1f8d26cd1d8a642d9e237c1fc9490ecf88d60f1b9110e8334ed5fe0ba2292",
+    "status": "GitHub Actions success; independent raw ZIP verification pending"
+  },
+  "prereg_parent": {
+    "pr": 1052,
+    "commit": "b98eb6490aad7553e67d100a55be19d6e08b30fe",
+    "prereg_blob": "9d6652e99ac9aa0de7898f15eeb8a54d598c49e6",
+    "green_run": 40834623613,
+    "head_sha": "fcb1f6054f1b4e96538b4bebe5d07e49fc5c4646",
+    "artifact_id": 12880053598,
+    "artifact_zip_sha256": "b2b4d9b923364edee0ff8006ace75ff85e056db89cbcf449b09cf39cfbf0eb7a"
+  },
+  "immutable_source_pins": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "cohort": "329153aaa73df009fdc433523994e372e0fd2c95",
+    "plan": "033ea9c8c3e6f9ff631b84136afa1f74dd7e627c",
+    "executor": "56306009d69554419bd9c024173ba9e56f32f56c",
+    "verifier": "b79abbfa0bcd16e115acd89383885e5d228660d7",
+    "runner": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+    "models": "bd035cf8029850cce00b179edf533e53bf24358a",
+    "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "model_sha256": {
+    "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "C3_LANGUAGE": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
+  "status": "PRE_NATIVE_SOURCE_ONLY_REVIEW_NOT_EXECUTED",
+  "native_execution_started": false,
+  "prerequisites": [
+    "Parent source-only exact-head run must be verified from raw artifact",
+    "Parent prereg source-only exact-head CI must be verified from raw artifact",
+    "Linux x86_64 cgroup >=3GB, MemAvailable >=3.5GB, disk >=4GB",
+    "No other in-progress native owner; serial only",
+    "Pinned B1/B2/C3 model and llama-server hashes verified before/after"
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "planned_evidence": [
+    "SOURCE",
+    "PARENT_SOURCE",
+    "PARENT_EXECUTOR",
+    "RESOURCE",
+    "DEPS",
+    "COMPILE",
+    "FOCUSED",
+    "INSTALL",
+    "ADMISSION",
+    "NATIVE",
+    "VERIFY",
+    "PRIVACY",
+    "DIFF",
+    "SHA256SUMS"
+  ],
+  "raw_evidence": "GitHub Actions artifact, public synthetic data only, no weights",
+  "private_backup": "Only a permitted private destination; do not use previously rejected anyone-writable Drive",
+  "exact_next_command": "After workflow source/parent admission, in v13/code: python -m scripts.hb1a_native_executor --home \"$HOME_DIR\" --install && python -m scripts.hb1a_native_executor --home \"$HOME_DIR\" --out \"$FRESH_EVIDENCE\" --fixture-sha256 73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b && python -m scripts.hb1a_independent_native_verifier --evidence-dir \"$FRESH_EVIDENCE\"",
+  "open_questions": [
+    "Can pinned B2 Qwen3.5 run on b10964?",
+    "Does C3 schema emit valid actions?",
+    "Does real B1/B2 source separation improve any arm?",
+    "Does foreign-source control cause wrong commitments?",
+    "No Redmi/independent holdout evidence"
+  ],
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}
