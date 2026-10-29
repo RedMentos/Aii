@@ -94,6 +94,13 @@ class Run118PointerChoiceCandidate(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CURRENT_PROJECT_MISMATCH"):
             candidate.build(current, history, f["id"])
 
+    def test_invalid_project_refused(self):
+        f = corpus.fixtures()[0]
+        current, history = self.records(f)
+        for project in ("", "Atlas/Zenith", "../Atlas", None):
+            with self.assertRaisesRegex(ValueError, "INVALID_PROJECT"):
+                candidate.build(current, history, project)
+
     def test_cap_below_three_and_above_24_refused(self):
         f = corpus.fixtures()[0]
         current, history = self.records(f)
