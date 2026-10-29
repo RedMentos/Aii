@@ -112,6 +112,26 @@ def digest(store,checkpoint=None):
                        for row in groups.get(u['event_id'],[]))
                    for u in settled):
                 continue
+        elif len(users)==TURNS_MAX:
+            # A pending predecessor can sit just beyond the 64-user page.
+            # If an assistant from this page finished after that user row,
+            # the original barrier still applies. Check the crossed interval
+            # in SQLite, without materializing unbounded source text/history.
+            latest=max(row['id'] for u in settled
+                       for row in groups[u['event_id']]
+                       if row['role']=='assistant')
+            crossed=store.one(
+                "SELECT u.id FROM messages u "
+                "WHERE u.session_id=? AND u.role='user' AND u.id>? AND u.id<=? "
+                "AND (u.status!='FINAL' OR "
+                "(SELECT COUNT(*) FROM messages p WHERE p.session_id=u.session_id "
+                "AND p.event_id=u.event_id AND p.role IN ('user','assistant'))!=2 OR "
+                "NOT EXISTS (SELECT 1 FROM messages a WHERE a.session_id=u.session_id "
+                "AND a.event_id=u.event_id AND a.role='assistant' AND a.id>u.id "
+                "AND a.status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'))) "
+                "ORDER BY u.id LIMIT 1",
+                (sess,users[-1]['id'],latest))
+            if crossed:continue
         if not settled:continue
         # Source/rule revocation, exact source bytes, event session, answer
         # lineage and duplicate-row counts remain enforced by native_history.
