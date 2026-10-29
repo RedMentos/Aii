@@ -8,7 +8,11 @@ permissions:
 jobs:
   full:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -24,12 +28,34 @@ jobs:
           git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_dependency_lifecycle_20261029.py > "$e/SOURCE_BLOBS.txt"
           python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
           echo "$?" > "$e/VENV_EXIT.txt"
-          "$RUNNER_TEMP/venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
-          echo "$?" > "$e/DEPS_EXIT.txt"
-          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest discover -s tests) > "$e/FULL_RAW.log" 2>&1
-          echo "$?" > "$e/FULL_EXIT.txt"
-          "$RUNNER_TEMP/venv/bin/python" -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_dependency_lifecycle_20261029.py > "$e/COMPILE_RAW.log" 2>&1
-          echo "$?" > "$e/COMPILE_EXIT.txt"
+          py="$RUNNER_TEMP/venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            rc=$?
+            if [ "$rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+              rc=$?
+            fi
+            if [ "$rc" = 0 ]; then
+              "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/DEPS_RAW.log" 2>&1
+              rc=$?
+            fi
+            echo "$rc" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else
+            echo SKIPPED > "$e/DEPS_EXIT.txt"
+            echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+            "$py" -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_dependency_lifecycle_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+          else
+            for n in FULL COMPILE; do echo SKIPPED > "$e/${n}_EXIT.txt"; echo SKIPPED > "$e/${n}_RAW.log"; done
+          fi
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 89a7422916d60b6a0966713eb584c725069c9f2c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check 89a7422916d60b6a0966713eb584c725069c9f2c HEAD > "$e/DIFF_RAW.log" 2>&1
@@ -48,7 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/ag6-rated-dependency-full"
-          for n in VENV DEPS FULL COMPILE PRIVACY DIFF; do
+          for n in VENV DEPS PIP_CHECK FULL COMPILE PRIVACY DIFF; do
             test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n failed"; exit 1; }
           done
           echo AG6_SOURCE_ONLY_NO_AUTHORITY
