@@ -107,7 +107,7 @@ def _unsafe_backticks(text):
                 # A fence closes on its own line, never inside a code string.
                 if line[:match.start()].strip() or line[match.end():].strip():return True
                 mode=None
-        if mode=='inline' and line.endswith(('\\n','\\r')):return True
+        if mode=='inline' and line.endswith(('\n','\r')):return True
     return mode is not None
 
 
