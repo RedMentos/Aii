@@ -53,7 +53,7 @@ jobs:
           else echo SKIPPED > "$e/TORCH_EXIT.txt"; fi
           if [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ]; then
             "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check \
-              'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.7.0' \
+              'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' \
               > "$e/DEPS_RAW.log" 2>&1
             echo "$?" > "$e/DEPS_EXIT.txt"
           else echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
