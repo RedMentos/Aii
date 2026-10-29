@@ -1,5 +1,9 @@
 """Software-only cross-project source-binding regressions for Run141."""
 import unittest
+import os
+from pathlib import Path
+
+from scripts import step2_exact_rule_native_replay_preflight as frozen
 
 from scripts import context_option_project_scope_candidate as scoped
 from scripts import context_option_reference_candidate as parent
@@ -76,6 +80,24 @@ class ProjectSourceScope(unittest.TestCase):
         unheaded = "Quoted note: " + BETA_OPTIONS
         self.assertIsNone(scoped.project_key(unheaded))
         self.assertIsNone(scoped.read_project_scoped(BETA_TASK, [unheaded])["options"])
+
+    def test_canonical_supplier_header_is_recognized(self):
+        self.assertEqual(scoped.project_key("Project Atlas supplier data sheet, revision 3."), "atlas")
+        self.assertEqual(scoped.project_key("Project Delta revision note."), "delta")
+        self.assertEqual(scoped.project_key("Project Epsilon kickoff notes."), "epsilon")
+
+    def test_frozen_six_fixture_source_scope_if_supplied(self):
+        path = os.environ.get("V13_RUN116_SOURCE_REPORT")
+        if not path:
+            self.skipTest("original frozen native source raw not supplied")
+        report = frozen.load_original(Path(path))
+        self.assertEqual(len(report["fixtures"]), 6)
+        for fixture in report["fixtures"]:
+            with self.subTest(project=fixture["id"]):
+                current, history = fixture["current"], fixture["history"]
+                self.assertEqual(scoped.project_key(current), fixture["id"].casefold())
+                self.assertEqual(scoped.read_project_scoped(current, history),
+                                 parent.read_fixed_reference(current, history))
 
     def test_multiword_name_is_not_guessed(self):
         task = "Project New York. Decide between Option A and Option B."
