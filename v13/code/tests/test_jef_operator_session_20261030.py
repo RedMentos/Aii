@@ -42,6 +42,8 @@ class JEFOperatorSessionTests(unittest.TestCase):
             {"coalition": [{"item_id": offer["packet_id"]}],
              "inquisition": [], "decision": "INCORPORATE_A"},
             [offer["packet_id"]])
+        self.r.store.message(session, event["event_id"], "assistant",
+                             text, status="FINAL")
         return event["event_id"]
 
     def test_last_returns_current_turn_even_when_foreign_is_newer(self):
