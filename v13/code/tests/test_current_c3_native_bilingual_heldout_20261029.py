@@ -35,10 +35,10 @@ class C3BilingualHeldoutOracleTests(unittest.TestCase):
 
     def test_generated_only_parser_excludes_exact_prompt_echo(self):
         prompt = H.CASES[0][1]
-        raw = ('CLI banner\n\n> ' + prompt + '\n120 euros'
+        raw = ('CLI banner\n\n> ' + prompt + '\n160 euros'
                '\n\n[ Prompt: 242.5 t/s | Generation: 108.1 t/s ]'
                '\n\n\nExiting...\n').encode()
-        self.assertEqual(H.extract_generated(raw, prompt), '120 euros')
+        self.assertEqual(H.extract_generated(raw, prompt), '160 euros')
         self.assertTrue(H.oracle_correct('en_present',
                                          H.extract_generated(raw, prompt), 160))
         # The raw prompt itself contains 160, but is never scored.
