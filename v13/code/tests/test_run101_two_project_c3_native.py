@@ -1,5 +1,13 @@
 """Run101 acceptance guards; software only, never native or model mocks as evidence."""
 import unittest
+import json
+from pathlib import Path
+import tempfile
+from unittest.mock import patch
+
+from scripts.ask_verified_budget import BudgetContext, query as ask
+from v13.operator import Operator
+from v13.runtime import Runtime
 
 from scripts.run101_two_project_c3_native import _native_ok, _preflight_ok, REVISION
 
@@ -44,6 +52,68 @@ class Run101GateTests(unittest.TestCase):
                 "status": status, "native_calls": 1,
                 "model_called": True, "answer": ""
             }, status))
+
+    def test_real_two_source_restart_conflict_and_independent_forget(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp) / "home"
+            runtime = Runtime(home)
+            try:
+                runtime.sleep.cycle.set_policy("enabled", "off")
+                ids = {}
+                for project, amount in (("Dovan", "731 Euro"), ("Mira", "942 Euro")):
+                    key = "Project " + project + " budget"
+                    event = runtime.store.event(runtime.session, key)
+                    ids[project] = runtime.memory.feedback(
+                        event["event_id"], "fact", amount, key=key, permission="record")
+                session = runtime.session
+                op = Operator(runtime)
+                for project in ids:
+                    ready = json.loads(op.run(
+                        ":verified What is the budget for Project " + project + "?"))
+                    self.assertEqual(ready["status"], "READY")
+                    self.assertEqual(ready["memory_id"], ids[project])
+            finally:
+                runtime.close()
+
+            context = BudgetContext(home)
+            try:
+                self.assertEqual(context.session, session)
+                with patch.object(context.pool, "get",
+                                  side_effect=AssertionError("NATIVE_CALLED")):
+                    for project in ids:
+                        self.assertEqual(ask(
+                            context, "What is the budget for Project " + project + "?",
+                            native=False)["status"], "READY")
+                    self.assertEqual(ask(context,
+                        "What is the budget for Project Elyra?", native=True)["status"],
+                        "CLARIFY")
+            finally:
+                context.close()
+
+            runtime = Runtime(home)
+            try:
+                runtime.sleep.cycle.set_policy("enabled", "off")
+                event = runtime.store.event(runtime.session, "Project Dovan budgets")
+                conflict_id = runtime.memory.feedback(
+                    event["event_id"], "fact", "809 Euro",
+                    key="Project Dovan budgets", permission="record")
+                op = Operator(runtime)
+                self.assertEqual(json.loads(op.run(
+                    ":verified What is the budget for Project Dovan?"))["status"],
+                    "CLARIFY")
+                self.assertEqual(json.loads(op.run(
+                    ":verified What is the budget for Project Mira?"))["status"],
+                    "READY")
+                for memory_id in (ids["Dovan"], conflict_id):
+                    op.run(":forget " + memory_id + " --confirm")
+                self.assertEqual(json.loads(op.run(
+                    ":verified What is the budget for Project Dovan?"))["status"],
+                    "CLARIFY")
+                self.assertEqual(json.loads(op.run(
+                    ":verified What is the budget for Project Mira?"))["status"],
+                    "READY")
+            finally:
+                runtime.close()
 
 
 if __name__ == "__main__":
