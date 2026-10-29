@@ -1,4 +1,4 @@
-"""Run105: human-entered Age0 F1/F5 source -> separate CLI -> real pinned C3.
+"""Run105: operator-command Age0 F1/F5 source -> separate CLI -> real pinned C3.
 
 Linux-native, synthetic public budget only. Not Runtime._turn, not Redmi.
 Prereg: docs/proofs/continuation-20261028/RUN105_HUMAN_SOURCE_C3_NATIVE_PREREG.md
@@ -80,7 +80,7 @@ def run(home, out):
     out.mkdir(parents=True)
     report = {
         "schema": SCHEMA, "status": "INCOMPLETE",
-        "evidence_kind": "LINUX_NATIVE_HUMAN_TTY_SOURCE_C3_ONE_PUBLIC_SYNTHETIC_FACT",
+        "evidence_kind": "LINUX_NATIVE_OPERATOR_COMMAND_SOURCE_C3_ONE_PUBLIC_SYNTHETIC_FACT",
         "platform": platform.platform(), "model_revision": REVISION,
         "model_sha256": MODEL_SHA, "seed": 13, "max_tokens": 64,
         "deadline_s": 90, "native_calls_expected": 1,
