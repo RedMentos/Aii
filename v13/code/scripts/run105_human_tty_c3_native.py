@@ -51,8 +51,10 @@ def _native_ok(value, source_ref):
     answer = value.get("answer")
     if not isinstance(answer, str):
         return False
+    named = re.findall(r"\bProject\s+([A-Za-z][A-Za-z0-9_-]*)\b", answer, re.I)
     return (re.findall(r"(?<!\w)\d+(?!\w)", answer) == ["615"]
-            and bool(re.search(r"\bProject\s+Elyra\b", answer, re.I))
+            and not re.search(r"(?<!\w)-\s*615\b", answer)
+            and bool(named) and all(name.casefold() == "elyra" for name in named)
             and bool(re.search(r"\b(?:Euro|Euros|EUR)\b|€", answer, re.I)))
 
 
