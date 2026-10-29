@@ -1,0 +1,59 @@
+name: V13 P2X CAL36 source-only diagnostic
+
+on:
+  push:
+    branches:
+      - codex/v13-p2x-cal36-transport-20261029
+    paths:
+      - 'v13/code/scripts/p2x_cal36_transport.py'
+      - 'v13/code/tests/test_p2x_cal36_transport_20261029.py'
+      - 'v13/code/docs/P2X_CAL36_TRANSPORT_*'
+      - '.github/workflows/v13-p2x-cal36-source-20261029.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-p2x-cal36-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact review branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Focused source, compile, immutable plan and raw logs
+        shell: bash
+        run: |
+          set -u
+          export PYTHONPATH="v13/code:v13/code/scripts:v13/code/tests"
+          python3 -m unittest -v tests.test_p2x_cal36_transport_20261029 > CAL36_TEST.log 2>&1
+          TEST_EXIT=$?
+          python3 v13/code/scripts/p2x_cal36_transport.py --plan-check > CAL36_PLAN.log 2>&1
+          PLAN_EXIT=$?
+          python3 -m compileall -q v13/code/scripts/p2x_cal36_transport.py v13/code/tests/test_p2x_cal36_transport_20261029.py > CAL36_COMPILE.log 2>&1
+          COMPILE_EXIT=$?
+          printf '{"test_exit":%s,"plan_exit":%s,"compile_exit":%s,"native_calls":0,"gate_promoted":false}\n' "$TEST_EXIT" "$PLAN_EXIT" "$COMPILE_EXIT" > CAL36_STAGES.json
+          sha256sum CAL36_TEST.log CAL36_PLAN.log CAL36_COMPILE.log CAL36_STAGES.json > CAL36_SHA256SUMS
+          cat CAL36_STAGES.json
+          cat CAL36_TEST.log
+          cat CAL36_PLAN.log
+          test "$TEST_EXIT" -eq 0 && test "$PLAN_EXIT" -eq 0 && test "$COMPILE_EXIT" -eq 0
+      - name: Preserve source-only raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cal36-source-only-raw
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            CAL36_TEST.log
+            CAL36_PLAN.log
+            CAL36_COMPILE.log
+            CAL36_STAGES.json
+            CAL36_SHA256SUMS
