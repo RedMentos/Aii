@@ -70,8 +70,6 @@ def audit(report, cohort, evidence_root):
          and report.get("target_texts_sha256") == P.sha(P.canonical([
              F.json_target(row["target_action"]) for row in selected])),
          "JSON_TARGET_FORMAT_BINDING_RED")
-    need(True,
-         "FROZEN_REPORT_BINDING_RED")
     need(report.get("training_pilot") is True
          and report.get("ag6_approved") is False
          and report.get("production_activation") is False
