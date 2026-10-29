@@ -197,6 +197,38 @@ def query(r, text, session=None, *, native=False, timeout_s=120, max_tokens=64):
             "model_called": True, "native_calls": 1}
 
 
+
+def exact_source(r, text, session=None):
+    """Explicit TTY-only deterministic answer from an active F1/F5 budget source.
+
+    This is source copy, not C3 language generation or a learned response.
+    Existing semantic recall may use an encoder if configured; no C3 decode.
+    """
+    session = r.session if session is None else session
+    first, packet = _preflight(r, text, session)
+    if packet is None:
+        return first
+    source = packet["decision"]["source"]
+    topic, value = source["topic"], source["value"]
+    name = PROJECT.search(topic)
+    if name is None or not BUDGET_VALUE.fullmatch(value):
+        return {"status": "CLARIFY", "reason": "SOURCE_FORMAT_CHANGED",
+                "model_called": False, "native_calls": 0}
+    german = bool(re.search(r"projekt|wie hoch|finanzrahmen", text, re.I))
+    answer = ("Projekt " if german else "Project ") + name.group(1) + ": " + value + "."
+    second, second_packet = _preflight(r, text, session)
+    if (second_packet is None or second["status"] != "READY"
+            or second["memory_id"] != first["memory_id"]
+            or second["source_ref"] != first["source_ref"]
+            or second["messages_sha256"] != first["messages_sha256"]):
+        return {"status": "CLARIFY", "reason": "SOURCE_CHANGED_BEFORE_EXACT_OUTPUT",
+                "model_called": False, "native_calls": 0}
+    return {"status": "FINAL_SOURCE_EXACT", "answer": answer,
+            "source_ref": source["source_ref"], "authority": "EXACT_SOURCE",
+            "model_called": False, "native_calls": 0, "learned": False,
+            "semantic_encoder_may_run": r.memory.semantic_keys.mode() != "off"}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--home", required=True)
