@@ -30,8 +30,10 @@ jobs:
           python3 -m py_compile v13/code/scripts/p2x_c3_lora_pilot.py v13/code/tests/test_p2x_c3_lora_pilot.py v13/code/scripts/p2x_token_admission_native_probe.py v13/code/tests/test_p2x_token_admission_native_probe.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 -m unittest discover -s v13/code/tests -p 'test_p2x_c3_lora_pilot.py' -v > "$e/TEST_RAW.log" 2>&1
+          first_rc="$?"
           python3 -m unittest discover -s v13/code/tests -p 'test_p2x_token_admission_native_probe.py' -v >> "$e/TEST_RAW.log" 2>&1
-          echo "$?" > "$e/TEST_EXIT.txt"
+          second_rc="$?"
+          if [ "$first_rc" = 0 ] && [ "$second_rc" = 0 ]; then echo 0 > "$e/TEST_EXIT.txt"; else echo 1 > "$e/TEST_EXIT.txt"; fi
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 41b20ad7f65dc65c7cacb23b6ef5579779c94251 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check 41b20ad7f65dc65c7cacb23b6ef5579779c94251 HEAD > "$e/DIFF_RAW.log" 2>&1
