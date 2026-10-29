@@ -180,36 +180,102 @@ class WeightConsolidation:
         if b['status']!='TRAINED' or not ev:return b
         return self.gate(bid,ev['base_eval'],ev['candidate_eval'],ev.get('learned_recall'),drift=ev.get('wp_s5_drift'))
     def gate(self,bid,base_eval,candidate_eval,learned_recall=None,drift=None):
-        """base_eval/candidate_eval: AG12 run summaries. learned_recall: candidate accuracy on the batch's own prompts.
-        drift: WP-S5 report on the frozen drift probes (drift.Drift.measure_lm), when the evaluator measured one."""
+        """Validate measured AG12 evidence before requesting human approval.
+
+        Missing optional measures keep their historical semantics. Present
+        malformed/nonfinite/out-of-range values never count as a pass, never
+        reach JSON persistence, and cannot create an approval request.
+        """
+        import math
         b=self.batch(bid)
         if b['status']!='TRAINED':raise ValueError('Gate nur nach TRAINED')
-        delta=float(self.cfg.get('retention_max_delta',.02));checks={}
-        bo,co=base_eval.get('overall'),candidate_eval.get('overall')
-        checks['general_retention']=bo is not None and co is not None and co>=bo-delta
-        bu,cu=base_eval.get('unseen'),candidate_eval.get('unseen')
-        checks['unseen_retention']=bu is None or (cu is not None and cu>=bu-delta)
-        fr=(candidate_eval.get('forgetting') or {}).get('rate')
-        checks['forgetting']=fr is None or fr<=delta
-        kl=b['trainer']['metrics'].get('kl_to_base')
+        invalid=[]
+        def measure(value,name,maximum=1.):
+            # bool is a Python int; it is not a measured quality rate.
+            if type(value) not in (int,float):
+                invalid.append(name);return None
+            try:
+                number=float(value)
+            except (ValueError,TypeError,OverflowError):
+                invalid.append(name);return None
+            if not math.isfinite(number) or number<0 or (maximum is not None and number>maximum):
+                invalid.append(name);return None
+            return number
+        def optional(row,key,name,maximum=1.):
+            if key not in row or row[key] is None:return None
+            return measure(row[key],name,maximum)
+        if not isinstance(base_eval,dict):
+            invalid.append('base_eval.schema');base_eval={}
+        if not isinstance(candidate_eval,dict):
+            invalid.append('candidate_eval.schema');candidate_eval={}
+        raw_delta=self.cfg.get('retention_max_delta',.02)
+        # Config traditionally accepts numeric strings; retain that support
+        # but reject booleans, negative, nonfinite and unbounded thresholds.
+        if isinstance(raw_delta,bool):
+            invalid.append('retention_max_delta');delta=None
+        else:
+            try:delta=float(raw_delta)
+            except (TypeError,ValueError,OverflowError):delta=None
+            if delta is None or not math.isfinite(delta) or not 0<=delta<=1:
+                invalid.append('retention_max_delta');delta=None
+        bo=measure(base_eval.get('overall'),'base.overall')
+        co=measure(candidate_eval.get('overall'),'candidate.overall')
+        bu=optional(base_eval,'unseen','base.unseen')
+        cu=optional(candidate_eval,'unseen','candidate.unseen')
+        forgetting=candidate_eval.get('forgetting')
+        if forgetting is not None and not isinstance(forgetting,dict):
+            invalid.append('candidate.forgetting.schema');forgetting={}
+        fr=optional(forgetting or {},'rate','candidate.forgetting.rate')
+        metrics=(b.get('trainer') or {}).get('metrics') or {}
+        if not isinstance(metrics,dict):
+            invalid.append('trainer.metrics.schema');metrics={}
+        kl=measure(metrics.get('kl_to_base'),'trainer.kl_to_base',None)
+        learned=measure(learned_recall,'learned_recall')
+        base_leak=optional(base_eval,'near_miss_leak','base.near_miss_leak')
+        leak=optional(candidate_eval,'near_miss_leak','candidate.near_miss_leak')
+        if drift is not None:
+            if not isinstance(drift,dict):
+                invalid.append('drift.schema');drift={}
+            if type(drift.get('passed')) is not bool:
+                invalid.append('drift.passed')
+            for key in ('value','cap'):
+                if key in drift and drift[key] is not None:
+                    measure(drift[key],'drift.'+key,None)
+            if 'n' in drift and drift['n'] is not None:
+                if type(drift['n']) is not int or drift['n']<0:
+                    invalid.append('drift.n')
+        checks={'numeric_admission':not invalid}
+        checks['general_retention']=(bo is not None and co is not None
+                                     and delta is not None and co>=bo-delta)
+        checks['unseen_retention']=(bu is None or (cu is not None
+                                   and delta is not None and cu>=bu-delta))
+        checks['forgetting']=fr is None or (delta is not None and fr<=delta)
         checks['drift']=kl is not None and kl<=DRIFT_MAX
-        checks['learned']=learned_recall is not None and learned_recall>=LEARNED_MIN
-        # Specificity (knowledge-editing locality): near-miss questions must not receive the learned answers.
-        leak=candidate_eval.get('near_miss_leak')
-        if leak is not None:checks['specificity']=leak<=float(base_eval.get('near_miss_leak') or 0.)+LEAK_MAX
-        if drift is not None:checks['frozen_drift']=bool(drift.get('passed'))  # WP-S5: hash-pinned generic probes, never trained on
+        checks['learned']=learned is not None and learned>=LEARNED_MIN
+        if leak is not None:
+            checks['specificity']=(leak<=(base_leak if base_leak is not None else 0.)+LEAK_MAX)
+        if drift is not None:
+            checks['frozen_drift']=drift.get('passed') is True
         ok=all(checks.values())
         def f(st,b):
-            b['gate']={'checks':checks,'base':{'overall':bo,'unseen':bu},'candidate':{'overall':co,'unseen':cu,'forgetting':fr},
-                       'kl_to_base':kl,'learned_recall':learned_recall,'retention_max_delta':delta,'drift_max':DRIFT_MAX}
-            if drift is not None:b['drift']={k:drift.get(k) for k in ('component','measure','value','cap','n','probes_sha256','passed','error') if k in drift}
+            b['gate']={'checks':checks,'invalid_numeric_fields':invalid,
+                       'base':{'overall':bo,'unseen':bu},
+                       'candidate':{'overall':co,'unseen':cu,'forgetting':fr},
+                       'kl_to_base':kl,'learned_recall':learned,
+                       'retention_max_delta':delta,'drift_max':DRIFT_MAX}
+            if drift is not None:
+                b['drift']={k:(None if k in ('value','cap') and
+                                     (type(v) not in (int,float) or
+                                      not math.isfinite(float(v))) else v)
+                            for k,v in drift.items()
+                            if k in ('component','measure','value','cap','n','probes_sha256','passed','error')}
             if ok:
                 b['request_id']=self.s.request('WEIGHT_CONSOLIDATION',{'batch_id':bid,'base_generation':b['base_generation'],
                     'artifact_hash':b['trainer']['hash'],'items':len(b['items']),'gate':b['gate']})
                 self._move(b,'PENDING_USER')
             else:self._move(b,'GATE_FAIL')
         out=self._set(bid,f)
-        # §16.3: a failed retention gate reopens/blocks the knowledge path; a pass is measured evidence, not a tag by itself.
+        # A measured pass is only a human approval request, never automatic activation.
         self._neuromod('signal',bid,source_class='real_deterministic_outcome',retention=1. if ok else -1.)
         return out
     # -- human decisions --------------------------------------------------------------------------------
