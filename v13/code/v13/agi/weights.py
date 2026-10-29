@@ -257,7 +257,7 @@ class WeightConsolidation:
         if drift is not None:
             checks['frozen_drift']=drift.get('passed') is True
         ok=all(checks.values())
-        def f(st,b):
+        def f(st,b,c):
             b['gate']={'checks':checks,'invalid_numeric_fields':invalid,
                        'base':{'overall':bo,'unseen':bu},
                        'candidate':{'overall':co,'unseen':cu,'forgetting':fr},
@@ -285,11 +285,28 @@ class WeightConsolidation:
                     safe[key]=value
                 b['drift']=safe
             if ok:
-                b['request_id']=self.s.request('WEIGHT_CONSOLIDATION',{'batch_id':bid,'base_generation':b['base_generation'],
-                    'artifact_hash':b['trainer']['hash'],'items':len(b['items']),'gate':b['gate']})
+                # Request and batch state must commit or roll back together.
+                # A standalone Store.request() inside StateBox.mutate()
+                # committed an orphan request before a failed state write.
+                rid=uid('req')
+                payload={'batch_id':bid,'base_generation':b['base_generation'],
+                         'artifact_hash':b['trainer']['hash'],
+                         'items':len(b['items']),'gate':b['gate']}
+                c.execute("INSERT INTO requests VALUES (?,?,?,?,?)",
+                          (rid,'WEIGHT_CONSOLIDATION',dumps(payload),'PENDING',time.time()))
+                b['request_id']=rid
                 self._move(b,'PENDING_USER')
             else:self._move(b,'GATE_FAIL')
-        out=self._set(bid,f)
+        # One SQLite transaction covers the gate row and the human request.
+        # The current TRAINED status is checked under the same write lock.
+        with self.s.tx() as c:
+            proxy,st,version=self._approval_state(c)
+            current=st['batches'].get(bid)
+            if not current or current['status']!='TRAINED':
+                raise ValueError('Gate nur nach TRAINED')
+            f(st,current,c)
+            proxy.set_state(KEY,st,expected=version)
+            out=dict(current)
         # A measured pass is only a human approval request, never automatic activation.
         self._neuromod('signal',bid,source_class='real_deterministic_outcome',retention=1. if ok else -1.)
         return out
