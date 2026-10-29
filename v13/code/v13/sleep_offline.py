@@ -72,20 +72,28 @@ def digest(store,checkpoint=None):
             eid=row['event_id']
             if eid not in groups:groups[eid]=[];order.append(eid)
             groups[eid].append(row)
+        settled=[];barrier=None
         for eid in order:
             pair=groups[eid]
-            if len(pair)!=2:break
             users=[row for row in pair if row['role']=='user']
             answers=[row for row in pair if row['role']=='assistant']
-            if len(users)!=1 or len(answers)!=1:break
-            u,a=users[0],answers[0]
-            # Never pass incomplete/streaming or duplicate messages. A
-            # settled failed answer advances the scan but is not a fact;
-            # native_history still revalidates all source/rule lineage.
-            if (u['id']>=a['id'] or u['status']!='FINAL'
-                    or a['status'] not in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED')):
-                break
-            highwater=max(highwater,a['id'])
+            valid=(len(pair)==2 and len(users)==1 and len(answers)==1)
+            if valid:
+                u,a=users[0],answers[0]
+                valid=(u['id']<a['id'] and u['status']=='FINAL'
+                       and a['status'] in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'))
+            if valid:
+                settled.append((u,a))
+            else:
+                # A pending or malformed earlier user row may lie *before*
+                # the assistant of a completed turn. Never move the durable
+                # high-water past that unresolved row: it would be lost on
+                # the next after_id scan even if its answer later finalized.
+                first=min(row['id'] for row in pair)
+                barrier=first if barrier is None else min(barrier,first)
+        for u,a in settled:
+            if barrier is None or a['id']<barrier:
+                highwater=max(highwater,a['id'])
         if highwater<=d['until']:continue
         recs,_=native_history(store,sess,'',TURNS_MAX,after_id=d['until'])
         pairs={}
