@@ -46,8 +46,8 @@ jobs:
              [ "$(git hash-object v13/code/scripts/p2x_candidate360_standalone.py)" = 29fa99031862f534afe835a3a997ecb62b9b1752 ] &&
              [ "$(git hash-object v13/code/scripts/p2x_cal36_transport.py)" = 8b8634375c37c40f804907120951d308ddb15a7f ] &&
              [ "$(git hash-object v13/code/tests/test_p2x_cal36_transport_20261029.py)" = 3232ce1ab9f483ec16b85e52da4ab06e63175f6a ] &&
-             [ "$(git rev-parse b9acd518a0c5f8494255c8e3fe0b2d75db11c8a2:v13/code/v13/age.py)" = d4c38ae344746811fedecff706a9affe9cf8b375 ] &&
-             [ "$(git rev-parse b9acd518a0c5f8494255c8e3fe0b2d75db11c8a2:v13/code/v13/world_jepa.py)" = b95cd3fd9172ddef0fb88f0a7d70e2921c43e777 ]; then
+             [ "$(git rev-parse b9acd518a0c5f8494255c8e3fe0b2d75db11c8a2:v13/code/v13/age.py)" = 964048c47ddb5a8f11ea6706d72a1f37ab41f5d4 ] &&
+             [ "$(git rev-parse b9acd518a0c5f8494255c8e3fe0b2d75db11c8a2:v13/code/v13/world_jepa.py)" = 5ada6e93ae4cab2e3dedfec82c315d559fb9cd6b ]; then
             echo 0 > "$e/PIN_EXIT.txt"
           else echo 1 > "$e/PIN_EXIT.txt"; fi
           python3 -m venv "$RUNNER_TEMP/v13-worldage-p2x-unified-venv" > "$e/VENV_RAW.log" 2>&1
