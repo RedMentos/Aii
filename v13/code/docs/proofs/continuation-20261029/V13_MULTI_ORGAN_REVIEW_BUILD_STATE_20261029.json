@@ -1,0 +1,109 @@
+{
+  "schema": "v13-review-checkpoint-20261029-v1",
+  "scope": "BRANCH_SCOPED_SOFTWARE_ONLY_NOT_MAIN",
+  "owner": "GPT-6 isolated ContextOS/SelfWorld/Sleep review chain",
+  "parent_prs": [
+    {
+      "pr": 1083,
+      "head": "48a58ca8ca49c0b908509e04081cf9fc132017fd",
+      "full_regression_run": 40865117927,
+      "conclusion": "SUCCESS"
+    },
+    {
+      "pr": 1084,
+      "head_at_dependency_repair": "c80e855030b77c5b146918d5a3304ab368724039"
+    },
+    {
+      "pr": 1085,
+      "head_at_dependency_repair": "52d8acc7b6706a78e1dd5e8fbc46a25e3e24cf3f"
+    }
+  ],
+  "current_pr": 1086,
+  "current_head": "3225756b6ad41222ea58623c148778d168a07735",
+  "packages": {
+    "context_os": {
+      "pr": 1084,
+      "source_blob": "d28036f8ede96d031ec38a608c76549936c21eea",
+      "test_blob": "a7271a41e6b8fec7c8aeffa3c174f4de18e86363",
+      "status": "FOCUSED_PASS_FULL_DEPENDENCY_RED_RETRY_RUNNING",
+      "red_first_run": 40866038357,
+      "full_dependency_red_run": 40866180445,
+      "isolated_dependency_retry": 40866812715
+    },
+    "self_world": {
+      "pr": 1085,
+      "source_blob": "072ae59d75c97d972433fedd3830002d2c8530ad",
+      "test_blob": "3fc2068087861f1e044cd39101addae23cb68634",
+      "status": "RED_FIRST_REPRODUCED_RETRY_RUNNING",
+      "red_first_run": 40866385792,
+      "isolated_dependency_retry": 40866860307
+    },
+    "sleep_dream": {
+      "pr": 1086,
+      "source_blob": "3f6c91b1ab4ac02624a86049373957ff7bd93fd2",
+      "test_blob": "da3e97bfd9ca8808ec2208d21ac6c1b76236fa84",
+      "status": "RED_FIRST_REPRODUCED_RETRY_RUNNING",
+      "red_first_run": 40866677801,
+      "isolated_dependency_retry": 40866865992
+    }
+  },
+  "raw_backups": [
+    {
+      "run": 40866038357,
+      "zip_sha256": "756145c2a0c646a5bab2eb16fce0b5d0ffb249fefbe0b5250f61861e71c7a09d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_RED_40866038357_sha756145c2.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866180445,
+      "zip_sha256": "b7ae9aec4cbe17182f92eb88d086053cd63dda71b0dc9745d41da7669204205b",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_FULL_DEP_RED_40866180445_shab7ae9aec.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866385792,
+      "zip_sha256": "c926fb58df11583b1366bad6e0a0620157e3421e4b6288ab10d2067cd1e4b69d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SELF_BOOL_RED_40866385792_shac926fb58.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866677801,
+      "zip_sha256": "2f065672901a2ce197ca88860bf425325e9f3661452ab37baf5dd70f577d8f1d",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_RED_40866677801_sha2f065672.zip",
+      "byte_verified": true
+    }
+  ],
+  "prerequisites": [
+    "Exact branch source pin, private synthetic evidence only",
+    "Isolated CPU torch/transformers full-suite dependencies",
+    "Do not run native/model jobs while unrelated active owners exist",
+    "Redmi device unavailable; no device claim"
+  ],
+  "next_command": "gh run view 40866812715 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866860307 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866865992 --repo RedMentos/Aii --json status,conclusion,headSha; download originals, audit all SHA256SUMS/stage exits/privacy, privately back up, then update branch-scoped result and continue independent canonical package.",
+  "open_questions": [
+    "Three isolated dependency-pinned full software runs pending",
+    "No real C3 source-composition utility improvement demonstrated",
+    "No Redmi native sustained thermal/RSS/energy evidence",
+    "PRs are draft review branches, not production merged"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}
