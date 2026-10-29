@@ -1,0 +1,94 @@
+name: V13 Self/World bool-number attribution source regression
+on:
+  push:
+    branches: [assistant/v13-self-corollary-bool-20261029]
+    paths:
+      - '.github/workflows/v13-self-corollary-bool-20261029.yml'
+      - 'v13/code/v13/selfmodel.py'
+      - 'v13/code/tests/test_self_corollary_bool_20261029.py'
+      - 'v13/code/docs/proofs/continuation-20261029/SELF_COROLLARY_BOOL_*'
+permissions:
+  contents: read
+jobs:
+  source-code:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Closed source-only exact code evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-self-bool"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          4c3394de887bb9a8a59f648794505918a8788eb6 v13/code/docs/proofs/continuation-20261029/SELF_COROLLARY_BOOL_PREREG.md
+          3fc2068087861f1e044cd39101addae23cb68634 v13/code/tests/test_self_corollary_bool_20261029.py
+          e08ff42cb7ae13027e832c0908f0ac72903a9b1d v13/code/v13/selfmodel.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          source_red=0
+          : > "$e/SOURCE_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            echo "$want $got $file" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then source_red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-self-bool-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-self-bool-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_selfmodel tests.test_self_corollary_bool_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"; echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"; echo SKIPPED > "$e/FULL_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/selfmodel.py v13/code/tests/test_self_corollary_bool_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6854e17317e8a7a13bd968ba7a15ea5612c29799 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 6854e17317e8a7a13bd968ba7a15ea5612c29799 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-self-bool-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-self-bool/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce exact source and tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-self-bool"
+          for stage in SOURCE VENV DEPS PIP_CHECK FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED, original raw retained"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'SELF_BOOL_ATTRIBUTION_SOFTWARE_ONLY'
