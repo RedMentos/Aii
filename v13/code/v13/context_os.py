@@ -210,6 +210,42 @@ class ContextOS:
         return self._mutate(fn)
     def capability(self,role,cap):
         return bool(self._load()[0]['capabilities'].get(role,{}).get(cap,{}).get('value'))
+    # -- exact source restoration (§8.4) ---------------------------------------------------------------
+    def source(self,event_id,session):
+        """Read an original current-session user turn from its immutable SourceRef.
+
+        This is an explicit operator audit, not a context-plan change or a
+        fallback to mutable message-table text. Deleted, truncated, unbound or
+        corrupted source bytes remain unavailable in both SHADOW and ACTIVE.
+        """
+        if type(event_id) is not str or type(session) is not str:
+            raise ValueError('CTXOS_SOURCE_INVALID_ID')
+        row=self.s.one(
+            "SELECT e.packet,e.source_id,s.hash,s.chars,s.deleted "
+            "FROM events e JOIN sources s ON s.id=e.source_id "
+            "WHERE e.id=? AND e.session_id=?",(event_id,session))
+        if not row or row['deleted']:
+            raise ValueError('CTXOS_SOURCE_NOT_FOUND_OR_DELETED')
+        import json
+        try:
+            envelope=json.loads(row['packet'])
+            ref=envelope['source_ref']
+            if (type(ref) is not dict or ref.get('source_id')!=row['source_id']
+                    or ref.get('sha256')!=row['hash']
+                    or type(ref.get('char_start')) is not int
+                    or ref['char_start']!=0
+                    or type(ref.get('char_end')) is not int
+                    or ref['char_end']!=row['chars']
+                    or ref.get('modality')!='text'):
+                raise ValueError('SourceRef does not bind complete event source')
+            text=self.s.read_source(ref)
+            if type(text) is not str or len(text)!=row['chars']:
+                raise ValueError('Incomplete source restoration')
+        except (ValueError,KeyError,TypeError,UnicodeError) as exc:
+            raise ValueError('CTXOS_SOURCE_UNAVAILABLE') from exc
+        return {'event_id':event_id,'source_ref':ref,'text':text,
+                'authority':'SOURCE_EXACT_READ_ONLY','context_applied':False}
+
     # -- warm memory (§9.1) ----------------------------------------------------------------------------
     def warm(self,query,session,recalled,threshold=WARM_ADMIT):
         """Reactivate only still-human-authorized F1 memories in warm order.
@@ -451,13 +487,14 @@ def controller(runtime):
         c=runtime.context_os=ContextOS(runtime.store,runtime.cfg,age,n)
     return c
 
-USAGE=':ctxos [status|last|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <0..1>]'
+USAGE=':ctxos [status|last|source <Event>|shadow|active|learned shadow|learned active|layout legacy|stable_prefix|append_only|digest on|off|knob <Name> <0..1>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <0..1>]'
 def operator_command(r,args):
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())
     if args==['last']:
         row=r.store.one("SELECT payload FROM packets WHERE kind='ContextPlan' ORDER BY created DESC LIMIT 1")
         return row['payload'] if row else dumps(None)
+    if len(args)==2 and args[0]=='source':return dumps(c.source(args[1],r.session))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})  # typed by the operator = explicit
     if len(args)==2 and args[0]=='learned':return dumps({'learned':c.set_mode(args[1].upper(),'EXPLICIT_HUMAN','learned')})
