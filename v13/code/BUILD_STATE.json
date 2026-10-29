@@ -2899,5 +2899,50 @@
     "next_prerequisites": "Independent full-suite review, audit real multiple-selection patterns, continue canonical organs; no authority/gate promotion.",
     "report": "docs/proofs/continuation-20261029/WORLDMODEL_ACTION_SELECTION_BINDING_RESULT_20261029.md",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "review_c3_budget_output_guard_20261029": {
+    "scope": "REVIEW_ONLY_SOFTWARE_FAKE_NATIVE_C3_OUTPUT",
+    "owner_branch": "codex/v13-c3-budget-output-guard-20261029-auto10ag",
+    "parent_pr": 1144,
+    "parent_sha": "de9bd8206cb6294187f42ca46c20ea5434b43fd1",
+    "prereg_sha": "193463514d1f859266c8894d19abfa6faa11756f",
+    "original_red": {
+      "run": 40949673704,
+      "tests": "36 RUN / 9 FAIL",
+      "zip_sha256": "c2e0c05f7318b8185cbe2f81d72b872741845ced4ff09f51603221bb68ab6a7b"
+    },
+    "candidate_red": {
+      "run": 40949729998,
+      "tests": "36 RUN / 4 FAIL double-escaped word boundary",
+      "zip_sha256": "c589e086ac96865ad8c9849bc38804006116a0a0146e7b4404a8ee8adebef41b"
+    },
+    "green": {
+      "run": 40949778639,
+      "head": "5623e42ebf57a0c0e74b4aedd617b456c79b12fb",
+      "tests": "36/36 PASS",
+      "zip_sha256": "08d66b7d9eb7fc4bc6f1d13e8fdaa6ce8eb7367716bbcbd751e66b22568171cd",
+      "source_blob": "87b1addd06680ce01f8247df735fa305371ceb93",
+      "test_blob": "0bb4cb5f1566e389b6ed59adb839405d7637a195",
+      "inner_hashes": "18/18",
+      "privacy": "CLEAN"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run10-C3BudgetOutputGuard/",
+    "private_backup_byte_exact": true,
+    "full_suite": "PENDING_NOT_CLAIMED",
+    "native_c3_evidence": false,
+    "redmi_measured": false,
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_c3_budget_output_guard_20261029 tests.test_ask_verified_budget tests.test_verified_exact_standalone_cli_20261029 tests.test_verified_exact_budget_20261029 tests.test_source_consumer_admission",
+    "next_prerequisites": "Independent full software review; future pinned real C3 native negative-answer cohort; continue canonical roadmap.",
+    "report": "docs/proofs/continuation-20261029/C3_BUDGET_OUTPUT_CONTRADICTION_RESULT_20261029.md",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
