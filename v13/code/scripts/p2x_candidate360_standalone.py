@@ -74,7 +74,8 @@ class LocalServer:
         cmd = [str(binary), "-m", str(model), "--lora-scaled", str(adapter), "1",
                "--host", "127.0.0.1", "--port", str(self.port), "-c", str(CONTEXT),
                "-np", "1", "-t", "2", "-tb", "2", "-b", "128", "-ub", "128",
-               "-ngl", "0", "--no-warmup", "--no-webui", "--log-disable"]
+               "-ngl", "0", "--cache-ram", "128", "--ctx-checkpoints", "6",
+               "--no-warmup", "--no-webui", "--log-disable"]
         self.log_file = Path(log).open("ab")
         try:
             self.proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL,
