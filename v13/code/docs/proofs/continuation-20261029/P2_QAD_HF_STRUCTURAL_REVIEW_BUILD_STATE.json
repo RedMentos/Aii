@@ -7,10 +7,10 @@
   "review_pr": 1069,
   "parent_head_sha": "100268d45a70ab7ad62757e55367bd0dbe147fb6",
   "source_only_tests": {
-    "count": 12,
+    "count": 16,
     "status": "PASS",
-    "run": 40847599915,
-    "head_sha": "0d3c5d0edb4ddbb344b91180072ec00d51eba792"
+    "run": 40848450346,
+    "head_sha": "fbbf79771b8b9384bea8b2581924649ed7864c2a"
   },
   "hf_metadata": {
     "source_repo": "LiquidAI/LFM2.5-350M",
@@ -27,10 +27,20 @@
   },
   "deployed_gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
   "real_source_structural": {
-    "prereg_commit": "81e58d0d1bd3434aa5f1279521adabde5af57a6c",
-    "initial_run": 40848183523,
-    "corrected_source_run": 40848210830,
-    "status": "IN_PROGRESS_NO_RESULT",
+    "prereg_commit": "cc4e04c57916fcf759c1f6dc56e924685c86b0b2",
+    "original_red_runs": [
+      40848183523,
+      40848210830
+    ],
+    "verified_green_run": 40848575587,
+    "green_head_sha": "442699c9afb181b57f71ebd9245d016fd7dd318b",
+    "green_zip_sha256": "8864e5d2db428e46ca5355ec82f2ce0a72eaddcff9685e4d948fb093afb4757a",
+    "status": "STRUCTURE_MATCH_PARITY_UNPROVEN",
+    "hf_count": 148,
+    "gguf_count": 148,
+    "matched_exact": 138,
+    "approved_shortconv_squeeze": 10,
+    "other_mismatches": 0,
     "no_model_inference": true,
     "no_training": true
   },
@@ -45,12 +55,28 @@
     "v13_complete": false,
     "production_merged": false
   },
-  "next_command": "Inspect GitHub Actions run 40848210830 and download original raw artifact; independently verify ZIP CRC, SHA256SUMS, source hashes, stage exits and STRUCTURAL_RESULT.json; record any RED, then preregister separate non-heldout native parity if mapping verified.",
+  "next_command": "Inspect Actions run 40849200975, download original raw artifact, verify ZIP SHA256/CRC/all SHA256SUMS and stage exits; inspect VALUE_RESULT.json. Preserve RED, no parity promotion. Then independently preregister QAD tokenizer/native logit/LoRA transfer checks, never overwrite ordinary HF evidence.",
   "open_questions": [
-    "Whether pinned GGUF b10964 name map covers all HF tensors without shape/orientation exceptions",
-    "Whether QAD weights are value-compatible with the instruction HF master",
-    "Whether tokenizer/chat template and q/k RoPE transformations are compatible",
-    "No evidence of LP3 causal-state utility, C3 source-use gain, or Redmi behavior"
+    "Native QAD FP32→GGUF dequant value distribution and RoPE q/k layout",
+    "QAD tokenizer/chat-template and runtime prompt-ID equivalence",
+    "LoRA adapter export/merge and QAD GGUF transfer utility",
+    "JEF/Context OS/B1-B2/World/JEPA/Dream and Redmi acceptance remain required"
   ],
-  "remaining_platform_budget": "UNKNOWN"
+  "remaining_platform_budget": "UNKNOWN",
+  "qad_fp32_source": {
+    "source_repo": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "subfolder": "qad",
+    "master_sha256": "1d90518482c4ec204bebb4820bbaee4f8a38c5a6df72256f86bcd21fe52ad079",
+    "size_bytes": 1417952352,
+    "source_metadata_run": 40848748542,
+    "source_metadata_zip_sha256": "216abc4c90fb7ded57581d9c4064e28914a4cc43851ed91c43677b161bef07df",
+    "source_metadata_verified_bytes": true,
+    "value_audit_source_only_run": 40849094848,
+    "value_audit_source_only_status": "PASS",
+    "value_audit_native_run": 40849200975,
+    "value_audit_native_status": "IN_PROGRESS_NO_RESULT",
+    "value_audit_workflow_head_sha": "ca5985370d0d94d7d9158c605dfc23de84c1ba8d",
+    "training_approved": false
+  }
 }
