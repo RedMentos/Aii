@@ -77,12 +77,36 @@ class WeightConsolidation:
         done=set(self.box.load()[0]['consolidated']);out=[]
         for r in rows:
             if r.get('origin')!='EXPLICIT_NOTE' or r['score']<min_score or 'rating:'+r['event_id'] in done:continue
-            q=self.s.one("SELECT text FROM messages WHERE event_id=? AND role='user' ORDER BY id LIMIT 1",(r['event_id'],))
-            a=self.s.one("SELECT text FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",(r['event_id'],))
-            ev=self.s.one("SELECT source_id FROM events WHERE id=?",(r['event_id'],))
-            if not q or not a or not ev:continue
+            ev=self.s.one(
+                "SELECT e.session_id,e.source_id,e.packet,s.hash,s.chars,s.deleted "
+                "FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=?",
+                (r['event_id'],))
+            if not ev or ev['deleted']:continue
+            # A rating is a human quality signal, not permission to revive
+            # deleted input or to train from mutable/cross-session chat text.
+            q=self.s.one("SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? AND role='user' ORDER BY id LIMIT 1",
+                         (r['event_id'],ev['session_id']))
+            a=self.s.one("SELECT text FROM messages WHERE event_id=? AND session_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",
+                         (r['event_id'],ev['session_id']))
+            if not q or not a:continue
+            try:
+                # This AG6 branch does not contain the separate ContextOS
+                # source-restore PR. Validate the immutable event/source
+                # binding directly instead of importing a foreign chain.
+                ref=json.loads(ev['packet'])['source_ref']
+                if (type(ref) is not dict or ref.get('source_id')!=ev['source_id']
+                        or ref.get('sha256')!=ev['hash']
+                        or type(ref.get('char_start')) is not int or ref['char_start']!=0
+                        or type(ref.get('char_end')) is not int or ref['char_end']!=ev['chars']
+                        or ref.get('modality')!='text'
+                        or json.loads(q['metadata']).get('source_ref')!=ref
+                        or self.s.read_source(ref)!=q['text']):
+                    continue
+            except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                continue
+            ref=dict(ref,label='HUMAN_QUALITY_LABEL_NOT_FACT')
             out.append({'memory_id':'rating:'+r['event_id'],'event_id':r['event_id'],'kind':'rated_answer','prompt':q['text'],'target':a['text'],
-                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':{'source_id':ev['source_id'],'modality':'text','label':'HUMAN_QUALITY_LABEL_NOT_FACT'}})
+                        'weight':round((r['score']-5)/5,3),'rating':r['score'],'source_ref':ref})
         return out
     def sdft_candidates(self):
         """WP-S5 SDFT: human corrections marked `learn`. The target stays empty here; a self-teaching trainer
