@@ -62,7 +62,10 @@ def _row(family, sheet_index, rule_index):
     # Add the same offset to all budgets and costs. The entire 2x3
     # counterfactual decision matrix remains unchanged across families.
     shift = 3 * family
-    project = f"HB0F{family:02d}S{sheet_index}R{rule_index}"
+    # Opaque per-world identity: never encode sheet/rule axes in the prompt.
+    # Public synthetic IDs are NOT a blind held-out evaluation key.
+    digest = hashlib.sha256(f"{SEED}|{family}|{sheet_index}|{rule_index}".encode("ascii")).hexdigest()[:14]
+    project = "HB0" + digest.upper()
     rule = RULES[rule_index]
     rule = (rule[0] + shift, rule[1], rule[2])
     options = tuple((o[0] + shift, o[1], o[2])
