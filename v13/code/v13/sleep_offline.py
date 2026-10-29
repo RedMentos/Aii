@@ -36,8 +36,19 @@ def digest(store,checkpoint=None):
     """Extractive day digest per session; only turns newer than the last digest."""
     from .history import native_history
     st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0}
-    rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
-    for r in rows:
+    # Select *pending* sessions before applying the per-run budget. The
+    # former latest-eight SQL LIMIT could permanently starve older sessions
+    # even when all eight selected sessions had already been digested.
+    candidates=store.rows(
+        "SELECT session_id,MAX(id) AS last FROM messages "
+        "WHERE role='assistant' AND status='FINAL' GROUP BY session_id")
+    pending=[r for r in candidates
+             if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)]
+    # Never-seen/oldest high-water sessions first; stable tie-breakers make
+    # scheduling deterministic without increasing the per-run compute cap.
+    pending.sort(key=lambda r:(st['sessions'].get(r['session_id'],{}).get('until',0),
+                               r['last'],r['session_id']))
+    for r in pending[:SESSIONS_MAX]:
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
         if checkpoint:checkpoint()
