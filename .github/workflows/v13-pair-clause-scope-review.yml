@@ -22,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 50
-      - name: Frozen raw, multi-turn option reference tests, full suite and privacy
+      - name: Frozen raw, typed pair-scope review tests, full suite and privacy
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -40,8 +40,8 @@ jobs:
           check 16b30834410854b3621490b71be83637bb5bd73c v13/code/docs/proofs/continuation-20261029/PAIR_CLAUSE_SCOPE_REVIEW_PREREG.md || source_ok=1
           check 7f13f5d01f4df2919e27a0ac24ce89f347a2d328 v13/code/scripts/context_option_reference_candidate.py || source_ok=1
           check 073425903636593401d12210cbf9003257f76f29 v13/code/tests/test_context_option_reference_candidate.py || source_ok=1
-          check 143b8fe864bd085f4322105f5f3269fec21acf5e v13/code/scripts/context_option_pair_scope_candidate.py || source_ok=1
-          check 496e0da4393253afb0cfc125b449d10df1e0b09a v13/code/tests/test_context_option_pair_scope_candidate.py || source_ok=1
+          check c92a3e36fe76588a7e6b78dc2fa57e84c651d74c v13/code/scripts/context_option_pair_scope_candidate.py || source_ok=1
+          check 78f4a157682870f65ff5d5a03f08d7a765ce41ab v13/code/tests/test_context_option_pair_scope_candidate.py || source_ok=1
           check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_ok=1
           check c9b9c1694cba016ccf0059da7f78585694a31327 v13/code/scripts/step2_option_quote_consistency_candidate.py || source_ok=1
           check 58e0aceea1b99e1fc770296902bdb641608e6cc3 v13/code/scripts/step2_exact_rule_native_replay_preflight.py || source_ok=1
@@ -104,7 +104,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: run141-context-option-${{ github.run_id }}-${{ github.sha }}
+          name: pair-scope-review-${{ github.run_id }}-${{ github.sha }}
           path: ${{ runner.temp }}/v13-pair-scope/
           if-no-files-found: error
           retention-days: 30
