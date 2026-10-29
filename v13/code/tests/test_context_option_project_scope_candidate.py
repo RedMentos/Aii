@@ -67,6 +67,16 @@ class ProjectSourceScope(unittest.TestCase):
         result = scoped.read_project_scoped(BETA_TASK, [BETA_OPTIONS.lower()])
         self.assertEqual([o["cost"] for o in result["options"]], [60, 85])
 
+    def test_late_project_mention_does_not_authorize_history(self):
+        current = "Earlier note mentions Project Beta. Decide between Option A and Option B."
+        self.assertIsNone(scoped.project_key(current))
+        self.assertIsNone(scoped.read_project_scoped(current, [BETA_OPTIONS])["options"])
+
+    def test_unheaded_prior_project_mention_not_used(self):
+        unheaded = "Quoted note: " + BETA_OPTIONS
+        self.assertIsNone(scoped.project_key(unheaded))
+        self.assertIsNone(scoped.read_project_scoped(BETA_TASK, [unheaded])["options"])
+
     def test_multiword_name_is_not_guessed(self):
         task = "Project New York. Decide between Option A and Option B."
         self.assertIsNone(scoped.project_key(task))
