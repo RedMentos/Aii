@@ -1,0 +1,9 @@
+# Run93 original RED — correction amendment before rerun (2026-10-29)
+
+Original prereg: `RUN93_SOURCE_C3_NATIVE_E2E_PREREG.md` committed FIRST `05a371873ec57578225551d6959aec1d80b7a9a4`. Original workflow exact head `1f3d26c6f0763d06bdee0df9667a3fd967ab7b4d`, Actions `40792357478` **FAILED**. Original artifact ID `12862870738`; downloaded ZIP SHA256 `dc78a654a3042d3baa212ea1148f7b4323180e70f01885f717f36d9d206944b2`, CRC clean, 19/19 inner SHA256SUMS verified, source/compile/focused/privacy/diff exit 0, focused **29 OK**. Original ZIP privately saved and re-materialized byte-identical at `/V13-Checkpoints/2026-10-29/Run93-Source-C3-Native/V13_Run93_ORIGINAL_RED_40792357478.zip`. No native model call occurred; native exit SKIPPED_RED.
+
+**Observed exact failures (not a model result):**
+1. `INSTALL_RAW.log`: `ModuleNotFoundError: No module named 'v13'` because the workflow invoked `python scripts/run93_source_c3_native_e2e.py` (Python prepends `scripts/` to sys.path), not the package module.
+2. `FULL_RAW.log`: 2627 tests, 4 import errors (1 skipped group 18), including `test_lp3_state_prefix` and `test_lp3_shift_row_control_20261028`: `ModuleNotFoundError: No module named 'torch'`. The initial workflow installed only base dependencies, unlike independently GREEN Run91 #998, which installs pinned CPU `torch==2.14.1`, `transformers==5.20.2`, `peft==0.21.2`.
+
+**Authorized narrow correction, without changing any registered source, model, seed, prompt, max tokens or test assertion:** invoke the exact same script as `python -m scripts.run93_source_c3_native_e2e` from `v13/code`, and install the same pinned full-suite Python dependencies used by Run91 before running the original unchanged test suite. No weakening of native or answer acceptance. Corrected CI must retain original RED and produce new independent raw artifact. All negative gates remain unchanged.
