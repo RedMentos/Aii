@@ -29,7 +29,7 @@
     "v13": "INCOMPLETE",
     "redmi_measured": false
   },
-  "exact_next_command": "Resolve official LiquidAI/LFM2.5-350M HF instruction master commit/config/tokenizer/safetensors hashes and license; commit immutable source-pin addendum BEFORE downloading or testing, then audit existing LoraTrainer._load_gguf_weights tensor coverage in source-only CI",
+  "exact_next_command": "Use authorized GitHub Actions isolated runner (not local container DNS) or official Hugging Face metadata to resolve exact HF instruction master commit and file SHA/license; checkpoint source pin before downloading/training. Continue independent canonical Context OS/JEF/Body learning packages if HF metadata unavailable.",
   "open_questions": [
     "QAD GGUF to HF master full tensor mapping unproven",
     "Native logits/tokenizer parity unproven",
@@ -37,5 +37,12 @@
   ],
   "private_backup": "Use permitted private /V13/RawEvidence for raw model proof; no rejected Drive",
   "production_merge": false,
-  "remaining_platform_budget": "UNKNOWN"
+  "remaining_platform_budget": "UNKNOWN",
+  "prerequisite_probe": {
+    "attempt": "Python urllib.request GET https://huggingface.co/api/models/LiquidAI/LFM2.5-350M",
+    "result": "FETCH_BLOCKED",
+    "error": "URLError [Errno -3] Temporary failure in name resolution",
+    "evidence_kind": "LOCAL_CONTAINER_NETWORK",
+    "native_model_calls": 0
+  }
 }
