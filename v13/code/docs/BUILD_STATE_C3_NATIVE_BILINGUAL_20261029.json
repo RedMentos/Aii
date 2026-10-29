@@ -13,7 +13,8 @@
       ".github/workflows/v13-current-c3-bilingual-native-20261029.yml",
       "v13/code/docs/C3_NATIVE_BILINGUAL_SOURCE_PREREG_20261029.md",
       "v13/code/docs/BUILD_STATE_C3_NATIVE_BILINGUAL_20261029.json"
-    ]
+    ],
+    "pr": 1136
   },
   "canon": {
     "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
@@ -42,10 +43,39 @@
   "native_run": {
     "run": 40939274639,
     "source_head": "19a2195546e4b5c0fa2e871c3bc69fa3277181ff",
-    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "status": "COMPLETED_SUCCESS_LINUX_NATIVE_C3_ONLY_UNSCORED",
     "expected_rows": 6,
     "scoring": "UNSCORED_NATIVE_OBSERVATION",
-    "claim_limit": "Only actual pinned Linux C3 generation; no semantic utility/JEPA/Redmi/whole-system gate"
+    "claim_limit": "Only actual pinned Linux C3 generation; no semantic utility/JEPA/Redmi/whole-system gate",
+    "artifact": 12926965187,
+    "zip_sha256": "f7ea513c3d4cefddf42ba7ba798412d0b0d10fcf91ed449fa923394b1eb95def",
+    "crc": true,
+    "inner_sha256": "32/32",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-C3-Native-Bilingual/RAW_NATIVE_GREEN_40939274639_shaF7EA51.zip",
+    "private_readback": "byte-exact",
+    "software_tests": "10/10 PASS",
+    "native_rows": "6/6 actual pinned Linux llama-cli generations; all exit0, uncapped and generation marker",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "SOFTWARE": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "actual_cli_sha256": "3acf625ff44f1dc28799e7e036519207b5564191d6243371bfae086b3911ed71",
+    "prompt_set_sha256": "592b63b9c0f93b5bc8a19468c342271f322ef5a58b2598f416708c68d34815f4",
+    "observations_after_raw_inspection": [
+      "EN source-present generated '120 euros'",
+      "EN no-source generated 'UNKNOWN'",
+      "EN revised generated 'The current budget is 90 euros.'",
+      "DE source-present generated 'Betrag: 120 Euro' with separate blank currency field",
+      "DE no-source generated 'UNKREID' (not requested 'UNBEKANNT')",
+      "DE revised generated 'Betrag: 90 Euro' plus unsupported 'Wehrung: 30 Euro'"
+    ],
+    "observations_claim_limit": "Qualitative post-hoc inspection only; no preregistered semantic score, no utility pass"
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -58,16 +88,14 @@
     "whole_system_complete": false
   },
   "open_questions": [
-    "Close Actions raw artifact, verify CRC and SHA256SUMS, private backup byte-exact",
-    "If actual native raw exposes a reliable generated-only delimiter, preregister a separate fixed-oracle scorer before inspecting semantic answers",
-    "Do not count prompt echoes as semantic success",
-    "Independent full software review Actions 40938719557 still running"
+    "Preregister a NEW heldout six-case native cohort with fixed generated-only extractor and exact semantic scorer before seeing its outputs; preserve this original unscored pilot",
+    "Run34/Run37 frozen historical preflight is an independent sibling branch; do not rewrite pins",
+    "Full software review Actions 40938719557 remains separate evidence track"
   ],
   "next_commands": [
-    "Fetch GitHub Actions 40939274639 status, jobs and artifact when completed",
-    "Preserve any RED and exact source/model/runner hashes; do not overwrite original attempts",
-    "Update BUILD_STATE with exact outcome and draft PR child of PR1135",
-    "Continue functional utility work on independent package; native and Redmi are distinct"
+    "Verify PR1136 branch head and this BUILD_STATE remote blob",
+    "Develop a new heldout fixed-oracle scorer using the known llama-cli prompt/generation delimiters, then run on unseen fictional project prompts; no prompt echo scoring",
+    "Continue independent canonical utility work; preserve negative gates"
   ],
-  "checkpoint_reason": "Pinned public native C3 pilot launched; source/tests/workflow committed remotely before long run; remaining budget UNKNOWN"
+  "checkpoint_reason": "6/6 real pinned C3 Linux-native generations, 10/10 software guards; closed raw ZIP verified and private Library readback byte-exact; utility still unproven"
 }
