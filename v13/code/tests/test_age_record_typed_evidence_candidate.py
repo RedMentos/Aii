@@ -35,7 +35,7 @@ class AgeRecordTypedEvidenceCandidate(unittest.TestCase):
         for value in (True,-1,2.0,"100",float("inf")):
             with self.subTest(experience=repr(value)):
                 self.assert_rejects_without_write(dict(GOOD,experience=value))
-        for value in (1,0,None,"true"):
+        for value in (1,0,"true"):
             with self.subTest(regression_pass=repr(value)):
                 self.assert_rejects_without_write(dict(GOOD,regression_pass=value))
     def test_explicit_evidence_id_must_be_nonempty_exact_string(self):
@@ -52,6 +52,24 @@ class AgeRecordTypedEvidenceCandidate(unittest.TestCase):
         self.assertNotIn("proposal",result)
         self.assertEqual(self.ctl.state()[0]["system"]["evidence_count"],1)
         self.assertFalse(self.ctl.allowed("short_dream"))
+    def test_unmeasured_none_metrics_are_recorded_without_gate_credit(self):
+        incomplete=dict(GOOD,competence=None,retention=None,calibration=None,
+                        stability=None,safe_self_control=None,regression_pass=None)
+        result=self.ctl.record("system",incomplete,evidence_id="unmeasured-1")
+        self.assertEqual(result["stage"],0)
+        self.assertNotIn("proposal",result)
+        self.assertEqual(self.ctl.state()[0]["system"]["evidence_count"],1)
+        self.assertEqual(self.ctl.state()[0]["system"]["maturity"]["competence"],0.)
+        self.assertFalse(self.ctl.allowed("short_dream"))
+        # False regression with unavailable retention is a maintenance miss,
+        # not evidence of severe retention collapse.
+        a=age.AgeControl(self.store,self.cfg,build_ceiling=5)
+        for i in range(3):a.record("language",GOOD,evidence_id="warm-"+str(i))
+        self.assertEqual(a.state()[0]["capabilities"]["language"]["stage"],1)
+        a.record("language",dict(GOOD,retention=None,regression_pass=False),
+                 evidence_id="missing-retention")
+        self.assertEqual(a.state()[0]["capabilities"]["language"]["stage"],1)
+
     def test_valid_full_evidence_and_restart_remain_age_zero(self):
         for i in range(4):
             self.ctl.record("system",GOOD,evidence_id="good-"+str(i))
