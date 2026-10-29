@@ -81,7 +81,9 @@ class PilotTests(unittest.TestCase):
                 pilot.read_frozen(p)
 
     @staticmethod
-    def token_fake(prompt_ids, target_ids=2, rendered="RENDERED"):
+    def token_fake(prompt_ids, target_ids=None, rendered="RENDERED"):
+        if target_ids is None:
+            target_ids = [2, 3]
         class FakeTokenizer:
             def __init__(self):
                 self.calls = []
