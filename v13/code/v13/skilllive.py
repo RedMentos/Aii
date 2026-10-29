@@ -50,7 +50,14 @@ def automatic(r,e,text,meta):
         from .cognition import scaffold_route
         live=matches(hub(r).skills,text,LIVE)
         if not live:return None
-        sk=live[0];route=_route_only(sk)
+        # Multiple individually trusted procedures may disagree on the same
+        # input. Trigger length/name is not authority to bypass C_fast.
+        routes={_route_only(sk) for sk in live}
+        if len(routes)!=1:
+            r.store.log('skilllive_ambiguous',e['event_id'],
+                        {'match_count':len(live),'routes':sorted(routes)})
+            return None
+        sk=live[0];route=next(iter(routes))
         meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'])
         return route,{'source':'TRUSTED_SKILL_AUTOMATIC','skill':sk['name'],'skipped':['C2_CONTROL']}
     except Exception as exc:
