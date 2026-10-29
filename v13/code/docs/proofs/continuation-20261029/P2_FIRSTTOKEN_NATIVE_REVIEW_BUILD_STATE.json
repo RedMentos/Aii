@@ -1,0 +1,68 @@
+{
+  "schema": "v13.p2.firsttoken_native_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2 native first-token review",
+  "branch": "codex/v13-p2-firsttoken-native-review-20261029",
+  "parent_pr": 1069,
+  "review_pr": 1070,
+  "parent_head_sha": "955c7abab8a56e68781f651b2661de94b03aa382",
+  "original_prereg": "P2_QAD_FP32_VS_GGUF_FIRSTTOKEN_NATIVE_PREREG.md",
+  "independent_prereg_commit": "ab223d25443224ab85e4920ecc9f4cd81d689147",
+  "native_attempts": [
+    {
+      "run": 40850998235,
+      "head": "20002c31be0dc3215e0e5de3db99a12b451df081",
+      "status": "RED_DEPENDENCY_TOKENIZERS",
+      "artifact": 12886404615,
+      "zip_sha256": "bc900460800282865a5d8334e6b150d6da20e9bdaac6c6c88011d88fd0421ca5",
+      "model_forward_calls": 0
+    },
+    {
+      "run": 40851169183,
+      "head": "4309b9306d235865624944b24227e014ad5bc49b",
+      "status": "RED_DEPENDENCY_SAFETENSORS",
+      "artifact": 12887296566,
+      "zip_sha256": "56f16af2c01ee09a51b8dec1fda09c0889a5dfc71be36994ef5f6a44aef96442",
+      "model_forward_calls": 0
+    },
+    {
+      "run": 40851408574,
+      "head": "d101aec5000e2e45fbe1b7da25475d1244c8cece",
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "artifact": null,
+      "zip_sha256": null,
+      "model_forward_calls": null
+    }
+  ],
+  "source_only_independent_review": {
+    "run": 40851352741,
+    "head": "c6903a4db2b6fd96b2d303b55781d81504c2e9aa",
+    "status": "PASS",
+    "tests": 9,
+    "privacy": "CLEAN"
+  },
+  "tokenizer_reference": {
+    "run": 40850029535,
+    "artifact": 12886198086,
+    "zip_sha256": "fff6a6477090166176b71674ef593d1954966b5cbb685723054cd1b230c8e342",
+    "verified_eight_ids_equal": true
+  },
+  "private_backup": {
+    "location": "/V13/RawEvidence/2026-10-29/P2-firsttoken/",
+    "saved_and_byte_reverified": true,
+    "files": 3
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Check Actions 40851408574 exact head d101aec5000e2e45fbe1b7da25475d1244c8cece; download original ZIP, independent CRC/SHA256SUMS/stage/source/prompt-ID audit against tokenizer run 40850029535; preserve RED or register measured result; private Library backup; then continue next canonical package.",
+  "remaining_platform_budget": "UNKNOWN"
+}
