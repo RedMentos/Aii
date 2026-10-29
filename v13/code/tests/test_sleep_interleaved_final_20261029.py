@@ -67,5 +67,17 @@ class InterleavedFinal(unittest.TestCase):
         self.assertEqual(self.entries(), [])
 
 
+    def test_late_earlier_answer_must_not_skip_interleaved_pending_user(self):
+        first, second = self.event("first"), self.event("second")
+        self.answer(first, "first")
+        # The first answer is after the second user's row. Advancing the
+        # assistant high-water would irreversibly skip the second source.
+        self.assertEqual(S.digest(self.s)["turns"], 0)
+        self.answer(second, "second")
+        self.assertEqual(S.digest(self.s)["turns"], 2)
+        self.assertEqual([x["event_id"] for x in self.entries()],
+                         [first["event_id"], second["event_id"]])
+
+
 if __name__ == "__main__":
     unittest.main()
