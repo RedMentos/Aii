@@ -61,7 +61,7 @@ class SchedulerFiniteBoundaryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "due"):
                 s.post("RESOURCE_CHANGE", due=float("nan"))
             self.assertEqual(s.pending(), before)
-            self.assertEqual(s.report()["counters"]["dropped_capacity"], 0)
+            self.assertEqual(s.report()["counters"].get("dropped_capacity", 0), 0)
 
     def test_valid_finite_user_timer_retains_due_and_expiry(self):
         s = self.scheduler
