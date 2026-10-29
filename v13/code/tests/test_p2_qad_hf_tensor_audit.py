@@ -81,5 +81,29 @@ class AuditTests(unittest.TestCase):
             self.assertEqual(json.loads(out.read_text())['status'], 'STRUCTURE_RED')
 
 
+    def test_receipt_cannot_be_overwritten(self):
+        with tempfile.TemporaryDirectory() as d:
+            master = Path(d) / 'master'
+            master.mkdir()
+            (master / 'model.safetensors').write_bytes(b'not master')
+            gg = Path(d) / 'model.gguf'
+            gg.write_bytes(b'not gguf')
+            out = Path(d) / 'report.json'
+            out.write_text('original failed attempt')
+            with self.assertRaises(FileExistsError):
+                audit.main(['--master', str(master), '--gguf', str(gg),
+                            '--output', str(out)])
+            self.assertEqual(out.read_text(), 'original failed attempt')
+
+    def test_symlinked_model_source_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            master = Path(d) / 'master'
+            master.mkdir()
+            (master / 'model.safetensors').write_bytes(b'not master')
+            gg = Path(d) / 'model.gguf'
+            gg.symlink_to(master / 'model.safetensors')
+            with self.assertRaisesRegex(ValueError, 'symlinked'):
+                audit.audit(master, gg)
+
 if __name__ == '__main__':
     unittest.main()
