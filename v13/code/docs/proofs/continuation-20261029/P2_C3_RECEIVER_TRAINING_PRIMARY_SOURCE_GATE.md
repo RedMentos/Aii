@@ -18,3 +18,7 @@ Owner: GPT-6 isolated V13 review. This is an **implementation research note**, n
 5. **Operational handoff:** if training path blocked (license/master mismatch, RAM, unsupported modules), record it and pursue Context OS / JEF / B1/B2 integration packages rather than iterating only on helper scaffolding.
 
 Current 600-call native source-arm owner at writing: run `40841374171`, PR #1066; wait for closed evidence before choosing whether P2 training is highest priority. Remaining platform budget UNKNOWN.
+
+## Canonical roadmap reconciliation (read before any new training package)
+
+`v13/ROADMAP.md` (Git blob `7e377bfa0e4bd06c8fbf13bab28e7a5b40f693eb`) already records **LP1_NO_ATTRIBUTABLE_GAIN** (C3 master component gradients reach LoRA but no utility and more drift), **LP2_ALIGNS_NO_GAIN** (predictor maps facts correctly but answers do not depend on it), and the explicit **WP-LP3** requirement: make the answer causally depend on predicted state (soft-prefix or memory key), with shifted-target controls and fresh paraphrases. Therefore a P0X supervised C3 receiver adapter, if attempted, is a **separate baseline/control**, not a replacement for LP3's JEPA causal-learning proof or B1/B2 learning. Preserve original LP1/LP2 negative evidence and jepa_weight=0. The roadmap also records Age0 late-correction false-alarm failure; do not use source-arm performance to enable `deliver`.
