@@ -11,21 +11,21 @@ from scripts import context_option_reference_candidate as parent
 from v13.agi import eligibility as original
 
 
-# Both orders; explicit conjunction or punctuation; second "Option" optional.
-JOINT = re.compile(
-    r"\boption\s+([AB])\s*(?:and|or|,|&|/)\s*(?:option\s+)?([AB])\b[^.]*",
-    re.I,
-)
+# The frozen Run141 clause reader is period-delimited. Two option labels
+# sharing that clause cannot each own its typed values, regardless of whether
+# they are joined by "and", "versus", a semicolon, or other punctuation.
+A_TAG = re.compile(r"\boption\s+A\b", re.I)
+B_TAG = re.compile(r"\boption\s+B\b", re.I)
 
 
 def ambiguous_typed_pair(text):
-    """True if a joint A/B clause contains option-typed values, not a pure reference."""
+    """Refuse two different option labels in one typed period-delimited clause."""
     if type(text) is not str:
         raise ValueError("OPTION_SOURCE_INPUT_INVALID")
-    for match in JOINT.finditer(text):
-        if match.group(1).upper() != match.group(2).upper() and parent.OPTION_WORDS.search(match.group(0)):
-            return True
-    return False
+    return any(
+        A_TAG.search(clause) and B_TAG.search(clause) and parent.OPTION_WORDS.search(clause)
+        for clause in text.split(".")
+    )
 
 
 def option_with_pair_scope(entity, current, earlier=()):
