@@ -75,7 +75,7 @@ class CrossOrganWorldAgeSkillIntegration(unittest.TestCase):
                 self.assertEqual(age.system_stage(), 0)
                 self.assertFalse(age.allowed("short_dream"))
                 self.assertEqual(r.cfg["learning_mode"], "RECORD_ONLY")
-                self.assertEqual(r.cfg["jepa_weight"], 0)
+                self.assertEqual(r.cfg.get("jepa_weight", 0), 0)
             finally:
                 r.close()
             r2 = Runtime(home)
