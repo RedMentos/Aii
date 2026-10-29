@@ -189,6 +189,11 @@ class WeightConsolidation:
     def train(self,bid,cancel=None,deadline=None):
         b=self.batch(bid)
         if b['status']!='STAGED':raise ValueError('Nur STAGED-Batches werden trainiert')
+        from ..guards import mix_for_training
+        kept,mix=mix_for_training(b['items'])
+        if len(kept)!=len(b['items']) or not mix['check']['pass']:  # defence in depth: a batch staged before the mix rule or edited later
+            def bad(st,b):b['data_mix']=mix;self._move(b,'DATA_MIX_FAIL')
+            return self._set(bid,bad)
         # Source revocation may happen after STAGED and before fit. A stored
         # SourceRef is not a perpetual permission to train; veto the entire
         # immutable batch rather than silently changing its dataset hash.
@@ -216,11 +221,6 @@ class WeightConsolidation:
                                    'reason':reason}
                 self._move(b,'SOURCE_INVALID')
             return self._set(bid,source_invalid)
-        from ..guards import mix_for_training
-        kept,mix=mix_for_training(b['items'])
-        if len(kept)!=len(b['items']) or not mix['check']['pass']:  # defence in depth: a batch staged before the mix rule or edited later
-            def bad(st,b):b['data_mix']=mix;self._move(b,'DATA_MIX_FAIL')
-            return self._set(bid,bad)
         try:
             from ..anchor import for_batch,AnchorAdmissionError
             anchor,override=for_batch(self.s,b['items'],self.trainer)  # WP-U5 §69: anchor strength from novelty/stability
