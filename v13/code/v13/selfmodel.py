@@ -82,10 +82,15 @@ def interoception(snapshot,cfg,recent=(),own_active=False):
 def _match(pred,value):
     """(matched, residual) for one predicted observation."""
     pv=pred.get('value')
-    if isinstance(pv,(int,float)) and not isinstance(pv,bool) and isinstance(value,(int,float)):
+    if pv=='*':return True,None
+    # Python bool is an int subclass: never treat a type-conflicting flag
+    # as a zero-error numeric observation (or the reverse).
+    if type(pv) is bool or type(value) is bool:
+        matched=type(pv) is bool and type(value) is bool and pv==value
+        return matched,None if matched else {'expected':pv,'actual':value}
+    if isinstance(pv,(int,float)) and isinstance(value,(int,float)):
         res=value-pv;tol=pred.get('tolerance');tol=abs(pv)*.5 if tol is None else tol
         return abs(res)<=tol,res
-    if pv=='*':return True,None
     return value==pv,None if value==pv else {'expected':pv,'actual':value}
 
 def attribute(open_corollaries,obs):
