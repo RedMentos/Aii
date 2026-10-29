@@ -223,10 +223,14 @@ def exact_source(r, text, session=None):
             or second["messages_sha256"] != first["messages_sha256"]):
         return {"status": "CLARIFY", "reason": "SOURCE_CHANGED_BEFORE_EXACT_OUTPUT",
                 "model_called": False, "native_calls": 0}
+    # The standalone BudgetContext deliberately does not attach a semantic
+    # encoder; Runtime may attach one. Do not require an optional organ to
+    # deliver a deterministic lexical source copy.
+    keys = getattr(r.memory, "semantic_keys", None)
     return {"status": "FINAL_SOURCE_EXACT", "answer": answer,
             "source_ref": source["source_ref"], "authority": "EXACT_SOURCE",
             "model_called": False, "native_calls": 0, "learned": False,
-            "semantic_encoder_may_run": r.memory.semantic_keys.mode() != "off"}
+            "semantic_encoder_may_run": keys is not None and keys.mode() != "off"}
 
 
 def main(argv=None):
@@ -234,8 +238,11 @@ def main(argv=None):
     p.add_argument("--home", required=True)
     p.add_argument("--query", required=True)
     p.add_argument("--session", default=None)
-    p.add_argument("--native", action="store_true",
-                   help="explicitly invoke one pinned C3 native generation")
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument("--native", action="store_true",
+                      help="explicitly invoke one pinned C3 native generation")
+    mode.add_argument("--exact", action="store_true",
+                      help="copy the current verified F1/F5 source without C3 generation")
     p.add_argument("--timeout", type=float, default=120)
     p.add_argument("--max-tokens", type=int, default=64)
     args = p.parse_args(argv)
@@ -246,10 +253,12 @@ def main(argv=None):
     r = None
     try:
         r = BudgetContext(home)
-        result = query(r, args.query, args.session, native=args.native,
-                       timeout_s=args.timeout, max_tokens=args.max_tokens)
+        result = (exact_source(r, args.query, args.session) if args.exact else
+                  query(r, args.query, args.session, native=args.native,
+                        timeout_s=args.timeout, max_tokens=args.max_tokens))
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-        return 0 if result["status"] in {"READY", "FINAL", "CLARIFY", "NOT_APPLICABLE"} else 2
+        return 0 if result["status"] in {"READY", "FINAL", "FINAL_SOURCE_EXACT",
+                                         "CLARIFY", "NOT_APPLICABLE"} else 2
     except Exception as exc:
         print(json.dumps({"status": "ERROR", "reason": type(exc).__name__}, sort_keys=True))
         return 2
