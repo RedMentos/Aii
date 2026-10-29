@@ -51,6 +51,10 @@ class UserCursorOverflow(unittest.TestCase):
         self.assertEqual(S.digest(self.r.store)["turns"], 0)
         self.assertEqual([x["event_id"] for x in self.entries()],
                          [e["event_id"] for e in events[-S.ENTRIES_MAX:]])
+        # Live context must still revalidate all 96 exact sources, even
+        # though the latest 194 message rows contain only 64 user rows.
+        self.assertEqual(S.view(self.r.store, self.session, cap=100000)["entries"],
+                         S.ENTRIES_MAX)
 
     def test_pending_first_user_blocks_then_late_completion_recovers(self):
         events = self.events(65)
@@ -77,6 +81,7 @@ class UserCursorOverflow(unittest.TestCase):
         ids = [x["event_id"] for x in self.entries()]
         self.assertNotIn(events[5]["event_id"], ids)
         self.assertEqual(len(ids), 64)
+        self.assertEqual(S.view(self.r.store, self.session, cap=100000)["entries"], 64)
 
 
 if __name__ == "__main__":
