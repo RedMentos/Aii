@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from v13 import context_os as C
 from v13 import sleep_offline as S
 from v13.operator import Operator
 from v13.runtime import Runtime
@@ -17,6 +18,7 @@ class ContextSleepSourceIntegration(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.runtime = Runtime(Path(self.tmp.name))
         self.runtime.sleep.cycle.set_policy("enabled", "off")
+        self.ctx = C.ContextOS(self.runtime.store, self.runtime.cfg)
 
     def tearDown(self):
         self.runtime.close()
@@ -55,7 +57,7 @@ class ContextSleepSourceIntegration(unittest.TestCase):
         # Even an entry outside the retained digest is still exact in SourceRef.
         self.assertEqual(json.loads(Operator(self.runtime).run(
             ":ctxos source " + events[0][0]["event_id"]))["text"], events[0][1])
-        self.assertEqual(self.runtime.context_os.report()["mode"], "SHADOW")
+        self.assertEqual(self.ctx.report()["mode"], "SHADOW")
 
     def test_revocation_filters_digest_and_blocks_explicit_restore(self):
         events = [self.turn(i) for i in range(70)]
@@ -69,7 +71,7 @@ class ContextSleepSourceIntegration(unittest.TestCase):
                         (target["source_ref"]["source_id"],))
         self.assertEqual(S.view(store, self.runtime.session, cap=100000)["entries"], 69)
         with self.assertRaisesRegex(ValueError, "CTXOS_SOURCE"):
-            self.runtime.context_os.source(target["event_id"], self.runtime.session)
+            self.ctx.source(target["event_id"], self.runtime.session)
         self.assertEqual(json.loads(Operator(self.runtime).run(
             ":ctxos source " + events[51][0]["event_id"]))["text"], events[51][1])
 
@@ -79,12 +81,12 @@ class ContextSleepSourceIntegration(unittest.TestCase):
         pending, text = self.turn(64, final=False)
         self.assertEqual(S.digest(self.runtime.store)["turns"], 64)
         self.assertEqual(S.digest(self.runtime.store)["turns"], 0)
-        self.assertEqual(self.runtime.context_os.source(
+        self.assertEqual(self.ctx.source(
             pending["event_id"], self.runtime.session)["text"], text)
         other = self.runtime.store.new_session("other")
         foreign, _ = self.turn(999, session=other)
         with self.assertRaisesRegex(ValueError, "CTXOS_SOURCE"):
-            self.runtime.context_os.source(foreign["event_id"], self.runtime.session)
+            self.ctx.source(foreign["event_id"], self.runtime.session)
         self.runtime.store.message(
             self.runtime.session, pending["event_id"], "assistant",
             "Exact source acknowledged 064.",
