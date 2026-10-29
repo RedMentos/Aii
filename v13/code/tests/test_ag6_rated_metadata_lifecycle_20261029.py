@@ -99,6 +99,23 @@ class RatedMetadataLifecycle(unittest.TestCase):
         self.assertEqual(self.s.state(KEY)[0]["consolidated"], [])
         self.assertNotIn("C3_LANGUAGE", AdapterRegistry(self.s).report()["active"])
 
+    def test_new_ambiguous_final_after_stage_vetoes_fit(self):
+        t = CountingTrainer()
+        w, bid = self._stage(t)
+        self.s.message(self.r.session, self.event_id, "assistant",
+                       "Contradictory new FINAL.", "FINAL", self.metadata)
+        self.assertEqual(w.train(bid)["status"], "SOURCE_INVALID")
+        self.assertEqual(t.calls, [])
+
+    def test_changed_final_text_after_gate_vetoes_approval(self):
+        w, bid = self._stage(self._fake())
+        gated = w.train_and_gate(bid)
+        self.assertEqual(gated["status"], "PENDING_USER")
+        self._change_final(text="Changed after gate.")
+        with self.assertRaisesRegex(ValueError, "Quelle|Source"):
+            w.approve(bid)
+        self.assertEqual(w.batch(bid)["status"], "PENDING_USER")
+
     def test_unchanged_rated_answer_preserves_manual_approval(self):
         w, bid = self._stage(self._fake())
         self.assertEqual(w.train_and_gate(bid)["status"], "PENDING_USER")
