@@ -1,5 +1,10 @@
 """WP-T6 source-only RED-first ambiguous multi-step fast-skill routing tests."""
 import unittest
+import json
+import tempfile
+import time
+from pathlib import Path
+from unittest.mock import Mock
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -44,6 +49,38 @@ class MultiStepRouteReview(unittest.TestCase):
         mixed = skill("mixed", [{"route": "simple"}, {"tool": "lookup", "args": {}}])
         lib = SimpleNamespace(box=Box({"mixed": mixed}))
         self.assertEqual(skilllive.matches(lib, "weekly plan", skilllive.LIVE), [])
+
+
+class RuntimeFastpathIntegration(unittest.TestCase):
+    def test_conflicting_trusted_route_reenters_real_runtime_c_fast(self):
+        from v13.runtime import Runtime
+        from v13.operator import Operator
+        from v13.agi import hub
+        with tempfile.TemporaryDirectory() as tmp:
+            r = Runtime(Path(tmp))
+            try:
+                Operator(r).run(":observers off")
+                lib = hub(r).skills
+                lib.propose("conflict_weekly",
+                            [{"route": "detail"}, {"route": "gist"}],
+                            trigger="weekly plan")
+                lib.set_stage("conflict_weekly", "TRUSTED")
+                r._route = Mock(return_value=("detail", {"source": "BOOT_SCAFFOLD"}))
+                r.pool.get = Mock(return_value=SimpleNamespace(
+                    role="C3_LANGUAGE", last_metrics={"test_seam": True},
+                    generate=lambda *a, **k: iter(["ok"])))
+                r.learner.output_delta = Mock(return_value=None)
+                r.submit("Make my weekly plan")
+                deadline = time.monotonic() + 10
+                while not r.idle() and time.monotonic() < deadline:
+                    time.sleep(.005)
+                answer = r.last_answer()
+                self.assertIsNotNone(answer)
+                metadata = json.loads(answer["metadata"])
+                self.assertEqual(metadata["route"]["source"], "BOOT_SCAFFOLD")
+                r._route.assert_called_once()
+            finally:
+                r.close()
 
 
 if __name__ == "__main__":
