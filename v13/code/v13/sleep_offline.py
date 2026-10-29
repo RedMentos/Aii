@@ -41,16 +41,36 @@ def digest(store,checkpoint=None):
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
         if checkpoint:checkpoint()
-        recs,_=native_history(store,sess,'',TURNS_MAX)
+        # Process the oldest bounded window *after* the durable assistant
+        # high-water mark. The former latest-64 query plus until=global-last
+        # permanently skipped earlier turns after a long idle interval.
+        scanned=store.rows(
+            "SELECT id,event_id,role,status FROM messages "
+            "WHERE session_id=? AND id>? ORDER BY id LIMIT ?",
+            (sess,d['until'],2*TURNS_MAX))
+        highwater=d['until']
+        for i in range(0,len(scanned)-1,2):
+            u,a=scanned[i:i+2]
+            # Never pass an incomplete/streaming answer; it may become FINAL.
+            # Settled failures and revoked sources can be skipped, but not
+            # promoted to digest entries (native_history validates lineage).
+            if (u['role']!='user' or a['role']!='assistant'
+                    or u['event_id']!=a['event_id']
+                    or u['status']!='FINAL'
+                    or a['status'] not in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED')):
+                break
+            highwater=a['id']
+        if highwater<=d['until']:continue
+        recs,_=native_history(store,sess,'',TURNS_MAX,after_id=d['until'])
         pairs={}
         for m in recs:pairs.setdefault(m['event_id'],{})[m['role']]=m
-        new=[p for p in pairs.values() if p['assistant']['id']>d['until']]
+        new=[p for p in pairs.values() if p['assistant']['id']<=highwater]
         for p in sorted(new,key=lambda p:p['assistant']['id']):
             u,us,uok=compress(p['user']['text'],TURN_CAP);a,as_,aok=compress(p['assistant']['text'],TURN_CAP)
             d['entries'].append({'event_id':p['user']['event_id'],'user':u if uok or len(u)<=TURN_CAP*2 else u[:TURN_CAP*2],'answer':a if aok or len(a)<=TURN_CAP*2 else a[:TURN_CAP*2],
                                  'exact':us+as_,'msg':p['assistant']['id']})
             out['turns']+=1;out['compressed']+=int(uok)+int(aok)
-        d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=r['last'];out['sessions']+=1
+        d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=highwater;out['sessions']+=1
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 
