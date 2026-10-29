@@ -35,6 +35,14 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def file_sha(path):
+    h = hashlib.sha256()
+    with Path(path).open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
 def canonical(obj):
     return json.dumps(obj, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=False, allow_nan=False).encode("utf-8")
@@ -101,7 +109,7 @@ def source_admission(master):
     p = Path(master)
     for name, expected in MASTER_SHA.items():
         f = p / name
-        if f.is_symlink() or sha(f.read_bytes()) != expected:
+        if f.is_symlink() or file_sha(f) != expected:
             raise ValueError("QAD FP32 source SHA256 mismatch: " + name)
     return MASTER_SHA["model.safetensors"]
 
@@ -172,7 +180,7 @@ def run_pilot(cohort, master, work, budget_seconds):
             or not math.isfinite(metrics["final_ce"])):
         raise ValueError("P2X pilot training/export metrics RED")
     adapter = Path(result["artifact"])
-    if not adapter.is_file() or sha(adapter.read_bytes()) != result.get("hash"):
+    if not adapter.is_file() or file_sha(adapter) != result.get("hash"):
         raise ValueError("P2X pilot exported GGUF adapter hash RED")
     if source_admission(master) != base_sha:
         raise ValueError("P2X pilot source base-weight drift RED")
