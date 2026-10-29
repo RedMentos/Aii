@@ -1,0 +1,53 @@
+{
+  "schema": "v13.run137.age_evidence_id_preflight_review.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "codex/age-evidence-id-preflight-20261029; isolated software-only",
+  "parent_pr": 1032,
+  "parent_sha": "fe36d3be24256c380c81812ec9f7f8ba1f585740",
+  "parent_raw": {
+    "run": 40815936157,
+    "zip_sha256": "6c004e3fd20a2d2456d4b8c2bb8b5b7622cd1ab554854e0d9b0408728b3cc103",
+    "crc": "CLEAN",
+    "sha256sums": "16/16",
+    "exits": "ALL_ZERO",
+    "focused": "25 PASS",
+    "full": "EXIT_0",
+    "privacy": "CLEAN"
+  },
+  "prereg_commit": "684c405df741074c2decbba83f2856896e1721fc",
+  "prereg_blob": "42ada155c675f8d9d5a6a151d805ab0ebe747ad7",
+  "source_blob": "5ef987673ac10f1f790306bab47b9ef310a6a5de",
+  "test_blob": "a2b577f5841137494dadf8a546aa2fba30dd9669",
+  "observed_issue": "Run131 finite wrapper does not validate evidence_id; truthy nonstring IDs can be durably persisted and later quarantined by Run132.",
+  "changes": [
+    "Opt-in evidence_id preflight rejects nonempty-string contract violations before any Store write",
+    "Store-backed negative reproduction, invalid input atomicity, valid/duplicate/restart/freeze and finite delegation tests"
+  ],
+  "software_ci": {
+    "status": "PENDING",
+    "run_id": null,
+    "focused": "PENDING",
+    "full": "PENDING",
+    "privacy": "PENDING",
+    "raw": "PENDING"
+  },
+  "model_calls": 0,
+  "production_runtime_modified": false,
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Wait for exact-head Run137 GitHub Actions on codex/age-evidence-id-preflight-20261029, download original raw ZIP, verify HEAD/CRC/SHA256SUMS, all exit files, focused/full/privacy/diff, then independently review counterexamples and publish review-only PR; preserve RED.",
+  "prerequisites": [
+    "No production AgeControl/runtime edit",
+    "No registered model/source/seed/cohort changes",
+    "No native/Redmi authority",
+    "Do not use rejected anyone-writable Drive"
+  ]
+}
