@@ -1,0 +1,44 @@
+{
+  "schema": "v13.run102.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29T00:53:00Z",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run102-source-exact-restore-20261029",
+  "pr": 1006,
+  "base_pr": 1003,
+  "base_head": "8dcec32c4da3c992ebca9d038fabba3009bdda8b",
+  "prereg_commit_first": "27a2eb752060d05d5507706e5ad25c6e2c164eb0",
+  "source_commit": "6fd2967001176823be7577c4afad21149a0f54b7",
+  "test_commit": "3f039794b8d2bec6661ee162d3f81013b97e3351",
+  "workflow_commit": "a7ee62a0153ca121a2456fe9d25504362e1d666f",
+  "blobs": {
+    "source_exact": "957c63a6286572ff1a396be9ec9e000e7656af8f",
+    "test": "8d3ba898f4242a2fedb9d0ec6f2cdcdff0e41df5",
+    "prereg": "5a569e81fa329bf80908b97bc90205b196ced095",
+    "workflow": "874f254ebe94799b4d338fad0e8537c67f37a28b",
+    "backup_frozen": "409c4e13ba0754364d708e4dbe803bd740954b69",
+    "store_frozen": "0779d986fb8aee8aa01c5df5f656889d4bd56348"
+  },
+  "status": "REVIEW_BRANCH_PUSHED; CI_SOURCE_AND_TESTS_PENDING",
+  "native_evidence": "NONE",
+  "local_test_execution": "NOT_AVAILABLE; GitHub Actions push workflow pending",
+  "change": "standalone source_exact.main calls recover_startup(home) before BudgetContext/Store; refuses invalid journal/lock",
+  "tests": [
+    "real F1/F5 source exact baseline",
+    "invalid journal path escape fail before Store, DB SHA unchanged",
+    "valid no-op journal recovery before source read",
+    "live coordinator lock refuses",
+    "missing home no initialization"
+  ],
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect exact latest PR #1006 head and Actions workflow v13-run102-source-exact-restore.yml; download original raw ZIP, verify HEAD/source blobs/CRC/SHA256SUMS, seven exits, focused/full tests, privacy/diff. Preserve original RED. If GREEN, private backup and independent review; consider Run98/Run99 integration only after their own GREEN.",
+  "remaining_execution_budget": "UNKNOWN"
+}
