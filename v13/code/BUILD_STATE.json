@@ -2968,7 +2968,13 @@
     },
     "full_suite": {
       "run": 40955400194,
-      "status": "PENDING_NOT_CLAIMED"
+      "head": "ac7fdfcec7a5967fc67b57475761a9d61c7801cf",
+      "status": "RED_6_FAIL_43_ERROR_28_SKIPPED",
+      "tests": 3266,
+      "zip_sha256": "0de0ebb0e161ae6b965a480f120ece072f757b92dfb6155543eb3a13b34baea6",
+      "inner_hashes": "18/18",
+      "private_backup_byte_exact": true,
+      "causes": "27 RUN50_INVALID_RECORD_COUNT, 8 missing events table, 4 torch unavailable, 2 frozen Run34/Run37 pins; other original failures retained"
     },
     "private_backup": "/V13-Checkpoints/2026-10-29/Run10-C3StreamBounds/",
     "private_backup_red_green_byte_exact": true,
