@@ -91,13 +91,39 @@ class EmaAdapter:
         class _Swap:
             def __enter__(self):
                 import torch
+                # A failed __enter__ never gets __exit__: preflight every
+                # shadow before the first student parameter is overwritten.
+                if len(ema.shadow)!=len(ema.params):
+                    raise ValueError('EMA swap parameter count mismatch')
+                for shadow,param in zip(ema.shadow,ema.params):
+                    if (shadow.shape!=param.shape or shadow.dtype!=param.dtype
+                            or shadow.device!=param.device):
+                        raise ValueError('EMA swap parameter metadata mismatch')
                 self.keep=[p.detach().clone() for p in ema.params]
                 with torch.no_grad():
-                    for s,p in zip(ema.shadow,ema.params):p.copy_(s)
+                    try:
+                        for shadow,param in zip(ema.shadow,ema.params):
+                            param.copy_(shadow)
+                    except BaseException:
+                        # Unexpected failure on a later tensor must not leave
+                        # an earlier student tensor overwritten with EMA data.
+                        errors=[]
+                        for original,param in zip(self.keep,ema.params):
+                            try:param.copy_(original)
+                            except BaseException as exc:errors.append(exc)
+                        if errors:
+                            raise RuntimeError('EMA swap entry rollback failed') from errors[0]
+                        raise
+                return self
             def __exit__(self,*exc):
                 import torch
+                errors=[]
                 with torch.no_grad():
-                    for k,p in zip(self.keep,ema.params):p.copy_(k)
+                    for original,param in zip(self.keep,ema.params):
+                        try:param.copy_(original)
+                        except BaseException as err:errors.append(err)
+                if errors:
+                    raise RuntimeError('EMA swap exit restore failed') from errors[0]
                 return False
         return _Swap()
 
