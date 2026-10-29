@@ -5,6 +5,7 @@ on:
     branches: [codex/v13-worldjepa-age-crosschain-review-20261029]
     paths:
       - '.github/workflows/v13-worldjepa-age-crosschain-review-20261029.yml'
+      - 'v13/code/tests/test_worldjepa_age_skill_crosschain_20261029.py'
 
 permissions:
   contents: read
