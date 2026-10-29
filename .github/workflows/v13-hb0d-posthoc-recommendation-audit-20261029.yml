@@ -1,0 +1,82 @@
+name: V13 HB0d posthoc recommendation coverage audit (no native calls)
+on:
+  push:
+    branches: [codex/v13-hb0d-posthoc-recommendation-audit-20261029]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-hb0d-posthoc-review
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify sources, synthetic tests, original native raw, posthoc audit, full suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb0d-posthoc"
+          parent="$RUNNER_TEMP/v13-hb0d-parent"
+          mkdir -p "$e" "$parent"
+          trap '(cd "$e"; find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)' EXIT
+          git rev-parse HEAD > "$e/HEAD.txt"
+          check() { [ "$(git hash-object "$2")" = "$1" ]; }
+          {
+            check 4cc116aba3b4aa81f152105ab121e54cf3e46500 v13/code/docs/proofs/continuation-20261029/HB0D_POSTHOC_RECOMMENDATION_AUDIT_PLAN.md
+            check 72c9132c6ffe44c0a389e6a2de288dcd175b1c6c v13/code/scripts/hb0d_posthoc_recommendation_audit.py
+            check f381138e91035af7dd50ef38f4b3932674bf2459 v13/code/tests/test_hb0d_posthoc_recommendation_audit.py
+            check 41e388c7d34074dfcb86f3cb4f5423ab4b9c8af6 v13/code/scripts/hb0_c3_receiver_native_pilot.py
+            check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py
+            check ea933b53af8503f5e37d64560e50272ed69288d5 v13/code/docs/proofs/continuation-20261029/HB0_C3_RECEIVER_NATIVE_PREREG.md
+            check 218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+            echo HB0D_SOURCE_PINS_OK
+          } 2>&1 | tee "$e/SOURCE_RAW.log"
+          python3 -m venv "$RUNNER_TEMP/v13-hb0d-venv"
+          py="$RUNNER_TEMP/v13-hb0d-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/DEPS_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/hb0d_posthoc_recommendation_audit.py v13/code/tests/test_hb0d_posthoc_recommendation_audit.py
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_hb0d_posthoc_recommendation_audit tests.test_hb0_c3_receiver_native_pilot) > "$e/FOCUSED_RAW.log" 2>&1
+          gh run download 40829097897 -n v13-hb0c-native-40829097897-17c989f1cf2f7f5ca25d388afa47044d6f69898b -D "$parent" > "$e/DOWNLOAD_RAW.log" 2>&1
+          python3 - "$parent" > "$e/VERIFY_RAW.log" 2>&1 <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          assert (root/'HEAD.txt').read_text().strip()=='17c989f1cf2f7f5ca25d388afa47044d6f69898b'
+          lines=(root/'SHA256SUMS.txt').read_text().splitlines()
+          assert len(lines)>=20
+          for line in lines:
+              digest,path=line.split('  ',1)
+              assert hashlib.sha256((root/path.removeprefix('./')).read_bytes()).hexdigest()==digest,path
+          assert hashlib.sha256((root/'evidence/RAW.json').read_bytes()).hexdigest()=='dbaf4fd299138c21c5a6f2de4bd52f092abc73f1f165c4ae447c962799e7b638'
+          assert hashlib.sha256((root/'evidence/SCORE.json').read_bytes()).hexdigest()=='8dc551c43c5223581b2eaf8116107f8e6aea8679586817aa4a22993d5056b971'
+          for name in ('SOURCE','PARENT_DOWNLOAD','PARENT_VERIFY','RESOURCE','INSTALL_DEPS','COMPILE','FOCUSED','BOOTSTRAP','ADMISSION','NATIVE','VERIFY','PRIVACY','DIFF'):
+              assert (root/(name+'_EXIT.txt')).read_text().strip()=='0',name
+          print('HB0D_PARENT_EXACT_HEAD_CLOSED_NATIVE_ARTIFACT_SHA256_OK')
+          PY
+          (cd v13/code && "$py" -m scripts.hb0d_posthoc_recommendation_audit --evidence-dir "$parent/evidence" --out "$e/HB0D_REPORT.json") > "$e/AUDIT_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=10s 12m "$py" -m unittest discover -s tests -q) > "$e/FULL_RAW.log" 2>&1
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 17c989f1cf2f7f5ca25d388afa47044d6f69898b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          grep -q CLEAN "$e/PRIVACY_RAW.log"
+          git diff --check 17c989f1cf2f7f5ca25d388afa47044d6f69898b HEAD
+          echo HB0D_POSTHOC_ONLY_ALL_CHECKS_GREEN > "$e/STATUS.txt"
+      - name: Preserve report, checks and RED attempts (never parent raw)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb0d-posthoc-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb0d-posthoc/
+          if-no-files-found: error
+          retention-days: 30
