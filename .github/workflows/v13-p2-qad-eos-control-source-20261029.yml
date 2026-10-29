@@ -1,0 +1,26 @@
+name: V13 P2 QAD EOS-control source-only preflight
+on:
+  push:
+    branches: [codex/v13-p2-eos-sampling-control-20261029]
+    paths:
+      - 'v13/code/scripts/p2_qad_eos_control.py'
+      - 'v13/code/tests/test_p2_qad_eos_control.py'
+      - '.github/workflows/v13-p2-qad-eos-control-source-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Compile and nine fail-closed source-only tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile v13/code/scripts/p2_qad_eos_control.py v13/code/tests/test_p2_qad_eos_control.py
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2_qad_eos_control.py' -v
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9be1c524d1ab813be97b80873b0ba223372f7fd0 --head HEAD --no-worktree
+          git diff --check 9be1c524d1ab813be97b80873b0ba223372f7fd0 HEAD
