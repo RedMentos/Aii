@@ -45,22 +45,44 @@ def targets(meta,coalition,memory_ids):
     return out
 
 def after_turn(r,e,meta,status,focal_run):
-    """Record outcome labels for the head decisions of a FINAL turn (never changes the answer)."""
+    """Record each FINAL event/component self-label once; retries preserve later corrections."""
     if status!='FINAL' or not focal_run:return {}
     try:
-        t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or []);rows=[]
+        t=targets(meta,focal_run.get('coalition') or [],meta.get('memory_ids') or [])
+        candidates=[]
         for comp,value in t.items():
             d=_decision(r.store,e['event_id'],comp)
             if not d:continue
-            ref=r.store.source(value,AUTHORITY)
-            rows.append({'event_id':e['event_id'],'component':comp,'value':value,'baseline':d['baseline'],'decision_packet_id':d['packet_id'],
-                         'context_sha256':d['context_ref']['sha256'],'context_revision':d['context_revision'],'source_id':ref['source_id']})
-        if rows:
-            def f(st):st['labels']=(st['labels']+rows)[-MAX:]
-            _mutate(r.store,f);r.store.log('jef_outcome_labels',e['event_id'],{'n':len(rows)})
-        return {x['component']:x['value'] for x in rows}
+            # No source allocation until a missing label has been identified.
+            candidates.append({'event_id':e['event_id'],'component':comp,'value':value,
+                               'baseline':d['baseline'],'decision_packet_id':d['packet_id'],
+                               'context_sha256':d['context_ref']['sha256'],
+                               'context_revision':d['context_revision']})
+        if not candidates:return {}
+        wanted={x['component'] for x in candidates}
+        for attempt in (0,1):
+            st,v=r.store.state(KEY)
+            st=st or {'mode':'record','labels':[]}
+            existing={x['component']:x for x in st.get('labels',[])
+                      if x['event_id']==e['event_id'] and x['component'] in wanted}
+            fresh=[x for x in candidates if x['component'] not in existing]
+            if not fresh:
+                return {k:x['value'] for k,x in existing.items()}
+            # Optimistic CAS prevents duplicate retained labels. In a rare CAS
+            # collision an unused source may remain, never an extra label.
+            for x in fresh:
+                x['source_id']=r.store.source(x['value'],AUTHORITY)['source_id']
+            st['labels']=(st.get('labels',[])+fresh)[-MAX:]
+            try:r.store.set_state(KEY,st,expected=v)
+            except ValueError:
+                if attempt:raise
+                continue
+            r.store.log('jef_outcome_labels',e['event_id'],{'n':len(fresh)})
+            existing.update({x['component']:x for x in fresh})
+            return {k:x['value'] for k,x in existing.items()}
     except Exception as exc:
-        r.store.log('jef_outcome_unavailable',e['event_id'],{'error':type(exc).__name__});return {}
+        r.store.log('jef_outcome_unavailable',e['event_id'],{'error':type(exc).__name__})
+        return {}
 
 def on_route_correction(store,event_id,value):
     """A disagreeing route correction on a skill turn turns its skill outcome label into 'none'."""
