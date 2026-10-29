@@ -67,7 +67,7 @@ jobs:
             for stage in UNZIP INNER_SHA ORIGINAL_HEAD ORIGINAL_EXITS; do echo SKIPPED > "$e/${stage}_EXIT.txt"; done
           fi
           if [ "$(cat "$e/ORIGINAL_EXITS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests python3 -m scripts.p2x_calibration_independent_audit --evidence "$work/original/evidence") > "$e/INDEPENDENT_RAW.json" 2>&1
+            (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m scripts.p2x_calibration_independent_audit --evidence "$work/original/evidence") > "$e/INDEPENDENT_RAW.json" 2>&1
             echo "$?" > "$e/INDEPENDENT_EXIT.txt"
           else echo SKIPPED_ORIGINAL_RED > "$e/INDEPENDENT_RAW.json"; echo SKIPPED > "$e/INDEPENDENT_EXIT.txt"; fi
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 7174040ad6ab005f5a75704d796ce194a0bd2fe6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
