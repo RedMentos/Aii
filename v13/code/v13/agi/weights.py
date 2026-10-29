@@ -218,6 +218,36 @@ class WeightConsolidation:
                         dep['modality']!='text'):
                     raise ValueError('Invalid rated-answer dependency')
                 self.s.read_source(dep)
+            # The explicit quality label and the exact FINAL answer are
+            # mutable Store records. Recheck them at both use boundaries,
+            # not just at rated_candidates() construction time.
+            from ..inputs import ratings
+            eid=item.get('event_id')
+            if type(eid) is not str or type(item.get('target')) is not str:
+                raise ValueError('Invalid rated-answer identity')
+            current=[r for r in ratings(self.s)
+                     if r.get('event_id')==eid and r.get('origin')=='EXPLICIT_NOTE']
+            score=item.get('rating')
+            if (len(current)!=1 or type(score) is not int or score<RATED_MIN
+                    or type(current[0].get('score')) is not int
+                    or current[0]['score']!=score):
+                raise ValueError('Rated-answer human approval changed')
+            event=self.s.one("SELECT session_id FROM events WHERE id=?", (eid,))
+            if not event:
+                raise ValueError('Rated-answer event missing')
+            answers=self.s.rows(
+                "SELECT text,metadata FROM messages WHERE event_id=? AND session_id=? "
+                "AND role='assistant' AND status='FINAL' ORDER BY id LIMIT 2",
+                (eid,event['session_id']))
+            if len(answers)!=1 or answers[0]['text']!=item['target']:
+                raise ValueError('Rated-answer FINAL changed')
+            meta=json.loads(answers[0]['metadata'])
+            if type(meta) is not dict:
+                raise ValueError('Rated-answer metadata invalid')
+            live=meta.get('context_source_refs')
+            if live is None:live=[]
+            if type(live) is not list or live!=deps:
+                raise ValueError('Rated-answer dependency metadata changed')
 
     def train(self,bid,cancel=None,deadline=None):
         b=self.batch(bid)
