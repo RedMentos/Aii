@@ -113,6 +113,18 @@ def _answer_uses_euro_source(answer, source):
     expected = PROJECT.search(topic)
     if not match or not expected or not isinstance(answer, str):
         return False
+    # An exact source number inside a negation, uncertain answer, question or
+    # competing currency is not an affirmative sourced budget. Reject the
+    # whole generated answer even when every numeral equals the source value.
+    # This is a conservative veto, not a general semantic truth verifier.
+    if ("?" in answer or re.search(
+            r"\\b(?:not|no|never|wrong|incorrect|unverified|unknown|uncertain|"
+            r"cannot|nicht|kein(?:e|en|er|es)?|falsch|unbekannt|unbestätigt)\\b",
+            answer, flags=re.I)
+            or re.search(
+                r"(?<!\\w)(?:dollars?|USD|CAD|pounds?|GBP|yen|JPY|CHF|francs?)(?!\\w)|[$£¥]",
+                answer, flags=re.I)):
+        return False
     amount = source["value"].split(" ", 1)[0]
     # Exact amount + Euro; never accept a decimal/grouped or negative variant.
     if not re.search(r"(?<![-\d])" + re.escape(amount)
