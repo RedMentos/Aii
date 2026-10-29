@@ -18,6 +18,7 @@ class FakeReadOnlyView:
             self.routes[event_id] = world_model.ACTIONS[i % 4]
             self._rows.append({
                 'id': 'action-%04d' % i, 'event_id': event_id,
+                'generation_id': 'synthetic-gen-%04d' % i,
                 'status': 'FINAL',
                 'expected': json.dumps({'forecast': {
                     'input_chars': 100 + i, 'resource_state': 'NORMAL'}}),
@@ -31,7 +32,22 @@ class FakeReadOnlyView:
         self.read_calls += 1
         if not sql.lstrip().upper().startswith('SELECT '):
             raise AssertionError('read-only SELECT expected')
-        return list(reversed(self._rows))
+        if 'FROM actions a JOIN events e' in sql:
+            return list(reversed(self._rows))
+        if "FROM packets WHERE kind='ActionSelection'" in sql:
+            event_id, generation_id, action_created = args
+            match = next((row for row in self._rows
+                          if row['event_id'] == event_id
+                          and row['generation_id'] == generation_id
+                          and row['created'] > action_created - 1), None)
+            if match is None:
+                return []
+            return [{'payload': json.dumps({
+                'event_id': event_id,
+                'brain_generation_id': generation_id,
+                'stage': 'COMMIT',
+                'route_hint': self.routes[event_id]})}]
+        raise AssertionError('Unexpected synthetic SELECT')
 
     def one(self, sql, args=()):
         self.read_calls += 1
