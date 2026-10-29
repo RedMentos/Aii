@@ -3251,6 +3251,8 @@
       "private_byte_exact": true,
       "privacy": "CLEAN"
     },
+    "integration_report": "docs/proofs/continuation-20261029/BODYJEPA_DERANGEMENT_INTEGRATION_RESULT_20261029.md",
+    "integration_green": {"run": 40961078579, "head": "c5052795070ccf36b5273b4907562fd3220f51a0", "tests": "25/25 PASS", "zip_sha256": "100b3fce6c83e78bb475b3a69765c4d3b9ed9f973d5697d5d8688500424673d5", "inner_hashes": "24/24", "private_byte_exact": true, "non_native": true},
     "report": "docs/proofs/continuation-20261029/BODYJEPA_DERANGEMENT_BOUND_RESULT_20261029.md",
     "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
     "age0": "RECORD_ONLY",
