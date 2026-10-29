@@ -61,5 +61,19 @@ class DigestSessionFairness(unittest.TestCase):
         self.assertEqual(S.view(self.r.store, self.sessions[0], cap=10000)["entries"], 0)
 
 
+    def test_eight_stalled_sessions_cannot_starve_a_ninth_valid_session(self):
+        # Each stalled session has an unfinished older event and a later
+        # FINAL event. S7 must not repeatedly spend all eight slots on them.
+        for i, session in enumerate(self.sessions[:8]):
+            self.r.store.event(session, "Unfinished older request %d." % i)
+            self.turn(session, i)
+        valid = self.turn(self.sessions[8], 900)
+        self.assertEqual(S.digest(self.r.store)["turns"], 0)
+        self.assertEqual(S.digest(self.r.store)["turns"], 1)
+        st, _ = self.r.store.state(S.KEY)
+        self.assertEqual(st["sessions"][self.sessions[8]]["entries"][0]["event_id"],
+                         valid["event_id"])
+
+
 if __name__ == "__main__":
     unittest.main()
