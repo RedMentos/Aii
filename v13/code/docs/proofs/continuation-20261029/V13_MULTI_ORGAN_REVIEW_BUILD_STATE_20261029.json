@@ -25,18 +25,26 @@
       "pr": 1084,
       "source_blob": "d28036f8ede96d031ec38a608c76549936c21eea",
       "test_blob": "a7271a41e6b8fec7c8aeffa3c174f4de18e86363",
-      "status": "FOCUSED_PASS_FULL_DEPENDENCY_RED_RETRY_RUNNING",
+      "status": "GREEN_37_FOCUSED_3115_FULL_11_SKIPPED_SOFTWARE_ONLY",
       "red_first_run": 40866038357,
       "full_dependency_red_run": 40866180445,
-      "isolated_dependency_retry": 40866812715
+      "isolated_dependency_retry": 40866812715,
+      "green_run": 40866812715,
+      "green_head": "c80e855030b77c5b146918d5a3304ab368724039",
+      "artifact_sha256": "6884b2cdbd4495d9518eed8ae38d1b91408184da4fb8f497c04e4a334a4182f8",
+      "artifact_id": 12893529245
     },
     "self_world": {
       "pr": 1085,
       "source_blob": "072ae59d75c97d972433fedd3830002d2c8530ad",
       "test_blob": "3fc2068087861f1e044cd39101addae23cb68634",
-      "status": "RED_FIRST_REPRODUCED_RETRY_RUNNING",
+      "status": "GREEN_28_FOCUSED_3123_FULL_11_SKIPPED_SOFTWARE_ONLY",
       "red_first_run": 40866385792,
-      "isolated_dependency_retry": 40866860307
+      "isolated_dependency_retry": 40866860307,
+      "green_run": 40866860307,
+      "green_head": "52d8acc7b6706a78e1dd5e8fbc46a25e3e24cf3f",
+      "artifact_sha256": "d7011c9db572fd5b51a2863db6209a904cbcf50cc4954bd5a0f82da96563517c",
+      "artifact_id": 12894676804
     },
     "sleep_dream": {
       "pr": 1086,
@@ -91,6 +99,22 @@
       "crc": "CLEAN",
       "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_GREEN_40866865992_shaadcc91b3.zip",
       "byte_verified": true
+    },
+    {
+      "run": 40866812715,
+      "zip_sha256": "6884b2cdbd4495d9518eed8ae38d1b91408184da4fb8f497c04e4a334a4182f8",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_CONTEXT_GREEN_40866812715_sha6884b2cd.zip",
+      "byte_verified": true
+    },
+    {
+      "run": 40866860307,
+      "zip_sha256": "d7011c9db572fd5b51a2863db6209a904cbcf50cc4954bd5a0f82da96563517c",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SELF_BOOL_GREEN_40866860307_shad7011c9d.zip",
+      "byte_verified": true
     }
   ],
   "prerequisites": [
@@ -99,12 +123,12 @@
     "Do not run native/model jobs while unrelated active owners exist",
     "Redmi device unavailable; no device claim"
   ],
-  "next_command": "gh run view 40866812715 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866860307 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40867462246 --repo RedMentos/Aii --json status,conclusion,headSha; audit original ZIPs, backup byte-verify and update branch-scoped results; no gate promotion.",
+  "next_command": "gh run view 40867462246 --repo RedMentos/Aii --json status,conclusion,headSha; download exact original raw, audit SHA256SUMS/privacy/stage exits and private backup; then pursue disjoint P2 receiver native learning/Redmi prerequisites without gate promotion.",
   "open_questions": [
-    "Context and Self isolated dependency-pinned full software runs pending; Sleep GREEN",
+    "Three isolated organs GREEN software only; cross-organ integration PR #1087 run 40867462246 pending",
     "No real C3 source-composition utility improvement demonstrated",
     "No Redmi native sustained thermal/RSS/energy evidence",
-    "PRs are draft review branches, not production merged"
+    "PRs draft review branches, not production merged"
   ],
   "gates": {
     "age0": "RECORD_ONLY",
