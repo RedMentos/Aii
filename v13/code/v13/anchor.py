@@ -13,6 +13,7 @@ SHADOW (default): the policy is recorded in the batch, training uses the measure
 `:anchor active`, explicit human): the trainer's anchor_weight is scaled by m for that batch. Drift caps
 (WP-S5, guards.stability_envelope) are never relaxed by this module: a lower anchor must still pass the same gate.
 """
+import math
 from .common import dumps
 
 KEY='U5_ANCHOR';REVISION='u5-anchor-v1'
@@ -35,7 +36,21 @@ def stability(store,path='weights'):
         return float(Neuromod(store).gate(path)['meta']['features']['stability'])
     except Exception:return 0.
 
+def _unit_signal(value,name):
+    if (not isinstance(value,(int,float)) or isinstance(value,bool)
+            or not 0. <= value <= 1.):
+        raise ValueError(name+' must be a finite [0,1] numeric signal')
+    try:
+        result=float(value)
+    except (ValueError,OverflowError):
+        raise ValueError(name+' must be finite') from None
+    if not math.isfinite(result):
+        raise ValueError(name+' must be finite')
+    return result
+
 def policy(nov,stab,shared=True):
+    nov=_unit_signal(nov,'novelty')
+    stab=_unit_signal(stab,'stability')
     m=1+ANCHOR['protected_old_skill_weight']*stab-ANCHOR['new_domain_relaxation']*nov*(1-stab)
     floor=max(ANCHOR['pretrained_geometry_weight'],ANCHOR['shared_layer_priority'] if shared else 0.)
     reason='OLD_SKILL_PROTECTED' if m>1 else ('NEW_DOMAIN_RELAXED' if m<1 else 'NEUTRAL')
@@ -58,8 +73,19 @@ def for_batch(store,items,trainer):
     p=policy(novelty(store,items),stability(store),shared);p['mode']=mode(store)
     base=(cfg or {}).get('anchor_weight')
     p['base_anchor_weight']=base
-    if isinstance(base,(int,float)) and not isinstance(base,bool):
-        p['proposed_anchor_weight']=round(base*p['multiplier'],4)
+    if base is not None:
+        if not isinstance(base,(int,float)) or isinstance(base,bool) or base < 0:
+            raise ValueError('anchor_weight must be a finite nonnegative number')
+        try:
+            base_float=float(base)
+        except (ValueError,OverflowError):
+            raise ValueError('anchor_weight outside finite numeric range') from None
+        if not math.isfinite(base_float):
+            raise ValueError('anchor_weight must be finite')
+        proposed=base_float*p['multiplier']
+        if not math.isfinite(proposed):
+            raise ValueError('proposed anchor_weight must be finite')
+        p['proposed_anchor_weight']=round(proposed,4)
         if p['mode']=='ACTIVE':p['applied']=True;return p,{'anchor_weight':p['proposed_anchor_weight']}
     p['applied']=False;return p,None
 
