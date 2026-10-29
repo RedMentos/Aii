@@ -45,6 +45,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/v13-hb0d-venv"
           py="$RUNNER_TEMP/v13-hb0d-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/DEPS_RAW.log" 2>&1
           python3 -m compileall -q v13/code/scripts/hb0d_posthoc_recommendation_audit.py v13/code/tests/test_hb0d_posthoc_recommendation_audit.py
           (cd v13/code && timeout --signal=TERM --kill-after=5s 180s "$py" -m unittest -v tests.test_hb0d_posthoc_recommendation_audit tests.test_hb0_c3_receiver_native_pilot) > "$e/FOCUSED_RAW.log" 2>&1
           gh run download 40829097897 -n v13-hb0c-native-40829097897-17c989f1cf2f7f5ca25d388afa47044d6f69898b -D "$parent" > "$e/DOWNLOAD_RAW.log" 2>&1
