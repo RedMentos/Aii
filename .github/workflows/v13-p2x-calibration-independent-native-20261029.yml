@@ -1,0 +1,108 @@
+name: V13 P2X independent replay of original 360 native calibration calls
+on:
+  push:
+    branches: [assistant/v13-p2x-calibration-independent-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2x-calibration-independent-native-20261029.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay-original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch exact original Actions artifact and independently replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-calibration-original-independent"
+          work="$RUNNER_TEMP/v13-p2x-calibration-original-independent-work"
+          mkdir -p "$e" "$work"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/proofs/continuation-20261029/P2X_CALIBRATION_INDEPENDENT_AUDIT_PREREG.md > "$e/PREREG_BLOB.txt"
+          test "$(cat "$e/PREREG_BLOB.txt")" = a3f9d89c9e8ae1231294df78d0a1f728f92e1bc5
+          echo "$?" > "$e/SOURCE_EXIT.txt"
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12892287362/zip" \
+            --output "$work/original.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            printf '%s  %s\n' 0cef7a72655ba4e58c15ca52b0189e2bdd0b90c3f58daa69e22da2b12259d9d9 "$work/original.zip" | sha256sum -c > "$e/ZIP_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/ZIP_SHA_EXIT.txt"
+            unzip -t "$work/original.zip" > "$e/CRC_RAW.log" 2>&1
+            echo "$?" > "$e/CRC_EXIT.txt"
+          else echo SKIPPED > "$e/ZIP_SHA_EXIT.txt"; echo SKIPPED > "$e/CRC_EXIT.txt"; fi
+          if [ "$(cat "$e/ZIP_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/CRC_EXIT.txt")" = 0 ]; then
+            mkdir -p "$work/original"
+            unzip -q "$work/original.zip" -d "$work/original" > "$e/UNZIP_RAW.log" 2>&1
+            echo "$?" > "$e/UNZIP_EXIT.txt"
+            (cd "$work/original" && sha256sum -c SHA256SUMS) > "$e/INNER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/INNER_SHA_EXIT.txt"
+            test "$(cat "$work/original/HEAD.txt")" = 977d1b3bd8b1d54bd672ae30948a14e734e4463c
+            echo "$?" > "$e/ORIGINAL_HEAD_EXIT.txt"
+            python3 - "$work/original" > "$e/ORIGINAL_EXITS_RAW.log" 2>&1 <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          stages=('SOURCE','RESOURCE','VENV','DEPS','PIP_CHECK','FOCUSED','INSTALL','NATIVE','VERIFY','PRIVACY','DIFF')
+          for stage in stages:
+              value=(root/(stage+'_EXIT.txt')).read_text().strip()
+              print(stage,value)
+              assert value=='0'
+          PY
+            echo "$?" > "$e/ORIGINAL_EXITS_EXIT.txt"
+          else
+            for stage in UNZIP INNER_SHA ORIGINAL_HEAD ORIGINAL_EXITS; do echo SKIPPED > "$e/${stage}_EXIT.txt"; done
+          fi
+          if [ "$(cat "$e/ORIGINAL_EXITS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests python3 -m scripts.p2x_calibration_independent_audit --evidence "$work/original/evidence") > "$e/INDEPENDENT_RAW.json" 2>&1
+            echo "$?" > "$e/INDEPENDENT_EXIT.txt"
+          else echo SKIPPED_ORIGINAL_RED > "$e/INDEPENDENT_RAW.json"; echo SKIPPED > "$e/INDEPENDENT_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7174040ad6ab005f5a75704d796ce194a0bd2fe6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 7174040ad6ab005f5a75704d796ce194a0bd2fe6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve independent original raw audit even if RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-calibration-original-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-calibration-original-independent/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce independent original ZIP and raw replay
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-calibration-original-independent"
+          for stage in SOURCE DOWNLOAD ZIP_SHA CRC UNZIP INNER_SHA ORIGINAL_HEAD ORIGINAL_EXITS INDEPENDENT PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original evidence preserved"
+              tail -30 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/INDEPENDENT_RAW.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='INDEPENDENT_RAW_REPLAY_NO_GATE'
+          assert r['rows']==360 and r['native_calls']==360
+          assert r['step2_status']=='UTILITY_FAIL' and r['jepa_weight']==0
+          assert r['whole_system_complete'] is False
+          print('P2X_CALIBRATION_INDEPENDENT_ORIGINAL_NATIVE_NO_GATE')
+          PY
