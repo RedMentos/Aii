@@ -62,7 +62,7 @@ def hashed_latent(text,dim=DIM):
 
 def empty():
     return {'revision':REVISION,'mode':'SHADOW','w':[0.]*len(FEATURES),'updates':0,'query':{},'fields':{},'observer':{},
-            'turns':[],'scaffold_agree':{'n':0,'agree':0}}
+            'turns':[],'outcome_receipts':[],'scaffold_agree':{'n':0,'agree':0}}
 
 def features(offer,goal,coalition_ids=(),verdicts=None,reentry=False):
     o=offer['offer'];verdicts=verdicts or {}
@@ -187,6 +187,10 @@ class JEFBridge:
                     q=st['fields'].setdefault(role+'|'+f,{'with':[0.,0],'without':[0.,0]});k='with' if f in fields else 'without'
                     q[k][0]+=max(ur);q[k][1]+=1
             st['turns']=(st['turns']+[{'event_id':eid,'rows':[{k:r[k] for k in ('id','role','x','selected')} for r in rows],'queries':queries or {},'trigger':trig}])[-TURNS_KEEP:]
+            # Human feedback receipts follow the bounded training window.
+            kept={t['event_id'] for t in st['turns']}
+            st['outcome_receipts']=[x for x in st.get('outcome_receipts',[])
+                                    if x['event_id'] in kept]
             return learned,preds
         learned,preds=self._mutate(fn)
         rec=self.recommend_query(view)
@@ -232,9 +236,20 @@ class JEFBridge:
         def fn(st):
             t=next((x for x in st['turns'] if x['event_id']==event_id),None)
             if not t:return 0
+            receipts=st.setdefault('outcome_receipts',[])
+            # A repeated note/operator delivery is not a second human label.
+            # Check and write the receipt atomically with the SGD update.
+            if any(x['event_id']==event_id and x['source']==source
+                   and x['utility']==u for x in receipts):
+                return 0
             n=0
             for r in t['rows']:
                 if r['selected']:self._sgd(st,r['x'],u,sc*LR[source]);n+=1
+            if n:
+                receipts[:]=[x for x in receipts
+                             if not (x['event_id']==event_id
+                                     and x['source']==source)]
+                receipts.append({'event_id':event_id,'source':source,'utility':u})
             return n
         n=self._mutate(fn)
         if n:self._signal('offer',event_id,'human_correction',task_success=u)

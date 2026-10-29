@@ -1,0 +1,54 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:13:30Z",
+  "branch": "codex/v13-jef-feedback-dedupe-20261030-auto11b",
+  "pr": 1168,
+  "base_pr": 1167,
+  "base_commit": "8c9ff4b0a86371bff8d6468c0e2b1f21247c85bf",
+  "verified_ci_commit": "6dcd4ef4c7125b7f09a0c3a3c9ec457e620938ad",
+  "ci_run": 40971597320,
+  "ci_conclusion": "success",
+  "focused_tests": 24,
+  "raw_artifact_id": 12940118129,
+  "raw_zip_sha256": "fd8a861713f40cf6fd40202d48dfc367d9074e4ca35276eae029e81cea27bc3d",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 18,
+  "source_blobs": {
+    "v13/code/v13/jefbridge.py": "628d650e620670d437bfe35f1b211cea081d8204",
+    "v13/code/tests/test_jef_feedback_dedupe_20261030.py": "7067f03decb14923ee087b9d7356e9c9aa99cdc5",
+    ".github/workflows/v13-jef-feedback-dedupe-20261030.yml": "dd9b882c7d5544c775375b6ea48a44758b3fac5f"
+  },
+  "feature": "Bounded same-event/source identical human feedback receipts prevent repeated SGD updates",
+  "checks": {
+    "focused_unittest": "PASS",
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-jef-feedback-dedupe-20261030-auto11b",
+  "open_questions": [
+    "Revised ratings currently add a corrective online SGD step; they do not mathematically undo the prior update, despite inputs.record_rating latest-per-origin storage.",
+    "Full unfiltered suite after these two packages has not yet been replayed; previous frozen historical Run34/37 failures remain.",
+    "Native/Redmi and all Canon gates still open."
+  ],
+  "next_command": "Create review-only unfiltered full-suite CI child of PR1168; pin isolated CPU torch 2.5.1, Transformers 4.44.2, PEFT 0.13.2 and NumPy 2.2.6, run python -m unittest discover -s tests -p 'test_*.py' without exclusions; retain known historical failures and raw.",
+  "prerequisites": [
+    "Fresh remote head check and no owner collision",
+    "Preregister full-suite evidence scope",
+    "No gate promotion from focused tests"
+  ]
+}
