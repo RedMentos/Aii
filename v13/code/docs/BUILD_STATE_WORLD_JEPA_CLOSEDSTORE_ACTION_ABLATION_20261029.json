@@ -1,0 +1,131 @@
+{
+  "schema": "v13.review_build_state.world_jepa_closedstore_action_ablation.v1",
+  "date_utc": "2026-10-29",
+  "scope": "review-only PR1131 child of PR1130; no production merge",
+  "owner": {
+    "branch": "codex/v13-worldjepa-closedstore-action-ablation-20261029-auto10q",
+    "pr": 1131,
+    "parent_pr": 1130,
+    "parent_commit": "e15f46a5212dceeeac4361a68ba982bcb00419a4",
+    "owned_paths": [
+      "v13/code/scripts/world_jepa_closedstore_heldout_action_probe_20261029.py",
+      "v13/code/tests/test_world_jepa_closedstore_heldout_action_probe_20261029.py",
+      ".github/workflows/v13-world-jepa-closedstore-action-ablation-20261029.yml",
+      "v13/code/docs/WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_PREREG_20261029.md",
+      "v13/code/docs/WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_OPERATOR_20261029.md",
+      "v13/code/docs/BUILD_STATE_WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_20261029.json"
+    ]
+  },
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "prereg": {
+    "commit": "055a1fcb6a2ed77e1c7bcdab5947b9d5c52400b3",
+    "path": "v13/code/docs/WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_PREREG_20261029.md"
+  },
+  "code": {
+    "source_commit": "013e48221168e2b7d90074393e21bd362fc19a96",
+    "source_blob": "a247c73e021fc0305808db73871b00395e6aa765",
+    "test_commit": "15b45ad93dc864ee88f1a94e1378c0397c7910e8",
+    "test_blob": "35d8da85b2494e211ad169ce64669efc9e63b36a",
+    "existing_kernel_changed": false,
+    "live_runtime_changed": false
+  },
+  "focused_green": {
+    "run": 40928540323,
+    "head": "2538084b8e5fd9552d4b4cb2aa48bc5188fd7f10",
+    "tests": "24/24 PASS; real SQLite synthetic fixture, two-seed NumPy fit and frozen readout",
+    "artifact": 12920749031,
+    "zip_sha256": "097be2aedfc74eea7547465a1deccd6d4cb309820d8bee0d12d2e34aeb13c5b6",
+    "crc": true,
+    "inner_sha256": "14/14",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-ClosedStore-Action/RAW_40928540323_sha097BE2.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "world_jepa_utility": "UNPROVEN",
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Synthetic SQLite fixture on Linux CI only; no actual user DB, native model or Redmi",
+    "No change to registered model/source/seed/cohort, fit kernel, runtime permissions or weights",
+    "Operator must explicitly acknowledge closed Store and SHADOW fit; no persisted weights or tool authority",
+    "Positive fixed-readout MAE delta is a diagnostic, not causal utility or gate promotion"
+  ],
+  "open_questions": [
+    "Synthetic 20-step numeric smoke has mixed direct-ridge gains; require independent real closed-store and registered multi-seed/heldout cohort before any utility claim",
+    "Need private actual observed closed-Store run under operator control with independent source provenance",
+    "Need heldout causal/ablation and independent cohort evidence before World-JEPA utility",
+    "Parent #1130 full suite pending; inherited Run34/Run37 frozen-source errors expected RED",
+    "No Redmi/native evidence"
+  ],
+  "next_commands": [
+    "Inspect raw OPERATOR_RAW.json in Actions 40928970467; preserve mixed gain signs and no gate promotion",
+    "Verify remote bytes of this BUILD_STATE and exact source/test blobs; keep PR1131 draft",
+    "Run pinned full software suite when not conflicting with another heavy CI owner; preserve inherited Run34/Run37 RED",
+    "Use explicit operator command in WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_OPERATOR_20261029.md only on closed private Store",
+    "Continue independent canonical packages; do not promote gates"
+  ],
+  "checkpoint_reason": "Second verified software/SQLite functional integration package; continue independent work, platform budget UNKNOWN",
+  "operator_numeric_smoke": {
+    "run": 40928970467,
+    "head": "7200648cba16d58b47b9bb5ee7a47fe61b6fb566",
+    "status": "SOFTWARE_SYNTHETIC_SQLITE_ONLY",
+    "steps": 20,
+    "seeds": [
+      3,
+      7
+    ],
+    "n": 64,
+    "train_n": 47,
+    "heldout_n": 17,
+    "scaled_direct_ridge_pooled_mae": 0.0002764050583280943,
+    "seed3": {
+      "correct_pooled_mae": 0.0002844529202720191,
+      "gain_vs_direct": -0.00000804786194392483,
+      "gain_vs_row_mismatch": 0.001235038231160517,
+      "gain_vs_column_mismatch": 0.0012582520635233624
+    },
+    "seed7": {
+      "correct_pooled_mae": 0.000251502464272974,
+      "gain_vs_direct": 0.000024902594055120294,
+      "gain_vs_row_mismatch": 0.00031953934787599866,
+      "gain_vs_column_mismatch": 0.0003779483742497363
+    },
+    "interpretation": "Mixed vs direct ridge across two seeds, action mismatch controls degrade synthetic outcome readout; no demonstrated stable causal or real-store utility",
+    "artifact": 12921118580,
+    "zip_sha256": "132e864df78533931ed27c2dde203b83c4de3c0bf1ad95c375a977518dcd1613",
+    "crc": true,
+    "inner_sha256": "20/20",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-ClosedStore-Action/RAW_40928970467_sha132E86.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "FIXTURE": 0,
+      "OPERATOR": 0,
+      "OPERATOR_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  }
+}
