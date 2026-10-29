@@ -18,6 +18,12 @@
 - Sealed `PAIRED.json`: `base_exact_both=24`, `candidate_exact_both=24`, **`both_exact_delta=0`**; `foreign_wrong_committed_base=72`, `foreign_wrong_committed_candidate=72`.
 - The score and verifier report `P2X_NATIVE_RECEIVER_DIAGNOSTIC_NO_GATE` / `VERIFIED_CANDIDATE360_NO_GATE`. GitHub workflow success means the diagnostic completed and integrity checks passed; it does **not** mean learned semantic utility passed.
 
+## Independent baseline ZIP cross-check
+
+The pinned base artifact `12890306165` was independently downloaded too: **103,879 bytes**, ZIP SHA256 `43e8dcc71370cf17355d4cd0bbc4f9aaa1378ead648a1de3425edf333b082d93`, matching the hash explicitly pinned in the native candidate workflow. CRC clean; **34/34** internal SHA256SUMS match.
+
+Base and candidate `ANSWERS.json` bytes are identical, `INPUTS.json` bytes are identical, and the same **360** `(task_id, arm)` pairs occur. Baseline output distribution: **352** standard `NONE`, **6** spacing-variant `NONE`, **2** `B` (both in the shuffled arm). Candidate: **348** standard `NONE`, **12** spacing-variant `NONE`, **0** `B`. Exactly **20/360** raw output strings changed, mostly JSON whitespace; no change in both-exact semantic choice. This independently confirms `both_exact_delta=0` from the original raw baseline/candidate outputs, rather than merely trusting `PAIRED.json`.
+
 ## Interpretation and exact next work
 
 The corrected `--lora-scaled FNAME:SCALE` argv repair restored actual 360-call native execution after the earlier zero-call failure. The model's action outputs, however, collapsed to **NONE** across every arm. There is **no measured gain** over the recorded base control, no evidence of source-sensitive action selection, and no basis for promoting STEP2 or the LoRA/JEPA learning path.
