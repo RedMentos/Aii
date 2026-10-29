@@ -1,0 +1,47 @@
+{
+  "schema": "v13.p2x.calibration_independent_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated independent raw/oracle review",
+  "review_pr": 1080,
+  "parent_pr": 1079,
+  "parent_head": "7174040ad6ab005f5a75704d796ce194a0bd2fe6",
+  "branch": "assistant/v13-p2x-calibration-independent-audit-20261029",
+  "prereg_commit": "00542f5536830dfa0b7cc281d227b73a02faf14e",
+  "prereg_blob": "a3f9d89c9e8ae1231294df78d0a1f728f92e1bc5",
+  "auditor_blob": "efab826d482ed69e84eaa5b799036ef80dd72c6a",
+  "tests_blob": "db7e9b4594f0add726f024cd78ab704dca5421d3",
+  "source_only": {
+    "run": 40863066134,
+    "head": "c06d37b66e67c946298fe615826936cf452f4ca5",
+    "status": "INDEPENDENT_SOURCE_ONLY_GREEN",
+    "focused": "24/24 PASS",
+    "zip_sha256": "b22cf10e81223260f410a19d845d1265adfb893d03b18a5c42b6db06a93a3438",
+    "zip_crc": "CLEAN",
+    "sha256sums": "12/12 MATCH",
+    "stage_exits": "5/5 ZERO",
+    "privacy": "CLEAN",
+    "diff": "PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-29/P2X-Calibration/INDEPENDENT_SOURCE_GREEN_40863066134_shab22cf10e.zip",
+    "private_backup_byte_verified": true
+  },
+  "native_original": {
+    "run": 40862592051,
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "model_calls_verified": 0,
+    "owner": "PR1079 serialized native"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Once PR1079 native run 40862592051 finishes, download original ZIP and check CRC, SHA256SUMS, exits, head; private backup; run independent `PYTHONPATH=.:tests python -m scripts.p2x_calibration_independent_audit --evidence <original ZIP/evidence>` and compare exact per-arm/paired counts to original SCORE; retain original RED if failure. Then integrate review as child only; do not merge to main or promote gates.",
+  "remaining_platform_budget": "UNKNOWN"
+}
