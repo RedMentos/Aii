@@ -28,3 +28,8 @@ Remaining execution budget: UNKNOWN. This is a verified intermediate checkpoint,
 - Full software regression/privacy workflow `40884654019` launched on later docs/workflow-only head `7771606a4def91062eecc80e5bc5a4fd6c27179f`; **PENDING at this addendum**, do not claim full-suite GREEN until original raw is audited.
 - All negative gates unchanged: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, AG6 unapproved, Redmi unmeasured, V13 incomplete. Native CAL36 is a diagnostic, not a production activation or learning proof.
 - Next: independently audit full software CI, then select a separate canonical organ package rather than repeatedly probing the same CAL36 sample. A future P2X format/schema/adapter diagnostic needs **new disjoint preregistered data** and a serialized owner; no tuning of the 72 held-out validation rows.
+
+## Addendum — full software regression closed
+- Exact-head full software Actions `40884654019` on `7771606a4def91062eecc80e5bc5a4fd6c27179f` **GREEN**: 13 focused PASS, **3163 full tests OK (11 skipped)**, all PIN/VENV/NUMPY/FOCUSED/COMPILE/INSTALL/PIP_CHECK/FULL/PRIVACY/DIFF exits 0. Privacy scan CLEAN, diff check 0. No native model calls in this workflow.
+- Original artifact `12902721356`, ZIP SHA256 `5ec9d90e94dcd7605c6477bdf4ee240ffc094484e00d99522bbea08b409b6fa9`, CRC clean, 23/23 SHA256SUMS. Privately backed up to `/V13-Checkpoints/2026-10-29/GPT6-Review-Raw/V13_P2X_CAL36_FULLSUITE_40884654019.zip`, re-materialized and byte-identical.
+- This closes software regression for this review-only package. It does not change the **negative** native CAL36 model-quality result or any canonical gate.
