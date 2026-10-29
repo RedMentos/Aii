@@ -1,0 +1,57 @@
+name: V13 P2X base360 native executor source-only admission
+on:
+  push:
+    branches: [assistant/v13-p2x-base360-native-20261029]
+    paths:
+      - 'v13/code/scripts/p2x_base360_native_executor.py'
+      - 'v13/code/tests/test_p2x_base360_native_executor.py'
+      - 'v13/code/docs/proofs/continuation-20261029/P2X_BASE360_*'
+      - '.github/workflows/v13-p2x-base360-source-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve original eight base-only admission test results
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-base360-source"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m py_compile v13/code/scripts/p2x_base360_native_executor.py v13/code/tests/test_p2x_base360_native_executor.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_p2x_base360_native_executor) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 77429f4f13e9df60b0b98142567babaccd0afa03 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 77429f4f13e9df60b0b98142567babaccd0afa03 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Upload original source-only RED/GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-base360-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-base360-source/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all source-only gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-base360-source"
+          for stage in COMPILE TEST PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
