@@ -69,5 +69,33 @@ class EuroAliasEquivalenceTests(unittest.TestCase):
         self.assertFalse(got["learned"])
 
 
+    def test_tampered_equivalent_competitor_vetoes_exact_output(self):
+        self.add("Project Elyra budget", "615 Euro")
+        rival = self.add("Project Elyra budgets", "615 EUR")
+        self.assertEqual(
+            exact_source(self.runtime, self.query)["status"], "FINAL_SOURCE_EXACT")
+        blob = (self.runtime.home / "data/blobs" /
+                rival["source_ref"]["sha256"])
+        blob.write_text("tampered", encoding="utf-8")
+        with patch.object(self.runtime.pool, "get",
+                          side_effect=AssertionError("C3 must not run")):
+            got = exact_source(self.runtime, self.query)
+        self.assertEqual(got["status"], "CLARIFY")
+        self.assertNotIn("answer", got)
+        self.assertEqual(got["native_calls"], 0)
+
+    def test_revoked_equivalent_competitor_does_not_poison_remaining_source(self):
+        self.add("Project Elyra budget", "615 Euro")
+        rival = self.add("Project Elyra budgets", "615 EUR")
+        self.runtime.memory.forget(rival["id"])
+        with patch.object(self.runtime.pool, "get",
+                          side_effect=AssertionError("C3 must not run")):
+            got = exact_source(self.runtime, self.query)
+        self.assertEqual(got["status"], "FINAL_SOURCE_EXACT")
+        self.assertEqual(got["answer"], "Project Elyra: 615 Euro.")
+        self.assertFalse(got["model_called"])
+        self.assertEqual(got["native_calls"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
