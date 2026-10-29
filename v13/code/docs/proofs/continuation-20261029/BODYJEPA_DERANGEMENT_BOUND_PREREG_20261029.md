@@ -3,7 +3,7 @@
 ## Parent, scope, observed source risk
 - Review-only child of PR #1152, exact parent `e5e054c7059181952ff2919789c2652e7ce97c45`; owner only `v13/code/v13/body_jepa.py`, new dedicated tests, new focused CI/proof. No other owner file edits.
 - `v13.body_jepa.derangement(n,rng)` currently uses unbounded `while True` calling `rng.permutation(n)` until no index is fixed. For a deterministic/repeated identity RNG, this never terminates; malformed permutation with no fixed points can also be accepted. A B-JEPA shuffled-target negative control must not hang or silently accept invalid pairing.
-- Original source Git blob `d510e72d12ecf1d4d300be816ac074a384c0c6f7` is **test_body_jepa.py**, not body_jepa.py; the body_jepa.py source hash must be captured in CI before modification. Canon Git blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` is immutable.
+- Frozen parent `v13/code/v13/body_jepa.py` source Git blob `b935884d41d398ce2f5e513466fafd5821d60104`; existing `test_body_jepa.py` Git blob `d510e72d12ecf1d4d300be816ac074a384c0c6f7`. Both original hashes must remain recorded with the new candidate, never overwrite historical evidence. Canon Git blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` is immutable.
 
 ## Registered adversarial tests before implementation
 - A fake RNG returning the identity permutation for 64 calls and raising on call 65 must result in a bounded explicit `ValueError` (`derangement attempts exhausted`) without reaching the 65th call. Old unbounded implementation instead leaks the fake RNG's `AssertionError`.
