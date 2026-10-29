@@ -59,6 +59,7 @@ def canonical_sha256(value):
 
 
 def inspect():
+    original_sha256 = canonical_sha256(z2.FIXTURES)
     cases = fixtures()
     ids = [f["id"] for f in cases]
     original_ids = [f["id"] for f in z2.FIXTURES]
@@ -80,7 +81,7 @@ def inspect():
                               f["rules"]["local_only"]) in f["history"][1]
             for f in cases if f["fixture_kind"] == "REVISED"),
         "latest_rule_oracles_consistent": True,
-        "frozen_z2_unchanged": original_ids == [f["id"] for f in z2.FIXTURES],
+        "frozen_z2_unchanged": original_sha256 == canonical_sha256(z2.FIXTURES),
     }
     for f in cases:
         opts = f["oracle"]["options"]
