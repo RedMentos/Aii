@@ -166,7 +166,7 @@ jobs:
           path: ${{ runner.temp }}/v13-p2x-fourstep-native-evidence/
           retention-days: 30
           if-no-files-found: error
-      - name: Enforce narrow one-step training proof, never AG6 activation
+      - name: Enforce bounded four-step training proof, never AG6 activation
         if: always()
         shell: bash
         run: |
@@ -178,7 +178,7 @@ jobs:
           python3 - "$e/RESULT.json" <<'PY'
           import json,sys,math
           x=json.load(open(sys.argv[1]))
-          assert x['schema']=='v13.p2x.c3_lora_pilot.v1'
+          assert x['schema']=='v13.p2x.c3_receiver_fourstep.v1'
           assert x['status']=='SIXTEEN_EXAMPLE_FOUR_STEP_LORA_PILOT_ONLY'
           assert len(x['selected'])==16
           assert x['metrics']['steps']==4 and math.isfinite(x['metrics']['final_ce'])
