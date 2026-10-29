@@ -19,7 +19,7 @@
     "test": "ca0c0c50ae3f27661a4e9eaa5435dd1a4aac8a31"
   },
   "test_run": 40867462246,
-  "status": "PENDING_EXACT_HEAD_CI",
+  "status": "GREEN_81_FOCUSED_3131_FULL_11_SKIPPED_SOFTWARE_ONLY",
   "native_calls": 0,
   "model_downloads": false,
   "prerequisites": [
@@ -27,9 +27,9 @@
     "Independently download original raw ZIP, CRC/SHA256SUMS and stage exits",
     "Private Library /V13/RawEvidence permitted; rejected Drive must not be retried"
   ],
-  "next_command": "gh run view 40867462246 --repo RedMentos/Aii --json status,conclusion,headSha; on completion download original raw artifact and verify; if RED preserve, fix observed cause on same review branch; if GREEN backup privately and checkpoint result.",
+  "next_command": "gh run list --repo RedMentos/Aii --branch assistant/v13-p2x-c3-fourstep-20261029; review exact P2X 16-example four-step source-only CI, then run serialized native model job if pinned prerequisites/owner slot pass; do not promote Age/STEP2/B3.",
   "open_questions": [
-    "No real model C3 receiver source-use gain proven",
+    "P2X four-step source-only and native learning utility unmeasured",
     "No Redmi sustained native thermal/RSS/energy proof",
     "No production merge or AGE/JEPA gate promotion"
   ],
@@ -44,5 +44,15 @@
     "redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "remaining_platform_budget": "UNKNOWN"
+  "remaining_platform_budget": "UNKNOWN",
+  "green_run": 40867462246,
+  "green_head": "3fde9805fc27cdbc6ca3abe4a498b44de79b4620",
+  "artifact_id": 12893914229,
+  "artifact_sha256": "0db5c7013d7b086199f711ed8f520dd4c98a08083a45a385105e34ca657ddd7c",
+  "artifact_internal_hashes": "21/21",
+  "artifact_crc": "CLEAN",
+  "stage_exits": "9/9 zero",
+  "privacy": "CLEAN",
+  "private_backup": "/V13/RawEvidence/2026-10-29/V13_CROSSORGAN_GREEN_40867462246_sha0db5c701.zip",
+  "private_backup_byte_verified": true
 }
