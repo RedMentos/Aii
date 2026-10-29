@@ -269,10 +269,19 @@ def operator_command(r,args):
     j=controller(r)
     if not args or args==['status']:return dumps(j.report())
     if args==['last']:
-        row=r.store.one("SELECT payload FROM packets WHERE kind='JEFBridgeTurn' ORDER BY created DESC LIMIT 1")
+        # Source-linked JEF offers belong to the chat that produced them.
+        row=r.store.one("SELECT p.payload FROM packets p "
+                        "JOIN events e ON e.id=p.event_id "
+                        "WHERE p.kind='JEFBridgeTurn' AND e.session_id=? "
+                        "ORDER BY p.created DESC, p.rowid DESC LIMIT 1",
+                        (r.session,))
         return row['payload'] if row else dumps(None)
     if args==['shadow']:return dumps({'mode':j.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':j.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args==['query']:return dumps(j.recommend_query({}))
-    if len(args)==3 and args[0]=='outcome':return dumps(j.outcome(args[1],float(args[2])))
+    if len(args)==3 and args[0]=='outcome':
+        row=r.store.one('SELECT session_id FROM events WHERE id=?',(args[1],))
+        if row is None or row['session_id']!=r.session:
+            raise ValueError('Event nicht im aktuellen Chat')
+        return dumps(j.outcome(args[1],float(args[2])))
     raise ValueError(USAGE)
