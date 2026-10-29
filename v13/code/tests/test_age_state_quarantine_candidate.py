@@ -118,6 +118,20 @@ class Run132AgeStateQuarantine(unittest.TestCase):
         self.assertEqual(self.controller.system_stage(), 0)
         self.assertFalse(self.controller.allowed("short_dream"))
 
+    def test_falsy_persisted_corruption_not_masked_by_agecontrol_state(self):
+        # Original AgeControl.state() uses "st or default_state()"; this must
+        # not make an existing corrupt row look like a genuinely absent row.
+        for payload in ({}, None, [], 0, False):
+            with self.subTest(payload=payload):
+                self._persist(payload)
+                # The original public reader masks these stored falsy values.
+                self.assertEqual(self.controller.state()[0], age.default_state())
+                report = candidate.snapshot(self.controller)
+                self.assertEqual(report["status"], "QUARANTINED_DIAGNOSTIC_ONLY")
+                self.assertEqual(report["granted_rights"], [])
+                with self.assertRaises(candidate.AgeStateIntegrityError):
+                    candidate.guarded_view(self.controller)
+
     def test_invalid_shape_rejected_without_mutation(self):
         for invalid in (None, [], {}, {"revision": age.REVISION}):
             with self.subTest(value=invalid):
