@@ -24,6 +24,10 @@ class BudgetContext:
     """Existing-home operator lane: no Runtime coordinator, sleep or new session."""
     def __init__(self, home):
         self.home = Path(home)
+        # A pending offline restore must be reconciled under the coordinator
+        # lock before initialize/Store can create or migrate SQLite state.
+        from v13.backup import recover_startup
+        recover_startup(self.home)
         self.cfg = initialize(self.home)
         self.store = Store(self.home, self.cfg["log_retention_days"])
         try:
