@@ -1,0 +1,161 @@
+name: V13 Run11 canceled-worker identity pinned Linux-native review
+on:
+  push:
+    branches: [codex/v13-native-cancel-process-identity-20261029-auto10h]
+    paths: ['.github/workflows/v13-native-cancel-identity-real-20261029.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  cancel-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pin original 23 sources and new preregistered cancel script, install, bootstrap, deep-verify
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-cancel-native-identity"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          432b2e33eb53142b0d4246813b96fc791b0900f0 v13/code/scripts/acceptance.py
+          3e2cde4c6da782e72c4a805ee4b426dfacbe088b v13/code/scripts/acceptance_checkpoint.py
+          04b5aa181d3a8e26df5174c0cb5adb6c12bc733e v13/code/scripts/verify_acceptance.py
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          82fb81c8a98c51ca1c339737184e2fda8ab6a692 v13/code/v13/bodies.py
+          3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7 v13/code/v13/world.py
+          646c6f31b52ca2664c1952af7c7e842fc3e20885 v13/code/v13/prompts.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          18cba28d46091c2e823c6cbb4adcc5a336e4c1ec v13/code/tests/integration_experience.py
+          4941a395bb970565654598a6431c351a8c40bcc1 v13/code/tests/integration_learning.py
+          25ab800083306c2890758145bbf9290efe7113e1 v13/code/tests/integration_executive.py
+          2c1d5e5bcebfffda95e9ab15e5d173952a959455 v13/code/tests/integration_resources.py
+          70fbd368f935aa1ff26fd326b06ecf8bcba5d568 v13/code/tests/integration_readouts.py
+          fe922144de4bf9ae3347d37d0ac8be45506b643e v13/code/tests/integration_taps.py
+          93d813eb494dedb18e36d096af12d03591b2e012 v13/code/tests/integration_predictor.py
+          e9e61542c50f2bec5ae356164bb302046aeccde5 v13/code/tests/integration_control_calibration.py
+          9583a1b6240ba127c371aeb2d0598dd19d7a2c2b v13/code/tests/integration_retrieval.py
+          2da82a5f851593dd36617b21898b665572d9827d v13/code/tests/integration_consolidation.py
+          f6744fc1e575211507cd63d1777cf7862942f49e v13/code/tests/integration_output_adapter.py
+          3ffe3e8b3d0391dcb4f2f723e65c35e9ceef43c9 v13/code/tests/integration_student.py
+          4e3ea09861e239ab65eced9c53b1d81f792c8f4d v13/code/tests/integration_world.py
+          30142c325bf4fca7f6edb4f63d08d62e01f0971a v13/code/tests/integration_second_attempt.py
+          f35d36ceab9acd473abebc8c59958aa6b784e42d v13/code/tests/integration_real.py
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo BLOB_MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q BLOB_MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-cancel-native-venv"
+          py="$RUNNER_TEMP/v13-cancel-native-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          home="$RUNNER_TEMP/v13-cancel-native-home"
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ] && [ ! -e "$home" ]; then
+            timeout --signal=INT --kill-after=15s 14m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$home" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_SOURCE_INSTALL_OR_HOME_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code "$py" - "$home" > "$e/MODEL_VERIFY_RAW.log" 2>&1 <<'PY'
+          import json,pathlib,sys
+          from v13.models import ModelManager
+          home=pathlib.Path(sys.argv[1]);m=ModelManager(home)
+          v=m.verify(deep=True)
+          assert len(v)>=4 and all(row['ok'] and row['hash_checked'] for row in v.values()),v
+          cfg=json.loads((home/'config/settings.json').read_text())
+          assert cfg['system_stage']==0 and cfg['learning_mode']=='RECORD_ONLY'
+          assert cfg.get('jepa_weight',0)==0 and not cfg['latents_enabled']
+          print('PINNED_LINUX_NATIVE_AGE0',json.dumps({k:x['revision'] for k,x in v.items()},sort_keys=True))
+          PY
+            echo "$?" > "$e/MODEL_VERIFY_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/MODEL_VERIFY_RAW.log"
+            echo SKIPPED_RED > "$e/MODEL_VERIFY_EXIT.txt"
+          fi
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Run new isolated real-weight cancel/restart cohort
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-cancel-native-identity"
+          home="$RUNNER_TEMP/v13-cancel-native-home"
+          py="$RUNNER_TEMP/v13-cancel-native-venv/bin/python"
+          if [ "$(cat "$e/MODEL_VERIFY_EXIT.txt")" = 0 ]; then
+            timeout --signal=INT --kill-after=15s 13m env PYTHONPATH=v13/code "$py" v13/code/tests/integration_real.py --installed-home "$home" --out "$e/CANCEL_RESTART.json" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_MODEL_PREREQ_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/CANCEL_RESTART.json" ]; then
+            "$py" - "$e/CANCEL_RESTART.json" > "$e/CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          c=d['cancel'];runner=c['runner'];release=runner['interruption_unload']
+          pid=release['before'].get('resolved_proc_pid',release['before'].get('pid'))
+          assert d['uses_real_weights'] and d['device']['android'] is False
+          assert c['status']=='CANCELLED' and runner['status']=='CANCELLED'
+          assert type(pid) is int and pid>0 and release['process_reaped'] is True
+          assert pid not in c['pool_pids_after']
+          assert c['native_process_stopped'] is True
+          assert d['all_passed'] is True,d['checks']
+          print('NEW_COHORT_LINUX_NATIVE_CANCEL_WORKER_IDENTITY_PASS',pid)
+          PY
+            echo "$?" > "$e/CHECK_EXIT.txt"
+          else
+            echo NO_NATIVE_JSON > "$e/CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e719910f02b4d4af50ac245cd8175cef287dff4b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check e719910f02b4d4af50ac245cd8175cef287dff4b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve closed raw new-cohort native evidence (never weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-cancel-native-identity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-cancel-native-identity/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce new cohort exact pins and real native worker identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-cancel-native-identity"
+          for n in BLOBS INSTALL BOOTSTRAP MODEL_VERIFY NATIVE CHECK PRIVACY DIFF; do
+            printf '%s %s\n' "$n" "$(cat "$e/${n}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${n}_EXIT.txt")" = 0
+          done
+          echo 'NEW_COHORT_LINUX_NATIVE_CANCEL_ONLY_NO_REDMI_NO_GATE_PROMOTION'
