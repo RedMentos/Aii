@@ -481,7 +481,13 @@ def operator_command(r,args):
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())
     if args==['last']:
-        row=r.store.one("SELECT payload FROM packets WHERE kind='ContextPlan' ORDER BY created DESC LIMIT 1")
+        # Context plans may contain raw/source-linked text. Never show another
+        # chat's latest packet merely because it was written more recently.
+        row=r.store.one("SELECT p.payload FROM packets p "
+                        "JOIN events e ON e.id=p.event_id "
+                        "WHERE p.kind='ContextPlan' AND e.session_id=? "
+                        "ORDER BY p.created DESC, p.rowid DESC LIMIT 1",
+                        (r.session,))
         return row['payload'] if row else dumps(None)
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})  # typed by the operator = explicit
@@ -494,5 +500,9 @@ def operator_command(r,args):
         import threading,time
         res=probe_template(r.pool.get(args[1]),threading.Event(),time.monotonic()+120)
         return dumps(c.set_capability(args[1],'consecutive_user',res['value'],res['evidence']))
-    if len(args)==3 and args[0]=='outcome':return dumps(c.outcome(args[1],float(args[2]),'human_correction'))
+    if len(args)==3 and args[0]=='outcome':
+        row=r.store.one('SELECT session_id FROM events WHERE id=?',(args[1],))
+        if row is None or row['session_id']!=r.session:
+            raise ValueError('Event nicht im aktuellen Chat')
+        return dumps(c.outcome(args[1],float(args[2]),'human_correction'))
     raise ValueError(USAGE)
