@@ -13,3 +13,8 @@
 2. Independently review the scheduler for many sessions, stalled/late FINAL, cross-session source revocation, state persistence/restart, resource bounds and concurrent sleep conflicts. The separate out-of-order assistant completion issue may require event-aware scanning; do not claim it solved here.
 3. Keep review branch unmerged pending independent review. Continue next canonical package; no device/native inference was run in this change.
 4. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight0; AG6 unapproved; Redmi sustained proof absent; V13 incomplete.
+
+
+## First full-source CI result and inherited correction
+- First exact-head full workflow `40903493539` at `ccb46a3350c9344515ba2272d782451af4771381` was RED: 18 focused tests, 1 failed; 3199 full tests, 1 failed and 11 skipped. All four new S7 fairness regressions PASS. Only failure was the already diagnosed inherited foreign-session test expectation from parent #1111 (a second FINAL assistant caused two sessions to digest). DEPS/COMPILE/PRIVACY/DIFF all exit0. Original raw ZIP `12910457860` SHA256 `eed11c076699aae02f1ccde1f6e56b9f9bddfaddba10717833b8cc59c405ac80`, CRC and internal SHA256SUMS verified.
+- Imported exact parent test-only correction `ecf81a6a37cf0630100e2bebcad615f74827dc60`, new test blob `37619a487643544a18681bf6ea2c6a61ac643ff2`. No S7 source change, no frozen cohort modification. Rerun exact-head full software CI required; no GREEN claimed from old RED.
