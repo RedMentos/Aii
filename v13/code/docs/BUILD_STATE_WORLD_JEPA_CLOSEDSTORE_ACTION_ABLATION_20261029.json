@@ -70,16 +70,62 @@
     "Positive fixed-readout MAE delta is a diagnostic, not causal utility or gate promotion"
   ],
   "open_questions": [
+    "Synthetic 20-step numeric smoke has mixed direct-ridge gains; require independent real closed-store and registered multi-seed/heldout cohort before any utility claim",
     "Need private actual observed closed-Store run under operator control with independent source provenance",
     "Need heldout causal/ablation and independent cohort evidence before World-JEPA utility",
     "Parent #1130 full suite pending; inherited Run34/Run37 frozen-source errors expected RED",
     "No Redmi/native evidence"
   ],
   "next_commands": [
+    "Inspect raw OPERATOR_RAW.json in Actions 40928970467; preserve mixed gain signs and no gate promotion",
     "Verify remote bytes of this BUILD_STATE and exact source/test blobs; keep PR1131 draft",
     "Run pinned full software suite when not conflicting with another heavy CI owner; preserve inherited Run34/Run37 RED",
     "Use explicit operator command in WORLD_JEPA_CLOSEDSTORE_ACTION_ABLATION_OPERATOR_20261029.md only on closed private Store",
     "Continue independent canonical packages; do not promote gates"
   ],
-  "checkpoint_reason": "Second verified software/SQLite functional integration package; continue independent work, platform budget UNKNOWN"
+  "checkpoint_reason": "Second verified software/SQLite functional integration package; continue independent work, platform budget UNKNOWN",
+  "operator_numeric_smoke": {
+    "run": 40928970467,
+    "head": "7200648cba16d58b47b9bb5ee7a47fe61b6fb566",
+    "status": "SOFTWARE_SYNTHETIC_SQLITE_ONLY",
+    "steps": 20,
+    "seeds": [
+      3,
+      7
+    ],
+    "n": 64,
+    "train_n": 47,
+    "heldout_n": 17,
+    "scaled_direct_ridge_pooled_mae": 0.0002764050583280943,
+    "seed3": {
+      "correct_pooled_mae": 0.0002844529202720191,
+      "gain_vs_direct": -0.00000804786194392483,
+      "gain_vs_row_mismatch": 0.001235038231160517,
+      "gain_vs_column_mismatch": 0.0012582520635233624
+    },
+    "seed7": {
+      "correct_pooled_mae": 0.000251502464272974,
+      "gain_vs_direct": 0.000024902594055120294,
+      "gain_vs_row_mismatch": 0.00031953934787599866,
+      "gain_vs_column_mismatch": 0.0003779483742497363
+    },
+    "interpretation": "Mixed vs direct ridge across two seeds, action mismatch controls degrade synthetic outcome readout; no demonstrated stable causal or real-store utility",
+    "artifact": 12921118580,
+    "zip_sha256": "132e864df78533931ed27c2dde203b83c4de3c0bf1ad95c375a977518dcd1613",
+    "crc": true,
+    "inner_sha256": "20/20",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-WorldJEPA-ClosedStore-Action/RAW_40928970467_sha132E86.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "FOCUSED": 0,
+      "FIXTURE": 0,
+      "OPERATOR": 0,
+      "OPERATOR_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  }
 }
