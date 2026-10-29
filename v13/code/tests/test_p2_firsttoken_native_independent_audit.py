@@ -92,6 +92,8 @@ class IndependentNativeReviewTests(unittest.TestCase):
                 r = audit.verify(n, t)
             self.assertEqual(r["status"], "EIGHT_FIRSTTOKEN_NATIVE_DESCRIPTIVE_VERIFIED")
             self.assertEqual(r["top1_equal_count"], 8)
+            self.assertEqual(r["gguf_toplogprob_first_equal_count"], 8)
+            self.assertEqual(r["gguf_generated_vs_toplogprob_first_disagreements"], 0)
             self.assertFalse(r["parity_or_utility_proven"])
 
     def test_stage_red(self):
