@@ -64,10 +64,10 @@ jobs:
           # No receipt is committed yet: missing audit always blocks inference.
           gh run view 40812183190 --json headSha,status,conclusion > "$e/ADMISSION_RUN_RAW.json" 2> "$e/ADMISSION_QUERY_RAW.log"
           echo "$?" > "$e/ADMISSION_QUERY_EXIT.txt"
-          python3 - "$e/ADMISSION_RUN_RAW.json" "v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json" > "$e/ADMISSION_RAW.log" 2>&1 <<'PY'
+          python3 - "$e/ADMISSION_RUN_RAW.json" "v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json" "v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_NATIVE_OWNER_RELEASE.json" > "$e/ADMISSION_RAW.log" 2>&1 <<'PY'
           import json,sys
           from pathlib import Path
-          run=Path(sys.argv[1]);proof=Path(sys.argv[2])
+          run=Path(sys.argv[1]);proof=Path(sys.argv[2]);owner=Path(sys.argv[3])
           assert run.is_file(), 'EXACT_HEAD_CI_QUERY_MISSING'
           r=json.loads(run.read_text())
           assert r.get('headSha')=='7f25f3b0d0d8b7167817420240d0475f57f0a538', 'EXACT_HEAD_MISMATCH'
@@ -80,7 +80,13 @@ jobs:
           assert a.get('crc_clean') is True and a.get('all_inner_sha256_verified') is True
           assert a.get('software_only') is True and a.get('native_calls')==0
           assert isinstance(a.get('original_zip_sha256'),str) and len(a['original_zip_sha256'])==64
-          print('EXACT_HEAD_CI_AND_SEPARATE_ORIGINAL_RAW_AUDIT_ADMITTED')
+          assert owner.is_file(), 'NATIVE_OWNER_RELEASE_MISSING_NO_NATIVE'
+          o=json.loads(owner.read_text())
+          assert o.get('schema')=='v13.step2.run126.native_owner_release.v1'
+          assert o.get('run_id')==40812183190 and o.get('software_zip_sha256')==a['original_zip_sha256']
+          assert o.get('native_owner_idle_verified') is True
+          assert o.get('resource_admission_approved') is True
+          print('EXACT_HEAD_RAW_AUDIT_AND_NATIVE_OWNER_RELEASE_ADMITTED')
           PY
           echo "$?" > "$e/ADMISSION_EXIT.txt"
           python3 - "$e" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
