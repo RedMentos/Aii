@@ -3145,11 +3145,13 @@
     "parent_sha": "cdf5f48c5bacbca494674a2554e96bf1e4e8dc2b",
     "prereg_commit": "2a2f6fcf88d601009b9be6c6d371f11dcad3f466",
     "workflow_commit": "3d78cebfbea84ba5b21ee1c77fc2c3a3cfa1ddcb",
+    "raw_reclassification": "docs/proofs/continuation-20261029/FULL_SUITE_TORCH_ERROR_CLASSIFICATION_CORRECTION_20261029.md",
+    "original_raw_independently_verified": "ZIP_SHA256_MATCH_CRC_CLEAN_22_OF_22_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
     "previous_red": {
       "run": 40957012351,
       "head": "12c3c152a5a183f7dd3899761a62d964854f0a97",
       "tests": "3285 RUN / 6 ERROR / 11 SKIPPED",
-      "errors": "4 missing-transformers imports; 2 frozen Run34/Run37 native_source_or_catalog_changed",
+      "errors": "3 missing-transformers imports; 1 missing-peft import; 2 frozen Run34/Run37 native_source_or_catalog_changed",
       "artifact_id": 12933534420,
       "actions_zip_sha256": "c3abbd38acc66b12f4bb495849dd3faccbdca74e93286f6d4e3c6102e5dc826d"
     },
