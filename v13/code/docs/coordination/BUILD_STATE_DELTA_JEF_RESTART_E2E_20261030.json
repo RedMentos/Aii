@@ -1,0 +1,60 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:20:00Z",
+  "branch": "codex/v13-jef-restart-e2e-20261030-auto11e",
+  "pr": 1171,
+  "base_pr": 1170,
+  "base_commit": "b7fcf04a7dd2becc166cb7f418896de83baf0dfb",
+  "verified_ci_commit": "a21cee08572399eceb6fbd89ed54d7dd22d1b59d",
+  "ci_run": 40972483735,
+  "ci_conclusion": "success",
+  "focused_tests": 36,
+  "raw_artifact_id": 12941156535,
+  "raw_zip_sha256": "7be8209f4cbe2e87ffcde73828619989531d200b3531fa249fd3ceedc3dd705a",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 18,
+  "failed_attempt_preserved": {
+    "commit": "e1e700a841ceaa3e813fe618c27d3afd9fe07740",
+    "ci_run": 40972362311,
+    "artifact_id": 12941315884,
+    "raw_zip_sha256": "530597ab865a9942264456c4b48e385f26cc7da687f92842f45865f9cc9e090f",
+    "reason": "Fixture incorrectly assumed Runtime restart creates new chat; actual Runtime restores last_session; corrected to explicitly invoke :new after restart."
+  },
+  "source_blobs": {
+    "v13/code/tests/test_jef_restart_e2e_20261030.py": "cf57c9943ef02feee5be79c660e59c62a812a225",
+    ".github/workflows/v13-jef-restart-e2e-20261030.yml": "56478925de9d7e4203d36762e3086ea6579f2708"
+  },
+  "feature": "Real delivered FINAL with stub C3 and JEF outcome; persisted human SGD receipt across Runtime close/reopen; explicit :new isolates old session",
+  "checks": {
+    "focused_unittest": "PASS",
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-jef-restart-e2e-20261030-auto11e",
+  "open_questions": [
+    "PR1169 full unfiltered suite running on earlier source; latest PR1171 still requires its own unfiltered replay.",
+    "No native JEF/C2, Body-JEPA, Redmi or full-system acceptance.",
+    "Revised human ratings are additional online updates, not exact replacement of old gradients."
+  ],
+  "next_command": "Audit PR1169 full-suite raw and preserve frozen failures. Create full-suite CI child of PR1171 with pinned torch/Transformers/PEFT; run unfiltered tests without exclusions. Integrate review branches only after independent review.",
+  "prerequisites": [
+    "Fresh remote head and owner check",
+    "Do not rewrite Run34/Run37 frozen source or suppress failed tests",
+    "No gate promotion"
+  ]
+}
