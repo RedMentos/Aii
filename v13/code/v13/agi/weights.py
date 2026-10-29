@@ -439,12 +439,40 @@ class WeightConsolidation:
         except Exception as exc:
             self.s.log('neuromod_gate_unavailable',None,{'component':'weights','error':type(exc).__name__});return None
     def reject(self,bid,reason='user'):
-        def f(st,b):
-            if b['status'] in {'APPROVED','ROLLED_BACK'}:raise ValueError('Schon freigegeben; rollback verwenden')
+        """Reject a batch and its pending human request in one SQLite transaction.
+
+        StateBox callbacks must not perform independently committed request
+        writes: a later state-write failure would cancel the request while
+        leaving a PENDING_USER batch. Lock and validate the current batch and
+        request together; do not race a live ACTIVATING approval intent.
+        """
+        with self.s.tx() as c:
+            proxy,st,v=self._approval_state(c)
+            b=st['batches'].get(bid)
+            if not b:raise ValueError('Unbekannter Konsolidierungs-Batch')
+            if b['status'] in {'APPROVED','ROLLED_BACK'}:
+                raise ValueError('Schon freigegeben; rollback verwenden')
+            if b['status']=='ACTIVATING':
+                raise ValueError('Freigabeversuch läuft; erst Wiederherstellung abwarten')
+            rid=b.get('request_id')
+            if b['status']=='PENDING_USER' and not rid:
+                raise ValueError('Keine offene Konsolidierungsanfrage')
+            if rid:
+                expected='REJECTED' if b['status']=='REJECTED' else 'PENDING'
+                cur=c.execute(
+                    "SELECT status FROM requests WHERE id=? AND kind='WEIGHT_CONSOLIDATION'",
+                    (rid,)).fetchone()
+                if not cur or cur['status']!=expected:
+                    raise ValueError('Konsolidierungsanfrage nicht im erwarteten Zustand')
+                if expected=='PENDING':
+                    changed=c.execute(
+                        "UPDATE requests SET status='REJECTED' WHERE id=? "
+                        "AND kind='WEIGHT_CONSOLIDATION' AND status='PENDING'",(rid,))
+                    if changed.rowcount!=1:
+                        raise ValueError('Keine offene Konsolidierungsanfrage')
             self._move(b,'REJECTED');b['reason']=str(reason)[:200]
-            if b['request_id']:
-                with self.s.tx() as c:c.execute("UPDATE requests SET status='REJECTED' WHERE id=?",(b['request_id'],))
-        return self._set(bid,f)
+            proxy.set_state(KEY,st,expected=v)
+            return dict(b)
     def rollback(self,bid):
         def f(st,b):
             if b['status']!='APPROVED':raise ValueError('Rollback nur für APPROVED')
