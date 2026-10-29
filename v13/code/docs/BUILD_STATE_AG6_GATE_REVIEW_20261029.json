@@ -1,0 +1,58 @@
+{
+  "revision": "ag6-finite-gate-review-v1",
+  "date_utc": "2026-10-29",
+  "owner": "codex/v13-ag6-finite-gate-review-20261029-auto10b",
+  "parent_pr": 1114,
+  "parent_sha": "f428a171cd595ed053d0c7e16801ce415bf1e4a0",
+  "review_pr": 1116,
+  "scope": "AG6 numeric gate admission only",
+  "original_red": {
+    "run_id": 40907508787,
+    "head_sha": "0c1d62def8c700c1c690eef969ae0357f1b4300f",
+    "artifact_id": 12911557803,
+    "sha256": "8321fc246ede4618bd3e63a84d45c2048b1815ecd61575ecc41ef5a8422c8ff6",
+    "crc": "PASS",
+    "sha256sums": "5/5 PASS",
+    "focused": "6 FAIL, 3 ERROR, 1 valid control PASS",
+    "privacy": "PASS"
+  },
+  "candidate": {
+    "source_commit": "d20454e224d1d3793b704b2160b0135de5febeb3",
+    "ci_run_id": 40907705671,
+    "ci_status": "FOCUSED_GREEN_FULL_RED",
+    "evidence_level": "SOFTWARE_STORE_ONLY",
+    "focused": "33/33 PASS",
+    "full": "3197 tests; 11 skipped; two inherited frozen-source identity errors in run34/run37",
+    "artifact_id": 12912327545,
+    "artifact_sha256": "625ed325b80702d5f99373eba2f8002286d8e9c1061769fc1bceae75812561f3",
+    "raw_verified": "CRC and 19/19 SHA256SUMS PASS",
+    "stage_exits": {
+      "venv": 0,
+      "deps": 0,
+      "pip_check": 0,
+      "focused": 0,
+      "full": 1,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    }
+  },
+  "gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Does candidate pass focused and full tests at exact head?",
+    "Does request insertion share transaction with gate persistence under concurrent state writes?",
+    "Can inherited run34/run37 frozen source-identity failures be reconciled without changing registered pins?"
+  ],
+  "next_command": "Fetch GitHub Actions run 40907705671; verify raw artifact HEAD, stage exits, SHA256SUMS; independent review; continue next authorized blueprint package.",
+  "production_integrated": false
+}
