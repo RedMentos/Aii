@@ -77,7 +77,7 @@ class PairedSoftware(unittest.TestCase):
     def test_duplicate_oracle_and_summary_tamper(self):
         base, arms = scores()
         corrupt = deepcopy(arms)
-        corrupt["details"][1]["id_sha256"] = corrupt["details"][0]["id_sha256"]
+        corrupt["details"][4]["id_sha256"] = corrupt["details"][0]["id_sha256"]
         with self.assertRaisesRegex(ValueError, "ROW_SHAPE"):
             paired.analyze(base, corrupt)
         corrupt = deepcopy(arms)
