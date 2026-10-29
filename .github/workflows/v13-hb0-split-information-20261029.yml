@@ -35,8 +35,8 @@ jobs:
             [ "$got" = "$1" ]
           }
           check 486030c7031b5cfa343c935fe39a0f3d74049c65 v13/code/docs/proofs/continuation-20261029/HB0_SPLIT_INFORMATION_COHORT_PREREG.md || source_red=1
-          check 4b201681e830b9f57a2ea16d8c32b5a385d97417 v13/code/scripts/hb0_split_information_cohort.py || source_red=1
-          check 69071d6a49cdacaca0dc50c0d31a29280bb0c38d v13/code/tests/test_hb0_split_information_cohort.py || source_red=1
+          check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py || source_red=1
+          check c67fe0ee9d693413c1bb430b6f391d8a478f8960 v13/code/tests/test_hb0_split_information_cohort.py || source_red=1
           check 8c79ab6d38eeebce832faa139c4a819f6d379d96 v13/code/scripts/context_option_safe_scope_candidate.py || source_red=1
           check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_red=1
           echo "$source_red" > "$e/SOURCE_EXIT.txt"
