@@ -1,0 +1,70 @@
+{
+  "schema": "v13.run134.step2_composed_source_repairs_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation; review-only software integration, no native/model owner",
+  "branch": "assistant/v13-run134-step2-composed-source-repair-20261029",
+  "pr": 1034,
+  "parent_pr": 1033,
+  "parent_sha": "cebd9be65c189133e25eee3b060dff409fe0538b",
+  "donor_pr": 1029,
+  "donor_blobs": {
+    "source": "2878ea7c67e017a35feff0fdd48ae3c76ae02b73",
+    "test": "fbc827f1b5483090b63b96caa36e97ca5e7b63f8",
+    "prereg": "4dbe04813d3dfa3d982d14ad695af5b7fb9250fe",
+    "all_imported_exact": true
+  },
+  "prereg_commit": "291299ec51b6430b7841dd06dec837220726238e",
+  "source_blob": "6e5e9395301c76061927796dcc6ecc2031846649",
+  "test_blob": "73a9a3dcdb89b635e087c6621fc40cd2184e566d",
+  "workflow_blob": "16d72372f8374e2ff330855245ef8a0c32343e9d",
+  "workflow_head_before_checkpoint": "c35dacdea67109e5ba4feb6fc786e395fbb68906",
+  "software_ci": {
+    "run_id": 40816770233,
+    "status": "RUNNING_OR_UNAUDITED",
+    "focused": "PENDING",
+    "probe": "PENDING",
+    "full": "PENDING",
+    "privacy": "PENDING",
+    "original_raw": "PENDING",
+    "native_calls": 0
+  },
+  "changes": [
+    "Imported exact Run129 source, test and prereg blobs without modifications.",
+    "Composed Run133 source-ref verified C3 typed option correction with unchanged deterministic eligibility and Run129 project alias binding.",
+    "Added synthetic fail-closed and original 42-row offline replay tests; original native raw unchanged."
+  ],
+  "independent_frozen_raw": {
+    "source_sha256": "c0cd539ec28f9583abe25c93f48871597df6758c442782eb6fedd56ad612105f",
+    "tool_sha256": "e90c23fd909dc0e138312f6802a05a3377f451f6675a496c1d4b1f1b19847ac0",
+    "rows": 42,
+    "source_evidence": 162,
+    "verified_quotes": 95,
+    "original_zip_sha256": "4e9f52df6f33003009d8dcb43dcce220699d31235eeec64e8fb8f1d5ce194fd7",
+    "recomputed_all_row_hashes": true,
+    "original_29_sha256": true
+  },
+  "open_questions": [
+    "Does Run134 exact-head original 42-row replay pass with no wrong committed and source hashes unchanged?",
+    "Does composed alias+quote repair improve full-exact offline without falsely promoting STEP2?",
+    "Can a future fresh disjoint native cohort be preregistered after exclusive native-owner release?",
+    "What is the correct reviewed production integration order after source freeze?"
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Check GitHub Actions run 40816770233 at exact source head c35dacdea67109e5ba4feb6fc786e395fbb68906, download original raw ZIP, verify HEAD, CRC, SHA256SUMS, source/donor hashes, 42-row composition, zero wrong committed, focused/full/privacy/diff exits. Preserve any RED and repair on own branch. Then review Run132/133 latest heads and private-backup all verified raw.",
+  "prerequisites": [
+    "No new native owner release, no Redmi",
+    "No main merge or production runtime edit",
+    "Do not change original frozen source/model/seed/cohort",
+    "No fresh utility claim from post-observation replay"
+  ],
+  "no_main_merge": true
+}
