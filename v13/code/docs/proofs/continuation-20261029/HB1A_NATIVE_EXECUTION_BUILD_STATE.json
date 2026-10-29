@@ -1,0 +1,39 @@
+{
+  "schema": "v13.hb1a.native_execution_build_state.v1",
+  "recorded_utc": "2026-10-29T07:18:00Z",
+  "owner": "GPT-6 automation, isolated review branch",
+  "branch": "codex/v13-hb1a-native-execution-20261029",
+  "base_branch": "codex/v13-hb1-two-body-native-pilot-20261029",
+  "base_head_sha": "73e6343e3b7e5370cddf912d5023080a29ea9e4a",
+  "parent_pr": 1052,
+  "status": "SOURCE_ONLY_PREREGISTERED_WAITING_EXACT_HEAD_SOFTWARE_CI",
+  "native_execution_started": false,
+  "source_pins": {
+    "prereg_blob": "9d6652e99ac9aa0de7898f15eeb8a54d598c49e6",
+    "plan_blob": "033ea9c8c3e6f9ff631b84136afa1f74dd7e627c",
+    "tests_blob": "6a2f2feb5a15dc59ea1905b4ecbfadbfeb0fbac0",
+    "fixture_sha256": "73c9f4096a928ece659cfa5aff0c483001346834f6117765ed1c53c9c2b7939b",
+    "body_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "gist_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "c3_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "PR1052 exact-head software CI GREEN and artifact SHA256SUMS verified",
+    "No active heavy native owner",
+    "Linux x86_64 cgroup>=3GB and disk>=4GB",
+    "Pinned B1/B2/C3 and runner installed and deep SHA verified"
+  ],
+  "exact_next_command": "After prerequisites, implement isolated hb1a_native_executor.py, focused tests and source-pinned native Actions workflow; retain all RED; never promote Canon gates.",
+  "remaining_platform_budget": "UNKNOWN",
+  "production_merge": false
+}
