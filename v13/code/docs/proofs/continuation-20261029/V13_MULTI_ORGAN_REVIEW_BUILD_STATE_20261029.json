@@ -42,9 +42,13 @@
       "pr": 1086,
       "source_blob": "3f6c91b1ab4ac02624a86049373957ff7bd93fd2",
       "test_blob": "da3e97bfd9ca8808ec2208d21ac6c1b76236fa84",
-      "status": "RED_FIRST_REPRODUCED_RETRY_RUNNING",
+      "status": "GREEN_39_FOCUSED_3130_FULL_11_SKIPPED_SOFTWARE_ONLY",
       "red_first_run": 40866677801,
-      "isolated_dependency_retry": 40866865992
+      "isolated_dependency_retry": 40866865992,
+      "green_run": 40866865992,
+      "green_head": "3225756b6ad41222ea58623c148778d168a07735",
+      "artifact_sha256": "adcc91b3e9658962115309bd8fc47a13a86e8a8088db962e9279cba91bbee458",
+      "artifact_id": 12894432063
     }
   },
   "raw_backups": [
@@ -79,6 +83,14 @@
       "crc": "CLEAN",
       "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_RED_40866677801_sha2f065672.zip",
       "byte_verified": true
+    },
+    {
+      "run": 40866865992,
+      "zip_sha256": "adcc91b3e9658962115309bd8fc47a13a86e8a8088db962e9279cba91bbee458",
+      "internal": "21/21",
+      "crc": "CLEAN",
+      "path": "/V13/RawEvidence/2026-10-29/V13_SLEEP_MIX_GREEN_40866865992_shaadcc91b3.zip",
+      "byte_verified": true
     }
   ],
   "prerequisites": [
@@ -87,9 +99,9 @@
     "Do not run native/model jobs while unrelated active owners exist",
     "Redmi device unavailable; no device claim"
   ],
-  "next_command": "gh run view 40866812715 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866860307 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866865992 --repo RedMentos/Aii --json status,conclusion,headSha; download originals, audit all SHA256SUMS/stage exits/privacy, privately back up, then update branch-scoped result and continue independent canonical package.",
+  "next_command": "gh run view 40866812715 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40866860307 --repo RedMentos/Aii --json status,conclusion,headSha && gh run view 40867462246 --repo RedMentos/Aii --json status,conclusion,headSha; audit original ZIPs, backup byte-verify and update branch-scoped results; no gate promotion.",
   "open_questions": [
-    "Three isolated dependency-pinned full software runs pending",
+    "Context and Self isolated dependency-pinned full software runs pending; Sleep GREEN",
     "No real C3 source-composition utility improvement demonstrated",
     "No Redmi native sustained thermal/RSS/energy evidence",
     "PRs are draft review branches, not production merged"
