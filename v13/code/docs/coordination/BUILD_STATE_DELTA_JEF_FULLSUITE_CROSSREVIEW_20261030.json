@@ -1,0 +1,60 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:21:00Z",
+  "branch": "codex/v13-fullsuite-jef-crossreview-20261030-auto11c",
+  "pr": 1169,
+  "base_pr": 1168,
+  "base_commit": "44ccc360a1ddd0cb6168b6e7deb945b404392995",
+  "verified_ci_commit": "4ed936b92c0e6a389a296f8afc49e536ff7d2937",
+  "ci_run": 40971766985,
+  "ci_conclusion": "failure",
+  "full_unfiltered_tests": 3349,
+  "errors": 2,
+  "skipped": 11,
+  "raw_artifact_id": 12941051359,
+  "raw_zip_sha256": "3b8e7bcb3b07e1ac3ebfcebe80f59d542ed491c9fa904f29181c9f50cf836e74",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 30,
+  "failed_tests": [
+    "test_run34_c3_native_quote_intervention_pilot.Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates",
+    "test_run37_c3_rule_use_native_pilot.Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates"
+  ],
+  "failure_reason": "native_source_or_catalog_changed on frozen historical Run34/Run37 utility.py source identity; inherited and deliberately not waived",
+  "new_regressions_observed": 0,
+  "source_blobs": {
+    ".github/workflows/v13-fullsuite-jef-crossreview-20261030.yml": "270f77bf76a23ae857b56eb49e202b4a7ea153ee"
+  },
+  "checks": {
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS",
+    "torch_import": "PASS",
+    "transformers_import": "PASS",
+    "peft_import": "PASS",
+    "full_unfiltered_unittest": "RED_INHERITED_TWO_ERRORS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-fullsuite-jef-crossreview-20261030-auto11c",
+  "open_questions": [
+    "This full suite predates FINAL/restart packages PR1170/1171 and must not be reused as their full-suite evidence.",
+    "Historical Run34/Run37 frozen source preflight remains RED and should not be patched by changing preregistered artifacts."
+  ],
+  "next_command": "Run preregistered latest full-suite review from codex/v13-fullsuite-jef-final-restart-20261030-auto11f after focused PR1171; no exclusions; retain original two errors.",
+  "prerequisites": [
+    "Isolated pinned torch/Transformers/PEFT",
+    "Do not mutate historical source hashes or promote gates"
+  ]
+}
