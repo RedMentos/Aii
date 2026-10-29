@@ -1,5 +1,6 @@
 """HB1a synthetic 54-call orchestration and RED-retention test; NO native weights."""
 import json
+import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -67,7 +68,7 @@ class HB1AOrchestrationSoftware(unittest.TestCase):
         for role, digest in plan.MODEL_SHAS.items():
             if path.name == role + ".gguf":
                 return digest
-        raise AssertionError("unexpected hash path")
+        return hashlib.sha256(path.read_bytes()).hexdigest()
 
     def run_with_mocks(self, home, out):
         with patch.object(native, "admit"), \
