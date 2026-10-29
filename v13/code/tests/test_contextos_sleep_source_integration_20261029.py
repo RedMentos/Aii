@@ -84,7 +84,7 @@ class ContextSleepSourceIntegration(unittest.TestCase):
         self.assertEqual(self.ctx.source(
             pending["event_id"], self.runtime.session)["text"], text)
         other = self.runtime.store.new_session("other")
-        foreign, _ = self.turn(999, session=other)
+        foreign, _ = self.turn(999, session=other, final=False)
         with self.assertRaisesRegex(ValueError, "CTXOS_SOURCE"):
             self.ctx.source(foreign["event_id"], self.runtime.session)
         self.runtime.store.message(
