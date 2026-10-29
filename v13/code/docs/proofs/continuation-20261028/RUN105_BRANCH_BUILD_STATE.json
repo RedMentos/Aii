@@ -18,8 +18,8 @@
   ],
   "blobs": {
     "prereg": "cb32022d03caa004139633819f635243905a095a",
-    "script": "6276f89f67615305882322acc98c985d819939ec",
-    "tests": "4a308b7405a8ed20d9f7de3306e6670134df75ea",
+    "script": "7c43e14778546860e601bd42dc60e82e0f882630",
+    "tests": "fb882c98b5c4061e3e510a17c99b08ee9b8c8e78",
     "imported_run93_exact": "7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02",
     "human_operator_frozen": "ef3cdd5913a47b8e6e35bbaebf97a8325ecf13cb",
     "cli_frozen": "9248e46e199a4227c296d538e6a2ef969e8e10cb",
@@ -46,5 +46,8 @@
     "whole_system_complete": false
   },
   "next_command": "Verify Run104 original ZIP and 15/15 SHA256SUMS; only if GREEN create Run105 source-bound native workflow, run pinned model, independently audit raw and privately back up. No original Run96 retroactive promotion.",
-  "remaining_execution_budget": "UNKNOWN"
+  "remaining_execution_budget": "UNKNOWN",
+  "preexecution_scope_amendment_commit": "2027c96f9f4b69bd3efd8cbb738d08517bee7d04",
+  "scope_clarification": "Scripted real Operator.run command, NOT a physical TTY or human/device trial",
+  "test_final_commit": "fdeb83d2b3c4c34c7b912fa4af11928065634870"
 }
