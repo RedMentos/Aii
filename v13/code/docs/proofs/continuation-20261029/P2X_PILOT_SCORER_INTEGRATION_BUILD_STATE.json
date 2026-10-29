@@ -1,0 +1,42 @@
+{
+  "schema": "v13.p2x.pilot_scorer_integration_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated integration reviewer",
+  "branch": "assistant/v13-p2x-pilot-scorer-integration-20261029",
+  "parent_pr": 1075,
+  "parent_sha": "ea82d7b9f0955e590b4dd7fe8d1babdb33e67088",
+  "donor_pr": 1076,
+  "donor_sha": "ed617fa463bff191c3767077a8abb57b1821e622",
+  "review_pr": 1077,
+  "prereg_commit": "ee29ef03767c1251f6b60b6265b56f9ec69596fa",
+  "import_commit": "642e35989a9937f03c0c6daaf32d9b6ddc7b9d5f",
+  "imported_exact_blobs": 7,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "expected_source_blobs": {
+    "pilot": "41b61ba3d196fc8d624e586c0f31e740002bd469",
+    "scorer": "c9509e299510540af4e43ebbc397f2e5a144142d",
+    "tokenizer_probe": "8d4683a25d7ddd2530c1e72bf33015f2b1303f6b"
+  },
+  "integration_ci": {
+    "run": 40856249467,
+    "workflow_head": "ce31554c37e27b4fad9ca62ecc55b830e283267e",
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "focused_expected": 37,
+    "full_expected": "ALL_SOFTWARE_TESTS",
+    "native_calls": 0
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6_approved": false,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Inspect Actions 40856249467; download original raw artifact and independently verify ZIP CRC, all SHA256SUMS, 8 stage exits, exact head, focused 37 tests, full suite result and privacy. Preserve RED and diagnose only observed cause. Then checkpoint verified result, private backup and continue other canonical organ work.",
+  "remaining_platform_budget": "UNKNOWN"
+}
