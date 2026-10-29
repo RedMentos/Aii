@@ -60,6 +60,8 @@ class PairedSoftware(unittest.TestCase):
         self.assertEqual(result["comparisons"]["c3_only"]["wins"], 100)
         self.assertEqual(result["comparisons"]["c3_only"]["losses"], 0)
         self.assertGreater(result["comparisons"]["c3_only"]["bootstrap_ci_95"][0], 0)
+        self.assertGreater(result["comparisons"]["c3_only"]["family_cluster_ci_95"][0], 0)
+        self.assertEqual(len(set(paired.frozen_family_map().values())), 30)
         self.assertLess(result["comparisons"]["c3_only"]["holm_adjusted_p"], .001)
         self.assertFalse(result["canonical_gate_pass"])
         self.assertEqual(result, paired.analyze(base, arms))
@@ -73,6 +75,7 @@ class PairedSoftware(unittest.TestCase):
             self.assertEqual(contrast["losses"], 0)
             self.assertEqual(contrast["mcnemar_exact_p_two_sided"], 1.0)
             self.assertEqual(contrast["bootstrap_ci_95"], [0, 0])
+            self.assertEqual(contrast["family_cluster_ci_95"], [0, 0])
 
     def test_duplicate_oracle_and_summary_tamper(self):
         base, arms = scores()
@@ -98,6 +101,13 @@ class PairedSoftware(unittest.TestCase):
         arms["details"] = [d for d in arms["details"] if d["arm"] != "shuffled"]
         with self.assertRaisesRegex(ValueError, "ARMS_COUNT"):
             paired.analyze(base, arms)
+
+    def test_family_cluster_map_must_cover_all_rows(self):
+        base, arms = scores()
+        bad = paired.frozen_family_map()
+        bad.pop(next(iter(bad)))
+        with self.assertRaisesRegex(ValueError, "FAMILY_MATCH"):
+            paired.analyze(base, arms, family_map=bad)
 
     def test_exact_mcnemar_and_holm(self):
         self.assertEqual(paired.mcnemar_exact(0, 0), 1.0)
