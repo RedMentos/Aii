@@ -22,7 +22,11 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_staged_source_revocation_20261029.py > "$e/SOURCE_BLOBS.txt"
-          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught tests.test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path tests.test_learning_invariants.DataMixBeforeTraining.test_weight_consolidation_refuses_self_only_and_trims_mixed tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest -v tests.test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught tests.test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path tests.test_learning_invariants.DataMixBeforeTraining.test_weight_consolidation_refuses_self_only_and_trims_mixed tests.test_ag6_staged_source_revocation_20261029 tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029) > "$e/FOCUSED_RAW.log" 2>&1
           echo "$?" > "$e/FOCUSED_EXIT.txt"
           python3 -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_staged_source_revocation_20261029.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
@@ -46,7 +50,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/ag6-staged-source-regression-recheck"
-          for n in FOCUSED COMPILE PRIVACY DIFF; do
+          for n in VENV DEPS FOCUSED COMPILE PRIVACY DIFF; do
             printf '%s %s\n' "$n" "$(cat "$e/${n}_EXIT.txt" 2>/dev/null || echo MISSING)"
             if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
               tail -100 "$e/${n}_RAW.log"
