@@ -1,0 +1,99 @@
+name: V13 C3 native bilingual unseen fixed-oracle heldout
+on:
+  push:
+    branches: [codex/v13-c3-native-heldout-20261029-auto10x]
+    paths: ['.github/workflows/v13-current-c3-bilingual-heldout-20261029.yml', 'v13/code/scripts/current_c3_native_bilingual_heldout_20261029.py', 'v13/code/tests/test_current_c3_native_bilingual_heldout_20261029.py']
+permissions:
+  contents: read
+concurrency:
+  group: v13-c3-native-bilingual-heldout-20261029
+  cancel-in-progress: false
+jobs:
+  heldout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Freeze oracle software checks then execute six fresh pinned native heldout cases
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c3-bilingual-heldout"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/models.json v13/code/v13/models.py v13/code/scripts/current_c3_native_linux_smoke_20261028.py v13/code/scripts/current_c3_native_bilingual_source_probe_20261029.py v13/code/scripts/current_c3_native_bilingual_heldout_20261029.py v13/code/tests/test_current_c3_native_bilingual_heldout_20261029.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v test_current_c3_native_bilingual_heldout_20261029 test_current_c3_native_bilingual_source_probe_20261029) > "$e/SOFTWARE_RAW.log" 2>&1
+            echo "$?" > "$e/SOFTWARE_EXIT.txt"
+          else
+            echo SKIPPED_DEPS_RED > "$e/SOFTWARE_RAW.log"
+            echo SKIPPED > "$e/SOFTWARE_EXIT.txt"
+          fi
+          if [ "$(cat "$e/SOFTWARE_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 16m env PYTHONPATH=v13/code "$py" v13/code/scripts/current_c3_native_bilingual_heldout_20261029.py --scratch-home "$RUNNER_TEMP/v13-c3-bilingual-heldout-scratch" --evidence-dir "$e/native" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_SOFTWARE_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED > "$e/NATIVE_EXIT.txt"
+          fi
+          "$py" - "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path(sys.argv[1])/'native/REPORT.json'
+          if not p.is_file():raise SystemExit('NO_CLOSED_NATIVE_HELDOUT_REPORT')
+          j=json.loads(p.read_text())
+          assert j['schema']=='v13.current_c3_native_bilingual_heldout.v1'
+          assert j['evidence_kind']=='LINUX_NATIVE_C3_HELDOUT_FIXED_ORACLE_ONLY'
+          assert j['model_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          assert j['runner_tar_sha256']=='9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443'
+          assert j['model_catalog_blob']=='7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          assert j['model_manager_blob']=='bd035cf8029850cce00b179edf533e53bf24358a'
+          assert [r['id'] for r in j['rows']]==['en_present','en_absent','en_revised','de_present','de_absent','de_revised']
+          assert j['n_scored']==6 and j['n_unscorable']==0 and j['status']=='CLOSED_NATIVE_HELDOUT'
+          assert all(r['scorable'] and r['native_smoke_pass'] and r['native_exit_code']==0 for r in j['rows'])
+          assert 0<=j['n_correct']<=6 and j['correct_fraction']==j['n_correct']/6
+          assert not j['utility_proven'] and not j['step2_gate_pass']
+          assert not j['c2_jef_executed'] and not j['b1_b2_executed']
+          assert not j['memory_consumer_executed'] and not j['redmi_measured']
+          assert j['age_authority']==0 and not j['tool_authority']
+          assert j['negative_gates_unchanged']['jepa_weight']==0
+          assert not j['negative_gates_unchanged']['whole_system_complete']
+          print('C3_ONLY_FRESH_NATIVE_HELDOUT_SCORED_WITHOUT_GATE_PROMOTION')
+          PY
+          echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          "$py" -m compileall -q v13/code/scripts/current_c3_native_bilingual_heldout_20261029.py v13/code/tests/test_current_c3_native_bilingual_heldout_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base eaa86721edf634e3325d045905f94443cbb7c795 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check eaa86721edf634e3325d045905f94443cbb7c795 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw native heldout and all failed rows
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-c3-bilingual-heldout-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c3-bilingual-heldout/
+          if-no-files-found: error
+      - name: Enforce source-pinned native measurement not semantic success
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c3-bilingual-heldout"
+          for n in VENV DEPS SOFTWARE NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n RED; raw preserved"; exit 1; }
+          done

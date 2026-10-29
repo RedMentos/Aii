@@ -1,0 +1,110 @@
+{
+  "schema": "v13.review_build_state.c3_bilingual_native_heldout.v1",
+  "date_utc": "2026-10-29",
+  "scope": "Review-only PR1138 child of PR1136; new unseen fixed-oracle C3 Linux-native cohort, no production merge",
+  "owner": {
+    "branch": "codex/v13-c3-native-heldout-20261029-auto10x",
+    "pr": 1138,
+    "parent_pr": 1136,
+    "parent_commit": "eaa86721edf634e3325d045905f94443cbb7c795",
+    "owned_paths": [
+      "v13/code/scripts/current_c3_native_bilingual_heldout_20261029.py",
+      "v13/code/tests/test_current_c3_native_bilingual_heldout_20261029.py",
+      ".github/workflows/v13-current-c3-bilingual-heldout-20261029.yml",
+      "v13/code/docs/C3_NATIVE_BILINGUAL_HELDOUT_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_C3_NATIVE_BILINGUAL_HELDOUT_20261029.json"
+    ]
+  },
+  "canon": {
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "prereg": {
+    "commit": "32e19dab2abb6c27c4c67cbbfca2a90237ab0168",
+    "path": "v13/code/docs/C3_NATIVE_BILINGUAL_HELDOUT_PREREG_20261029.md",
+    "registered_before_native": true,
+    "cohort": "Project Lumen, EN/DE x source160/absent/revised75",
+    "cohort_sha256": "237d2ef0391a341a1001efac272512826fd0f127c3fa8c8bb4cd99a7f8c3beb4"
+  },
+  "original_software_red": {
+    "run": 40940016761,
+    "head": "a8e4a6f95759e0324bbd902ea07af2e99c6d8047",
+    "tests": "13 total, 1 FAIL (synthetic parser control mistakenly 120 instead of frozen 160), 12 PASS",
+    "native_executed": false,
+    "artifact": 12927330147,
+    "zip_sha256": "b66ee8f015eb46bfbcfa0f63e35cfec27dc2774f5d7697d0d8279cc602a66fee",
+    "crc": true,
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-C3-Heldout/RAW_SOFTWARE_RED_40940016761_shaB66EE8.zip",
+    "private_readback": "byte-exact"
+  },
+  "native_heldout": {
+    "run": 40940312940,
+    "head": "812f92a2c35c17e35a4e9c6b7a8fc3ce92c2da29",
+    "source_blob": "d8c6d896ff55991bfc8ef091c4011b614b8809ff",
+    "test_blob": "899808668273f5ced8d263c852a8be86ed0e2ce1",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "llama_cli_sha256": "3acf625ff44f1dc28799e7e036519207b5564191d6243371bfae086b3911ed71",
+    "license": "LFM Open License 1.0",
+    "evidence_kind": "LINUX_NATIVE_C3_HELDOUT_FIXED_ORACLE_ONLY",
+    "software_tests": "13/13 PASS",
+    "native_rows": "6/6 native exit0, 6/6 generated-only parsed",
+    "score": {
+      "n_scored": 6,
+      "n_correct": 3,
+      "n_unscorable": 0,
+      "correct_fraction": 0.5,
+      "english": "3/3",
+      "german": "0/3",
+      "german_failures": [
+        "source present extra unsupported 0",
+        "no source UNKREID not UNBEKANNT",
+        "revised extra unsupported 50 Euro"
+      ]
+    },
+    "artifact": 12925808672,
+    "zip_sha256": "458629d91f41d7aa2fd371d070a8b434e1281ec82ccb29851b3250b264d87ca7",
+    "crc": true,
+    "inner_sha256": "32/32",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Automation10-C3-Heldout/RAW_NATIVE_HELDOUT_40940312940_sha458629.zip",
+    "private_readback": "byte-exact",
+    "exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "SOFTWARE": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "claim_limits": [
+    "Six-case preregistered C3-only native heldout, not a statistically generalizable utility benchmark",
+    "No JEF/C2, B1/B2, JEPA, Context OS memory consumer, tool action or Redmi",
+    "No native whole-system, learning authority or STEP2 gate promotion",
+    "Original raw pilot remains unscored, and heldout failures retained"
+  ],
+  "open_questions": [
+    "Measure German C3 failure mechanism on a separately preregistered prompt/template intervention without tuning on heldout",
+    "Investigate whether small C3 output field contamination is mitigated by a constrained answer schema; new heldout required",
+    "World-Model ablation consumer regression discovered by 3257-test full suite remains a separate review branch"
+  ],
+  "next_commands": [
+    "Verify PR1138 branch head and this BUILD_STATE remote bytes",
+    "Review German 0/3 failure with preregistered new prompts; do not relabel current errors",
+    "Continue independent canonical package and preserve negative gates"
+  ],
+  "checkpoint_reason": "Unseen six-case fixed-oracle C3 Linux-native 3/6, English3/3 German0/3; 13/13 software tests, raw ZIP private backup byte-exact; remaining platform budget UNKNOWN"
+}
