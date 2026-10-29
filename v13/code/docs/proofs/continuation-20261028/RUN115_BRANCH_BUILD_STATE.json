@@ -1,0 +1,73 @@
+{
+  "schema": "v13.run115.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run115-sixfixture-cqp20-native-20261029",
+  "base_pr": 1018,
+  "base_head": "12b0e3ad0d1876de83e2ecc38216cc9e268e26ea",
+  "prereg_first_commit": "5a3fce43be805ef1b0d7787d1a3cea0d4ae85a36",
+  "run114_audit": {
+    "actions_run": 40803179849,
+    "artifact_id": 12866744283,
+    "exact_head": "12b0e3ad0d1876de83e2ecc38216cc9e268e26ea",
+    "zip_sha256": "2bfd768a12ff54298ee5d56809e1afa8b28c5763b1fdc765bda87ba473f24e2d",
+    "zip_crc": "CLEAN",
+    "inner_sha256sums": "29/29",
+    "exits": "12/12 ZERO",
+    "focused": "16 PASS",
+    "full": "2692 PASS 1 SKIP",
+    "privacy": "CLEAN",
+    "linux_native": "B1_B2_C3_FINAL",
+    "source_exact_actions": "0/7",
+    "tool_exact_actions": "0/7",
+    "source_wrong_committed": "7/7",
+    "tool_unknown": "7/7",
+    "tool_wrong_committed": 0,
+    "step2_gate": "UTILITY_FAIL",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run114-Atlas-CQP20-Native/RAW_40803179849_sha2BFD768A.zip",
+    "private_byte_identical": true
+  },
+  "run115": {
+    "status": "PREREG_FIRST_IMPLEMENTED_SOFTWARE_CI_NOT_YET_VERIFIED_NATIVE_NOT_LAUNCHED",
+    "arm": "CQP",
+    "seed": 20,
+    "fixtures": [
+      "Atlas",
+      "Borealis",
+      "Cygnus",
+      "Delta",
+      "Epsilon",
+      "Fornax"
+    ],
+    "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+    "source_rows": 42,
+    "tool_rows": 42,
+    "script_git_blob": "07e81269560fc72b3c0d27533119fc31a140888d",
+    "tests_git_blob": "470617ed8db41ef70bf6b0144bda2a94317b7f7f",
+    "prereg_git_blob": "80454d03e9ce6168a381a59e5c7780fc5efda485"
+  },
+  "gates": {
+    "age": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "blocked": [
+    "Redmi physical device not present; do not claim phone proof",
+    "DQP/CQ and seeds21/22 require separate prereg and serialized native ownership"
+  ],
+  "next_command": "After independent software raw GREEN and no active native owner: execute pinned .github/workflows/v13-run115-sixfixture-cqp20-native.yml on the exact Run115 review branch; audit original raw ZIP, then proceed to separately preregistered matched controls.",
+  "prerequisites": [
+    "verify branch HEAD and Git blobs",
+    "software CI original raw independent GREEN",
+    "GitHub Actions no active native owners",
+    "Linux runner resources admitted",
+    "public privacy scan CLEAN"
+  ],
+  "note": "Branch scoped; no main merge; no model/fixture/source/seed hashes changed; no canonical gate promotion."
+}
