@@ -9,13 +9,13 @@
   "preimplementation_amendment_commit": "5549155d376348831640774f2b19fc7dfce39fe3",
   "original_script_commit": "06bae5957951e103d262401b29b7e2a4cf036fbf",
   "corrected_script_commit": "1c712969b586377b64b01415b40cc81301421e48",
-  "workflow_head_before_this_note": "2f6bef7bbff2e54285fa96719a7a67606e58584d",
+  "workflow_head_before_this_note": "118b840aefa18ac4d44211b19cc016d388ad0a71",
   "source_blobs": {
     "script": "c0cb959855068c3b344567c214dbfb5dccfc2c97",
-    "tests": "94e04f6d355f3087f92c367a7d5f7bbdb7d3f51a",
+    "tests": "7c9d71fd404eef15eb5576484366ac9828b5fcc5",
     "prereg": "ea7fab53b759770040590f2582739fdabbf5af63",
     "preimplementation_amendment": "7e88453ab462183ddb0ebaad44b403d347dce16a",
-    "workflow": "93087cda34b5aa9822fac749f2d294bc8941c9cd"
+    "workflow": "c7bfac4826cd6ae56bf6158c55dd7c27ff2fce4b"
   },
   "status": "PUSHED_REVIEW_BRANCH; ACTIONS_ORIGINAL_RAW_NOT_YET_AUDITED",
   "scope": "two synthetic persisted F1/F5 project facts Dovan 731, Mira 942; two serial native C3 answers and missing/conflict/forget controls",
@@ -59,5 +59,7 @@
   ],
   "next_command": "Fetch newest PR #1005 head, inspect GitHub Actions push workflow v13-run101-two-project-c3-native.yml for exact head; download ORIGINAL artifact, verify ZIP SHA256, CRC, SHA256SUMS, nine exit files, report and source hashes. Preserve original RED before any correction. If GREEN, private Library backup and independent review; then choose next non-operator Canon package.",
   "remaining_execution_budget": "UNKNOWN",
-  "main_integrated": false
+  "main_integrated": false,
+  "test_expansion_commit": "da1f8f728c49c87874f5052fa26532ecd8c48aba",
+  "test_expansion": "Added actual two-source model-free Runtime/Operator/Store/Memory restart, independent conflict and selective forget regression; not run locally"
 }
