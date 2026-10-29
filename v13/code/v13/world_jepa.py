@@ -291,10 +291,17 @@ class WorldJEPA:
         zt = self.latent(X2)
         if zt.ndim != 2 or len(zt) != len(X2) or not np.isfinite(zt).all():
             raise ValueError('Invalid WorldJEPA target latents')
+        # Exact constant rows can produce tiny positive covariance from
+        # floating mean rounding (e.g. 3 or 7 identical nonzero latents).
+        # Detect the actual zero-information condition before eigendecomp.
+        min_std = float(zt.std(0).min())
+        if not np.isfinite(min_std):
+            raise ValueError('Nonfinite WorldJEPA collapse evidence')
+        if np.all(np.ptp(zt, axis=0) == 0):
+            return {'effective_rank': 0., 'min_std': 0., 'collapsed': True}
         ev = np.clip(np.linalg.eigvalsh(np.cov(zt.T)), 0, None)
         total = float(ev.sum())
-        min_std = float(zt.std(0).min())
-        if not np.isfinite(total) or not np.isfinite(min_std):
+        if not np.isfinite(total):
             raise ValueError('Nonfinite WorldJEPA collapse evidence')
         if total == 0.:
             return {'effective_rank': 0., 'min_std': min_std, 'collapsed': True}
