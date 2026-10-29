@@ -23,6 +23,7 @@ class HumanSourceNativeValidation(unittest.TestCase):
             ("answer", "The budget for Project Elyra is 616 Euros."),
             ("answer", "The budget for Project Elyra is 615 Euros and 12 extras."),
             ("answer", "Project Elyra has -615 Euros."),
+            ("answer", "Project Elyra has 615 Euros, also Project Dovan."),
         ):
             with self.subTest(key=key, replacement=replacement):
                 changed = dict(value, **{key: replacement})
