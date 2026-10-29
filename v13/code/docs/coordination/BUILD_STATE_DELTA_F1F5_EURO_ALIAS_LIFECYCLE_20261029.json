@@ -1,0 +1,28 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29",
+  "parent": "cc2fcdaf007d74a4cbfdc2c8a01e6fa476284132",
+  "branch": "codex/v13-f1f5-euro-alias-revocation-20261029-auto10at",
+  "verified_test_commit": "b4e4508fb53bc44de042a6876e70d15478f73246",
+  "test_blob": "8990de66539d68201ed10de6408b98107b3a8675",
+  "software_ci_run": 40963561414,
+  "software_ci": "PASS",
+  "raw_artifact_id": 12936798473,
+  "raw_artifact_name": "v13-f1f5-euro-alias-40963561414-b4e4508fb53bc44de042a6876e70d15478f73246",
+  "preserved_original_failed_attempt": 40963457098,
+  "failed_attempt_reason": "Test incorrectly treated safe CLARIFY abstention question as prohibited answer; corrected to require no leaked numeric value and exact UNVERIFIABLE_SCOPED_CORRECTION.",
+  "proof_scope": "software isolated Store/Memory/Operator, no model weights or native calls",
+  "negative_gates_unchanged": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "world_jepa_utility": "UNPROVEN",
+    "redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "next": "Implement read-only multi-route World-Model operator comparison; no action selection authority."
+}
