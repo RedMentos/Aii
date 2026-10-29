@@ -1,0 +1,50 @@
+{
+  "schema": "v13.run105.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run105-human-source-c3-native-20261029",
+  "base_head": "4ddf364e127dd274884338835d2cf0407b2944d6",
+  "base_pr": 1008,
+  "parent_condition": "Run104 original raw must be independently GREEN before executing Run105 native CI",
+  "prereg_first_commit": "4b146b98f5c3ff7daf63a143711dd4b703fc1e01",
+  "source_commits": [
+    "c8dadc076ae2894f9c7c9944cb291e67e5492a65",
+    "fdc5f99e0935b390b12e354c51a33e974833df51",
+    "e61bcc1c51c6c9b4e1a0876e0108ef336903478b"
+  ],
+  "test_commits": [
+    "6240912cff1a10fec283f318ca2c239b21794bd4",
+    "325cc2606b15b2a6d346e9dfb67a96fa01a7ff2c"
+  ],
+  "blobs": {
+    "prereg": "cb32022d03caa004139633819f635243905a095a",
+    "script": "6276f89f67615305882322acc98c985d819939ec",
+    "tests": "4a308b7405a8ed20d9f7de3306e6670134df75ea",
+    "imported_run93_exact": "7b65fdaa044ebd9d564f1dd06bfa5423e40c1d02",
+    "human_operator_frozen": "ef3cdd5913a47b8e6e35bbaebf97a8325ecf13cb",
+    "cli_frozen": "9248e46e199a4227c296d538e6a2ef969e8e10cb",
+    "source_consumer_frozen": "4b73842be25e784f70ade4f6c4ced3fe2dcb9eab",
+    "catalog_frozen": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "model": {
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "seed": 13,
+    "deadline_s": 90,
+    "max_tokens": 64
+  },
+  "status": "PREREG_AND_SOURCE_STAGED; PARENT_RUN104_CI_PENDING; NO_NATIVE_EXECUTION_YET",
+  "native_calls_observed": 0,
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Verify Run104 original ZIP and 15/15 SHA256SUMS; only if GREEN create Run105 source-bound native workflow, run pinned model, independently audit raw and privately back up. No original Run96 retroactive promotion.",
+  "remaining_execution_budget": "UNKNOWN"
+}
