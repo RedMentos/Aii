@@ -1,0 +1,32 @@
+{
+  "schema": "v13.run108.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run108-step2-pointer-long-notes-20261029",
+  "base_head": "e56753ffe8fc3b78e341659a19e7af02302d9bb8",
+  "base_pr": 1009,
+  "prereg_first_commit": "fda098ebf2c7c89a44372a3bfc440c4fd195e8b5",
+  "source_commits": [
+    "6aec47da946026f8a500f66858c6ac9ce80614b9",
+    "2a9d17cbb120d60b4e31dd3c61a19970bb262c5d"
+  ],
+  "blobs": {
+    "prereg": "f801b33f0f3f46548bc654a91014ca3de9c3a889",
+    "script": "6732fe5be704018f716a0bf52b524c19d2da0707",
+    "tests": "94bc485f9582e8bf179c181c95d4420477108b0a",
+    "cognition_frozen": "1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf"
+  },
+  "status": "SOFTWARE_ONLY_SOURCE_STAGED; CI_PENDING; NO_MODEL_INFERENCE",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Run deterministic Run108 probe with original closed raw SHA256 and 5 focused/full tests, privacy/diff, independent artifact audit/private backup; use result to preregister new native STEP2 same-model one-body pointer control with long/revised notes, new seeds, no original cohort mutation.",
+  "remaining_execution_budget": "UNKNOWN"
+}
