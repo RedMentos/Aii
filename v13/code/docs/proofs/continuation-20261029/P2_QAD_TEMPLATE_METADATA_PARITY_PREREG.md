@@ -1,0 +1,7 @@
+# P2 QAD GGUF embedded chat-template byte check preregistration (2026-10-29)
+
+Source-only, no inference/training. Official QAD FP32 `qad/chat_template.jinja` at `LiquidAI/LFM2.5-350M-GGUF@657e078c94084481950a2d555a941481f715536b`, independently rehashed SHA256 `ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6`, 5487 bytes, Actions `40848748542`. Deployed QAD GGUF same pinned repo revision SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`, size 219312832. Parser pinned llama.cpp b10964 archive SHA256 `4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe`.
+
+Retrieve only pinned GGUF and the 5487-byte public template in a bounded isolated Linux source-only job, hash both, read GGUF metadata field `tokenizer.chat_template` via pinned `gguf.GGUFReader`, compare **exact UTF-8 bytes** with original QAD Jinja source; record metadata field presence, length, SHA256, equality, exact source hashes and stage exits. If absent, non-string, mismatch or source SHA RED, preserve original raw and mark RED. No prompt tokenization or logit parity is inferred even from exact template bytes. The six observed ordinary-HF-vs-QAD `added_tokens.special` differences remain a separate unresolved tokenizer issue.
+
+No new model weights, forward calls, training, adapter activation, P0X heldout, AG6 bypass, production merge or Redmi claims. All negative gates remain unchanged.
