@@ -1,0 +1,31 @@
+name: V13 full software test corpus exact source export
+on:
+  push:
+    branches:
+      - codex/v13-verified-exact-budget-20261029-auto10ad
+    paths:
+      - .github/workflows/v13-full-test-corpus-export-20261029.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Export exact tests and docs, no models or private data
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/full-test-corpus"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git archive --format=tar HEAD v13/code/tests v13/code/docs > "$e/TEST_DOC_SOURCE.tar"
+          sha256sum "$e/TEST_DOC_SOURCE.tar" > "$e/TEST_DOC_SOURCE_SHA256.txt"
+          git hash-object v13/code/v13/operator.py v13/code/scripts/ask_verified_budget.py v13/code/tests/test_verified_exact_budget_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-full-test-corpus-${{ github.sha }}
+          path: ${{ runner.temp }}/full-test-corpus/
+          if-no-files-found: error
