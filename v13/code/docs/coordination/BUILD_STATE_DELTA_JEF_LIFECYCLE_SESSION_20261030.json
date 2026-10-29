@@ -1,0 +1,53 @@
+{
+  "package": "JEF_LIFECYCLE_SESSION_BOUNDARY_20261030",
+  "scope": "review-only, software-only",
+  "parent_pr": 1174,
+  "parent_sha": "917c2c7d9d717426facd0bc6f98b126af3a4ece3",
+  "review_pr": 1175,
+  "prereg_commit": "83f1b82f9266f458551af83f110e38df5b2b1ddb",
+  "source_commit": "baa21fa053791c3aa44b80e90fde4aeb16944333",
+  "source_blob": "1c4d6eaae7bdc68785560c3fea4835e94749da6c",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "red": {
+    "run": 40974550349,
+    "head": "28f3d36b512cb7fcf98808d7635e01533d874f17",
+    "tests": 17,
+    "failures": 3,
+    "artifact": 12941179909,
+    "zip_sha256": "f1a365ef3a5234ca4a91c4c5afeb2de7599db1d3494aa68f66de3a99cfbaa073",
+    "inner_sha256_ok": 18,
+    "crc_ok": true
+  },
+  "green": {
+    "run": 40974635042,
+    "head": "baa21fa053791c3aa44b80e90fde4aeb16944333",
+    "tests": 17,
+    "passed": 17,
+    "artifact": 12941668249,
+    "zip_sha256": "2872a7e9909c2610677ac0f92f43db8f55ad5e3759a9c7eb67e01d5b257dfc12",
+    "inner_sha256_ok": 18,
+    "crc_ok": true,
+    "privacy": "CLEAN",
+    "stage_exits_all_zero": true
+  },
+  "full_suite_parent": {
+    "run": 40973462353,
+    "tests": 3360,
+    "errors": 2,
+    "skipped": 11,
+    "status": "RED_FROZEN_RUN34_RUN37_SOURCE_PREFLIGHT"
+  },
+  "current_mode": "Age0 RECORD_ONLY / read-only lifecycle",
+  "native_evidence": false,
+  "redmi_evidence": false,
+  "step2_promoted": false,
+  "b3_promoted": false,
+  "body_jepa_promoted": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Manifest provenance matching uses source-ID substring instead of typed source_ids; next independent package",
+    "Current-source full unfiltered suite retains historical frozen Run34/Run37 errors",
+    "No Redmi validation"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jefoutcome_session_20261030 tests.test_jefoutcome tests.test_jef_operator_session_20261030 tests.test_contextos_operator_session_20261029"
+}
