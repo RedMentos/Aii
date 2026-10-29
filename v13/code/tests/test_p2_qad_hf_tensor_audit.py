@@ -105,5 +105,32 @@ class AuditTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'symlinked'):
                 audit.audit(master, gg)
 
+    def test_pinned_lfm2_shortconv_squeeze1_is_explicit(self):
+        hf = {'model.layers.0.conv.conv.weight': {'shape': [1024, 1, 3], 'dtype': 'F32'}}
+        gg = {'blk.0.shortconv.conv.weight': {'shape': [3, 1024], 'type': 'Q4_0'}}
+        result = audit.compare(hf, gg, lambda _: 'blk.0.shortconv.conv')
+        self.assertEqual(result['status'], 'STRUCTURE_MATCH_PARITY_UNPROVEN')
+        self.assertEqual(result['matched_count'], 0)
+        self.assertEqual(result['approved_shape_transforms'][0]['transform'], 'LFM2_SHORTCONV_SQUEEZE1')
+
+    def test_shortconv_non_singleton_middle_dimension_rejected(self):
+        hf = {'model.layers.0.conv.conv.weight': {'shape': [1024, 2, 3], 'dtype': 'F32'}}
+        gg = {'blk.0.shortconv.conv.weight': {'shape': [3, 1024], 'type': 'Q4_0'}}
+        result = audit.compare(hf, gg, lambda _: 'blk.0.shortconv.conv')
+        self.assertEqual(result['status'], 'STRUCTURE_RED')
+        self.assertEqual(result['approved_shape_transforms'], [])
+
+    def test_same_element_count_nonconv_reshape_rejected(self):
+        hf = {'model.layers.0.ffn.weight': {'shape': [1024, 1, 3], 'dtype': 'F32'}}
+        gg = {'blk.0.ffn.weight': {'shape': [3, 1024], 'type': 'Q4_0'}}
+        result = audit.compare(hf, gg, lambda _: 'blk.0.ffn')
+        self.assertEqual(result['status'], 'STRUCTURE_RED')
+
+    def test_shortconv_wrong_axis_rejected(self):
+        hf = {'model.layers.0.conv.conv.weight': {'shape': [1024, 1, 3], 'dtype': 'F32'}}
+        gg = {'blk.0.shortconv.conv.weight': {'shape': [1024, 3], 'type': 'Q4_0'}}
+        result = audit.compare(hf, gg, lambda _: 'blk.0.shortconv.conv')
+        self.assertEqual(result['status'], 'STRUCTURE_RED')
+
 if __name__ == '__main__':
     unittest.main()
