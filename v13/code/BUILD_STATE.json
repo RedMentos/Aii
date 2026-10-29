@@ -3155,10 +3155,15 @@
       "artifact_id": 12933534420,
       "actions_zip_sha256": "c3abbd38acc66b12f4bb495849dd3faccbdca74e93286f6d4e3c6102e5dc826d"
     },
+    "result_report": "docs/proofs/continuation-20261029/FULL_SUITE_TRANSFORMERS_RESULT_20261029.md",
+    "original_artifact_id": 12935131558,
+    "original_zip_sha256": "5be46cb9fc6c73570475bd937692e06748f8267492013033c0e6519e2845d47f",
+    "original_zip_verified": "CRC_CLEAN_26_OF_26_HASHES_PRIVATE_LIBRARY_BYTE_EXACT",
+    "errors": "2 missing-peft BJ1 (direct import and unavailable fit) plus 2 frozen Run34/Run37 source pins; no waivers",
     "current_run": {
       "run": 40958983649,
       "head": "3d78cebfbea84ba5b21ee1c77fc2c3a3cfa1ddcb",
-      "status": "IN_PROGRESS_NO_PASS_CLAIM",
+      "status": "COMPLETED_FAILURE_3304_TESTS_4_ERROR_11_SKIPPED",
       "dependencies": [
         "torch==2.5.1+cpu",
         "transformers==4.44.2",
