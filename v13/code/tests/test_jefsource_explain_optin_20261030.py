@@ -103,6 +103,24 @@ class JefSourceExplainOptinTests(unittest.TestCase):
         self.assertEqual(result["explanation_status"], "SOURCE_NOT_ADMITTED")
         self.assertEqual(result["suggested_action"], "UNKNOWN")
 
+    def test_tampered_human_source_blob_suppresses_explanation(self):
+        ids = self.sources()
+        sheet = self.r.memory.candidate(ids[2], self.r.session)
+        blob = self.home / "data/blobs" / sheet["source_ref"]["sha256"]
+        blob.write_bytes(b"forged")
+        result = json.loads(self.op.run(self.cmd(ids)))
+        self.assertEqual(result["suggested_action"], "UNKNOWN")
+        self.assertIsNone(result["source_exact_explanation"])
+        self.assertEqual(result["explanation_status"], "SOURCE_NOT_ADMITTED")
+        self.assertFalse(result["human_source_lineage_verified"])
+
+    def test_foreign_session_event_is_not_an_operator_source(self):
+        ids = self.sources()
+        other = self.r.store.new_session("foreign")
+        event = self.r.store.event(other, self.row["current"])
+        with self.assertRaisesRegex(ValueError, "CURRENT_SESSION_EVENT_REQUIRED"):
+            self.op.run(self.cmd((event["event_id"], ids[1], ids[2])))
+
     def test_revocation_during_first_check_is_vetoed_by_second(self):
         ids = self.sources()
         original = admission.decide
