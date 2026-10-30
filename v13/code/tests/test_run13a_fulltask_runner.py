@@ -102,6 +102,9 @@ class Run13ASourceTests(unittest.TestCase):
             "strict_admission"]["matches"] = False
         self.assertFalse(m.summarize(rows)["all_native_structurally_valid"])
         rows = fake_rows()
+        rows[0]["arm"] = "B_B1_ONLY"
+        self.assertFalse(m.summarize(rows)["all_native_structurally_valid"])
+        rows = fake_rows()
         rows[0]["flags"]["body_offer_roles"] = ["B1_DETAIL"]
         self.assertFalse(m.summarize(rows)["all_native_structurally_valid"])
         rows = fake_rows()
