@@ -1,0 +1,61 @@
+{
+  "schema": "v13.build_state.scoped.fullsuite_run11c.v1",
+  "owner": "assistant/v13-fullsuite-currentchain-de-20261030-run11c",
+  "parent_pr": 1225,
+  "parent_head": "852f2c6ccef375cb03a0ad8318fec851f3b191ad",
+  "fullsuite": {
+    "run_id": 41018761078,
+    "tested_head": "df51911c13cd04fd345016ce842058724d76b4a7",
+    "artifact_id": 12960931826,
+    "zip_sha256": "33de529daf0f1b3dfe55e5b5cbced8c4432180647ddcb25bb37dcc79234bf277",
+    "inner_hashes": "30/30",
+    "tests": 3635,
+    "errors": 3,
+    "skips": 14,
+    "exit": 1,
+    "seconds": 392.129,
+    "dependency_imports": "ALL_ZERO",
+    "canon": "ZERO",
+    "compile": "ZERO",
+    "privacy": "CLEAN",
+    "diff": "CLEAN"
+  },
+  "errors": [
+    {
+      "test": "run34_native_quote",
+      "reason": "historical native_source_or_catalog_changed",
+      "preserve": true
+    },
+    {
+      "test": "run37_rule_use",
+      "reason": "historical native_source_or_catalog_changed",
+      "preserve": true
+    },
+    {
+      "test": "step2_expression_diagnostic",
+      "reason": "original ZIP missing in fresh CI",
+      "resolvable": true
+    }
+  ],
+  "original_artifact": {
+    "run_id": 40996792157,
+    "artifact_id": 12951963045,
+    "sha256": "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46",
+    "bytes": 297655,
+    "crc": "CLEAN",
+    "head": "5e802d235c9501879a3aff07e5134c1455e1769b"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-FullSuite/",
+  "next_package": "fresh child branch inject hash-pinned original native ZIP into CI tests directory, rerun same unfiltered suite; preserve historical RED",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}
