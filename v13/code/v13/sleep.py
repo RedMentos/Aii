@@ -161,14 +161,30 @@ class SleepCycle:
         p,_=self.s.state(POLICY_KEY,None)
         return validate_policy(default_policy()|(p or {}))
     def set_policy(self,name,value):
-        p=self.policy()
+        """Validated operator policy update; reject ambiguous booleans and stale writes."""
         if name in LOCKED:raise ValueError(name+' ist gesperrt')
-        if name=='quiet_hours':p[name]=None if value in (None,'off') else [int(x) for x in str(value).split('-')]
-        elif name=='enabled':p[name]=str(value).lower() in {'1','true','on','ja'}
-        elif name.startswith('mix.'):p['mix']=dict(p['mix'])|{name[4:]:float(value)}
-        elif name in POLICY:p[name]=type(POLICY[name][0])(float(value)) if isinstance(POLICY[name][0],float) else int(value)
-        else:raise ValueError('Unbekannter Sleep-Parameter: '+name)
-        self.s.set_state(POLICY_KEY,validate_policy(p));return p
+        for _ in range(8):
+            prior,v=self.s.state(POLICY_KEY,None)
+            p=validate_policy(default_policy()|(prior or {}))
+            if name=='quiet_hours':
+                p[name]=None if value in (None,'off') else [int(x) for x in str(value).split('-')]
+            elif name=='enabled':
+                token=str(value).strip().lower()
+                if token in {'1','true','on','ja','yes'}:p[name]=True
+                elif token in {'0','false','off','nein','no'}:p[name]=False
+                else:raise ValueError('enabled: on|off|true|false|1|0|ja|nein|yes|no')
+            elif name.startswith('mix.'):
+                p['mix']=dict(p['mix'])|{name[4:]:float(value)}
+            elif name in POLICY:
+                p[name]=type(POLICY[name][0])(float(value)) if isinstance(POLICY[name][0],float) else int(value)
+            else:raise ValueError('Unbekannter Sleep-Parameter: '+name)
+            p=validate_policy(p)
+            try:
+                self.s.set_state(POLICY_KEY,p,expected=v)
+                return p
+            except ValueError as exc:
+                if str(exc)!='Stale state write':raise
+        raise ValueError('Sleep policy CAS contention')
     # helpers ------------------------------------------------------------------------------------------
     def _allowed(self,right,resource_state):
         if self.age is None:return False
