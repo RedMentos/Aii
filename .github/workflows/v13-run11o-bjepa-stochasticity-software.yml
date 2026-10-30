@@ -41,7 +41,7 @@ jobs:
           py="$RUNNER_TEMP/v13-run11o-venv/bin/python"
           "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2             'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu             > "$e/TORCH_RAW.log" 2>&1
           echo "$?" > "$e/TORCH_EXIT.txt"
-          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2             'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52'             > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2             'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0'             > "$e/DEPS_RAW.log" 2>&1
           echo "$?" > "$e/DEPS_EXIT.txt"
           (cd v13/code && PYTHONPATH=.:scripts:tests "$py" -m unittest -v             tests.test_bodyjepa_target_mode_stochasticity_run11o             tests.test_body_jepa_target_eval_run11             tests.test_body_jepa) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
