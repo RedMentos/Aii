@@ -19,6 +19,8 @@ jobs:
       PYTHONNOUSERSITE: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 20
       - name: Download exact original Run13R ZIP (no model, no native)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +47,6 @@ jobs:
             > "$RUNNER_TEMP/run13s-evidence/TEST_RAW.log" 2>&1
           python3 -m py_compile v13/code/scripts/run13s_independent_raw_review.py \
             v13/code/tests/test_run13s_independent_raw_review.py
-          git fetch --no-tags --depth=1 origin d1f728b8373bf4331f1c763e2b76c80379ae98cc
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base d1f728b8373bf4331f1c763e2b76c80379ae98cc --head HEAD --no-worktree \
             > "$RUNNER_TEMP/run13s-evidence/PRIVACY_RAW.log" 2>&1
