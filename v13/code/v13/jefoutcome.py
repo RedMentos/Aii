@@ -129,6 +129,27 @@ def _valid_human_receipt(store, feedback, human, decision):
         return False
 
 
+def _live_self_label_source(store, label):
+    """Report only live, byte-exact outcome sources as agreement evidence.
+
+    Historical retained label counts remain visible separately. This read-only
+    check grants no training/approval authority and does not relax human vetoes.
+    """
+    if (not isinstance(label, dict)
+            or type(label.get('source_id')) is not str
+            or type(label.get('value')) is not str):
+        return False
+    source=store.one("SELECT hash,chars,kind,deleted FROM sources WHERE id=?",
+                     (label['source_id'],))
+    if (not source or source['deleted'] or source['kind']!=AUTHORITY
+            or type(source['chars']) is not int or source['chars']<0):
+        return False
+    ref={'source_id':label['source_id'],'sha256':source['hash'],
+         'char_start':0,'char_end':source['chars'],'modality':'text'}
+    try:return store.read_source(ref)==label['value']
+    except (ValueError,KeyError,TypeError,OSError,UnicodeError):return False
+
+
 def _human_label_exists(store,component,revision,context_sha256):
     """Conservative veto: active linked human feedback outranks self labels.
 
@@ -196,7 +217,8 @@ def report(r):
     st=r.store.state(KEY)[0] or {'mode':'record','labels':[]};out={'mode':st.get('mode','record'),'heads':{}}
     for comp in ('wake','memory','skill'):
         labels=[x for x in st.get('labels',[]) if x['component']==comp];agree_h=n_h=0
-        for x in labels:
+        live_labels=[x for x in labels if _live_self_label_source(r.store,x)]
+        for x in live_labels:
             # Report agreement is evidence, not merely a matching source_id.
             # Reuse the same byte-exact human receipt contract as the learner.
             saved=r.store.one(
@@ -223,7 +245,7 @@ def report(r):
                     break
         counts={}
         for x in labels:counts[x['value']]=counts.get(x['value'],0)+1
-        out['heads'][comp]={'labels':len(labels),'by_value':counts,'differs_from_scaffold':sum(x['value']!=x['baseline'] for x in labels),
+        out['heads'][comp]={'labels':len(labels),'live_labels':len(live_labels),'by_value':counts,'differs_from_scaffold':sum(x['value']!=x['baseline'] for x in labels),
                             'human_overlap':n_h,'human_agreement':round(agree_h/n_h,4) if n_h else None}
     out['claim_limit']='Self labels from outcomes, below human labels; used for :learn only in learn mode and only where no human label exists'
     return out
