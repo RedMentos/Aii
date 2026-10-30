@@ -13,6 +13,7 @@ curves show what B1/B2/C3 can do per generation. Rules:
   no recall); that would put holdout prompts into memory.
 """
 import json
+import math
 import re
 import threading
 import time
@@ -115,15 +116,35 @@ def make_solver(runtime,name='v13'):
 def run(growth,runtime,name='v13',label='manual',cancel=None,deadline=None):
     solver=make_solver(runtime,name)
     if solver is None:return {'status':'NO_SOLVER','solver':name}
-    out=growth.eval.run(solver,label=label,cancel=cancel,deadline=deadline,solver_name=name)
+    out=growth.eval.run(solver,label=label,cancel=cancel,deadline=deadline,solver_name=name,include_results=True)
     _feed_metacog(growth,name,out)
     return {'status':out['status'],'solver':name,'roles':list(solver.roles),'overall':out['summary']['overall'],
             'unseen':out['summary']['unseen'],'ece':out['summary']['calibration']['ece'],'stats':solver.stats}
 
 def _feed_metacog(growth,name,run_):
-    """AG9: (confidence, correct) per item into the component calibrator 'ag12:<solver>'. Only numbers, no prompts."""
-    if run_['status']!='DONE' or growth.home is None:return
+    """AG9 receives only validated rows from the exact completed AG12 run in memory.
+
+    No export-file reread: that file may be stale, overwritten, or tampered.
+    German diagnostics use a distinct calibration component; English stays unchanged.
+    """
+    if run_.get('status')!='DONE' or growth.home is None:return
     try:
-        rows=json.loads((growth.home/'exports/generality-last.json').read_text())['results']
-        for r in rows:growth.metacog.record('ag12:'+name,r['confidence'],r['correct'])
-    except Exception:pass
+        suite=growth.eval.suite
+        rows=run_.get('_results')
+        items=suite['items']
+        if (run_.get('suite_hash')!=suite['hash'] or run_.get('items')!=len(items)
+                or not isinstance(rows,list) or len(rows)!=len(items)):
+            return
+        for item,row in zip(items,rows):
+            if (type(row) is not dict or row.get('id')!=item['id']
+                    or type(row.get('correct')) is not int or row['correct'] not in (0,1)
+                    or type(row.get('confidence')) not in (int,float)
+                    or not math.isfinite(row['confidence'])
+                    or not 0.<=row['confidence']<=1.):
+                return
+        component='ag12:'+name+(':de' if suite['lang']=='de' else '')
+        for row in rows:
+            growth.metacog.record(component,row['confidence'],row['correct'])
+    except Exception:
+        # A failed feedback diagnostic must not grant model or Age authority.
+        return
