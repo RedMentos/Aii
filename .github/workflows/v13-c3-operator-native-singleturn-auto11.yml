@@ -1,0 +1,158 @@
+name: V13 C3 operator one-source pinned Linux native
+on:
+  push:
+    branches:
+      - 'codex/v13-c3-operator-native-singleturn-20261030-auto11c'
+    paths:
+      - 'v13/code/docs/C3_OPERATOR_NATIVE_SINGLETURN_LAUNCH_MARKER_AUTO11_20261030.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  operator-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Exact source, isolated real native call and closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/c3-operator-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          printf '%s\n' \
+            '49067d626044a40339ffa099a2dc5f3f26f8d704 v13/code/specs/listarith_de_operator_native_singleturn_auto11.txt' \
+            'a7bade39b3e9b8b9bc4db3e49f3d8068557a69b1 v13/code/scripts/listarith_de_operator_shadow.py' \
+            '25cacd7388e5464dd814f4b18c545e2ec2f78b54 v13/code/v13/agi/listarith_de_shadow_pipeline.py' \
+            'f9791c84846db660e9bde0e002defa55321f47b3 v13/code/v13/agi/listarith_de_shadow_v2_candidate.py' \
+            '35893e9f829a591ffb9a792a73cef9bce986b3c4 v13/code/v13/agi/listarith.py' \
+            'efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py' \
+            '7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json' \
+            > "$e/EXPECTED_BLOBS.txt"
+          red=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c3-operator-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/c3-operator-native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 5m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_c3_operator_receipt_boundary_auto11 \
+              tests.test_c3_de_operator_shadow_run11g_20261030 \
+              tests.test_listarith_de_closedworld_seed101_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else
+            echo SKIPPED_PINS_OR_DEPS > "$e/TEST_RAW.log"
+            echo SKIPPED_RED > "$e/TEST_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/c3-operator-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_TEST_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 25m env PYTHONPATH=v13/code "$py" \
+              v13/code/scripts/listarith_de_operator_shadow.py \
+              --native --home "$V13_HOME" \
+              --source-file v13/code/specs/listarith_de_operator_native_singleturn_auto11.txt \
+              --out "$e/OPERATOR_PRIVATE_REPORT.json" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/OPERATOR_PRIVATE_REPORT.json" ]; then
+            "$py" - "$e/OPERATOR_PRIVATE_REPORT.json" v13/code/specs/listarith_de_operator_native_singleturn_auto11.txt "$e" <<'PY' > "$e/AUDIT_RAW.log" 2>&1
+          import hashlib, json, os, pathlib, sys
+          report_path, source_path, directory = map(pathlib.Path, sys.argv[1:])
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          source = source_path.read_bytes()
+          negative = ("step2_gate_promoted", "b3_promoted", "body_jepa_available",
+                      "redmi_measured", "whole_system_complete",
+                      "live_tool_execution", "external_action_authority")
+          assert report["schema"] == "v13.c3.de.operator_shadow.v1"
+          assert report["source_sha256"] == hashlib.sha256(source.rstrip(b"\n")).hexdigest()
+          assert report["learning_mode"] == "RECORD_ONLY"
+          assert report["jepa_weight"] == 0
+          assert all(report[k] is False for k in negative)
+          assert report["evidence_level"] == "LOCAL_NATIVE_IF_VERIFIED"
+          assert report["native_attempted"] is True
+          assert report["status"] in ("SHADOW_RESULT", "SHADOW_ABSTAIN")
+          assert (os.stat(report_path).st_mode & 0o777) == 0o600
+          if report["status"] == "SHADOW_RESULT":
+              assert report["native_receipt_admitted"] is True
+              assert report["native_final"] is True
+              assert report["postclose_process_reaped"] is True
+              assert type(report["native_pid"]) is int and report["native_pid"] > 0
+              assert report["release"]["process_reaped"] is True
+              raw = report["raw_output"]
+              assert report["raw_sha256"] == hashlib.sha256(raw.encode()).hexdigest()
+          semantic = (report["status"] == "SHADOW_RESULT"
+                      and report["closedworld"]["operation"] == "total"
+                      and report["closedworld"]["value"] == 25
+                      and report["closedworld"]["input_count"] == 3)
+          (directory / "SEMANTIC_EXIT.txt").write_text("0\n" if semantic else "1\n")
+          (directory / "SEMANTIC_RAW.log").write_text(
+              json.dumps({"semantic_exact": semantic, "status": report["status"],
+                          "reason": report["reason"]}, sort_keys=True) + "\n")
+          print(json.dumps({"structural_native_receipt": report.get("native_receipt_admitted"),
+                            "status": report["status"], "semantic_exact": semantic}))
+          PY
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else
+            echo NO_NATIVE_REPORT > "$e/AUDIT_RAW.log"
+            echo SKIPPED_NO_REPORT > "$e/AUDIT_EXIT.txt"
+            echo SKIPPED_NO_REPORT > "$e/SEMANTIC_EXIT.txt"
+            echo SKIPPED_NO_REPORT > "$e/SEMANTIC_RAW.log"
+          fi
+          "$py" -m py_compile v13/code/scripts/listarith_de_operator_shadow.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base f9625470aa1ee67ea4356d36a3be8d16a84835e7 \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check f9625470aa1ee67ea4356d36a3be8d16a84835e7 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c3-operator-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c3-operator-native/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve native raw and exact gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/c3-operator-native"
+          for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE AUDIT SEMANTIC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved; no promotion"
+              tail -80 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "ONE_NATIVE_C3_OPERATOR_SHADOW_ONLY_NO_STEP2_B3_JEPA_REDMI_OR_WHOLE_SYSTEM_PROMOTION"
