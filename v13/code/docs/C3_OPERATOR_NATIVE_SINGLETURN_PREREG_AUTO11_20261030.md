@@ -1,0 +1,11 @@
+# V13 C3 operator one-source real Linux-native proof — prereg 2026-10-30
+
+Owner: GPT-6 automation, review-only child of #1228 exact parent `f9625470aa1ee67ea4356d36a3be8d16a84835e7`. No changes to frozen original seed83 cohort, source/model/catalog/binary pins or Canon. File ownership: new workflow, prereg, immutable fixture, scoped checkpoint only; native CLI source from parent is frozen for this attempt. No concurrent heavy jobs: use original `v13-step2-budget-paired-native-20261030` concurrency group with cancel-in-progress false.
+
+Goal: execute the newly implemented one-source German C3 operator SHADOW CLI **with a real pinned C3 LFM2.5-350M and llama-server** on isolated Linux runner after `v13.bootstrap` and exact source/model/binary/age preflight. This tests whether the operator path itself actually runs, emits source-bound typed arithmetic or abstains, saves raw private 0600 output, and closes/reaps its native process. A stubbed test is not native proof.
+
+Frozen fresh single source: `Inventar: Birke 4, Komet 13, Welle 8. Wie hoch ist die Summe?` Expected deterministic sum **25**, operation total, 3 values. One attempt, no prompt edits/retries/cherry-picking after observing output. Native model may fail extraction or abstain; preserve that as a negative result. Source hash and Git blob are recorded with the fixture before launch.
+
+Acceptance for technical execution: exact source HEAD, original `pilot.fixtures()` pins, installed model/binary hashes, Age0 RECORD_ONLY, real C3 PID/FINAL, postclose process-reaped, raw hash and private output, SHA256SUMS/CRC, zero stage exits. Semantic success separately requires SHADOW_RESULT with closedworld value 25 and all three exact source-bound values; otherwise report RED/ABSTAIN without promotion. No live ToolStep/C5, no new action permission, no learning, no STEP2/B3/JEPA/Redmi/whole-system promotion.
+
+Run only if original native concurrency group is free; the group serializes any later concurrent runs. Do not run another heavy job concurrently. Full unfiltered software suite is separate and historically RED (Run34/37). Next after raw: independent audit of original artifact, private backup and scoped BUILD_STATE, then continue another authorized organ.
