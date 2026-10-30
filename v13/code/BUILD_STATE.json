@@ -3977,5 +3977,64 @@
     },
     "exact_next_command": "Audit exact original artifacts for preflight 41008170038 and both serialized native runs 41007813416 / 41008162051 after terminal; preserve all failures, hash-verify and privately back up original raw; no third heavy native job.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_seed61_first_native_original_red_raw_audit": {
+    "owner": "independent original-raw triage; original native Actions terminal",
+    "run": 41007813416,
+    "source_head": "5ac90444fe2e0317a954cb4ed94730900b33d92c",
+    "artifact": 12955848461,
+    "zip_sha256": "5296bf6bdf9fda8ac2c2b95ec9b73e10a1a1eb53574038c803a9d3ac12c55ad1",
+    "crc_clean": true,
+    "original_inner_sha256_manifest": "MISSING_DUE_WORKFLOW_HEREDOC_DEFECT",
+    "status": "CI_RED_INCOMPLETE_INDEPENDENT_PROOF",
+    "stage_exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "PINS": 0,
+      "BOOTSTRAP": 0,
+      "TEST": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": "NOT_EXECUTED",
+      "PRIVACY": "NOT_EXECUTED",
+      "DIFF": "NOT_EXECUTED"
+    },
+    "software_tests": "26/26 PASS",
+    "original_native_rows": "24/24 valid_native flags; internal PILOT_COMPLETE_NO_GATE",
+    "independent_pid_receipts": {
+      "final_runner": "24/24 matched and reaped",
+      "observer_offers": "31/31 matched and reaped",
+      "isolated_single_body_observers": "OFF_NO_OFFERS"
+    },
+    "native_c2_invocations": 4,
+    "native_c2_selected": 4,
+    "registered_remainder_scores_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 6,
+      "D_DISTINCT_BOTH": 1,
+      "E_SHARED_DUAL_COLD": 1,
+      "F_NATIVE_AUTO": 0
+    },
+    "registered_comparative_signals": {
+      "distinct_vs_single_shared": false,
+      "native_auto_vs_forced": false
+    },
+    "posthoc_full_task": "B2 1/4 strict lexical full-task; other arms 0/4; exploratory NOT preregistered",
+    "posthoc_ci": 41008975067,
+    "corrected_native_run": 41008162051,
+    "corrected_native_status": "IN_PROGRESS_AT_CHECKPOINT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12-Seed61-IsolatedPostclose/ORIGINAL_NATIVE_RED_INCOMPLETE_MANIFEST_41007813416_sha5296BF.zip",
+    "private_backup_byte_identical": true,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Audit corrected native run 41008162051 original ZIP after terminal, verify full inner SHA256SUMS and all stage exits, 24 source-bound rows, privately back up; no third heavy native job. Investigate dual-vs-gist utility on new disjoint preregistered cohort.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
