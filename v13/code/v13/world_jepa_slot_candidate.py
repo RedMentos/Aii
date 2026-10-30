@@ -87,13 +87,13 @@ class SlotSharedWorldJEPA:
     def _validate(self, X, A, X2=None):
         X = _array(X, SLOTS * FEATURES, "OBS")
         A = _array(A, LOCAL_ACTIONS + SLOTS, "ACTION")
-        if len(X) != len(A):
+        if len(X) != len(A) or len(X) < 1:
             raise ValueError("RUN28_TRANSITION_LENGTH")
         ids = _decode(A)
         if X2 is None:
             return X, A, ids
         X2 = _array(X2, SLOTS * FEATURES, "NEXT_OBS")
-        if X2.shape != X.shape or len(X) < 2 or len(X) > 100000:
+        if X2.shape != X.shape or len(X) < 2 or len(X) > 50000:
             raise ValueError("RUN28_TRANSITION_SHAPE")
         return X, A, X2, ids
 
