@@ -113,7 +113,7 @@ def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resourc
     if observer_window_s is not None and ceiling!='none':
         fits=int(observer_window_s//max(p['min_body_seconds'],1e-9))
         if fits<1:ceiling='none';why.append('DEADLINE_NO_BODY')
-        elif fits<2 and plan['wake']=='both':ceiling='one' if ceiling=='one' else 'detail';why.append('DEADLINE_ONE_BODY')
+        elif fits<2 and plan['wake']=='both':ceiling='one';why.append('DEADLINE_ONE_BODY')
     if plan['max_reentry']>cfg.get('max_reentry',1):plan['max_reentry']=cfg.get('max_reentry',1);why.append('CFG_MAX_REENTRY')
     if plan['focal_slots']>cfg.get('focal_slots',8):plan['focal_slots']=cfg['focal_slots'];why.append('CFG_FOCAL_SLOTS')
     depth=min(age['focal_depth'],p['max_cycles_age0']) if age['stage']==0 else age['focal_depth']
