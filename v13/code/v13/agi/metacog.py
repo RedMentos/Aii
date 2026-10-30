@@ -8,11 +8,13 @@ estimates uncertainty from several sampled answers without a confidence head.
 The calibrated value feeds age.record(metrics['calibration']).
 """
 import math
+import re
 from .base import StateBox,clamp01
 from .generality import calibration,normalize
 
 KEY='G9_METACOGNITION';REVISION='g9-metacog-v1'
 BINS=10;WINDOW=512;MIN_SUPPORT=20
+RECEIPT_HISTORY=256  # bounded per-component duplicate suppression, not permanent exactly-once
 SECOND_ATTEMPT=(.35,.75)  # BOOT: retry band of calibrated confidence
 ABSTAIN_BELOW=.2
 
@@ -56,6 +58,32 @@ class Metacognition:
             comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
             comp['pairs']=(comp['pairs']+[[c,k]])[-WINDOW:];comp['calibrator']=self._fit(comp['pairs'])
         self.box.mutate(f)
+    def record_batch(self,component,pairs,receipt):
+        """Atomically append a validated batch, fitting PAV once and deduping recent receipts."""
+        component = _component_name(component)
+        if (type(receipt) is not str or re.fullmatch(r'[0-9a-f]{64}',receipt) is None):
+            raise ValueError('AG9_INVALID_RECEIPT')
+        if type(pairs) not in (list,tuple) or not 1<=len(pairs)<=WINDOW:
+            raise ValueError('AG9_INVALID_BATCH')
+        validated=[]
+        for pair in pairs:
+            if type(pair) not in (list,tuple) or len(pair)!=2:
+                raise ValueError('AG9_INVALID_BATCH_ROW')
+            if type(pair[1]) is not int or pair[1] not in (0,1):
+                raise ValueError('AG9_INVALID_OUTCOME_LABEL')
+            validated.append([_finite_confidence(pair[0]),pair[1]])
+        prior=self.box.load()[0]['components'].get(component)
+        if prior and receipt in prior.get('receipts',[]):
+            return {'status':'DUPLICATE','added':0}
+        def f(st):
+            comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
+            if receipt in comp.get('receipts',[]):
+                return {'status':'DUPLICATE','added':0}
+            comp['pairs']=(comp['pairs']+validated)[-WINDOW:]
+            comp['calibrator']=self._fit(comp['pairs'])
+            comp['receipts']=(comp.get('receipts',[])+[receipt])[-RECEIPT_HISTORY:]
+            return {'status':'RECORDED','added':len(validated)}
+        return self.box.mutate(f)
     @staticmethod
     def _fit(pairs):
         """Histogram binning, then pool-adjacent-violators so calibrated confidence is monotone."""

@@ -17,7 +17,7 @@ import math
 import re
 import threading
 import time
-from ..common import Cancelled,Unavailable
+from ..common import Cancelled,Unavailable,digest,dumps
 from .generality import normalize
 
 SYS='Answer with only the final answer. No explanation, no units, no extra words.'
@@ -142,9 +142,15 @@ def _feed_metacog(growth,name,run_):
                     or not math.isfinite(row['confidence'])
                     or not 0.<=row['confidence']<=1.):
                 return
+        nonce=run_.get('_feedback_nonce')
+        if type(nonce) is not str or re.fullmatch(r'g12fb_[0-9a-f]{32}',nonce) is None:
+            return
         component='ag12:'+name+(':de' if suite['lang']=='de' else '')
-        for row in rows:
-            growth.metacog.record(component,row['confidence'],row['correct'])
+        receipt=digest(dumps([nonce,suite['hash'],name,
+                              [[row['id'],row['confidence'],row['correct']] for row in rows]]))
+        growth.metacog.record_batch(component,
+                                    [(row['confidence'],row['correct']) for row in rows],
+                                    receipt=receipt)
     except Exception:
         # A failed feedback diagnostic must not grant model or Age authority.
         return
