@@ -33,7 +33,9 @@
     "privacy": "CLEAN",
     "replay_exit": 0,
     "original_raw_rows_replayed": 24,
-    "posthoc_only": true
+    "posthoc_only": true,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11T-Original-Native-Posthoc/POSTHOC_GREEN_41037868725_sha98F50F.zip",
+    "private_byte_exact": true
   },
   "posthoc_red": [
     {
@@ -44,7 +46,9 @@
       "run_id": 41037723812,
       "artifact_id": 12968248498,
       "zip_sha256": "9c7ca18e97656736631af3788f33771b705e10b6b36f4f8f99c781f3b373a6f6",
-      "reason": "synthetic primary/secondary totals shared mutable dict"
+      "reason": "synthetic primary/secondary totals shared mutable dict",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11T-Original-Native-Posthoc/POSTHOC_RED_41037723812_sha9C7CA1.zip",
+      "private_byte_exact": true
     }
   ],
   "score_totals_out_of_8": {
