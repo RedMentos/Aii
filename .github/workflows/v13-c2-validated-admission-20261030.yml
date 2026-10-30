@@ -1,0 +1,92 @@
+name: V13 C2 archived native validated flag admission review
+on:
+  push:
+    branches: [codex/v13-c2-validated-shadow-cv-20261030-auto11x]
+    paths:
+      - '.github/workflows/v13-c2-validated-admission-archived-20261030.yml'
+      - 'v13/code/scripts/c2_route96_hybrid_archived_20261030.py'
+      - 'v13/code/tests/test_c2_route96_hybrid_archived_20261030.py'
+      - 'v13/code/tests/test_c2_archived_validated_admission_20261030.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-bound-archived-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify archived original C2 rows, run deterministic CV and preserve raw
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c2-validated-admission"
+          w="$RUNNER_TEMP/v13-c2-validated-admission-work"
+          mkdir -p "$e" "$w"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          test "$(cat "$e/CANON_BLOB.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v             tests.test_c2_route96_hybrid_archived_20261030 tests.test_c2_archived_validated_admission_20261030)             > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/c2_route96_hybrid_archived_20261030.py             > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          curl -fL --retry 2 --connect-timeout 20 --max-time 180             -H "Authorization: Bearer $GH_TOKEN"             -H 'Accept: application/vnd.github+json'             'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12792493532/zip'             -o "$w/original.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ] &&
+             [ "$(cat "$e/TEST_EXIT.txt")" = 0 ] && [ "$(cat "$e/CANON_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:scripts python3               scripts/c2_route96_hybrid_archived_20261030.py               --original-zip "$w/original.zip" --out "$e/RESULT.json")               > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py             --base c7b23b863817f6ab8ad011f04c08c30387dde6b7 --head HEAD --no-worktree             > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c7b23b863817f6ab8ad011f04c08c30387dde6b7 HEAD             > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve complete original raw (no model weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-c2-validated-admission-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c2-validated-admission/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source-bound exploratory claim limit
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c2-validated-admission"
+          for stage in CANON TEST COMPILE DOWNLOAD AUDIT PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw retained; no C2 promotion"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/RESULT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['schema']=='v13.c2.archived_native_scaffold_cv.v1'
+          assert d['status'] in ('NO_C2_HYBRID_GAIN','EXPLORATORY_HYBRID_SIGNAL_NO_PROMOTION')
+          assert d['source_zip_sha256']=='c4dd65ba18b446447271d4780b0741a4dc6994ab489496592ab3447123747076'
+          assert d['original_inner_hash_count']==17
+          assert len(d['folds'])==4 and d['new_native_calls']==0
+          assert d['c2_quality_promoted'] is False and d['redmi_measured'] is False
+          assert d['age_authority']==0 and d['step2_utility_pass'] is False
+          assert d['status']=='NO_C2_HYBRID_GAIN'
+          assert d['cross_validated_hybrid']['accuracy']==0.479167
+          assert d['scaffold']['accuracy']==0.479167
+          assert d['native']['accuracy']==0.15625
+          print('ARCHIVED_C2_VALIDATED_FLAG_NO_GAIN_UNCHANGED',d['status'])
+          PY
