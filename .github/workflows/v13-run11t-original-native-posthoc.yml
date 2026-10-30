@@ -3,7 +3,7 @@ on:
   push:
     branches: [assistant/v13-run11t-native-posthoc-testfix-20261030]
     paths:
-      - '.github/workflows/v13-run11r-original-native-posthoc.yml'
+      - '.github/workflows/v13-run11t-original-native-posthoc.yml'
 permissions:
   contents: read
   actions: read
