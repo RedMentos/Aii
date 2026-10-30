@@ -1,0 +1,9 @@
+Run11O explicit pinned native mechanism assay trigger — 2026-10-30.
+Preregregistration commit 14c3ecf2c731ff4789713d9639d6543d275cf7b6 precedes implementation.
+Original run11m native 41029997425 terminal SUCCESS, negative DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN.
+Integrated run11n full unfiltered 41031045322 terminal RED, only frozen Run34/Run37 source-pin errors; original ZIP audited and backed up.
+Software run11o 41031312216 GREEN 19/19, original raw backed up.
+No other heavy model job observed in latest GitHub Actions at trigger time.
+Source blob d2065a5e023cbbe53bc0deaa17ecd8b4f99de6a1.
+Master revision 120bf032c36dd1273de754669da040dba7ad4982; SHA256 1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e.
+Probe is zero-training and no-export, model-mode mechanism only, no utility or gate promotion.

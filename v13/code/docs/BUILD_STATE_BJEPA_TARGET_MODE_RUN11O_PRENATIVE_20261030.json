@@ -1,0 +1,52 @@
+{
+  "schema": "V13_RUN11O_TARGET_MODE_PRENATIVE_CHECKPOINT",
+  "date_utc": "2026-10-30",
+  "repository": "RedMentos/Aii",
+  "branch": "assistant/v13-run11o-bjepa-target-stochasticity-20261030",
+  "parent_pr": 1243,
+  "parent_sha": "02e1f414c0ae48b70bcb49d728490da0916bdea0",
+  "prereg_commit": "14c3ecf2c731ff4789713d9639d6543d275cf7b6",
+  "probe_source_git_blob": "d2065a5e023cbbe53bc0deaa17ecd8b4f99de6a1",
+  "test_source_git_blob": "cfa31d0f40e3c6e1c0061af15c78d534d4031620",
+  "canon_git_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "body_jepa_source_git_blob": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+  "software_red": {
+    "run_id": 41031251781,
+    "head": "73f0d0007550c2a25b14a04ccaac42cdd05303a5",
+    "tests": "19 tests, 1 ERROR missing peft dependency",
+    "zip_sha256": "ffe93fa5e953cc8cb795d4f5b9b429d693696322354c85ec0376a999ebc87a57",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11O-BodyJEPA-TargetMode/SOFTWARE_RED_41031251781_shaFFE93.zip",
+    "private_readback_byte_exact": true
+  },
+  "software_green": {
+    "run_id": 41031312216,
+    "head": "a30c1724cc065f2e8479451f75938c917da917f7",
+    "tests": "19/19 PASS",
+    "zip_sha256": "37f314b0430d10c34ae33b4332472fcee0d27732de20927318287f0edde55c86",
+    "crc_clean": true,
+    "inner_hashes": "19/19",
+    "stage_exits": "8/8",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11O-BodyJEPA-TargetMode/SOFTWARE_GREEN_41031312216_sha37F314.zip",
+    "private_readback_byte_exact": true
+  },
+  "native": {
+    "status": "PREPARED_NOT_TRIGGERED",
+    "workflow": ".github/workflows/v13-run11o-bjepa-stochasticity-native.yml",
+    "trigger": "v13/code/docs/BJEPA_TARGET_MODE_STOCHASTICITY_NATIVE_TRIGGER_RUN11O.txt",
+    "model_id": "LiquidAI/LFM2.5-350M",
+    "model_revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "After run11n unfiltered suite Actions 41031045322 terminal, create trigger file on this review branch to start one pinned Linux-native target-mode mechanism assay; audit original raw ZIP, back up privately and re-read bytes.",
+  "owner": "GPT-6; independent review-only branch"
+}
