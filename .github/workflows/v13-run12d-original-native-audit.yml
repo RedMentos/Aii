@@ -1,0 +1,102 @@
+name: V13 Run12D independently audit original Run12C native ZIP
+on:
+  push:
+    branches: [assistant/v13-run12d-bjepa-native-raw-auditor-20261030-hourly11]
+    paths:
+      - 'v13/code/docs/BJEPA_RUN12D_ORIGINAL_NATIVE_AUDIT_TRIGGER_20261030.txt'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-raw-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify original native ZIP and independent prereg NLL replay
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run12d-original-native-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          test "$(git hash-object v13/code/scripts/bodyjepa_350m_contrastive_raw_audit_run12d.py)" = 40d94e455091d411cf5e1619fbd61f2bbd2bc6b4 &&
+          test "$(git hash-object v13/code/scripts/bodyjepa_350m_contrastive_disjoint_run12c.py)" = 15597550100de6ca546b1b024fbc6597fc600839 &&
+          test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/PINS_EXIT.txt"
+          python3 - "$e" > "$e/FETCH_RAW.log" 2>&1 <<'PY'
+          import hashlib,os,pathlib,shutil,sys,urllib.error,urllib.parse,urllib.request
+          e=pathlib.Path(sys.argv[1]);dest=e/'ORIGINAL_NATIVE.zip'
+          req=urllib.request.Request('https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12973177358/zip',
+              headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+              'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):return None
+          opener=urllib.request.build_opener(NoRedirect)
+          try:
+              with opener.open(req,timeout=120) as response,dest.open('wb') as out:
+                  shutil.copyfileobj(response,out)
+          except urllib.error.HTTPError as exc:
+              if exc.code not in (301,302,303,307,308):raise
+              url=urllib.parse.urlsplit(exc.headers.get('Location',''))
+              if url.scheme!='https' or not url.hostname:raise ValueError('INVALID_SIGNED_REDIRECT')
+              with urllib.request.urlopen(urllib.request.Request(urllib.parse.urlunsplit(url)),timeout=120) as response,dest.open('wb') as out:
+                  shutil.copyfileobj(response,out)
+          got=hashlib.sha256(dest.read_bytes()).hexdigest()
+          want='67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd'
+          if got!=want:raise ValueError('ORIGINAL_NATIVE_ZIP_SHA_CHANGED')
+          print('ORIGINAL_ZIP_SHA256_OK',got,'bytes',dest.stat().st_size)
+          PY
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          unset GH_TOKEN
+          if [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/PINS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:scripts python3 scripts/bodyjepa_350m_contrastive_raw_audit_run12d.py --zip "$e/ORIGINAL_NATIVE.zip" --expected-zip-sha256 67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd --expected-head 35c163f19f3ccdc1e8ebed1df5821c679d96a13a --out "$e/INDEPENDENT_AUDIT.json") > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else echo SKIPPED > "$e/AUDIT_EXIT.txt"; echo SKIPPED > "$e/AUDIT_RAW.log"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 61d4b05d080296962e72e4501c933993545d4ce1 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 61d4b05d080296962e72e4501c933993545d4ce1 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native and audit raw even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run12d-original-native-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run12d-original-native-audit/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce independent raw consistency without utility promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run12d-original-native-audit"
+          for stage in PINS FETCH AUDIT PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw preserved"
+              tail -100 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/INDEPENDENT_AUDIT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['status']=='RAW_REPORT_CONSISTENT_NOT_UTILITY_GATE'
+          assert d['native_report_consistent'] is True
+          assert d['utility_gate_pass'] is False
+          assert d['production_activation'] is False
+          assert d['redmi_measured'] is False
+          assert d['whole_system_complete'] is False
+          print('RUN12D_INDEPENDENT_RAW_CONSISTENCY_ONLY',d['diagnostic']['status'])
+          PY
