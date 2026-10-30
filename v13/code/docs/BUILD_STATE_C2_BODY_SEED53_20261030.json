@@ -34,7 +34,7 @@
     "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/PREFLIGHT_41001989486.zip",
     "private_byte_identical": true
   },
-  "native_status": "NOT_LAUNCHED_PENDING_FULLSUITE_41001786002_TERMINAL",
+  "native_status": "QUEUED_ACTIONS_41002194549_UNVERIFIED",
   "learning_mode": "RECORD_ONLY",
   "jepa_weight": 0,
   "step2_gate_promoted": false,
@@ -49,7 +49,7 @@
     "Historical Run34/Run37 full suite source-pin errors remain RED",
     "No Redmi device"
   ],
-  "next_command": "After fullsuite 41001786002 terminal, create/launch pinned native workflow for 24 serial Linux-native turns; independently verify raw and private byte backup. No gate promotion.",
+  "next_command": "At terminal run 41002194549 fetch original ZIP, verify SHA/CRC/inner SHA256SUMS/24 raw rows and all stage exits, preserve RED if any, private byte backup. Inspect fullsuite rerun 41001786002 separately. Continue next independent canonical package.",
   "software_preflight_original": {
     "run": 41001429136,
     "head": "12e754a9fde4d3ff97a526cdc279c1424e88fe2b",
@@ -83,5 +83,9 @@
     "private_byte_identical": true,
     "scope": "12/12 GREEN after Qwen B2 identity correction, before C2 native PID identity hardening"
   },
-  "review_fix_2": "Native C2 metrics memory PID must equal actual live/reaped process PID; source_errors must explicitly be []"
+  "review_fix_2": "Native C2 metrics memory PID must equal actual live/reaped process PID; source_errors must explicitly be []",
+  "native_workflow_commit": "051c2924f9f89730d5850b5e539aa4a119bb1a93",
+  "native_workflow_run": 41002194549,
+  "native_concurrency_group": "v13-step2-budget-paired-native-20261030",
+  "native_scope": "24 isolated serial Linux-native turns, no Redmi or STEP2 promotion"
 }
