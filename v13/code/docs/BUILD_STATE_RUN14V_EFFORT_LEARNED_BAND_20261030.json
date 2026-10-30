@@ -1,5 +1,5 @@
 {
-  "schema": "v13.run14v.learned_wake_band.pending_ci.v1",
+  "schema": "v13.run14v.learned_wake_band.software_green.v1",
   "date_utc": "2026-10-30",
   "owner": "GPT-6 scheduled continuation; independent C2/JEF effort band integrity",
   "parent": {
@@ -19,18 +19,54 @@
     "original_red": {
       "run": 41124856690,
       "head": "25e50acf77412fb38387757ac0f4f4d1e271a6ce",
-      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+      "artifact": 13009204332,
+      "zip_sha256": "aa7261900d96e81f1a84347e23f521406d115af8b29e63479f8b9ccd5a1b606f",
+      "tests": 24,
+      "failures": 5,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14V-EffortBand/Run14V_Effort_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
     },
-    "candidate": {
+    "candidate_green": {
       "run": 41124944903,
       "head": "d9654f9edde634c12685554a08932f30ca01d42c",
-      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+      "artifact": 13010586474,
+      "zip_sha256": "49bba8e4cb69cf266dae9182bf45a03b8a8744713918dcf5d7ccb7903236d2a3",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14V-EffortBand/Run14V_Effort_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
     }
   },
   "limitations": [
-    "No test result is claimed until original raw ZIP and candidate raw are independently checked.",
-    "GitHub Actions queue transient at checkpoint; no native/Redmi proof.",
-    "Historical full-suite RED unwaived; no production merge."
+    "37 focused software tests only; full unfiltered suite remains RED historically.",
+    "Resource/latency savings from fewer wake calls not measured on Redmi.",
+    "No production merge; no independent external review agent available."
   ],
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -41,5 +77,10 @@
     "redmi_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Monitor original RED Actions 41124856690 and candidate Actions 41124944903 to terminal. Download original ZIPs, verify CRC/SHA256SUMS/stage exits, preserve every failure and private byte-exact backups; if candidate GREEN, update checkpoint and create review-only PR based on #1337. If CI remains queued, continue independent canonical package without claiming tests."
+  "next_command": "Review Run14V draft PR and integrate only after Run14S/Run14U ancestor review. Continue an independent canonical package (C3/Body/JEPA or Sleep) with test-first and native where available; preserve historical full-suite RED. Do not promote gates.",
+  "review": [
+    "Original test-first RED confirmed before candidate source was committed (queued run head immutable); candidate passed pure policy, C2 deadline preferred wake, resource modes and runtime C3 uncertainty wake regressions.",
+    "Learned proposals cannot exceed band or hard ceiling; explicit user forced modes unaffected.",
+    "No native model or Redmi proof; no autonomous age/learning gate promotion."
+  ]
 }
