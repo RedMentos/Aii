@@ -1,0 +1,120 @@
+name: V13 seed83 pinned native German C3 arithmetic SHADOW pilot
+on:
+  push:
+    branches:
+      - 'assistant/v13-de83-native-shadow-cohort-*'
+    paths:
+      - 'v13/code/docs/DE83_NATIVE_LAUNCH_MARKER_20261030.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  native-de83:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Pinned original source and native raw, preserve all errors
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/de83-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          printf '%s\n' \
+            '6fb413f911fb91dea7da7aca1404db8925c5b3be v13/code/docs/LISTARITH_DE83_NATIVE_SHADOW_PREREG_20261030.md' \
+            'cc052aa9eaecd213124f9c79df15f30637c5a80c v13/code/specs/listarith_de83_native_shadow_frozen.json' \
+            'b410821d89313ffb862ddc347b56f43d98c73741 v13/code/scripts/listarith_de83_native_shadow.py' \
+            '623aaae86730fdd4c100625c5134fbcc6eec3b93 v13/code/scripts/listarith_de83_native_shadow_audit.py' \
+            'a0f4f0b799483ebfafe8369c822c660ce1848890 v13/code/tests/test_listarith_de83_native_shadow_20261030.py' \
+            'ca2d8c52584f3ee7ea66865b6aa212de816a6895 v13/code/tests/test_listarith_de83_native_shadow_audit_20261030.py' \
+            '25cacd7388e5464dd814f4b18c545e2ec2f78b54 v13/code/v13/agi/listarith_de_shadow_pipeline.py' \
+            'f9791c84846db660e9bde0e002defa55321f47b3 v13/code/v13/agi/listarith_de_shadow_v2_candidate.py' \
+            '35893e9f829a591ffb9a792a73cef9bce986b3c4 v13/code/v13/agi/listarith.py' \
+            'efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py' \
+            '7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json' \
+            > "$e/EXPECTED_BLOBS.txt"
+          red=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/de83-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/de83-native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_listarith_de83_native_shadow_20261030 tests.test_listarith_de83_native_shadow_audit_20261030 tests.test_listarith_de_shadow_pipeline_20261030 tests.test_listarith_de_seed79_native_posthoc_replay_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else
+            echo SKIPPED_PIN_OR_DEPS_RED > "$e/TEST_RAW.log"
+            echo SKIPPED_RED > "$e/TEST_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-de83-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_TEST_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 35m env PYTHONPATH=v13/code "$py" v13/code/scripts/listarith_de83_native_shadow.py --home "$V13_HOME" --out "$e/pilot" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/pilot/report.json" ]; then
+            env PYTHONPATH=v13/code "$py" v13/code/scripts/listarith_de83_native_shadow_audit.py --dir "$e/pilot" --out "$e/INDEPENDENT_AUDIT.json" > "$e/REPORT_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo NO_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_NO_REPORT > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          "$py" -m py_compile v13/code/scripts/listarith_de83_native_shadow.py v13/code/scripts/listarith_de83_native_shadow_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 22cbd1bcd4e31091eb6a4f3e0bb5d818367b339b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 22cbd1bcd4e31091eb6a4f3e0bb5d818367b339b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-de83-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/de83-native/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Verify raw and preserve original negative gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/de83-native"
+          for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained; no gate"
+              tail -80 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          if ! grep -q '"status": "NATIVE_DE83_SHADOW_PILOT_SIGNAL"' "$e/pilot/report.json"; then
+            echo "NATIVE_DE83_SHADOW_NOT_SUPPORTED_OR_PARTIAL; no gate promotion"
+            exit 1
+          fi
+          echo "NATIVE_DE83_PILOT_SIGNAL_ONLY_NO_STEP2_B3_JEPA_REDMI_OR_WHOLE_SYSTEM_GATE"
