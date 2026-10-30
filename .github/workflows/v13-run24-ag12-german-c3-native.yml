@@ -36,6 +36,7 @@ jobs:
           04ca9fb8190407a0d896c9789c932b7165930627 v13/code/docs/AG12_GERMAN_C3_NATIVE_PREREG_RUN24_20261030.md
           b781461e8fae5de9a519a0216d4d9a6a773eb498 v13/code/scripts/run24_ag12_german_c3_native.py
           04226718c4cbbd1d1f84ee01eed890b036211809 v13/code/tests/test_run24_ag12_german_c3_native.py
+          3a5c13e14307d08c894476fa7acfc145acb16d00 v13/code/tests/test_ag12_german_body_eval_run23.py
           7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
           bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py
           dc23e192bcd01589475692666ebb6568c80d078b v13/code/v13/bootstrap.py
