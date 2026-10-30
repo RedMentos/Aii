@@ -45,6 +45,7 @@ class FakeRuntime:
         self.models = FakeModels()
         self.pool = FakePool()
         self.needle = FakeNeedle()
+        self.store = object()
         self.cfg = {"deadline_seconds": 1.0, "observer_seconds": 1.0}
         self.session = "test-session"
         self.closed = False
