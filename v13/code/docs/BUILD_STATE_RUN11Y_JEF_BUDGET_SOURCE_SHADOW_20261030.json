@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN11Y_SEED197_SOFTWARE_PREFLIGHT_PENDING",
+  "schema": "V13_RUN11Y_SEED197_SOFTWARE_GREEN_SHADOW_ONLY",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run11y-jef-budget-source-shadow-20261030",
@@ -20,8 +20,18 @@
   "software": {
     "run_id": 41042568321,
     "head": "1d02887590416da6063e3303843de9720a7edcdb",
-    "status": "IN_PROGRESS",
-    "result": "UNKNOWN"
+    "status": "GREEN",
+    "artifact_id": 12970732096,
+    "zip_sha256": "788bb9ac9ddb053214ea978a710f26634575ee2cd0a996f0146c54b522adea92",
+    "bytes": 3411,
+    "zip_entries": 17,
+    "sha256_manifest_entries": 16,
+    "crc": "PASS",
+    "stage_exits": "7/7 zero",
+    "tests": "6/6 PASS (8/8 seed197 Store positives, adversarial negatives, restart, revocation, tamper)",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Y-JEF-Budget197/SOFTWARE_GREEN_41042568321_sha788BB9AC.zip",
+    "private_backup_byte_exact": true
   },
   "native": {
     "launched": false,
@@ -37,5 +47,5 @@
     "redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "next_command": "Wait for Actions 41042568321 terminal; download original raw ZIP and verify SHA/CRC/SHA256SUMS/HEAD/stages/tests/privacy; preserve RED, fix only new candidate/test/workflow if needed; private Library byte-exact backup; update scoped BUILD_STATE and PR. Then continue next canonical package."
+  "next_command": "Cross-review Run11Y candidate and independent negative counterexamples; then preregister actual native C3/Body/C2 consumer utility experiment on new disjoint sources. No authority or gate promotion from 6 software tests."
 }
