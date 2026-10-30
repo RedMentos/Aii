@@ -92,7 +92,7 @@ jobs:
                       "redmi_measured", "whole_system_complete",
                       "live_tool_execution", "external_action_authority")
           assert report["schema"] == "v13.c3.de.operator_shadow.v1"
-          assert report["source_sha256"] == hashlib.sha256(source.rstrip(b"\n")).hexdigest()
+          assert report["source_sha256"] == hashlib.sha256(source).hexdigest()
           assert report["learning_mode"] == "RECORD_ONLY"
           assert report["jepa_weight"] == 0
           assert all(report[k] is False for k in negative)
