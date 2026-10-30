@@ -42,7 +42,8 @@ class OutputReceiptBinding(SourceBoundFallback):
     def test_missing_wrong_or_malformed_output_binding_is_fallback(self):
         answer = self.linked["answer"]
         for receipt in (
-            self.receipt(),
+            {k: v for k, v in self.receipt().items()
+             if not k.startswith('native_output_')},
             self.bound(answer, native_output_sha256="0" * 64),
             self.bound(answer, native_output_sha256=mux._sha(answer).upper()),
             self.bound(answer, native_output_sha256=True),
@@ -52,6 +53,18 @@ class OutputReceiptBinding(SourceBoundFallback):
         ):
             with self.subTest(receipt=receipt):
                 self.assert_fallback(answer, receipt)
+
+    def test_bound_wrong_fact_still_rejected_by_source_fidelity(self):
+        answer = self.linked["answer"]
+        wrong = answer.replace(" finishes sooner.", " finishes later.")
+        self.assertNotEqual(wrong, answer)
+        result = self.select(wrong, self.bound(wrong))
+        self.assert_shadow(result)
+        self.assertEqual(result["selected_provenance"],
+                         "JEF_VERIFIED_FALLBACK_SHADOW")
+        self.assertTrue(result["native_receipt_bound"])
+        self.assertEqual(result["c3_fidelity_reason"],
+                         "CANDIDATE_FACT_MISMATCH")
 
     def test_boolean_native_calls_cannot_claim_one_native_call(self):
         answer = self.linked["answer"]
