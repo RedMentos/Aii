@@ -17,10 +17,12 @@ def safe_confidence(metrics):
     fallback. A present invalid highest-priority field is a hard zero, not
     permission to select a lower-priority value. No model/Store side effects.
     """
-    if metrics is None or metrics == {}:
+    if metrics is None:
         return 0.5, "none"
     if type(metrics) is not dict:
         return 0.0, "invalid:metrics"
+    if not metrics:
+        return 0.5, "none"
     if "token_confidence" not in metrics:
         return 0.5, "none"
     tc = metrics["token_confidence"]
