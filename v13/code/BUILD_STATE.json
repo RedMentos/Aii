@@ -3601,5 +3601,39 @@
     "exact_next_command": "Preregister a fresh paired STEP2 no-body/one-body/both native semantic utility scorer against current pinned source; keep current historical cohorts unchanged.",
     "next_prerequisites": "Fixed disjoint semantic fixtures, original baseline and counterfactual, serialized pinned native runs, actual Redmi evidence separately.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_jef_selflabel_source_admission": {
+    "scope": "JEF_WP_U1_SELF_OUTCOME_LIVE_SOURCE_TRAINING_ROW_ADMISSION",
+    "owner": "V13 hourly automation; review-only",
+    "parent_head": "81ca76bc6637a5f543f364cf7464f3a241ce0bf3",
+    "branch": "codex/v13-jef-selflabel-source-admission-20261030-auto11ae",
+    "pr": null,
+    "prereg_commit": "541c656755ef7c3e1cec58378bae3aadc3740838",
+    "original_red_head": "db2be76fccdc3ce3a7af023b4491e21edf1727c8",
+    "original_red_run": 40988049715,
+    "original_red_tests": "19 total / 3 expected FAIL / 16 PASS",
+    "source_green_head": "5c4ae0f53528947ccee71760500dce4470bec7ca",
+    "source_blob": "b68661541990cf94b538b9aebf0c7dff35e0ac1a",
+    "green_run": 40988140394,
+    "green_tests": "19/19 PASS",
+    "stage_exits": "8/8 exit0",
+    "red_zip_sha256": "e7aac9659ef6b4bbb280c20e3b7eae0509ff3c5b9e6e334297a9908b53e30927",
+    "green_zip_sha256": "6f08b4621119300158ad38e15f852dda060d7264aaeb5d10689214360a5b0670",
+    "raw_crc_clean": true,
+    "raw_inner_hashes": "18/18 both",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEF-SelfLabelSource/",
+    "remote_bytes_verified": true,
+    "claim": "SOFTWARE_SOURCE_REVOCATION_AND_DECISION_LINEAGE_ADMISSION_ONLY",
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Run full unfiltered software suite on current combined source with pinned CPU torch Transformers PEFT, preserve frozen historical errors; then STEP2 paired utility candidate.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
