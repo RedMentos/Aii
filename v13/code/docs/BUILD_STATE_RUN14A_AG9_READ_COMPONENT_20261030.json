@@ -8,7 +8,7 @@
   },
   "branch": "assistant/v13-run14a-ag9-invalid-component-read-20261030-hourly11",
   "pr": 1318,
-  "state": "SOURCE_REMOTE_VERIFIED_TEST_FIRST_AND_CANDIDATE_CI_QUEUED",
+  "state": "ORIGINAL_TESTFIRST_RED_CANDIDATE_SOFTWARE_GREEN_PRIVATE_BYTE_VERIFIED",
   "prereg_commit": "40f7371665fe8a3e34941fe06b99a6fd997063ed",
   "test_first_commit": "df23f7440481be85105776ebbda96dd2819ce53d",
   "test_first_workflow_commit": "229ea7d4f9f75ff9dabcdeac8ff3fffcdff5cc01",
@@ -23,19 +23,46 @@
   "ci": {
     "red_run": 41103491267,
     "green_run": 41103632027,
-    "observed_status": "QUEUED",
-    "red_result": "UNKNOWN",
-    "green_result": "UNKNOWN",
-    "original_raw_zip_sha256": null,
-    "candidate_raw_zip_sha256": null
+    "red_head": "229ea7d4f9f75ff9dabcdeac8ff3fffcdff5cc01",
+    "green_head": "873f98722ab93c000ca11cbff65127bd99a49a3d",
+    "red_status": "completed/failure",
+    "green_status": "completed/success",
+    "red_tests": 15,
+    "red_failures": 8,
+    "red_errors": 2,
+    "green_tests": 15,
+    "green_failures": 0,
+    "red_original_zip_sha256": "04bae8a5f3db093448221fffe85a729d5019ca263fd5972303321a081714ff27",
+    "green_original_zip_sha256": "e949ae3e42ae3a280be2387616c3e7020818b605d954233b372ac24163698fcf",
+    "red_inner_sha256": "12/12 PASS",
+    "green_inner_sha256": "12/12 PASS",
+    "red_crc": "PASS",
+    "green_crc": "PASS",
+    "green_stage_exits": {
+      "PINS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "red_stage_exits": {
+      "PINS": 0,
+      "TEST": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14A-AG9-ReadComponent/",
+    "private_readback": "BYTE_IDENTICAL_SHA256"
   },
   "change": "Read-side _component_name validation prevents unhashable lookup TypeError and invalid-component extra compute; valid unknown component and confidence gates preserved.",
-  "tests": "4 new preregistered tests plus existing 11 Run13Y/Z focused tests, pending exact GitHub CI",
-  "evidence_scope": "SOFTWARE_SOURCE_ONLY_PENDING",
+  "tests": "Original test-first 15 focused tests: 8 failures + 2 errors; candidate same 15 focused tests PASS. Exact original GitHub Actions ZIPs independently CRC/SHA256SUMS verified.",
+  "evidence_scope": "EXACT_GITHUB_ACTIONS_SOFTWARE_ONLY_VERIFIED",
   "open_questions": [
-    "Obtain terminal test-first RED and candidate GREEN original ZIPs, verify CRC/inner SHA256/stage exits and privacy.",
-    "Run independent read-side adversarial counterexamples and unfiltered historical full suite without waivers.",
-    "No private backup attempted; public GitHub source checkpoint verified, raw evidence pending."
+    "Independent unfiltered full-suite remains required; historical 120 RED identities are not waived.",
+    "No native/model/Redmi evidence or age calibration authority; no production merge.",
+    "Separate Run14B AG12 candidate is independently scoped and not integrated."
   ],
   "gates": {
     "learning_mode": "RECORD_ONLY",
@@ -46,5 +73,5 @@
     "redmi_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Poll GitHub Actions 41103491267 and 41103632027 to terminal, download exact raw artifacts, verify hashes/exit/test counts; update scoped checkpoint and PR, then continue next canonical package."
+  "next_command": "Independently review PR #1318 source diff and run unfiltered cross-organ full suite on an integration branch when a stable chain is selected; keep historical RED and all negative gates. Continue Run14B AG12 test-first/raw verification; do not merge PRs automatically."
 }
