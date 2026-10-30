@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from scripts import run13l_c3_system_native as l
 from scripts import run13j_c3_jef_native as j
+from scripts import run13k_c3_copy_native as k
 from v13.agi import jef_c3_shadow_fallback_run13v as mux
 from v13.agi.c3_source_fidelity_shadow_run13m import TRUSTED
 from v13.runtime import Runtime
@@ -130,6 +131,15 @@ class C3StructuredSourceShadow(unittest.TestCase):
                 result = self.select(raw, bad)
                 self.assert_shadow(result)
                 self.assertEqual(result["selected_provenance"], "JEF_VERIFIED_FALLBACK_SHADOW")
+
+    def test_legacy_copy_prompt_receipt_cannot_authorize_structured_json(self):
+        raw = self.raw()
+        old_hash = mux._sha(k.COPY_PREFIX + self.linked["answer"] + k.COPY_SUFFIX)
+        receipt = self.receipt(raw, prompt=old_hash)
+        result = self.select(raw, receipt)
+        self.assert_shadow(result)
+        self.assertEqual(result["selected_provenance"], "JEF_VERIFIED_FALLBACK_SHADOW")
+        self.assertEqual(result["selected_text"], self.linked["answer"])
 
     def test_revoked_source_abstains_even_with_structured_native_receipt(self):
         raw = self.raw()
