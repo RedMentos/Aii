@@ -116,7 +116,26 @@ class EventScheduler:
         return True
     def background_since_input(self):
         """Background dispatches since the last accepted user turn."""
-        row=self.s.one('SELECT MAX(accepted_at) AS t FROM accepted_turns');last=row['t'] if row and row['t'] else 0.
+        row=self.s.one('SELECT MAX(accepted_at) AS t FROM accepted_turns')
+        last=0.
+        if row and row['t'] is not None:
+            try:
+                last=float(row['t'])
+            except (TypeError,ValueError,OverflowError):
+                return DISPATCH_LEDGER_MAX
+            if not math.isfinite(last):
+                return DISPATCH_LEDGER_MAX
+            # A wall-clock rollback after the last accepted user turn must
+            # not make every dispatch appear older than that turn forever,
+            # resetting the burnout budget to zero on every background wake.
+            try:
+                clock_now=float(self.clock())
+            except (TypeError,ValueError,OverflowError) as exc:
+                raise ValueError('Scheduler budget clock must be finite') from exc
+            if not math.isfinite(clock_now):
+                raise ValueError('Scheduler budget clock must be finite')
+            if last>clock_now:
+                return DISPATCH_LEDGER_MAX  # > max configured burnout budget
         st,_=self._load()
         # Persistent per-dispatch ledger counts RETRY/CANCELLED attempts and
         # survives the 64-entry compact event-history eviction. The bounded
