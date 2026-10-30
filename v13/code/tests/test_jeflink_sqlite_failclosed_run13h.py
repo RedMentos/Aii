@@ -78,6 +78,17 @@ class Run13HSqliteFailureContainment(unittest.TestCase):
             finally:
                 runtime.close()
 
+    def test_idle_preflight_sqlite_error_is_contained(self):
+        with TemporaryDirectory() as td:
+            runtime = Runtime(Path(td))
+            try:
+                with patch.object(runtime.store, "one",
+                                  side_effect=sqlite3.OperationalError("idle read failure")):
+                    got = json.loads(Operator(runtime).run(":jeflink last"))
+                self._assert_denied(got)
+            finally:
+                runtime.close()
+
     def test_malformed_explicit_ids_still_rejected_before_store_read(self):
         with TemporaryDirectory() as td:
             runtime = Runtime(Path(td))
