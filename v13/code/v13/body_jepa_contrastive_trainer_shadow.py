@@ -9,7 +9,7 @@ import json
 import time
 
 from .body_jepa import (
-    BodyJepaTrainer, EmaAdapter, pad, last_token_latent, make_predictor,
+    BodyJepaTrainer, MODES, EmaAdapter, pad, last_token_latent, make_predictor,
     minor_subspace_init, derangement, ema_target_latent, effective_rank,
 )
 from .body_jepa_contrastive_shadow import loss_and_metrics
