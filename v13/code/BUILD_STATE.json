@@ -3371,7 +3371,9 @@
     "unfiltered_crossorgan": {
       "branch": "codex/v13-jef-record-fullsuite-20261030-auto11u",
       "run": 40984606331,
-      "status": "IN_PROGRESS_RESULT_UNKNOWN",
+      "status": "RED_ONLY_HISTORICAL_RUN34_RUN37_FROZEN_SOURCE",
+      "original_raw_zip_sha256": "020834f5050b35927b2132844c36a72faf24cf2f82612b7f96a1f9848b7071f1",
+      "tests": "3395 total, 2 historical frozen-source errors, 11 skipped, no other errors",
       "historical_frozen_Run34_Run37": "EXPECTED_RED_NOT_WAIVED"
     },
     "gates": {
@@ -3391,6 +3393,59 @@
       "Full current-source STEP2 semantic complementarity still UTILITY_FAIL.",
       "Body-JEPA latent objective lacks attributable heldout utility and remains inactive."
     ],
+    "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_fullsuite_c3_native": {
+    "scope": "CURRENT_CHAIN_SOFTWARE_FULLSUITE_AND_REAL_C3_NATIVE_LINUX_RECHECK",
+    "owner": "V13 hourly automation; native and software jobs serialized",
+    "parent_head": "eec47c269eadd08a1d6035107ea6351cc5af1268",
+    "native_branch": "codex/v13-current-c3-linux-native-recheck-20261030-auto11y",
+    "native_pr": 1189,
+    "fullsuite": {
+      "run": 40984606331,
+      "source_head": "7926e85ee7ebb33d4f9a43d8ad821758c08f686e",
+      "tests": 3395,
+      "errors": 2,
+      "skipped": 11,
+      "unexpected_errors": 0,
+      "reason": "Only historical frozen Run34 and Run37 native_source_or_catalog_changed",
+      "status": "RED_NO_WAIVER",
+      "zip_sha256": "020834f5050b35927b2132844c36a72faf24cf2f82612b7f96a1f9848b7071f1",
+      "inner_hashes": "30/30",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEF-FullSuite",
+      "raw_bytes_verified": true
+    },
+    "c3_native": {
+      "run": 40985573677,
+      "source_head": "732133f244caafadabf6b09e294d678bd6447ac7",
+      "status": "GREEN_LINUX_NATIVE_C3_ONLY",
+      "model": "LiquidAI/LFM2.5-350M-GGUF",
+      "model_revision": "657e078c94084481950a2d555a941481f715536b",
+      "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+      "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+      "native_elapsed_s": 0.818,
+      "guards": "4/4 PASS",
+      "stage_exits": "6/6 zero",
+      "zip_sha256": "a567b6ffd46313ffd6f17f8189b1ef59aa32a21535f87442b60688c9bbae62ff",
+      "inner_hashes": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C3-NativeRecheck",
+      "raw_bytes_verified": true,
+      "redmi_measured": false,
+      "c2_jef_executed": false,
+      "b1_b2_executed": false
+    },
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+    "next_prerequisites": "Review actual current C2+JEF+C3 full-turn Linux native with exact source/model pins; Redmi requires user device. Do not claim full system from C3-only; do not overlap heavy native jobs.",
     "remaining_platform_budget": "UNKNOWN"
   }
 }
