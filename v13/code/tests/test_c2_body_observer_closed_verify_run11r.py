@@ -52,6 +52,56 @@ def synthetic_all_invalid(directory):
     return report
 
 
+
+def inject_valid_synthetic_c3(directory, report):
+    """One positive *synthetic* replay row; other 23 remain explicit RED."""
+    directory = Path(directory)
+    fixture = m.FIXTURES[0]
+    arm = "A_C3_ONLY"
+    output = "Cedar: 149 Euro remaining. Garnet: 41 Euro remaining."
+    audit = {
+        "event_id": "synthetic-event", "output": output,
+        "checks": {"source_refs_valid": True}, "source_errors": [],
+        "offers": [],
+        "output_metadata": {
+            "route": {"source": "OPERATOR_ROUTE_OVERRIDE"},
+            "c2_packet": {"route": "simple"},
+            "runner": {"role": "C3_LANGUAGE", "actual_model": m.LANGUAGE_MODEL},
+            "model_generated": True,
+        },
+    }
+    receipts = [{"role": "C3_LANGUAGE", "process_reaped": True}]
+    flags = m.row_evidence(audit, arm, receipts)
+    assert flags["valid_native"] is True  # software stub, NOT native evidence
+    raw = {
+        "index": 0, "fixture": fixture["project"], "arm": arm,
+        "prompt": m.prompt(fixture), "event_id": "synthetic-event",
+        "session_id": "synthetic-session", "raw_audit": audit,
+        "final_output": output, "context_packet": None,
+        "body_process_releases_before_close": [],
+        "body_process_releases": receipts,
+        "release_capture_phase": "after_close",
+        "native_c2_alive_before_close": False,
+        "source_exact_before_close": False,
+        "native_c2_process_reaped": True, "native_c2_pid": None,
+        "b1_model_key": "body", "b2_model_key": "gist",
+        "b2_control": "two_body", "flags": flags,
+        "score": m.score_primary(fixture, output),
+        "secondary_score": m.score_pair(fixture, output),
+        "learning_mode": "RECORD_ONLY", "jepa_weight": 0,
+        "step2_gate_promoted": False, "b3_promoted": False,
+        "body_jepa_available": False, "redmi_measured": False,
+        "whole_system_complete": False,
+    }
+    row = {k: value for k, value in raw.items()
+           if k not in ("raw_audit", "context_packet", "prompt", "route_info")}
+    report["rows"][0] = row
+    report["score_totals_out_of_8"][arm] = row["score"]["correct"]
+    report["secondary_totals_out_of_8"][arm] = row["secondary_score"]["correct"]
+    write_json(directory / "report.json", report)
+    write_json(directory / "raw" / f"00_{arm}.json", raw)
+    return raw
+
 class VerifyRun11R(unittest.TestCase):
     def test_structural_red_does_not_become_native_green(self):
         with tempfile.TemporaryDirectory() as d:
@@ -108,6 +158,34 @@ class VerifyRun11R(unittest.TestCase):
             write_json(Path(d) / "report.json", report)
             write_json(Path(d) / "raw" / f"00_{row['arm']}.json", row)
             with self.assertRaisesRegex(ValueError, "ERROR_ROW_FORGED"):
+                v.verify_report(d)
+
+
+    def test_one_synthetic_positive_row_replayed_without_promoting_red(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            inject_valid_synthetic_c3(d, report)
+            verdict = v.verify_report(d)
+            self.assertEqual(verdict["status"], "PILOT_PARTIAL_RED")
+            self.assertEqual(verdict["primary_totals"]["A_C3_ONLY"], 2)
+            self.assertFalse(verdict["utility_gate_pass"])
+
+    def test_tampered_synthetic_native_score_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            raw = inject_valid_synthetic_c3(d, report)
+            raw["final_output"] = "Cedar: 150 Euro remaining."
+            write_json(Path(d) / "raw" / "00_A_C3_ONLY.json", raw)
+            with self.assertRaisesRegex(ValueError, "RAW_REPORT_DIVERGENCE|SOURCE_OR_EVENT_CHANGED"):
+                v.verify_report(d)
+
+    def test_tampered_postclose_release_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            raw = inject_valid_synthetic_c3(d, report)
+            raw["body_process_releases"] = []
+            write_json(Path(d) / "raw" / "00_A_C3_ONLY.json", raw)
+            with self.assertRaisesRegex(ValueError, "NATIVE_FLAGS_REPLAY_MISMATCH"):
                 v.verify_report(d)
 
     def test_report_symlink_rejected(self):
