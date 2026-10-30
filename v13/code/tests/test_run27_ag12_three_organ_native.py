@@ -135,7 +135,20 @@ class Run27ThreeOrganSoftware(unittest.TestCase):
             if bad and lang == "en":
                 stats["B2_GIST"]["items"] = 87
             return {"status": "DONE", "roles": list(pilot.ROLES), "stats": stats}
+        def fake_hash(path):
+            path = Path(path)
+            if path == archive:
+                return pilot.RUNNER_SHA
+            if path == binary:
+                return pilot.RUNNER_BINARY_SHA
+            for role, model_path in paths.items():
+                if path == model_path:
+                    return {"C3_LANGUAGE": pilot.C3_SHA,
+                            "B1_DETAIL": pilot.BODIES["b1"]["sha"],
+                            "B2_GIST": pilot.BODIES["b2"]["sha"]}[role]
+            raise AssertionError("unregistered fake path")
         with patch.object(pilot, "install", side_effect=fake_install), \
+             patch.object(pilot, "file_hash", side_effect=fake_hash), \
              patch.object(pilot, "Runtime", return_value=runtime), \
              patch.object(pilot, "hub", return_value=object()), \
              patch.object(pilot.sv, "run", side_effect=fake_run):
