@@ -69,7 +69,9 @@ class Metacognition:
         for pair in pairs:
             if type(pair) not in (list,tuple) or len(pair)!=2:
                 raise ValueError('AG9_INVALID_BATCH_ROW')
-            validated.append([_finite_confidence(pair[0]),_binary_label(pair[1])])
+            if type(pair[1]) is not int or pair[1] not in (0,1):
+                raise ValueError('AG9_INVALID_OUTCOME_LABEL')
+            validated.append([_finite_confidence(pair[0]),pair[1]])
         prior=self.box.load()[0]['components'].get(component)
         if prior and receipt in prior.get('receipts',[]):
             return {'status':'DUPLICATE','added':0}
