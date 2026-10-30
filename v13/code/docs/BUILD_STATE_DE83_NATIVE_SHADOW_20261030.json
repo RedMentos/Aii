@@ -34,10 +34,31 @@
     "privacy": "CLEAN"
   },
   "native": {
-    "status": "NOT_LAUNCHED",
-    "concurrency_group": "v13-step2-budget-paired-native-20261030"
+    "status": "NATIVE_DE83_SHADOW_PILOT_SIGNAL",
+    "run_id": 41013265710,
+    "source_head": "b0d81e4e811a7c9482a717fb03eea99a1d893b17",
+    "artifact_id": 12958586993,
+    "zip_sha256": "e92fda4b20a0ba01e533d1b2a343091fb4f46bebe7c9e8a60efdf3f2ca667f57",
+    "crc_clean": true,
+    "inner_sha256_count": 48,
+    "stage_exits": "10/10 ZERO",
+    "source_pins": "11/11 EXACT",
+    "tests": "43/43 PASS",
+    "privacy": "CLEAN",
+    "native_rows": 24,
+    "unique_pids": 24,
+    "all_reaped": true,
+    "supported_correct": 15,
+    "supported_wrong_emitted": 0,
+    "unsupported_false_positive": 0,
+    "unsupported_abstained": 8,
+    "invented_nonaggregate": 0,
+    "only_supported_abstain": "D83-01 header Kassenbuch instead of Aster",
+    "evidence": "LINUX_NATIVE_NOT_REDMI",
+    "private_library": "/V13-Checkpoints/2026-10-30/Run11-Seed83-Native-Shadow/de83-native-41013265710.zip",
+    "private_byte_verified": true
   },
-  "next_command": "Create v13/code/docs/DE83_NATIVE_LAUNCH_MARKER_20261030.md on current review branch once no other heavy native owner is active; inspect Actions native run and original ZIP; independently replay all rows",
+  "next_command": "Read v13/code/docs/LISTARITH_DE83_NATIVE_SHADOW_VERIFIED_20261030.md and original native ZIP from private Library; keep original raw and all negative gates; preregister next independent package before editing",
   "gates": {
     "age0": "RECORD_ONLY",
     "step2": "UTILITY_FAIL",
@@ -47,5 +68,20 @@
     "redmi": "UNMEASURED",
     "whole_system": "INCOMPLETE"
   },
-  "remaining_platform_budget": "UNKNOWN"
+  "remaining_platform_budget": "UNKNOWN",
+  "operation_baseline": {
+    "run_id": 41013360118,
+    "source_head": "f3c319e00faec742fdc4fd640f3faef27f546f01",
+    "artifact_id": 12958730963,
+    "zip_sha256": "64376a19dc6e1340965c3afa33915ad7e974c7a90e3879b22d2ed208c015c5c6",
+    "inner_sha256_count": 16,
+    "tests": "44/44 PASS",
+    "stage_exits": "7/7 ZERO",
+    "operation_exact": "24/24",
+    "supported_exact": "16/16",
+    "unsupported_abstained": "8/8",
+    "evidence": "SOFTWARE_SYNTHETIC_PRE_NATIVE",
+    "private_byte_verified": true
+  },
+  "next_package": "fresh disjoint header-label error mitigation candidate or another canonical organ; no patch to seed83 or seed79; no live German ToolStep/C5 promotion without separate utility and Redmi"
 }
