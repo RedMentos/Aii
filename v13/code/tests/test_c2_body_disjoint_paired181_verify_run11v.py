@@ -210,7 +210,7 @@ class VerifyRun11V(unittest.TestCase):
             output = ("Fern: 396 - 243 = 153 Euro remaining.\n"
                       "Slate: 396 - 352 = 44 Euro remaining.")
             raw = inject_valid_synthetic_c3(d, report, output=output)
-            equations = raw["secondary_score"]["equation"]["a"]["equations"]
+            equations = raw["score"]["equation"]["a"]["equations"]
             self.assertTrue(equations)
             self.assertIsInstance(equations[0], tuple)  # pre-wire scorer
             verdict = v.verify_report(d)  # JSON stores lists, not tuples
