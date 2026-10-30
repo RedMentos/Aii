@@ -19,7 +19,7 @@ PINS = {
     "seed71": "406013716d90411704c1dcc2a51c56e7b96cbb64",
     "seed67": "264805f54b697f693dc0e9730f0448f447fa8141",
     "original": "d13120bcd6be6572b6e63af5f2b5a3242e7d0b98",
-    "candidate": "dd0e13c75efb7db591e78ddf892e502193275252",
+    "candidate": "f9791c84846db660e9bde0e002defa55321f47b3",
 }
 LABELS = ("total", "difference_max_min", "none")
 
