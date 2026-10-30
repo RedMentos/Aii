@@ -1,6 +1,10 @@
 name: V13 Run11R seed163 C2-C3-Body native pilot (explicit only)
 on:
   workflow_dispatch:
+  push:
+    branches: [assistant/v13-run11r-native-explicit-trigger-20261030]
+    paths:
+      - 'v13/code/docs/RUN11R_NATIVE_TRIGGER_20261030.txt'
 permissions:
   contents: read
 concurrency:
