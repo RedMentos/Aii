@@ -19,6 +19,7 @@ def synthetic_all_invalid(directory):
     directory = Path(directory)
     rawdir = directory / "raw"
     rawdir.mkdir()
+    (directory / "preclose").mkdir()
     rows = []
     for i in range(24):
         f = m.FIXTURES[i // 6]
@@ -100,6 +101,11 @@ def inject_valid_synthetic_c3(directory, report):
     report["secondary_totals_out_of_8"][arm] = row["secondary_score"]["correct"]
     write_json(directory / "report.json", report)
     write_json(directory / "raw" / f"00_{arm}.json", raw)
+    final_only = {"body_process_releases", "release_capture_phase",
+                  "native_c2_process_reaped", "native_c2_pid",
+                  "flags", "score", "secondary_score"}
+    witness = {k: value for k, value in raw.items() if k not in final_only}
+    write_json(directory / "preclose" / f"00_{arm}.json", witness)
     return raw
 
 class VerifyRun11R(unittest.TestCase):
@@ -186,6 +192,26 @@ class VerifyRun11R(unittest.TestCase):
             raw["body_process_releases"] = []
             write_json(Path(d) / "raw" / "00_A_C3_ONLY.json", raw)
             with self.assertRaisesRegex(ValueError, "NATIVE_FLAGS_REPLAY_MISMATCH"):
+                v.verify_report(d)
+
+
+    def test_missing_preclose_witness_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            inject_valid_synthetic_c3(d, report)
+            (Path(d) / "preclose" / "00_A_C3_ONLY.json").unlink()
+            with self.assertRaisesRegex(ValueError, "PRECLOSE_WITNESS_MISSING"):
+                v.verify_report(d)
+
+    def test_changed_preclose_witness_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            inject_valid_synthetic_c3(d, report)
+            path = Path(d) / "preclose" / "00_A_C3_ONLY.json"
+            witness = json.loads(path.read_text())
+            witness["prompt"] = "forged"
+            write_json(path, witness)
+            with self.assertRaisesRegex(ValueError, "PRECLOSE_WITNESS_CHANGED"):
                 v.verify_report(d)
 
     def test_report_symlink_rejected(self):
