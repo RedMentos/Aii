@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12D_INDEPENDENT_ORIGINAL_ZIP_AUDIT_SOFTWARE_GREEN_NO_NATIVE_CLAIM",
+  "schema": "V13_RUN12D_INDEPENDENT_ORIGINAL_NATIVE_AUDIT_GREEN_NO_GAIN",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12d-bjepa-native-raw-auditor-20261030-hourly11",
@@ -45,8 +45,33 @@
   "native": {
     "run_id": 41046804934,
     "launch_head": "35c163f19f3ccdc1e8ebed1df5821c679d96a13a",
-    "status": "IN_PROGRESS_AT_CHECKPOINT",
-    "verified": false
+    "status": "SUCCESS",
+    "verified": true,
+    "completed_arms": 12,
+    "diagnostic": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+    "seed_wins": 0,
+    "original_artifact_id": 12973177358,
+    "original_zip_sha256": "67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd",
+    "original_crc": "PASS",
+    "original_inner_sha256": "31/31",
+    "original_private_backup": "/V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239/ORIGINAL_NATIVE_41046804934_sha67F56F5E.zip",
+    "original_backup_byte_exact": true,
+    "independent_audit": {
+      "run_id": 41047976128,
+      "status": "GREEN",
+      "tested_head": "2867b66ae574f75ba25b0f1e1760f43cb78260a9",
+      "result": "RAW_REPORT_CONSISTENT_NOT_UTILITY_GATE",
+      "bad_stages": [],
+      "bad_pins": [],
+      "replay": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+      "artifact_id": 12972963260,
+      "zip_sha256": "bb111cdfb2444802338a9fea7f7ed321e5bee935ecf82cd7d605beb28ede9c09",
+      "zip_bytes": 21501,
+      "crc": "PASS",
+      "inner_sha256": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run12D-BJEPA-Raw-Audit/ORIGINAL_NATIVE_INDEPENDENT_GREEN_41047976128_shaBB111CDF.zip",
+      "backup_byte_exact": true
+    }
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -58,5 +83,5 @@
     "whole_system_complete": false
   },
   "known_gap": "CLOSED: independent fixture SHA, exact train/paraphrase/near-miss/retention q+answer rows and baseline rows now checked. Remaining limitation: native execution/utility not yet independently observed.",
-  "next_command": "Inspect Run12C native Actions 41046804934 terminal. Download exact original ZIP, SHA/CRC/inner manifest; run Run12D auditor against launch HEAD 35c163f..., preserve RED and backup. Continue unrelated Canon implementation if still in progress."
+  "next_command": "Native 12-arm pilot and independent original ZIP audit are complete with NO_ATTRIBUTABLE_GAIN, no gate promotion. Review PR1260/1261 and select next preregistered substantive Body-JEPA hypothesis or another canonical organ. Preserve all source/model/seed hashes and negative gates. Redmi still unmeasured; do not rerun same failed cohort posthoc."
 }
