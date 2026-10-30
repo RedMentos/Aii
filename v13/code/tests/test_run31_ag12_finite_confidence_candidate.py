@@ -26,7 +26,7 @@ class Run31FiniteConfidence(unittest.TestCase):
     def test_candidate_nonfinite_and_boolean_are_not_certainty(self):
         for v in (float("nan"), float("inf"), float("-inf"),
                   True, False, 10**10000):
-            with self.subTest(value=str(v)[:20]):
+            with self.subTest(type=type(v).__name__):
                 self.assertEqual(safe_confidence(metrics(v)),
                                  (0.0, "invalid:field_min_prob"))
 
