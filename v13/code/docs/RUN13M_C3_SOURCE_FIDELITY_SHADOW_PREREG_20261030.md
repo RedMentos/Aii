@@ -1,0 +1,15 @@
+# Run13M — source-bound C3 fact-fidelity SHADOW gate (implementation prereg 2026-10-30)
+
+Owner GPT-6; child of independent Run13L raw review #1303 at `b461c0b935e91cc8c28d489900a49900296df6a1`. This is a **posthoc motivated software safety candidate**, not a preregistered native utility experiment. No native inference, model updates, Runtime route changes or user delivery.
+
+## Problem and fixed behavior before code
+
+The frozen Run13L native SYSTEM_COPY arm scored 4/6 strict full, but 0/6 exact four-line copies. Case Beacon251 swapped value associations. The existing Run13I exact-copy auditor is safe but cannot distinguish harmless punctuation/delimiters from wrong facts. Add a *new* SHADOW-only deterministic parser, without changing original Run13J/K/L raw, model/seed/scorer, Canon or any acceptance gate.
+
+- Input: Run13I `linked` candidate with zero authority, answer/prompt SHA256 and exact `PREFIX+answer` integrity; candidate native text. Source-integrity validation uses the existing Run13K `prompt_for(..., "COPY_DIRECT")` guard; malformed/missing source must fail closed. This does **not** replace fresh Store/ContextOS source revalidation at any future egress.
+- Trusted JEF answer grammar is exactly four facts: `Project NAME.`, `OPTION_A leaves INTEGER Euro remaining.`, `OPTION_B leaves INTEGER Euro remaining.`, `FASTER finishes sooner.`. Option A/B distinct, faster exactly one of them, nonnegative finite bounded amounts. Refuse malformed trusted answer.
+- Candidate grammar: same project/name/value/faster facts in same order, with only bounded punctuation/whitespace variation, `Euro` or `euros`, and optional literal `BEGIN_VERIFIED` and `END_VERIFIED` framing at boundaries. Anchor **the entire candidate**; no unknown words, extra numbers, duplicate claims, swapped values, missing facts, contradictory options, arbitrary text or embedded delimiters. Candidate max 768 UTF-8 bytes; source answer max 512. No free-form semantic normalization or LLM judge.
+- Output `SHADOW_NO_AUTHORITY`, `delivery_authority=0`, `context_authority=0`, `native_calls=0`, `weight_updates=false`, Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, jepa_weight0. Result `FACTS_EXACT` or fail-closed `ABSTAIN`; never an active chat answer.
+- Software tests: exact trusted copy, punctuation/delimiter variants, observed Run13L synthetic output counterexamples (Atlas missing value, Beacon swapped values), wrong faster, wrong project, duplicate/extra number, malformed source, oversized input, embedded `ABSTAIN`, and no model call. No original native score changes. Expected on **already observed** Run13L six SYSTEM_COPY outputs: candidate facts pass on Canyon/Delta/Ember/Forest (4), reject Atlas/Beacon (2); this is a posthoc implementation fixture, **not** new generalization evidence.
+
+No gate promotion or human authorization implied. New independent unseen source/wording cohort and explicit user approval would be required before any live C3 delivery; even then deterministic source revalidation at egress is mandatory. Historical Run13A/G14/Run13J/Run13K negative evidence unchanged.
