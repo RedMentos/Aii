@@ -1,0 +1,94 @@
+name: V13 Run13A synthetic 32-row verifier replay preflight
+on:
+  push:
+    branches: [assistant/v13-run13a-verifier-tamper-review-20261030]
+    paths:
+      - '.github/workflows/v13-run13a-verifier-tamper-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  source-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen source pins, focused tests, privacy and raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13a-verifier"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          084fc8039dfae484d26b6ad595e33759acb8a46c v13/code/scripts/c2_body_fulltask_run13a.py
+          4b7bb4b4007e550d8bd518cfd568adbd99579d32 v13/code/scripts/c2_body_fulltask_verify_run13a.py
+          b3362017ea6c7e4d4671dff0952fe51b4bdb7d0d v13/code/tests/test_run13a_fulltask_runner.py
+          eed8f25578a51d218bdfd014ab5726856670c6f4 v13/code/tests/test_run13a_fulltask_verify_synthetic.py
+          ede3b31b32620a680d2f22b0ad744c9237d182b5 v13/code/docs/fixtures/c2_body_fulltask_run13a_seed211_20261030.json
+          073db9cadc135a6661a12f3064faef71f8d5c55e v13/code/docs/C2_BODY_FULLTASK_RUN13A_PREREG_20261030.md
+          76322127674d50cd4c9cbb117fd60ca4b5c88213 v13/code/tests/test_run13a_fulltask_prereg.py
+          716b71401d3a228252beb8b4903e9ad656db75c5 v13/code/scripts/c2_body_observer_off_run12n.py
+          a78f65b1c50f07bde3f845a492f8f41385e355c8 v13/code/scripts/c2_body_observer_off_verify_run12n.py
+          7324f5c8c09d5e5706c40887f755285dcdcbb9a8 v13/code/scripts/c2_body_run12n_fulltask_readonly.py
+          d274a66b8ceb801c741bbffe1456611b43603208 v13/code/scripts/c2_body_disjoint_paired181_run11v.py
+          22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run13a-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run13a-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts timeout 240s "$py" -m unittest -v tests.test_run13a_fulltask_prereg tests.test_run13a_fulltask_runner tests.test_run13a_fulltask_verify_synthetic tests.test_c2_body_observer_off_run12n tests.test_c2_body_observer_off_verify_run12n tests.test_c2_body_observer_off_lifecycle_integration tests.test_run12n_jef_source_baseline tests.test_budget_en_source_shadow_run11y) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else
+            echo SKIPPED_PINS_OR_DEPS_RED > "$e/TEST_RAW.log"
+            echo 99 > "$e/TEST_EXIT.txt"
+          fi
+          "$py" -m py_compile v13/code/scripts/c2_body_fulltask_run13a.py v13/code/scripts/c2_body_fulltask_verify_run13a.py v13/code/tests/test_run13a_fulltask_runner.py v13/code/tests/test_run13a_fulltask_verify_synthetic.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 77c53bf36bd3fe3348ac604e563efb9d5a0aa08b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 77c53bf36bd3fe3348ac604e563efb9d5a0aa08b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original source-only raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13a-verifier-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13a-verifier/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce preflight with no native or gate promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run13a-verifier"
+          for stage in PINS VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw retained"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN13A_VERIFIER_SYNTHETIC_GREEN_NO_NATIVE_OR_GATE
