@@ -1,0 +1,203 @@
+{
+  "schema": "v13.c3.de.typed_read.seed79.v1",
+  "seed": 79,
+  "source": "SYNTHETIC",
+  "rows": [
+    {
+      "id": "C79-01",
+      "text": "Aufstellung: Apfel 14 Euro; Birne 26 Euro. Wie hoch ist die Summe?",
+      "values": [
+        {
+          "name": "Apfel",
+          "number": 14
+        },
+        {
+          "name": "Birne",
+          "number": 26
+        }
+      ]
+    },
+    {
+      "id": "C79-02",
+      "text": "In der Liste stehen Nord=17, Süd=9 und Ost=22. Bitte addiere.",
+      "values": [
+        {
+          "name": "Nord",
+          "number": 17
+        },
+        {
+          "name": "Süd",
+          "number": 9
+        },
+        {
+          "name": "Ost",
+          "number": 22
+        }
+      ]
+    },
+    {
+      "id": "C79-03",
+      "text": "2026 wurden für Kiefer 18 Euro und für Fichte 31 Euro notiert. Was ergibt das zusammen?",
+      "values": [
+        {
+          "name": "Kiefer",
+          "number": 18
+        },
+        {
+          "name": "Fichte",
+          "number": 31
+        }
+      ]
+    },
+    {
+      "id": "C79-04",
+      "text": "Rechnung: Alpha 14, Beta 14, Gamma 9. Wie viel ist alles zusammen?",
+      "values": [
+        {
+          "name": "Alpha",
+          "number": 14
+        },
+        {
+          "name": "Beta",
+          "number": 14
+        },
+        {
+          "name": "Gamma",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": "C79-05",
+      "text": "Temperaturen: Morgen -3, Mittag 9, Abend 2. Wie groß ist die Summe?",
+      "values": [
+        {
+          "name": "Morgen",
+          "number": -3
+        },
+        {
+          "name": "Mittag",
+          "number": 9
+        },
+        {
+          "name": "Abend",
+          "number": 2
+        }
+      ]
+    },
+    {
+      "id": "C79-06",
+      "text": "Posten: Rot 108 Euro; Blau 27 Euro; Grün 15 Euro. Summe: 150 Euro. Ist die genannte Summe richtig?",
+      "values": [
+        {
+          "name": "Rot",
+          "number": 108
+        },
+        {
+          "name": "Blau",
+          "number": 27
+        },
+        {
+          "name": "Grün",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": "C79-07",
+      "text": "Werte: Lina: 7; Omar: 12. Gesamt: 19. Addiere die Einzelwerte.",
+      "values": [
+        {
+          "name": "Lina",
+          "number": 7
+        },
+        {
+          "name": "Omar",
+          "number": 12
+        }
+      ]
+    },
+    {
+      "id": "C79-08",
+      "text": "Liste:\nEins = 4\nZwei = 6\nDrei = 8\nWie viel insgesamt?",
+      "values": [
+        {
+          "name": "Eins",
+          "number": 4
+        },
+        {
+          "name": "Zwei",
+          "number": 6
+        },
+        {
+          "name": "Drei",
+          "number": 8
+        }
+      ]
+    },
+    {
+      "id": "C79-09",
+      "text": "Im Jahr 2024: Luchs kostet 53 Euro und Wolf 21 Euro. Welche Summe?",
+      "values": [
+        {
+          "name": "Luchs",
+          "number": 53
+        },
+        {
+          "name": "Wolf",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": "C79-10",
+      "text": "Zahlenblock: Saphir (+12), Rubin (+7), Opal (+5). Addiere.",
+      "values": [
+        {
+          "name": "Saphir",
+          "number": 12
+        },
+        {
+          "name": "Rubin",
+          "number": 7
+        },
+        {
+          "name": "Opal",
+          "number": 5
+        }
+      ]
+    },
+    {
+      "id": "C79-11",
+      "text": "Kosten: Boot 61; Zug 44; Bus 29. Wie lautet die Summe?",
+      "values": [
+        {
+          "name": "Boot",
+          "number": 61
+        },
+        {
+          "name": "Zug",
+          "number": 44
+        },
+        {
+          "name": "Bus",
+          "number": 29
+        }
+      ]
+    },
+    {
+      "id": "C79-12",
+      "text": "Inventar: Paket-A 36, Paket-B 48. Summe: 84. Bitte die Einzelposten addieren.",
+      "values": [
+        {
+          "name": "Paket-A",
+          "number": 36
+        },
+        {
+          "name": "Paket-B",
+          "number": 48
+        }
+      ]
+    }
+  ]
+}
