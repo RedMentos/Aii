@@ -84,6 +84,29 @@ class SleepASourceUnavailableRun11L(unittest.TestCase):
         self.assertIn("EVENT_ENVELOPE_INVALID", errors)
         self.assertIn("source_integrity", detail["affected_paths"])
 
+    def test_wake_replay_persists_failed_source_without_retirement(self):
+        second = self._correct("Projekt Sternenlicht Budget?", "350 Euro")
+        self._blob(self.event).unlink()
+        report = self.cycle.run("wake", origin="USER", batch=2)
+        self.assertEqual(report["status"], "DONE")
+        phase = next(p for p in report["phases"] if p["phase"] == "SLEEP_A")
+        self.assertEqual((phase["selected"], phase["failed"], phase["passed"]),
+                         (2, 1, 1))
+        state, _ = self.cycle.queue.load()
+        failed = [it for it in state["items"].values()
+                  if it["event_id"] == self.event["event_id"]]
+        healthy = [it for it in state["items"].values()
+                   if it["event_id"] == second["event_id"]]
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(len(healthy), 1)
+        self.assertEqual(failed[0]["last_outcome"], "FAIL")
+        self.assertEqual(failed[0]["failures"], 1)
+        self.assertIsNone(failed[0]["retired"])
+        self.assertEqual(healthy[0]["last_outcome"], "PASS")
+        self.assertEqual(healthy[0]["reps"], 1)
+        reopened = SleepCycle(self.store, self.cfg, self.memory, home=self.home)
+        self.assertEqual(reopened.queue.load()[0]["items"], state["items"])
+
     def test_one_missing_source_does_not_abort_other_replay(self):
         second = self._correct("Projekt Mondlicht Budget?", "250 Euro")
         self._blob(self.event).unlink()
