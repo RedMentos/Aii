@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 jobs:
-  mechanism-control:
+  eightstep-protocol:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Source-bound tiny torch controls and raw receipts
+      - name: Source-bound eight-step cohort protocol and raw receipts
         shell: bash
         run: |
           set +e
@@ -36,9 +36,9 @@ jobs:
           test "$(cat "$e/BJEPA_BLOB.txt")" = b560d4e88fe457f381e89dfc5d6188a8ec3b306b &&
           test "$(cat "$e/CANON_BLOB.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
           echo "$?" > "$e/SOURCE_EXIT.txt"
-          python3 -m venv "$RUNNER_TEMP/v13-run11o-venv" > "$e/VENV_RAW.log" 2>&1
+          python3 -m venv "$RUNNER_TEMP/v13-run11p-venv" > "$e/VENV_RAW.log" 2>&1
           echo "$?" > "$e/VENV_EXIT.txt"
-          py="$RUNNER_TEMP/v13-run11o-venv/bin/python"
+          py="$RUNNER_TEMP/v13-run11p-venv/bin/python"
           "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2             'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu             > "$e/TORCH_RAW.log" 2>&1
           echo "$?" > "$e/TORCH_EXIT.txt"
           "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2             'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0'             > "$e/DEPS_RAW.log" 2>&1
