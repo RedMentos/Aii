@@ -3762,5 +3762,81 @@
     },
     "exact_next_command": "Inspect GitHub Actions run 40992102064 to terminal; download original raw, verify SHA/CRC/all hashes, inspect every row, private backup, then checkpoint verified result and open review PR.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_seed53_seed59_original_native_raw_triage": {
+    "scope": "INDEPENDENT_ORIGINAL_RAW_REVIEW_ONLY",
+    "owner": "V13 independent continuation; no active native model jobs launched",
+    "parent_pr": 1213,
+    "parent_sha": "0f6f5998691d768bdb5fbc0f6aa2eee2f3261c9e",
+    "branch": "assistant/v13-seed53-seed59-independent-raw-triage-20261030",
+    "original_seed53": {
+      "run": 41002194549,
+      "artifact": 12955090505,
+      "zip_sha256": "ae05e6d49fff080ba65424118db7259a5762fb20f9308062492c3a758a00b9e9",
+      "inner_sha256": "48/48",
+      "crc_clean": true,
+      "rows": "24/24",
+      "native_valid": "16/24",
+      "native_c2_invoked": 4,
+      "native_c2_selected": 0,
+      "status": "PILOT_PARTIAL_RED",
+      "cause": "8 B1_ONLY/B2_ONLY rows contaminated by both background observer roles",
+      "scores_out_of_8": [
+        0,
+        0,
+        0,
+        2,
+        2,
+        3
+      ]
+    },
+    "original_seed59": {
+      "run": 41002769766,
+      "artifact": 12954791608,
+      "zip_sha256": "515205f25d700a89190491f8747c23fe7f5531d176aeebcb58eb494271351138",
+      "inner_sha256": "36/36",
+      "crc_clean": true,
+      "rows": "12/12",
+      "native_valid": "11/12",
+      "native_c2_invoked": 4,
+      "native_c2_selected": 4,
+      "status": "PILOT_PARTIAL_RED",
+      "cause": "1 native gist row lacks pre-close release receipt; no proof of process leak",
+      "scores_out_of_8": [
+        0,
+        0,
+        2
+      ]
+    },
+    "original_fullsuite": {
+      "run": 41001786002,
+      "artifact": 12953119319,
+      "zip_sha256": "baa3ff7a90f486287c7bfa88a3003062f5058347a75299d05808d5d1f93c8319",
+      "inner_sha256": "33/33",
+      "crc_clean": true,
+      "focused": "31/31 PASS",
+      "full": "3465 tests; 3 errors; 3 failures; 11 skipped",
+      "cause": "2 historical source-pin negative gates plus source-tree temporary ZIP symlink packaging failures",
+      "status": "RED"
+    },
+    "local_software_tests": "7/7 PASS; py_compile PASS; original ZIP audit PASS with original status RED",
+    "source_path": "v13/code/scripts/c2_native_raw_triage_20261030.py",
+    "test_path": "v13/code/tests/test_c2_native_raw_triage_20261030.py",
+    "doc_path": "v13/code/docs/C2_NATIVE_SEED53_SEED59_ORIGINAL_RAW_TRIAGE_20261030.md",
+    "workflow": ".github/workflows/v13-c2-native-original-triage-20261030.yml",
+    "workflow_status": "PENDING_AT_CHECKPOINT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/; /Run11-C2-SimpleScaffold-Seed59/; /Run11-ReviewChain-Independent/",
+    "backup_byte_identical": true,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Inspect branch Actions workflow v13-c2-native-original-triage-20261030.yml; download and hash-check result, then preregister a fresh disjoint observer-isolation + post-close release cohort; do not modify original seed53/seed59.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }

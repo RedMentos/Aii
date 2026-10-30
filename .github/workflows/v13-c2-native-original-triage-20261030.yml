@@ -1,0 +1,49 @@
+name: V13 seed53-seed59 independent native raw triage
+on:
+  push:
+    branches:
+      - assistant/v13-seed53-seed59-independent-raw-triage-20261030
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test isolated standard-library auditor
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s v13/code/tests -p 'test_c2_native_raw_triage_20261030.py' -v
+          python3 -m py_compile v13/code/scripts/c2_native_raw_triage_20261030.py v13/code/tests/test_c2_native_raw_triage_20261030.py
+      - name: Fetch exact original artifacts and verify closed raw
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v13-triage"
+          curl -fsSL --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12955090505/zip" -o "$RUNNER_TEMP/v13-triage/seed53.zip"
+          curl -fsSL --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12954791608/zip" -o "$RUNNER_TEMP/v13-triage/seed59.zip"
+          python3 v13/code/scripts/c2_native_raw_triage_20261030.py --seed53 "$RUNNER_TEMP/v13-triage/seed53.zip" --seed59 "$RUNNER_TEMP/v13-triage/seed59.zip" | tee "$RUNNER_TEMP/v13-triage/RESULT.json"
+          (cd "$RUNNER_TEMP/v13-triage" && sha256sum seed53.zip seed59.zip RESULT.json > SHA256SUMS)
+      - name: Privacy and diff hygiene
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0f6f5998691d768bdb5fbc0f6aa2eee2f3261c9e --head HEAD --no-worktree
+          git diff --check 0f6f5998691d768bdb5fbc0f6aa2eee2f3261c9e HEAD
+      - name: Preserve result, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-seed53-seed59-independent-triage-${{ github.run_id }}
+          path: ${{ runner.temp }}/v13-triage/RESULT.json
+          retention-days: 30
+          if-no-files-found: warn
