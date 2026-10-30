@@ -30,9 +30,9 @@ jobs:
           py="$RUNNER_TEMP/de83-preflight-venv/bin/python"
           "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
           echo "$?" > "$e/DEPS_EXIT.txt"
-          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_listarith_de83_native_shadow_20261030 tests.test_listarith_de_shadow_pipeline_20261030 tests.test_listarith_de_seed79_native_posthoc_replay_20261030) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_listarith_de83_native_shadow_20261030 tests.test_listarith_de83_native_shadow_audit_20261030 tests.test_listarith_de_shadow_pipeline_20261030 tests.test_listarith_de_seed79_native_posthoc_replay_20261030) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
-          "$py" -m py_compile v13/code/scripts/listarith_de83_native_shadow.py v13/code/tests/test_listarith_de83_native_shadow_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m py_compile v13/code/scripts/listarith_de83_native_shadow.py v13/code/scripts/listarith_de83_native_shadow_audit.py v13/code/tests/test_listarith_de83_native_shadow_20261030.py v13/code/tests/test_listarith_de83_native_shadow_audit_20261030.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 22cbd1bcd4e31091eb6a4f3e0bb5d818367b339b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
