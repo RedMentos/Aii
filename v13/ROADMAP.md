@@ -1,3 +1,7 @@
+## 2026-10-30 — STEP2 v3 counterbalanced native exploratory follow-up (review-only)
+
+New preregistered seed41 nine-task cohort, 27 Linux-native turns in Latin-square order, independent fixed scorer and no STEP2 gate. Software preflight 40996622134 GREEN (12/12 tests, 7/7 stages, privacy CLEAN), private byte-verified original ZIP; native Actions 40996792157 launched, result **pending**. Source `v13/code/scripts/step2_budget_paired_native_v3_20261030.py`, evidence `v13/code/docs/STEP2_PAIRED_NATIVE_V3_LAUNCH_CHECKPOINT_20261030.md`. Continue other organs while native runs. No native C2 route proof, no Redmi, no B3/Body-JEPA/JEPA/STEP2 promotion, historical Run34/37 source-pin RED and whole-system incomplete.
+
 ## 2026-10-30 — new preregistered STEP2 paired native v2 (pending raw)
 
 Review-only child `codex/v13-step2-paired-native-v2-20261030-hourly11`: fixed new four-task disjoint seed29, option-bound contradiction-vetoing scorer and route override validator corrected without claiming native Needle/C2 control. Software preflight `40992003721` 12/12 PASS. Linux-native 12-turn run `40992102064` launched in serialized native concurrency group; **result pending**. See `code/docs/STEP2_PAIRED_NATIVE_V2_LAUNCH_CHECKPOINT_20261030.md`. Original pilot RED and STEP2 UTILITY_FAIL/B3/Body-JEPA/JEPA/age gates remain; do not promote from a small pilot.
