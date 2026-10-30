@@ -3838,5 +3838,203 @@
     },
     "exact_next_command": "Inspect branch Actions workflow v13-c2-native-original-triage-20261030.yml; download and hash-check result, then preregister a fresh disjoint observer-isolation + post-close release cohort; do not modify original seed53/seed59.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_seed61_isolated_postclose_source_ready": {
+    "owner": "V13 independent continuation",
+    "status": "SOURCE_PREFLIGHT_GREEN_AT_84E60_RECHECK_PENDING_AT_BB61_NO_NATIVE",
+    "prereg_sha": "8713ee286a6a20a777ce266a557b316c46599429",
+    "source_branch": "assistant/v13-seed61-isolated-body-postclose-20261030",
+    "source_sha": "a37bec247276ce714f6f55d546f1f6ce8f331fba",
+    "source_path": "v13/code/scripts/c2_isolated_postclose_seed61_20261030.py",
+    "source_blob": "631df9e4932bb7ace43d95dd4097c1733dc852c7",
+    "test_path": "v13/code/tests/test_c2_isolated_postclose_seed61_20261030.py",
+    "test_blob": "0f9edaf885b940f7d8ee368909ca25eb61aa6685",
+    "fixture_sha256": "bf4c4da0de4c79bb66555f6e442fe9daacb0affa34b4cf9126bb51d4a83e5bf3",
+    "local_tests": "12/12 PASS; py_compile PASS",
+    "source_preflight_original": {
+      "run": 41007535305,
+      "head": "84e60ef668f77405b6692c88479712f70c556dcf",
+      "artifact": 12956236143,
+      "zip_sha256": "7e6352688789323aec68d0990da90ed13ecdb6dfe5c119a96547c1b2335259d5",
+      "crc_clean": true,
+      "inner_sha256": "20/20",
+      "stages": "9/9 zero",
+      "real_module_import": "PASS",
+      "privacy_diff": "PASS",
+      "private_backup_byte_identical": true
+    },
+    "recheck_head": "bb61c0d21278f48f2f0fa2f2ddc0f152bb8860be",
+    "recheck_status": "PENDING",
+    "native_run": "NOT_STARTED",
+    "redmi_run": "NOT_STARTED",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12-Seed61-IsolatedPostclose/",
+    "exact_next_command": "Inspect exact-head seed61 preflight Actions at bb61c0d21278f48f2f0fa2f2ddc0f152bb8860be, audit original ZIP, then source-pin and launch serialized seed61 native workflow if GREEN and no active heavy owner.",
+    "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_seed61_native_launch": {
+    "owner": "GitHub Actions serialized native job; independent continuation reviewing",
+    "status": "IN_PROGRESS_AT_LAUNCH_CHECKPOINT",
+    "branch": "assistant/v13-seed61-isolated-body-postclose-20261030",
+    "workflow_head": "5ac90444fe2e0317a954cb4ed94730900b33d92c",
+    "workflow_path": ".github/workflows/v13-c2-isolated-seed61-native-20261030.yml",
+    "run_id": 41007813416,
+    "concurrency_group": "v13-step2-budget-paired-native-20261030",
+    "source_preflight": {
+      "run": 41007663414,
+      "head": "bb61c0d21278f48f2f0fa2f2ddc0f152bb8860be",
+      "status": "GREEN",
+      "artifact": 12955639430,
+      "zip_sha256": "66098f8456aec42f9d9044f4d70d9e836034d4db0e98ce65e281f0aeba1d956e",
+      "inner_sha256": "20/20",
+      "stages": "9/9 zero",
+      "tests": "12/12",
+      "actual_import": "PASS",
+      "private_backup_byte_identical": true
+    },
+    "native_result": "UNKNOWN_NOT_YET_TERMINAL",
+    "native_artifact": "UNKNOWN",
+    "redmi": "UNMEASURED",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12-Seed61-IsolatedPostclose/",
+    "exact_next_command": "On terminal Actions run 41007813416, fetch jobs+original artifact ZIP; verify GitHub SHA256, CRC, every SHA256SUMS, stage exits and all 24 source-bound rows; persist original ZIP privately and verify materialized bytes. Do not run concurrent heavy model job.",
+    "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_reviewchain_third_fullsuite_raw_audit": {
+    "owner": "independent read-only audit; original owner PR1211 untouched",
+    "source_head": "b55ad7e4eb8709e96ffb7166c96d166df77556e2",
+    "run": 41002640672,
+    "artifact": 12954705447,
+    "zip_sha256": "ad90c641c18dbd220d90a99504162329a9b42b5bbeb8a15f78218eade450740c",
+    "crc_clean": true,
+    "inner_sha256": "33/33",
+    "focused": "31/31 PASS",
+    "unfiltered": "3465 tests; 2 errors; 11 skipped; no assertion failures",
+    "status": "FULL_RED_HISTORICAL_SOURCE_PINS",
+    "failed_tests": [
+      "Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates",
+      "Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates"
+    ],
+    "symlink_packaging_failures": "ABSENT_ON_THIRD_ATTEMPT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/FULLSUITE_RED_41002640672_shaAD90C6.zip",
+    "private_backup_byte_identical": true,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Do not mutate historical source pins; preregister a current-source suite/negative-control split if needed, keep original unfiltered RED."
+  },
+  "run12_20261030_seed61_native_workflow_heredoc_correction": {
+    "owner": "independent static review; GitHub Actions serialized native owner",
+    "original_run": {
+      "id": 41007813416,
+      "head": "5ac90444fe2e0317a954cb4ed94730900b33d92c",
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "known_workflow_defect": "embedded report-check PY closing delimiter 20 spaces instead of 10; preserve original attempt"
+    },
+    "corrected_run": {
+      "id": 41008162051,
+      "head": "45624d16f53cad1ae95e3a5cfc5a7467f32d527c",
+      "status": "QUEUED_BEHIND_ORIGINAL",
+      "concurrency": "v13-step2-budget-paired-native-20261030"
+    },
+    "corrected_preflight": {
+      "id": 41008170038,
+      "head": "2257416b27936de444ee595b310be4f6add2bdbf",
+      "status": "QUEUED_AT_CHECKPOINT",
+      "new_test": "native workflow heredoc terminator and ast.parse",
+      "test_blob": "15921a36c0dc83c5edeaea02c63f41e8db41d26e"
+    },
+    "source_model_seed_fixture_changed": false,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Audit exact original artifacts for preflight 41008170038 and both serialized native runs 41007813416 / 41008162051 after terminal; preserve all failures, hash-verify and privately back up original raw; no third heavy native job.",
+    "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_seed61_first_native_original_red_raw_audit": {
+    "owner": "independent original-raw triage; original native Actions terminal",
+    "run": 41007813416,
+    "source_head": "5ac90444fe2e0317a954cb4ed94730900b33d92c",
+    "artifact": 12955848461,
+    "zip_sha256": "5296bf6bdf9fda8ac2c2b95ec9b73e10a1a1eb53574038c803a9d3ac12c55ad1",
+    "crc_clean": true,
+    "original_inner_sha256_manifest": "MISSING_DUE_WORKFLOW_HEREDOC_DEFECT",
+    "status": "CI_RED_INCOMPLETE_INDEPENDENT_PROOF",
+    "stage_exits": {
+      "VENV": 0,
+      "DEPS": 0,
+      "PINS": 0,
+      "BOOTSTRAP": 0,
+      "TEST": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": "NOT_EXECUTED",
+      "PRIVACY": "NOT_EXECUTED",
+      "DIFF": "NOT_EXECUTED"
+    },
+    "software_tests": "26/26 PASS",
+    "original_native_rows": "24/24 valid_native flags; internal PILOT_COMPLETE_NO_GATE",
+    "independent_pid_receipts": {
+      "final_runner": "24/24 matched and reaped",
+      "observer_offers": "31/31 matched and reaped",
+      "isolated_single_body_observers": "OFF_NO_OFFERS"
+    },
+    "native_c2_invocations": 4,
+    "native_c2_selected": 4,
+    "registered_remainder_scores_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 6,
+      "D_DISTINCT_BOTH": 1,
+      "E_SHARED_DUAL_COLD": 1,
+      "F_NATIVE_AUTO": 0
+    },
+    "registered_comparative_signals": {
+      "distinct_vs_single_shared": false,
+      "native_auto_vs_forced": false
+    },
+    "posthoc_full_task": "B2 1/4 strict lexical full-task; other arms 0/4; exploratory NOT preregistered",
+    "posthoc_ci": 41008975067,
+    "corrected_native_run": 41008162051,
+    "corrected_native_status": "IN_PROGRESS_AT_CHECKPOINT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12-Seed61-IsolatedPostclose/ORIGINAL_NATIVE_RED_INCOMPLETE_MANIFEST_41007813416_sha5296BF.zip",
+    "private_backup_byte_identical": true,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Audit corrected native run 41008162051 original ZIP after terminal, verify full inner SHA256SUMS and all stage exits, 24 source-bound rows, privately back up; no third heavy native job. Investigate dual-vs-gist utility on new disjoint preregistered cohort.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
