@@ -26,8 +26,18 @@ def _reject_json_constant(value):
     raise ValueError('Nonfinite JSON literal in persisted World state')
 
 
+def _unique_world_object(pairs):
+    """JSON object keys must be unique at every depth, including escaped aliases."""
+    out={}
+    for key,value in pairs:
+        if key in out:raise ValueError('Duplicate World JSON object key')
+        out[key]=value
+    return out
+
+
 def _strict_json_object(raw):
-    obj=json.loads(raw,parse_constant=_reject_json_constant)
+    obj=json.loads(raw,parse_constant=_reject_json_constant,
+                   object_pairs_hook=_unique_world_object)
     if not isinstance(obj,dict):raise ValueError('World JSON object required')
     return obj
 
@@ -51,6 +61,16 @@ CASE WHEN json_valid(p.payload) AND json_valid(a.outcome) THEN
     AND json_type(p.payload,'$.observation.causal_claim')='false'
     AND json_type(p.payload,'$.observation.external_world_observation')='false'
     AND json_type(p.payload,'$.observation.scored') IN ('true','false')
+    AND NOT EXISTS (
+        SELECT 1 FROM json_tree(p.payload) AS j
+        WHERE j.key IS NOT NULL
+        GROUP BY j.parent,j.key HAVING COUNT(*)>1
+    )
+    AND NOT EXISTS (
+        SELECT 1 FROM json_tree(a.outcome) AS j
+        WHERE j.key IS NOT NULL
+        GROUP BY j.parent,j.key HAVING COUNT(*)>1
+    )
 ELSE 0 END
 """
 
@@ -95,10 +115,17 @@ class WorldState:
         samples=[];failures=0;invalid_timing=0
         for row in rows:
             if row['event_id']==event['event_id']:continue
-            expected=json.loads(row['expected']);old=expected.get('forecast',{})
-            if old.get('profile',{}).get('id')!=profile['id']:continue
+            try:
+                expected=_strict_json_object(row['expected'])
+                old=expected.get('forecast',{})
+                if not isinstance(old,dict):raise ValueError('World forecast shape invalid')
+            except (ValueError,TypeError,OverflowError,RecursionError):
+                invalid_timing+=1;continue
+            if not isinstance(old.get('profile'),dict) or old['profile'].get('id')!=profile['id']:continue
             if row['status']!='FINAL':failures+=1;continue
-            actual=json.loads(row['outcome'] or '{}')
+            try:actual=_strict_json_object(row['outcome'] or '{}')
+            except (ValueError,TypeError,OverflowError,RecursionError):
+                invalid_timing+=1;continue
             if actual.get('role')!=role:continue
             duration=actual.get('action_duration_s');chars=old.get('input_chars')
             if not _valid_duration(duration) or type(chars) is not int or chars<0:
@@ -221,16 +248,19 @@ class WorldState:
         """Bind a real committed own outcome to intent/corollary and raw source."""
         action=self.s.one("SELECT * FROM actions WHERE id=? AND status='FINAL' AND outcome IS NOT NULL",(aid,))
         if not action:raise ValueError('Completed World action required')
-        event=self.s.one('SELECT packet FROM events WHERE id=?',(action['event_id'],));env=json.loads(event['packet'])
+        event=self.s.one('SELECT packet FROM events WHERE id=?',(action['event_id'],));env=_strict_json_object(event['packet'])
         if env['authority']!='AUTHORITATIVE':raise ValueError('World requires authoritative input')
         copy=self.s.one("SELECT payload FROM packets WHERE kind='CorollaryCopy' AND id=?",(action['corollary_id'],))
         if not copy:raise ValueError('World CorollaryCopy missing')
-        copy=json.loads(copy['payload']);actual=json.loads(action['outcome']);forecast=json.loads(action['expected']).get('forecast',{})
+        copy=_strict_json_object(copy['payload'])
+        actual=_strict_json_object(action['outcome'])
+        expected=_strict_json_object(action['expected'])
+        forecast=expected.get('forecast',{})
         intent=self.s.one("SELECT payload FROM packets WHERE kind='ActionIntent' AND event_id=? AND json_extract(payload,'$.action_id')=?",(env['event_id'],aid))
         if not intent:raise ValueError('World ActionIntent missing')
-        intent=json.loads(intent['payload'])
+        intent=_strict_json_object(intent['payload'])
         if intent['permission']!='local_text_only' or intent['action_type']!=action['kind'] or intent['brain_generation_id']!=env['brain_generation_id']:raise ValueError('World intent/generation mismatch')
-        if not copy['self_caused'] or copy['brain_generation_id']!=env['brain_generation_id'] or copy['event_id']!=env['event_id'] or copy['action_id']!=aid or copy['expected']!=json.loads(action['expected']):raise ValueError('World action/corollary mismatch')
+        if not copy['self_caused'] or copy['brain_generation_id']!=env['brain_generation_id'] or copy['event_id']!=env['event_id'] or copy['action_id']!=aid or copy['expected']!=expected:raise ValueError('World action/corollary mismatch')
         own=self.s.one("SELECT * FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",(env['event_id'],))
         if not own or digest(own['text'])!=actual.get('self_candidate_hash'):raise ValueError('World outcome differs from committed Self-Candidate')
         role=actual.get('role')
@@ -238,7 +268,7 @@ class WorldState:
         if role!='SOURCE_COPY' and forecast['profile'].get('model_revision')!=self.r.models.revision(role):raise Unavailable('World action model changed')
         existing=self.s.one("SELECT payload FROM packets WHERE kind='WorldTransition' AND event_id=? AND json_extract(payload,'$.action_id')=?",(env['event_id'],aid))
         if existing:
-            p=json.loads(existing['payload'])
+            p=_strict_json_object(existing['payload'])
             if p['source_ref']!=env['source_ref'] or p['action_role']!=role or p['corollary_packet_id']!=copy['packet_id'] or self.s.read_source(p['outcome_source_ref'])!=own['text']:raise ValueError('Stored World transition binding changed')
             self.s.read_source(p['source_ref']);return p
         ref=self.s.source(own['text'],'DIGITAL_ACTION_OUTCOME');self.s.read_source(env['source_ref'])
