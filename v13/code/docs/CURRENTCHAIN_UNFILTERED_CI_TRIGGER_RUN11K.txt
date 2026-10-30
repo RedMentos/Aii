@@ -1,0 +1,10 @@
+V13 RUN11K UNFILTERED FULL SOFTWARE REVIEW TRIGGER
+Date 2026-10-30; owner GPT-6.
+Branch assistant/v13-bjepa-ema-target-crossorgan-run11j-20261030
+Parent chain #1237 -> #1238 -> #1239 -> #1240.
+Previous focused cross-organ exact tested HEAD a882596e7b59e70b1baab96c7445e0e786a3efa6: 121/121 PASS.
+This trigger requests an unfiltered test_*.py suite on the current review branch,
+using original pinned native ZIP artifact 12951963045 SHA256
+98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46.
+Do not waive the two historical Run34/Run37 source-pin errors.
+No new native/Redmi, no gate promotion, no production merge.
