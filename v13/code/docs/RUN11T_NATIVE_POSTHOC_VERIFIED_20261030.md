@@ -30,7 +30,7 @@ Original native C2 invocation **4/4**, native C2 route selected **4/4** in the F
 ## Integrity, ownership and continuation
 
 - Owner: GPT-6, Run11T review branch `assistant/v13-run11t-native-posthoc-testfix-20261030`. No edits to parent PR #1247, no force-push, no frozen model/fixture/scorer/hash modifications. Original failed attempts and parent RED are preserved.
-- Private original native ZIP is already in Library `/V13-Checkpoints/2026-10-30/Run11R-C2Body-Closed/NATIVE_RED_41035932580_sha47493D.zip`; new Run11T GREEN and RED posthoc ZIPs must be byte-reverified in private Library before claiming secondary backup.
+- Private original native ZIP is already in Library `/V13-Checkpoints/2026-10-30/Run11R-C2Body-Closed/NATIVE_RED_41035932580_sha47493D.zip`; new Run11T GREEN and RED posthoc ZIPs are saved at `/V13-Checkpoints/2026-10-30/Run11T-Original-Native-Posthoc/` and **byte-reverified after Library materialization**: GREEN `98f50f8a624a4e7a914379798cafbd8484fdf2acb64063cfc2105da313a488a2`, RED `9c7ca18e97656736631af3788f33771b705e10b6b36f4f8f99c781f3b373a6f6`.
 - Age0 `RECORD_ONLY`, STEP2 `UTILITY_FAIL`, B3 `NO_PROMOTION`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi `UNMEASURED`, whole V13 incomplete. Existing unfiltered historical Run34/Run37 source-pin RED remains; no waiver.
 - Next: independent review of scorer mismatch and original 24 outputs, then **new preregistered disjoint paired** model-output utility study with A/B/C/D/E/F controls and frozen scorer plus separate diagnostics. Do not tune or rerun seed163. Continue independent JEF/ContextOS/JEPA/Sleep work in parallel. New Redmi proof still requires the user's device.
 
