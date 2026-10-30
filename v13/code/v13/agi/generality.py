@@ -178,7 +178,7 @@ class GeneralityEval:
     def due(self):
         runs=self._current_runs()
         return not runs or self.clock()-runs[-1]['finished']>=self.interval_s
-    def run(self,solver,label='manual',cancel=None,deadline=None,generation=None,solver_name=None):
+    def run(self,solver,label='manual',cancel=None,deadline=None,generation=None,solver_name=None,include_results=False):
         """solver_name keeps one curve and one forgetting baseline per solver (C3, B1, B2, ensemble, ...).
         A solver may offer batch(views, cancel, deadline) -> {id: out}: lets a body adapter answer all items with
         one model before switching to the next (one resident body on the phone)."""
@@ -222,7 +222,7 @@ class GeneralityEval:
             export = 'generality-last.json' if self.suite['lang']=='en' else 'generality-last-de.json'
             atomic_write(self.home/'exports'/export,dumps(run|{'results':results}))
         self.s.log('generality_eval',None,{'status':status,'solver':key,'overall':summary['overall'],'unseen':summary['unseen'],'items':len(results)})
-        return run
+        return (run | {'_results':results}) if include_results else run
     def curve(self,axis='overall',solver=None):
         """Time series for one axis: overall|seen|unseen|generalization_gap|planning_depth|forgetting|ece; optionally one solver."""
         out=[]
