@@ -1,0 +1,458 @@
+{
+  "schema": "v13.de83.native_shadow.v1",
+  "seed": 83,
+  "source": "SYNTHETIC",
+  "supported_total": 12,
+  "supported_difference": 4,
+  "unsupported": 8,
+  "rows": [
+    {
+      "id": "D83-01",
+      "text": "Kassenbuch: Aster 23 Euro, Nebel 11 Euro, Mohn 8 Euro. Bitte summiere die Einzelbeträge.",
+      "values": [
+        {
+          "name": "Aster",
+          "number": 23
+        },
+        {
+          "name": "Nebel",
+          "number": 11
+        },
+        {
+          "name": "Mohn",
+          "number": 8
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 42
+    },
+    {
+      "id": "D83-02",
+      "text": "Die Mengen: Dachs=4, Reiher=13, Frosch=7. Wie hoch ist die Gesamtsumme?",
+      "values": [
+        {
+          "name": "Dachs",
+          "number": 4
+        },
+        {
+          "name": "Reiher",
+          "number": 13
+        },
+        {
+          "name": "Frosch",
+          "number": 7
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 24
+    },
+    {
+      "id": "D83-03",
+      "text": "Tabelle:\nKabel: -5\nStecker: 12\nAdapter: 6\nWas ergibt das zusammen?",
+      "values": [
+        {
+          "name": "Kabel",
+          "number": -5
+        },
+        {
+          "name": "Stecker",
+          "number": 12
+        },
+        {
+          "name": "Adapter",
+          "number": 6
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 13
+    },
+    {
+      "id": "D83-04",
+      "text": "Im Jahr 2023 wurden Zeder 39 Euro und Eibe 17 Euro erfasst. Addiere die beiden Werte.",
+      "values": [
+        {
+          "name": "Zeder",
+          "number": 39
+        },
+        {
+          "name": "Eibe",
+          "number": 17
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 56
+    },
+    {
+      "id": "D83-05",
+      "text": "Daten: Tal (+8), Berg (+19), See (+3). Welche Summe entsteht?",
+      "values": [
+        {
+          "name": "Tal",
+          "number": 8
+        },
+        {
+          "name": "Berg",
+          "number": 19
+        },
+        {
+          "name": "See",
+          "number": 3
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 30
+    },
+    {
+      "id": "D83-06",
+      "text": "Budget: Kran 102 Euro, Seil 28 Euro, Rad 9 Euro. Gesamt: 139 Euro. Rechne die Einzelposten zusammen.",
+      "values": [
+        {
+          "name": "Kran",
+          "number": 102
+        },
+        {
+          "name": "Seil",
+          "number": 28
+        },
+        {
+          "name": "Rad",
+          "number": 9
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 139
+    },
+    {
+      "id": "D83-07",
+      "text": "Ausgaben: Tulpe 14, Lilie 14, Rose 5. Wie viel insgesamt?",
+      "values": [
+        {
+          "name": "Tulpe",
+          "number": 14
+        },
+        {
+          "name": "Lilie",
+          "number": 14
+        },
+        {
+          "name": "Rose",
+          "number": 5
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 33
+    },
+    {
+      "id": "D83-08",
+      "text": "Verbrauch: Strom 71, Gas 24. Was ist die Summe?",
+      "values": [
+        {
+          "name": "Strom",
+          "number": 71
+        },
+        {
+          "name": "Gas",
+          "number": 24
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 95
+    },
+    {
+      "id": "D83-09",
+      "text": "Werte: Ocker 12; Indigo 4; Siena 6. Addiere sie.",
+      "values": [
+        {
+          "name": "Ocker",
+          "number": 12
+        },
+        {
+          "name": "Indigo",
+          "number": 4
+        },
+        {
+          "name": "Siena",
+          "number": 6
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 22
+    },
+    {
+      "id": "D83-10",
+      "text": "Liste: Orion 31; Vega 27; Lyra 15. Gesamtwert?",
+      "values": [
+        {
+          "name": "Orion",
+          "number": 31
+        },
+        {
+          "name": "Vega",
+          "number": 27
+        },
+        {
+          "name": "Lyra",
+          "number": 15
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 73
+    },
+    {
+      "id": "D83-11",
+      "text": "Zahlen: Pappel 9, Ulme 8, Ahorn 7. Wie lautet die Summe?",
+      "values": [
+        {
+          "name": "Pappel",
+          "number": 9
+        },
+        {
+          "name": "Ulme",
+          "number": 8
+        },
+        {
+          "name": "Ahorn",
+          "number": 7
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 24
+    },
+    {
+      "id": "D83-12",
+      "text": "Posten: Nadel 2, Faden 3, Stoff 5, Knopf 4. Rechne alles zusammen.",
+      "values": [
+        {
+          "name": "Nadel",
+          "number": 2
+        },
+        {
+          "name": "Faden",
+          "number": 3
+        },
+        {
+          "name": "Stoff",
+          "number": 5
+        },
+        {
+          "name": "Knopf",
+          "number": 4
+        }
+      ],
+      "expected_operation": "total",
+      "expected_answer": 14
+    },
+    {
+      "id": "D83-13",
+      "text": "Punkte: Jade 44, Flint 9, Glas 22. Wie groß ist die Spannweite?",
+      "values": [
+        {
+          "name": "Jade",
+          "number": 44
+        },
+        {
+          "name": "Flint",
+          "number": 9
+        },
+        {
+          "name": "Glas",
+          "number": 22
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 35
+    },
+    {
+      "id": "D83-14",
+      "text": "Höhen: Hügel 18, Fels 52, Wiese 7. Wie weit liegen der höchste und der niedrigste Wert auseinander?",
+      "values": [
+        {
+          "name": "Hügel",
+          "number": 18
+        },
+        {
+          "name": "Fels",
+          "number": 52
+        },
+        {
+          "name": "Wiese",
+          "number": 7
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 45
+    },
+    {
+      "id": "D83-15",
+      "text": "Beträge: Komet 63, Planet 21. Wie groß ist die Differenz zwischen Maximum und Minimum?",
+      "values": [
+        {
+          "name": "Komet",
+          "number": 63
+        },
+        {
+          "name": "Planet",
+          "number": 21
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 42
+    },
+    {
+      "id": "D83-16",
+      "text": "Längen: Kurz 6, Mittel 14, Lang 25. Welche Spannweite ergibt sich?",
+      "values": [
+        {
+          "name": "Kurz",
+          "number": 6
+        },
+        {
+          "name": "Mittel",
+          "number": 14
+        },
+        {
+          "name": "Lang",
+          "number": 25
+        }
+      ],
+      "expected_operation": "difference_max_min",
+      "expected_answer": 19
+    },
+    {
+      "id": "D83-17",
+      "text": "Mengen: Salz 8, Zucker 12. Wie viele Werte stehen in der Liste?",
+      "values": [
+        {
+          "name": "Salz",
+          "number": 8
+        },
+        {
+          "name": "Zucker",
+          "number": 12
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-18",
+      "text": "Kosten: Bahn 35, Taxi 52. Ist die Summe 87 richtig?",
+      "values": [
+        {
+          "name": "Bahn",
+          "number": 35
+        },
+        {
+          "name": "Taxi",
+          "number": 52
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-19",
+      "text": "Posten: Atlas 9, Beta 17. Bitte keine Summe bilden.",
+      "values": [
+        {
+          "name": "Atlas",
+          "number": 9
+        },
+        {
+          "name": "Beta",
+          "number": 17
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-20",
+      "text": "Messwerte: Kobalt 6, Gold 18, Kupfer 12. Wie lautet der Durchschnitt?",
+      "values": [
+        {
+          "name": "Kobalt",
+          "number": 6
+        },
+        {
+          "name": "Gold",
+          "number": 18
+        },
+        {
+          "name": "Kupfer",
+          "number": 12
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-21",
+      "text": "Preise: Haus 240, Garten 60. Wie viel Prozent sind 60 von 240?",
+      "values": [
+        {
+          "name": "Haus",
+          "number": 240
+        },
+        {
+          "name": "Garten",
+          "number": 60
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-22",
+      "text": "Werte: Ring 5, Stern 7. Welche Zahl gehört zu Stern?",
+      "values": [
+        {
+          "name": "Ring",
+          "number": 5
+        },
+        {
+          "name": "Stern",
+          "number": 7
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-23",
+      "text": "Daten: A 9, B 3, C 2. Wie viel mehr hat A als B?",
+      "values": [
+        {
+          "name": "A",
+          "number": 9
+        },
+        {
+          "name": "B",
+          "number": 3
+        },
+        {
+          "name": "C",
+          "number": 2
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    },
+    {
+      "id": "D83-24",
+      "text": "Kassenstand: Brot 6, Milch 4. Summe: 10. Warum stimmt die Summe?",
+      "values": [
+        {
+          "name": "Brot",
+          "number": 6
+        },
+        {
+          "name": "Milch",
+          "number": 4
+        }
+      ],
+      "expected_operation": null,
+      "expected_answer": null
+    }
+  ]
+}
