@@ -175,18 +175,17 @@ def row_evidence(audit, arm, releases, native_context=None, native_alive=False,
                       else GIST_MODEL if final_role == "B2_GIST"
                       and arm != "E_SHARED_DUAL_COLD" else BODY_MODEL)
     role_valid = final_role in expected_final and final_model == expected_model
-    body_releases = [r for r in releases if isinstance(r, dict)
-                     and r.get("role") in ("B1_DETAIL", "B2_GIST")]
-    release_roles = {r["role"] for r in body_releases}
-    expected_releases = ({final_role} if arm in ("B_B1_ONLY", "C_B2_ONLY")
-                         else required)
+    runner_releases = [r for r in releases if isinstance(r, dict)
+                       and r.get("role") in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST")]
+    release_roles = {r["role"] for r in runner_releases}
+    # Final C3 must be reaped too; an empty list must NEVER count as proof.
+    expected_releases = ({final_role} if single else
+                         required | ({"C3_LANGUAGE"} if final_role == "C3_LANGUAGE" else set()))
     released = bool(release_capture_phase == "after_close"
                     and offers == expected_offers
                     and release_roles == expected_releases
-                    and all(r.get("process_reaped") is True for r in body_releases))
-    # No native Body may appear in the supposedly C3-only baseline.
-    if arm == "A_C3_ONLY":
-        released = released and not body_releases
+                    and len(runner_releases) >= len(expected_releases)
+                    and all(r.get("process_reaped") is True for r in runner_releases))
     output = bool(checks_valid and meta.get("model_generated") is True
                   and isinstance(audit.get("output"), str)
                   and audit["output"].strip() and role_valid)
@@ -227,6 +226,12 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
         if runtime.models.b2_control != cfg["b2_control"]:
             runtime.close()
             raise ValueError("B2_CONTROL_CONFIG_MISMATCH")
+        b1_key = model_key("B1_DETAIL", runtime.models.b2_control)
+        b2_key = model_key("B2_GIST", runtime.models.b2_control)
+        if ((arm == "D_DISTINCT_BOTH" and b1_key == b2_key)
+                or (arm == "E_SHARED_DUAL_COLD" and b1_key != b2_key)):
+            runtime.close()
+            raise ValueError("BODY_MODEL_IDENTITY_MISMATCH")
         record = None
         needle_proc = None
         preclose_releases = []
