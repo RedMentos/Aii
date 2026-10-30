@@ -11,10 +11,13 @@ from v13.models import model_key
 class ControlledUtilitySoftware(unittest.TestCase):
     def sample(self, route="both", source="OPERATOR_ROUTE_OVERRIDE", role="B1_DETAIL", shared=False):
         offers = [{"role": k} for k in m.expected_roles(route)]
+        route_info = {"source": source}
+        if source != "OPERATOR_ROUTE_OVERRIDE":
+            route_info["native_control_metrics"] = {"memory": {"pid": 1234}}
         audit = {"checks": {"source_refs_valid": True, "final_output": True},
                  "source_errors": [], "offers": offers,
                  "output": "Option Sable: 382 - 241 = 141\nOption Tern: 382 - 317 = 65",
-                 "output_metadata": {"route": {"source": source},
+                 "output_metadata": {"route": route_info,
                                      "c2_packet": {"route": route},
                                      "runner": {"role": role,
                                                 "actual_model": (m.LANGUAGE_MODEL if role == "C3_LANGUAGE"
@@ -99,7 +102,7 @@ class ControlledUtilitySoftware(unittest.TestCase):
         with patch.object(m, "valid_control_evidence", return_value=True):
             flags = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
                                    native_context=context, native_alive=True,
-                                   native_reaped=True, source_exact=True,
+                                   native_reaped=True, native_pid=1234, source_exact=True,
                                    session="chat_1", event_id="event_1", source_text="synthetic")
             self.assertTrue(flags["native_c2_invocation"])
             self.assertFalse(flags["native_c2_selected"])
@@ -112,10 +115,27 @@ class ControlledUtilitySoftware(unittest.TestCase):
             self.assertTrue(selected["native_c2_selected"])
             missing = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
                                      native_context=context, native_alive=True,
-                                     native_reaped=False, source_exact=True,
+                                     native_reaped=False, native_pid=1234, source_exact=True,
                                      session="chat_1", event_id="event_1", source_text="synthetic")
             self.assertFalse(missing["valid_native"])
             self.assertFalse(missing["native_c2_invocation"])
+
+    def test_auto_wrong_process_pid_rejected(self):
+        audit, releases = self.sample(source="NATIVE_C2_ADVISORY")
+        with patch.object(m, "valid_control_evidence", return_value=True):
+            flags = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
+                                   native_context={"query_ref": {"source_id": "synthetic"}},
+                                   native_alive=True, native_reaped=True, native_pid=9999,
+                                   source_exact=True, session="s", event_id="e",
+                                   source_text="synthetic")
+        self.assertFalse(flags["native_c2_invocation"])
+        self.assertFalse(flags["native_c2_selected"])
+        self.assertFalse(flags["valid_native"])
+
+    def test_missing_source_error_proof_rejected(self):
+        audit, releases = self.sample()
+        audit.pop("source_errors")
+        self.assertFalse(m.row_evidence(audit, "D_DISTINCT_BOTH", releases)["valid_native"])
 
     def test_auto_forged_native_rejected(self):
         audit, releases = self.sample(source="NATIVE_C2_ADVISORY")
