@@ -1,0 +1,45 @@
+{
+  "schema": "v13.run14v.learned_wake_band.pending_ci.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent C2/JEF effort band integrity",
+  "parent": {
+    "pr": 1337,
+    "head_sha": "09f6ce79d1a7684a0421c6d509dc934218b71bf2"
+  },
+  "branch": "assistant/v13-run14v-effort-learned-wake-ceiling-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "197f77ad2c76611df33c1841e68be369ddb05bc2",
+    "test_first": "d1cda1627b93e30701a35f022df1ff09270886b8",
+    "effort_original": "e2cd61815eed0192dbe281e7edfb246d70a394ca",
+    "effort_candidate": "563a6db17c1331f5eaa9f6549502f8afc460ad57"
+  },
+  "change": "resolve_wake now caps learned wake by DIRECT=none / ONE_BODY=one / FOCAL and DEEP=both before resource/deadline ceiling; user forced modes unchanged.",
+  "evidence": {
+    "original_red": {
+      "run": 41124856690,
+      "head": "25e50acf77412fb38387757ac0f4f4d1e271a6ce",
+      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+    },
+    "candidate": {
+      "run": 41124944903,
+      "head": "d9654f9edde634c12685554a08932f30ca01d42c",
+      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+    }
+  },
+  "limitations": [
+    "No test result is claimed until original raw ZIP and candidate raw are independently checked.",
+    "GitHub Actions queue transient at checkpoint; no native/Redmi proof.",
+    "Historical full-suite RED unwaived; no production merge."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Monitor original RED Actions 41124856690 and candidate Actions 41124944903 to terminal. Download original ZIPs, verify CRC/SHA256SUMS/stage exits, preserve every failure and private byte-exact backups; if candidate GREEN, update checkpoint and create review-only PR based on #1337. If CI remains queued, continue independent canonical package without claiming tests."
+}
