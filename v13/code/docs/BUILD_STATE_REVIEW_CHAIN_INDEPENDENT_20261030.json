@@ -22,7 +22,7 @@
   "private_backup_byte_identical": true,
   "fullsuite_run": 41001121075,
   "fullsuite_head": "a1d1a8c2bcac2dc62b1635e42f9fd0e31d4e06e9",
-  "fullsuite_status": "RUN1_RED_PRESERVED_RUN2_PENDING",
+  "fullsuite_status": "RUN1_AND_RUN2_RED_PRESERVED_RUN3_PENDING",
   "fullsuite_unfiltered": true,
   "learning_mode": "RECORD_ONLY",
   "step2_gate_promoted": false,
@@ -32,12 +32,12 @@
   "redmi_measured": false,
   "whole_system_complete": false,
   "open_questions": [
-    "Run1 original fullsuite 3465 tests RED 3 errors; two historical source-pin errors and one harness missing native ZIP",
-    "Run2 rerun pending, must verify original raw",
-    "No runtime gate promotion",
-    "No Redmi"
+    "Run1 3465 tests RED 3 errors (2 historical + missing ZIP fixture)",
+    "Run2 3465 tests RED 3 errors and 3 failures (2 historical + package-source rejects symlink)",
+    "Run3 regular ZIP fixture rerun pending",
+    "No gate promotion or Redmi"
   ],
-  "next_command": "Inspect second Actions run on branch, download original raw, verify SHA/CRC/inner hashes; expect Run34/Run37 RED, no expression ZIP missing. Preserve both RED attempts. Then native seed53 pilot after heavy slot.",
+  "next_command": "Inspect Actions run3 on branch, download raw, verify SHA/CRC/inner hashes and exact 3465 test failures; preserve RED if any; do not waive Run34/Run37.",
   "original_focused_module_counts": {
     "test_step2_budget_paired_native_v3_20261030": 6,
     "test_c2_native_route_provenance_20261030": 7,
@@ -66,8 +66,32 @@
     "private_byte_identical": true
   },
   "fullsuite_run_2": {
-    "workflow_fix_commit": "2ff9e0bf91127a5c8aae8f8ce83194450b03b907",
+    "run": 41001786002,
+    "head": "2ff9e0bf91127a5c8aae8f8ce83194450b03b907",
+    "conclusion": "RED",
+    "tests": 3465,
+    "errors": 3,
+    "failures": 3,
+    "skipped": 11,
+    "original_artifact_id": 12953119319,
+    "original_artifact_sha256": "baa3ff7a90f486287c7bfa88a3003062f5058347a75299d05808d5d1f93c8319",
+    "zip_crc": "CLEAN",
+    "inner_sha256": "33/33",
+    "focused_tests": "31/31 PASS",
+    "fullsuite_errors": [
+      "Run34 historical native_source_or_catalog_changed",
+      "Run37 historical native_source_or_catalog_changed",
+      "test_werkzeug_handy symlink candidate rejection"
+    ],
+    "fullsuite_failures": [
+      "Three test_package_source ZIP extraction regressions rejected symlinked tests/NATIVE_40996792157.zip"
+    ],
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/FULLSUITE_RED_41001786002.zip",
+    "private_byte_identical": true
+  },
+  "fullsuite_run_3": {
+    "workflow_fix_commit": "b55ad7e4eb8709e96ffb7166c96d166df77556e2",
     "status": "LAUNCHED_OR_QUEUED_UNVERIFIED",
-    "change": "Retain digest-verified original native ZIP symlink through full unfiltered suite; no runtime/model/test edits"
+    "change": "Copy verified original 297655-byte ZIP as regular file, not symlink; retain through unfiltered suite. No source/runtime/model/test changes."
   }
 }
