@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12M_C2_C3_BODY_PAIRED_SOURCE_PREFLIGHT_PENDING",
+  "schema": "V13_RUN12M_NATIVE_PARTIAL_RED_OBSERVER_ROUTE_CONFOUND_NO_GATE",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12m-c2-c3-body-utility-20261030",
@@ -51,12 +51,45 @@
     "launched": true,
     "run_id": 41054908080,
     "tested_head": "faf0e6c6717ff8a80d0163e13f2836d399c356dc",
-    "status": "IN_PROGRESS",
-    "original_artifact_sha256": "UNKNOWN",
+    "status": "PILOT_PARTIAL_RED",
+    "artifact_id": 12976826165,
+    "zip_sha256": "2203a2d757db084f3b79244433af92fbf01ad8dd1cd555b80a986ae2e7df9b55",
+    "zip_bytes": 264497,
+    "crc": "PASS",
+    "inner_sha256": "60/60",
+    "raw": "16/16",
+    "preclose": "16/16",
+    "strict": "4/4",
+    "native_invocations": 4,
+    "strict_matches": 4,
+    "native_selected": 2,
+    "valid_native": "14/16",
+    "invalid_rows": [
+      3,
+      12
+    ],
+    "invalid_reason": "F auto simple fallback with background B1 offer; frozen row_evidence expected zero offers",
+    "score_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 5,
+      "C_B2_ONLY": 4,
+      "F_NATIVE_AUTO": 1
+    },
+    "secondary_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 0,
+      "F_NATIVE_AUTO": 0
+    },
+    "utility_signal": false,
+    "all_native_structurally_valid": false,
+    "stages": "9/10 EXIT0; NATIVE_EXIT2; REPORT_CHECK_EXIT0",
+    "source_tests": "46/46 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12M-C2BodyUtility/V13_Run12M_NATIVE_RED_41054908080.zip",
+    "private_byte_exact": true,
     "redmi": false,
-    "utility_proven": false,
-    "concurrency_group": "v13-step2-budget-paired-native-20261030",
-    "model_revisions": "UNCHANGED_FROZEN_RUN11V"
+    "utility_proven": false
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -68,10 +101,10 @@
     "whole_system_complete": false
   },
   "open_questions": [
-    "Does strict Run12J native auto improve real arithmetic remainder answer quality over best C3/B1/B2 single-body on a disjoint paired cohort?",
+    "Run12M answered: 14/16 full native witness; F simple fallback/background B1 offer confound, utility signal RED. No comparative proof.",
     "If no, keep C2 route advisory SHADOW/scaffold-first until separately validated; do not change frozen runtime in place.",
     "Target Redmi resource/thermal and multi-day proof remains device-only."
   ],
-  "next_command": "Wait for original native Actions 41054908080 terminal. Download artifact even on RED, independently check HEAD faf0e6c6, ZIP SHA/CRC/manifest/16 raw+16 preclose+4 strict, replay frozen scores and negative gates, private byte-exact backup. If blocked, preserve original failure and continue independent Canon package; do not retune frozen cohort.",
+  "next_command": "Preserve Run12M original RED. Prospectively preregister a new disjoint observer-OFF all-arms route-utility cohort with new source-bound witness (do not change Run11V scorer or original Run12M labels), source-only tests, serialized native, independent original ZIP audit and private backup. No gate promotion.",
   "pr": 1269
 }
