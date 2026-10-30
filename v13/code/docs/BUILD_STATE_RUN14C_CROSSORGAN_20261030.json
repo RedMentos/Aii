@@ -1,0 +1,70 @@
+{
+  "schema": "v13.run14c.ag9_ag12_crossorgan.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; disjoint AG9/AG12 integration review only",
+  "parent": {
+    "pr": 1317,
+    "commit": "7e7d57e1db88642f4fcd447eda2c012c1e625bfb"
+  },
+  "sources": [
+    {
+      "pr": 1318,
+      "head": "e575d93a2682fdbe78267075237efd90969c6ef5",
+      "ag9_blob": "658b3c04bd95907211d1f5f7601436d3370d68e1",
+      "testfirst_red_run": 41103491267,
+      "candidate_green_run": 41103632027
+    },
+    {
+      "pr": 1319,
+      "head": "07992eb4beed154c84ecfeffca321c9ff0c5d38e",
+      "ag12_blob": "6f7906c9b9352b9d4ffe9cf9f237fba684942308",
+      "testfirst_red_run": 41104149055,
+      "candidate_green_run": 41104211814
+    }
+  ],
+  "branch": "assistant/v13-run14c-ag9-ag12-crossorgan-review-20261030-hourly11",
+  "pr": 1320,
+  "state": "EXPLICIT_TWO_PARENT_MERGE_REMOTE_VERIFIED_FULLSUITE_CI_QUEUED",
+  "prereg_commit": "2bae118d95f369b8b129b147f3ea0c72fd08ca98",
+  "merge_commit": "22abfc9320bc3e4389f7cf778218a06704641cf0",
+  "merge_parents": [
+    "2bae118d95f369b8b129b147f3ea0c72fd08ca98",
+    "07992eb4beed154c84ecfeffca321c9ff0c5d38e"
+  ],
+  "workflow_commit": "730d335c40ee61fc47dd4d3ae1856a74a846f427",
+  "ci": {
+    "run_id": 41104878974,
+    "status": "QUEUED",
+    "focused": "UNKNOWN",
+    "unfiltered": "UNKNOWN",
+    "raw_sha256": null
+  },
+  "baseline": {
+    "run_id": 41088780210,
+    "artifact_id": 12994050614,
+    "original_zip_sha256": "4d4132478876762d14fd86d0acbd3632cdc4408988c81c363ceb8673f80c68fd",
+    "top_level_tests": 4027,
+    "failures": 4,
+    "errors": 65,
+    "skips": 15,
+    "nested_failure_identities": 120,
+    "unique_failure_identities": 86,
+    "status": "HISTORICAL_RED"
+  },
+  "evidence_scope": "SOFTWARE_GITHUB_ACTIONS_PENDING",
+  "open_questions": [
+    "Wait for 41104878974 focused and unfiltered jobs; inspect exact original raw and compare failure identities, not only counts.",
+    "No native/model/Redmi proof; full-suite may preserve 120 historical RED identities; no waiver.",
+    "No main/production merge, no user approval/age gate promotion."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Fetch Actions 41104878974 jobs/artifacts when terminal; verify ZIP CRC/inner hashes/stage exits; compare unfiltered failure identities against original Run13N artifact 12994050614; privately byte-backup and checkpoint, then select next substantive canonical package."
+}
