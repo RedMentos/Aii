@@ -1,0 +1,80 @@
+name: V13 JEF F1F5 stored FINAL audit focused software
+on:
+  push:
+    branches:
+      - assistant/v13-jef-f1f5-final-audit-20261030-0407
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-jef-f1f5-final-audit-20261030
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Focused real Store tests with closed raw
+        id: run
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-jef-final-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          git hash-object v13/code/v13/jef_f1f5_operator.py v13/code/tests/test_jef_f1f5_final_output_audit_20261030.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/jef-final-audit-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/jef-final-audit-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else
+            echo SKIPPED_VENV_RED > "$e/DEPS_RAW.log"
+            echo SKIPPED_RED > "$e/DEPS_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_jef_f1f5_final_output_audit_20261030 tests.test_jefsource_explain_optin_20261030 tests.test_jef_f1f5_operator) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_DEPS_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          "$py" -m py_compile v13/code/tests/test_jef_f1f5_final_output_audit_20261030.py v13/code/v13/jef_f1f5_operator.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4f9a5aef58d9f3ccbfc46ac67df26eecf34096fd --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4f9a5aef58d9f3ccbfc46ac67df26eecf34096fd HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-jef-final-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-jef-final-audit/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused software
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-jef-final-audit"
+          for stage in VENV DEPS FOCUSED COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo JEF_F1F5_STORED_FINAL_AUDIT_SOFTWARE_ONLY_NO_GATE
