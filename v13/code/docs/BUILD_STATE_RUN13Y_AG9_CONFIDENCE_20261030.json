@@ -1,0 +1,41 @@
+{
+  "schema": "v13.run13y.ag9_finite_confidence.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 Run13Y AG9 isolated candidate",
+  "parent": {
+    "pr": 1315,
+    "commit": "7965a39e960d13faf923dd469df8226bd0204a81"
+  },
+  "branch": "assistant/v13-run13y-ag9-confidence-input-guard-20261030-auto11",
+  "pr": 1316,
+  "state": "SOURCE_COMMITTED_CI_QUEUED",
+  "prereg_commit": "5a9d99a8faecf63e16ebc76e9fb650022508ed3e",
+  "bug": "AG9 clamp01 maps NaN/Inf to plausible 1.0/0.0; int(bool('false')) records false string as positive outcome.",
+  "change": "Finite nonboolean confidence, exact bool/int0/1 outcome labels and bounded component names validated before StateBox mutation; invalid decide explicit abstention.",
+  "source_commit": "033f5fb3fa882afa48e398f32d32e7a454bfda19",
+  "workflow_pinned_commit": "be361c200a0640bd848fb7de5515cbbaa55e0727",
+  "ci": {
+    "test_first_run": 41101207117,
+    "intermediate_pin_mismatch_run": 41101258925,
+    "green_candidate_run": 41101270744,
+    "observed_status": "QUEUED",
+    "observed_test_result": "UNKNOWN",
+    "raw_artifact": null
+  },
+  "evidence_scope": "SOFTWARE_IN_MEMORY_STATEBOX_PENDING",
+  "limitations": [
+    "No completed CI tests yet; do not claim GREEN or observed RED.",
+    "No active production merge or general AG9 semantic calibration.",
+    "No model/native/Redmi test or learning authority."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "When Actions 41101207117 and 41101270744 become terminal, download original raw ZIPs, check test-first RED and GREEN, CRC and SHA256SUMS, privacy and compile exits; fix isolated AG9 candidate if needed and privately byte-backup. Continue independent blueprint work while queued."
+}
