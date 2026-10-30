@@ -1,0 +1,90 @@
+name: V13 F1/F5 source-exact arithmetic SHADOW review
+on:
+  push:
+    branches: [codex/v13-f1f5-exact-arithmetic-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-f1f5-source-arithmetic-shadow-20261030.yml'
+      - 'v13/code/v13/jef_typed_source_shadow.py'
+      - 'v13/code/tests/test_jef_source_arithmetic_shadow_20261030.py'
+      - 'v13/code/docs/F1F5_SOURCE_EXACT_ARITHMETIC_*'
+permissions:
+  contents: read
+jobs:
+  source-arithmetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run source-exact arithmetic, real Store, F1/F5 tests and preserve raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-f1f5-arithmetic"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          5d31d6d063972997350eadff05f2abafead01214 v13/code/docs/F1F5_SOURCE_EXACT_ARITHMETIC_PREREG_20261030.md
+          6e62e7c4e1825103877f20438aac3342b893c9df v13/code/tests/test_jef_source_arithmetic_shadow_20261030.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          source_red=0
+          : > "$e/SOURCE_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then source_red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          git hash-object v13/code/v13/jef_typed_source_shadow.py > "$e/TYPED_SOURCE_BLOB.txt"
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-f1f5-arithmetic-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-f1f5-arithmetic-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_jef_source_arithmetic_shadow_20261030 tests.test_jef_typed_source_shadow tests.test_jef_f1f5_source_admission) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PREREQ_RED > "$e/TEST_RAW.log"; echo SKIPPED > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/jef_typed_source_shadow.py v13/code/tests/test_jef_source_arithmetic_shadow_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d7dddf8ab6c23f187003d919570dc18b650d5a8b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check d7dddf8ab6c23f187003d919570dc18b650d5a8b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original source-only evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-f1f5-arithmetic-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-f1f5-arithmetic/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all source-arithmetic stages
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-f1f5-arithmetic"
+          for stage in SOURCE VENV DEPS PIP_CHECK TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'F1F5_ARITHMETIC_SHADOW_ONLY_NO_NATIVE_NO_GATE'
