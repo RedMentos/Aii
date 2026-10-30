@@ -19,7 +19,7 @@ MAX_CHARS = 4096
 MAX_RESULT = 10**12
 INT = r"[+-]?\d{1,6}"
 EXPR = rf"{INT}(?:\s*[+\-*/×÷]\s*{INT}){{1,3}}"
-EQ = re.compile(rf"(?<![\w.+*/×÷-])(?P<expr>{EXPR})\s*=\s*(?P<rhs>[+-]?\d{{1,9}})(?![\w.+*/×÷-])")
+EQ = re.compile(rf"(?<![\w.+*/×÷-])(?P<expr>{EXPR})\s*=\s*(?P<rhs>[+-]?\d{{1,9}})(?!(?:[\w+*/×÷-]|\.\d))")
 QUESTION = re.compile(r"\s*(?:what is|calculate|was ist|berechne)\s+(.+?)\s*\??\s*", re.I)
 ANSWER = re.compile(r"\s*([+-]?\d{1,9})[.!]?\s*")
 
