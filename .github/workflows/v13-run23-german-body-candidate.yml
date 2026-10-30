@@ -27,7 +27,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           95f4361704caf236ef4a80c46776ae9982ec60f0 v13/code/docs/AG12_GERMAN_BODY_EVAL_PREREG_RUN23_20261030.md
-          3f5e0d72b06588a5cf837b56f7da4af4493a47b6 v13/code/tests/test_ag12_german_body_eval_run23.py
+          3a5c13e14307d08c894476fa7acfc145acb16d00 v13/code/tests/test_ag12_german_body_eval_run23.py
           66a9419143c456f01747b4796fb327b3b36711b3 v13/code/v13/agi/solver.py
           8e4727140e9f1e88b64c6d3bfdccb8526f772647 v13/code/v13/agi/__init__.py
           32a03faf746f3bb4a3d7968b6d9b5d06e7db0a2c v13/code/v13/operator.py
