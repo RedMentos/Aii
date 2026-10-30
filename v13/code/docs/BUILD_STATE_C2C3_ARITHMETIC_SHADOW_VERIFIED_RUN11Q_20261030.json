@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN11Q_C2C3_SOURCE_ARITHMETIC_SHADOW_VERIFIED",
+  "date_utc": "2026-10-30",
+  "branch": "assistant/v13-run11q-c2c3-source-arithmetic-shadow-20261030",
+  "parent_pr": 1245,
+  "parent_head": "5184ef06ae1108db01caeb55aabebba2498c0067",
+  "prereg_commit": "b70574156cfb68839296c20429725fb3b77ff638",
+  "script_git_blob": "d824690e942489b11c79c3aa68cd0f02e6176f06",
+  "test_git_blob": "54bba1955955e9d0bc31b8bb6104002eb67e99e5",
+  "canon_git_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "historical_native": {
+    "run_id": 40999648419,
+    "artifact_id": 12952434876,
+    "original_zip_sha256": "df680697f65f9879b7817179b8d4a2d1f8625656579c68f03c0268d599f6d4c4",
+    "crc_clean": true,
+    "inner_hashes": "27/27",
+    "fixture_sha256": "74818535a13819a65d4d32801d704fecd7716ea99c112b33c3bca248f3442c36",
+    "native_c2_invocations": 3,
+    "native_c2_selected": 0,
+    "c3_final": 0,
+    "b1_final": 3
+  },
+  "software_red": {
+    "run_id": 41032861606,
+    "zip_sha256": "fdefe4a4baae39718cb67560f1755cea85d6e57e9b64f8557f98f4e084787ea2",
+    "reason": "Shallow-copy synthetic test fixture contamination",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Q-C2C3-Arithmetic-Shadow/SOFTWARE_RED_41032861606_shaFDEFE4.zip",
+    "private_readback_byte_exact": true
+  },
+  "software_green": {
+    "run_id": 41033010731,
+    "exact_tested_head": "2406d355d4d2af5f2de3190b73d7a44edd58ec40",
+    "artifact_id": 12966612981,
+    "zip_sha256": "76a6ad3e77062a60bfdc85ba4bbbf8afa9d5e35c3b00a4c9298a976f036a3d44",
+    "crc_clean": true,
+    "inner_hashes": "19/19",
+    "stage_exits": "8/8",
+    "tests": "11/11 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Q-C2C3-Arithmetic-Shadow/SOFTWARE_GREEN_41033010731_sha76A6AD.zip",
+    "private_readback_byte_exact": true
+  },
+  "posthoc_scores": {
+    "matches": 2,
+    "source_contradictions": 4,
+    "unscored": 0,
+    "conflicting": 0,
+    "total": 6,
+    "evidence_class": "LINUX_NATIVE_POSTHOC_SOURCE_BOUND_SHADOW",
+    "utility_gate_pass": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "c2_native_selected_non_simple": "UNPROVEN",
+    "c3_final_in_cohort": "UNOBSERVED",
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Prepare new disjoint paired C2/C3/Body native utility cohort (C3-only/B1-only/B2-only/both/one-Body-two-states) with source-bound contradiction scoring and no authority promotion. Do not count posthoc 2/6 as prereg utility.",
+  "owner": "GPT-6 review-only branch"
+}
