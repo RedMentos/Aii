@@ -29,7 +29,7 @@ PINS = {
 }
 MODEL_SHA256 = "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
 MODEL_REVISION = "657e078c94084481950a2d555a941481f715536b"
-SCHEMA = "v13.c3.de.native_typed_read.seed79.v1"
+SCHEMA = "v13.c3.de.typed_read.seed79.v1"
 GATES = ("step2_gate_promoted", "b3_promoted", "body_jepa_available",
          "redmi_measured", "whole_system_complete")
 
