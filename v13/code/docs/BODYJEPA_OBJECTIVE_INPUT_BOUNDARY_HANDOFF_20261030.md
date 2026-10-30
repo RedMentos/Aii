@@ -5,3 +5,7 @@ Review-only branch `codex/v13-bodyjepa-objective-input-boundary-20261030-auto11s
 **Concurrent-owner discovery:** another owner independently started `v13/code/tests/test_bodyjepa_typed_batch_preflight_20261030.py` at commit `a1fc46786413eb0bb24904210a7a7a2e6404af15` with overlapping checks, original RED Actions **40983639114**. Do not simultaneously edit `body_jepa_objective_bridge.py` or overwrite their branch. This branch intentionally has **no source fix**, no PR and no merge request. Coordinate/compare the two tests after the other owner's candidate is finalized; keep both original RED artifacts.
 
 Canon, registered cohorts, native models, Age gates and live `jepa_weight` unchanged. Exact next action on this branch: review the concurrent owner's eventual source candidate and decide whether any unique regression from this RED witness remains uncovered. Owner for the active source fix: **other concurrent Body-JEPA preflight thread**, not this branch.
+
+## Independent differential review note
+
+The concurrent owner's RED-first `test_bodyjepa_typed_batch_preflight_20261030.py` covers early `model.forward` refusal and detached float-tensor eligibility, which this branch does not. This branch adds **non-Tensor lengths** and **negative token IDs** as extra typed-boundary counterexamples (plus repeated wrong-shape target checks). These cases should be reviewed after the owner's GREEN; do not cherry-pick this branch blindly. Both original RED artifacts are independent and neither proves real-weight utility.
