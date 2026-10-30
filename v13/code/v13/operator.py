@@ -33,6 +33,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :source budget <ProjectName> <WholeEuroAmount> [--confirm] (user-authored F1/F5 fact, no model or prior answer)\n:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
 :verified <Frage> | :verified exact <Frage> (F1/F5-Vorprüfung oder genaue Quellantwort; keine C3-Generierung)
 :jefsource <Event-ID> <PolicyMemory-ID> <SheetMemory-ID> (nur lokale F1/F5-SHADOW-Diagnose, keine Live-Antwort)
+:jeflink <ContextPlan-Packet-ID> <QueryEvent-ID> <SourceEvent-ID> (Age0, nur lokale SOURCE_LINKS/JEF-SHADOW-Antwort, kein Chatturn)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
@@ -96,6 +97,9 @@ class Operator:
         if cmd=='help':return HELP
         if cmd=='jefsource':
             from .jef_f1f5_operator import operator_command
+            return operator_command(r,args)
+        if cmd=='jeflink':
+            from .jef_context_link_operator_run13f import operator_command
             return operator_command(r,args)
         if cmd=='source':
             from .source_record import operator_command
