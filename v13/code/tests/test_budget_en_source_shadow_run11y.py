@@ -108,10 +108,11 @@ class BudgetEnSourceShadowRun11Y(unittest.TestCase):
             good.replace("For Maple197,", "For Maple197 and Dawn197,"),
             good.replace("284 Euro", "999999 Euro"),
             good.replace("512 Euro", "0 Euro"),
-            good.replace("Euro and needs 7 days", "Euro and needs 7 days. Project Other197"),
+            good.replace("Opal uses", "Project Other197. Opal uses"),
         )
         for i, bad in enumerate(cases):
             with self.subTest(i=i):
+                self.assertNotEqual(bad, good)
                 q, s = self.pair(f, override=bad)
                 got = shadow.propose(self.r.store, q, s)
                 self.assertIsNone(got["candidate"])
