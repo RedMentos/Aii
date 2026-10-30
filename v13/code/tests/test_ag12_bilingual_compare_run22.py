@@ -103,10 +103,12 @@ class AG12BilingualCompareRun22(unittest.TestCase):
                 de = GeneralityEval(rt.store, lang="de")
                 en.run(oracle_solver(en.suite), solver_name="v13")
                 de.run(null_solver, solver_name="v13")
-                def corrupt(st):
-                    st["runs"][-1]["summary"]["overall"] = "nan"
-                de.box.mutate(corrupt)
-                self.assertEqual(compare_languages(rt.store)["status"], "INVALID_METRIC_DE")
+                for bad in ("nan", True, 10 ** 1000, -0.1, 1.1):
+                    with self.subTest(malformed=type(bad).__name__):
+                        def corrupt(st):
+                            st["runs"][-1]["summary"]["overall"] = bad
+                        de.box.mutate(corrupt)
+                        self.assertEqual(compare_languages(rt.store)["status"], "INVALID_METRIC_DE")
                 rotated = GeneralityEval(rt.store, lang="de", seed=17)
                 self.assertEqual(compare_languages(rt.store)["status"], "SUITE_MISMATCH_DE")
                 self.assertEqual(rotated.report()["runs"], 0)
