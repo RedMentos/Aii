@@ -62,37 +62,7 @@ jobs:
           python3 - "$e/FULL_RAW.log" "$e/IDENTITY_RAW.json" <<'PY'
 import hashlib,json,re,sys
 raw=open(sys.argv[1],encoding='utf-8',errors='replace').read()
-entries=re.findall(r'^(ERROR|FAIL): (.+)
-          echo "$?" > "$e/COMPILE_EXIT.txt"
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 2b947a0fe97be5aa3bea6b9387bdda953fe6c45c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
-          echo "$?" > "$e/PRIVACY_EXIT.txt"
-          git diff --check 2b947a0fe97be5aa3bea6b9387bdda953fe6c45c HEAD > "$e/DIFF_RAW.log" 2>&1
-          echo "$?" > "$e/DIFF_EXIT.txt"
-          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
-          exit 0
-      - name: Preserve complete original raw even when suite is RED
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: v13-g14-unfiltered-jeflink-${{ github.run_id }}-${{ github.sha }}
-          path: ${{ runner.temp }}/v13-g14-unfiltered-jeflink/
-          retention-days: 30
-          if-no-files-found: error
-      - name: Enforce all checks and frozen negative gates without waivers
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          e="$RUNNER_TEMP/v13-g14-unfiltered-jeflink"
-          for stage in CANON VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT FULL IDENTITY COMPILE PRIVACY DIFF; do
-            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
-              echo "$stage RED; raw retained; no gate promotion"
-              tail -75 "$e/${stage}_RAW.log" 2>/dev/null || true
-              exit 1
-            fi
-          done
-          echo 'G14_FULL_SOFTWARE_PASS_ONLY_NOT_NATIVE_OR_REDMI'
-,raw,re.M)
+entries=re.findall(r'^(ERROR|FAIL): (.+)$',raw,re.M)
 digest=hashlib.sha256(json.dumps(sorted(entries),separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
 expected='e85743aad6bb69a8c319daa93228d7fb0cc8d24a43e5f1a1c41526a1a2b8a3e7'
 result={'baseline_sha256':expected,'actual_sha256':digest,'identity_entries':len(entries),'fail_entries':sum(x[0]=='FAIL' for x in entries),'error_entries':sum(x[0]=='ERROR' for x in entries),'same_multiset':digest==expected,'claim':'DIAGNOSTIC_ONLY_FULLSUITE_RED_NOT_WAIVED'}
@@ -122,11 +92,11 @@ PY
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-g14-unfiltered-jeflink"
-          for stage in CANON VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT FULL COMPILE PRIVACY DIFF; do
+          for stage in CANON VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT FULL IDENTITY COMPILE PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; raw retained; no gate promotion"
               tail -75 "$e/${stage}_RAW.log" 2>/dev/null || true
               exit 1
             fi
           done
-          echo 'FULL_SOFTWARE_PASS_ONLY_NOT_NATIVE_OR_REDMI'
+          echo 'G14_FULL_SOFTWARE_PASS_ONLY_NOT_NATIVE_OR_REDMI'
