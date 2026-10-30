@@ -3493,5 +3493,42 @@
     "exact_next_command": "PYTHONPATH=v13/code python3 v13/code/scripts/current_c2_native_linux_smoke_20261028.py --scratch-home <fresh> --evidence-dir <fresh>",
     "next_prerequisites": "Pinned C2 Needle3 Linux control call after B1/B2; then separate combined real full-turn integration. Never infer STEP2 complementarity from individual native model smokes.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_c2_native_recheck": {
+    "scope": "CURRENT_CHAIN_C2_NEEDLE3_REAL_LINUX_NATIVE_CONTROL_CALL",
+    "owner": "V13 hourly automation; serialized after C3 and B1/B2 native jobs",
+    "parent_head": "bd3cce27d2c009ce44e334503b8e76c1ab5117c1",
+    "branch": "codex/v13-current-c2-native-recheck-20261030-auto11aa",
+    "pr": 1191,
+    "exact_test_head": "af731e1b86cde85e758dcbae80a22dce01ff2a14",
+    "actions_run": 40986013453,
+    "status": "GREEN_LINUX_NATIVE_C2_CONTROL_CALL_ONLY",
+    "model_id": "Cactus-Compute/needle3",
+    "model_sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
+    "binary_sha256": "5eb163c5ed33bd914c103ef8eba2134c7bb2d97bafafdd69f410a4a3100e8c37",
+    "tools_blob": "954a3f468f10195fbce12d27f68585ee7edee2c9",
+    "native_elapsed_s": 0.417,
+    "route": "both",
+    "confidence": "UNCALIBRATED_0.9932",
+    "native_exit": 0,
+    "raw_zip_sha256": "363cac72b92ea781614cf294514c85362d9cfbef555ea8d53cf9dbffa15740a6",
+    "inner_hashes": "17/17",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2-NativeRecheck",
+    "remote_bytes_verified": true,
+    "external_tools_executed": false,
+    "jef_end_to_end_executed": false,
+    "b1_b2_c3_executed": false,
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Create preregistered combined real JEF/C2/B1/B2/C3 Linux full-turn smoke from current pinned source with fresh scratch and all source/model hashes; retain original RED if blocked.",
+    "next_prerequisites": "Individual native smokes do not prove connected utility; require native full-turn actual consumer and future Redmi measurements. No model/cohort changes.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
