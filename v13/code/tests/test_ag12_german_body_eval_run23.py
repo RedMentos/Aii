@@ -67,7 +67,7 @@ class GermanBodyEvalRun23(unittest.TestCase):
         self.assertEqual(self.g.metacog.report("ag12:c3")["components"]["ag12:c3"]["n"], 88)
 
     def test_legacy_english_payload_and_german_system_origin_veto(self):
-        self.fake()
+        self.fake(lang="en")
         operator_command(self.r, ["eval", "run", "c3"])
         events = [x for x in self.r.sleep.scheduler._load()[0]["events"]
                   if x["action"] == "growth_eval"]
