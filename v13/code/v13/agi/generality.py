@@ -151,6 +151,15 @@ class GeneralityEval:
         self.box=StateBox(store,KEY if lang=='en' else KEY+'_DE',REVISION,
                           lambda:{'runs':[],'last_items':{},'holdout':[],'suite_hash':None})
         self.box.mutate(self._register)
+    def _active_state(self):
+        """Reject a stale instance after a same-language suite rotation."""
+        st = self.box.load()[0]
+        if st.get('suite_hash') != self.suite['hash']:
+            raise ValueError('AG12_STALE_SUITE')
+        return st
+    def _current_runs(self):
+        """Keep historical runs for audit but never mix suite identities in curves."""
+        return [r for r in self._active_state()['runs'] if r.get('suite_hash') == self.suite['hash']]
     def _register(self,st):
         """Holdout digests of unseen families; a suite change is recorded, never silently mixed into old curves."""
         if st['suite_hash'] not in (None,self.suite['hash']):st['last_items']={};st['last_by']={}
@@ -158,20 +167,22 @@ class GeneralityEval:
         st['holdout']=sorted({digest(normalize(i['prompt'])) for i in self.suite['items'] if i['split']=='unseen'})
     def guard_training(self,texts):
         """Raise if any training/distillation text equals a holdout prompt. Called by AG1/AG4/AG6 dataset builders."""
-        hold=set(self.box.load()[0]['holdout'])
+        hold=set(self._active_state()['holdout'])
         bad=[t for t in texts if digest(normalize(t)) in hold]
         if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({len(bad)} Einträge)')
         return True
     def practice_items(self):
         """Only 'seen' families may be used for practice (AG4/AG5)."""
+        self._active_state()
         return [{k:i[k] for k in ('id','family','level','prompt','answer')} for i in self.suite['items'] if i['split']=='seen']
     def due(self):
-        runs=self.box.load()[0]['runs']
+        runs=self._current_runs()
         return not runs or self.clock()-runs[-1]['finished']>=self.interval_s
     def run(self,solver,label='manual',cancel=None,deadline=None,generation=None,solver_name=None):
         """solver_name keeps one curve and one forgetting baseline per solver (C3, B1, B2, ensemble, ...).
         A solver may offer batch(views, cancel, deadline) -> {id: out}: lets a body adapter answer all items with
         one model before switching to the next (one resident body on the phone)."""
+        self._active_state()
         started=self.clock();results=[];status='DONE';key=str(solver_name or 'default')[:32]
         views=[{k:it[k] for k in ('id','family','level','prompt')} for it in self.suite['items']]
         pre=None
@@ -192,18 +203,21 @@ class GeneralityEval:
             except Cancelled:status='INTERRUPTED';break
             except Exception as exc:ans,conf='',0.;out={'error':type(exc).__name__}
             results.append({'id':it['id'],'correct':int(normalize(ans)==normalize(it['answer'])),'confidence':conf})
-        st=self.box.load()[0]
+        st=self._active_state()
         prev=st.get('last_by',{}).get(key) if key!='default' else st['last_items']
         summary=summarize(self.suite,results,prev or None)
         run={'label':str(label)[:64],'solver':key,'status':status,'started':started,'finished':self.clock(),'items':len(results),
              'generation':generation if generation is not None else self.s.generation_id,'suite_hash':self.suite['hash'],'summary':summary}
         def save(st):
+            if st.get('suite_hash') != self.suite['hash']:
+                raise ValueError('AG12_STALE_SUITE')
             st['runs']=(st['runs']+[run])[-HISTORY:]
             if status=='DONE':
                 items={r['id']:r['correct'] for r in results}
                 if key=='default':st['last_items']=items
                 else:st.setdefault('last_by',{})[key]=items
         self.box.mutate(save)
+        self._active_state()
         if self.home is not None:
             export = 'generality-last.json' if self.suite['lang']=='en' else 'generality-last-de.json'
             atomic_write(self.home/'exports'/export,dumps(run|{'results':results}))
@@ -212,17 +226,18 @@ class GeneralityEval:
     def curve(self,axis='overall',solver=None):
         """Time series for one axis: overall|seen|unseen|generalization_gap|planning_depth|forgetting|ece; optionally one solver."""
         out=[]
-        for r in self.box.load()[0]['runs']:
+        for r in self._current_runs():
             if solver is not None and r.get('solver','default')!=solver:continue
             s=r['summary'];v=(s['forgetting'] or {}).get('rate') if axis=='forgetting' else s['calibration']['ece'] if axis=='ece' else s.get(axis)
             out.append({'finished':r['finished'],'generation':r['generation'],'label':r['label'],'solver':r.get('solver','default'),'value':v})
         return out
     def report(self):
-        st=self.box.load()[0]
+        st=self._active_state()
+        runs=[r for r in st['runs'] if r.get('suite_hash') == self.suite['hash']]
         return {'revision':REVISION,'suite':{'version':SUITE_VERSION,'hash':self.suite['hash'],'lang':self.suite['lang'],'items':len(self.suite['items']),
-                'families':{k:v[0] for k,v in FAMILIES.items()}},'runs':len(st['runs']),'due':self.due(),
-                'last':st['runs'][-1] if st['runs'] else None,
-                'solvers':sorted({r.get('solver','default') for r in st['runs']}),
+                'families':{k:v[0] for k,v in FAMILIES.items()}},'runs':len(runs),'due':self.due(),
+                'last':runs[-1] if runs else None,
+                'solvers':sorted({r.get('solver','default') for r in runs}),
                 'claim_limit':'Procedural text tasks only; body solvers answer without memory or tools (agi/solver.py)'}
 
 # Reference solvers (tests, baselines). They are not V13 intelligence.
