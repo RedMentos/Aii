@@ -1,0 +1,133 @@
+name: V13 Run11Z2 fullsuite with exact original native ZIP prerequisite
+on:
+  push:
+    branches: [assistant/v13-run11z2-fullsuite-pinned-native-prereq-20261030]
+    paths:
+      - '.github/workflows/v13-run11z2-fullsuite-native-prereq.yml'
+      - 'v13/code/docs/RUN11Z2_FULLSUITE_ORIGINAL_NATIVE_PREREQ_PREREG_20261030.md'
+permissions:
+  contents: read
+jobs:
+  full-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Full unfiltered software suite with pinned original native ZIP staged
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11z2-native-prereq-full"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/budget_en_source_shadow.py v13/code/tests/test_budget_en_source_shadow_run11y.py v13/code/v13/jefbridge.py v13/code/v13/jefoutcome.py v13/code/v13/agi/live.py v13/code/v13/skilllive.py v13/code/v13/body_jepa.py v13/code/v13/operator.py v13/code/tests/test_jefoutcome_session_20261030.py v13/code/tests/test_jefoutcome_manifest_20261030.py v13/code/tests/test_skilllive_jef_route_correction_20261030.py v13/code/tests/test_jefoutcome_idempotent_20261030.py v13/code/tests/test_jefoutcome_report_source_20261030.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/SOURCE_BLOBS.txt"
+          test "$(tail -1 "$e/SOURCE_BLOBS.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          python3 - "$e" > "$e/FETCH_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,os,pathlib,shutil,sys,urllib.error,urllib.parse,urllib.request,zipfile
+          e=pathlib.Path(sys.argv[1]);dest=pathlib.Path('v13/code/tests/NATIVE_40996792157.zip')
+          api='https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12951963045/zip'
+          req=urllib.request.Request(api,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+              'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):return None
+          opener=urllib.request.build_opener(NoRedirect)
+          try:
+              with opener.open(req,timeout=120) as response,dest.open('wb') as out:
+                  shutil.copyfileobj(response,out)
+          except urllib.error.HTTPError as exc:
+              if exc.code not in (301,302,303,307,308):raise
+              url=urllib.parse.urlsplit(exc.headers.get('Location',''))
+              if url.scheme!='https' or not url.hostname:raise ValueError('INVALID_SIGNED_REDIRECT')
+              with urllib.request.urlopen(urllib.request.Request(urllib.parse.urlunsplit(url)),timeout=120) as response,dest.open('wb') as out:
+                  shutil.copyfileobj(response,out)
+          data=dest.read_bytes()
+          want='98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46'
+          if hashlib.sha256(data).hexdigest()!=want:raise ValueError('ORIGINAL_NATIVE_ZIP_SHA_CHANGED')
+          with zipfile.ZipFile(dest) as z:
+              names=z.namelist()
+              if len(names)!=54 or len(names)!=len(set(names)) or z.testzip() is not None:raise ValueError('ORIGINAL_NATIVE_CRC_RED')
+              if z.read('HEAD.txt').decode().strip()!='5e802d235c9501879a3aff07e5134c1455e1769b':raise ValueError('ORIGINAL_NATIVE_HEAD_RED')
+              lines=z.read('SHA256SUMS').decode().splitlines()
+              if len(lines)!=53:raise ValueError('ORIGINAL_NATIVE_MANIFEST_RED')
+              for line in lines:
+                  sha,n=line.split(maxsplit=1);n=n.removeprefix('./')
+                  if n not in names or hashlib.sha256(z.read(n)).hexdigest()!=sha:raise ValueError('ORIGINAL_NATIVE_INNER_SHA_RED')
+              report=json.loads(z.read('pilot/report.json'))
+              if (len(report['rows'])!=27 or report['status']!='PILOT_COMPLETE_NO_GATE'
+                  or report['fixture_sha256']!='fe9b86fdf561778ad540dd4767111f04c10a147a8a44cf783fa16f0d2c8a45ca'
+                  or report['score_totals_out_of_18']!={'A_C3_ONLY':0,'B_DEFAULT_BOTH':10,'C_ARITH_BOTH':9}):
+                  raise ValueError('ORIGINAL_NATIVE_REPORT_RED')
+          print('ORIGINAL_NATIVE_PREREQUISITE_VERIFIED',want,'27 rows, 53 hashes')
+          PY
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          unset GH_TOKEN
+          python3 -m venv "$RUNNER_TEMP/v13-run11z2-native-prereq-full-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run11z2-native-prereq-full-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==4.44.2' > "$e/TRANSFORMERS_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'peft==0.13.2' > "$e/PEFT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -c 'import torch; assert torch.__version__=="2.5.1+cpu"; print(torch.__version__, torch.cuda.is_available())' > "$e/TORCH_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_IMPORT_EXIT.txt"
+            "$py" -c 'import transformers; from transformers import GPT2Config,GPT2LMHeadModel; assert transformers.__version__=="4.44.2"; print(transformers.__version__)' > "$e/TRANSFORMERS_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_IMPORT_EXIT.txt"
+            "$py" -c 'import peft; from peft import LoraConfig,get_peft_model; assert peft.__version__=="0.13.2"; print(peft.__version__)' > "$e/PEFT_IMPORT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_IMPORT_EXIT.txt"
+          else
+            for stage in DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT; do echo SKIPPED > "$e/${stage}_EXIT.txt"; echo SKIPPED > "$e/${stage}_RAW.log"; done
+          fi
+          if [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_IMPORT_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_IMPORT_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_IMPORT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else echo SKIPPED > "$e/FULL_EXIT.txt"; echo SKIPPED > "$e/FULL_RAW.log"; fi
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 31c8f073c97c773a7c91ad371dda18ed4e48e57f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 31c8f073c97c773a7c91ad371dda18ed4e48e57f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          rm -f v13/code/tests/NATIVE_40996792157.zip
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve complete original raw even when suite is RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run11z2-native-prereq-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11z2-native-prereq-full/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce all checks and frozen negative gates without waivers
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11z2-native-prereq-full"
+          for stage in CANON FETCH VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK TORCH_IMPORT TRANSFORMERS_IMPORT PEFT_IMPORT FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained; no gate promotion"
+              tail -75 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN11Z2_UNFILTERED_WITH_ORIGINAL_NATIVE_PREREQ_SOFTWARE_ONLY'
