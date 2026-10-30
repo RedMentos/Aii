@@ -129,6 +129,28 @@ class FocalSourceIdentityRun11U(unittest.TestCase):
         self.assertNotIn(key, result["selected_keys"])
         self.assertTrue(result["abstain"])
 
+    def test_corrupt_older_revision_abstains_instead_of_ignoring(self):
+        query, notes, original = self.selected_note("update")
+        newest = original["selected_keys"][0]
+        old_key = next(k for k, v in notes
+                       if "main budget is" in v and k != newest)
+        i = next(i for i, (k, _) in enumerate(notes) if k == old_key)
+        notes[i] = (old_key, notes[i][1] + " untrusted suffix")
+        result = guard.propose_bound(query, notes)
+        self.assertTrue(result["abstain"])
+        self.assertEqual(result["reason"], "SOURCE_KEY_VALUE_MISMATCH")
+        self.assertEqual(result["selected_keys"], [])
+
+    def test_irrelevant_separate_budget_note_does_not_veto(self):
+        query, notes, original = self.selected_note("update")
+        i = next(i for i, (k, _) in enumerate(notes)
+                 if k.endswith("travel budget"))
+        key, value = notes[i]
+        notes[i] = (key, value + " unrelated note")
+        result = guard.propose_bound(query, notes)
+        self.assertFalse(result["abstain"])
+        self.assertEqual(result["selected_keys"], original["selected_keys"])
+
     def test_unsupported_and_duplicate_source_fail_closed(self):
         query, notes, _ = self.selected_note("update")
         unsupported = guard.propose_bound("Tell me a joke", notes)
