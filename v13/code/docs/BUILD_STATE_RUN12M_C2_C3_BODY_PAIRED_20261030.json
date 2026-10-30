@@ -48,9 +48,15 @@
     "private_byte_exact": true
   },
   "native": {
-    "launched": false,
+    "launched": true,
+    "run_id": 41054908080,
+    "tested_head": "faf0e6c6717ff8a80d0163e13f2836d399c356dc",
+    "status": "IN_PROGRESS",
+    "original_artifact_sha256": "UNKNOWN",
+    "redmi": false,
     "utility_proven": false,
-    "redmi": false
+    "concurrency_group": "v13-step2-budget-paired-native-20261030",
+    "model_revisions": "UNCHANGED_FROZEN_RUN11V"
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -66,6 +72,6 @@
     "If no, keep C2 route advisory SHADOW/scaffold-first until separately validated; do not change frozen runtime in place.",
     "Target Redmi resource/thermal and multi-day proof remains device-only."
   ],
-  "next_command": "Source-only 46/46 GREEN and original ZIP/18 hashes/private backup byte-exact. Check no active heavy owner; commit serialized pinned four-model native workflow, preserve 16 raw/preclose/postclose receipts, run independent verifier, close original ZIP and backup. Keep negative gates.",
+  "next_command": "Wait for original native Actions 41054908080 terminal. Download artifact even on RED, independently check HEAD faf0e6c6, ZIP SHA/CRC/manifest/16 raw+16 preclose+4 strict, replay frozen scores and negative gates, private byte-exact backup. If blocked, preserve original failure and continue independent Canon package; do not retune frozen cohort.",
   "pr": 1269
 }
