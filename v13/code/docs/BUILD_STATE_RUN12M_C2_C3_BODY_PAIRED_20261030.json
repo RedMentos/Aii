@@ -33,9 +33,19 @@
     "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
   },
   "software": {
-    "status": "PENDING",
-    "tests": "NOT_YET_RUN",
-    "privacy": "PENDING"
+    "status": "GREEN_SOURCE_ONLY",
+    "run_id": 41054685390,
+    "tested_head": "0d35a36f7bf2e7f05fe930de44c9fdc0bea04cac",
+    "tests": "46/46 PASS",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12975308965,
+    "zip_sha256": "cceaa5149cb9aa9b663ba6d9969f3304961221bd16867ae1f4dd3f945010aa8b",
+    "zip_bytes": 5152,
+    "crc": "PASS",
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12M-C2BodyUtility/V13_Run12M_PREFLIGHT_41054685390.zip",
+    "private_byte_exact": true
   },
   "native": {
     "launched": false,
@@ -56,5 +66,6 @@
     "If no, keep C2 route advisory SHADOW/scaffold-first until separately validated; do not change frozen runtime in place.",
     "Target Redmi resource/thermal and multi-day proof remains device-only."
   ],
-  "next_command": "Run source-only pinned preflight and independent verifier tests. If GREEN and no heavy native owner, trigger one serialized pinned 16-turn Linux-native C2/C3/B1/B2 pilot; close original ZIP and private byte-exact backup, preserve negative gates."
+  "next_command": "Source-only 46/46 GREEN and original ZIP/18 hashes/private backup byte-exact. Check no active heavy owner; commit serialized pinned four-model native workflow, preserve 16 raw/preclose/postclose receipts, run independent verifier, close original ZIP and backup. Keep negative gates.",
+  "pr": 1269
 }
