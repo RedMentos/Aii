@@ -1,0 +1,84 @@
+name: V13 STEP2 paired native v2 fresh disjoint software preflight
+on:
+  push:
+    branches: [codex/v13-step2-paired-native-v2-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-step2-paired-native-v2-preflight-20261030.yml'
+      - 'v13/code/scripts/step2_budget_paired_native_v2_20261030.py'
+      - 'v13/code/tests/test_step2_budget_paired_native_v2_20261030.py'
+      - 'v13/code/docs/STEP2_PAIRED_NATIVE_V2_PREREG_20261030.md'
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source pinned v2 fixture/scorer/route tests and raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-step2-v2-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          cffeaf218836645600ec9dc985ba95b938a8d9b5 v13/code/docs/STEP2_PAIRED_NATIVE_V2_PREREG_20261030.md
+          6bd49f34c0abba03bf459a2031d2fe19ac290bcf v13/code/scripts/step2_budget_paired_native_v2_20261030.py
+          ff39f76dd2551b945a9f928b5b53f0918225e0b3 v13/code/tests/test_step2_budget_paired_native_v2_20261030.py
+          fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          red=0
+          : > "$e/SOURCE_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-step2-v2-preflight-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-step2-v2-preflight-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_step2_budget_paired_native_v2_20261030 tests.test_step2_paired_raw_validator_audit_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo SKIPPED > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/step2_budget_paired_native_v2_20261030.py v13/code/tests/test_step2_budget_paired_native_v2_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8c0d07947edb81a1cf7cbaaa63cfbcc8522d2e3c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8c0d07947edb81a1cf7cbaaa63cfbcc8522d2e3c HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original v2 preflight raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-step2-v2-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-v2-preflight/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce software preflight
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-step2-v2-preflight"
+          for stage in SOURCE VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; no native launch"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'FRESH_PAIRED_V2_SOFTWARE_PREFLIGHT_ONLY_NO_NATIVE_OR_GATE'
