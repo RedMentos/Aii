@@ -1,0 +1,78 @@
+{
+  "schema": "V13_RUN11X_SEED181_NATIVE_ORIGINAL_CLOSED_NO_GATE",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11x-seed181-native-closed-audit-20261030",
+  "parent_pr": 1252,
+  "parent_head": "6461f344384e9819402365bb7e150d6a8ccd9c38",
+  "original_native": {
+    "run_id": 41039528340,
+    "job_id": 124008604437,
+    "artifact_id": 12970277623,
+    "head": "6ba8986202febfe0faa813e8c1589ca85acac939",
+    "zip_sha256": "9d34fe9b81ad9c5560ba44c4db3851c0be9129a012cdfdf6b47717346972885f",
+    "bytes": 538516,
+    "zip_entries": 73,
+    "sha256_manifest_entries": 72,
+    "crc": "PASS",
+    "stage_exits": "10/10 zero",
+    "privacy": "CLEAN",
+    "native_raw_rows": 24,
+    "preclose_witnesses": 24,
+    "postclose_releases_reaped": 46,
+    "report_check": "PASS",
+    "status": "PILOT_COMPLETE_NO_GATE",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11V-Native181/ORIGINAL_41039528340_sha9D34FE9B.zip",
+    "backup_byte_exact": true
+  },
+  "fixtures_sha256": "ae4799f60316cf51412d228547662de8cb4b6523dedffd5fc02b2862d84477e3",
+  "runner_blob": "d274a66b8ceb801c741bbffe1456611b43603208",
+  "verifier_blob": "4f04236507d7f4c2ae70f62aef905eefe83389d6",
+  "independent_audit": {
+    "status": "STRUCTURAL_INDEPENDENT_PASS_NO_GATE",
+    "semantic_scorer_replay": "original verifier only",
+    "native_c2_invoked": 4,
+    "native_c2_selected": 4,
+    "native_routes": [
+      "both",
+      "both",
+      "both",
+      "detail"
+    ],
+    "primary_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 2,
+      "C_B2_ONLY": 6,
+      "D_DISTINCT_BOTH": 1,
+      "E_SHARED_DUAL_COLD": 0,
+      "F_NATIVE_AUTO": 0
+    },
+    "secondary_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 0,
+      "D_DISTINCT_BOTH": 0,
+      "E_SHARED_DUAL_COLD": 0,
+      "F_NATIVE_AUTO": 0
+    },
+    "distinct_pilot_signal": false,
+    "auto_pilot_signal": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "blocked_paths": [
+    "Current Redmi device execution not accessible from cloud runner"
+  ],
+  "open_questions": [
+    "Why native C2-selected F answers omit both source arithmetic remainders despite source-complete prompt?",
+    "What disjoint source-grounded C2/Body/C3 candidate improves over B2-only without leakage?"
+  ],
+  "next_command": "Review original native raw ZIP and seed181 audit; preregister fresh disjoint source-grounded candidate with frozen baseline and no gate promotion. Do not rerun seed181."
+}
