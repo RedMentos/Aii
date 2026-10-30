@@ -149,6 +149,10 @@ class Run13ASyntheticReplayTests(unittest.TestCase):
             d = json.loads(p.read_text())
             d["prompt"] = "FOREIGN"
             write(p, d)
+            pre = Path(td) / "preclose/00_A_C3_ONLY.json"
+            witness = json.loads(pre.read_text())
+            witness["prompt"] = "FOREIGN"
+            write(pre, witness)
             with self.assertRaisesRegex(ValueError, "SOURCE_OUTPUT_IDENTITY_CHANGED"):
                 replay(td)
 
