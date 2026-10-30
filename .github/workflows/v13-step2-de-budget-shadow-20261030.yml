@@ -5,6 +5,7 @@ on:
       - 'assistant/v13-step2-de-budget-remain-shadow-*'
 permissions:
   contents: read
+  actions: read
 jobs:
   source-only:
     runs-on: ubuntu-24.04
@@ -12,6 +13,7 @@ jobs:
     env:
       V13_NO_AUTOSTART: '1'
       DO_NOT_TRACK: '1'
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -27,12 +29,27 @@ jobs:
           echo "$?" > "$e/TEST_EXIT.txt"
           (cd v13/code && timeout 2m env PYTHONPATH=.:tests:scripts python3 scripts/step2_de_budget_remain_seed97_eval.py --out "$e/REPORT.json") > "$e/EVAL_RAW.log" 2>&1
           echo "$?" > "$e/EVAL_EXIT.txt"
-          python3 -m py_compile v13/code/v13/agi/budget_de_shadow.py v13/code/scripts/step2_de_budget_remain_seed97_eval.py v13/code/tests/test_step2_de_budget_remain_seed97_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/v13/agi/budget_de_shadow.py v13/code/scripts/step2_de_budget_remain_seed97_eval.py v13/code/scripts/step2_de_budget_original_posthoc.py v13/code/tests/test_step2_de_budget_remain_seed97_20261030.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 905bfeb0eeac1bb77ef29b12432d8279bb2193d4 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check 905bfeb0eeac1bb77ef29b12432d8279bb2193d4 HEAD > "$e/DIFF_RAW.log" 2>&1
           echo "$?" > "$e/DIFF_EXIT.txt"
+          original="$RUNNER_TEMP/original-step12.zip"
+          curl --fail --silent --show-error --location --max-time 90 --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12947896111/zip" \
+            -o "$original" > "$e/ORIGINAL_FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/ORIGINAL_FETCH_EXIT.txt"
+          if [ "$(cat "$e/ORIGINAL_FETCH_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 2m env PYTHONPATH=.:tests:scripts python3 scripts/step2_de_budget_original_posthoc.py --zip "$original" --out "$e/POSTHOC_REPORT.json") > "$e/POSTHOC_RAW.log" 2>&1
+            echo "$?" > "$e/POSTHOC_EXIT.txt"
+          else
+            echo ORIGINAL_FETCH_RED > "$e/POSTHOC_RAW.log"
+            echo SKIPPED_RED > "$e/POSTHOC_EXIT.txt"
+          fi
+          rm -f "$original"
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           exit 0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -47,7 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/step2-de-budget"
-          for stage in TEST EVAL COMPILE PRIVACY DIFF; do
+          for stage in TEST EVAL COMPILE PRIVACY DIFF ORIGINAL_FETCH POSTHOC; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; raw retained"
               tail -80 "$e/${stage}_RAW.log" || true
