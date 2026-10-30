@@ -1,0 +1,87 @@
+{
+  "schema": "v13.run14t.c3_schema_constraint.fixture.v1",
+  "seed": 311,
+  "cases": [
+    {
+      "project": "Atlas311",
+      "budget": 15200,
+      "a": "Oriel",
+      "a_cost": 2450,
+      "a_days": 20,
+      "b": "Kite",
+      "b_cost": 9925,
+      "b_days": 9
+    },
+    {
+      "project": "Brook311",
+      "budget": 6500,
+      "a": "Oriel",
+      "a_cost": 3725,
+      "a_days": 12,
+      "b": "Vega",
+      "b_cost": 3185,
+      "b_days": 27
+    },
+    {
+      "project": "Crest311",
+      "budget": 9900,
+      "a": "Topaz",
+      "a_cost": 1965,
+      "a_days": 9,
+      "b": "Dusk",
+      "b_cost": 8600,
+      "b_days": 24
+    },
+    {
+      "project": "Delta311",
+      "budget": 14900,
+      "a": "Oriel",
+      "a_cost": 6915,
+      "a_days": 23,
+      "b": "Wren",
+      "b_cost": 2360,
+      "b_days": 12
+    },
+    {
+      "project": "Ember311",
+      "budget": 9900,
+      "a": "Oriel",
+      "a_cost": 5575,
+      "a_days": 6,
+      "b": "Vale",
+      "b_cost": 5720,
+      "b_days": 13
+    },
+    {
+      "project": "Field311",
+      "budget": 15400,
+      "a": "Dawn",
+      "a_cost": 1550,
+      "a_days": 23,
+      "b": "Beryl",
+      "b_cost": 11885,
+      "b_days": 27
+    },
+    {
+      "project": "Glade311",
+      "budget": 8700,
+      "a": "Dawn",
+      "a_cost": 2320,
+      "a_days": 27,
+      "b": "Fern",
+      "b_cost": 1550,
+      "b_days": 19
+    },
+    {
+      "project": "Haven311",
+      "budget": 13700,
+      "a": "Nacre",
+      "a_cost": 1440,
+      "a_days": 7,
+      "b": "Wren",
+      "b_cost": 5225,
+      "b_days": 6
+    }
+  ],
+  "cases_sha256": "a46ca596386fc2ea75d2779c2a08982cc50fb5e119b4b9990168dfed26450d5a"
+}
