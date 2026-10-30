@@ -98,6 +98,17 @@ def score_pair(f, answer):
     return {"a": a, "b": b, "correct": int(a) + int(b),
             "out_of": 2, "diagnostic": d}
 
+def pilot_signal(totals, valid):
+    """Exploratory signal only; never a STEP2 acceptance gate."""
+    if (type(valid) is not bool or type(totals) is not dict
+            or set(totals) != set(ARMS)
+            or any(type(v) is not int or not 0 <= v <= 18
+                   for v in totals.values())):
+        return False
+    return (valid and totals[ARMS[2]] >= totals[ARMS[1]] + 3
+            and totals[ARMS[2]] >= totals[ARMS[0]] + 3)
+
+
 def validate_fixtures():
     if (fixture_hash() != FIXTURE_SHA256 or len(FIXTURES) != 9
             or len({f["project"] for f in FIXTURES}) != 4):
@@ -250,8 +261,7 @@ def run(base_home, out):
                            if r["arm"] == arm) for arm in ARMS}
         valid = all(r.get("valid_native") is True for r in report["rows"])
         report["score_totals_out_of_18"] = totals
-        report["pilot_gain"] = (valid and totals[ARMS[2]] >= totals[ARMS[1]] + 3
-                                and totals[ARMS[2]] >= totals[ARMS[0]] + 3)
+        report["pilot_gain"] = pilot_signal(totals, valid)
         report["status"] = ("PILOT_COMPLETE_NO_GATE" if valid
                             else "PILOT_PARTIAL_RED")
     except BaseException as exc:
