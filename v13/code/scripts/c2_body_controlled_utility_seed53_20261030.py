@@ -16,7 +16,7 @@ import time
 import traceback
 
 from v13.config import initialize, save_config
-from v13.models import ModelManager
+from v13.models import ModelManager, model_key
 from v13.proofs import audit_event
 from v13.runtime import Runtime
 from scripts.step2_paired_raw_validator_audit_20261030 import semantic_diagnostic
@@ -46,6 +46,7 @@ ROLE_BY_ROUTE = {"simple": ("C3_LANGUAGE",), "detail": ("B1_DETAIL",),
                  "gist": ("B2_GIST",), "both": ("B1_DETAIL", "B2_GIST")}
 BODY_MODEL = "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf"
 LANGUAGE_MODEL = "LFM2.5-350M-QAD-Q4_0.gguf"
+GIST_MODEL = "Qwen3.5-0.8B-Q4_0.gguf"
 
 
 def fixture_hash():
@@ -148,9 +149,10 @@ def row_evidence(audit, arm, releases, native_context=None, native_alive=False,
     expected_final = ROLE_BY_ROUTE.get(route, ())
     final_role = runner.get("role")
     final_model = runner.get("actual_model")
-    role_valid = (final_role in expected_final
-                  and final_model == (LANGUAGE_MODEL if final_role == "C3_LANGUAGE"
-                                      else BODY_MODEL))
+    expected_model = (LANGUAGE_MODEL if final_role == "C3_LANGUAGE"
+                      else GIST_MODEL if final_role == "B2_GIST"
+                      and arm != "E_SHARED_DUAL_COLD" else BODY_MODEL)
+    role_valid = (final_role in expected_final and final_model == expected_model)
     output = bool(checks_valid and meta.get("model_generated") is True
                   and isinstance(audit.get("output"), str)
                   and audit["output"].strip() and role_valid)
@@ -182,6 +184,9 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
             (home / name).symlink_to(base_home / name, target_is_directory=True)
         shutil.copyfile(base_home / "config/models.json", home / "config/models.json")
         runtime = Runtime(home)
+        if runtime.models.b2_control != cfg["b2_control"]:
+            runtime.close()
+            raise ValueError("B2_CONTROL_CONFIG_MISMATCH")
         record = None
         needle_proc = None
         try:
@@ -210,6 +215,11 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
             record = {"index": index, "fixture": fixture["project"], "arm": arm,
                       "prompt": text, "event_id": event_id, "session_id": runtime.session,
                       "route_info": route_info, "context_packet": context,
+                      "b2_control": runtime.models.b2_control,
+                      "b1_model_key": model_key("B1_DETAIL", runtime.models.b2_control),
+                      "b2_model_key": model_key("B2_GIST", runtime.models.b2_control),
+                      "b1_revision": runtime.models.revision("B1_DETAIL"),
+                      "b2_revision": runtime.models.revision("B2_GIST"),
                       "raw_audit": audit, "body_process_releases": releases,
                       "final_output": audit.get("output", ""), "learning_mode": "RECORD_ONLY",
                       "jepa_weight": 0, "step2_gate_promoted": False,
