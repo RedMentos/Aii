@@ -34,6 +34,36 @@ MASTER_SHA256 = "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4
 REVISION = "120bf032c36dd1273de754669da040dba7ad4982"
 FIXTURE_SHA256 = "848021441551627c47107c7b1298d338ab674d8983ff10af4848cf33adf77748"
 LICENSE_SHA256 = "4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c"
+FACTS = (
+    ("Avelorn", "copper", "Kestrel"),
+    ("Brimora", "jade", "Nimbus"),
+    ("Caelith", "indigo", "Saffron"),
+    ("Dornwick", "ivory", "Talon"),
+)
+RETENTION = (
+    ("What is the capital of Japan?", "Tokyo"),
+    ("What is 7 times 3?", "21"),
+    ("What is the opposite of wet?", "dry"),
+    ("Which gas do humans inhale to survive?", "oxygen"),
+)
+
+
+def expected_fixture():
+    """Independently reconstruct preregistered byte-exact synthetic query identities."""
+    train, paraphrase, near = [], [], []
+    for i, (archive, color, answer) in enumerate(FACTS):
+        train.append((f"In the invented {archive} archive, what is the {color} vault key?", answer))
+        paraphrase.append((f"Which key opens the {color} vault of the {archive} archive?", answer))
+        other_archive = FACTS[(i + 1) % len(FACTS)][0]
+        near.append((f"In the invented {other_archive} archive, what is the {color} vault key?", answer))
+    rows = {"train": train, "paraphrase": paraphrase,
+            "near_miss_leak_proxy": near, "retention": list(RETENTION)}
+    actual_sha = hashlib.sha256(json.dumps(rows, sort_keys=True,
+                              separators=(",", ":")).encode()).hexdigest()
+    require(actual_sha == FIXTURE_SHA256, "AUDITOR_FIXTURE_SELF_PIN_RED")
+    return rows
+
+
 MAX_ZIP_BYTES = 64 * 1024 * 1024
 MAX_MEMBERS = 100
 
@@ -167,6 +197,9 @@ def verify_report(d):
                       ("contrastive_trainer_source_git_blob", PINS["TRAINER_BLOB.txt"])):
         require(d.get(key) == want, "REPORT_PIN_RED:" + key)
     require(d.get("model_id") == "LiquidAI/LFM2.5-350M", "MODEL_ID_RED")
+    require(d.get("baseline_method") == "post_fit_disable_adapter_frozen_master", "BASELINE_METHOD_RED")
+    require(d.get("evidence_class") == "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT", "EVIDENCE_CLASS_RED")
+    require(d.get("run11p_source_git_blob") == PINS["ORIGINAL_RUN11P_BLOB.txt"], "RUN11P_PIN_RED")
     require(d.get("seeds") == [227, 229, 233] and d.get("arms") == list(ARMS),
             "COHORT_REGISTRATION_RED")
     cfg = d.get("config", {})
@@ -185,6 +218,7 @@ def verify_report(d):
                         ("whole_system_complete", False), ("b1_b2_utility_proven", False)):
         require(d.get(k) is expected or (type(expected) is int and d.get(k) == expected),
                 "PROMOTION_OR_MISSING_GATE:" + k)
+    fixture = expected_fixture()
     results = d.get("results")
     require(type(results) is dict and set(results) == set(SEEDS), "INCOMPLETE_SEEDS")
     for seed in SEEDS:
@@ -210,6 +244,12 @@ def verify_report(d):
                     "ELAPSED_RED")
             mean_rows(entry, "after")
             mean_rows(entry, "baseline")
+            for category, expected_pairs in fixture.items():
+                for kind in ("rows", "baseline_rows"):
+                    observed_pairs = [(row["q"], row["answer"])
+                                      for row in entry[kind][category]]
+                    require(observed_pairs == expected_pairs,
+                            "FIXTURE_ROW_IDENTITY_RED:" + seed + ":" + arm + ":" + category + ":" + kind)
     expected = independent_verdict(results)
     require(d.get("status") == expected["status"]
             and d.get("seed_wins") == expected["seed_wins"]
