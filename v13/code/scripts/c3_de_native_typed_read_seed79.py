@@ -105,7 +105,7 @@ def native_capture(home, out):
     raw_dir.mkdir()
     rows = fixtures()
     cfg = initialize(home)
-    if cfg["learning_mode"] != "RECORD_ONLY" or cfg["jepa_weight"] != 0:
+    if cfg["learning_mode"] != "RECORD_ONLY" or cfg.get("jepa_weight", 0) != 0:
         raise ValueError("AGE_OR_JEPA_CONFIG_CHANGED")
     mm = ModelManager(home)
     verified = mm.verify(deep=True)
