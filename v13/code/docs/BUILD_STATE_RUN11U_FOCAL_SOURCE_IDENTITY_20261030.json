@@ -1,0 +1,81 @@
+{
+  "schema": "V13_RUN11U_FOCAL_SOURCE_IDENTITY_SHADOW_SOFTWARE_VERIFIED",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 review-only",
+  "parent_pr": 1248,
+  "parent_head": "65585cd7518b98dd09562a1d083347435b2f8d0b",
+  "branch": "assistant/v13-run11u-focal-keybound-shadow-20261030",
+  "pr": "PENDING",
+  "prereg_commit": "3ffd6570ff701e5bbf0014709a24d4c24f877850",
+  "prereg_blob": "257df28b2548dbc546e68c7e0899897c06ad25f8",
+  "frozen": {
+    "run11s_source_blob": "bf9c7d8ee75bbe82a82c0c2d3dc4cefed4036bce",
+    "run11s_test_blob": "47b49d6df8f42d49bee08f7b818a70710c7abea1",
+    "original_generator_blob": "9d61acdd8f8aa47435ed682ac4b7013fd3e02df8",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "new": {
+    "source_blob": "f0fde30d4e29385bfeea8c598322d085d8923617",
+    "test_blob": "343866fd9d1c5f5f4ceb4127f7008e1b2cb72d17",
+    "seed": 173,
+    "rows": 60,
+    "capacity": 4,
+    "source_only": true,
+    "model_inference": false
+  },
+  "software_red": {
+    "run_id": 41038410680,
+    "head": "a28c4dc564961cf4ea7f022d130390302ca1e230",
+    "artifact_id": 12969575928,
+    "zip_sha256": "8436a0a828ad037d83048ebb6b3e776d1ec74cd47f5a6394ea9e4e94f64a5797",
+    "zip_bytes": 8915,
+    "inner_hashes": "19/19",
+    "tests": "21/22 PASS, one real FAIL",
+    "reason": "Malformed newest keyed note silently dropped to older revision",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11U-Focal-Keybound/SOFTWARE_RED_41038410680_sha8436A0.zip",
+    "private_byte_exact": true
+  },
+  "software_green": {
+    "run_id": 41038525401,
+    "head": "85a6289c2088548f33825638e43cedc9ca6c0452",
+    "artifact_id": 12968937319,
+    "zip_sha256": "9967ab363d1d134b11bb6da829f72773715cfdf6d00872f22b29bfef7b82c10a",
+    "zip_bytes": 8776,
+    "inner_hashes": "19/19",
+    "tests": "24/24 PASS",
+    "stages": "8/8 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11U-Focal-Keybound/SOFTWARE_GREEN_41038525401_sha9967AB.zip",
+    "private_byte_exact": true
+  },
+  "metrics": {
+    "exact_required": 60,
+    "original_exact_required": 60,
+    "required_included": 60,
+    "original_required_included": 60,
+    "abstentions": 0,
+    "by_kind": {
+      "update": 15,
+      "combine": 15,
+      "correction": 15,
+      "distract": 15
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "focal_capacity": "PARTIAL",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "No model answer utility, only synthetic source-key selection",
+    "No real Store/F5 source identity or runtime SHADOW consumer",
+    "Unseen paraphrase and cross-project real memory behavior not tested",
+    "Real Redmi unmeasured"
+  ],
+  "next_command": "Verify 41038525401 raw ZIP and source pins; preregister disjoint paired focal model-output utility with full/retrieval/coalition controls. Do not modify Run11S seed167 or WP-Z5b source/results."
+}
