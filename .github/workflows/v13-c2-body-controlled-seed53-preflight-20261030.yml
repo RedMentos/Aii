@@ -28,8 +28,8 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           decf9a6bafb2d5b15d6b7df224b191caf05cb98a v13/code/docs/C2_BODY_CONTROLLED_UTILITY_PREREG_20261030.md
-          c590f2e8dd5160b95d577404b9265c766330b679 v13/code/scripts/c2_body_controlled_utility_seed53_20261030.py
-          4957b13e7a9f1b501e13adcd21b2e6f399e8855a v13/code/tests/test_c2_body_controlled_utility_seed53_20261030.py
+          b10bcdcb2cf2a2151c95cd432b7b0b5e6c5aac6b v13/code/scripts/c2_body_controlled_utility_seed53_20261030.py
+          69fbc2e36898c9262f307bf2edba4885f58bddb9 v13/code/tests/test_c2_body_controlled_utility_seed53_20261030.py
           fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
           f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
           fb34dba97ae3700ba5accdcb928bfb72afcf4fcb v13/code/scripts/c2_native_route_provenance_20261030.py
