@@ -204,7 +204,9 @@ class GeneralityEval:
                 if key=='default':st['last_items']=items
                 else:st.setdefault('last_by',{})[key]=items
         self.box.mutate(save)
-        if self.home is not None:atomic_write(self.home/'exports/generality-last.json',dumps(run|{'results':results}))
+        if self.home is not None:
+            export = 'generality-last.json' if self.suite['lang']=='en' else 'generality-last-de.json'
+            atomic_write(self.home/'exports'/export,dumps(run|{'results':results}))
         self.s.log('generality_eval',None,{'status':status,'solver':key,'overall':summary['overall'],'unseen':summary['unseen'],'items':len(results)})
         return run
     def curve(self,axis='overall',solver=None):
