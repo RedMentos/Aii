@@ -154,6 +154,21 @@ class IsolatedPostcloseSoftware(unittest.TestCase):
         self.assertTrue(m.pilot_signals(t, True, 1)['native_auto_vs_forced'])
         self.assertFalse(m.pilot_signals({**t, 'F_NATIVE_AUTO': True}, True, 1)['native_auto_vs_forced'])
 
+    def test_native_workflow_raw_validator_heredoc_and_python_syntax(self):
+        import ast
+        workflow = (Path(__file__).resolve().parents[3] / '.github' / 'workflows' /
+                    'v13-c2-isolated-seed61-native-20261030.yml')
+        if not workflow.exists():
+            self.skipTest('GitHub workflow not in isolated source fixture')
+        content = workflow.read_text()
+        self.assertEqual(content.count("<<'PY'\n"), 1)
+        after = content.split("<<'PY'\n", 1)[1]
+        self.assertIn('\n          PY\n', after, 'Shell heredoc must close at run-block indentation')
+        block = after.split('\n          PY\n', 1)[0]
+        lines = block.splitlines()
+        self.assertTrue(all(line.startswith('          ') for line in lines))
+        ast.parse('\n'.join(line[10:] for line in lines))
+
     def test_existing_output_refused(self):
         with tempfile.TemporaryDirectory() as d:
             with self.assertRaises(FileExistsError):
