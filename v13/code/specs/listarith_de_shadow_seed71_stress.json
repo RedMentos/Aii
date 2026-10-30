@@ -1,0 +1,258 @@
+{
+  "schema": "v13.listarith.de_shadow.seed71.stress.v1",
+  "seed": 71,
+  "rows": [
+    {
+      "id": "T01",
+      "split": "stress",
+      "expected": "total",
+      "tag": "imperative",
+      "text": "Inventar: A 14, B 26, C 9. Bitte addiere alle genannten Beträge."
+    },
+    {
+      "id": "T02",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Wie lautet der Gesamtbetrag der genannten Ausgaben?"
+    },
+    {
+      "id": "T03",
+      "split": "stress",
+      "expected": "total",
+      "tag": "wh_question",
+      "text": "Messreihe: A=14, B=26, C=9. Welche Summe ergeben diese Werte?"
+    },
+    {
+      "id": "T04",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Drei Posten: A 14; B 26; C 9. Kannst du die Zahlen zusammenrechnen?"
+    },
+    {
+      "id": "T05",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Inventar: A 14, B 26, C 9. Wie viel kommt zusammen, wenn man alle Posten addiert?"
+    },
+    {
+      "id": "T06",
+      "split": "stress",
+      "expected": "total",
+      "tag": "imperative",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Berechne den Gesamtwert aller Einträge."
+    },
+    {
+      "id": "T07",
+      "split": "stress",
+      "expected": "total",
+      "tag": "imperative",
+      "text": "Messreihe: A=14, B=26, C=9. Ermittle die Gesamtsumme."
+    },
+    {
+      "id": "T08",
+      "split": "stress",
+      "expected": "total",
+      "tag": "imperative",
+      "text": "Drei Posten: A 14; B 26; C 9. Addiere die drei Werte."
+    },
+    {
+      "id": "T09",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Inventar: A 14, B 26, C 9. Wie viel ist das alles zusammen?"
+    },
+    {
+      "id": "T10",
+      "split": "stress",
+      "expected": "total",
+      "tag": "numeric_question",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Was ergibt 14 plus 26 plus 9?"
+    },
+    {
+      "id": "T11",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Messreihe: A=14, B=26, C=9. Bitte summiere die Werte."
+    },
+    {
+      "id": "T12",
+      "split": "stress",
+      "expected": "total",
+      "tag": "paraphrase",
+      "text": "Drei Posten: A 14; B 26; C 9. Was kommt bei der Addition heraus?"
+    },
+    {
+      "id": "D01",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Wie weit liegen der höchste und der niedrigste Wert auseinander?"
+    },
+    {
+      "id": "D02",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Messreihe: A=14, B=26, C=9. Wie groß ist der Abstand zwischen Maximum und Minimum?"
+    },
+    {
+      "id": "D03",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "imperative",
+      "text": "Drei Posten: A 14; B 26; C 9. Bestimme die Spannweite der Werte."
+    },
+    {
+      "id": "D04",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Inventar: A 14, B 26, C 9. Wie viel höher ist das Maximum als das Minimum?"
+    },
+    {
+      "id": "D05",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "imperative",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Zieh den kleinsten Wert vom größten ab."
+    },
+    {
+      "id": "D06",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Messreihe: A=14, B=26, C=9. Wie groß ist die Differenz zwischen dem höchsten und dem niedrigsten Betrag?"
+    },
+    {
+      "id": "D07",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Drei Posten: A 14; B 26; C 9. Wie viele Euro liegen zwischen dem teuersten und günstigsten Angebot?"
+    },
+    {
+      "id": "D08",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "imperative",
+      "text": "Inventar: A 14, B 26, C 9. Errechne max minus min."
+    },
+    {
+      "id": "D09",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Wie groß ist der Unterschied von größtem zu kleinstem?"
+    },
+    {
+      "id": "D10",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "imperative",
+      "text": "Messreihe: A=14, B=26, C=9. Ermittle den Abstand vom Spitzenwert zum Tiefstwert."
+    },
+    {
+      "id": "D11",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "imperative",
+      "text": "Drei Posten: A 14; B 26; C 9. Subtrahiere das Minimum vom Maximum."
+    },
+    {
+      "id": "D12",
+      "split": "stress",
+      "expected": "difference_max_min",
+      "tag": "paraphrase",
+      "text": "Inventar: A 14, B 26, C 9. Was ist der Abstand zwischen dem höchsten und niedrigsten Wert?"
+    },
+    {
+      "id": "N01",
+      "split": "stress",
+      "expected": null,
+      "tag": "negation",
+      "text": "Messreihe: A=14, B=26, C=9. Addiere die Werte bitte nicht."
+    },
+    {
+      "id": "N02",
+      "split": "stress",
+      "expected": null,
+      "tag": "negation",
+      "text": "Drei Posten: A 14; B 26; C 9. Berechne keine Summe, sondern den Durchschnitt."
+    },
+    {
+      "id": "N03",
+      "split": "stress",
+      "expected": null,
+      "tag": "negation",
+      "text": "Inventar: A 14, B 26, C 9. Ich brauche nicht die Differenz, sondern die Anzahl der Werte."
+    },
+    {
+      "id": "N04",
+      "split": "stress",
+      "expected": null,
+      "tag": "metalinguistic",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Ist die Summe bereits im Text angegeben?"
+    },
+    {
+      "id": "N05",
+      "split": "stress",
+      "expected": null,
+      "tag": "count",
+      "text": "Messreihe: A=14, B=26, C=9. Wie viele Werte stehen in der Liste?"
+    },
+    {
+      "id": "N06",
+      "split": "stress",
+      "expected": null,
+      "tag": "lookup",
+      "text": "Drei Posten: A 14; B 26; C 9. Wie viel kostet A?"
+    },
+    {
+      "id": "N07",
+      "split": "stress",
+      "expected": null,
+      "tag": "lookup",
+      "text": "Inventar: A 14, B 26, C 9. Nenne die größte Zahl."
+    },
+    {
+      "id": "N08",
+      "split": "stress",
+      "expected": null,
+      "tag": "metalinguistic",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Ist der Gesamtbetrag plausibel?"
+    },
+    {
+      "id": "N09",
+      "split": "stress",
+      "expected": null,
+      "tag": "metalinguistic",
+      "text": "Messreihe: A=14, B=26, C=9. Warum ist die Summe hier falsch?"
+    },
+    {
+      "id": "N10",
+      "split": "stress",
+      "expected": null,
+      "tag": "average",
+      "text": "Drei Posten: A 14; B 26; C 9. Berechne den Mittelwert der Beträge."
+    },
+    {
+      "id": "N11",
+      "split": "stress",
+      "expected": null,
+      "tag": "comparison",
+      "text": "Inventar: A 14, B 26, C 9. Vergleiche A mit B ohne zu rechnen."
+    },
+    {
+      "id": "N12",
+      "split": "stress",
+      "expected": null,
+      "tag": "specific_pair",
+      "text": "Ausgaben: A 14 Euro, B 26 Euro, C 9 Euro. Was ist die Differenz zwischen A und B?"
+    }
+  ]
+}
