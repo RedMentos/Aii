@@ -30,3 +30,9 @@ The script must reject mismatched original ZIP SHA, CRC, incomplete/duplicate in
 Next: inspect Run29 registered real-file World-JEPA workflow, download and independently verify original ZIP and W1..W6; preserve any RED. For AG12, pursue a separately preregistered actual fusion/selector comparison on disjoint data rather than treating posthoc oracle coverage as performance. No automatic production merge.
 
 Gates unchanged: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, World-JEPA SHADOW, no Redmi and whole-system completion false.
+
+## Closed independent CI evidence — 2026-10-31
+
+- Pure synthetic fail-closed tests Actions **41145716132** at exact `2375dd7ecf396d51f9092291ae163c67344a229c`: **7/7 PASS**, PINS/TEST/COMPILE/PRIVACY/DIFF all exit 0. Original ZIP artifact ID `13020566980`, SHA256 `86903234d0c141901dd6823a59417f2933bab525603a64bf9242f235bc1aea53`, CRC PASS, 12/12 inner SHA256SUMS independently verified.
+- Independent original-raw CI Actions **41145807041** at exact `fa2a3344f1087dfc0bcc8a06e52ad9634417060e`: terminal **SUCCESS**, original audit artifact ID `13020881154`, ZIP SHA256 `7abf52da5a3993e1b74bf9d61a4af7558d51f403353d24c69bbbedd8c449e9d6`, CRC PASS, **19/19** inner SHA256SUMS independently verified. PINS/RUN25_FETCH/RUN27_FETCH/ANALYSIS/REPORT_CHECK/COMPILE/PRIVACY/DIFF all exit 0. CI fetched original exact Run25 and Run27 GitHub artifacts with read-only Actions token, ran the committed audit source on them, and produced all four paired aggregates exactly matching the independent local analysis. No original ZIP contents, prompts, or private data republished.
+- This closes **Run30 read-only paired analysis**, not the original native utility/STEP2 gate. All negative gates unchanged. Run29 registered file-world Actions `41145551357` is a separate heavy owner and must be independently checked at terminal. No production merge or learning activation.
