@@ -4,7 +4,7 @@ on:
     branches:
       - 'assistant/v13-currentchain-unfiltered-run11g-20261030-gpt6'
     paths:
-      - '.github/workflows/v13-currentchain-unfiltered-run11g.yml'
+      - 'v13/code/docs/CURRENTCHAIN_UNFILTERED_CI_TRIGGER_RUN11G.txt'
   workflow_dispatch:
 permissions:
   contents: read
@@ -77,6 +77,8 @@ jobs:
           print("PINNED_ORIGINAL_NATIVE_ZIP_VERIFIED",len(blob),actual)
           PY
           echo "$?" > "$e/NATIVE_FETCH_EXIT.txt"
+          # Never pass the read-only Actions token into dependency installs/tests.
+          unset GH_TOKEN
           python3 -m venv "$RUNNER_TEMP/v13-currentchain-run11g-venv" > "$e/VENV_RAW.log" 2>&1
           echo "$?" > "$e/VENV_EXIT.txt"
           py="$RUNNER_TEMP/v13-currentchain-run11g-venv/bin/python"
