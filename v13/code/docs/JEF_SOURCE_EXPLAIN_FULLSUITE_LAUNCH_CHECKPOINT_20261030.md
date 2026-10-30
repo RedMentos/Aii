@@ -1,0 +1,7 @@
+# JEF source-exact explain full unfiltered suite — launch checkpoint 2026-10-30
+
+Review-only child of PR #1199 `codex/v13-jefsource-explain-fullsuite-20261030-hourly11`, exact parent head `eae7812e179bc0a0e574b27a25b1ab9b3e917ef8`. Preregistration commit `9d633fe872d9e23db40b7d863db661bb26c06d50` before workflow. Canon `218464b12a2d27d92524c751922fa8e1c3fb0ea7`; opt-in JEF operator blob `f0e687db8d47cad7621581e4b6d9a65b3679fc89`, operator help blob `e2679c9d2c6bd88bd2c770d66dec75b17a3962e5`, tests `83b0f5d079c6d93aaf1aeae71e07d2bda8a46970`.
+
+GitHub Actions `40991785171`, exact workflow source head `f42d7d3feb8c205dabd06d18e3d2a3ce85ce82c7`, launched the **unfiltered** `unittest discover -s tests -p 'test_*.py'` on fresh Ubuntu 24.04 venv, pinned numpy/torch CPU/transformers/peft dependencies, no model downloads, 45min job ceiling, raw full logs and SHA256SUMS. This is in progress at checkpoint. Exact next command: inspect Actions run `40991785171` to terminal, download raw even if RED, verify SHA/CRC/inner hashes, extract exact test count/failures and compare historical Run34/Run37 source-pin RED without waivers, private backup, update BUILD_STATE and review PR. Do not claim full suite PASS or infer historical failures before raw evidence.
+
+All negative gates remain Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, whole-system incomplete. Native v2 `40992102064` is a separate serialized native workflow/owner, not evidence for this software suite.
