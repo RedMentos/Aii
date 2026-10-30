@@ -1,0 +1,47 @@
+{
+  "schema": "v13.build_state.scoped.run11i.contextos_typographic.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "parent_pr": 1238,
+  "parent_sha": "c21e180f1902029e1d27aea099728815764dd394",
+  "prereg_commit": "b9b9293fe1288070ddb7cc430164154676766f80",
+  "test_first_commit": "2ebe9a08e28600ba05e05864d954b6e062c212cc",
+  "red": {
+    "run": 41027991160,
+    "head": "4bc4ac1c65f40b35b0cdf399d24e671e34b31941",
+    "artifact": 12964184114,
+    "sha256": "8b67ea4e071fb6ad7afb484f217e59fb3144a3afe3fda388a8f27e088505e205",
+    "tests": 53,
+    "failures": 6,
+    "inner_hashes_verified": 13
+  },
+  "green": {
+    "run": 41028141235,
+    "head": "9aa07923d30b8787cd480dd12d53804c29a7c580",
+    "artifact": 12964437779,
+    "sha256": "944710cb5af4b145dacda854a52b16c8b541203ff44755ece43072a48f622647",
+    "tests": 53,
+    "failures": 0,
+    "inner_hashes_verified": 13
+  },
+  "source_blob": "c515e9a432a1d912dab9cb551f74bb5f47d2e184",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11I-ContextOS-Typographic/",
+  "private_backup_byte_reverified": true,
+  "evidence_level": "SOFTWARE_SYNTHETIC_ONLY",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "blockers": [
+    "Historical Run34/Run37 frozen source-pin errors still RED",
+    "No current Redmi measurement"
+  ],
+  "next": "Independently review exact Body-JEPA opt-in EMA target candidate and import byte-identical source/tests only after verifying base blob; run cross-organ focused CI.",
+  "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_contextos_typographic_quotes_run11i tests.test_context_os_singlequote_exact_20261029 tests.test_context_os_unclosed_code_20261029 tests.test_context_os tests.test_context_warm_postverify_race_run11"
+}
