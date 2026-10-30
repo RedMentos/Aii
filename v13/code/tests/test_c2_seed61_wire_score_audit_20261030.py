@@ -44,7 +44,7 @@ class OriginalNativeZipTests(unittest.TestCase):
     def setUpClass(cls):
         cls.first = os.environ.get("V13_SEED61_FIRST_ZIP")
         cls.second = os.environ.get("V13_SEED61_SECOND_ZIP")
-        cls.scorer = frozen_scorer()
+        cls.scorer = staticmethod(frozen_scorer())
 
     def test_frozen_source_pins(self):
         self.assertTrue(callable(self.scorer))
