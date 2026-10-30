@@ -518,6 +518,12 @@ class SleepCycle:
     def run(self,mode='full',cancel=None,resource=None,origin='USER',batch=None):
         """mode: full | wake | a | b | c. Returns a report; persists schedule even when interrupted."""
         if mode not in {'full','wake','a','b','c'}:raise ValueError('Sleep-Modus full|wake|a|b|c')
+        # A negative/float/bool batch can create negative bucket quotas and
+        # Python negative slices (more replay, not less). Reject before any
+        # cycle/Store side effect, within the mode-specific policy ceiling.
+        max_batch=POLICY['wake_batch'][2] if mode=='wake' else POLICY['batch'][2]
+        if batch is not None and (type(batch) is not int or not 1<=batch<=max_batch):
+            raise ValueError(f'Sleep batch: integer 1..{max_batch}')
         policy=self.policy();started=self.monotonic();deadline=started+policy['max_minutes']*60
         state=resource() if resource else 'NORMAL'
         report={'kind':'V13_SLEEP','revision':REVISION,'mode':mode,'origin':origin,'resource_state':state,'started':self.clock(),'phases':[],
@@ -533,7 +539,7 @@ class SleepCycle:
         try:
             self.queue.sync(st,policy)
             budget=self._budget(state) if origin!='USER' else None
-            n=batch or (policy['wake_batch'] if mode=='wake' else policy['batch'])
+            n=batch if batch is not None else (policy['wake_batch'] if mode=='wake' else policy['batch'])
             if budget is not None:n=min(n,max(1,budget['replay_items']))  # Age envelope caps autonomous replay
             from .resource_modes import scaled
             report['resource_mode']=self._mode(state);n=scaled(n,report['resource_mode'],'replay_scale') or n  # §97.2 YELLOW halves replay (ORANGE/RED skip Sleep A below)
