@@ -199,7 +199,7 @@ class VerifyRun11R(unittest.TestCase):
     def test_equation_tuple_json_list_roundtrip_replays(self):
         with tempfile.TemporaryDirectory() as d:
             report = synthetic_all_invalid(d)
-            output = ("Cedar: 368 - 219 = 149 Euro remaining. "
+            output = ("Cedar: 368 - 219 = 149 Euro remaining.\n"
                       "Garnet: 368 - 327 = 41 Euro remaining.")
             raw = inject_valid_synthetic_c3(d, report, output=output)
             equations = raw["secondary_score"]["equation"]["a"]["equations"]
@@ -208,6 +208,18 @@ class VerifyRun11R(unittest.TestCase):
             verdict = v.verify_report(d)  # JSON stores lists, not tuples
             self.assertEqual(verdict["status"], "PILOT_PARTIAL_RED")
             self.assertFalse(verdict["utility_gate_pass"])
+
+    def test_same_line_dual_owner_equations_remain_ambiguous(self):
+        # The frozen diagnostic assigns equations only to a single named
+        # option per line. This is not a verifier or scorer defect.
+        f = m.FIXTURES[0]
+        output = ("Cedar: 368 - 219 = 149 Euro remaining. "
+                  "Garnet: 368 - 327 = 41 Euro remaining.")
+        result = m.score_pair(f, output)["equation"]
+        for option in ("a", "b"):
+            self.assertEqual(result[option]["status"], "AMBIGUOUS")
+            self.assertEqual(result[option]["equations"], [])
+            self.assertEqual(result[option]["ambiguous_lines"], 1)
 
     def test_missing_preclose_witness_rejected(self):
         with tempfile.TemporaryDirectory() as d:
