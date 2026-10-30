@@ -155,6 +155,13 @@ def job(sleep_runtime,event):
 def operator_command(r,args):
     """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>]"""
     from ..common import dumps
+    # Read-only bilingual comparison must not initialize Growth or register
+    # a missing English/German suite as a side effect of a status query.
+    if args and len(args) > 1 and args[:2] == ['eval', 'compare']:
+        if len(args) not in (3, 4) or args[2] != 'en-de':
+            raise ValueError('Usage: :growth eval compare en-de [solver]')
+        from .language_compare import compare_languages
+        return dumps(compare_languages(r.store, solver=args[3] if len(args) == 4 else 'v13'))
     g=hub(r)
     if not args or args==['status']:return dumps(g.report())
     c=args[0]
