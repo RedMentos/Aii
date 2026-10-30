@@ -64,13 +64,13 @@ FR_QUOTE=re.compile(r'«[^»]+»')
 CURLY_SINGLE=re.compile(r"(?<!\w)‘(?:[^’\n]|(?<=\w)’(?=\w)){1,400}’(?!\w)")
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
-SCIENTIFIC=re.compile(r'(?<![\\w.])[+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)[eE][+-]?\\d+(?!\\w)')
+SCIENTIFIC=re.compile(r'(?<![\w.])[+-]?(?:\d+(?:\.\d+)?|\.\d+)[eE][+-]?\d+(?!\w)')
 # Preserve arithmetic relationships, not merely the individual operands.
 # ASCII unspaced numeric date/range hyphens remain covered by NUMBER spans.
 MATH_REL=re.compile(
-    r'(?<!\\w)(?:\\d[\\d.,]*|[A-Za-z])\\s*'
-    r'(?:<=|>=|==|!=|[=×÷*+−<>≤≥/]|(?<=\\s)-(?=\\s))'
-    r'\\s*(?:[+-]?\\d|[A-Za-z])'
+    r'(?<!\w)(?:\d[\d.,]*|[A-Za-z])\s*'
+    r'(?:<=|>=|==|!=|[=×÷*+−<>≤≥/]|(?<=\s)-(?=\s))'
+    r'\s*(?:[+-]?\d|[A-Za-z])'
 )
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
 CRITIQUE=re.compile(r'\b(source|sources|according to|cite|citation|evidence|proof|quelle\w*|laut|beleg\w*|nachweis\w*)\b',re.I)
