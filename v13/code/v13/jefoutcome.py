@@ -96,8 +96,47 @@ def on_route_correction(store,event_id,value):
         return n
     return _mutate(store,f)
 
+def _valid_human_receipt(store, feedback, human, decision):
+    """Only a live, byte-exact explicit human receipt can outrank a self label.
+
+    Shared with learning.shadow_readout: a matching source_id alone does not
+    establish the human value, permission, source kind or decision/event.
+    """
+    if not isinstance(human, dict) or not isinstance(decision, dict):
+        return False
+    try:
+        if (human.get('kind') != feedback['kind']
+                or human.get('value') != feedback['value']
+                or human.get('learning_permission') != feedback['permission']
+                or human.get('event_id') != feedback['event_id']
+                or decision.get('event_id') != feedback['event_id']
+                or decision.get('component') != feedback['kind']
+                or human.get('decision_packet_id') != decision.get('packet_id')):
+            return False
+        ref = human.get('source_ref')
+        if not isinstance(ref, dict) or ref.get('source_id') != feedback['source_id']:
+            return False
+        src = store.one('SELECT hash,chars,kind,deleted FROM sources WHERE id=?',
+                        (feedback['source_id'],))
+        if (not src or src['deleted'] or src['kind'] != 'HUMAN_DECISION'
+                or ref.get('sha256') != src['hash']
+                or type(ref.get('char_start')) is not int or ref['char_start'] != 0
+                or type(ref.get('char_end')) is not int or ref['char_end'] != src['chars']
+                or ref.get('modality') != 'text'):
+            return False
+        return store.read_source(ref) == feedback['value']
+    except (ValueError, KeyError, TypeError, OSError, UnicodeError):
+        return False
+
+
 def _human_label_exists(store,component,revision,context_sha256):
-    """Exact active human feedback for this head/context, independent of recent-row limits."""
+    """Conservative veto: active linked human feedback outranks self labels.
+
+    A suspect active receipt is not valid human *training* data, but must not
+    silently unlock lower-authority self learning. Explicitly revoked sources
+    do not count. Exact admission to the human optimizer is separately
+    enforced by _valid_human_receipt in learning.shadow_readout.
+    """
     return bool(store.one(
         "SELECT 1 FROM feedback f "
         "JOIN sources s ON s.id=f.source_id AND s.deleted=0 "
@@ -109,7 +148,6 @@ def _human_label_exists(store,component,revision,context_sha256):
         "AND json_extract(d.payload,'$.context_revision')=? "
         "AND json_extract(d.payload,'$.context_ref.sha256')=? LIMIT 1",
         (component,component,revision,context_sha256)))
-
 
 def training_rows(store,component,revision,human_keys):
     """Outcome rows for learning.shadow_readout: only in 'learn' mode, only contexts without a human label."""
@@ -159,19 +197,30 @@ def report(r):
     for comp in ('wake','memory','skill'):
         labels=[x for x in st.get('labels',[]) if x['component']==comp];agree_h=n_h=0
         for x in labels:
-            h=r.store.one(
-                "SELECT f.value FROM feedback f "
-                "JOIN sources src ON src.id=f.source_id AND src.deleted=0 AND src.kind='HUMAN_DECISION' "
+            # Report agreement is evidence, not merely a matching source_id.
+            # Reuse the same byte-exact human receipt contract as the learner.
+            saved=r.store.one(
+                "SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",
+                (x['decision_packet_id'],))
+            if not saved:continue
+            try:decision=json.loads(saved['payload'])
+            except (TypeError,ValueError):continue
+            candidates=r.store.rows(
+                "SELECT f.*, p.payload AS human_payload FROM feedback f "
+                "JOIN sources src ON src.id=f.source_id AND src.deleted=0 "
+                " AND src.kind='HUMAN_DECISION' "
                 "JOIN packets p ON p.kind='HumanDecision' AND p.event_id=f.event_id "
-                "AND json_extract(p.payload,'$.decision_packet_id')=? "
-                "AND json_extract(p.payload,'$.source_ref.source_id')=f.source_id "
-                "AND json_extract(p.payload,'$.source_ref.sha256')=src.hash "
-                "AND json_extract(p.payload,'$.kind')=f.kind "
-                "AND json_extract(p.payload,'$.value')=f.value "
-                "AND json_extract(p.payload,'$.learning_permission')=f.permission "
-                "WHERE f.kind=? ORDER BY f.created DESC LIMIT 1",
-                (x['decision_packet_id'],comp))
-            if h:n_h+=1;agree_h+=int(h['value']==x['value'])
+                " AND json_extract(p.payload,'$.source_ref.source_id')=f.source_id "
+                "WHERE f.kind=? AND json_extract(p.payload,'$.decision_packet_id')=? "
+                "ORDER BY f.created DESC",
+                (comp,x['decision_packet_id']))
+            for human_row in candidates:
+                try:human=json.loads(human_row['human_payload'])
+                except (TypeError,ValueError):continue
+                if _valid_human_receipt(r.store,human_row,human,decision):
+                    n_h+=1
+                    agree_h+=int(human_row['value']==x['value'])
+                    break
         counts={}
         for x in labels:counts[x['value']]=counts.get(x['value'],0)+1
         out['heads'][comp]={'labels':len(labels),'by_value':counts,'differs_from_scaffold':sum(x['value']!=x['baseline'] for x in labels),

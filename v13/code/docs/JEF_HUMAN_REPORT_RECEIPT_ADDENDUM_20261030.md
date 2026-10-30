@@ -1,0 +1,5 @@
+# JEF human-agreement report receipt integrity — addendum 2026-10-30
+
+Owner `assistant/v13-jef-human-receipt-run11d-20261030`, same review-only JEF package. The human-label admission predicate now has a stronger exact-source contract than the `jefoutcome.report` metric path. This addendum freezes a separate test before changing report code: a human-agreement statistic must not count a forged `HumanDecision.event_id` or corrupted on-disk source bytes merely because the packet metadata still matches. The report is observational only; do not change stored self-labels, native models, age/learning rights, or the conservative self-label veto.
+
+Tests: real Runtime/Store valid human overlap =1; then tamper the HumanDecision event payload while leaving row event_id intact → overlap 0; tamper original source blob bytes while leaving DB hash intact → overlap 0; verify existing matching/disagreeing human reports and revocation tests. Run focused CI, retain baseline RED raw and final GREEN raw separately. Report's valid human receipt selection should reuse `_valid_human_receipt` (same authority hierarchy as the learner). No STEP2/B3/JEPA/Redmi gate promotion.

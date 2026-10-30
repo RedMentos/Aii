@@ -505,6 +505,7 @@ class Learner:
         if self.r.cfg['learning_mode']=='RECORD_ONLY':raise ValueError('RECORD_ONLY: keine Optimizer-Schritte. :learning shadow')
         if self.r.guard.update(self.r.resources())!='NORMAL':raise Unavailable('Shadow-Lernen wartet auf normale RAM-/Temperaturwerte')
         import numpy  # Fail before creating a candidate if setup is incomplete.
+        from .jefoutcome import _valid_human_receipt
         revision=self.context_revision(component);unique={}
         rows=self.s.rows("SELECT f.*,s.hash FROM feedback f JOIN sources s ON s.id=f.source_id WHERE f.kind=? AND s.deleted=0 ORDER BY f.created DESC LIMIT 512",(component,))
         for row in rows:
@@ -513,6 +514,7 @@ class Learner:
             saved=self.s.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(pid,))
             if not saved:continue
             p=json.loads(saved['payload'])
+            if not _valid_human_receipt(self.s,row,label,p):continue
             if p['component']!=component or p['context_revision']!=revision:continue
             key=p['context_ref']['sha256']
             # A newer RECORD label revokes prior permission for this exact context.
