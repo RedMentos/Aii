@@ -1,0 +1,118 @@
+name: V13 Run26 real closed native AG12 cross-organ diagnostic
+on:
+  push:
+    branches: [assistant/v13-run26-ag12-crossorgan-diagnostic-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-run26-ag12-crossorgan-real.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-closed-coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Read original GitHub artifact ZIPs and compute real diagnostic, no native jobs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run26-real"
+          input="$RUNNER_TEMP/v13-run26-original-inputs"
+          mkdir -p "$e" "$input"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          120488c5cb906b0c8a962505c3b7c7dd3cfe3ae3 v13/code/docs/AG12_CROSSORGAN_CLOSED_NATIVE_PREREG_RUN26_20261030.md
+          dc956cd488aec969ebb37e7562238b5e5c48e397 v13/code/scripts/run26_ag12_native_crossorgan.py
+          dfec1968331155e7e8c4cbd0a87b827107a0129a v13/code/tests/test_run26_ag12_native_crossorgan.py
+          a1cab60363814cb86472a42defb5089d4cdbd432 v13/code/v13/agi/generality.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run26-real-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run26-real-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            gh api repos/RedMentos/Aii/actions/artifacts/13015534785/zip > "$input/c3.zip" 2> "$e/C3_FETCH_RAW.log"
+            echo "$?" > "$e/C3_FETCH_EXIT.txt"
+            gh api repos/RedMentos/Aii/actions/artifacts/13020430675/zip > "$input/bodies.zip" 2> "$e/BODIES_FETCH_RAW.log"
+            echo "$?" > "$e/BODIES_FETCH_EXIT.txt"
+          else echo SKIPPED_PINS_OR_DEPS > "$e/C3_FETCH_RAW.log"; echo 99 > "$e/C3_FETCH_EXIT.txt"
+               echo SKIPPED_PINS_OR_DEPS > "$e/BODIES_FETCH_RAW.log"; echo 99 > "$e/BODIES_FETCH_EXIT.txt"; fi
+          if [ "$(cat "$e/C3_FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/BODIES_FETCH_EXIT.txt")" = 0 ]; then
+            sha256sum "$input/c3.zip" "$input/bodies.zip" > "$e/INPUT_ZIP_SHA256.txt"
+            PYTHONPATH=v13/code "$py" v13/code/scripts/run26_ag12_native_crossorgan.py \
+              --c3-zip "$input/c3.zip" --bodies-zip "$input/bodies.zip" \
+              --c3-sha 819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77 \
+              --bodies-sha 4a4b99a12cc2b60fa755aab7db5930cb9f8cd65ceea76272d8b2279e1b08331e \
+              --out "$e/RESULT.json" > "$e/ANALYSIS_RAW.log" 2>&1
+            echo "$?" > "$e/ANALYSIS_EXIT.txt"
+          else echo SKIPPED_ORIGINAL_FETCH_RED > "$e/ANALYSIS_RAW.log"; echo 99 > "$e/ANALYSIS_EXIT.txt"; fi
+          if [ -f "$e/RESULT.json" ]; then
+            "$py" - "$e/RESULT.json" > "$e/RESULT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='DIAGNOSTIC_ONLY' and r['seed']==13
+          assert r['source_zip_sha256']['c3']=='819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77'
+          assert r['source_zip_sha256']['bodies']=='4a4b99a12cc2b60fa755aab7db5930cb9f8cd65ceea76272d8b2279e1b08331e'
+          for lang in ('de','en'):
+              v=r['languages'][lang]
+              assert v['items']==88
+              assert set(v['correct_counts'])=={'c3','b1','b2','b1_or_b2_oracle','all_three_oracle'}
+              assert sum(x['items'] for x in v['by_family'].values())==88
+          assert r['jepa_weight']==0 and r['step2']=='UTILITY_FAIL' and r['b3']=='NO_PROMOTION'
+          assert not r['redmi_measured'] and not r['learned_german_transfer_proven']
+          assert not r['actual_fusion_proven'] and not r['whole_system_complete']
+          print('RUN26_REAL_CLOSED_NATIVE_ORACLE_DIAGNOSTIC_ONLY')
+          PY
+            echo "$?" > "$e/RESULT_CHECK_EXIT.txt"
+          else echo NO_CLOSED_RESULT > "$e/RESULT_CHECK_RAW.log"; echo 99 > "$e/RESULT_CHECK_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run26_ag12_native_crossorgan.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 503f73faab73b1aa780813f605c68362ac7bd7d9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 503f73faab73b1aa780813f605c68362ac7bd7d9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve aggregate result and raw stage logs, never original input ZIPs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run26-real-aggregate-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run26-real/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require original closed evidence and diagnostic-only result
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run26-real"
+          for stage in PINS VENV DEPS C3_FETCH BODIES_FETCH ANALYSIS RESULT_CHECK COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              tail -60 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'RUN26_ORIGINAL_CLOSED_LINUX_NATIVE_AG12_COVERAGE_NO_FUSION_OR_TRANSFER_CLAIM'
