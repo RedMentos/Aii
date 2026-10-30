@@ -18,6 +18,8 @@ from .base import StateBox,clamp01
 KEY='G12_GENERALITY_EVAL';REVISION='g12-generality-v1'
 SUITE_VERSION='g12-suite-v1'
 HISTORY=120
+HOLDOUT_MAX_SUITES=32
+HOLDOUT_MAX_DIGESTS=2048
 INTERVAL_S=30*86400.  # monthly by default (FORSCHUNG §9 #12)
 
 # family: (split, transfer_source or None, levels). 'seen' families may appear in practice/training,
@@ -96,6 +98,37 @@ def build_suite(seed=13,families=None,per_level=PER_LEVEL,lang='en'):
 
 def normalize(a):return ' '.join(str(a).strip().casefold().split())
 
+def _holdout_digest_ok(value):
+    return (type(value) is str and len(value)==64
+            and all(ch in '0123456789abcdef' for ch in value))
+
+def _holdout_list_ok(values):
+    return (type(values) is list and 0 < len(values) <= HOLDOUT_MAX_DIGESTS
+            and values == sorted(set(values))
+            and all(_holdout_digest_ok(v) for v in values))
+
+def _validated_holdout_registry(st):
+    """Fail closed on damaged or incomplete durable historical exclusion state."""
+    reg=st.get('holdout_registry')
+    if (type(reg) is not dict or len(reg)>HOLDOUT_MAX_SUITES
+            or type(st.get('holdout_history_unknown')) is not bool
+            or type(st.get('runs')) is not list):
+        raise ValueError('AG12_HOLDOUT_INTEGRITY')
+    union=set()
+    for suite_hash,values in reg.items():
+        if not _holdout_digest_ok(suite_hash) or not _holdout_list_ok(values):
+            raise ValueError('AG12_HOLDOUT_INTEGRITY')
+        union.update(values)
+    if (len(union)>HOLDOUT_MAX_DIGESTS
+            or st.get('holdout')!=sorted(union)
+            or st.get('suite_hash') not in reg):
+        raise ValueError('AG12_HOLDOUT_INTEGRITY')
+    if not st['holdout_history_unknown']:
+        if any(type(r) is not dict or r.get('suite_hash') not in reg
+               for r in st['runs']):
+            raise ValueError('AG12_HOLDOUT_INTEGRITY')
+    return reg
+
 def _solver_confidence(value):
     """Reject malformed solver confidence before the unchanged AG12 scorer."""
     if type(value) is bool:
@@ -161,20 +194,67 @@ class GeneralityEval:
         """Keep historical runs for audit but never mix suite identities in curves."""
         return [r for r in self._active_state()['runs'] if r.get('suite_hash') == self.suite['hash']]
     def _register(self,st):
-        """Holdout digests of unseen families; a suite change is recorded, never silently mixed into old curves."""
-        if st['suite_hash'] not in (None,self.suite['hash']):st['last_items']={};st['last_by']={}
-        st['suite_hash']=self.suite['hash']
-        st['holdout']=sorted({digest(normalize(i['prompt'])) for i in self.suite['items'] if i['split']=='unseen'})
+        """Never evict historical unseen digests silently when rotating suites."""
+        current=self.suite['hash']
+        unseen=sorted({digest(normalize(i['prompt'])) for i in self.suite['items']
+                       if i['split']=='unseen'})
+        if not _holdout_list_ok(unseen):
+            raise ValueError('AG12_HOLDOUT_INTEGRITY')
+        if 'holdout_registry' in st:
+            reg=dict(_validated_holdout_registry(st))
+            unknown=st['holdout_history_unknown']
+        else:
+            # Migrate a single legacy active suite without inventing older seeds.
+            reg={}
+            prior=st.get('suite_hash')
+            old=st.get('holdout',[])
+            if type(st.get('runs')) is not list:
+                raise ValueError('AG12_HOLDOUT_INTEGRITY')
+            if prior is not None:
+                if not _holdout_digest_ok(prior) or not _holdout_list_ok(old):
+                    raise ValueError('AG12_HOLDOUT_INTEGRITY')
+                reg[prior]=list(old)
+            elif old:
+                raise ValueError('AG12_HOLDOUT_INTEGRITY')
+            legacy_unknown=st.get('holdout_history_unknown',False)
+            if type(legacy_unknown) is not bool:
+                raise ValueError('AG12_HOLDOUT_INTEGRITY')
+            unknown=(legacy_unknown or any(
+                type(r) is not dict or r.get('suite_hash') not in reg
+                for r in st['runs']))
+        if current in reg:
+            if reg[current]!=unseen:
+                raise ValueError('AG12_HOLDOUT_INTEGRITY')
+        else:
+            if len(reg)>=HOLDOUT_MAX_SUITES:
+                raise ValueError('AG12_HOLDOUT_CAP')
+            reg[current]=unseen
+        union=sorted({h for values in reg.values() for h in values})
+        if len(union)>HOLDOUT_MAX_DIGESTS:
+            raise ValueError('AG12_HOLDOUT_CAP')
+        if st.get('suite_hash') not in (None,current):
+            st['last_items']={};st['last_by']={}
+        st['suite_hash']=current
+        st['holdout_registry']=reg
+        st['holdout']=union
+        st['holdout_history_unknown']=unknown
+        _validated_holdout_registry(st)
     def guard_training(self,texts):
-        """Raise if any training/distillation text equals a holdout prompt. Called by AG1/AG4/AG6 dataset builders."""
-        hold=set(self._active_state()['holdout'])
+        """Exclude all registered historical unseen prompts; unknown history blocks training."""
+        st=self._active_state()
+        _validated_holdout_registry(st)
+        if st['holdout_history_unknown']:
+            raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
+        hold=set(st['holdout'])
         bad=[t for t in texts if digest(normalize(t)) in hold]
         if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({len(bad)} Einträge)')
         return True
     def practice_items(self):
-        """Only 'seen' families may be used for practice (AG4/AG5)."""
-        self._active_state()
-        return [{k:i[k] for k in ('id','family','level','prompt','answer')} for i in self.suite['items'] if i['split']=='seen']
+        """Only 'seen' tasks may enter practice, after historical exclusion checks."""
+        items=[{k:i[k] for k in ('id','family','level','prompt','answer')}
+               for i in self.suite['items'] if i['split']=='seen']
+        self.guard_training([i['prompt'] for i in items])
+        return items
     def due(self):
         runs=self._current_runs()
         return not runs or self.clock()-runs[-1]['finished']>=self.interval_s
