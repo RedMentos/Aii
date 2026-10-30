@@ -1,0 +1,85 @@
+{
+  "package": "RUN13P_BJEPA_CE_VS_CONTRASTIVE_GRADIENT_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13p-bjepa-gradient-attribution-20261030-auto11",
+  "base": "5d37d8cb25f5cc1dab347c3cea9a64fe08d077c5",
+  "prereg_commit": "7528741a6a5b7a35ddec721a0baa99c611394ce9",
+  "software": {
+    "run_id": 41091771052,
+    "head": "0af0df4fddc345fd02def19bb629af905e676855",
+    "status": "GREEN",
+    "artifact_id": 12994446778,
+    "zip_sha256": "89852143dbfeeb91f023b4072e140634136eb71c2f4f0f220cd78bd60d4685be",
+    "crc": "PASS",
+    "inner_hashes": "23/23",
+    "tests": "12/12",
+    "stage_exits": "9/9 zero",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13P-BJEPA-Gradient/run13p-preflight-original-41091771052.zip",
+    "private_backup_byte_identical": true
+  },
+  "native": {
+    "run_id": 41092009944,
+    "launch_head": "031abf9cfd3a3ec08f69776eec12641eed54a44f",
+    "status": "SUCCESS_MECHANISM_ONLY_NO_UTILITY",
+    "artifact_id": 12994068020,
+    "zip_sha256": "3ab7acab16bd4329b4bca08756a8b76c1960b7aa2261f85c011c96af17e0cefc",
+    "zip_bytes": 11028,
+    "crc": "PASS",
+    "inner_hashes": "31/31",
+    "stage_exits": "11/11 zero",
+    "privacy": "CLEAN",
+    "source_pins": "7/7",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13P-BJEPA-Gradient/run13p-native-original-41092009944.zip",
+    "private_backup_byte_identical": true,
+    "completed_arms": "FIRST_STEP_GRADIENT_ONLY",
+    "independent_original_raw_review": true,
+    "measurement": {
+      "ce_adapter_l2": 13.966949380416676,
+      "contrastive_adapter_l2": 1.1653965363182082,
+      "shuffled_adapter_l2": 1.4075149294648932,
+      "contrastive_predictor_l2": 1.9192840072537583,
+      "weighted_contrastive_over_ce_l2": 0.020859897615728328,
+      "ce_vs_contrastive_signed_cosine": 0.012736124108614381,
+      "correct_vs_shuffled_signed_cosine": -0.09408751799694141,
+      "frozen_base_unchanged": true,
+      "optimizer_steps": 0,
+      "ema_updates": 0,
+      "model_exports": 0
+    }
+  },
+  "source_pins": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "body_jepa": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+    "contrastive_loss": "acd40aeac9e286e93b40bda72c655c17725a522e",
+    "lora_trainer": "49a752879ae5d19391963742a0f042e740edb2cc",
+    "probe": "07e64d1dacdadc12e16c59e4fb448466f5369fd5",
+    "test": "410685fbf2e22294314b27d9429e8e8f07810c44"
+  },
+  "original_run12c": {
+    "run_id": 41046804934,
+    "zip_sha256": "67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd",
+    "crc": "PASS",
+    "inner_hashes": "31/31",
+    "completed_native_arms": 12,
+    "diagnostic": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+    "seed_wins": 0,
+    "backup_byte_identical": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight_runtime": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "First-step JEPA gradient is only 2.09% of CE L2 at 0.25 weight, near orthogonal; no causal multi-step utility inference.",
+    "Design disjoint preregistered multi-step scale/retention cohort only after independent review; no tuning of Run12C or Run13P frozen data.",
+    "ContextOS/JEF/Body integration and Redmi resource gates remain open."
+  ],
+  "next_command": "Review Run13P original raw and source pins, then implement new preregistered disjoint Body-JEPA multi-step attribution/heldout retention and independent ContextOS/JEF packages. No gate promotion.",
+  "platform_remaining_budget": "UNKNOWN"
+}
