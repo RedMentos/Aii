@@ -98,7 +98,8 @@ def run(home, out, fixture_path):
         "proxy_threshold_met": result["proxy_threshold_met"],
         "net_correct_gain_first12": result["net_correct_gain_first12"],
     }, sort_keys=True))
-    return result["native_c2_proven"] and result["strict_compatibility"]
+    return (result["native_c2_proven"] and result["strict_compatibility"]
+            and result["non_simple_scaffold_preserved"])
 
 
 def main():
