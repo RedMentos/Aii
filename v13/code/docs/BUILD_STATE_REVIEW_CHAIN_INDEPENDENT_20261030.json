@@ -37,5 +37,12 @@
     "Historical Run34/Run37 source-pin RED not waived",
     "No native/Redmi utility or whole-system completion"
   ],
-  "next_command": "At terminal Actions 41001121075 download original artifact, verify SHA/CRC/inner SHA256SUMS, exact focused count and unfiltered errors, private byte backup, update scoped BUILD_STATE/PR. Continue independent seed53 native utility PR1212 after heavy slot released."
+  "next_command": "At terminal Actions 41001121075 download original artifact, verify SHA/CRC/inner SHA256SUMS, exact focused count and unfiltered errors, private byte backup, update scoped BUILD_STATE/PR. Continue independent seed53 native utility PR1212 after heavy slot released.",
+  "original_focused_module_counts": {
+    "test_step2_budget_paired_native_v3_20261030": 6,
+    "test_c2_native_route_provenance_20261030": 7,
+    "test_c2_c3_body_auto_native_smoke_20261030": 8,
+    "test_step2_expression_diagnostic_20261030": 10
+  },
+  "original_focused_module_counts_sum": 31
 }
