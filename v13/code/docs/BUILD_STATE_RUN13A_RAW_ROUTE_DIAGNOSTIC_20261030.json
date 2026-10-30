@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "pr": 1288,
+  "tested_head": "5d8a225a64330b584bc0f02350990c3f71fb81ea",
+  "ci": {
+    "run": 41071103024,
+    "status": "SUCCESS",
+    "artifact": 12983719932
+  },
+  "original_zip_sha256": "52b1e6c8209dba364f41a157496cccfd9d59590e84e79139879ad87e5f576a6f",
+  "original_zip_integrity": "397044 bytes; CRC clean; 96/96 SHA256SUMS",
+  "original_f_roles": {
+    "C3": 5,
+    "B1": 3,
+    "B2": 0
+  },
+  "original_f_routes": {
+    "simple": 5,
+    "both": 3
+  },
+  "c2_rejected": 5,
+  "original_numeric": {
+    "F": 0,
+    "B2": 6
+  },
+  "original_strict": {
+    "F": 0,
+    "B2": 2
+  },
+  "presence_both_only": 1,
+  "claim_limit": "POSTHOC NUMBER PRESENCE IS NOT CORRECTNESS; NO RESCORING",
+  "private_report_sha256": "e78b863542e906caa446004a2a28243c56b515753f8b477ce8b6c29ed89a6ac0",
+  "private_report": "/V13-Checkpoints/2026-10-30/Run13A/V13_RUN13A_READONLY_ROUTE_DIAGNOSTIC_20261030.json",
+  "gates": "Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight0; Redmi UNMEASURED; whole V13 incomplete",
+  "next": "Prospective disjoint C5 both-route B1/B2 arbitration and scorer comparison; preserve original Run13A RED",
+  "remaining_platform_budget": "UNKNOWN"
+}
