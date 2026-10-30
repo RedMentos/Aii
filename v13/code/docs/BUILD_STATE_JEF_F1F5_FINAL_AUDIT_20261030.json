@@ -48,7 +48,7 @@
     "No native persisted FINAL cohort measured with new audit",
     "Shared units and adversarial repeated option labels need independent review"
   ],
-  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_jef_f1f5_final_output_audit_20261030 tests.test_jefsource_explain_optin_20261030 tests.test_jef_f1f5_operator",
+  "next_command": "With genuinely persisted native FINAL and current-session human F1/F5 sources, run :jefsource audit and compare without output authority; preserve Run34/37 RED and no gate promotion.",
   "fullsuite_pin_audit": {
     "run_id": 40991785171,
     "tests": 3425,
@@ -60,5 +60,22 @@
     "other_three_pins_match": true,
     "status": "RED_UNWAIVED",
     "private_backup_byte_verified": true
+  },
+  "adversarial_green": {
+    "run": 40997671040,
+    "head": "3e66093da722a52e375600bc8d624ffdeea139ff",
+    "tests": "25/25 PASS",
+    "stages": "6/6 exit0",
+    "zip_sha256": "6ea1b00bec2b3776511cb1352cb61866c8d1f54df3672ef25501f15368a7cf80",
+    "inner_sha256": "15/15",
+    "private_backup_byte_identical": true,
+    "source_unchanged": true,
+    "tests_blob": "ef66a0a263514364886f68847cdfbef291df2f79",
+    "new_cases": [
+      "FINAL_CHANGED between two reads",
+      "same-unit UNSUPPORTED",
+      "signed negative exact remainder",
+      "oversize refusal"
+    ]
   }
 }
