@@ -1,0 +1,48 @@
+{
+  "schema": "v13.build_state.scoped.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "branch": "codex/v13-c3-paired109-independent-audit-20261030-auto11f",
+  "review_pr": 1232,
+  "original_native_run": 41021980064,
+  "original_native_head": "b9b83b7da73ef2f8b49a7a60df95cf51b3dbc254",
+  "original_zip_sha256": "9bb7616e899635f48a0e536de4120e4b38ddc981f8402f1414c06cfaa9394e43",
+  "independent_audit": {
+    "run": 41022375040,
+    "tested_head": "8144ae269baebc1e056d98bb11e7d8ce36fb552b",
+    "artifact": 12961817523,
+    "zip_sha256": "2ea75d43c07b1ddd0245929ed8b2eea6e45a03e63bc24597d0d1eefe64951978",
+    "inner_hashes": "20/20",
+    "stages": "9/9 zero",
+    "status": "STRUCTURAL_PASS",
+    "source_report_sha256": "d479bfc526fc4625cfefab33fe10ef389f34efc90cdbd8648ef2f58249b16b59",
+    "counts": {
+      "A_exact": 4,
+      "B_exact": 7,
+      "D_exact": 8,
+      "A_shadow_correct": 4,
+      "B_shadow_correct": 7,
+      "native_admitted": 16,
+      "A_abstain": 4,
+      "B_abstain": 1,
+      "A_wrong": 0,
+      "B_wrong": 0
+    }
+  },
+  "synthetic_tests": {
+    "run": 41022187374,
+    "tests": "38/38",
+    "zip_sha256": "5c8ba3666e7382cd66c25e106246aab55a6fb3ffda62f4d357ef0c138c65a870"
+  },
+  "evidence_grade": "INDEPENDENT_LINUX_NATIVE_RAW_RECOMPUTE",
+  "redmi_measured": false,
+  "learning_mode": "RECORD_ONLY",
+  "step2_gate": "UTILITY_FAIL",
+  "b3_gate": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C3-Operator-Receipt/",
+  "next": "Opt-in narrow deterministic no-model German operator SHADOW, fail-closed, prereg tests first; larger disjoint native heldout later."
+}
