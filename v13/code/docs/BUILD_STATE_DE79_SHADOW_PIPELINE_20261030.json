@@ -1,0 +1,45 @@
+{
+  "schema": "v13.build_state.scoped.de79_shadow_pipeline.v1",
+  "owner": "assistant/v13-de79-native-review-shadow-pipeline-20261030",
+  "parent_pr": 1220,
+  "parent_head": "542c8c426f4ff15dd5b26d94dd89152fe60d9dbc",
+  "date": "2026-10-30",
+  "package": "DE_C3_TYPED_READ_TO_LISTARITH_SHADOW",
+  "source_only_candidate": true,
+  "production_integration": false,
+  "frozen_original_native": {
+    "run_id": 41011375839,
+    "artifact_id": 12958290116,
+    "zip_sha256": "0538160dbd6f59804a0e670e5c34ea75aab5e6b3f031cac0f6ac13203be08d70",
+    "rows": 12,
+    "exact": 11,
+    "invented": 0,
+    "all_reaped": true,
+    "earlier_red_run_id": 41011141179
+  },
+  "software_ci": {
+    "red_run_id": 41012425616,
+    "green_run_id": 41012468843,
+    "tested_head": "dae5ce1b196143bfc52c0baacfc7298b84737ffe",
+    "tests_passed": 20,
+    "tests_failed": 0,
+    "artifact_id": 12958366032,
+    "zip_sha256": "64924ab49da530107da09d391d47c849d00bb0a5dea3bb382347dca73a36ce45",
+    "inner_sha256_count": 10,
+    "privacy": "CLEAN",
+    "stage_exits": "4/4 ZERO"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030",
+  "next_package": "independent read-only replay of original seed79 ZIP with SHA256, CRC, all inner hashes, row/PID/source/fixture bindings and posthoc arithmetic/abstention diagnostics; then fresh disjoint prereg",
+  "blocked": "No Redmi device; no native pipeline end-to-end proof yet",
+  "platform_remaining_budget": "UNKNOWN"
+}
