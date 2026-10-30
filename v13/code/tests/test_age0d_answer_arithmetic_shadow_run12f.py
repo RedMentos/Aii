@@ -52,11 +52,8 @@ class AnswerAwareArithmeticRun12F(unittest.TestCase):
                        "‘7 * 3 = 20’ is a quote"):
             with self.subTest(answer=answer):
                 r = a.inspect("Please explain", answer)
-                # Straight/typographic double quotes and backticks are blocked;
-                # curly single quotes are not currently an authority source.
                 self.assert_shadow(r)
-                if "'" not in answer and "‘" not in answer:
-                    self.assertEqual(r["status"], "ABSTAIN")
+                self.assertEqual(r["status"], "ABSTAIN")
 
     def test_unsafe_expressions_abstain_without_eval(self):
         for q, answer in (
