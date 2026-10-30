@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: v13-run13k-native-${{ github.run_id }}-${{ github.sha }}
-          path: ${{ runner.temp }}/v13-run13k-preflight/
+          path: ${{ runner.temp }}/v13-run13k-native/
           retention-days: 30
           if-no-files-found: error
       - name: Enforce actual native structural execution and independent replay only
@@ -92,7 +92,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          e="$RUNNER_TEMP/v13-run13k-preflight"
+          e="$RUNNER_TEMP/v13-run13k-native"
           for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED"; tail -60 "$e/${stage}_RAW.log" || true; exit 1
