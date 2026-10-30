@@ -12,7 +12,7 @@ id/family/prompt/level but never the answer. Exceptions count as wrong with conf
 import math
 import random
 import time
-from ..common import digest,dumps,atomic_write,Cancelled
+from ..common import digest,dumps,atomic_write,Cancelled,uid
 from .base import StateBox,clamp01
 
 KEY='G12_GENERALITY_EVAL';REVISION='g12-generality-v1'
@@ -222,7 +222,7 @@ class GeneralityEval:
             export = 'generality-last.json' if self.suite['lang']=='en' else 'generality-last-de.json'
             atomic_write(self.home/'exports'/export,dumps(run|{'results':results}))
         self.s.log('generality_eval',None,{'status':status,'solver':key,'overall':summary['overall'],'unseen':summary['unseen'],'items':len(results)})
-        return (run | {'_results':results}) if include_results else run
+        return (run | {'_results':results,'_feedback_nonce':uid('g12fb')}) if include_results else run
     def curve(self,axis='overall',solver=None):
         """Time series for one axis: overall|seen|unseen|generalization_gap|planning_depth|forgetting|ece; optionally one solver."""
         out=[]
