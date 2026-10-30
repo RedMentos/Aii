@@ -37,6 +37,7 @@ jobs:
             env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
               tests.test_jef_human_receipt_integrity_20261030 \
               tests.test_jef_human_record_precedence_20261030 \
+              tests.test_jef_human_record_window_20261030 \
               tests.test_jefoutcome_self_source_20261030 \
               tests.test_jefoutcome_report_source_20261030) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
