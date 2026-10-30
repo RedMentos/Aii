@@ -127,5 +127,29 @@ class HumanReceiptIntegrity(unittest.TestCase):
         self.assertEqual(self.r.pool.pids(), [])
 
 
+    def test_forged_human_learn_rows_never_reach_optimizer(self):
+        # Six samples per class would pass the learner's class-count gate if
+        # the forged packet values were treated as genuine human feedback.
+        for i in range(12):
+            e = self.r.store.event(self.r.session,
+                                   "separate forged human training context " + str(i))
+            fp.head(self.r, "skill", e, "skill")
+            value = "skill" if i % 2 else "none"
+            self.r.memory.feedback(e["event_id"], "skill", value, "learn")
+            human = self.r.store.one(
+                "SELECT id FROM packets WHERE kind='HumanDecision' AND event_id=? "
+                "ORDER BY created DESC LIMIT 1", (e["event_id"],))
+            with self.r.store.tx() as db:
+                db.execute("UPDATE packets SET payload=json_set(payload,'$.value',?) "
+                           "WHERE id=?", ("none" if value == "skill" else "skill",
+                                          human["id"]))
+        with patch.object(self.r.guard, "update", return_value="NORMAL"), patch.object(
+                self.r.learner, "readout_embedding",
+                side_effect=AssertionError("forged label reached optimizer")):
+            with self.assertRaisesRegex(ValueError, "Je Klasse"):
+                self.r.learner.shadow_readout("skill")
+        self.assertEqual(self.r.pool.pids(), [])
+
+
 if __name__ == "__main__":
     unittest.main()
