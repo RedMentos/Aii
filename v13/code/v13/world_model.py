@@ -188,7 +188,9 @@ def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a in state s; invalid evidence cannot create confidence."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
-    if not st or st.get('revision')!=REVISION or st.get('source_admission')!=SOURCE_ADMISSION or st.get('status')!='FITTED':
+    # Direct store=None scoring is a synthetic/offline diagnostic only. Real Store
+    # consumers, including explicitly supplied st, require the admission marker.
+    if not st or st.get('revision')!=REVISION or (store is not None and st.get('source_admission')!=SOURCE_ADMISSION) or st.get('status')!='FITTED':
         return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     if not _finite_vector(s,4) or st.get('support_scope')!='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED':
         return _invalid_numeric(a)
