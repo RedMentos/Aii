@@ -35,7 +35,7 @@ jobs:
           printf '%s\n' \
             '1f4af6ba056d26ada92df5fc2bc569cf166d6609 v13/code/docs/C3_DE_NATIVE_TYPED_READ_SEED79_PREREG_20261030.md' \
             'd0a840c9546fd87c3f7ef15f450b4650aaa06863 v13/code/specs/c3_de_native_typed_read_seed79.json' \
-            'c7b23ed1ce643a44ed176dc98fe7c62356663e7c v13/code/scripts/c3_de_native_typed_read_seed79.py' \
+            'a9bbdca02aff7b30cc4a1d44ddb1b80b903da106 v13/code/scripts/c3_de_native_typed_read_seed79.py' \
             '4ed3091be12b8548b889116298f0deb4db70a8c2 v13/code/scripts/c3_de_native_typed_read_seed79_audit.py' \
             '4e4cecf985e980860a83faa6dc0ac472f29a1339 v13/code/tests/test_c3_de_native_typed_read_seed79_20261030.py' \
             '35893e9f829a591ffb9a792a73cef9bce986b3c4 v13/code/v13/agi/listarith.py' \
