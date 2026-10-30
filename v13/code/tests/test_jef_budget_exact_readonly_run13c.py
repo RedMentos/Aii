@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from pathlib import Path
 import subprocess
 import sys
@@ -133,6 +134,35 @@ class Run13CReadOnlyCli(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertIsNone(json.loads(result.stdout)["answer"])
             self.assertEqual(json.loads(result.stdout)["native_calls"], 0)
+
+
+    def test_corrupt_zlib_archive_fails_closed_through_python_api(self):
+        with TemporaryDirectory() as td:
+            runtime = Runtime(Path(td))
+            try:
+                q, s = refs(runtime)
+                blob = Path(td) / "data/blobs" / s["sha256"]
+                blob.with_name(blob.name + ".z").write_bytes(b"not-a-zlib-stream")
+                blob.unlink()
+                with ReadOnlySourceStore(td) as reader:
+                    got = propose_text(reader, q, s)
+                self.assertIsNone(got["answer"])
+                self.assertEqual(got["delivery_authority"], 0)
+            finally:
+                runtime.close()
+
+    def test_closed_sqlite_connection_fails_closed_through_python_api(self):
+        with TemporaryDirectory() as td:
+            runtime = Runtime(Path(td))
+            try:
+                q, s = refs(runtime)
+                with ReadOnlySourceStore(td) as reader:
+                    reader.db.close()
+                    got = propose_text(reader, q, s)
+                self.assertIsNone(got["answer"])
+                self.assertEqual(got["delivery_authority"], 0)
+            finally:
+                runtime.close()
 
 
 if __name__ == "__main__":
