@@ -227,6 +227,19 @@ def report(r):
             if not saved:continue
             try:decision=json.loads(saved['payload'])
             except (TypeError,ValueError):continue
+            # A live self source and a valid human receipt are insufficient
+            # unless they refer to the SAME stored executive decision.
+            # Match the existing training_rows lineage contract before
+            # reporting overlap; historical counts remain unchanged.
+            context=decision.get('context_ref') if isinstance(decision,dict) else None
+            if (not isinstance(context,dict)
+                    or decision.get('packet_id')!=x.get('decision_packet_id')
+                    or decision.get('event_id')!=x.get('event_id')
+                    or decision.get('component')!=comp
+                    or decision.get('context_revision')!=x.get('context_revision')
+                    or context.get('sha256')!=x.get('context_sha256')
+                    or decision.get('baseline')!=x.get('baseline')):
+                continue
             candidates=r.store.rows(
                 "SELECT f.*, p.payload AS human_payload FROM feedback f "
                 "JOIN sources src ON src.id=f.source_id AND src.deleted=0 "
