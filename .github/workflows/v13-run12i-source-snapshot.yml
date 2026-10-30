@@ -1,0 +1,41 @@
+name: V13 Run12I source snapshot for local independent replay tests
+on:
+  push:
+    branches: [assistant/v13-run12i-sleep-replay-atomicity-20261030]
+    paths:
+      - '.github/workflows/v13-run12i-source-snapshot.yml'
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Package tracked Python source only, no models or user data
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run12i-source"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git ls-files 'v13/code/v13/*.py' 'v13/code/tests/*.py' 'v13/code/scripts/*.py' > "$e/PATHS.txt"
+          printf '%s\n' AGENTS.md v13/AGENTS.md v13/ROADMAP.md v13/NUTZER_ENTSCHEIDUNGEN.md v13/code/BUILD_STATE.json >> "$e/PATHS.txt"
+          test "$(wc -l < "$e/PATHS.txt")" -gt 100
+          tar -cf "$e/SOURCE.tar" -T "$e/PATHS.txt"
+          test "$(stat -c %s "$e/SOURCE.tar")" -lt 80000000
+          sha256sum "$e/SOURCE.tar" > "$e/SOURCE.sha256"
+          echo "TRACKED_PY_FILES=$(wc -l < "$e/PATHS.txt")" > "$e/REPORT.txt"
+          echo "SOURCE_BYTES=$(stat -c %s "$e/SOURCE.tar")" >> "$e/REPORT.txt"
+          cat "$e/SOURCE.sha256" >> "$e/REPORT.txt"
+      - name: Preserve source snapshot
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run12i-source-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run12i-source/
+          retention-days: 7
+          if-no-files-found: error

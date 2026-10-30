@@ -24,7 +24,7 @@ import math
 import time
 from pathlib import Path
 from .common import uid,dumps,atomic_write,Cancelled
-from .contracts import packet
+from .contracts import packet,validate
 from .memory import entities,relevance
 
 SCHEDULE_KEY='SLEEP_REPLAY_SCHEDULE'
@@ -94,11 +94,18 @@ class ReplayQueue:
         if replay_type not in TYPES:raise ValueError('replay_type')
         if not 0<=priority<=1:raise ValueError('priority 0..1')
         rid=uid('replay');now=self.clock()
-        with self.s.tx() as c:c.execute('INSERT INTO replay VALUES (?,?,?,?,?,?)',(rid,event_id,replay_type,float(priority),'SLEEP_QUEUED',now))
+        # Construct and validate before any durable mutation. Both records
+        # represent one logical queue item; a crash/constraint failure must
+        # never leave a replay row without its ReplayItem provenance packet.
         p=packet('ReplayItem','F9_SLEEP_QUEUE',event_id,self.s.generation_id,source_refs,replay_type=replay_type,source_refs=source_refs,
                  priority=float(priority),max_authority=max_authority,replay_id=rid,evidence_class=evidence_class,stage='QUEUED',
                  unresolved_errors=list(unresolved_errors),affected_paths=list(affected_paths),ttl_days=ttl_days,fact_write_authority=0,**(extra or {}))
-        self.s.add_packet('ReplayItem',p);return rid
+        validate('ReplayItem',p)
+        with self.s.tx() as c:
+            c.execute('INSERT INTO replay VALUES (?,?,?,?,?,?)',(rid,event_id,replay_type,float(priority),'SLEEP_QUEUED',now))
+            c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',
+                      (p['packet_id'],'ReplayItem',p['event_id'],p['brain_generation_id'],dumps(p),time.time()))
+        return rid
     def sync(self,st,policy):
         """Index rebuild: every replay row gets a schedule entry; vanished rows retire."""
         rows=self.s.rows('SELECT r.*,e.session_id FROM replay r JOIN events e ON e.id=r.event_id ORDER BY r.created LIMIT ?',(MAX_ITEMS+1,))
