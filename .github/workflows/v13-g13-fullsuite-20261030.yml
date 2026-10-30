@@ -3,7 +3,7 @@ on:
   push:
     branches: [assistant/v13-g13-fullsuite-review-20261030-auto11]
     paths:
-      - '.github/workflows/v13-run13a-unfiltered-fullsuite.yml'
+      - '.github/workflows/v13-g13-fullsuite-20261030.yml'
       - 'v13/code/docs/G13_FULLSUITE_PREREG_20261030.md'
 permissions:
   contents: read
