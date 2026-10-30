@@ -33,7 +33,7 @@ def make_report():
     return {
         "schema": "v13.c2_c3_body.auto_native_smoke.v1",
         "seed": 47, "fixture_sha256": a.FIXTURE_SHA256,
-        "fixtures": FIXTURES,
+        "fixtures": [dict(f) for f in FIXTURES],
         "rows": [{"fixture": f["project"], "final_output": output,
                   "output_role": "B1_DETAIL"} for f, output in zip(FIXTURES, OUTPUTS)],
     }
