@@ -124,9 +124,34 @@ def training_rows(store,component,revision,human_keys):
         if key not in human_cache:
             human_cache[key]=_human_label_exists(store,component,revision,key)
         if human_cache[key]:continue
-        row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(x['decision_packet_id'],))
+        # A retained outcome state entry is not training authority by itself.
+        # Source revocation or substitution must not reach the optimizer and
+        # abort otherwise valid batches at its later read_source check.
+        source=store.one("SELECT hash,chars,kind,deleted FROM sources WHERE id=?",
+                         (x.get('source_id'),))
+        if (not source or source['deleted'] or source['kind']!=AUTHORITY
+                or not isinstance(x.get('value'),str)):continue
+        ref={'source_id':x['source_id'],'sha256':source['hash'],
+             'char_start':0,'char_end':source['chars'],'modality':'text'}
+        try:
+            if store.read_source(ref)!=x['value']:continue
+        except (ValueError,KeyError,TypeError,OSError):continue
+        row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",
+                      (x.get('decision_packet_id'),))
         if not row:continue
-        out[key]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},json.loads(row['payload']))
+        try:p=json.loads(row['payload'])
+        except (TypeError,ValueError):continue
+        context=p.get('context_ref') if isinstance(p,dict) else None
+        if (not isinstance(context,dict)
+                or p.get('packet_id')!=x.get('decision_packet_id')
+                or p.get('event_id')!=x.get('event_id')
+                or p.get('component')!=component
+                or p.get('context_revision')!=revision
+                or context.get('sha256')!=key
+                or p.get('baseline')!=x.get('baseline')):continue
+        out[key]=({'value':x['value'],'source_id':x['source_id'],
+                   'event_id':x['event_id'],'permission':'learn',
+                   'authority':AUTHORITY},p)
     return [(k,row,p) for k,(row,p) in out.items()]
 
 def report(r):
