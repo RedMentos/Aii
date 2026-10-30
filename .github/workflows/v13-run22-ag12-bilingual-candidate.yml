@@ -27,7 +27,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           7a83e74e3472f4386c724fb4133714790382e32e v13/code/docs/AG12_BILINGUAL_COMPARE_PREREG_RUN22_20261030.md
-          0e0399e435ef04a8b93895e29ba2bd60f0a03c9c v13/code/tests/test_ag12_bilingual_compare_run22.py
+          5458d6cbac9ae0383b780738985657ef5c0f6003 v13/code/tests/test_ag12_bilingual_compare_run22.py
           725c5ea83fb0c331a8dc6f172c38fe6b02ba17e2 v13/code/v13/agi/language_compare.py
           7f6f56b2b0731a5d34a63e364e42262221cf71f6 v13/code/v13/agi/__init__.py
           6636efcb7e79acd9a010b3ef31bab55342cca349 v13/code/v13/operator.py
