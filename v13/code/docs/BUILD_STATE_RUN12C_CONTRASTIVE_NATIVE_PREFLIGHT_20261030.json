@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12C_CONTRASTIVE_350M_SOURCE_ONLY_GREEN_NATIVE_NOT_LAUNCHED",
+  "schema": "V13_RUN12C_CONTRASTIVE_350M_LINUX_NATIVE_COMPLETE_NO_GAIN",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12c-bjepa-contrastive-native-runner-20261030-hourly11",
@@ -71,7 +71,7 @@
   "native": {
     "workflow_prepared": true,
     "triggered": true,
-    "proven": false,
+    "proven": true,
     "owner": "GitHub Actions run 41046804934 serial Body-JEPA native group",
     "workflow_git_blob": "11b5612e32d07042c4c2d6e5052cb23b809dbc97",
     "explicit_trigger_path": "v13/code/docs/BJEPA_CONTRASTIVE_350M_NATIVE_TRIGGER_RUN12C.txt",
@@ -80,8 +80,30 @@
     "active_workflows_observed": 0,
     "launch_head": "35c163f19f3ccdc1e8ebed1df5821c679d96a13a",
     "run_id": 41046804934,
-    "run_status_at_checkpoint": "QUEUED",
-    "completed_arms": "UNKNOWN"
+    "run_status_at_checkpoint": "SUCCESS",
+    "completed_arms": 12,
+    "conclusion": "SUCCESS",
+    "evidence_class": "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT",
+    "report_status": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+    "seed_wins": 0,
+    "utility_gate_pass": false,
+    "mean_deltas": {
+      "paraphrase_contrast_minus_ce": -0.0006610822553435961,
+      "paraphrase_contrast_minus_cosine": 0.005089912563562393,
+      "paraphrase_contrast_minus_shuffled": 0.015732888753215473,
+      "near_miss_contrast_minus_ce": -0.013900738209486008,
+      "retention_contrast_minus_ce": -0.21595237652460733
+    },
+    "artifact_id": 12973177358,
+    "zip_sha256": "67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd",
+    "zip_bytes": 20412,
+    "crc": "PASS",
+    "inner_sha256": "31/31",
+    "stage_exits": "11/11 EXIT0",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239/ORIGINAL_NATIVE_41046804934_sha67F56F5E.zip",
+    "backup_byte_exact": true,
+    "independent_run12d_audit": "PENDING_ACTIONS_41047976128"
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -97,5 +119,5 @@
     "Independent raw scoring after original 12-arm native artifact",
     "Redmi thermal/RSS remains unmeasured"
   ],
-  "next_command": "Inspect Actions run 41046804934 until terminal, download original artifact, verify ZIP SHA256/CRC/SHA256SUMS/HEAD/pins/12 arm reports and preserve RED/partial. Upload original byte-exact ZIP to private Library /V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239, re-materialize cmp. Continue independent Canon work while native runs. No gate promotion."
+  "next_command": "Read terminal Run12D independent original native ZIP audit Actions 41047976128; preserve RED if fails, verify raw SHA/CRC/inner hashes, backup privately byte-exact. Update branch-scoped evidence only. Run12C 12/12 Linux-native arms completed with NO_ATTRIBUTABLE_GAIN; all gates negative."
 }
