@@ -28,7 +28,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           7d7aee0b501fcb7581df39d8588bc9b36f29e36d v13/code/v13/agi/jef_c3_shadow_fallback_run13v.py
-          b61dd1eeee8c0da852b2c0dbffbdfa12c0711b5c v13/code/tests/test_jef_c3_shadow_fallback_run13v.py
+          93dbfc26ce7bf2130ecb09e9550b3ec85110c303 v13/code/tests/test_jef_c3_shadow_fallback_run13v.py
           67eb2d9d772d45b8b6ea37043ed2a32a84f5cfa8 v13/code/docs/RUN13V_C3_JEF_SHADOW_FALLBACK_PREREG_20261030.md
           887aad1a55faf4b263b49c992a9e61372fce3948 v13/code/v13/agi/jef_c3_shadow_prompt_run13i.py
           82d1f1e2af5bf565f9d5f081844e1da55c88084c v13/code/v13/agi/c3_source_fidelity_shadow_run13m.py
