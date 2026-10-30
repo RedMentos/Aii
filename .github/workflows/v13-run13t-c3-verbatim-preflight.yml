@@ -28,10 +28,11 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           df7c23c7bf1af068a4cadc42fd1418fcbb05bf48 v13/code/docs/fixtures/run13t_c3_verbatim_seed283_20261030.json
-          2d0b5e89a2735b9194a8e6204d3e23e90b97e956 v13/code/scripts/run13t_c3_verbatim_heldout.py
-          16060c6afcf6fe771157bab85972b6e700fa3a34 v13/code/scripts/run13t_c3_verbatim_heldout_verify.py
-          f6e8a809b476ae5cb758ce5448847d1e803f1dad v13/code/tests/test_run13t_c3_verbatim_heldout.py
+          81be859e6e3944042aee3e28ddb23751c4b9a433 v13/code/scripts/run13t_c3_verbatim_heldout.py
+          9518bc9b9ad4c799aa93cdd663c6adc8a8b7a319 v13/code/scripts/run13t_c3_verbatim_heldout_verify.py
+          1ba451fa7a1ce7aeaaf673723d99c9cface3bc78 v13/code/tests/test_run13t_c3_verbatim_heldout.py
           dd2eaa4d7bc4c47df5808069ea89b184d6c10117 v13/code/docs/RUN13T_C3_VERBATIM_HELDOUT_PREREG_20261030.md
+          acce2ae73238298109a156a29608f852b4de3ad7 v13/code/docs/RUN13T_WRONG_CLAIM_SCORING_AMENDMENT_20261030.md
           b32edca2c1d622ce865f7beee11a925cdce064f9 v13/code/scripts/run13l_c3_system_native.py
           a8e240f47f25409eeb495d82e2dd0fe47dad0e3d v13/code/scripts/run13k_c3_copy_native.py
           de5cf4541bb45e2764ea424747dacd08e6f212e0 v13/code/scripts/run13j_c3_jef_native.py
