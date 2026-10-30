@@ -3943,5 +3943,39 @@
       "whole_system_complete": false
     },
     "exact_next_command": "Do not mutate historical source pins; preregister a current-source suite/negative-control split if needed, keep original unfiltered RED."
+  },
+  "run12_20261030_seed61_native_workflow_heredoc_correction": {
+    "owner": "independent static review; GitHub Actions serialized native owner",
+    "original_run": {
+      "id": 41007813416,
+      "head": "5ac90444fe2e0317a954cb4ed94730900b33d92c",
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "known_workflow_defect": "embedded report-check PY closing delimiter 20 spaces instead of 10; preserve original attempt"
+    },
+    "corrected_run": {
+      "id": 41008162051,
+      "head": "45624d16f53cad1ae95e3a5cfc5a7467f32d527c",
+      "status": "QUEUED_BEHIND_ORIGINAL",
+      "concurrency": "v13-step2-budget-paired-native-20261030"
+    },
+    "corrected_preflight": {
+      "id": 41008170038,
+      "head": "2257416b27936de444ee595b310be4f6add2bdbf",
+      "status": "QUEUED_AT_CHECKPOINT",
+      "new_test": "native workflow heredoc terminator and ast.parse",
+      "test_blob": "15921a36c0dc83c5edeaea02c63f41e8db41d26e"
+    },
+    "source_model_seed_fixture_changed": false,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Audit exact original artifacts for preflight 41008170038 and both serialized native runs 41007813416 / 41008162051 after terminal; preserve all failures, hash-verify and privately back up original raw; no third heavy native job.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
