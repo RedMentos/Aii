@@ -1,6 +1,6 @@
 """Run13A prospective observer-OFF C2/C3/B1/B2 native utility.
 
-New disjoint seed197 cohort. Frozen Run11V score functions and model pins
+New disjoint seed211 cohort. Frozen Run11V score functions and model pins
 unchanged; new witness explicitly requires zero observer offers in all arms.
 """
 from __future__ import annotations
@@ -249,12 +249,18 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
 
 
 def summarize(rows):
-    totals = {arm: sum(r.get("score", {}).get("correct", 0)
-                       for r in rows if r.get("arm") == arm)
-              for arm in ARMS}
+    numeric = {arm: sum(r.get("score", {}).get("correct", 0)
+                        for r in rows if r.get("arm") == arm)
+               for arm in ARMS}
     secondary = {arm: sum(r.get("secondary_score", {}).get("correct", 0)
                           for r in rows if r.get("arm") == arm)
                  for arm in ARMS}
+    components = {arm: sum(r.get("full_task", {}).get("components_correct", 0)
+                            for r in rows if r.get("arm") == arm)
+                  for arm in ARMS}
+    strict_full = {arm: sum(r.get("full_task", {}).get("strict_full_task") is True
+                            for r in rows if r.get("arm") == arm)
+                   for arm in ARMS}
     frows = [r for r in rows if r.get("arm") == "F_NATIVE_AUTO"]
     invoked = sum(r.get("flags", {}).get("native_c2_invocation") is True
                   for r in frows)
@@ -263,20 +269,26 @@ def summarize(rows):
     changed = sum(r.get("flags", {}).get("native_c2_selected") is True
                   for r in frows)
     valid = bool(
-        len(rows) == 16 and len(frows) == 4 and invoked == 4
-        and strict == 4
+        len(rows) == 32 and len(frows) == 8 and invoked == 8
+        and strict == 8
         and all(r.get("flags", {}).get("valid_native") is True
                 and r["flags"].get("body_offer_roles") == []
                 and r["flags"].get("expected_offer_roles") == []
                 and r["flags"].get("observer_mode") == "off"
+                and r.get("full_task", {}).get("out_of") == 3
                 for r in rows))
-    signal = bool(valid and changed >= 1 and
-                  totals["F_NATIVE_AUTO"] >=
-                  max(totals[a] for a in ARMS[:3]) + 2)
+    signal = bool(
+        valid and changed >= 2
+        and numeric["F_NATIVE_AUTO"] >=
+            max(numeric[a] for a in ARMS[:3]) + 3
+        and strict_full["F_NATIVE_AUTO"] >=
+            max(strict_full[a] for a in ARMS[:3]) + 2)
     return {
         "status": "PILOT_COMPLETE_NO_GATE" if valid else "PILOT_PARTIAL_RED",
-        "score_totals_out_of_8": totals,
-        "secondary_totals_out_of_8": secondary,
+        "score_totals_out_of_16": numeric,
+        "secondary_totals_out_of_16": secondary,
+        "full_task_component_totals_out_of_24": components,
+        "strict_full_task_totals_out_of_8": strict_full,
         "native_c2_invocations": invoked,
         "native_c2_strict_matches": strict,
         "native_c2_changed_routes": changed,
@@ -363,7 +375,7 @@ def run(home, out, fixture_path):
                        allow_nan=False) + "\n")
     print(json.dumps({
         "status": report["status"],
-        "totals": report["score_totals_out_of_8"],
+        "totals": report["score_totals_out_of_16"],
         "native_auto_signal": report["native_auto_utility_pilot_signal_not_gate"],
     }, sort_keys=True))
     return report["all_native_structurally_valid"]
