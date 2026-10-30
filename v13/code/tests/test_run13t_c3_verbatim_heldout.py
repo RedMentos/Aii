@@ -40,13 +40,16 @@ class Run13TSoftware(unittest.TestCase):
 
     def test_preregistered_diagnostic_never_promotes(self):
         base = {'n': 8, 'exact_copy': 1, 'strict_full': 3,
-                'source_facts_verified': 3}
+                'source_facts_verified': 3, 'wrong_claims': 0}
         good = {'n': 8, 'exact_copy': 3, 'strict_full': 3,
-                'source_facts_verified': 3}
+                'source_facts_verified': 3, 'wrong_claims': 0}
         self.assertEqual(t.verdict({'COPY_BASELINE': base, 'COPY_STRICT': good}),
                          'BOUNDED_SYNTHETIC_FIDELITY_SIGNAL_NOT_UTILITY_GATE')
         self.assertEqual(t.verdict({'COPY_BASELINE': base,
                                     'COPY_STRICT': dict(good, source_facts_verified=2)}),
+                         'NO_ATTRIBUTABLE_FIDELITY_GAIN')
+        self.assertEqual(t.verdict({'COPY_BASELINE': base,
+                                    'COPY_STRICT': dict(good, wrong_claims=1)}),
                          'NO_ATTRIBUTABLE_FIDELITY_GAIN')
         self.assertEqual(t.verdict({'COPY_BASELINE': base,
                                     'COPY_STRICT': dict(good, strict_full=2)}),
@@ -89,13 +92,14 @@ class Run13TSoftware(unittest.TestCase):
                                        'actual_model': 'LFM2.5-350M-QAD-Q4_0.gguf'},
                     'score': score, 'exact_copy': True,
                     'source_facts_verified': True, 'fidelity_reason': fidelity['reason'],
+                    'wrong_claims': 0,
                 }
                 path = pilot / 'raw' / f'{i:02d}_{arm}.json'
                 path.write_text(json.dumps(row))
                 rows.append(row)
         totals = {arm: {
             'n': 8, 'native_final': 8, 'exact_copy': 8,
-            'source_facts_verified': 8, 'numeric_correct': 16,
+            'source_facts_verified': 8, 'wrong_claims': 0, 'numeric_correct': 16,
             'faster_correct': 8, 'strict_full': 8, 'literal_abstain_dot': 0,
         } for arm in t.ARMS}
         report = {'schema': t.SCHEMA, 'seed': t.SEED,
@@ -109,6 +113,19 @@ class Run13TSoftware(unittest.TestCase):
                   'production_activation': False, 'semantic_quality_proven': False}
         (pilot / 'report.json').write_text(json.dumps(report))
         return pilot
+
+    def test_explicit_wrong_claims_option_value_and_faster(self):
+        case = t.load_fixture(FIXTURE)[0]
+        good = jverify.expected_answer(case)
+        self.assertEqual(t.explicit_wrong_claims(case, good), 0)
+        self.assertEqual(t.explicit_wrong_claims(case, good.replace(
+            str(case['budget'] - case['a_cost']), '9999')), 1)
+        expected_faster = case['a'] if case['a_days'] < case['b_days'] else case['b']
+        wrong_faster = case['b'] if expected_faster == case['a'] else case['a']
+        self.assertEqual(t.explicit_wrong_claims(case, good.replace(
+            expected_faster + ' finishes sooner', wrong_faster + ' finishes sooner')), 1)
+        with self.assertRaises(ValueError):
+            t.explicit_wrong_claims(case, None)
 
     def test_synthetic_verifier_and_corrupt_source_counterexample(self):
         with tempfile.TemporaryDirectory() as td:
