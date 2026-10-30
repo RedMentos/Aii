@@ -126,6 +126,7 @@ def run(home, out):
             raise ValueError("RUN24_MODEL_PATH_RED")
         growth = hub(runtime)
         before = runtime.store.one("SELECT COUNT(*) n FROM events")["n"]
+        before_messages = runtime.store.one("SELECT COUNT(*) n FROM messages")["n"]
         for lang in ("de", "en"):
             began = time.monotonic()
             result = sv.run(growth, runtime, "c3", lang=lang,
@@ -141,6 +142,10 @@ def run(home, out):
                 break
         report["comparison"] = compare_languages(runtime.store, solver="c3")
         after = runtime.store.one("SELECT COUNT(*) n FROM events")["n"]
+        after_messages = runtime.store.one("SELECT COUNT(*) n FROM messages")["n"]
+        report["messages_before"] = before_messages
+        report["messages_after"] = after_messages
+        report["no_holdout_prompts_in_messages"] = before_messages == after_messages
         report["events_before"] = before
         report["events_after"] = after
         report["no_holdout_prompts_in_events"] = before == after
@@ -165,7 +170,9 @@ def run(home, out):
             encoding="utf-8")
     if (report.get("error") or report.get("runtime_closed") is not True
             or report.get("no_holdout_prompts_in_events") is not True
+            or report.get("no_holdout_prompts_in_messages") is not True
             or report.get("native_calls_observed", 0) <= 0
+            or report.get("comparison", {}).get("status") != "DIAGNOSTIC_ONLY"
             or any(report["runs"].get(lang, {}).get("status") != "DONE"
                    for lang in ("de", "en"))):
         raise RuntimeError("RUN24_NATIVE_INCOMPLETE_OR_RED; closed report retained")
