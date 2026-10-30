@@ -73,15 +73,15 @@ class SleepAG12Staging(Base):
         # Base.tearDown calls close again; Store.close is idempotent.
 
     def test_no_ag12_registration_does_not_bootstrap_a_suite(self):
-        # Runtime eagerly initializes the default English AG12 evaluator. Remove
-        # that test-only state to exercise the genuine zero-registry bootstrap.
+        self.turn("One ordinary message?", "An ordinary answer.")
+        self.turn("Two ordinary messages?", "Another ordinary answer.")
+        S.digest(self.r.store)
+        # Runtime and its turns eagerly re-register default English AG12.
+        # Remove only ephemeral fixture rows immediately before the Sleep call.
         with self.r.store.tx() as c:
             c.execute("DELETE FROM states WHERE key IN (?,?)", (KEY, KEY + "_DE"))
         self.assertIsNone(self.r.store.state(KEY, None)[0])
         self.assertIsNone(self.r.store.state(KEY + "_DE", None)[0])
-        self.turn("One ordinary message?", "An ordinary answer.")
-        self.turn("Two ordinary messages?", "Another ordinary answer.")
-        S.digest(self.r.store)
         self.assertEqual(S.stage_ttt(self.r.store, self.home)["candidates"], 1)
         self.assertIsNone(self.r.store.state(KEY, None)[0])
         self.assertIsNone(self.r.store.state(KEY + "_DE", None)[0])
