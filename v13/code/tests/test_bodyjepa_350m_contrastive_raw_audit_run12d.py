@@ -15,6 +15,9 @@ def synthetic_report():
         "model_revision": a.REVISION, "master_sha256": a.MASTER_SHA256,
         "fixture_sha256": a.FIXTURE_SHA256, "license_sha256": a.LICENSE_SHA256,
         "body_jepa_source_git_blob": a.PINS["BJEPA_BLOB.txt"],
+        "run11p_source_git_blob": a.PINS["ORIGINAL_RUN11P_BLOB.txt"],
+        "baseline_method": "post_fit_disable_adapter_frozen_master",
+        "evidence_class": "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT",
         "contrastive_trainer_source_git_blob": a.PINS["TRAINER_BLOB.txt"],
         "seeds": [227, 229, 233], "arms": list(a.ARMS),
         "config": {"rank": 2, "alpha": 4., "lr": .0005,
@@ -29,6 +32,7 @@ def synthetic_report():
         "whole_system_complete": False, "b1_b2_utility_proven": False,
         "results": {},
     }
+    fixture = a.expected_fixture()
     for seed in a.SEEDS:
         arms = {}
         for arm in a.ARMS:
@@ -39,10 +43,10 @@ def synthetic_report():
             for category in a.CATEGORIES:
                 val = value if category in ("train", "paraphrase") else (
                     2.0 if category == "near_miss_leak_proxy" else 1.0)
-                rows[category] = [{"q": f"{category}-{i}", "answer": "synthetic",
-                                   "nll": val} for i in range(4)]
-                baseline_rows[category] = [{"q": f"{category}-{i}", "answer": "synthetic",
-                                            "nll": 1.0} for i in range(4)]
+                rows[category] = [{"q": q, "answer": answer, "nll": val}
+                                  for q, answer in fixture[category]]
+                baseline_rows[category] = [{"q": q, "answer": answer, "nll": 1.0}
+                                           for q, answer in fixture[category]]
             arms[arm] = {
                 "metrics": {
                     "steps": 8, "jepa_weight": 0. if arm == "CE" else .25,
@@ -152,6 +156,30 @@ class OriginalRawIndependentAudit(unittest.TestCase):
         d["seed_wins"] = 0
         sha = make_zip(self.path, d)
         with self.assertRaisesRegex(ValueError, "VERDICT_REPLAY_RED"):
+            a.audit(self.path, sha)
+
+    def test_exact_fixture_identity_rejects_question_and_answer_rewrites(self):
+        d = synthetic_report()
+        d["results"]["227"]["CE"]["rows"]["paraphrase"][0]["q"] = "A fabricated paraphrase"
+        sha = make_zip(self.path, d)
+        with self.assertRaisesRegex(ValueError, "FIXTURE_ROW_IDENTITY_RED"):
+            a.audit(self.path, sha)
+        d = synthetic_report()
+        d["results"]["233"]["CONTRAST_EMA"]["baseline_rows"]["retention"][1]["answer"] = "999"
+        sha = make_zip(self.path, d)
+        with self.assertRaisesRegex(ValueError, "FIXTURE_ROW_IDENTITY_RED"):
+            a.audit(self.path, sha)
+
+    def test_evidence_class_and_baseline_provenance_cannot_be_relabelled(self):
+        d = synthetic_report()
+        d["baseline_method"] = "independent_pre_fit_measured"
+        sha = make_zip(self.path, d)
+        with self.assertRaisesRegex(ValueError, "BASELINE_METHOD_RED"):
+            a.audit(self.path, sha)
+        d = synthetic_report()
+        d["evidence_class"] = "REDMI_NATIVE"
+        sha = make_zip(self.path, d)
+        with self.assertRaisesRegex(ValueError, "EVIDENCE_CLASS_RED"):
             a.audit(self.path, sha)
 
     def test_duplicate_json_keys_rejected(self):
