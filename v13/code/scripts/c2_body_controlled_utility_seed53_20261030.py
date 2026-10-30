@@ -114,8 +114,8 @@ def expected_roles(route):
 
 
 def row_evidence(audit, arm, releases, native_context=None, native_alive=False,
-                 native_reaped=False, source_exact=False, session=None, event_id=None,
-                 source_text=None):
+                 native_reaped=False, native_pid=None, source_exact=False,
+                 session=None, event_id=None, source_text=None):
     """Separate forced route, native C2 invocation/selection and output validity."""
     meta = audit.get("output_metadata") if isinstance(audit, dict) else None
     meta = meta if isinstance(meta, dict) else {}
@@ -126,14 +126,18 @@ def row_evidence(audit, arm, releases, native_context=None, native_alive=False,
     checks = audit.get("checks") if isinstance(audit, dict) else None
     checks_valid = bool(isinstance(checks, dict) and checks
                         and all(v is True for v in checks.values())
-                        and not audit.get("source_errors"))
+                        and audit.get("source_errors") == [])
     offers = {p.get("role") for p in audit.get("offers", [])
               if isinstance(p, dict)} if isinstance(audit, dict) else set()
     native = False
     if arm == "F_NATIVE_AUTO" and isinstance(native_context, dict):
         e = {"event_id": event_id, "session_id": session,
              "source_ref": native_context.get("query_ref")}
+        metrics = route_info.get("native_control_metrics") or {}
+        memory = metrics.get("memory") if isinstance(metrics, dict) else {}
+        memory = memory if isinstance(memory, dict) else {}
         native = bool(source_exact and native_alive and native_reaped
+                      and type(native_pid) is int and native_pid == memory.get("pid")
                       and valid_control_evidence(e, source_text, route, route_info,
                                                  context_packet=native_context))
     selected = bool(native and route_info.get("source") == "NATIVE_C2_ADVISORY")
@@ -233,10 +237,11 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
             raise ValueError("MISSING_NATIVE_ROW")
         reaped = bool(needle_proc is not None and needle_proc.poll() is not None)
         record["native_c2_process_reaped"] = reaped
+        record["native_c2_pid"] = needle_proc.pid if needle_proc is not None else None
         flags = row_evidence(record["raw_audit"], arm, record["body_process_releases"],
                              native_context=record["context_packet"],
                              native_alive=record.pop("_native_alive_before_close"),
-                             native_reaped=reaped,
+                             native_reaped=reaped, native_pid=record["native_c2_pid"],
                              source_exact=record.pop("_source_exact_before_close"),
                              session=record["session_id"], event_id=record["event_id"],
                              source_text=text)
