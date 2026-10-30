@@ -10,12 +10,16 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
+import tempfile
+import time
 import traceback
 
 from v13.cognition import scaffold_route
-from v13.config import initialize
-from v13.models import ModelManager
+from v13.config import initialize, save_config
+from v13.models import ModelManager, model_key
 from v13.runtime import Runtime
+from v13.proofs import audit_event
 from scripts import c2_body_disjoint_paired181_run11v as frozen
 from scripts.c2_strict_native_compat_run12k import classify
 
@@ -71,7 +75,7 @@ def zero_offer_witness(audit, arm, releases, **kwargs):
     original = frozen.row_evidence(audit, arm, releases, **kwargs)
     native_expected = arm == "F_NATIVE_AUTO"
     route = original["route"]
-    final_role = frozen.ROLE_BY_ROUTE.get(route)
+    final_role = original.get("runner_role")
     after_close = kwargs.get("release_capture_phase") == "after_close"
     offer_roles = original["body_offer_roles"]
     native_ok = (not native_expected or (
@@ -100,77 +104,121 @@ def zero_offer_witness(audit, arm, releases, **kwargs):
     return original
 
 
-def fresh_turn(home, cfg, fixture, arm, index, out):
-    turn_cfg = dict(cfg)
-    turn_cfg.update(seed=SEED, route_override=ROUTES[arm],
-                    observer_mode="off", learning_mode="RECORD_ONLY")
-    session = f"run12n-{fixture['project']}-{arm}-{SEED}"
+def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
+    """Real Runtime API; fresh Store and native workers for each frozen arm."""
     text = frozen.prompt(fixture)
-    runtime = Runtime(home, turn_cfg)
-    audit = None
-    preclose = None
-    raw_path = out / "raw" / f"{index:02d}_{arm}.json"
-    preclose_path = out / "preclose" / f"{index:02d}_{arm}.json"
-    try:
-        runtime.start()
-        audit = runtime.submit(text, session_id=session)
-        before = frozen.release_rows(runtime)
-        c2_pid = runtime.c2_worker.process.pid if runtime.c2_worker.process else None
-        c2_alive = bool(runtime.c2_worker.process and
-                        runtime.c2_worker.process.poll() is None)
-        context = dict(audit.get("c2_packet") or {})
-        source_exact = frozen.source_ok(audit, text, session)
-        preclose = {
-            "index": index, "fixture": fixture["project"], "arm": arm,
-            "prompt": text, "session_id": session,
-            "event_id": audit.get("event_id"),
-            "seed": SEED, "observer_mode": "off",
-            "native_c2_pid": c2_pid,
-            "native_c2_alive_before_close": c2_alive,
-            "source_exact_before_close": source_exact,
-            "context_packet": context,
-            "body_process_releases_before_close": before,
-            "raw_audit": audit,
-            "route_info": audit.get("route_info"),
-            "final_output": audit.get("output"),
+    with tempfile.TemporaryDirectory(
+            dir=base_home / "tmp", prefix="c2-body-seed197-") as td:
+        home = Path(td)
+        cfg = initialize(home)
+        cfg.update(base_cfg)
+        cfg.update(
+            learning_mode="RECORD_ONLY", system_stage=0, user_stage_cap=0,
+            teacher_enabled=False, latents_enabled=False, jepa_weight=0,
+            seed=SEED, history_turns=0, route_override=ROUTES[arm],
+            observer_mode="off", b2_control="two_body", control_seconds=20.0)
+        save_config(home, cfg)
+        for name in ("models", "bin"):
+            shutil.rmtree(home / name)
+            (home / name).symlink_to(
+                base_home / name, target_is_directory=True)
+        shutil.copyfile(base_home / "config/models.json",
+                        home / "config/models.json")
+        runtime = Runtime(home)
+        if runtime.models.b2_control != "two_body":
+            runtime.close()
+            raise ValueError("B2_CONTROL_CONFIG_MISMATCH")
+        if (model_key("B1_DETAIL", runtime.models.b2_control)
+                == model_key("B2_GIST", runtime.models.b2_control)):
+            runtime.close()
+            raise ValueError("BODY_MODEL_IDENTITY_MISMATCH")
+        record = None
+        needle_proc = None
+        try:
+            if arm == "A_C3_ONLY":
+                runtime.models.installed.pop("body", None)
+                runtime.models.installed.pop("gist", None)
+                runtime.models.save()
+            event_id = runtime.submit(text)
+            deadline = (time.monotonic() + runtime.cfg["deadline_seconds"]
+                        + 2 * runtime.cfg["observer_seconds"] + 15)
+            while not runtime.idle():
+                if time.monotonic() > deadline:
+                    runtime.cancel()
+                    raise TimeoutError("RUN12N_NATIVE_TURN_DEADLINE")
+                time.sleep(0.05)
+            audit = audit_event(runtime.store, event_id)
+            meta = audit.get("output_metadata") or {}
+            route_info = meta.get("route") or {}
+            context_id = route_info.get("executive_control_context_id")
+            packet = (runtime.store.one(
+                "SELECT payload FROM packets "
+                "WHERE id=? AND kind='ExecutiveControlContext'",
+                (context_id,)) if context_id else None)
+            context = json.loads(packet["payload"]) if packet else None
+            source_exact = bool(
+                context and runtime.store.read_source(context["query_ref"]) == text)
+            needle_proc = runtime.needle.proc
+            needle_alive = bool(
+                needle_proc is not None and needle_proc.poll() is None)
+            record = {
+                "index": index, "fixture": fixture["project"], "arm": arm,
+                "prompt": text, "session_id": runtime.session,
+                "event_id": event_id, "seed": SEED, "observer_mode": "off",
+                "native_c2_pid": needle_proc.pid if needle_proc else None,
+                "native_c2_alive_before_close": needle_alive,
+                "source_exact_before_close": source_exact,
+                "context_packet": context,
+                "body_process_releases_before_close":
+                    list(runtime.pool.release_history),
+                "raw_audit": audit, "route_info": route_info,
+                "final_output": audit.get("output", ""),
+            }
+        finally:
+            # Durable original preclose witness, even if close later fails.
+            if record is not None:
+                (out / "preclose" / f"{index:02d}_{arm}.json").write_text(
+                    json.dumps(record, sort_keys=True,
+                               ensure_ascii=False, allow_nan=False) + "\n")
+            runtime.close()
+        if record is None:
+            raise ValueError("RUN12N_PRECLOSE_WITNESS_MISSING")
+        after = list(runtime.pool.release_history)
+        c2_reaped = bool(
+            needle_proc is not None and needle_proc.poll() is not None)
+        flags = zero_offer_witness(
+            record["raw_audit"], arm, after,
+            native_context=record["context_packet"],
+            native_alive=record["native_c2_alive_before_close"],
+            native_reaped=c2_reaped,
+            native_pid=record["native_c2_pid"],
+            source_exact=record["source_exact_before_close"],
+            session=record["session_id"], event_id=record["event_id"],
+            source_text=text, release_capture_phase="after_close")
+        output = str(record["final_output"] or "")
+        score = (frozen.score_pair(fixture, output)
+                 if flags["valid_native"] else
+                 {"a": False, "b": False, "correct": 0, "out_of": 2})
+        secondary = (frozen.score_primary(fixture, output)
+                     if flags["valid_native"] else
+                     {"a": False, "b": False, "correct": 0, "out_of": 2})
+        raw = {
+            **record, "body_process_releases": after,
+            "native_c2_process_reaped": c2_reaped,
+            "release_capture_phase": "after_close",
+            "flags": flags, "score": score,
+            "secondary_score": secondary, "learning_mode": "RECORD_ONLY",
+            "jepa_weight": 0,
+            "step2_gate_promoted": False, "b3_promoted": False,
+            "body_jepa_available": False, "redmi_measured": False,
+            "whole_system_complete": False,
         }
-        preclose_path.write_text(
-            json.dumps(preclose, sort_keys=True, allow_nan=False) + "\n")
-    finally:
-        runtime.close()
-    if preclose is None:
-        raise RuntimeError("RUN12N_PRECLOSE_WITNESS_MISSING")
-    after = frozen.release_rows(runtime)
-    c2_reaped = bool(runtime.c2_worker.process is None)
-    flags = zero_offer_witness(
-        audit, arm, after,
-        native_context=preclose["context_packet"],
-        native_alive=preclose["native_c2_alive_before_close"],
-        native_reaped=c2_reaped,
-        native_pid=preclose["native_c2_pid"],
-        source_exact=preclose["source_exact_before_close"],
-        session=session, event_id=preclose["event_id"],
-        source_text=text, release_capture_phase="after_close")
-    output = str(audit.get("output") or "")
-    score = (frozen.score_pair(fixture, output) if flags["valid_native"]
-             else {"a": False, "b": False, "correct": 0, "out_of": 2})
-    secondary = (frozen.score_primary(fixture, output) if flags["valid_native"]
-                 else {"a": False, "b": False, "correct": 0, "out_of": 2})
-    record = {
-        **preclose, "body_process_releases": after,
-        "native_c2_process_reaped": c2_reaped,
-        "release_capture_phase": "after_close",
-        "flags": flags, "score": score,
-        "secondary_score": secondary, "learning_mode": "RECORD_ONLY",
-        "jepa_weight": 0,
-        "step2_gate_promoted": False, "b3_promoted": False,
-        "body_jepa_available": False, "redmi_measured": False,
-        "whole_system_complete": False,
-    }
-    raw_path.write_text(json.dumps(record, sort_keys=True,
-                                   allow_nan=False) + "\n")
-    return {k: v for k, v in record.items()
-            if k not in ("raw_audit", "context_packet", "prompt", "route_info")}
+        (out / "raw" / f"{index:02d}_{arm}.json").write_text(
+            json.dumps(raw, sort_keys=True,
+                       ensure_ascii=False, allow_nan=False) + "\n")
+        return {k: v for k, v in raw.items()
+                if k not in ("raw_audit", "context_packet", "prompt",
+                             "route_info")}
 
 
 def summarize(rows):
