@@ -43,7 +43,9 @@ class SourceBoundFallback(unittest.TestCase):
                 'source_event_id': self.ids[2], 'query_event_id': self.ids[1],
                 'context_plan_packet_id': self.ids[0],
                 'answer_sha256': self.linked['answer_sha256'],
-                'prompt_sha256': prompt_hash}
+                'prompt_sha256': prompt_hash,
+                'native_output_sha256': mux._sha(self.linked['answer']),
+                'native_output_bytes': len(self.linked['answer'].encode('utf-8'))}
 
     def select(self, text, receipt=None, snapshot=None, ids=None):
         return mux.select_shadow(self.runtime.store, *(ids or self.ids),
