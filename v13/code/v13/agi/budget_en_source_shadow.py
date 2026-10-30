@@ -18,7 +18,9 @@ NAME = r"[A-Za-z][A-Za-z-]{0,31}"
 NUM = r"[1-9][0-9]{0,5}"
 
 # Both grammars are intentionally closed-world. Unsupported paraphrases abstain.
-QUERY = re.compile(rf"Calculate both remaining budgets and faster option for Project (?P<project>{IDENT})\\.", re.ASCII)\n\nSTYLE_ONE = re.compile(
+QUERY = re.compile(rf"Calculate both remaining budgets and faster option for Project (?P<project>{IDENT})\\.", re.ASCII)
+
+STYLE_ONE = re.compile(
     rf"For (?P<project>{IDENT}), I have a spending ceiling of (?P<budget>{NUM}) Euro\. "
     rf"(?P<a>{NAME}) uses (?P<a_cost>{NUM}) Euro and needs (?P<a_days>{NUM}) days\. "
     rf"(?P<b>{NAME}) uses (?P<b_cost>{NUM}) Euro and needs (?P<b_days>{NUM}) days\. "
@@ -118,9 +120,16 @@ def propose(store, query_ref, source_ref):
     A future consumer MUST revalidate authorization at dispatch.
     """
     try:
+        query = _full_source(store, query_ref)
+        qm = QUERY.fullmatch(query)
+        if qm is None or _ref_digest(query_ref) == _ref_digest(source_ref):
+            raise ValueError("QUERY_SOURCE_BINDING_RED")
         text = _full_source(store, source_ref)
         candidate = _parse(text)
-        if _full_source(store, source_ref) != text:
+        if candidate["project"] != qm.group("project"):
+            raise ValueError("PROJECT_SOURCE_MISMATCH_RED")
+        if (_full_source(store, query_ref) != query
+                or _full_source(store, source_ref) != text):
             raise ValueError("SOURCE_CHANGED_DURING_READ")
         return _result("EXACT_SOURCE_ARITHMETIC_SHADOW",
                        candidate=candidate, source_ref_digest=_ref_digest(source_ref))
