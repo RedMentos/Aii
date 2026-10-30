@@ -38,7 +38,7 @@ _LO = re.compile(
 _DIFF = re.compile(
     r"(?i)\b(?:differenz|unterschied|abstand|mehr|h[oö]her|"
     r"auseinander|minus|subtrahier\w*|abzieh\w*|zieh\w*|"
-    r"entfernt|weit|spannweite|trenn\w*)\b"
+    r"entfernt|weit|zwischen|liegen|spannweite|trenn\w*)\b"
 )
 _TOTAL = re.compile(
     r"(?i)\b(?:summe|gesamtsumme|gesamtbetrag|gesamtwert|"
