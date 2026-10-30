@@ -1,0 +1,190 @@
+{
+  "schema": "v13.de.closedworld.seed101.v1",
+  "seed": 101,
+  "prereg_commit": "ea8cf0e6f220dc5d516f37ab85433dadb27e9b62",
+  "baseline_pipeline_blob": "25cacd7388e5464dd814f4b18c545e2ec2f78b54",
+  "supported": 12,
+  "negative": 12,
+  "rows": [
+    {
+      "id": "CW101-P01",
+      "text": "Inventar: Dohle 7, Esche 12, Falke 9. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Dohle\",\"number\":7},{\"name\":\"Esche\",\"number\":12},{\"name\":\"Falke\",\"number\":9}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 28
+    },
+    {
+      "id": "CW101-P02",
+      "text": "Liste: Ibis -4; Luchs 13; Uhu 6. Was ergibt das zusammen?",
+      "raw_json": "{\"values\":[{\"name\":\"Ibis\",\"number\":-4},{\"name\":\"Luchs\",\"number\":13},{\"name\":\"Uhu\",\"number\":6}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 15
+    },
+    {
+      "id": "CW101-P03",
+      "text": "Zahlen: Achat=17; Basalt=8; Granit=21. Bitte summiere.",
+      "raw_json": "{\"values\":[{\"name\":\"Achat\",\"number\":17},{\"name\":\"Basalt\",\"number\":8},{\"name\":\"Granit\",\"number\":21}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 46
+    },
+    {
+      "id": "CW101-P04",
+      "text": "Werte: Nord (+3), Mitte (+11), Süd (+8). Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Nord\",\"number\":3},{\"name\":\"Mitte\",\"number\":11},{\"name\":\"Süd\",\"number\":8}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 22
+    },
+    {
+      "id": "CW101-P05",
+      "text": "Posten: Tanne 14, Fels 14, Wolke 9. Bitte addiere.",
+      "raw_json": "{\"values\":[{\"name\":\"Tanne\",\"number\":14},{\"name\":\"Fels\",\"number\":14},{\"name\":\"Wolke\",\"number\":9}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 37
+    },
+    {
+      "id": "CW101-P06",
+      "text": "Konto: Elster −5, Reiher 2, Specht 10. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Elster\",\"number\":-5},{\"name\":\"Reiher\",\"number\":2},{\"name\":\"Specht\",\"number\":10}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 7
+    },
+    {
+      "id": "CW101-P07",
+      "text": "Messung: Birke 0; Moos 19; Bach 2. Was ergibt das zusammen?",
+      "raw_json": "{\"values\":[{\"name\":\"Birke\",\"number\":0},{\"name\":\"Moos\",\"number\":19},{\"name\":\"Bach\",\"number\":2}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 21
+    },
+    {
+      "id": "CW101-P08",
+      "text": "Auswahl: Mars 5, Venus 7, Erde 8, Mond 10. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Mars\",\"number\":5},{\"name\":\"Venus\",\"number\":7},{\"name\":\"Erde\",\"number\":8},{\"name\":\"Mond\",\"number\":10}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "total",
+      "expected_answer": 30
+    },
+    {
+      "id": "CW101-P09",
+      "text": "Stufen: Grau 6, Violett 24, Orange 11. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Grau\",\"number\":6},{\"name\":\"Violett\",\"number\":24},{\"name\":\"Orange\",\"number\":11}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "difference_max_min",
+      "expected_answer": 18
+    },
+    {
+      "id": "CW101-P10",
+      "text": "Bestand: Kiel -8, Rumpf 3, Mast 15. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Kiel\",\"number\":-8},{\"name\":\"Rumpf\",\"number\":3},{\"name\":\"Mast\",\"number\":15}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "difference_max_min",
+      "expected_answer": 23
+    },
+    {
+      "id": "CW101-P11",
+      "text": "Skala: Echo 5; Delta 5; Tango 13. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Echo\",\"number\":5},{\"name\":\"Delta\",\"number\":5},{\"name\":\"Tango\",\"number\":13}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "difference_max_min",
+      "expected_answer": 8
+    },
+    {
+      "id": "CW101-P12",
+      "text": "Preise: Minze 22, Safran 9, Pfeffer 31. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Minze\",\"number\":22},{\"name\":\"Safran\",\"number\":9},{\"name\":\"Pfeffer\",\"number\":31}]}",
+      "expected_status": "SHADOW_RESULT",
+      "expected_operation": "difference_max_min",
+      "expected_answer": 22
+    },
+    {
+      "id": "CW101-N01",
+      "text": "Inventar: Dohle 7, Esche 12, Falke 9. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Esche\",\"number\":12},{\"name\":\"Falke\",\"number\":9}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N02",
+      "text": "Liste: Ibis -4; Luchs 13; Uhu 6. Was ergibt das zusammen?",
+      "raw_json": "{\"values\":[{\"name\":\"Ibis\",\"number\":-4},{\"name\":\"Uhu\",\"number\":6}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N03",
+      "text": "Zahlen: Achat=17; Basalt=8; Granit=21. Bitte summiere.",
+      "raw_json": "{\"values\":[{\"name\":\"Achat\",\"number\":17},{\"name\":\"Basalt\",\"number\":8}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N04",
+      "text": "Werte: Nord (+3), Mitte (+11), Süd (+8). Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Mitte\",\"number\":11},{\"name\":\"Süd\",\"number\":8}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N05",
+      "text": "Posten: Tanne 14, Fels 14, Wolke 9. Bitte addiere.",
+      "raw_json": "{\"values\":[{\"name\":\"Tanne\",\"number\":14},{\"name\":\"Wolke\",\"number\":9}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N06",
+      "text": "Konto: Elster −5, Reiher 2, Specht 10. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Elster\",\"number\":-5},{\"name\":\"Reiher\",\"number\":2}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N07",
+      "text": "Messung: Birke 0; Moos 19; Bach 2. Was ergibt das zusammen?",
+      "raw_json": "{\"values\":[{\"name\":\"Moos\",\"number\":19},{\"name\":\"Bach\",\"number\":2}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N08",
+      "text": "Auswahl: Mars 5, Venus 7, Erde 8, Mond 10. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Mars\",\"number\":5},{\"name\":\"Venus\",\"number\":7},{\"name\":\"Erde\",\"number\":8}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "omitted_item"
+    },
+    {
+      "id": "CW101-N09",
+      "text": "Stufen: Grau 6, Violett 24, Orange 11. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Grau\",\"number\":6},{\"name\":\"Violett\",\"number\":24}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "hidden_extreme_or_duplicate"
+    },
+    {
+      "id": "CW101-N10",
+      "text": "Skala: Echo 5; Delta 5; Tango 13. Wie groß ist der Unterschied zwischen dem höchsten und dem niedrigsten Wert?",
+      "raw_json": "{\"values\":[{\"name\":\"Echo\",\"number\":5},{\"name\":\"Delta\",\"number\":5}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "hidden_extreme_or_duplicate"
+    },
+    {
+      "id": "CW101-N11",
+      "text": "Im Jahr 2023: Dohle 7, Esche 12, Falke 9. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Dohle\",\"number\":7},{\"name\":\"Esche\",\"number\":12},{\"name\":\"Falke\",\"number\":9}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "metadata_year"
+    },
+    {
+      "id": "CW101-N12",
+      "text": "Dohle 7, Esche 12, Falke 9. Summe: 28. Wie hoch ist die Summe?",
+      "raw_json": "{\"values\":[{\"name\":\"Dohle\",\"number\":7},{\"name\":\"Esche\",\"number\":12},{\"name\":\"Falke\",\"number\":9}]}",
+      "expected_status": "SHADOW_ABSTAIN",
+      "negative_family": "stated_aggregate"
+    }
+  ]
+}
