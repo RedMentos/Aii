@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import stat
 from pathlib import Path
 import sys
 import threading
@@ -67,10 +68,37 @@ def _sha(data):
 
 
 def _read_text(path, *, max_bytes):
+    """Read at most max_bytes+1 from an opened regular file, never a symlink.
+
+    A pre-read Path.is_file() check follows symlinks, and Path.read_bytes()
+    allocates before size validation. Neither is suitable for the phone floor.
+    """
     p = Path(path)
-    if not p.is_file():
+    flags = os.O_RDONLY
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    if hasattr(os, "O_NONBLOCK"):
+        flags |= os.O_NONBLOCK
+    # On platforms lacking O_NOFOLLOW, still reject obvious links. The
+    # atomic open+fstat proof is available on the Linux/Android target.
+    if not hasattr(os, "O_NOFOLLOW") and p.is_symlink():
         raise ValueError("INPUT_REGULAR_FILE_REQUIRED")
-    data = p.read_bytes()
+    try:
+        fd = os.open(p, flags)
+    except OSError as exc:
+        raise ValueError("INPUT_REGULAR_FILE_REQUIRED") from exc
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("INPUT_REGULAR_FILE_REQUIRED")
+        if not 0 < info.st_size <= max_bytes:
+            raise ValueError("INPUT_SIZE_OUT_OF_SCOPE")
+        with os.fdopen(fd, "rb", closefd=False) as f:
+            data = f.read(max_bytes + 1)
+    finally:
+        os.close(fd)
     if not data or len(data) > max_bytes:
         raise ValueError("INPUT_SIZE_OUT_OF_SCOPE")
     try:
@@ -208,6 +236,8 @@ def run(source_file, out, *, raw_json_file=None, home=None):
                     if len(candidate_bytes) <= RAW_MAX_BYTES:
                         report["quarantined_raw_output"] = candidate
             report["raw_output"] = None
+            if report.get("error_type") is not None:
+                report["native_reported_error_type"] = report["error_type"]
             report["error_type"] = "NATIVE_RECEIPT_UNVERIFIED"
     if raw is None:
         report.update(status="SHADOW_ABSTAIN", reason=report.get("error_type") or
