@@ -1,0 +1,51 @@
+{
+  "schema": "v13.run25.ag12_distinct_bodies.native_launch_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run25-ag12-bodies-20261030-hourly11",
+  "review_pr": 1352,
+  "parent_pr": 1351,
+  "parent_sha": "f86c93b40d84d66a05bad0fa672a1f35bb8ac93e",
+  "native_source_head": "5a7262bd23592cad69ea1af2b266c90383268be9",
+  "github_actions": 41142873467,
+  "status": "NATIVE_IN_PROGRESS_UNVERIFIED",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "prereg_blob": "0d70bd753c815fb7b7ba210f3036ab88f13b20d7",
+  "script_blob": "cec8b7ec36066ee74c2ff1a3684c7517160cef3a",
+  "test_blob": "72baacacc7d2e5a36bdf813aefd90429a58ae80f",
+  "workflow_blob": "b6806eef12ab6b0b1f416eb5c3cdccc1cb086dd2",
+  "catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "registered_cohort": {
+    "seed": 13,
+    "lang_order": [
+      "de",
+      "en"
+    ],
+    "items_per_language": 88,
+    "roles": [
+      "B1_DETAIL",
+      "B2_GIST"
+    ],
+    "expected_calls": 352,
+    "body_model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+    "gist_model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+    "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "learned_german_transfer_proven": false,
+    "whole_system_complete": false
+  },
+  "native_evidence": null,
+  "open_questions": [
+    "Whether pinned Qwen3.5 B2 and LFM B1 complete 88×2 on current native llama b10964 without per-role errors.",
+    "Actual B1/B2 paired performance and exclusive-correct coverage unknown until closed raw.",
+    "No actual V13 live fusion or German learning proof; historical full-suite RED."
+  ],
+  "next_command": "Inspect GitHub Actions 41142873467 after terminal; download original artifact and independently verify GitHub ZIP SHA, CRC, every SHA256SUMS entry, stage exits, exact 352 rows, model/runner hashes, role isolation, process release, privacy and negative gates. Back up original ZIP privately and verify byte-identical readback. On failure retain original RED, diagnose without modifying registered model/seed/source. Continue Run26 read-only diagnostic only on fully verified native result."
+}
