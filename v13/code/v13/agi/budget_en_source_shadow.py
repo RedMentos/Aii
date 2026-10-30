@@ -18,7 +18,7 @@ NAME = r"[A-Za-z][A-Za-z-]{0,31}"
 NUM = r"[1-9][0-9]{0,5}"
 
 # Both grammars are intentionally closed-world. Unsupported paraphrases abstain.
-QUERY = re.compile(rf"Calculate both remaining budgets and faster option for Project (?P<project>{IDENT})\\.", re.ASCII)
+QUERY = re.compile(rf"Calculate both remaining budgets and faster option for Project (?P<project>{IDENT})\.", re.ASCII)
 
 STYLE_ONE = re.compile(
     rf"For (?P<project>{IDENT}), I have a spending ceiling of (?P<budget>{NUM}) Euro\. "
