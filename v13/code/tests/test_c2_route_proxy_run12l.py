@@ -107,6 +107,14 @@ class Run12LProxyTests(unittest.TestCase):
         rows[0]["prompt"] = "foreign source"
         self.assertFalse(score(self.fixture, rows)["proxy_threshold_met"])
 
+    def test_malformed_native_route_fails_closed_without_exception(self):
+        rows = fake_rows(self.fixture, {4: "detail", 5: "detail", 8: "gist"})
+        rows[4]["route"] = {"foreign": "detail"}
+        report = score(self.fixture, rows)
+        self.assertFalse(report["strict_compatibility"])
+        self.assertFalse(report["proxy_threshold_met"])
+        self.assertIsNone(report["cases"][4]["final_route"])
+
     def test_partial_rows_fail_closed(self):
         rows = fake_rows(self.fixture, {4: "detail", 5: "detail", 8: "gist"})[:14]
         report = score(self.fixture, rows)
