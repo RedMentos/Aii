@@ -10,6 +10,7 @@ import sqlite3
 
 from scripts.run13k_c3_copy_native import COPY_PREFIX, COPY_SUFFIX
 from .c3_source_fidelity_shadow_run13m import audit_source_facts
+from .c3_structured_source_shadow_run14k import audit_slots, prompt_for as structured_prompt
 from .jef_c3_shadow_prompt_run13i import (
     MAX_ANSWER_BYTES, MAX_PROMPT_BYTES, PREFIX, propose_c3_context,
 )
@@ -69,6 +70,18 @@ def _source_snapshot_ok(snapshot, plan_id, query_id, source_id):
         return False
 
 
+def _structured_receipt_ok(receipt, snapshot):
+    """Require the exact structured system+user prompt, not a legacy copy receipt."""
+    if type(receipt) is not dict:
+        return False
+    try:
+        system, user = structured_prompt(snapshot)
+        return (receipt.get("prompt_sha256") == _sha(user)
+                and receipt.get("system_sha256") == _sha(system))
+    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError):
+        return False
+
+
 def _native_receipt_ok(receipt, snapshot, c3_text):
     """Bind caller-supplied receipt to exact candidate bytes (not attestation)."""
     if type(receipt) is not dict or type(c3_text) is not str:
@@ -84,6 +97,8 @@ def _native_receipt_ok(receipt, snapshot, c3_text):
         snapshot["prompt_sha256"],
         _sha(COPY_PREFIX + answer + COPY_SUFFIX),
     }
+    prompt_bound = (receipt.get("prompt_sha256") in allowed_prompts
+                    or _structured_receipt_ok(receipt, snapshot))
     return (receipt.get("native_role") == "C3_LANGUAGE"
             and receipt.get("native_status") == "FINAL"
             and type(receipt.get("native_calls")) is int
@@ -99,7 +114,7 @@ def _native_receipt_ok(receipt, snapshot, c3_text):
             and receipt.get("query_event_id") == snapshot["query_event_id"]
             and receipt.get("context_plan_packet_id") == snapshot["context_plan_packet_id"]
             and receipt.get("answer_sha256") == snapshot["answer_sha256"]
-            and receipt.get("prompt_sha256") in allowed_prompts
+            and prompt_bound
             and type(receipt.get("native_output_sha256")) is str
             and receipt["native_output_sha256"] == hashlib.sha256(output_bytes).hexdigest()
             and type(receipt.get("native_output_bytes")) is int
@@ -142,6 +157,15 @@ def select_shadow(store, plan_id, query_id, source_id, snapshot,
                            provenance="C3_FACTS_VERIFIED_SHADOW",
                            source_ok=True, receipt_ok=True,
                            fidelity_reason=fidelity.get("reason"))
+        structured = audit_slots(fresh, c3_text)
+        if (structured.get("result") == "SLOTS_EXACT"
+                and _structured_receipt_ok(native_receipt, fresh)):
+            # C3 only supplied verified slots. Render from JEF's original
+            # trusted answer, never emit raw JSON or model-generated claims.
+            return _closed("C3_STRUCTURED_FACTS_VERIFIED", text=answer,
+                           provenance="C3_STRUCTURED_FACTS_VERIFIED_SHADOW",
+                           source_ok=True, receipt_ok=True,
+                           fidelity_reason=structured.get("reason"))
         return _closed("C3_UNFAITHFUL_JEF_FALLBACK", text=answer,
                        provenance="JEF_VERIFIED_FALLBACK_SHADOW",
                        source_ok=True, receipt_ok=True,
