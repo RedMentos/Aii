@@ -91,6 +91,20 @@ def inspect(question, final_answer):
     # Quoted examples or code can be intentionally false; do not call them errors.
     if any(marker in final_answer for marker in ('`', '"', '“', '”', '„', '«', '»', '‘', '’', "'")):
         return _base("ABSTAIN", "QUOTED_OR_CODE_EXAMPLE")
+    # An equation inside a negation, hypothetical, or question is not an
+    # asserted numerical answer. Without a scope parser, abstain on the whole
+    # final answer rather than misclassifying someone else's false premise.
+    # This is a deliberately conservative synthetic-review fix, not a
+    # real-answer calibration or permission to deliver late corrections.
+    if ("?" in final_answer or "¿" in final_answer
+            or re.search(r"(?:!=|≠|~~)", final_answer)
+            or re.search(
+                r"\b(?:not|never|untrue|unwahr|nicht|kein(?:e|en|em|er|es)?|"
+                r"if|wenn|falls|suppose|assuming|angenommen|hypothetical|"
+                r"hypothetisch|what\s+if|is\s+it|is\s+this|"
+                r"question|frage|claimed|alleged|purported|premise|prämisse)\b",
+                final_answer, re.I)):
+        return _base("ABSTAIN", "NON_ASSERTIVE_EQUATION_CONTEXT")
     # A stated counterexample is not the assistant endorsing an equation.
     if re.search(r"\b(?:wrong|incorrect|false|falsch|fehlerhaft|counterexample|gegenbeispiel|example|beispiel)\b",
                  final_answer, re.I):
