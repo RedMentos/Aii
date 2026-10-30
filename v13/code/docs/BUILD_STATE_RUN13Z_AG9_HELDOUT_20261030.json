@@ -1,0 +1,61 @@
+{
+  "schema": "v13.run13z.ag9_heldout_shadow.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 Run13Z AG9 heldout diagnostic",
+  "parent": {
+    "pr": 1316,
+    "commit": "1096d953252811652f0e602980c745529ad7a25a"
+  },
+  "branch": "assistant/v13-run13z-ag9-heldout-calibration-shadow-20261030-auto11",
+  "state": "LOCAL_EXACT_SOURCE_SHADOW_GREEN_CI_QUEUED",
+  "prereg_commit": "6bb7a2b1b92a874e7a796ae440b3f6c65550c1a5",
+  "module_blob": "6e3063165b9acc5b70c0ab1732a4f548ad5b4408",
+  "test_blob": "36ae2486d7e197f675a6369afd36d15d034cfeef",
+  "local": {
+    "scope": "EXACT_GITHUB_SOURCE_BLOBS_WITH_STUBBED_BASE_GENERALITY; NOT_FULL_REPO_CI",
+    "tests": 11,
+    "failures": 0,
+    "train_n": 20,
+    "heldout_n": 10,
+    "matching": {
+      "status": "HELDOUT_NONDEGRADATION_SHADOW",
+      "heldout_raw_brier": 0.09,
+      "heldout_calibrated_brier": 0.0423,
+      "delta": -0.0477
+    },
+    "reversed": {
+      "status": "HELDOUT_DEGRADATION",
+      "train_raw_ece": 0.3,
+      "train_calibrated_ece": 0.2049,
+      "heldout_raw_brier": 0.49,
+      "heldout_calibrated_brier": 0.6325,
+      "delta": 0.1425
+    },
+    "zip_sha256": "c4523d9499a39c545f0bf3933896f3f593e2666d45aedb095319094059693cae",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13Z-AG9-Heldout/run13z_local_exact_source_heldout.zip",
+    "private_readback": "BYTE_IDENTICAL"
+  },
+  "ci": {
+    "first_workflow_commit": "e1a823143d23741da51ae0fce013fdea67c0af7e",
+    "corrected_workflow_commit": "0702394c29a3ada74c4aa35c1c1c36cf9b858e48",
+    "observed_status": "QUEUED_OR_PENDING",
+    "terminal_result": "UNKNOWN"
+  },
+  "limitations": [
+    "No real heldout labels; synthetic source-disjoint only.",
+    "No production AG9 state changes, no Age metric admission.",
+    "No GitHub full source-only CI terminal result yet.",
+    "No native/model/Redmi evidence.",
+    "source_disjoint=true is checked only against caller-supplied source_id strings; it does not authenticate original source provenance or prevent aliases for the same underlying source."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Check latest Run13Z Actions at corrected workflow head 0702394; verify all raw stage exits and privately backup if terminal. Independently inspect heldout source-ID and score contract. Do not integrate or promote before review."
+}
