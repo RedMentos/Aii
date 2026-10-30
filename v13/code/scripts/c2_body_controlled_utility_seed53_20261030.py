@@ -74,7 +74,7 @@ def validate_fixtures():
                 and f["a"] != f["b"] and f["a_days"] != f["b_days"]):
             raise ValueError("INVALID_FIXTURE")
         for remainder in (f["budget"] - f["a_cost"], f["budget"] - f["b_cost"]):
-            if re.search(rf"(?<!\\d){remainder}(?!\\d)", prompt(f)):
+            if re.search(rf"(?<!\d){remainder}(?!\d)", prompt(f)):
                 raise ValueError("ANSWER_LEAKED_IN_SOURCE")
     return True
 
