@@ -27,6 +27,40 @@ from scripts import listarith_de83_native_shadow as pilot
 SCHEMA = "v13.c3.de.operator_shadow.v1"
 RAW_MAX_BYTES = 16384
 
+# This is an allowlist of observations, NOT authority fields. The native
+# producer must never replace Age0/learning/gate/evidence-level constants.
+NATIVE_OBSERVATIONS = frozenset((
+    "native_final", "postclose_process_reaped", "native_metrics",
+    "native_pid", "release", "error_type", "error_message",
+    "release_error_type",
+))
+
+
+def _native_receipt_admissible(receipt):
+    """Gate raw model text on complete, typed, postclose native evidence."""
+    if not isinstance(receipt, dict):
+        return False
+    raw = receipt.get("raw_output")
+    metrics = receipt.get("native_metrics")
+    release = receipt.get("release")
+    pid = receipt.get("native_pid")
+    try:
+        raw_ok = (type(raw) is str and bool(raw)
+                  and len(raw.encode("utf-8")) <= RAW_MAX_BYTES)
+    except UnicodeError:
+        raw_ok = False
+    return bool(
+        raw_ok
+        and receipt.get("native_attempted") is True
+        and receipt.get("native_final") is True
+        and receipt.get("postclose_process_reaped") is True
+        and type(pid) is int and pid > 0
+        and isinstance(metrics, dict) and metrics.get("status") == "FINAL"
+        and isinstance(release, dict) and release.get("process_reaped") is True
+        and receipt.get("error_type") is None
+        and receipt.get("release_error_type") is None
+    )
+
 
 def _sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -153,8 +187,28 @@ def run(source_file, out, *, raw_json_file=None, home=None):
         raw = _read_text(raw_json_file, max_bytes=RAW_MAX_BYTES)
     else:
         native = _native_one(home, text)
-        report.update(native)
-        raw = native.get("raw_output")
+        if not isinstance(native, dict):
+            native = {"error_type": "INVALID_NATIVE_RECEIPT"}
+        # A malformed receipt cannot mutate hard negative gates or provenance.
+        report.update({k: native[k] for k in NATIVE_OBSERVATIONS if k in native})
+        report["native_receipt_admitted"] = _native_receipt_admissible(native)
+        candidate = native.get("raw_output")
+        raw = candidate if report["native_receipt_admitted"] else None
+        if raw is None and candidate is not None:
+            # Preserve a bounded, private quarantine for failed attempts.
+            # It is never fed to arithmetic or presented as verified native.
+            if type(candidate) is str:
+                try:
+                    candidate_bytes = candidate.encode("utf-8")
+                except UnicodeError:
+                    candidate_bytes = None
+                if candidate_bytes is not None:
+                    report["quarantined_raw_sha256"] = _sha(candidate_bytes)
+                    report["quarantined_raw_bytes"] = len(candidate_bytes)
+                    if len(candidate_bytes) <= RAW_MAX_BYTES:
+                        report["quarantined_raw_output"] = candidate
+            report["raw_output"] = None
+            report["error_type"] = "NATIVE_RECEIPT_UNVERIFIED"
     if raw is None:
         report.update(status="SHADOW_ABSTAIN", reason=report.get("error_type") or
                       "NATIVE_UNAVAILABLE", baseline=None, closedworld=None)
