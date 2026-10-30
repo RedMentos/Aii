@@ -77,6 +77,13 @@ class AnswerAwareArithmeticRun12F(unittest.TestCase):
                 self.assertEqual(r["status"], "ABSTAIN")
                 self.assert_shadow(r)
 
+    def test_sentence_period_allowed_but_decimal_rhs_not_partially_read(self):
+        self.assertEqual(a.inspect("Check", "7 * 3 = 21.")["status"],
+                         "LOCAL_ARITHMETIC_CONSISTENT")
+        self.assertEqual(a.inspect("Check", "7 * 3 = 20.")["status"],
+                         "POSSIBLE_ARITHMETIC_ERROR_SHADOW")
+        self.assertEqual(a.inspect("Check", "1 / 2 = 0.5")["status"], "ABSTAIN")
+
     def test_exact_fraction_arithmetic_no_float_rounding(self):
         self.assertEqual(a.evaluate("1 / 3 + 1 / 3"), a.Fraction(2, 3))
         r = a.inspect("Please verify", "1 / 2 = 0")
