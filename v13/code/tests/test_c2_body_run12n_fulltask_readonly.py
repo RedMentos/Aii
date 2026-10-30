@@ -6,7 +6,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts/c2_body_run12n_fulltask_readonly.py"\nif not SCRIPT.exists():\n    SCRIPT = Path(__file__).with_name("c2_body_run12n_fulltask_readonly.py")
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts/c2_body_run12n_fulltask_readonly.py"
+if not SCRIPT.exists():
+    SCRIPT = Path(__file__).with_name("c2_body_run12n_fulltask_readonly.py")
 spec = importlib.util.spec_from_file_location("fulltask", SCRIPT)
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
