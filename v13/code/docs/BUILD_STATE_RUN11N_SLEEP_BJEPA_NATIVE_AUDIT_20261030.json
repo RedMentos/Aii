@@ -1,0 +1,64 @@
+{
+  "schema": "V13_RUN11N_REVIEW_ONLY_CHECKPOINT",
+  "date_utc": "2026-10-30",
+  "repository": "RedMentos/Aii",
+  "branch": "assistant/v13-run11n-sleep-bjepa-integration-20261030",
+  "parent_pr": 1242,
+  "parent_head": "c66a0dd6f20d1db5e60c0e2462f2fb7d6ec49686",
+  "imported_sibling_pr": 1241,
+  "canon_git_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "sleep_source_git_blob": "903da6af1a23f82929a637389e98d6b4a966f3f4",
+  "body_jepa_source_git_blob": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+  "native_350m_original": {
+    "run_id": 41029997425,
+    "head": "c66a0dd6f20d1db5e60c0e2462f2fb7d6ec49686",
+    "artifact_id": 12966410552,
+    "zip_sha256": "aa54fbaf8a8b973cfa21afa8d5851dde5566acdef85b3ec29bbc8cc6ac3c202a",
+    "crc_clean": true,
+    "inner_hashes_verified": "31/31",
+    "stage_exits_zero": "13/13",
+    "software_tests": "21/21",
+    "completed_arms": 12,
+    "three_seeds": [
+      73,
+      79,
+      83
+    ],
+    "result": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+    "ema_eval_minus_train_paraphrase_nll": 0,
+    "ema_eval_minus_ce_paraphrase_nll": -0.0018718242645263672,
+    "evidence_class": "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11M-BodyJEPA-350M-EMA-Eval-Paired/RAW_41029997425_shaAA54FB.zip",
+    "private_readback_byte_exact": true
+  },
+  "crossorgan_software": {
+    "run_id": 41030718195,
+    "exact_tested_head": "a0d91358d58a09b1f5c7f23255557c421ef0114c",
+    "artifact_id": 12965851309,
+    "zip_sha256": "6048ff7438a4c55371a2207798a9639d360255a4148371294527aebad316b689",
+    "crc_clean": true,
+    "inner_hashes_verified": "19/19",
+    "stage_exits_zero": "8/8",
+    "tests": "75/75 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11N-Sleep-BJEPA-Crossorgan/RAW_41030718195_sha6048FF.zip",
+    "private_readback_byte_exact": true
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_v13_complete": false
+  },
+  "integration": "DRAFT_REVIEW_ONLY_NOT_MAIN",
+  "open_questions": [
+    "Why EMA target eval vs train has exactly zero heldout effect on pinned 350M master in three seeds; measure actual target stochasticity in a separately preregistered experiment.",
+    "Independent full-suite historical Run34/Run37 frozen source-pin RED; do not waive.",
+    "Need real Redmi measured sustained runtime and utility proof."
+  ],
+  "next_command": "Inspect draft PR diff and original Actions 41030718195; then independently review native JEPA target stochasticity and run new disjoint preregistered mechanism/utility ablation, without promoting any gate.",
+  "owner": "GPT-6 automation review branch; no other owner branch overwritten"
+}
