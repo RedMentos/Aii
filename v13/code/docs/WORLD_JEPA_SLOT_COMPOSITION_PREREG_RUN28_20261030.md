@@ -1,0 +1,17 @@
+# Run28 preregistration — compositional slot-shared World-JEPA candidate, SHADOW only
+
+Owner: GPT-6 scheduled continuation. Review-only child of Run27 #1354 at exact `740b376132405d77923d53400b59c5e0cee0cc96`. Binding Canon `V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`. This prereg is committed before code/tests or any candidate fit. Preserve original `v13/code/v13/world_jepa.py` blob `99a686a131a1bdc89efe0d0cf9610ec54cbd853b` and `v13/code/scripts/z12b_world_jepa.py` blob `2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4`; original Z12b seeds101–103, results and **Z12B_WORLD_JEPA_FAIL** unchanged.
+
+## Hypothesis and intervention
+
+Z12b's original 60-feature full-world JEPA receives operation+slot one-hot but did not generalize to unseen operation/slot combinations (~.27). Here create a separate **slot-shared** NumPy SHADOW candidate, not a production runtime change. Six 10-feature file slots are conditionally independent under the registered file-operation simulator; a single shared `WorldJEPA` with EMA encoder, inverse-dynamics loss and predictor learns local transitions. Each full transition yields the affected slot plus one deterministic unaffected slot (for noop, two deterministic slots), with a local action one-hot over five operations+noop; a zeroed-action control stays zero. Inference applies that same predictor to each slot and concatenates six latent predictions. This shares operation learning across slots; it does not invent new actions or touch actual files outside the existing test harness.
+
+The local encoder latent is 16 per slot, so the concatenated world latent is 96D vs original 16D. **Capacity is a confound**: any observed improvement is not solely attributable to composition; a matched-capacity control is a future requirement. No causal learned-utility claim from a software shape test.
+
+## Frozen evaluation protocol (defer heavy execution while Run27 native owns resources)
+
+After Run27 native terminal, use original `z12b_world_jepa.py` real file-action collection/evaluation functions unchanged, fixed seeds **101,102,103**, train=4000, cf=150, attr=300, steps=3000. Compare original Z12b reported baselines as historical, plus fresh same-seed original model and zero/shuffled-action controls only if compute budget permits, preserving all failed attempts. Required metrics: W1 covered-action counterfactual retrieval (>=.80 pooled, >=.70 each); W2 zero/shuffled <=.40 and gap>=.30; W3 latent rank/std; W4 confidence-error Spearman <=-.30 and every unseen operation-slot `SIMULATION_UNCERTAIN`; W5 own/world/none attribution thresholds .90/.90/.80; W6 no-action control at least .20 worse. The original W6 attribution design is confounded by action-identity thresholds; retain the original failure, do not reinterpret. Record original 16D vs candidate 96D capacity difference. No promotion if any gate fails.
+
+## Containment
+
+Never mark an unseen operation-slot as trained merely because the operation was observed in another slot: exact full action support counts remain authoritative for confidence and veto. Reject malformed/nonfinite action encodings and shapes. Train only on isolated generated file transitions, no user/private data, no training holdout prompt leakage. No model or source swaps in registered native AG12 cohorts. Age0 RECORD_ONLY, World-JEPA candidate SHADOW, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, whole V13 incomplete. No paid provisioning, automatic deployment or live authority.
