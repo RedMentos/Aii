@@ -1,0 +1,80 @@
+name: V13 Run13C read-only JEF SourceRef operator CLI
+on:
+  push:
+    branches:
+      - 'assistant/v13-run13c-jef-exact-cli-20261030-auto11'
+    paths:
+      - '.github/workflows/v13-run13c-jef-readonly-cli-20261030.yml'
+      - 'v13/code/scripts/jef_budget_exact_readonly_run13c.py'
+      - 'v13/code/tests/test_jef_budget_exact_readonly_run13c.py'
+      - 'v13/code/docs/RUN13C_JEF_READONLY_CLI_PREREG_20261030.md'
+permissions:
+  contents: read
+concurrency:
+  group: v13-run13c-jef-readonly-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run read-only operator source tests and capture raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13c-jef-readonly"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/scripts/jef_budget_exact_readonly_run13c.py v13/code/tests/test_jef_budget_exact_readonly_run13c.py v13/code/v13/agi/budget_answer_shadow_run13b.py v13/code/v13/agi/budget_en_source_shadow.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/SOURCE_BLOBS.txt"
+          test "$(tail -1 "$e/SOURCE_BLOBS.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run13c-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run13c-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts timeout 480s "$py" -m unittest -v tests.test_jef_budget_exact_readonly_run13c tests.test_budget_answer_shadow_run13b tests.test_run13a_fulltask_prereg tests.test_run12n_jef_source_baseline) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo DEPENDENCIES_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/jef_budget_exact_readonly_run13c.py v13/code/tests/test_jef_budget_exact_readonly_run13c.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 38e02285d4e27f9b4e27b5ad45ea1f7fa3b750f5 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 38e02285d4e27f9b4e27b5ad45ea1f7fa3b750f5 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original raw, exits and hashes on all outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13c-jef-readonly-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13c-jef-readonly/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce every software stage and preserve RED
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run13c-jef-readonly"
+          for stage in CANON VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -90 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN13C_READONLY_SOFTWARE_ONLY_NO_NATIVE_AGE_OR_GATE_PROMOTION'
