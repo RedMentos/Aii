@@ -38,10 +38,22 @@
     "backup_byte_identical": true
   },
   "native": {
-    "actions_run": 41086544571,
-    "launched": true,
-    "result": "PENDING_AT_CHECKPOINT",
-    "original_artifact": "PENDING"
+    "attempts": [
+      {
+        "actions_run": 41086544571,
+        "source_head": "234e5468fb38cfd24af2a5f14a4d30ec90b5b91f",
+        "result": "CI_RED_ARTIFACT_PATH",
+        "reason": "Native script stage completed, but upload-artifact and enforcement pointed to stale preflight temp path; original raw not exported. Retain Actions logs, do not claim native result."
+      },
+      {
+        "actions_run": 41086768006,
+        "source_head": "4f1f3e71e9d609a8f259e84d1df7e28e4713a560",
+        "result": "PENDING_AT_CHECKPOINT",
+        "workflow_fix": "2e8d9889dab1d8f0dc5030a57f7486d8bf7d8b85"
+      }
+    ],
+    "original_artifact": "PENDING",
+    "native_quality": "UNVERIFIED"
   },
   "prior_negative": "Run13J seed227 JEF 6/6 ABSTAIN., exact copy 0/6; original native RED preserved.",
   "negative_gates": {
@@ -58,6 +70,6 @@
     "Does the new disjoint COPY_DIRECT prompt change native exact-copy fidelity vs original SHADOW prefix?",
     "Original Run13A native full-task and G14 full-suite RED remain; no whole-system gate."
   ],
-  "next_command": "Check GitHub Actions 41086544571; download original raw ZIP, verify CRC/manifest/12 rows/native FINAL/reaping and independent frozen replay; private byte-identical backup before any claim.",
+  "next_command": "Inspect Actions 41086768006 terminal result, download original ZIP, verify SHA256/CRC/SHA256SUMS/12 native rows and independent replay; backup private Library; do not erase failed Actions 41086544571.",
   "platform_remaining_budget": "UNKNOWN"
 }
