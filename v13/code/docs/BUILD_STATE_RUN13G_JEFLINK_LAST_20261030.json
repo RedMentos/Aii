@@ -1,0 +1,49 @@
+{
+  "schema": "v13.run13g.jeflink_last_unique.review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13g-jeflink-last-20261030-auto11",
+  "base_sha": "d1e3e7ad8931c8a2a57ce7c82d728a045349c6c0",
+  "prereg_commit": "b8ed743b7bcd8e02129c0054a519fb0e5f0615ab",
+  "tested_head": "c0ba7ea3f9910dc6a9fc799ada550d16f5cb1895",
+  "pr": 1294,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "workflow_run": 41079958047,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12989171973,
+  "artifact_zip_sha256": "406271203c6e478dc253476631e016c529c9dd0255c350464c3b5cbde2ce90b5",
+  "artifact_entries": 16,
+  "artifact_crc": "CLEAN",
+  "artifact_inner_sha256": "15/15 verified, full coverage",
+  "tests": "39/39 PASS in 1.786s",
+  "stage_exits": {
+    "CANON": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run13G/RUN13G_41079958047.zip",
+  "private_backup_byte_identical": true,
+  "utility": "Explicit :jeflink last uses latest current-session SHADOW ContextPlan, all SOURCE_LINKS pointers capped 32, returns answer only on exactly one source-valid JEF budget match; no native/model/tool/chat writes.",
+  "original_native_run13a": "UTILITY_RED_UNCHANGED",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "No real native model answer path; this is a narrow deterministic operator feature, not general semantic recall.",
+    "Run full unfiltered software regression and compare exact historical RED identities before considering integration.",
+    "Future live egress requires explicit human approval, source revocation recheck and new disjoint native utility proof."
+  ],
+  "exact_next_command": "Preregister G14 unfiltered fullsuite on a new review child and compare exact 120 historical FAIL/ERROR identity entries against G13 frozen multiset hash e85743aad6bb69a8c319daa93228d7fb0cc8d24a43e5f1a1c41526a1a2b8a3e7; preserve RED, no waivers.",
+  "remaining_platform_budget": "UNKNOWN"
+}
