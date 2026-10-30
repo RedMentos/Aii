@@ -1,0 +1,60 @@
+{
+  "schema": "v13.run20b.age0_software_e2e.green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; latest-chain Age0 operator JEF World JEPA Sleep software integration",
+  "branch": "assistant/v13-run20-resource-sensor-finite-20261030-hourly11",
+  "pr": 1347,
+  "source_head": "f7c39a0ca4145584877b655f5f0ddba6215f1ab3",
+  "prereg_sha": "35b2f70aa57988392abd70970cfa85dfa72b020c",
+  "evidence": {
+    "run": 41132902013,
+    "artifact": 13013189538,
+    "sha256": "cce2172409d113c9c4a33510ee409ee20bfa4e26afda5ae8bd6ebcc6ad9a79a1",
+    "tests": 32,
+    "failures": 0,
+    "errors": 0,
+    "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+    "crc": "PASS",
+    "inner_sha256": "18/18",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run20-SensorFinite/Run20B_AGE0_E2E_GREEN.zip",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "tested_paths": [
+    "Age0 Operator source-exact F1/F5, chat export, backup/restore and confirmed forget",
+    "ContextOS/WorldModel/Sleep one-home software path",
+    "JEF source-linked SHADOW decision",
+    "WorldModel observed real Store fit/restart",
+    "private closed SQLite World-JEPA train-only checkpoint/heldout probe",
+    "Step12 negative proof gates"
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "other_evidence": {
+    "run19_unfiltered": {
+      "run": 41132298857,
+      "status": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "run20_unfiltered": {
+      "run": 41132648653,
+      "status": "IN_PROGRESS_AT_CHECKPOINT"
+    },
+    "run20_linux_native": {
+      "run": 41132792731,
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "source_head": "8672dbdd599b960c9c353c98853fb5d24b19fcf4"
+    }
+  },
+  "limitations": [
+    "No model/native call in these 32 tests; no evidence of end-to-end actual model quality or Redmi.",
+    "Other fullsuite failures remain unwaived; native result pending."
+  ],
+  "next_command": "Verify and preserve exact raw for Run19/20 cumulative unfiltered and Run20 Linux native when terminal; compare historical failure identities, native proof gates, privacy and hashes. Continue canonical JEF/C3/Body/JEPA/ContextOS functional roadmap, not just guards."
+}

@@ -156,6 +156,25 @@ def classify(snapshot,profile,previous='GREEN'):
     §73 budget is set, V13's total RSS/PSS (over hard backoff -> ORANGE, over soft budget -> YELLOW).
     """
     mem=snapshot.get('mem_available_bytes');temp=snapshot.get('battery_temperature_c')
+    invalid=[]
+    if mem is not None and (not _finite_number(mem) or mem<0):
+        invalid.append('INVALID_MEM_AVAILABLE')
+    if temp is not None and not _finite_number(temp):
+        invalid.append('INVALID_BATTERY_TEMP')
+    if profile.get('rss_mb'):
+        for proc in snapshot.get('processes') or ():
+            if type(proc) is not dict:
+                invalid.append('INVALID_PROCESS_METRICS');break
+            for key in ('pss_bytes','rss_bytes'):
+                v=proc.get(key)
+                if v is not None and (not _finite_number(v) or v<0):
+                    invalid.append('INVALID_PROCESS_'+key.upper())
+    if invalid:
+        # None is an unmeasured sensor (legacy policy); a *malformed* reading
+        # is different. Never promote malformed telemetry to GREEN, nor
+        # downgrade an existing ORANGE/RED resource reflex.
+        safe=previous if RANK.get(previous,0)>=RANK['YELLOW'] else 'YELLOW'
+        return safe,sorted(set(invalid))
     mem=None if mem is None else mem/1048576
     rss=total_rss_mb(snapshot) if profile.get('rss_mb') else None
     hm=profile['hysteresis']['mem_fraction'];ht=profile['hysteresis']['temp_c'];prev=RANK.get(previous,0)
