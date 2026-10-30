@@ -1,3 +1,7 @@
+## 2026-10-30 — C2/Needle auto-route provenance isolated follow-up
+
+Preregistered 3 fresh source prompts seed43; real Store ExecutiveControlContext/route binding software preflight Actions 40997339478 GREEN 7/7, private raw verified. Actual native C2 invocation **not yet measured**; heavy v3 STEP2 native Actions 40996792157 owns runner, next C2 native workflow must wait. This probe is C2-only and cannot prove integrated C2+C3, Body complementarity, Redmi or STEP2. `v13/code/docs/C2_NATIVE_ROUTE_PROVENANCE_PREFLIGHT_GREEN_20261030.md`. All negative gates unchanged.
+
 ## 2026-10-30 — STEP2 v3 counterbalanced native exploratory follow-up (review-only)
 
 New preregistered seed41 nine-task cohort, 27 Linux-native turns in Latin-square order, independent fixed scorer and no STEP2 gate. Software preflight 40996622134 GREEN (12/12 tests, 7/7 stages, privacy CLEAN), private byte-verified original ZIP; native Actions 40996792157 launched, result **pending**. Source `v13/code/scripts/step2_budget_paired_native_v3_20261030.py`, evidence `v13/code/docs/STEP2_PAIRED_NATIVE_V3_LAUNCH_CHECKPOINT_20261030.md`. Continue other organs while native runs. No native C2 route proof, no Redmi, no B3/Body-JEPA/JEPA/STEP2 promotion, historical Run34/37 source-pin RED and whole-system incomplete.
