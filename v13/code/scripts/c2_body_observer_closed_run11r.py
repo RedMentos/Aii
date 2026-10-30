@@ -275,6 +275,12 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
                       "native_c2_alive_before_close": needle_alive,
                       "source_exact_before_close": source_exact}
         finally:
+            # Persist original pre-close audit before risky finalization.
+            # If close raises, run() keeps a RED row and this witness.
+            if record is not None:
+                (out / "preclose" / f"{index:02d}_{arm}.json").write_text(
+                    json.dumps(record, sort_keys=True, ensure_ascii=False,
+                               allow_nan=False) + "\n")
             runtime.close()
         if record is None:
             raise ValueError("MISSING_NATIVE_ROW")
@@ -311,6 +317,7 @@ def run(base_home, out):
     validate_fixtures()
     out.mkdir(parents=True)
     (out / "raw").mkdir()
+    (out / "preclose").mkdir()
     report = {"schema": SCHEMA, "status": "INCOMPLETE", "seed": SEED,
               "fixture_sha256": FIXTURE_SHA256, "fixtures": FIXTURES,
               "arms": ARMS, "arm_order": ARM_ORDER, "rows": [],
