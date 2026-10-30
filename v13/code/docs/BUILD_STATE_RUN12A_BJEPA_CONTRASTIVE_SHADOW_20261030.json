@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12A_CONTRASTIVE_BJEPA_SHADOW_SOFTWARE_PENDING",
+  "schema": "V13_RUN12A_CONTRASTIVE_BJEPA_SHADOW_SOFTWARE_GREEN",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12a-bjepa-contrastive-shadow-20261030",
@@ -17,8 +17,19 @@
   "software": {
     "run_id": 41043341335,
     "head": "e0ee81864a7fa783c67072f1c64cbf198573e6eb",
-    "status": "QUEUED",
-    "result": "UNKNOWN"
+    "status": "GREEN",
+    "artifact_id": 12971571509,
+    "zip_sha256": "06573a8cf80c47699a2bbe005a10cd899bf710397cc15f47d1721ca6f50944f2",
+    "bytes": 4372,
+    "zip_entries": 19,
+    "sha256_manifest_entries": 18,
+    "crc": "PASS",
+    "stage_exits": "8/8 zero",
+    "tests": "6/6 PASS (autograd, finite-difference, shuffled, false negatives, invalid controls)",
+    "torch": "2.5.1+cpu",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12A-BJEPA-Contrastive223/SOFTWARE_GREEN_41043341335_sha06573A8C.zip",
+    "private_backup_byte_exact": true
   },
   "native": {
     "launched": false,
@@ -33,5 +44,5 @@
     "redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "next_command": "Inspect Run12A Actions 41043341335 terminal and original raw; preserve RED if failed, patch only new candidate/test; SHA/CRC/hash audit, private Library backup, scoped state update. Run11Z unfiltered fullsuite 41042932709 independently in progress; inspect original raw when terminal. Then plan disjoint native Body-JEPA alternative only after current heavy owner terminal."
+  "next_command": "Run12B disjoint seed239 experimental trainer port from frozen BodyJepaTrainer fit, no production edits; software preflight with real tiny model before separate heavy native trigger; all gates unchanged."
 }
