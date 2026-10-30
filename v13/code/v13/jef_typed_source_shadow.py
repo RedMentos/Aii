@@ -129,7 +129,32 @@ def decide(store, current_ref, source_refs):
                     if opt[0] <= max1 and opt[1] <= max2
                     and (not required or opt[2])]
         action = min(eligible)[2] if eligible else "NONE"
-        return _result(action, "FULL_SOURCE_TYPED_DECISION", source_refs)
+        # The existing exact SourceRefs already contain the two signed
+        # differences. Expose them only for complete grammar + integrity,
+        # never as learned utility, model authority, or an approved answer.
+        details = {}
+        for name, opt in zip("AB", options):
+            remaining = [max1 - opt[0], max2 - opt[1]]
+            details[name] = {
+                "used": [opt[0], opt[1]], "remaining": remaining,
+                "flag": opt[2],
+                "eligible": all(x >= 0 for x in remaining)
+                            and (not required or opt[2]),
+            }
+        arithmetic = {
+            "evidence_level": "STORE_INTEGRITY_ONLY",
+            "mode": MODE,
+            "project": req["id"], "domain": req["domain"],
+            "fields": [
+                {"name": policy["f1"], "unit": policy["u1"], "limit": max1},
+                {"name": policy["f2"], "unit": policy["u2"], "limit": max2},
+            ],
+            "options": details,
+        }
+        return {
+            **_result(action, "FULL_SOURCE_TYPED_DECISION", source_refs),
+            "source_exact_arithmetic": arithmetic,
+        }
     except (KeyError, ValueError, TypeError, OSError, UnicodeError,
             AttributeError, OverflowError):
         return _result("UNKNOWN", "SOURCE_INTEGRITY_OR_GRAMMAR_RED")

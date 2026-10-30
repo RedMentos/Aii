@@ -1,3 +1,7 @@
+## 2026-10-30 — F1/F5 source-exact signed arithmetic SHADOW (review-only)
+
+Current-chain STEP12 native semantic audit remains **0/2 required budget remainders**, no STEP2 utility proof. New review-only child `codex/v13-f1f5-exact-arithmetic-20261030-hourly11` adds source-bound signed residuals to the existing two-source JEF typed SHADOW path; 21/21 real-Store/software tests and 8/8 CI stages PASS after preserved 3-error RED, no native calls or output authority. Raw evidence private Library and exact hashes in `code/docs/F1F5_SOURCE_EXACT_ARITHMETIC_VERIFIED_RESULT_20261030.md`. Next required work: opt-in source-exact explanation with revalidated human lineage, then disjoint paired native no-body/one-body/both semantic utility, with frozen cohorts and negative gates intact. This is not a Canon completion.
+
 # V13 Umsetzungs-Roadmap (angelegt 2026-10-09; Ziele neu abgeglichen 2026-10-21, siehe §0)
 
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`

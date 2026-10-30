@@ -3675,5 +3675,42 @@
     },
     "exact_next_command": "Preregister fresh paired native STEP2 semantic utility no-body/one-body/both with source-grounded budget arithmetic and fixed disjoint tasks.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_f1f5_source_exact_arithmetic": {
+    "scope": "F1F5_SOURCE_EXACT_SIGNED_ARITHMETIC_SHADOW",
+    "owner": "V13 hourly continuation; independent review branch",
+    "parent_head": "d7dddf8ab6c23f187003d919570dc18b650d5a8b",
+    "branch": "codex/v13-f1f5-exact-arithmetic-20261030-hourly11",
+    "pr": null,
+    "prereg_commit": "296fc44e64483d25d4194733f13d916c29d3f62d",
+    "source_commit": "fd0697700d6f000d87f7c71210da6d83a73b50cd",
+    "source_blob": "f092369bf5f4674191dbd43cd80ed50ed8283475",
+    "test_blob": "6e62e7c4e1825103877f20438aac3342b893c9df",
+    "red_run": 40990408494,
+    "red_tests": "21 tests, 3 expected missing-field errors",
+    "red_zip_sha256": "e513d32e61ee4bf38b41a091ddeb8d16ff1079557436d39a94cd964838294356",
+    "green_run": 40990465358,
+    "green_tests": "21/21 PASS",
+    "green_zip_sha256": "eae13d12bdd2e798e7f637d6b4e07c6af185572e7f16baa390493d5a15c77d78",
+    "stages_exit0": "8/8",
+    "raw_crc_clean": true,
+    "raw_inner_hashes": "20/20 each",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-F1F5-SourceArithmetic/",
+    "private_backup_byte_identical": true,
+    "software_real_store": true,
+    "native_executed_here": false,
+    "redmi_measured": false,
+    "source_exact_arithmetic_shadow": true,
+    "comparative_utility_proven": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Independent review of arithmetic payload and TOCTOU; then opt-in source-exact explanatory operator candidate with lineage recheck; separately inspect native STEP2 paired pilot RED.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
