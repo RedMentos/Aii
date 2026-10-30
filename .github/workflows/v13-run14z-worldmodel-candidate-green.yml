@@ -28,7 +28,7 @@ jobs:
           cat > "$e/PINS.txt" <<'PINS'
           3a7dfe70007114379929ba5c60ec63660de57191 v13/code/docs/WORLD_MODEL_FIT_ADMISSION_PREREG_RUN14Z_20261030.md
           697d9ac16bcb532784f6ad1645e57955925325b7 v13/code/tests/test_world_model_fit_admission_run14z.py
-          f207596030feb65aeeefa5680caece2f5a6feb9f v13/code/v13/world_model.py
+          f5236f201ee90e16dae994d981e5d0ef67357722 v13/code/v13/world_model.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
           PINS
           bad=0
