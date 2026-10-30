@@ -116,6 +116,17 @@ class SourceBoundFallback(unittest.TestCase):
         self.assert_shadow(result)
         self.assertEqual(result['selected_provenance'], 'JEF_VERIFIED_FALLBACK_SHADOW')
 
+    def test_real_deleted_source_abstains_even_with_valid_native_receipt(self):
+        with self.runtime.store.tx() as db:
+            db.execute("UPDATE sources SET deleted=1 WHERE id="
+                       "(SELECT source_id FROM events WHERE id=?)",
+                       (self.ids[2],))
+        result = self.select(self.linked['answer'], self.receipt())
+        self.assert_shadow(result)
+        self.assertIsNone(result['selected_text'])
+        self.assertFalse(result['source_revalidated'])
+        self.assertEqual(result['selected_provenance'], 'NONE')
+
     def test_stale_source_tampered_snapshot_and_read_error_abstain(self):
         cases = (
             ('snapshot', dict(self.linked, answer_sha256='0'*64)),
