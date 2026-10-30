@@ -38,8 +38,29 @@
     "redmi": "UNMEASURED",
     "whole_system": "INCOMPLETE"
   },
-  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030",
-  "next_package": "independent read-only replay of original seed79 ZIP with SHA256, CRC, all inner hashes, row/PID/source/fixture bindings and posthoc arithmetic/abstention diagnostics; then fresh disjoint prereg",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030 tests.test_listarith_de_seed79_native_posthoc_replay_20261030",
+  "next_package": "preregister and freeze new disjoint German native value+operation cohort before implementation or inference, with supported/unsupported, negation/meta, aggregates, dates and signed values; keep no live authority and no gate promotion",
   "blocked": "No Redmi device; no native pipeline end-to-end proof yet",
-  "platform_remaining_budget": "UNKNOWN"
+  "platform_remaining_budget": "UNKNOWN",
+  "posthoc": {
+    "source_head": "3e8487a79a56c3629a94067eaa14663e29aeb9a7",
+    "run_id": 41012677736,
+    "artifact_id": 12957847837,
+    "zip_sha256": "f1dad9f4fae5155db46978003ee71d83bda13e6ee52f0abf027f27a5be5238ad",
+    "inner_sha256_count": 15,
+    "stages": "6/6 ZERO",
+    "software_tests": "27/27 PASS",
+    "original_native_rows": 12,
+    "shadow_emitted": 10,
+    "shadow_abstained": 2,
+    "correct_emitted": 10,
+    "abstain_ids": [
+      "C79-05",
+      "C79-06"
+    ],
+    "evidence": "POSTHOC_REPLAY_EXISTING_LINUX_NATIVE_NOT_PREREG_E2E",
+    "privacy": "CLEAN",
+    "private_library": "/V13-Checkpoints/2026-10-30/Run11-Seed79-Independent-Review/",
+    "library_hash_verified": true
+  }
 }
