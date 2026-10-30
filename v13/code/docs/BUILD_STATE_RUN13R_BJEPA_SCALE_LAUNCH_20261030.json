@@ -1,0 +1,64 @@
+{
+  "package": "RUN13R_DISJOINT_350M_JEPA_DOSE_HELDOUT_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13r-bjepa-scale-heldout-20261030-auto11",
+  "parent": "82cd958abb0c0874f1451dfc094f4bd3b2eb615a",
+  "prereg_commit": "533b0d2749954a0e564128aaa927ab9446f59210",
+  "software": {
+    "run": 41093474409,
+    "head": "94a6935d24b3b750f8190f368d3168484083ccbd",
+    "status": "GREEN_SOURCE_ONLY",
+    "artifact_id": 12994996417,
+    "zip_sha256": "ef4ccc643a54410f2783d9f46d5fb912a4dcd153ec7fbbfd686cfd207d2067de",
+    "crc": "PASS",
+    "inner_hashes": "26/26",
+    "tests": "18/18",
+    "stage_exits": "9/9 zero",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13R-BJEPA-Scale/run13r-preflight-original-41093474409.zip",
+    "private_backup_byte_identical": true
+  },
+  "native": {
+    "run": 41093680211,
+    "head": "aab856a28b8e864eddba37c03f945e9454804363",
+    "status": "QUEUED_UNVERIFIED",
+    "heavy_concurrency_group": "v13-bodyjepa-350m-eval-paired-native-serial-20261030",
+    "completed_arms": "UNKNOWN",
+    "original_zip_sha256": null
+  },
+  "cohort": {
+    "seeds": [
+      271,
+      277
+    ],
+    "arms": [
+      "CE_0",
+      "CONTRAST_2_5",
+      "CONTRAST_12",
+      "SHUFFLED_12"
+    ],
+    "train_steps_per_arm": 8,
+    "fixture_sha256": "a93322a5a30f9a9da5c391d172f8f6048cc6b9e2d617ab0349f4d148d278b77e",
+    "new_runner_blob": "5d665c09909ae77eeb12bf038a053232371abcb8",
+    "new_test_blob": "ac3a38192de0c5dd6cde632746da4e191d196adf",
+    "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+    "model_revision": "120bf032c36dd1273de754669da040dba7ad4982",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight_runtime": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run13R native 8-arm result not yet observed; no NLL/greedy claim until original raw verified.",
+    "High JEPA dose may cause instability/forgetting; preserve failures and predeclared scorer.",
+    "Synthetic NLL pilot cannot promote real Body-JEPA learning or whole-system utility."
+  ],
+  "next_command": "When Actions 41093680211 terminal, download original artifact, verify ZIP SHA/CRC/SHA256SUMS/HEAD/source pins/stages, independently recompute all 8-arm NLL summaries, registered verdict and greedy hits, private byte-identical backup; preserve failures and all gates. Continue other Canon organs while heavy job runs.",
+  "platform_remaining_budget": "UNKNOWN"
+}
