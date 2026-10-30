@@ -1,0 +1,85 @@
+name: V13 Body-JEPA opt-in EMA target eval diagnostic run11
+on:
+  push:
+    branches:
+      - 'assistant/v13-bjepa-target-eval-run11-20261030-gpt6'
+    paths:
+      - 'v13/code/docs/BJEPA_TARGET_EVAL_CI_TRIGGER_RUN11.txt'
+      - 'v13/code/v13/body_jepa.py'
+permissions:
+  contents: read
+jobs:
+  bjepa-target:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Tiny torch EMA target diagnostics with raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/bjepa-target-eval-run11"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/bjepa-target-eval-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/bjepa-target-eval-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+          echo "$?" > "$e/TORCH_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==4.44.2' > "$e/TRANSFORMERS_RAW.log" 2>&1
+          echo "$?" > "$e/TRANSFORMERS_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'peft==0.13.2' > "$e/PEFT_RAW.log" 2>&1
+          echo "$?" > "$e/PEFT_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          "$py" -c 'import torch,peft,transformers; assert torch.__version__=="2.5.1+cpu"; assert peft.__version__=="0.13.2"; assert transformers.__version__=="4.44.2"; print(torch.__version__,peft.__version__,transformers.__version__)' > "$e/IMPORT_RAW.log" 2>&1
+          echo "$?" > "$e/IMPORT_EXIT.txt"
+          if [ "$(cat "$e/IMPORT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 10m \
+              env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+                tests.test_body_jepa_target_eval_run11 \
+                tests.test_body_jepa \
+                tests.test_body_jepa_checkpoint \
+                tests.test_body_jepa_checkpoint_fit \
+                tests.test_body_jepa_objective_bridge_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PREREQUISITE_RED > "$e/TEST_RAW.log"; echo SKIPPED_RED > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/body_jepa.py v13/code/tests/test_body_jepa_target_eval_run11.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 8744720e30a28dd0c87247bd7a0e37a1f840bb4e \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8744720e30a28dd0c87247bd7a0e37a1f840bb4e HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-bjepa-target-eval-run11-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bjepa-target-eval-run11/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed with original RED retained
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/bjepa-target-eval-run11"
+          for stage in VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK IMPORT TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained; no learning promotion"
+              tail -90 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo "BJEPA_TINY_SOFTWARE_ONLY_NO_NATIVE_OR_AGE_PROMOTION"
