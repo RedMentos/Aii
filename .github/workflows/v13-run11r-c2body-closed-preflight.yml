@@ -4,11 +4,6 @@ on:
     branches: [assistant/v13-run11r-c2body-closed-release-seed163-20261030]
     paths:
       - '.github/workflows/v13-run11r-c2body-closed-preflight.yml'
-      - 'v13/code/scripts/c2_body_observer_closed_run11r.py'
-      - 'v13/code/tests/test_c2_body_observer_closed_run11r.py'
-      - 'v13/code/scripts/c2_body_observer_closed_verify_run11r.py'
-      - 'v13/code/tests/test_c2_body_observer_closed_verify_run11r.py'
-      - 'v13/code/docs/C2_BODY_OBSERVER_CLOSED_PREREG_RUN11R_20261030.md'
   workflow_dispatch:
 permissions:
   contents: read
