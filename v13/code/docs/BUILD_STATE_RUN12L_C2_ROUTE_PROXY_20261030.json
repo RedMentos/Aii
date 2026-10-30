@@ -1,0 +1,60 @@
+{
+  "schema": "V13_RUN12L_C2_ROUTE_PROXY_SOURCE_PENDING_NATIVE",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12l-c2-route-proxy-native-20261030",
+  "pr": 1268,
+  "parent_pr": 1267,
+  "parent_head": "0470e5c06f7382d0fea1263691bbbdca636d692e",
+  "source_pins": {
+    "fixture": "999561f79efccd334c8cc6e5a602d5169a969142",
+    "prereg": "6229b34739a5f4fd8d9e2201309a4e3c8193e2a1",
+    "scorer": "1130e34aca7208859204117b5e074ee0597b222d",
+    "runner": "f31947da2bce92a96d580d1f9cea1c0fda5a1974",
+    "tests": "dd162105fb97d1344c14325359330b6ce5fbea28",
+    "original_turn": "fb34dba97ae3700ba5accdcb928bfb72afcf4fcb",
+    "strict_classifier": "cee1980787f1217e9a7aa2a1f180686b4add67fb",
+    "runtime": "22ed11e4a53d9eeae8fbc74a1753082b5785be2b",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "cohort": {
+    "n": 15,
+    "seed": 43,
+    "fixture_canonical_sha256": "9d65d64ffeca0291b27809b572696c27c74c45ac0df9975e3aceda4ee24181dd",
+    "prompts_sha256": "ecf13d17b7be4f8516d4c193d2e8bef05f6d0c5e5577985f64e73cd9f2252655",
+    "simple_scaffold": 12,
+    "non_simple_controls": 3,
+    "original_prior_cohorts_unchanged": true
+  },
+  "software": {
+    "initial_preflight_run": 41053486932,
+    "latest_preflight_run": 41053739320,
+    "latest_status": "PENDING",
+    "test_count": 11,
+    "privacy": "PENDING",
+    "original_failed_attempts_preserved": true
+  },
+  "native": {
+    "launched": false,
+    "model_sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
+    "c3_called": false,
+    "body_called": false,
+    "route_semantic_utility_proven": false,
+    "redmi_measured": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Will frozen role-proxy labels show net native C2 improvement on 12 simple-scaffold prompts without greeting regressions?",
+    "Even a positive proxy cannot establish actual C3/Body response utility; paired native response benchmark remains necessary.",
+    "Actual Redmi sustained resource/thermal proof unavailable in cloud."
+  ],
+  "next_command": "Wait for Run12L latest preflight Actions 41053739320 to complete; inspect stage logs and artifact, fix if RED. Only after GREEN commit isolated serialized pinned C2-only native workflow; verify original ZIP SHA256/CRC/manifest/15 raw and private backup. Do not promote gates."
+}
