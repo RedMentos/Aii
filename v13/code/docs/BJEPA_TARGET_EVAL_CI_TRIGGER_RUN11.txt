@@ -1,0 +1,7 @@
+Body-JEPA opt-in target eval test-first RED trigger.
+Owner: GPT-6; isolated review branch.
+Original prereg: 8f5dfbd7a86fae64628ceeaddc5f8e78b4544a5d
+Test-first: 98de2b47031e3c649a11f1e87a90feda25041875
+Default configuration and source are still unchanged.
+Full unfiltered suite owner 41025103796 has completed; original RED preserved.
+No native model/Redmi/learning/age promotion.
