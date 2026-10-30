@@ -6,6 +6,7 @@ training authority. No Store writes, model calls, or Runtime wiring.
 from __future__ import annotations
 import hashlib
 import json
+import sqlite3
 
 from . import jef_typed_source_shadow as typed
 
@@ -109,5 +110,6 @@ def decide(memory, session, event_id, current_ref, memory_ids):
             "memory_id_hashes": [_sha(mid) for mid in memory_ids],
         }
     except (ValueError, TypeError, KeyError, AttributeError,
-            OSError, UnicodeError, OverflowError, json.JSONDecodeError):
+            OSError, UnicodeError, OverflowError, json.JSONDecodeError,
+            sqlite3.Error):
         return _deny("F1F5_SOURCE_OR_LINEAGE_RED")
