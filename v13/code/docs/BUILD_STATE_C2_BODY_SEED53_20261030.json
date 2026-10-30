@@ -6,8 +6,8 @@
   "pr": 1212,
   "prereg_commit": "25c409468b1e3412e676124329624e78569bdf8a",
   "prereg_blob": "decf9a6bafb2d5b15d6b7df224b191caf05cb98a",
-  "source_blob": "c590f2e8dd5160b95d577404b9265c766330b679",
-  "tests_blob": "4957b13e7a9f1b501e13adcd21b2e6f399e8855a",
+  "source_blob": "b10bcdcb2cf2a2151c95cd432b7b0b5e6c5aac6b",
+  "tests_blob": "69fbc2e36898c9262f307bf2edba4885f58bddb9",
   "seed": 53,
   "fixture_sha256": "7c5da29e274c3d63a34b68baac6ac9b6e31a968d5632b938eff7de01cf2f24d4",
   "arms": [
@@ -20,18 +20,18 @@
   ],
   "expected_native_rows": 24,
   "software_preflight": {
-    "run": 41001725062,
-    "head": "1d48d6117b02d6e5f6e9c9d1d6c27a777beff03d",
+    "run": 41001989486,
+    "head": "2f03636681ec70d114335b215b13d5aa8b20c3c0",
     "conclusion": "SUCCESS",
-    "tests": "12/12 PASS",
+    "tests": "14/14 PASS",
     "stages": "8/8 EXIT0",
     "privacy": "CLEAN",
-    "artifact_id": 12953802079,
-    "artifact_sha256": "fb496b15d2eab3f146533f44c13a1d5d891eccc39a1f5a5e1039203d964ed815",
-    "artifact_bytes": 4358,
+    "artifact_id": 12953941972,
+    "artifact_sha256": "ef40eae8efdf7844c3b4ff2802e27143f943790687e9cc1b0b9c7f58e7044085",
+    "artifact_bytes": 4397,
     "zip_crc": "CLEAN",
     "inner_sha256": "18/18",
-    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/PREFLIGHT_41001725062.zip",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/PREFLIGHT_41001989486.zip",
     "private_byte_identical": true
   },
   "native_status": "NOT_LAUNCHED_PENDING_FULLSUITE_41001786002_TERMINAL",
@@ -49,7 +49,7 @@
     "Historical Run34/Run37 full suite source-pin errors remain RED",
     "No Redmi device"
   ],
-  "next_command": "After fullsuite 41001786002 terminal, launch native seed53 workflow under serial v13-step2-budget-paired-native-20261030 concurrency. Verify 24 raw rows and private byte backup.",
+  "next_command": "After fullsuite 41001786002 terminal, create/launch pinned native workflow for 24 serial Linux-native turns; independently verify raw and private byte backup. No gate promotion.",
   "software_preflight_original": {
     "run": 41001429136,
     "head": "12e754a9fde4d3ff97a526cdc279c1424e88fe2b",
@@ -66,5 +66,22 @@
     "private_byte_identical": true,
     "scope": "11/11 GREEN but before independent B2 Qwen model identity correction; original artifact preserved, not the native launch source"
   },
-  "review_fix": "B2_GIST distinct pinned Qwen3.5-0.8B versus B1 1.2B, E_SHARED_DUAL_COLD maps B2 to body; record model keys/revisions"
+  "review_fix": "B2_GIST distinct pinned Qwen3.5-0.8B versus B1 1.2B, E_SHARED_DUAL_COLD maps B2 to body; record model keys/revisions",
+  "software_preflight_prior": {
+    "run": 41001725062,
+    "head": "1d48d6117b02d6e5f6e9c9d1d6c27a777beff03d",
+    "conclusion": "SUCCESS",
+    "tests": "12/12 PASS",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12953802079,
+    "artifact_sha256": "fb496b15d2eab3f146533f44c13a1d5d891eccc39a1f5a5e1039203d964ed815",
+    "artifact_bytes": 4358,
+    "zip_crc": "CLEAN",
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/PREFLIGHT_41001725062.zip",
+    "private_byte_identical": true,
+    "scope": "12/12 GREEN after Qwen B2 identity correction, before C2 native PID identity hardening"
+  },
+  "review_fix_2": "Native C2 metrics memory PID must equal actual live/reaped process PID; source_errors must explicitly be []"
 }
