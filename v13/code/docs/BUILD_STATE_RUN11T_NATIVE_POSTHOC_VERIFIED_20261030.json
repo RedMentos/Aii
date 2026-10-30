@@ -1,0 +1,92 @@
+{
+  "schema": "V13_RUN11T_NATIVE_ORIGINAL_POSTHOC_VERIFIED",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 independent review-only",
+  "parent_pr": 1247,
+  "parent_head": "3346063841bc9a96a167fe5edf43863a7f34688e",
+  "branch": "assistant/v13-run11t-native-posthoc-testfix-20261030",
+  "pr": "PENDING",
+  "original_native": {
+    "run_id": 41035932580,
+    "status": "RED",
+    "head": "3d76c8e28735cfef4d40c290baad4556b61e04a7",
+    "artifact_id": 12967698710,
+    "zip_sha256": "47493d719ac1d6dedcb0142106b29b96817c0d4a211a6a2219879dec93cc8c5e",
+    "zip_bytes": 469247,
+    "entries": 73,
+    "inner_hashes": "72/72",
+    "native_exit": 0,
+    "report_check_exit": 1,
+    "reason": "SOURCE_SCORE_REPLAY_MISMATCH",
+    "original_unchanged": true
+  },
+  "posthoc_green": {
+    "run_id": 41037868725,
+    "head": "f855313f28354dd570843001503301a6c32690a0",
+    "artifact_id": 12967434902,
+    "zip_sha256": "98f50f8a624a4e7a914379798cafbd8484fdf2acb64063cfc2105da313a488a2",
+    "zip_bytes": 5398,
+    "entries": 22,
+    "inner_hashes": "21/21",
+    "tests": "31/31 PASS",
+    "stages": "9/9 PASS",
+    "privacy": "CLEAN",
+    "replay_exit": 0,
+    "original_raw_rows_replayed": 24,
+    "posthoc_only": true,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11T-Original-Native-Posthoc/POSTHOC_GREEN_41037868725_sha98F50F.zip",
+    "private_byte_exact": true
+  },
+  "posthoc_red": [
+    {
+      "run_id": 41036791173,
+      "reason": "same-line two-owner synthetic fixture failed to create equations"
+    },
+    {
+      "run_id": 41037723812,
+      "artifact_id": 12968248498,
+      "zip_sha256": "9c7ca18e97656736631af3788f33771b705e10b6b36f4f8f99c781f3b373a6f6",
+      "reason": "synthetic primary/secondary totals shared mutable dict",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11T-Original-Native-Posthoc/POSTHOC_RED_41037723812_sha9C7CA1.zip",
+      "private_byte_exact": true
+    }
+  ],
+  "score_totals_out_of_8": {
+    "A_C3_ONLY": 0,
+    "B_B1_ONLY": 0,
+    "C_B2_ONLY": 0,
+    "D_DISTINCT_BOTH": 0,
+    "E_SHARED_DUAL_COLD": 0,
+    "F_NATIVE_AUTO": 0
+  },
+  "secondary_totals_out_of_8": {
+    "A_C3_ONLY": 0,
+    "B_B1_ONLY": 2,
+    "C_B2_ONLY": 7,
+    "D_DISTINCT_BOTH": 1,
+    "E_SHARED_DUAL_COLD": 0,
+    "F_NATIVE_AUTO": 2
+  },
+  "native_c2_invocations": 4,
+  "native_c2_selected": 4,
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "privacy": {
+    "public_source_only": true,
+    "private_raw_library": "/V13-Checkpoints/2026-10-30/Run11R-C2Body-Closed/NATIVE_RED_41035932580_sha47493D.zip"
+  },
+  "open_questions": [
+    "Why frozen primary source-bound scorer scores 0/48 while independent secondary diagnostic scores 12/48",
+    "Fresh preregistered model-output utility not yet proven",
+    "Real Redmi evidence absent",
+    "Historical Run34/37 source-pin errors unresolved"
+  ],
+  "next_command": "Inspect original ZIP 12967698710 and posthoc ZIP 12967434902; run current read-only verifier on extracted original pilot; then preregister a new disjoint paired C2/C3/Body utility cohort. No seed163 rerun/tuning."
+}

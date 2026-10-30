@@ -43,8 +43,8 @@ def synthetic_all_invalid(directory):
         "step2_gate_promoted": False, "b3_promoted": False,
         "body_jepa_available": False, "redmi_measured": False,
         "whole_system_complete": False, "comparative_utility_proven": False,
-        "score_totals_out_of_8": totals,
-        "secondary_totals_out_of_8": totals,
+        "score_totals_out_of_8": dict(totals),
+        "secondary_totals_out_of_8": dict(totals),
         "native_c2_invocations": 0, "native_c2_selected": 0,
         "pilot_signal_not_gate": False,
         "native_auto_signal_not_gate": False,
@@ -117,6 +117,14 @@ class VerifyRun11R(unittest.TestCase):
             self.assertEqual(verdict["status"], "PILOT_PARTIAL_RED")
             self.assertFalse(verdict["utility_gate_pass"])
             self.assertFalse(verdict["redmi_measured"])
+
+    def test_synthetic_primary_and_secondary_totals_are_independent(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            self.assertIsNot(report["score_totals_out_of_8"],
+                             report["secondary_totals_out_of_8"])
+            report["secondary_totals_out_of_8"]["A_C3_ONLY"] = 1
+            self.assertEqual(report["score_totals_out_of_8"]["A_C3_ONLY"], 0)
 
     def test_forged_positive_row_rejected(self):
         with tempfile.TemporaryDirectory() as d:
@@ -199,7 +207,7 @@ class VerifyRun11R(unittest.TestCase):
     def test_equation_tuple_json_list_roundtrip_replays(self):
         with tempfile.TemporaryDirectory() as d:
             report = synthetic_all_invalid(d)
-            output = ("Cedar: 368 - 219 = 149 Euro remaining. "
+            output = ("Cedar: 368 - 219 = 149 Euro remaining.\n"
                       "Garnet: 368 - 327 = 41 Euro remaining.")
             raw = inject_valid_synthetic_c3(d, report, output=output)
             equations = raw["secondary_score"]["equation"]["a"]["equations"]
@@ -208,6 +216,18 @@ class VerifyRun11R(unittest.TestCase):
             verdict = v.verify_report(d)  # JSON stores lists, not tuples
             self.assertEqual(verdict["status"], "PILOT_PARTIAL_RED")
             self.assertFalse(verdict["utility_gate_pass"])
+
+    def test_same_line_dual_owner_equations_remain_ambiguous(self):
+        # The frozen diagnostic assigns equations only to a single named
+        # option per line. This is not a verifier or scorer defect.
+        f = m.FIXTURES[0]
+        output = ("Cedar: 368 - 219 = 149 Euro remaining. "
+                  "Garnet: 368 - 327 = 41 Euro remaining.")
+        result = m.score_pair(f, output)["equation"]
+        for option in ("a", "b"):
+            self.assertEqual(result[option]["status"], "AMBIGUOUS")
+            self.assertEqual(result[option]["equations"], [])
+            self.assertEqual(result[option]["ambiguous_lines"], 1)
 
     def test_missing_preclose_witness_rejected(self):
         with tempfile.TemporaryDirectory() as d:
