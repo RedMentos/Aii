@@ -78,10 +78,13 @@ class ReadOnlySourceStore:
     def read_source(self, ref):
         if type(ref) is not dict or type(ref.get("source_id")) is not str:
             raise ValueError("SOURCE_REF_INVALID")
-        row = self.db.execute(
-            "SELECT hash,kind,bytes,chars,deleted FROM sources WHERE id=?",
-            (ref["source_id"],)
-        ).fetchone()
+        try:
+            row = self.db.execute(
+                "SELECT hash,kind,bytes,chars,deleted FROM sources WHERE id=?",
+                (ref["source_id"],)
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise ValueError("SOURCE_SQLITE_READ_UNAVAILABLE") from exc
         if (row is None or row["deleted"] != 0 or row["kind"] != "USER"
                 or row["hash"] != ref.get("sha256")):
             raise ValueError("SOURCE_MISSING_REVOKED_OR_FOREIGN")
@@ -96,7 +99,10 @@ class ReadOnlySourceStore:
             compressed = _regular_bytes(
                 blob.with_name(name + ".z"), MAX_ARCHIVE_BYTES)
             dec = zlib.decompressobj()
-            data = dec.decompress(compressed, MAX_BLOB_BYTES + 1)
+            try:
+                data = dec.decompress(compressed, MAX_BLOB_BYTES + 1)
+            except zlib.error as exc:
+                raise ValueError("ARCHIVED_SOURCE_INVALID") from exc
             if (len(data) > MAX_BLOB_BYTES or not dec.eof
                     or dec.unconsumed_tail or dec.unused_data):
                 raise ValueError("ARCHIVED_SOURCE_NOT_BOUNDED")
