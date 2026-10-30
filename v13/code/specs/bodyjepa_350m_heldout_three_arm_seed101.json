@@ -1,0 +1,86 @@
+{
+  "schema": "v13.bodyjepa.350m.heldout_three_arm_frozen.v1",
+  "seed": 101,
+  "source": "INVENTED_SYNTHETIC",
+  "model_id": "LiquidAI/LFM2.5-350M",
+  "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+  "arms": [
+    "CE_ONLY",
+    "CE_EMA_JEPA",
+    "CE_SHUFFLED_JEPA"
+  ],
+  "steps": 4,
+  "lr": 0.001,
+  "jepa_weight": 0.2,
+  "ema_decay": 0.9,
+  "rank": 2,
+  "alpha": 4,
+  "rows": [
+    {
+      "source_id": "invented-s101-01",
+      "prompt": "In the invented Seloria register, what is the tag for island Varo?",
+      "target": "amber",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Varo?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Varo Minor?"
+    },
+    {
+      "source_id": "invented-s101-02",
+      "prompt": "In the invented Seloria register, what is the tag for island Dalen?",
+      "target": "copper",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Dalen?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Dalen Minor?"
+    },
+    {
+      "source_id": "invented-s101-03",
+      "prompt": "In the invented Seloria register, what is the tag for island Mirra?",
+      "target": "violet",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Mirra?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Mirra Minor?"
+    },
+    {
+      "source_id": "invented-s101-04",
+      "prompt": "In the invented Seloria register, what is the tag for island Nuvia?",
+      "target": "basalt",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Nuvia?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Nuvia Minor?"
+    },
+    {
+      "source_id": "invented-s101-05",
+      "prompt": "In the invented Seloria register, what is the tag for island Kelon?",
+      "target": "silver",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Kelon?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Kelon Minor?"
+    },
+    {
+      "source_id": "invented-s101-06",
+      "prompt": "In the invented Seloria register, what is the tag for island Oris?",
+      "target": "cedar",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Oris?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Oris Minor?"
+    },
+    {
+      "source_id": "invented-s101-07",
+      "prompt": "In the invented Seloria register, what is the tag for island Zetha?",
+      "target": "coral",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Zetha?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Zetha Minor?"
+    },
+    {
+      "source_id": "invented-s101-08",
+      "prompt": "In the invented Seloria register, what is the tag for island Breva?",
+      "target": "indigo",
+      "paraphrase": "What tag does the fictional Seloria register assign to island Breva?",
+      "near_miss": "In the invented Seloria register, what is the tag for island Breva Minor?"
+    }
+  ],
+  "retention_anchors": [
+    "What is the capital of France?",
+    "How many sides does a triangle have?",
+    "Translate cat to German.",
+    "Name a primary color.",
+    "What is 3 plus 4?",
+    "Who wrote Hamlet?",
+    "What is water made of?",
+    "What is the opposite of hot?"
+  ]
+}
