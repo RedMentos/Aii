@@ -18,7 +18,7 @@
   "turns_planned": 27,
   "score_per_arm": 18,
   "latin_square": true,
-  "native_status": "NOT_YET_LAUNCHED",
+  "native_status": "QUEUED_OR_RUNNING_UNVERIFIED",
   "step2_gate_promoted": false,
   "native_c2_control_proven": false,
   "redmi_measured": false,
@@ -31,5 +31,8 @@
     "No Redmi measurement",
     "Historical Run34/Run37 source-pin errors remain RED"
   ],
-  "next_command": "Push pinned .github/workflows/v13-step2-paired-native-v3-20261030.yml, inspect original Actions raw, verify ZIP/27 records/36 releases, privately back up, no gate promotion."
+  "next_command": "Inspect Actions run 40996792157 until terminal; download original raw ZIP even if RED; verify ZIP SHA256, CRC, SHA256SUMS, all 27 raw rows/351 structural flags/36 B1+B2 releases, score 18 per arm; private byte-verified backup; record gates unchanged.",
+  "native_run_id": 40996792157,
+  "native_head": "5e802d235c9501879a3aff07e5134c1455e1769b",
+  "native_workflow": ".github/workflows/v13-step2-paired-native-v3-20261030.yml"
 }
