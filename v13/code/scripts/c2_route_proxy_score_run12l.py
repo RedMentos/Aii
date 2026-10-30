@@ -68,7 +68,8 @@ def score(fixture, rows):
                      and strict.get("selected") is
                          (info.get("source") == "NATIVE_C2_ADVISORY"))
         selected = info.get("source") == "NATIVE_C2_ADVISORY"
-        final_route = row.get("route") if row.get("route") in ROUTES else None
+        candidate = row.get("route")
+        final_route = candidate if type(candidate) is str and candidate in ROUTES else None
         # No silent acceptance of an invalid or unbound source as utility.
         valid = bool(prompt_ok and scaffold_ok and source_ok and
                      native_ok and strict_ok and final_route is not None)
