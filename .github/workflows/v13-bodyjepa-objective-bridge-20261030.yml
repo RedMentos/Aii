@@ -57,7 +57,7 @@ jobs:
           if [ "$(cat "$e/SOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] &&
              [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/HF_EXIT.txt")" = 0 ] &&
              [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v               tests.test_body_jepa_objective_bridge_20261030 tests.test_body_jepa tests.test_objectives)               > "$e/TEST_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v               tests.test_body_jepa_objective_bridge_20261030 tests.test_body_jepa tests.test_action_jepa_objective)               > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
             "$py" -m py_compile v13/code/v13/body_jepa_objective_bridge.py               > "$e/COMPILE_RAW.log" 2>&1
             echo "$?" > "$e/COMPILE_EXIT.txt"
