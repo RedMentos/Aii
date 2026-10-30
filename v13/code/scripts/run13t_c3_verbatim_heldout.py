@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -85,13 +86,33 @@ def arm_order(index):
     return ARMS if index % 2 == 0 else tuple(reversed(ARMS))
 
 
+
+def explicit_wrong_claims(case, output):
+    """Conservative count of parseable wrong source-value/faster claims only."""
+    if type(output) is not str:
+        raise ValueError("RUN13T_NON_TEXT_CLAIM")
+    wrong = 0
+    for option, expected in ((case["a"], case["budget"] - case["a_cost"]),
+                             (case["b"], case["budget"] - case["b_cost"])):
+        pattern = rf"\b{re.escape(option)}\s+leaves\s+([0-9]{{1,6}})\s+Euros?\s+remaining\b"
+        wrong += sum(int(m.group(1)) != expected for m in re.finditer(
+            pattern, output, flags=re.IGNORECASE))
+    expected_faster = case["a"] if case["a_days"] < case["b_days"] else case["b"]
+    for m in re.finditer(r"\b([A-Za-z][A-Za-z0-9_-]{0,63})\s+finishes\s+sooner\b",
+                         output, flags=re.IGNORECASE):
+        if m.group(1).casefold() != expected_faster.casefold():
+            wrong += 1
+    return wrong
+
+
 def verdict(totals):
     base, strict = (totals[a] for a in ARMS)
     if (base["n"] != 8 or strict["n"] != 8):
         raise ValueError("RUN13T_INCOMPLETE_COHORT")
     if (strict["exact_copy"] >= base["exact_copy"] + 2
             and strict["strict_full"] >= base["strict_full"]
-            and strict["source_facts_verified"] >= base["source_facts_verified"]):
+            and strict["source_facts_verified"] >= base["source_facts_verified"]
+            and strict["wrong_claims"] <= base["wrong_claims"]):
         return "BOUNDED_SYNTHETIC_FIDELITY_SIGNAL_NOT_UTILITY_GATE"
     if (strict["strict_full"] < base["strict_full"]
             or strict["exact_copy"] < base["exact_copy"]):
@@ -190,6 +211,7 @@ def fresh_case(base_home, base_cfg, case, index, out):
                 row["source_facts_verified"] = bool(
                     valid and fidelity["result"] == "FACTS_EXACT")
                 row["fidelity_reason"] = fidelity["reason"]
+                row["wrong_claims"] = explicit_wrong_claims(case, output)
                 (out / "raw" / f"{index:02d}_{arm}.json").write_text(
                     json.dumps(row, sort_keys=True, ensure_ascii=False,
                                allow_nan=False) + "\n", encoding="utf-8")
@@ -219,6 +241,7 @@ def run(home, out, fixture):
                             and row["native_reaped"] for row in rows),
         "exact_copy": sum(row["arm"] == arm and row["exact_copy"] for row in rows),
         "source_facts_verified": sum(row["arm"] == arm and row["source_facts_verified"] for row in rows),
+        "wrong_claims": sum(row["wrong_claims"] for row in rows if row["arm"] == arm),
         "numeric_correct": sum(row["score"]["numeric"]["correct"]
                                for row in rows if row["arm"] == arm),
         "faster_correct": sum(row["score"]["faster_correct"]
