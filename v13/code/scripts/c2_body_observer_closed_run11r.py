@@ -272,8 +272,8 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
                       "jepa_weight": 0, "step2_gate_promoted": False,
                       "b3_promoted": False, "body_jepa_available": False,
                       "redmi_measured": False, "whole_system_complete": False,
-                      "_native_alive_before_close": needle_alive,
-                      "_source_exact_before_close": source_exact}
+                      "native_c2_alive_before_close": needle_alive,
+                      "source_exact_before_close": source_exact}
         finally:
             runtime.close()
         if record is None:
@@ -286,9 +286,9 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
         record["native_c2_pid"] = needle_proc.pid if needle_proc is not None else None
         flags = row_evidence(record["raw_audit"], arm, record["body_process_releases"],
                              native_context=record["context_packet"],
-                             native_alive=record.pop("_native_alive_before_close"),
+                             native_alive=record["native_c2_alive_before_close"],
                              native_reaped=reaped, native_pid=record["native_c2_pid"],
-                             source_exact=record.pop("_source_exact_before_close"),
+                             source_exact=record["source_exact_before_close"],
                              session=record["session_id"], event_id=record["event_id"],
                              source_text=text,
                              release_capture_phase=record["release_capture_phase"])
