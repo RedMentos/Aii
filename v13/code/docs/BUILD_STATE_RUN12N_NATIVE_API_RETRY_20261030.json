@@ -51,13 +51,38 @@
     "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
   },
   "native_retry": {
-    "status": "IN_PROGRESS",
-    "concurrency_group": "v13-step2-budget-paired-native-20261030",
-    "rationale": "Original failed before any model-generated turn; retry fixes only Runtime API and scalar release witness, retains exact registered fixture/scorer/models.",
+    "status": "STRUCTURAL_GREEN_UTILITY_RED",
     "run_id": 41061289187,
     "exact_tested_head": "6a5e9af1e83da8d4c16817b88d4aee55198f1495",
-    "result": "UNKNOWN_PENDING_TERMINAL",
-    "original_red_preserved": true
+    "artifact_id": 12979551173,
+    "original_zip_sha256": "c058f33d1055d838000cc31e27b6e6ba6d37f86caa8e7b0d15a643672d44c447",
+    "original_zip_size_bytes": 197079,
+    "crc": "CLEAN",
+    "inner_sha256": "60/60",
+    "stage_exits": "10/10 zero",
+    "tests": "50/50 PASS",
+    "privacy": "CLEAN",
+    "raw": "16/16",
+    "preclose": "16/16",
+    "strict": "4/4",
+    "native_c2_invocations": 4,
+    "native_c2_selected": 3,
+    "all_structurally_valid": true,
+    "primary_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 3,
+      "C_B2_ONLY": 4,
+      "F_NATIVE_AUTO": 1
+    },
+    "secondary_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 0,
+      "F_NATIVE_AUTO": 0
+    },
+    "utility_signal": false,
+    "comparative_utility_proven": false,
+    "private_backup_byte_exact": true
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -73,6 +98,6 @@
     "Whether native-auto C2 improves source-bound answer score vs best single model",
     "Redmi and §100 acceptance unavailable"
   ],
-  "next_command": "Inspect terminal Actions 41061289187; download original ZIP and independently verify SHA256, CRC, every SHA256SUMS, stage exits, 16 raw/preclose and 4 strict C2; preserve any RED and byte-exact private backup. Then select next independent blueprint package; do not promote gates.",
+  "next_command": "Implement separately labeled read-only full-task (remainders+sooner) diagnostic against original seed197 native ZIP, preserving frozen numeric score and negative gates. Preregister a NEW disjoint full-task cohort and deterministic no-model baseline before future native policy tests.",
   "remaining_platform_budget": "UNKNOWN"
 }
