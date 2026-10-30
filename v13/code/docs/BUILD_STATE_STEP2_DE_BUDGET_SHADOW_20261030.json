@@ -1,0 +1,58 @@
+{
+  "schema": "v13.build_state.scoped.step2_de_budget_shadow.v1",
+  "owner": "assistant/v13-step2-de-budget-remain-shadow-20261030",
+  "parent_pr": 1222,
+  "parent_head": "905bfeb0eeac1bb77ef29b12432d8279bb2193d4",
+  "date": "2026-10-30",
+  "prereg_commit": "64f1b66c163ae581e211b49b1d5095975c3dc649",
+  "fixture_commit": "b8cb3bf94dce110f8e81087417247742ec518c8e",
+  "fixture_blob": "b0d50ab64b97aa646fd5b3dd02940a8375c0eafc",
+  "cohort": {
+    "supported": 12,
+    "unsupported": 12
+  },
+  "software": {
+    "run_id": 41013833587,
+    "head": "d0fa75b88198ed4c1c44cfc6eecfda14b819fc21",
+    "artifact_id": 12958761621,
+    "zip_sha256": "277c67fe6bdbc6745ac4c6476de72f7ac9c2e7e735927cc9bf390b0ffd9c463e",
+    "inner_sha256_count": 12,
+    "stage_exits": "5/5 ZERO",
+    "tests": "17/17 PASS",
+    "supported_correct": 12,
+    "unsupported_false_positive": 0,
+    "privacy": "CLEAN"
+  },
+  "original_native_posthoc": {
+    "run_id": 41013926611,
+    "head": "780c034cce01a2136e2e980e9d59c0b1a51eda54",
+    "artifact_id": 12958821611,
+    "zip_sha256": "9ee900d49c61925e86f340939d8a86b37ddef74a967f69779e1c87b5611d9d9a",
+    "inner_sha256_count": 17,
+    "stage_exits": "7/7 ZERO",
+    "original_native_zip_sha256": "ad961abb8eea8d567f58cbc4f1fed67f7a79920e36564bb5527b7ea08fa4f3f7",
+    "original_native_semantic_status": "SEMANTIC_REQUIREMENT_FAIL",
+    "original_native_remainders_stated": 0,
+    "shadow_remainders_computed": 2,
+    "values": {
+      "Rot": 40,
+      "Blau": 10
+    },
+    "new_native_calls": 0
+  },
+  "private_library": "/V13-Checkpoints/2026-10-30/Run11-STEP2-GermanBudgetShadow/",
+  "private_byte_verified": true,
+  "production_integration": false,
+  "next_package": "fresh preregistered paired native STEP2 comparison with exact source-bound budget tool-consumer arm and permission/age gates; or independent canonical organ; do not alter original native proof",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_step2_de_budget_remain_seed97_20261030",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}
