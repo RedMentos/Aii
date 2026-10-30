@@ -1,0 +1,77 @@
+{
+  "schema": "V13_RUN11V_SEED181_SOFTWARE_GREEN_NATIVE_NOT_YET_LAUNCHED",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11v-disjoint-c2body-paired181-20261030",
+  "parent_pr": 1249,
+  "parent_head": "de6096cded820c2a95ca84461b0b7babe14b7702",
+  "prereg_commit": "be617e194503ef38e1e225aef23741ae7ff6dc22",
+  "fixture_sha256": "ae4799f60316cf51412d228547662de8cb4b6523dedffd5fc02b2862d84477e3",
+  "seed": 181,
+  "turns_planned": 24,
+  "arms": [
+    "A_C3_ONLY",
+    "B_B1_ONLY",
+    "C_B2_ONLY",
+    "D_DISTINCT_BOTH",
+    "E_SHARED_DUAL_COLD",
+    "F_NATIVE_AUTO"
+  ],
+  "source_blobs": {
+    "runner": "d274a66b8ceb801c741bbffe1456611b43603208",
+    "verifier": "4f04236507d7f4c2ae70f62aef905eefe83389d6",
+    "runner_test": "8923c0108e2db3c1ffc4e0be41a794070d55e64a",
+    "verifier_test": "8608bf75b3e1553790756dc58946e0b115d1f010",
+    "original_runner": "e3c4b93bc1dafe24c23747105cf654aa59de2937",
+    "original_verifier": "9cef2f2edd8bbd2fae075f03690bd9f31b8c4c1e",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "scoring": {
+    "primary": "frozen Run11R score_pair contradiction-veto",
+    "secondary": "frozen Run11R score_primary strict",
+    "modified_scorers": false
+  },
+  "software_green": {
+    "run_id": 41039208355,
+    "head": "9306a3c0a90e3453650dc996c5120ec596eb8c88",
+    "artifact_id": 12970275291,
+    "sha256": "0a9510ae1cc1cd74af1fea54a387f7c191497f922eda545a80b5dc05d5718eb2",
+    "bytes": 5584,
+    "tests": "55/55 PASS",
+    "stages": "8/8 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11V-C2Body-Paired181/PREFLIGHT_GREEN_41039208355_sha0A9510.zip",
+    "private_byte_exact": true
+  },
+  "software_red": [
+    {
+      "run_id": 41039010262,
+      "artifact_id": 12969272257,
+      "sha256": "6d7ddb0df09b4bb8ae5b935f98c2c2ac9e8901a61bd46527793570ac6b95d8af",
+      "reason": "synthetic test fixture used old scorer slots",
+      "private_byte_exact": true
+    },
+    {
+      "run_id": 41039102942,
+      "artifact_id": 12969651118,
+      "sha256": "f107e40badf043112c40d39c3bca916d25fa10c072036e2ff51080cd9925833a",
+      "reason": "synthetic tuple-wire test read secondary rather than primary",
+      "private_byte_exact": true
+    }
+  ],
+  "native": {
+    "launched": false,
+    "redmi": false,
+    "utility_proven": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Check no active heavy owner, create separate native trigger branch pinned to Run11V source and test blobs, launch under existing concurrency group; verify raw ZIP SHA/CRC/24 rows and private backup. Do not modify frozen seed163."
+}
