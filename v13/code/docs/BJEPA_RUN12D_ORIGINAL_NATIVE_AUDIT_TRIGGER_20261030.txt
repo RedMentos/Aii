@@ -1,0 +1,8 @@
+RUN12D EXPLICIT ORIGINAL RUN12C NATIVE RAW AUDIT TRIGGER
+Date UTC 2026-10-30
+Owner GPT-6; review-only PR #1261, child of #1260.
+Original native Actions run: 41046804934, terminal SUCCESS, exact HEAD 35c163f19f3ccdc1e8ebed1df5821c679d96a13a.
+Original Actions artifact: 12973177358, SHA256 67f56f5e43e9240e12287bd566058380db40aab75ff7aae5e61c06ad978380dd, CRC and 31 inner hashes verified independently.
+Original report: 12/12 arms, DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN; all negative gates unchanged.
+Run read-only Run12D independent source/fixture/metric/scorer audit; no model execution, no production promotion.
+Preserve any RED and raw; privately backup exact audit artifact.
