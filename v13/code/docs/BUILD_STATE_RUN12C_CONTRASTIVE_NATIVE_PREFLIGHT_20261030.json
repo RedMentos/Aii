@@ -70,14 +70,18 @@
   },
   "native": {
     "workflow_prepared": true,
-    "triggered": false,
+    "triggered": true,
     "proven": false,
-    "owner": "NONE_ASSIGNED",
+    "owner": "GitHub Actions run 41046804934 serial Body-JEPA native group",
     "workflow_git_blob": "11b5612e32d07042c4c2d6e5052cb23b809dbc97",
     "explicit_trigger_path": "v13/code/docs/BJEPA_CONTRASTIVE_350M_NATIVE_TRIGGER_RUN12C.txt",
     "concurrency_group": "v13-bodyjepa-350m-eval-paired-native-serial-20261030",
     "active_heavy_owner_checked_at": "2026-10-30T11:15Z",
-    "active_workflows_observed": 0
+    "active_workflows_observed": 0,
+    "launch_head": "35c163f19f3ccdc1e8ebed1df5821c679d96a13a",
+    "run_id": 41046804934,
+    "run_status_at_checkpoint": "QUEUED",
+    "completed_arms": "UNKNOWN"
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -93,5 +97,5 @@
     "Independent raw scoring after original 12-arm native artifact",
     "Redmi thermal/RSS remains unmeasured"
   ],
-  "next_command": "Native preflight GREEN and no active Actions owner observed. Create the exact explicit trigger file on own review branch to launch serial pinned 12-arm Linux-native diagnostic; immediately persist trigger HEAD/run ID and independently audit terminal original raw. Continue other organs while pending."
+  "next_command": "Inspect Actions run 41046804934 until terminal, download original artifact, verify ZIP SHA256/CRC/SHA256SUMS/HEAD/pins/12 arm reports and preserve RED/partial. Upload original byte-exact ZIP to private Library /V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239, re-materialize cmp. Continue independent Canon work while native runs. No gate promotion."
 }
