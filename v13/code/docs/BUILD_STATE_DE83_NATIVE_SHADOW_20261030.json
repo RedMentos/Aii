@@ -1,0 +1,51 @@
+{
+  "schema": "v13.build_state.scoped.de83_native_shadow.v1",
+  "owner": "assistant/v13-de83-native-shadow-cohort-20261030",
+  "parent_pr": 1221,
+  "parent_head": "22cbd1bcd4e31091eb6a4f3e0bb5d818367b339b",
+  "date": "2026-10-30",
+  "prereg_commit": "7dd6cae461c03e711e0798fa33855deae7607d2e",
+  "fixture_commit": "16854058e72361cd993716fa2cf0b86b0aa6fbba",
+  "fixture_blob": "cc052aa9eaecd213124f9c79df15f30637c5a80c",
+  "rows": {
+    "supported_total": 12,
+    "supported_difference": 4,
+    "unsupported": 8
+  },
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "source_blobs": {
+    "harness": "b410821d89313ffb862ddc347b56f43d98c73741",
+    "audit": "623aaae86730fdd4c100625c5134fbcc6eec3b93",
+    "pipeline": "25cacd7388e5464dd814f4b18c545e2ec2f78b54",
+    "german": "f9791c84846db660e9bde0e002defa55321f47b3",
+    "listarith": "35893e9f829a591ffb9a792a73cef9bce986b3c4",
+    "runners": "efda7aa1aa5729e974d0d641870d4da05d21c961",
+    "catalog": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "preflight": {
+    "run_id": 41013108578,
+    "head": "c280905e8624128c330484daa97e1ddbd87da3da",
+    "tests": "43/43 PASS",
+    "stage_exits": "6/6 ZERO",
+    "artifact_id": 12958437645,
+    "zip_sha256": "e2da2a1231124c7877e5a29c6e44ef484d3f04ceeef16f323af49b69a95f1cf7",
+    "inner_sha256_count": 13,
+    "privacy": "CLEAN"
+  },
+  "native": {
+    "status": "NOT_LAUNCHED",
+    "concurrency_group": "v13-step2-budget-paired-native-20261030"
+  },
+  "next_command": "Create v13/code/docs/DE83_NATIVE_LAUNCH_MARKER_20261030.md on current review branch once no other heavy native owner is active; inspect Actions native run and original ZIP; independently replay all rows",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}
