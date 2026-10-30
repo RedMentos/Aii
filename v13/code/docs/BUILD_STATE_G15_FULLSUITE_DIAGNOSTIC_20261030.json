@@ -1,0 +1,83 @@
+{
+  "package": "G15_EXACT_ORIGINAL_FULLSUITE_DIAGNOSTIC_20261030",
+  "owner": "GPT-6",
+  "status": "DIAGNOSTIC_SOFTWARE_GREEN_ORIGINAL_FULLSUITE_REMAINS_RED",
+  "branch": "assistant/v13-g15-fullsuite-diagnostic-verdict-20261030-auto11",
+  "parent_commit": "129f1b20ee855335225334e0e47d8206da486de6",
+  "preregistered_commit": "901478b095b792e77d2f3335bbec4ce7c88ed0c0",
+  "tested_commit": "ff7c6d1b0788dd557b8a6df75dcc00b0222ed737",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "source_blobs": {
+    "v13/code/scripts/g15_fullsuite_diagnostic.py": "1eca4145372e447b0a8d277c4e29e8970f01c394",
+    "v13/code/tests/test_g15_fullsuite_diagnostic.py": "603f543d13b1312c5a93450c486cedf4be621469"
+  },
+  "verification": {
+    "actions_run": 41082642447,
+    "artifact_id": 12989473858,
+    "zip_sha256": "412c28cbcb4a73264f2188bf5fdcfc8b9baf119fe40298edb0bfb8872b689cfb",
+    "crc": "PASS",
+    "inner_hashes": "21/21",
+    "tests": "8/8",
+    "stage_exits": {
+      "CANON": 0,
+      "COMPILE": 0,
+      "DIFF": 0,
+      "PRIVACY": 0,
+      "TEST": 0,
+      "FETCH_G13": 0,
+      "FETCH_G14": 0,
+      "ORIGINAL_ASSERT": 0,
+      "ORIGINAL_VERDICT": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "BYTE_IDENTICAL"
+  },
+  "original_baseline": {
+    "run": 41069560040,
+    "head": "86c706eba2ece7da3234e245a8e3e8860e607b7e",
+    "zip_sha256": "a3f9c4ea76a59865886eb759e9039c6840f0f6f2a009d7e4948ba9fd9c0a0ed1",
+    "tests": 3972,
+    "full_exit": 1,
+    "identity_entries": 120
+  },
+  "original_candidate": {
+    "run": 41080416868,
+    "head": "4c789ae85758ca71bf86dd5067ab697913071a51",
+    "zip_sha256": "77906cc480e18a7695b833896730dded1e5f881278966259a7725440d766c27f",
+    "tests": 3987,
+    "full_exit": 1,
+    "identity_entries": 120
+  },
+  "result": {
+    "status": "HISTORICAL_RED_SAME_IDENTITIES",
+    "evidence_valid": true,
+    "software_suite_gate_pass": false,
+    "added_failure_identities": [],
+    "removed_failure_identities": []
+  },
+  "scope": "Read-only offline exact-original ZIP multiset comparison with SHA/CRC/inner manifest/HEAD/stage verification; not a full-suite fix, native test or model learning.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "persistence": {
+    "github_review_branch": true,
+    "private_library": "/V13-Checkpoints/2026-10-30/G15-Original-Fullsuite-Diagnostic",
+    "g14_private_library": "/V13-Checkpoints/2026-10-30/G14-Unfiltered-JEFLink",
+    "verified_remote_code_blobs": true
+  },
+  "open_questions": [
+    "Full suite remains RED with 4 failures and 65 errors; exact identities unchanged, not waived.",
+    "Current SourceHandoff/frozen package failures require owner-scoped remediation with original cohort integrity.",
+    "Native C2+C3+B1/B2 comparative utility, Body-JEPA gain, Redmi measurements and entire blueprint still incomplete."
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_g15_fullsuite_diagnostic",
+  "next_work": "Move to substantive measured C2/C3/B1/B2 and JEPA utility package; preserve original G13/G14 ZIPs and historical negative gates.",
+  "platform_remaining_budget": "UNKNOWN"
+}
