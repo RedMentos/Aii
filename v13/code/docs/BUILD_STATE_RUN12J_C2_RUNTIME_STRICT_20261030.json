@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN12J_C2_RUNTIME_STRICT_VALIDATED_TOOL_SOURCE_GREEN_NO_NATIVE_PROMOTION",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12j-c2-runtime-strict-tool-admission-20261030",
+  "pr": 1266,
+  "parent_pr": 1265,
+  "parent_head": "d51058764af32f9e7dcda8f2e31228747dcef9ee",
+  "source_blobs": {
+    "runtime": "22ed11e4a53d9eeae8fbc74a1753082b5785be2b",
+    "tests": "cfacb8739c769c8a4171ce1d19eaa477d9528eb5",
+    "control_calibration_worker": "1b353cf79ca2291c6ec4cf7b69eb926a63a1b48b",
+    "sleep": "90d5361d1f8ad34c2311e870572a1d40146e4ca0",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41051158002,
+    "tested_head": "e2f15e823068a91e90df9ff6b6786694d30505e3",
+    "status": "GREEN",
+    "tests": "57/57 PASS (5 new fake Needle seam + 52 C2/Calibration/Provenance)",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12974936511,
+    "zip_sha256": "c24b39bca80909450c78cbac77503788cb996ea206c89305997042622ba22341",
+    "zip_bytes": 78778,
+    "crc": "PASS",
+    "inner_sha256": "21/21",
+    "original_counterexamples": [
+      "Original foreign top-level gist preempted validated detail; patch selects detail",
+      "Original success=false with route both was selected; patch retains scaffold simple"
+    ],
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12J-C2StrictRuntime/V13_Run12J_C2_41051158002.zip",
+    "backup_byte_exact": true
+  },
+  "previous_run12i_broad": {
+    "run_id": 41050891565,
+    "status": "GREEN",
+    "tests": "89/89 all Sleep + 3/3 Context/World/Sleep",
+    "zip_sha256": "0ba7d064ec44ac22c199ad1159398d60cc80306263e0857e8c7ac354e793afe9",
+    "private_backup_byte_exact": true
+  },
+  "native": {
+    "launched": false,
+    "c2_native_utility_proven": false,
+    "redmi": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Native Needle/C2 source output compatibility under strict unique validated tool admission unmeasured",
+    "No comparative task utility; structural correctness only",
+    "Historical full-suite source pin REDs remain open"
+  ],
+  "next_command": "Run preregistered disjoint Linux-native C2 route compatibility on exact pinned Needle3 under serial native owner and compare strict vs prior; do not promote until measured utility. Continue independent Canon work meanwhile."
+}
