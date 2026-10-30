@@ -31,6 +31,14 @@ class Run13HSqliteFailureContainment(unittest.TestCase):
         self.assertEqual(value["jepa_weight"], 0)
         self.assertFalse(value["whole_system_complete"])
 
+    def _fault(self, runtime, prefix, error_type):
+        real_one = runtime.store.one
+        def fail_selected_query(sql, args=()):
+            if sql.startswith(prefix):
+                raise error_type("selected SQLite read failure")
+            return real_one(sql, args)
+        return patch.object(runtime.store, "one", side_effect=fail_selected_query)
+
     def test_last_sqlite_errors_fail_closed(self):
         with TemporaryDirectory() as td:
             runtime = Runtime(Path(td))
@@ -38,7 +46,7 @@ class Run13HSqliteFailureContainment(unittest.TestCase):
                 runtime.sleep.cycle.set_policy("enabled", "off")
                 for cls in (sqlite3.DatabaseError, sqlite3.OperationalError):
                     with self.subTest(error=cls.__name__):
-                        with patch.object(runtime.store, "one", side_effect=cls("read failure")):
+                        with self._fault(runtime, "SELECT p.id,p.event_id,p.payload", cls):
                             got = json.loads(Operator(runtime).run(":jeflink last"))
                         self._assert_denied(got)
             finally:
@@ -51,7 +59,7 @@ class Run13HSqliteFailureContainment(unittest.TestCase):
                 runtime.sleep.cycle.set_policy("enabled", "off")
                 for cls in (sqlite3.DatabaseError, sqlite3.OperationalError):
                     with self.subTest(error=cls.__name__):
-                        with patch.object(runtime.store, "one", side_effect=cls("read failure")):
+                        with self._fault(runtime, "SELECT session_id FROM events", cls):
                             got = json.loads(Operator(runtime).run(
                                 f":jeflink {PACKET} {QUERY} {SOURCE}"))
                         self._assert_denied(got)
@@ -64,7 +72,7 @@ class Run13HSqliteFailureContainment(unittest.TestCase):
             try:
                 for cls in (sqlite3.DatabaseError, sqlite3.OperationalError):
                     with self.subTest(error=cls.__name__):
-                        with patch.object(runtime.store, "one", side_effect=cls("read failure")):
+                        with self._fault(runtime, "SELECT event_id,payload FROM packets", cls):
                             got = propose_pointer(runtime.store, PACKET, QUERY, SOURCE)
                         self._assert_denied(got)
             finally:
