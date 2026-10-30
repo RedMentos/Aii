@@ -1,0 +1,11 @@
+# Run11Z prereg — unfiltered cross-organ review of Run11Y (2026-10-30)
+
+Review-only child of Run11Y PR #1255 at exact HEAD `4090a8885baa37f077f41ae199967d8db7e963d5`. No Run11Y source/test edits, no model inference, no new native job. The original Run11Y software Actions 41042568321 GREEN (6/6 tests) and original ZIP SHA256 `788bb9ac9ddb053214ea978a710f26634575ee2cd0a996f0146c54b522adea92` are frozen.
+
+**Plan committed before workflow:** run complete unfiltered `python -m unittest discover -s tests -p 'test_*.py'` from current review-chain source with isolated pinned CPU torch, transformers, peft, numpy and existing dependencies. No exclusions, waivers or replacement of historical failures. Run `compileall`, privacy scan from parent, `git diff --check`, source/Canon pin check, pip consistency. Preserve original raw even on RED; verify ZIP SHA/CRC/SHA256SUMS, exact HEAD, original failures and private backup. Full suite is software only, not Linux-native model utility or Redmi.
+
+Independent review targets: (1) no changes to original Canon, source/model/seed/scorers; (2) JEF budget candidate remains no-authority, no Runtime consumer; (3) source integrity does not establish human approval; (4) **same-project conflicting active source substitution is not prevented by current Run11Y** because the query binds project but not source identity. Treat as an open limitation; do not claim that negative control is proven. Future source-pinned or authorized-source-set consumer must close it before any output authority. (5) second-read revocation cannot eliminate later race; dispatch revalidation mandatory.
+
+**Expected:** fullsuite may reproduce historical Run34/Run37 source-pin RED; do not silently waive. This review's outcome remains UNKNOWN until original terminal raw is inspected. All gates Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi UNMEASURED, whole V13 incomplete.
+
+**Next command:** add source-only fullsuite workflow pinned to parent, launch, inspect terminal and raw, checkpoint. Continue another independent canonical organ while it runs.
