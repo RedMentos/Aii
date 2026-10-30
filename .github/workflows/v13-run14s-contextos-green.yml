@@ -1,0 +1,92 @@
+name: V13 Run14S ContextOS outcome replay candidate and cross-organ
+on:
+  push:
+    branches: [assistant/v13-run14s-contextos-outcome-replay-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-run14s-contextos-green.yml'
+permissions:
+  contents: read
+jobs:
+  context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run pinned SQLite ContextOS replay, warm authority and neuromod regressions
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run14s-green"; mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          5b5da5926c662abd4ddb0693fb536fab5d53403a v13/code/docs/CONTEXTOS_OUTCOME_REPLAY_PREREG_RUN14S_20261030.md
+          e24621931038b4392e82163aa2dd410ca0ead28f v13/code/tests/test_context_os_outcome_replay_run14s.py
+          40a77a9c3717db7899bfd8966acfa4b9e315e966 v13/code/v13/context_os.py
+          a76cf2b62a4610795d1a382dd0139fefefe866a9 v13/code/tests/test_context_os.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run14s-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run14s-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_context_os_outcome_replay_run14s \
+              tests.test_context_os \
+              tests.test_context_os_singlequote_exact_20261029 \
+              tests.test_context_os_unclosed_code_20261029 \
+              tests.test_context_warm_authority_run271 \
+              tests.test_context_warm_final_20261029 \
+              tests.test_context_warm_postverify_race_run11 \
+              tests.test_neuromod \
+              tests.test_neuromod_authority_live) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PREREQUISITE > "$e/TEST_RAW.log";echo 99 > "$e/TEST_EXIT.txt";fi
+          python3 -m compileall -q v13/code/v13/context_os.py v13/code/tests/test_context_os.py v13/code/tests/test_context_os_outcome_replay_run14s.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 7379befc9c475988f25a44771652449cbda3418f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 7379befc9c475988f25a44771652449cbda3418f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve complete candidate raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run14s-green-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run14s-green/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require all candidate stages GREEN
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run14s-green"
+          for stage in PINS VENV DEPS PIP_CHECK TEST COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              tail -100 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'CONTEXTOS_REPLAY_SOFTWARE_ONLY; NO_MODEL_OR_AGE_PROMOTION'
