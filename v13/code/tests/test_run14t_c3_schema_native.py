@@ -136,7 +136,7 @@ class Run14TSourcePreflight(unittest.TestCase):
             out = Path(td) / "pilot"
             self.build_synthetic_raw(out)
             self.assertEqual(replay.verify(out, FIXTURE)["rows"], 16)
-            rowfile = out / "raw/00_COPY_BASELINE.json"
+            rowfile = out / "raw/00_PROMPT_ONLY.json"
             original = rowfile.read_text()
             row = json.loads(original)
             for field, bad in (
