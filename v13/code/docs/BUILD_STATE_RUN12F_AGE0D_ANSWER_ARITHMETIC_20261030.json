@@ -1,0 +1,66 @@
+{
+  "schema": "V13_RUN12F_AGE0D_ANSWER_AWARE_SHADOW_SOFTWARE_GREEN_NO_DELIVERY",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12f-age0d-answer-arithmetic-shadow-20261030-hourly11",
+  "pr": 1263,
+  "parent_pr": 1262,
+  "parent_head": "70fa2161187a5cce769df7f739c8844c0fff5c05",
+  "source_blobs": {
+    "candidate": "899b8e32d94725adec9beb134be2620b72fc1d5d",
+    "tests": "444e8e39715b3c2bbe8c9e75ebc7ae240f1d0a22",
+    "frozen_selfmodel": "072ae59d75c97d972433fedd3830002d2c8530ad",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41048744563,
+    "tested_head": "cf42144bd29cb88989cf675ad84f462b9fcb9928",
+    "status": "GREEN",
+    "tests": "21/21 PASS",
+    "stages": "7/7 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12974050628,
+    "zip_sha256": "62b1170801ab03118913847bbd3a04a97142342a428a2b2e1d91bb0dd3aeac61",
+    "zip_bytes": 3775,
+    "crc": "PASS",
+    "inner_sha256": "16/16",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12F-Age0D-AnswerArithmetic/FINAL_SOFTWARE_GREEN_41048744563_sha62B11708.zip",
+    "backup_byte_exact": true
+  },
+  "historical_red": [
+    {
+      "run_id": 41048430223,
+      "zip_sha256": "4249d44aaf2a4bc429a54ca549347aa477babcc4e18b88bc67d4ddd11b7c0c06",
+      "test_exit": 1,
+      "backup": "/V13-Checkpoints/2026-10-30/Run12F-Age0D-AnswerArithmetic/ORIGINAL_RED_41048430223_sha4249D44A.zip"
+    },
+    {
+      "run_id": 41048528793,
+      "zip_sha256": "6660c8794d89867af298e6ba5a48eb20ac4776950602920ddd345ecdcfc16c1f",
+      "test_exit": 1,
+      "backup": "/V13-Checkpoints/2026-10-30/Run12F-Age0D-AnswerArithmetic/INTERMEDIATE_RED_41048528793_sha6660C879.zip"
+    },
+    {
+      "run_id": 41048637555,
+      "zip_sha256": "00d6065adb11fd1c2eb5db92dacad206a402d8cb16e98a79e39f9789410c222a",
+      "test_exit": 1,
+      "backup": "/V13-Checkpoints/2026-10-30/Run12F-Age0D-AnswerArithmetic/BOUNDARY_FIXED_RED_41048637555_sha00D6065A.zip"
+    }
+  ],
+  "native": {
+    "launched": false,
+    "required_for_candidate": false,
+    "real_final_answer_calibration": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "late_correction_delivery": "NOT_AUTHORIZED_BY_THIS_CANDIDATE",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Do not activate Age0d or deliver corrections. Preregister disjoint correct/incorrect real final-answer calibration with source evidence and false-alarm thresholds, or continue another canonical organ. All original RED and GREEN ZIPs privately byte-exact backed; preserve full Canon and negative gates."
+}
