@@ -1,0 +1,63 @@
+{
+  "schema": "V13_RUN12E_CONTEXTOS_ESCAPED_ASCII_QUOTE_SHADOW_SOFTWARE_GREEN",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12e-contextos-escaped-ascii-shadow-20261030-hourly11",
+  "pr": 1262,
+  "parent_pr": 1261,
+  "parent_head": "352cf805ae8250252ebdf75ccc604cb502be6238",
+  "source_blobs": {
+    "candidate": "660155b61275623ad545a03dae7bca0157046215",
+    "tests": "1a469be44e2a7e6b9f9f5b827ac4787059191060",
+    "frozen_context_os": "c515e9a432a1d912dab9cb551f74bb5f47d2e184",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41047626573,
+    "tested_head": "2241ae88c445c9e8f8a6842d51b91eb0bd9ebdc9",
+    "status": "GREEN",
+    "tests": "31/31 PASS",
+    "stages": "5/5 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12973167246,
+    "zip_sha256": "fa22fc237c05a9010c32f80c20fe575fde30fe163b7d639cdb337388fef3579e",
+    "zip_bytes": 3360,
+    "crc": "PASS",
+    "inner_sha256": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12E-ContextOS-EscapedQuote/SOFTWARE_GREEN_41047626573_shaFA22FC23.zip",
+    "backup_byte_exact": true
+  },
+  "other_owner_readonly_review": {
+    "pr": 1259,
+    "run_id": 41044254663,
+    "status": "RED",
+    "tests": "3825, 2 errors, 14 skipped",
+    "remaining_errors": [
+      "Run34 historical source/catalog pin",
+      "Run37 historical source/catalog pin"
+    ],
+    "native_zip_prereq": "VERIFIED_AND_STAGED",
+    "artifact_id": 12971578827,
+    "zip_sha256": "8ae94bb96efb66a10b26d2b14db9155de1df5681b80d601fd3a7191cd4adbdb9",
+    "crc": "PASS",
+    "inner_sha256": "32/32",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Z2-Independent-Review/ORIGINAL_RED_41044254663_sha8AE94BB9.zip",
+    "backup_byte_exact": true
+  },
+  "native_run12c": {
+    "run_id": 41046804934,
+    "launch_head": "35c163f19f3ccdc1e8ebed1df5821c679d96a13a",
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "verified": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Monitor Run12C native Actions 41046804934 until terminal; independently audit original ZIP with Run12D, backup byte-exact privately, preserve RED. Continue other canonical organs; Context OS candidate remains SHADOW until frozen cohort/approval allows integration."
+}
