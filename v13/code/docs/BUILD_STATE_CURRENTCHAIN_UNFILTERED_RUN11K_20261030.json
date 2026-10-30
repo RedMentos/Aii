@@ -1,0 +1,39 @@
+{
+  "schema": "v13.build_state.scoped.run11k.full_unfiltered.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "review_pr": 1240,
+  "tested_head": "645c70e8c28fb9e016eaa5d068c2d3977075184d",
+  "run": 41028701239,
+  "artifact": 12964813103,
+  "sha256": "670025f22c1928724b081e7aff7f94f31670c4f9173d4e7d19591ba318f14989",
+  "crc_clean": true,
+  "inner_hashes_verified": 32,
+  "tests": 3719,
+  "errors": 2,
+  "skipped": 14,
+  "full_exit": 1,
+  "other_stage_exits_zero": 14,
+  "original_native_artifact": 12951963045,
+  "original_native_sha256": "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "errors_exact": [
+    "test_run34_c3_native_quote_intervention_pilot.Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates",
+    "test_run37_c3_rule_use_native_pilot.Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates"
+  ],
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11K-CurrentChain-FullUnfiltered/",
+  "private_backup_byte_reverified": true,
+  "evidence_level": "FULL_LINUX_SOFTWARE_UNFILTERED_WITH_PINNED_HISTORICAL_NATIVE_INPUT",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next": "Keep Run34/37 historical RED; continue Sleep A #1241 review and new preregistered 350M eval-target follow-up after software-only CI",
+  "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'"
+}
