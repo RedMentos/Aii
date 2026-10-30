@@ -3447,5 +3447,51 @@
     "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
     "next_prerequisites": "Review actual current C2+JEF+C3 full-turn Linux native with exact source/model pins; Redmi requires user device. Do not claim full system from C3-only; do not overlap heavy native jobs.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_b1b2_native_recheck": {
+    "scope": "CURRENT_CHAIN_DISTINCT_B1_B2_REAL_LINUX_NATIVE_SMOKE",
+    "owner": "V13 hourly automation; B1/B2 native serialized after C3 native",
+    "parent_head": "0fb05a442da9eaf6f0756b4e46ea51ed6c4b1064",
+    "branch": "codex/v13-current-b1b2-native-recheck-20261030-auto11z",
+    "pr": 1190,
+    "exact_test_head": "85bcaa9ad6d866d5e12b2677f24c726cccf73d6a",
+    "actions_run": 40985801650,
+    "status": "GREEN_LINUX_NATIVE_DISTINCT_B1_B2_ONLY",
+    "roles": {
+      "B1_DETAIL": {
+        "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+        "model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+        "native_elapsed_s": 1.52,
+        "exit": 0,
+        "smoke_pass": true
+      },
+      "B2_GIST": {
+        "model_id": "ggml-org/Qwen3.5-0.8B-GGUF",
+        "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+        "native_elapsed_s": 1.971,
+        "exit": 0,
+        "smoke_pass": true,
+        "output_quality": "ONLY_PARTIAL_THINKING_TRACE_AT_12_TOKEN_CAP"
+      }
+    },
+    "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "raw_zip_sha256": "50aff3b9b2a61a90857708f613d29022351a709fd4024add35e3d973c2dfd82a",
+    "raw_inner_hashes": "19/19",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-B1B2-NativeRecheck",
+    "remote_bytes_verified": true,
+    "c2_jef_executed": false,
+    "c3_executed": false,
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "PYTHONPATH=v13/code python3 v13/code/scripts/current_c2_native_linux_smoke_20261028.py --scratch-home <fresh> --evidence-dir <fresh>",
+    "next_prerequisites": "Pinned C2 Needle3 Linux control call after B1/B2; then separate combined real full-turn integration. Never infer STEP2 complementarity from individual native model smokes.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
