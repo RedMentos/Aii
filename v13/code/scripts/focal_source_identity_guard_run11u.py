@@ -55,6 +55,21 @@ def _consistent(kind, project, key, value):
     return False
 
 
+def _relevant_key(kind, project, key):
+    """Recognize an expected source family even if its value is malformed."""
+    if kind in ("update", "combine"):
+        budget = _BUDGET_KEY.fullmatch(key)
+        if budget and budget.group(1).lower() == project:
+            return True
+        if kind == "combine":
+            spend = _SPEND_KEY.fullmatch(key)
+            return bool(spend and spend.group(1).lower() == project)
+    if kind == "correction":
+        correction = _CORRECTION_KEY.fullmatch(key)
+        return bool(correction and correction.group(1).lower() == project)
+    return False
+
+
 def propose_bound(query, notes, capacity=CAPACITY):
     """Source-only guard around frozen Run11S; no answer or runtime authority."""
     prior = frozen.propose(query, notes, capacity=capacity)
@@ -69,6 +84,12 @@ def propose_bound(query, notes, capacity=CAPACITY):
             return _abstain(prior, "UNEXPECTED_DISTRACT_SOURCES")
         return {**prior, "key_value_consistent": True,
                 "identity_scope": "NO_STORED_SOURCE_REQUIRED"}
+    # A malformed newest note must not silently disappear and make an
+    # older revision look current. Inspect relevant keys before admission.
+    if any(_relevant_key(prior["kind"], project, key)
+           and not _consistent(prior["kind"], project, key, value)
+           for key, value in notes):
+        return _abstain(prior, "SOURCE_KEY_VALUE_MISMATCH")
     keys = {key: value for key, value in notes}
     if len(keys) != len(notes):
         return _abstain(prior, "SOURCE_KEY_DUPLICATE")
