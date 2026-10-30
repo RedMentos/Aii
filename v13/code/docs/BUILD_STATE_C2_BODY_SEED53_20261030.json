@@ -47,7 +47,8 @@
     "Native 24-row pilot not yet executed",
     "One-body dual state control cold-start only",
     "Historical Run34/Run37 full suite source-pin errors remain RED",
-    "No Redmi device"
+    "No Redmi device",
+    "Need disjoint simple-scaffold native C2 selection utility cohort; seed53 F auto is an invocation negative control"
   ],
   "next_command": "At terminal run 41002194549 fetch original ZIP, verify SHA/CRC/inner SHA256SUMS/24 raw rows and all stage exits, preserve RED if any, private byte backup. Inspect fullsuite rerun 41001786002 separately. Continue next independent canonical package.",
   "software_preflight_original": {
@@ -87,5 +88,6 @@
   "native_workflow_commit": "051c2924f9f89730d5850b5e539aa4a119bb1a93",
   "native_workflow_run": 41002194549,
   "native_concurrency_group": "v13-step2-budget-paired-native-20261030",
-  "native_scope": "24 isolated serial Linux-native turns, no Redmi or STEP2 promotion"
+  "native_scope": "24 isolated serial Linux-native turns, no Redmi or STEP2 promotion",
+  "structural_c2_route_limit": "All seed53 prompts begin Compare and scaffold_route returns both. Runtime._route only accepts native C2 advisory proposal when scaffold route is simple; F_NATIVE_AUTO therefore measures native C2 invocation/context but is structurally not an intervention on selected route. Native-selected expected 0/4. Do not interpret F as C2 utility proof; a separate disjoint simple-scaffold task cohort is required."
 }
