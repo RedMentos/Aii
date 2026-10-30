@@ -1,0 +1,91 @@
+{
+  "schema": "v13.run14p.ag12_crosslanguage_holdout.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; review-only",
+  "parent": {
+    "pr": 1331,
+    "head_sha": "0867211473912e2ca41725579be2c72e710e177d",
+    "head_ci": {
+      "run": 41115672901,
+      "conclusion": "success"
+    }
+  },
+  "branch": "assistant/v13-run14p-ag12-crosslanguage-holdout-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "626d7591314464ffc2adbb6889ea3877169e6d54",
+    "tests": "66a0fd236a8a8ef3ca4a533a01d4556164869f48",
+    "generality_original": "0972b10353b8b1911060992f037d0f71eaa05331",
+    "generality_candidate": "43831251af47dbdd718fa9ee3289955fc7f84a87",
+    "metacog": "7bed7c85357dee21cb50f8cb8b3964a564e6d9d8"
+  },
+  "changes": [
+    "English and German AG12 evaluation curves and SQLite StateBoxes stay independent, but guard_training now excludes the union of all registered EN and DE historical unseen prompt digests.",
+    "Existing damaged, wrong-revision, or unknown-history sibling state blocks training fail closed; absent sibling state does not bootstrap a language or write anything.",
+    "No suite generation, model, seed, scorer, AG9 feedback, age or output authority changed."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41116728497,
+      "head": "7f55ea3aae952693a48d0b4f5e81682832b86c28",
+      "artifact": 13005403499,
+      "zip_sha256": "5af7029be2e17a960ae8f2d116ad20cc58584afc96f285dd8796c6e0708bfe0c",
+      "tests": 18,
+      "failures": 9,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14P-AG12CrossLanguage/Run14P_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41116924224,
+      "head": "41483c3d0f8d169594ca990c7266a7e24a6ab020",
+      "artifact": 13005703350,
+      "zip_sha256": "974b6548d89924c1fe85d965d4a24c0001d89b8b4d769ef65619bf90e50d3ee3",
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14P-AG12CrossLanguage/Run14P_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Test-first original source accepted 9 cross-language failures, existing 14 tests remained green.",
+    "Independent code review checked absent sibling, null-with-version sibling, wrong revision, union corruption, unknown history, stale same-language instance and no cross-language mutation. No separate independent agent invoked."
+  ],
+  "limitations": [
+    "Software/real SQLite only; no native model calls or proof of actual training or learned German transfer.",
+    "Registered exact normalized prompts only; future suites not yet registered and paraphrases are not covered.",
+    "Training guard is a read-side check, not an atomic transaction with an external training optimizer; all later train-time gate checks still required.",
+    "Historical unfiltered Run14E/Run14M suite failures remain unresolved and unwaived.",
+    "Redmi target runtime unavailable in this environment."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Continue from current verified remote PR chain, independently review substantive ContextOS/B1-B2 learning or Sleep/Dream path; keep original failed artifacts and no gate promotion. Do not edit active owners' branches. Run14P focused 61/61 is not an unfiltered suite pass."
+}
