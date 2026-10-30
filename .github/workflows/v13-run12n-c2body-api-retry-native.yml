@@ -1,7 +1,7 @@
 name: V13 Run12N corrected Runtime API 16-turn native technical retry
 on:
   push:
-    branches: [assistant/v13-run12n-api-retry-native-api-retry-20261030]
+    branches: [assistant/v13-run12n-native-api-retry-20261030]
     paths:
       - '.github/workflows/v13-run12n-c2body-api-retry-native.yml'
 permissions:
