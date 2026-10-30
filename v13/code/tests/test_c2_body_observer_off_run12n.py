@@ -1,4 +1,6 @@
 """Run12N prospective observer-OFF source-only and zero-offer witness tests."""
+import ast
+import inspect
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -7,13 +9,15 @@ from unittest.mock import patch
 
 from scripts import c2_body_observer_off_run12n as m
 from scripts import c2_body_disjoint_paired181_run11v as frozen
+from v13.runtime import Runtime
 
 FIXTURE = Path(__file__).resolve().parents[1] / "docs/fixtures/c2_body_observer_off_run12n_20261030.json"
 
 
 def base_flags(offers=None, route="simple"):
     return {
-        "route": route, "body_offer_roles": [] if offers is None else offers,
+        "route": route, "runner_role": frozen.ROLE_BY_ROUTE[route][0],
+        "body_offer_roles": [] if offers is None else offers,
         "native_c2_invocation": True, "native_c2_selected": route != "simple",
         "route_valid": True, "output_valid": True, "source_exact": True,
         "process_release_valid": False, "valid_native": False,
@@ -22,7 +26,7 @@ def base_flags(offers=None, route="simple"):
 
 def witness(flags, releases=None, **overrides):
     releases = releases if releases is not None else [
-        {"role": frozen.ROLE_BY_ROUTE[flags["route"]], "process_reaped": True}]
+        {"role": flags["runner_role"], "process_reaped": True}]
     args = {
         "native_context": {}, "native_alive": True, "native_reaped": True,
         "native_pid": 321, "source_exact": True, "session": "s",
@@ -52,6 +56,40 @@ def fake_rows():
 
 
 class Run12NTests(unittest.TestCase):
+    def test_real_runtime_api_contract_no_fake_start_or_session_kw(self):
+        # Original candidate used Runtime(home, cfg), runtime.start(),
+        # submit(text, session_id=...), and treated event-id as audit dict.
+        self.assertEqual(list(inspect.signature(Runtime.__init__).parameters),
+                         ["self", "home", "notify"])
+        self.assertEqual(list(inspect.signature(Runtime.submit).parameters),
+                         ["self", "text"])
+        self.assertFalse(hasattr(Runtime, "start"))
+        tree = ast.parse(inspect.getsource(m.fresh_turn))
+        calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)]
+        constructors = [n for n in calls if isinstance(n.func, ast.Name)
+                        and n.func.id == "Runtime"]
+        self.assertEqual(len(constructors), 1)
+        self.assertEqual(len(constructors[0].args), 1)
+        self.assertFalse(constructors[0].keywords)
+        submits = [n for n in calls if isinstance(n.func, ast.Attribute)
+                   and n.func.attr == "submit"]
+        self.assertEqual(len(submits), 1)
+        self.assertEqual(len(submits[0].args), 1)
+        self.assertFalse(submits[0].keywords)
+        self.assertTrue(any(isinstance(n.func, ast.Name)
+                            and n.func.id == "audit_event" for n in calls))
+        self.assertFalse(any(isinstance(n.func, ast.Attribute)
+                             and n.func.attr == "start" for n in calls))
+
+    def test_release_role_is_scalar_not_tuple(self):
+        flags = base_flags(route="simple")
+        self.assertTrue(witness(flags)["valid_native"])
+        # An artificial tuple-valued role was accepted by the original
+        # synthetic test, but no native runner records a tuple role.
+        wrong = [{"role": frozen.ROLE_BY_ROUTE["simple"],
+                  "process_reaped": True}]
+        self.assertFalse(witness(flags, releases=wrong)["valid_native"])
+
     def test_frozen_new_disjoint_seed_and_four_sources(self):
         f = m.load_fixture(FIXTURE)
         self.assertEqual(f["seed"], 197)
