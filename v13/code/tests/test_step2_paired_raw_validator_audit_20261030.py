@@ -2,7 +2,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from step2_paired_raw_validator_audit import (
+from scripts.step2_paired_raw_validator_audit_20261030 import (
     _number_claims, semantic_diagnostic, audit_zip)
 
 F = {"project": "Vega", "budget": 145,
