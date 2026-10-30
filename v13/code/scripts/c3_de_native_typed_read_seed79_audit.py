@@ -66,8 +66,8 @@ def audit(directory):
                     "ERROR_RAW_MISSING:" + str(i))
             continue
         require(type(raw["native_pid"]) is int
-                and raw["native_metrics"]["memory"]["pid"] == raw["native_pid"]
-                if "memory" in raw["native_metrics"] else type(raw["native_pid"]) is int,
+                and isinstance(raw["native_metrics"].get("memory"), dict)
+                and raw["native_metrics"]["memory"].get("pid") == raw["native_pid"],
                 "NATIVE_PID_METRIC_RED:" + str(i))
         require(raw["native_metrics"]["status"] == "FINAL"
                 and raw["native_metrics"]["actual_model"] == raw["native_model"],
