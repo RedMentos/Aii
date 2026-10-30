@@ -18,7 +18,7 @@ NAME = r"[A-Za-z][A-Za-z-]{0,31}"
 NUM = r"[1-9][0-9]{0,5}"
 
 # Both grammars are intentionally closed-world. Unsupported paraphrases abstain.
-STYLE_ONE = re.compile(
+QUERY = re.compile(rf"Calculate both remaining budgets and faster option for Project (?P<project>{IDENT})\\.", re.ASCII)\n\nSTYLE_ONE = re.compile(
     rf"For (?P<project>{IDENT}), I have a spending ceiling of (?P<budget>{NUM}) Euro\. "
     rf"(?P<a>{NAME}) uses (?P<a_cost>{NUM}) Euro and needs (?P<a_days>{NUM}) days\. "
     rf"(?P<b>{NAME}) uses (?P<b_cost>{NUM}) Euro and needs (?P<b_days>{NUM}) days\. "
@@ -111,8 +111,8 @@ def _parse(value):
     }
 
 
-def propose(store, source_ref):
-    """Read-only Store-backed SHADOW proposal; never turn bytes into approval.
+def propose(store, query_ref, source_ref):
+    """Read-only Store-backed SHADOW proposal; both query and data are verified.
 
     A second Store read narrows, but cannot eliminate, a later revocation race.
     A future consumer MUST revalidate authorization at dispatch.
