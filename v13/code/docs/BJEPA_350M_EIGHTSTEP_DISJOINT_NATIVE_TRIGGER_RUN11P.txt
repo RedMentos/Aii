@@ -1,0 +1,7 @@
+Run11P explicit native trigger, 2026-10-30. Pre-registered commit eb55df7eaf744becdfa20679868bab5fa1ebe79c before implementation.
+New independent 8-step three-seed CE/EMA/SHUFFLED cohort, fixture SHA256 1b2f71817200389d3f78fc87cf70512e23bd7273e75c2901768c3cc76ded56aa.
+Script blob af685a22ddd4ff6412643a8849a1f00bf2112487; unchanged Body-JEPA blob b560d4e88fe457f381e89dfc5d6188a8ec3b306b.
+Master LiquidAI/LFM2.5-350M revision 120bf032c36dd1273de754669da040dba7ad4982, SHA256 1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e.
+Software Actions 41032287108 terminal GREEN 19/19; original ZIP privately backed up and byte-reverified.
+No active heavy native/model job observed in latest Actions before trigger.
+No exported adapters, no age/STEP2/B3/Body-JEPA/Redmi/whole-system promotion; research-only Linux FP32 Torch synthetic heldout.
