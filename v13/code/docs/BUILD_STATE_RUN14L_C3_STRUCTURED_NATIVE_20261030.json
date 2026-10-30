@@ -46,7 +46,11 @@
       "zip_sha256": "635b71e0f74d5c89783e5db39b6c8cc269eb2fdff4c4791a4987e44af02b1e02",
       "tests": 16,
       "errors": 1,
-      "reason": "Synthetic temporary raw parent directory missing; original attempt preserved"
+      "reason": "Synthetic temporary raw parent directory missing; original attempt preserved",
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14L-C3StructuredNative/Run14L_PREFLIGHT_ORIGINAL_RED.zip",
+      "private_readback": "BYTE_IDENTICAL"
     },
     "corrected_preflight": {
       "run": 41113258774,
