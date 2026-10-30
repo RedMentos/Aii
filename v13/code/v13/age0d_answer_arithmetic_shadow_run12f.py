@@ -89,7 +89,7 @@ def inspect(question, final_answer):
     if len(question) > MAX_CHARS or len(final_answer) > MAX_CHARS:
         return _base("ABSTAIN", "TEXT_BOUND")
     # Quoted examples or code can be intentionally false; do not call them errors.
-    if any(marker in final_answer for marker in ('`', '"', '“', '”', '„', '«', '»', "'")):
+    if any(marker in final_answer for marker in ('`', '"', '“', '”', '„', '«', '»', '‘', '’', "'")):
         return _base("ABSTAIN", "QUOTED_OR_CODE_EXAMPLE")
     matches = list(EQ.finditer(final_answer))
     if matches:
