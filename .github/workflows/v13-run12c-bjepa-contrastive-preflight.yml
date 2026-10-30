@@ -63,7 +63,7 @@ jobs:
           ):
               assert required in s, "MISSING_NATIVE_WORKFLOW_GUARD: " + required
           assert "workflow_dispatch" not in s, "NATIVE_WORKFLOW_MUST_NOT_AUTODISPATCH"
-          assert "on:\\n  push:" not in s  # ensure this check is never silently mistaken for YAML parsing
+          assert s.startswith("name: V13 Run12C"), "NATIVE_WORKFLOW_NAME_RED"
           print("STATIC_NATIVE_WORKFLOW_GUARDS_PASS; YAML parser/execution not yet verified")
           PY
           echo "$?" > "$e/NATIVE_WORKFLOW_EXIT.txt"
