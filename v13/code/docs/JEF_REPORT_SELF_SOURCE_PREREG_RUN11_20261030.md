@@ -1,0 +1,11 @@
+# JEF human agreement report: live self-outcome source integrity prereg (2026-10-30)
+
+Review-only child of C3 boundary #1234 exact `c67edbf29ab45e24037ab2c50b22e88abce23f0f`, incorporating earlier JEF receipt #1226. Owner GPT-6; isolated JEF files `v13/code/v13/jefoutcome.py`, `v13/code/tests/test_jef_report_self_source_run11.py`, a branch-specific CI workflow, and scoped docs. Do not change `learning.py`, native, frozen fixtures or approval/age rights.
+
+**Observed code-level risk before testing:** `jefoutcome.training_rows` already rejects revoked, wrong-kind or byte-mismatched self-label sources. `jefoutcome.report` counts every retained self label toward human overlap/agreement without verifying its own source, so a revoked/tampered self label may still produce a positive human agreement statistic. This is a reporting-integrity question, not a claim of optimizer admission.
+
+**Preregistered contract:** preserve `labels` and `by_value` as historical retained-label counts for audit continuity. Add a distinct `live_labels` count, counting only outcome labels whose `source_id` is active, kind `OUTCOME_SELF_LABEL`, source bytes exactly equal the retained value, and whose source hash/span can be revalidated. Only such live self labels can contribute to `human_overlap`/`human_agreement`. A valid live self source + matching genuine human feedback remains overlap1/agreement1. A revoked source, substituted source kind, or corrupted blob yields historical labels1, live_labels0, human_overlap0, agreement null. Do not change conservative human veto logic or `training_rows` behavior.
+
+**Test-first plan:** commit prereg, then real-Store synthetic test and branch CI; observe and retain original RED; implement minimal report-only source check; rerun existing JEF human receipt, source and outcome tests, verify raw/CRC/SHA256 and private backup. If original report semantics or tests contradict this contract, preserve evidence and reconsider without rewriting historical gates. No model inference or learning run.
+
+**Negative gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA unavailable, `jepa_weight=0`, Redmi unmeasured, whole V13 incomplete. Synthetic real-Store software evidence only, no automatic merge.
