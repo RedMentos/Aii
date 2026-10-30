@@ -60,15 +60,15 @@ jobs:
             echo "$?" > "$e/FULL_EXIT.txt"
           else echo SKIPPED > "$e/FULL_EXIT.txt"; echo SKIPPED > "$e/FULL_RAW.log"; fi
           python3 - "$e/FULL_RAW.log" "$e/IDENTITY_RAW.json" <<'PY'
-import hashlib,json,re,sys
-raw=open(sys.argv[1],encoding='utf-8',errors='replace').read()
-entries=re.findall(r'^(ERROR|FAIL): (.+)$',raw,re.M)
-digest=hashlib.sha256(json.dumps(sorted(entries),separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
-expected='e85743aad6bb69a8c319daa93228d7fb0cc8d24a43e5f1a1c41526a1a2b8a3e7'
-result={'baseline_sha256':expected,'actual_sha256':digest,'identity_entries':len(entries),'fail_entries':sum(x[0]=='FAIL' for x in entries),'error_entries':sum(x[0]=='ERROR' for x in entries),'same_multiset':digest==expected,'claim':'DIAGNOSTIC_ONLY_FULLSUITE_RED_NOT_WAIVED'}
-open(sys.argv[2],'w').write(json.dumps(result,sort_keys=True)+'\\n')
-sys.exit(0 if digest==expected else 1)
-PY
+          import hashlib,json,re,sys
+          raw=open(sys.argv[1],encoding='utf-8',errors='replace').read()
+          entries=re.findall(r'^(ERROR|FAIL): (.+)$',raw,re.M)
+          digest=hashlib.sha256(json.dumps(sorted(entries),separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+          expected='e85743aad6bb69a8c319daa93228d7fb0cc8d24a43e5f1a1c41526a1a2b8a3e7'
+          result={'baseline_sha256':expected,'actual_sha256':digest,'identity_entries':len(entries),'fail_entries':sum(x[0]=='FAIL' for x in entries),'error_entries':sum(x[0]=='ERROR' for x in entries),'same_multiset':digest==expected,'claim':'DIAGNOSTIC_ONLY_FULLSUITE_RED_NOT_WAIVED'}
+          open(sys.argv[2],'w').write(json.dumps(result,sort_keys=True)+chr(10))
+          sys.exit(0 if digest==expected else 1)
+          PY
           echo "$?" > "$e/IDENTITY_EXIT.txt"
           "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
