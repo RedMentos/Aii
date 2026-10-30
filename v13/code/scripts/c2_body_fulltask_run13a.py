@@ -259,7 +259,9 @@ def summarize(rows):
     invoked = sum(r.get("flags", {}).get("native_c2_invocation") is True for r in frows)
     strict = sum(r.get("strict_admission", {}).get("matches") is True for r in frows)
     changed = sum(r.get("flags", {}).get("native_c2_selected") is True for r in frows)
-    valid = bool(len(rows) == 32 and len(frows) == 8 and invoked == 8
+    valid = bool(len(rows) == 32 and len(frows) == 8
+                 and all(sum(r.get("arm") == a for r in rows) == 8 for a in ARMS)
+                 and invoked == 8
                  and strict == 8 and all(
                      r.get("flags", {}).get("valid_native") is True
                      and r["flags"].get("body_offer_roles") == []
