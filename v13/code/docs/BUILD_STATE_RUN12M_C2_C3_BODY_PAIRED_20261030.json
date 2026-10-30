@@ -1,0 +1,110 @@
+{
+  "schema": "V13_RUN12M_NATIVE_PARTIAL_RED_OBSERVER_ROUTE_CONFOUND_NO_GATE",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12m-c2-c3-body-utility-20261030",
+  "parent_pr": 1268,
+  "parent_head": "03ba3422b6d17c1956b22d054941e9d51cd6b16a",
+  "cohort": {
+    "seed": 181,
+    "fixtures": 4,
+    "arms": [
+      "A_C3_ONLY",
+      "B_B1_ONLY",
+      "C_B2_ONLY",
+      "F_NATIVE_AUTO"
+    ],
+    "turns": 16,
+    "fixture_sha256": "c2739d0e3a0a7e9bda8383e145a9c7c2cfa26d3ab86a7052030ff32679884b48",
+    "scorer": "frozen Run11V score_pair primary; score_primary secondary",
+    "original_seed181_unchanged": true,
+    "original_run12l_red_unchanged": true
+  },
+  "source_blobs": {
+    "fixture": "1ccb21c8ca13d20fc0f837f889705c323800feb6",
+    "prereg": "92cdb5129eb50865486ddceab7808bd5b7c89598",
+    "runner": "96c195263121610de1f44d954eff3b6a0043ec93",
+    "verifier": "22010109e2c6d572367d69a9c11ca3454e52a60e",
+    "runner_tests": "d49b99e590824a8ad1a0e8803c2961d3bace3dd1",
+    "verifier_tests": "57372fbbf403e4fb0114e8b9066baf936468bf7c",
+    "frozen_run11v_runner": "d274a66b8ceb801c741bbffe1456611b43603208",
+    "frozen_run11v_verifier": "4f04236507d7f4c2ae70f62aef905eefe83389d6",
+    "runtime": "22ed11e4a53d9eeae8fbc74a1753082b5785be2b",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "status": "GREEN_SOURCE_ONLY",
+    "run_id": 41054685390,
+    "tested_head": "0d35a36f7bf2e7f05fe930de44c9fdc0bea04cac",
+    "tests": "46/46 PASS",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12975308965,
+    "zip_sha256": "cceaa5149cb9aa9b663ba6d9969f3304961221bd16867ae1f4dd3f945010aa8b",
+    "zip_bytes": 5152,
+    "crc": "PASS",
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12M-C2BodyUtility/V13_Run12M_PREFLIGHT_41054685390.zip",
+    "private_byte_exact": true
+  },
+  "native": {
+    "launched": true,
+    "run_id": 41054908080,
+    "tested_head": "faf0e6c6717ff8a80d0163e13f2836d399c356dc",
+    "status": "PILOT_PARTIAL_RED",
+    "artifact_id": 12976826165,
+    "zip_sha256": "2203a2d757db084f3b79244433af92fbf01ad8dd1cd555b80a986ae2e7df9b55",
+    "zip_bytes": 264497,
+    "crc": "PASS",
+    "inner_sha256": "60/60",
+    "raw": "16/16",
+    "preclose": "16/16",
+    "strict": "4/4",
+    "native_invocations": 4,
+    "strict_matches": 4,
+    "native_selected": 2,
+    "valid_native": "14/16",
+    "invalid_rows": [
+      3,
+      12
+    ],
+    "invalid_reason": "F auto simple fallback with background B1 offer; frozen row_evidence expected zero offers",
+    "score_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 5,
+      "C_B2_ONLY": 4,
+      "F_NATIVE_AUTO": 1
+    },
+    "secondary_totals_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_B1_ONLY": 0,
+      "C_B2_ONLY": 0,
+      "F_NATIVE_AUTO": 0
+    },
+    "utility_signal": false,
+    "all_native_structurally_valid": false,
+    "stages": "9/10 EXIT0; NATIVE_EXIT2; REPORT_CHECK_EXIT0",
+    "source_tests": "46/46 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12M-C2BodyUtility/V13_Run12M_NATIVE_RED_41054908080.zip",
+    "private_byte_exact": true,
+    "redmi": false,
+    "utility_proven": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Run12M answered: 14/16 full native witness; F simple fallback/background B1 offer confound, utility signal RED. No comparative proof.",
+    "If no, keep C2 route advisory SHADOW/scaffold-first until separately validated; do not change frozen runtime in place.",
+    "Target Redmi resource/thermal and multi-day proof remains device-only."
+  ],
+  "next_command": "Preserve Run12M original RED. Prospectively preregister a new disjoint observer-OFF all-arms route-utility cohort with new source-bound witness (do not change Run11V scorer or original Run12M labels), source-only tests, serialized native, independent original ZIP audit and private backup. No gate promotion.",
+  "pr": 1269
+}
