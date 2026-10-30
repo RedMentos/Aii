@@ -1,0 +1,47 @@
+{
+  "schema": "v13.run14l.c3_structured_native.fixture.v1",
+  "seed": 307,
+  "cases_sha256": "f2ac30189adfc3ebdcf509c4e6183708dcb9c34ce659d4b8073a6807ae8bccbf",
+  "cases": [
+    {
+      "project": "Amber307",
+      "budget": 900,
+      "a": "Vega",
+      "a_cost": 235,
+      "a_days": 7,
+      "b": "Lumen",
+      "b_cost": 460,
+      "b_days": 5
+    },
+    {
+      "project": "Birch307",
+      "budget": 1250,
+      "a": "Orion",
+      "a_cost": 640,
+      "a_days": 9,
+      "b": "Nova",
+      "b_cost": 425,
+      "b_days": 12
+    },
+    {
+      "project": "Cobalt307",
+      "budget": 720,
+      "a": "Sage",
+      "a_cost": 190,
+      "a_days": 4,
+      "b": "Talon",
+      "b_cost": 365,
+      "b_days": 8
+    },
+    {
+      "project": "Delta307",
+      "budget": 1500,
+      "a": "Mica",
+      "a_cost": 710,
+      "a_days": 14,
+      "b": "Pine",
+      "b_cost": 520,
+      "b_days": 11
+    }
+  ]
+}
