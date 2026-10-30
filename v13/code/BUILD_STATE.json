@@ -3751,5 +3751,32 @@
     },
     "exact_next_command": "Run full unfiltered software suite on this review branch with pinned CPU dependencies and preserve original frozen RED; then separate fresh native paired STEP2 pilot after owner checks.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_jefsource_explain_fullsuite": {
+    "scope": "JEF_SOURCE_EXPLAIN_FULL_UNFILTERED_SOFTWARE_REGRESSION",
+    "owner": "V13 hourly continuation; separate CPU software Actions job",
+    "parent_head": "eae7812e179bc0a0e574b27a25b1ab9b3e917ef8",
+    "branch": "codex/v13-jefsource-explain-fullsuite-20261030-hourly11",
+    "pr": null,
+    "prereg_commit": "9d633fe872d9e23db40b7d863db661bb26c06d50",
+    "full_run": 40991785171,
+    "full_source_head": "f42d7d3feb8c205dabd06d18e3d2a3ce85ce82c7",
+    "full_status": "IN_PROGRESS_AT_LAUNCH_CHECKPOINT",
+    "full_result": null,
+    "unfiltered": true,
+    "pinned_cpu_deps": "numpy2.2.6 torch2.5.1+cpu transformers4.44.2 peft0.13.2",
+    "original_historical_fullsuite": "Run34/Run37 RED, not waived",
+    "native_executed_here": false,
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Inspect Actions 40991785171 terminal; download original raw ZIP, verify hashes, extract all failures, private backup and update checkpoint/PR without waivers.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
