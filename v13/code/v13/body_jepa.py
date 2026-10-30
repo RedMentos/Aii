@@ -118,6 +118,27 @@ def last_token_latent(torch,model,batch_ids,layer=-1):
     h=out.hidden_states[layer]
     return h[torch.arange(len(lens)),lens-1]
 
+def ema_target_latent(torch,model,tgt,ema,layer=-1,eval_target=False):
+    """Opt-in dropout-stable EMA target, without changing frozen train-mode cohorts.
+
+    The EMA adapter and all module train/eval flags are restored even if the
+    target forward raises. The student graph is created only after this pass.
+    """
+    if type(eval_target) is not bool:raise ValueError('jepa_target_eval must be bool')
+    if not eval_target:
+        with torch.no_grad(),ema.swap():
+            return last_token_latent(torch,model,tgt,layer).detach()
+    modules=list(model.modules());flags=[m.training for m in modules]
+    try:
+        model.eval()
+        with torch.no_grad(),ema.swap():
+            return last_token_latent(torch,model,tgt,layer).detach()
+    finally:
+        # Run train() hooks on the root, then restore mixed child flags exactly.
+        model.train(flags[0])
+        for module,flag in zip(modules,flags):module.training=flag
+
+
 def pad(torch,seqs,pad_id=0):
     if not seqs or any(len(s)==0 for s in seqs):
         raise ValueError('nonempty token sequences required')
@@ -221,6 +242,8 @@ class BodyJepaTrainer(LoraTrainer):
         except ImportError:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'NO_TORCH_PEFT'}}
         import numpy as np
         t0=time.monotonic();cfg=self.cfg;mode=str(cfg['jepa_target']);w_j=float(cfg['jepa_weight']);layer=int(cfg['jepa_layer'])
+        target_eval=cfg.get('jepa_target_eval',False)
+        if type(target_eval) is not bool:raise ValueError('jepa_target_eval must be bool')
         if mode not in MODES:raise ValueError('unknown jepa_target')
         if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
         torch,tok,model=self._load()
@@ -275,7 +298,7 @@ class BodyJepaTrainer(LoraTrainer):
             _check(cancel,deadline);opt.zero_grad()
             ema_t_step=None
             if w_j>0 and mode!='base':  # EMA target first: the in-place swap would break a graph built earlier in the step
-                with torch.no_grad(),ema.swap():ema_t_step=last_token_latent(torch,model,tgt_b,layer)
+                ema_t_step=ema_target_latent(torch,model,tgt_b,ema,layer,eval_target=target_eval)
             o=model(input_ids=ids_b,attention_mask=att)
             lg=o.logits[:,:-1].float();lb=lab_b[:,1:]
             tok_ce=torch.nn.functional.cross_entropy(lg.reshape(-1,lg.shape[-1]),lb.reshape(-1),ignore_index=-100,reduction='none').view(lb.shape)
@@ -313,7 +336,7 @@ class BodyJepaTrainer(LoraTrainer):
         metrics={'revision':REVISION,'objective':OBJECTIVE.objective_id,'dataset_hash':dh,'base_generation':base_generation,'steps':step,
                  'loss_history':hist,'final_ce':hist[-1]['ce'] if hist else None,'trainable_parameter_count':n_train,
                  'predictor_parameter_count':sum(p.numel() for p in pred.parameters()),'rank':int(cfg['rank']),'targets':list(cfg['targets']),
-                 'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),
+                 'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),'jepa_target_eval':target_eval,
                  'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
                  'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
