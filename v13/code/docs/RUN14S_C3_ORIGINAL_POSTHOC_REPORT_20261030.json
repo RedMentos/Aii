@@ -1,0 +1,96 @@
+{
+  "b3_status": "NO_PROMOTION",
+  "body_jepa_status": "UNAVAILABLE",
+  "counts": {
+    "closed_json_object": 6,
+    "exact_four_no_extra_keys": 0,
+    "exact_four_source_strings": 3,
+    "exact_four_with_extra_keys": 3,
+    "fenced_json": 8,
+    "incomplete_or_invalid_json": 2,
+    "wrong_shape_or_values": 5
+  },
+  "details": [
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": false,
+      "index": 0,
+      "json_shape": "FENCE_INCOMPLETE_OR_DIFFERENT",
+      "project": "Aster307",
+      "unverified_extra_keys": false
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": false,
+      "index": 1,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Birch307",
+      "unverified_extra_keys": false
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": true,
+      "index": 2,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Cedar307",
+      "unverified_extra_keys": true
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": false,
+      "index": 3,
+      "json_shape": "FENCE_INCOMPLETE_OR_DIFFERENT",
+      "project": "Dune307",
+      "unverified_extra_keys": false
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": true,
+      "index": 4,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Echo307",
+      "unverified_extra_keys": true
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": false,
+      "index": 5,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Fable307",
+      "unverified_extra_keys": false
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": true,
+      "index": 6,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Grove307",
+      "unverified_extra_keys": true
+    },
+    {
+      "admissible_under_strict_four_string_schema": false,
+      "exact_four_source_strings": false,
+      "index": 7,
+      "json_shape": "CLOSED_JSON_OBJECT",
+      "project": "Harbor307",
+      "unverified_extra_keys": false
+    }
+  ],
+  "distinct_reaped_native_pids": 16,
+  "evidence_kind": "ORIGINAL_LINUX_NATIVE_RAW_POSTHOC_READONLY",
+  "fixture_cases_sha256": "a598c5f6eed3c956c3aa2f1e6f9419b8054d155e1f145aa0ca58776b26f1ffd1",
+  "jepa_weight": 0,
+  "learning_mode": "RECORD_ONLY",
+  "no_authority": true,
+  "no_intervention_efficacy_claim": true,
+  "no_native_calls_by_audit": true,
+  "original_head": "067920aa2d3896917e9cdd07e24b5ba0be28201c",
+  "original_zip_sha256": "8ab389b2ebe5876f1b37696460a650e0f8e9d2bf49d9a2b0afa9d9c7639f8b8a",
+  "redmi_measured": false,
+  "registered_original_verdict_unchanged": "FIDELITY_HURT",
+  "rows_verified": 16,
+  "schema": "v13.run14s.c3_original_posthoc.v1",
+  "step2_status": "UTILITY_FAIL",
+  "structured_rows": 8,
+  "whole_system_complete": false
+}
