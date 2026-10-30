@@ -27,6 +27,9 @@ def extract(text):
     question = listarith.question_part(trimmed).strip()
     if (not question or question == trimmed
             or not question.endswith("?")
+            # question_part joins trailing digit-free sentences; only one
+            # explicit question sentence is within this parser's contract.
+            or question.count("?") != 1 or re.search(r"[.!]", question)
             or re.search(r"\d", question)):
         raise ValueError("QUESTION_BOUNDARY_OR_NUMERIC_AMBIGUOUS")
     proposal = german.propose(trimmed)
