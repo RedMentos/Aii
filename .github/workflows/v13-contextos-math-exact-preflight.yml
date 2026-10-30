@@ -28,8 +28,8 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
-          37b000160d3cb41a8ce0be331b8065846aaa4013 v13/code/v13/context_os.py
-          63581b547ac7021be2e9c1d16be0ee34b752f1ad v13/code/tests/test_context_os_math_exact_20261030.py
+          0d3a474487ecfa21176507dc9e47e3338a5bb5cf v13/code/v13/context_os.py
+          33356c48925b4dbf5f5fcc477ca5d58660688489 v13/code/tests/test_context_os_math_exact_20261030.py
           054ee37eda080a8686235c528fa8cce11cf5d5bd v13/code/docs/CONTEXT_OS_MATH_EXACT_GUARD_PREREG_20261030.md
           22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
