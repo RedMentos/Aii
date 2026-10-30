@@ -1,0 +1,40 @@
+{
+  "schema": "v13.run14w.crossorgan.pending_ci.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent cross-organ integration witness",
+  "parent": {
+    "pr": 1338,
+    "head_sha": "f5bc048cf425132209911e4575fe80dd1067722f"
+  },
+  "branch": "assistant/v13-run14w-crossorgan-integration-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "021391e21e6cd9aeafca8ce819be514032ae0e1e",
+    "integrated_test": "597d6ca7528a496c34d1178a6f6156993b457ebb",
+    "context_os": "40a77a9c3717db7899bfd8966acfa4b9e315e966",
+    "world": "03c87501862eb773f80b3704f1e2b8f81b5cfc75",
+    "effort": "563a6db17c1331f5eaa9f6549502f8afc460ad57"
+  },
+  "evidence": {
+    "integrated": {
+      "run": 41125526607,
+      "head": "2e7cbd9ebc1595f20a56229d04036355015ed589",
+      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "No integrated pass claimed until raw artifact independently verified.",
+    "Historical full-suite RED unwaived.",
+    "No native/Redmi or model proof."
+  ],
+  "next_command": "Monitor Run14W integrated Actions 41125526607, preserve any original RED, inspect real SQLite restart witness, fix only evidenced regressions, privately back up byte-exact raw. Then run justified unfiltered full-suite comparison against Run14R 4140/4F/66E/16S and retain all failures. Update checkpoint and create draft review PR; do not merge or promote gates."
+}
