@@ -1,5 +1,7 @@
 """IH-H25 Body-JEPA ObjectiveAdapter: actual tiny Torch gradient, zero authority."""
 import unittest
+import json
+from pathlib import Path
 
 import torch
 
@@ -39,7 +41,12 @@ class BodyJepaObjectiveBridgeTests(unittest.TestCase):
         self.assertEqual(a.loss_terms, ("JEPA_COSINE_ONLY",))
         self.assertIs(a.loss, research_loss)
         self.assertNotIn(name, objectives._PLUGINS)
-        self.assertEqual(objectives.report({})["B_local_JEPA"]["status"], "UNAVAILABLE")
+        self.assertNotIn(name, objectives.report({}))
+        spec = json.loads((Path(__file__).resolve().parents[1] /
+                           "specs/learning-objectives.json").read_text())
+        row = next(x for x in spec["objectives"] if x["objective_id"] == "B_local_JEPA")
+        self.assertEqual(row["status"], "UNAVAILABLE")
+        self.assertEqual(row["learn_gain"], 0)
         for mode in ("RECORD_ONLY", "SHADOW", "COMMIT"):
             self.assertEqual(a.learn_gain({"learning_mode": mode, "age": 10}), 0.)
 
