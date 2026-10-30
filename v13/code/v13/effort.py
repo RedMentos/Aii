@@ -143,7 +143,7 @@ def resolve_wake(plan,learned=None):
     """
     if learned is None or not plan['learned_wake_allowed']:return plan['wake'],'EFFORT_POLICY'
     if learned not in WAKES:raise ValueError('wake action')
-    capped=cap_wake(learned,plan['wake_ceiling'])
+    capped=cap_wake(learned,plan['wake_ceiling'],plan.get('one_body','detail'))
     return capped,'LEARNED_WAKE' if capped==learned else 'LEARNED_WAKE_CAPPED'
 
 def get_mode(store):
