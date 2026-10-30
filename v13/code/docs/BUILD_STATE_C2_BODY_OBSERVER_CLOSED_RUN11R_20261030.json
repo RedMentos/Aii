@@ -54,15 +54,30 @@
   },
   "full_suite": {
     "run_id": 41034867980,
-    "status": "IN_PROGRESS_UNVERIFIED",
-    "original_native_artifact_id": 12951963045
+    "status": "RED_ORIGINAL_PRESERVED",
+    "exact_tested_head": "b6bbee14251c3876c7e6ef0542cab6b316154567",
+    "artifact_id": 12968630397,
+    "zip_sha256": "22936aa4816bc5027c025ae1eda29d1cb6aa02796b8e09303fef6219d449c554",
+    "zip_bytes": 10080,
+    "crc_clean": true,
+    "inner_hashes": "32/32",
+    "tests": "3780 run, 1 new test failure (on pre-fix head), 2 historical Run34/Run37 source-pin errors, 14 skips",
+    "new_failure_fixed_in_latest_review": true,
+    "stage_exits": "14/15 (FULL_EXIT=1; other stages0)",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11R-C2Body-Closed/FULLSUITE_RED_41034867980_sha22936A.zip",
+    "private_byte_exact": true
   },
   "native": {
-    "status": "NOT_EXECUTED",
+    "status": "QUEUED",
     "workflow": ".github/workflows/v13-run11r-c2body-closed-native.yml",
     "trigger_branch": "assistant/v13-run11r-native-explicit-trigger-20261030",
     "trigger_file": "v13/code/docs/RUN11R_NATIVE_TRIGGER_20261030.txt",
-    "concurrency_group": "v13-step2-budget-paired-native-20261030"
+    "concurrency_group": "v13-step2-budget-paired-native-20261030",
+    "run_id": 41035932580,
+    "trigger_commit": "3d76c8e28735cfef4d40c290baad4556b61e04a7",
+    "exact_source_review_head": "2907ce0832e407a633a336111aa63b44088c72d7",
+    "note": "Queued after full-suite terminal; no other heavy native/model job active. No native proof until original ZIP audited."
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -75,11 +90,11 @@
     "utility_gate_pass": false
   },
   "open_questions": [
-    "Full-suite current branch original raw pending; retain all historical failures",
-    "Native Run11R 24 turns not executed",
+    "Full-suite 41034867980 original RED preserved; rerun latest source after native if useful, two historical Run34/37 errors remain",
+    "Native Run11R 24 turns queued 41035932580; no result yet",
     "Review branch workflow_dispatch may require default-branch registration; explicit trigger branch path is prepared",
     "No Redmi device for acceptance",
     "Need independent postnative raw audit and two-state complementarity proof"
   ],
-  "next_command": "Inspect Actions 41034867980 terminal and raw; after heavy owner released create explicit native trigger branch from latest review HEAD, commit only RUN11R_NATIVE_TRIGGER_20261030.txt; on terminal verify original native ZIP/CRC/inner hashes/preclose/24 rows, private backup, no promotion."
+  "next_command": "Check native Actions 41035932580 terminal; download original artifact, verify ZIP SHA256/CRC/SHA256SUMS and 24 raw/preclose rows, independently run Run11R verifier, private byte-exact backup. Do not promote on partial native; after native, consider latest-head full-suite rerun to remove pre-fix Run11R test failure."
 }
