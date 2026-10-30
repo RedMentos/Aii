@@ -1,0 +1,58 @@
+name: V13 German typed arithmetic SHADOW source-only
+on:
+  push:
+    branches:
+      - 'assistant/v13-de79-native-review-shadow-pipeline-*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shadow-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Focused tests, compile, privacy and closed evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-de79-shadow"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 --version > "$e/PYTHON_VERSION.txt" 2>&1
+          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/v13/agi/listarith_de_shadow_pipeline.py v13/code/tests/test_listarith_de_shadow_pipeline_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 542c8c426f4ff15dd5b26d94dd89152fe60d9dbc --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 542c8c426f4ff15dd5b26d94dd89152fe60d9dbc HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-de79-shadow-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-de79-shadow/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Gate only source tests, never native or age promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-de79-shadow"
+          for stage in TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -80 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "SHADOW_SOFTWARE_ONLY_NO_NATIVE_OR_STEP2_B3_JEPA_REDMI_GATE"
