@@ -1,0 +1,76 @@
+name: V13 ContextOS typographic exact literals run11i
+on:
+  push:
+    branches:
+      - 'assistant/v13-contextos-typographic-quotes-run11i-20261030'
+    paths:
+      - '.github/workflows/v13-contextos-typographic-quotes-run11i.yml'
+      - 'v13/code/tests/test_contextos_typographic_quotes_run11i.py'
+      - 'v13/code/v13/context_os.py'
+      - 'v13/code/docs/CONTEXTOS_TYPOGRAPHIC_CI_TRIGGER_RUN11I.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  typographic-literals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: ContextOS source fidelity and hashed raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/contextos-typographic-run11i"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/contextos-typographic-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/contextos-typographic-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 7m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_contextos_typographic_quotes_run11i \
+              tests.test_context_os_singlequote_exact_20261029 \
+              tests.test_context_os_unclosed_code_20261029 \
+              tests.test_context_os \
+              tests.test_context_warm_postverify_race_run11) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/v13/context_os.py \
+            v13/code/tests/test_contextos_typographic_quotes_run11i.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base c21e180f1902029e1d27aea099728815764dd394 \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check c21e180f1902029e1d27aea099728815764dd394 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-contextos-typographic-run11i-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/contextos-typographic-run11i/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed and preserve raw
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/contextos-typographic-run11i"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/"$stage"_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -100 "$e/"$stage"_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "CONTEXTOS_SOFTWARE_ONLY_NO_NATIVE_OR_AGE_PROMOTION"
