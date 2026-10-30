@@ -1,3 +1,7 @@
+## 2026-10-30 — JEF F1/F5 stored FINAL arithmetic discrepancy audit (review-only)
+
+Implemented opt-in local `:jefsource audit` on the current-session persisted assistant FINAL and twice-verified human F1/F5 source, lexical-only with zero authority. Focused RED preserved, GREEN 23/23 Actions 40996224837, original raw CRC/hash and private Library backup verified. `v13/code/docs/JEF_F1F5_FINAL_OUTPUT_AUDIT_VERIFIED_20261030.md`. Separate native STEP2 v2 pilot independently audited in PR #1202: C3 2/8, default both 3/8, arithmetic both 5/8, pilot signal but no STEP2 gate. Next: adversarial FINAL-change/same-unit review and source-disjoint native utility. Canon unchanged; Age0 RECORD_ONLY, B3/Body-JEPA/JEPA/STEP2 gates unchanged; Run34/37 full-suite source-pin RED remains.
+
 ## 2026-10-30 — explicit local source-exact explanation (JEF F1/F5 SHADOW)
 
 Review-only child `codex/v13-jefsource-explain-optin-20261030-hourly11` adds `:jefsource explain`: exact signed source remainder and eligibility with two human F1/F5 rechecks, no live authority or native model. Preregistered 19/19 real Store software tests PASS after preserved 17-test RED; original `:jefsource` remains unchanged. Raw hashes and limits in `code/docs/JEF_SOURCE_EXPLAIN_OPTIN_VERIFIED_RESULT_20261030.md`. Next: full unfiltered suite and separately registered native paired semantic utility with corrected validator/scorer. STEP2 UTILITY_FAIL and all other Canon negative gates remain.

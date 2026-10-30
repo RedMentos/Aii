@@ -1,0 +1,81 @@
+{
+  "schema": "v13.build_state.jef_f1f5_stored_final_audit.v1",
+  "date_utc": "2026-10-30",
+  "owner": "assistant/v13-jef-f1f5-final-audit-20261030-0407",
+  "parent_pr": 1201,
+  "parent_head": "4f9a5aef58d9f3ccbfc46ac67df26eecf34096fd",
+  "prereg_commit": "d471c3b30fb2251096532f7817199fbeb5db7a48",
+  "tested_head": "5bab4521fa326d6741b1f8f779ece648d54f6d47",
+  "source_blobs": {
+    "parser": "f51890bb8b4621204f3cb18a834cfbec97d9c252",
+    "operator": "b4f4f2d77034316016c2f14fe9037c6c6dc861a9",
+    "help": "300d4c62ed03fa7a708a9fbce674c2cf0f3c9f1d",
+    "tests": "d2fa9ee09f82c12d6f286b4d02f808873db91422"
+  },
+  "red": {
+    "run": 40996085693,
+    "artifact_id": 12951271388,
+    "sha256": "388f9a9f485c7181a0e9825277bc2aef74b94552682d0c6cd7091ec30178ef7d",
+    "tests": "16 old PASS + 1 missing module import ERROR",
+    "workflow_base_checkout_errors_preserved": true
+  },
+  "green": {
+    "run": 40996224837,
+    "artifact_id": 12950459579,
+    "sha256": "132b4b1a8753a4c96b1facba73ffd8913e89ff0faee7431688b60deb5076dd33",
+    "tests": "23/23 PASS",
+    "stages": "6/6 exit0",
+    "privacy": "CLEAN"
+  },
+  "zip_crc_clean": true,
+  "inner_hashes_red": "15/15",
+  "inner_hashes_green": "15/15",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEFFinalAudit/",
+  "private_backup_byte_verified": true,
+  "feature_status": "SHADOW_READ_ONLY_SOFTWARE_ONLY",
+  "native_executed": false,
+  "redmi_measured": false,
+  "learning_mode": "RECORD_ONLY",
+  "jepa_weight": 0,
+  "step2_status": "UTILITY_FAIL",
+  "b3_status": "NO_PROMOTION",
+  "body_jepa_status": "UNAVAILABLE",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "historical_fullsuite": "RUN34_RUN37_SOURCE_PIN_RED_UNWAIVED",
+  "open_questions": [
+    "Lexical audit cannot establish semantic truth",
+    "No native persisted FINAL cohort measured with new audit",
+    "Shared units and adversarial repeated option labels need independent review"
+  ],
+  "next_command": "With genuinely persisted native FINAL and current-session human F1/F5 sources, run :jefsource audit and compare without output authority; preserve Run34/37 RED and no gate promotion.",
+  "fullsuite_pin_audit": {
+    "run_id": 40991785171,
+    "tests": 3425,
+    "errors": 2,
+    "skipped": 11,
+    "artifact_sha256": "c4fb54cbbd7bf28a65764c4f2e31bf3ae3010d3f91a11da9a0b14f480d03abb2",
+    "expected_utility_blob": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd",
+    "observed_utility_blob": "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53",
+    "other_three_pins_match": true,
+    "status": "RED_UNWAIVED",
+    "private_backup_byte_verified": true
+  },
+  "adversarial_green": {
+    "run": 40997671040,
+    "head": "3e66093da722a52e375600bc8d624ffdeea139ff",
+    "tests": "25/25 PASS",
+    "stages": "6/6 exit0",
+    "zip_sha256": "6ea1b00bec2b3776511cb1352cb61866c8d1f54df3672ef25501f15368a7cf80",
+    "inner_sha256": "15/15",
+    "private_backup_byte_identical": true,
+    "source_unchanged": true,
+    "tests_blob": "ef66a0a263514364886f68847cdfbef291df2f79",
+    "new_cases": [
+      "FINAL_CHANGED between two reads",
+      "same-unit UNSUPPORTED",
+      "signed negative exact remainder",
+      "oversize refusal"
+    ]
+  }
+}
