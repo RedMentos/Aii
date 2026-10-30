@@ -1,0 +1,65 @@
+{
+  "schema": "V13_RUN11P_EIGHTSTEP_NATIVE_VERIFIED_REVIEW_ONLY",
+  "date_utc": "2026-10-30",
+  "pr": 1245,
+  "branch": "assistant/v13-run11p-bjepa-eightstep-disjoint-20261030",
+  "prereg_commit": "eb55df7eaf744becdfa20679868bab5fa1ebe79c",
+  "tested_head": "5184ef06ae1108db01caeb55aabebba2498c0067",
+  "source_git_blob": "af685a22ddd4ff6412643a8849a1f00bf2112487",
+  "canon_git_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "body_jepa_git_blob": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+  "model_revision": "120bf032c36dd1273de754669da040dba7ad4982",
+  "master_sha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+  "fixture_sha256": "1b2f71817200389d3f78fc87cf70512e23bd7273e75c2901768c3cc76ded56aa",
+  "native_original": {
+    "run_id": 41032521554,
+    "artifact_id": 12965978378,
+    "zip_sha256": "a70cd3b6df954ad843437f893e0e572e1f492eae86874e96b863b0621dd511f9",
+    "size_bytes": 16454,
+    "crc_clean": true,
+    "inner_hashes": "28/28",
+    "stage_exits": "11/11 zero",
+    "software_tests": "19/19 PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11P-BodyJEPA-8Step-Disjoint/NATIVE_GREEN_NEGATIVE_41032521554_shaA70CD3.zip",
+    "private_readback_byte_exact": true
+  },
+  "seeds": [
+    97,
+    101,
+    103
+  ],
+  "arms": [
+    "CE",
+    "EMA",
+    "SHUFFLED"
+  ],
+  "steps_per_arm": 8,
+  "completed_arms": 9,
+  "status": "DIAGNOSTIC_HURT",
+  "utility_gate_pass": false,
+  "seed_wins": 0,
+  "mean_deltas": {
+    "paraphrase_ema_minus_ce": 0.0920162753512462,
+    "paraphrase_ema_minus_shuffled": -0.004515114550789197,
+    "near_miss_ema_minus_ce": 0.09546290648480256,
+    "retention_ema_minus_ce": 0.18358520107964674
+  },
+  "all_original_row_nll_summaries_recalculated": true,
+  "evidence_class": "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Choose new anchored/smaller-weight semantic-target JEPA cohort or prioritize C2/C3 real answer utility; do not retune frozen Run11P.",
+    "Historical Run34/Run37 frozen source-pin RED still unresolved.",
+    "No Redmi native evidence."
+  ],
+  "next_command": "Review PR #1245 original Actions 41032521554 and independent raw hashes; continue independent C2/C3 source-bound answer scoring PR #1246 and preregister a disjoint paired utility experiment.",
+  "owner": "GPT-6 review-only branch"
+}
