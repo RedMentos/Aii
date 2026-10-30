@@ -1,0 +1,52 @@
+{
+  "package": "RUN13L_NATIVE_INDEPENDENT_SOURCE_VALUE_REVIEW_20261030",
+  "owner": "GPT-6",
+  "parent_commit": "af9b57b92fcf0747299df75cce766a5158ff838a",
+  "original": {
+    "actions_run": 41087610878,
+    "head": "5a78f544ea349d7d787f2fb6ad5d4d8c86f8e3c9",
+    "artifact_id": 12991823249,
+    "zip_sha256": "cb1c2786f663ca49840ff73d26146f60c3bbebd66546ac7b2d155e24fc72f4cb",
+    "zip_bytes": 28560,
+    "crc": "PASS",
+    "inner_hashes": "35/35",
+    "rows": "12/12",
+    "stage_exits": "10/10 zero",
+    "independent_verifier": "RUN13L_RAW_REPLAY_VALID",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13L-C3-System/run13l-native-original-41087610878.zip",
+    "backup_byte_identical": true
+  },
+  "source": {
+    "seed": 251,
+    "fixture_sha256": "ccf9e0aebdf5a4376f2b3a0b65460cce5dd1ac3198ac3dde189080f3dbeb4473",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "revision": "657e078c94084481950a2d555a941481f715536b"
+  },
+  "review": {
+    "independent_arithmetic_cases": "6/6",
+    "abstain_literal": "6/6",
+    "copy_exact": "0/6",
+    "copy_numeric": "9/12",
+    "copy_faster": "5/6",
+    "copy_strict_full": "4/6",
+    "negative_counterexample": "Beacon251 swapped numeric association and omitted faster claim",
+    "source_value_scope": "SYNTHETIC_LINUX_NATIVE_EXPLORATORY_NOT_GENERAL_UTILITY"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Can an exact source-to-output gate detect swapped associations and unsupported claims before any active C3 egress?",
+    "Can a new preregistered heldout source group demonstrate robustness beyond n=6?",
+    "How to move beyond isolated C3 prompt pilots toward full canonical multi-organ utility?"
+  ],
+  "next_command": "Implement a source-bound deterministic C3 candidate-vs-JEF fact validation SHADOW gate with explicit swapped/extra/missing claim negative tests; do not modify prior frozen cohorts or activate egress. Alternatively pursue independent Body-JEPA/C2/ContextOS roadmap packages while native owners are active.",
+  "platform_remaining_budget": "UNKNOWN"
+}
