@@ -1,3 +1,7 @@
+## 2026-10-30 — explicit local source-exact explanation (JEF F1/F5 SHADOW)
+
+Review-only child `codex/v13-jefsource-explain-optin-20261030-hourly11` adds `:jefsource explain`: exact signed source remainder and eligibility with two human F1/F5 rechecks, no live authority or native model. Preregistered 19/19 real Store software tests PASS after preserved 17-test RED; original `:jefsource` remains unchanged. Raw hashes and limits in `code/docs/JEF_SOURCE_EXPLAIN_OPTIN_VERIFIED_RESULT_20261030.md`. Next: full unfiltered suite and separately registered native paired semantic utility with corrected validator/scorer. STEP2 UTILITY_FAIL and all other Canon negative gates remain.
+
 ## 2026-10-30 — F1/F5 source-exact signed arithmetic SHADOW (review-only)
 
 Current-chain STEP12 native semantic audit remains **0/2 required budget remainders**, no STEP2 utility proof. New review-only child `codex/v13-f1f5-exact-arithmetic-20261030-hourly11` adds source-bound signed residuals to the existing two-source JEF typed SHADOW path; 21/21 real-Store/software tests and 8/8 CI stages PASS after preserved 3-error RED, no native calls or output authority. Raw evidence private Library and exact hashes in `code/docs/F1F5_SOURCE_EXACT_ARITHMETIC_VERIFIED_RESULT_20261030.md`. Next required work: opt-in source-exact explanation with revalidated human lineage, then disjoint paired native no-body/one-body/both semantic utility, with frozen cohorts and negative gates intact. This is not a Canon completion.
