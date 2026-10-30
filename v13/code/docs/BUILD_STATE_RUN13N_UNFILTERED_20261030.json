@@ -1,0 +1,39 @@
+{
+  "package": "RUN13N_UNFILTERED_CURRENT_CHAIN_FULLSUITE_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13n-unfiltered-chain-fullsuite-20261030-auto11",
+  "parent": "f5805204f68a063003e04eed9f45280e732628a8",
+  "preregistered_commit": "c8a1aab37273e23f40fd4d044b021b563d79a93e",
+  "source_head_at_launch": "d883e8e9cc7b22966f862fad953939f112f8f6b9",
+  "test_scope": "UNFILTERED_ORIGINAL_PYTHON_UNITTEST_DISCOVER_ALL",
+  "no_waivers": true,
+  "dependencies": {
+    "numpy": "2.2.6",
+    "torch": "2.5.1+cpu",
+    "transformers": "4.44.2",
+    "peft": "0.13.2",
+    "prompt_toolkit": "3.0.52"
+  },
+  "evidence": {
+    "actions_run": 41088780210,
+    "status": "PENDING",
+    "original_artifact": "PENDING",
+    "historical_G14_G15": "RED_120_FAILURE_IDENTITIES_NOT_WAIVED"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Does unfiltered original full suite on current Run13M chain retain historical G14/G15 RED identities?",
+    "Any new failures in Run13J-M? If so triage without waivers.",
+    "No native/Redmi acceptance from software-only run."
+  ],
+  "next_command": "Inspect GitHub Actions 41088780210 terminal; download original artifact, verify SHA256/CRC/inner hashes/exit codes, parse raw failure identity counts, private byte-identical backup, then choose highest priority cross-organ repair without waiving RED.",
+  "platform_remaining_budget": "UNKNOWN"
+}
