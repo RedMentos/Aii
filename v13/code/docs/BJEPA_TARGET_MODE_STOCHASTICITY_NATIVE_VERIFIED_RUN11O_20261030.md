@@ -1,0 +1,18 @@
+# Run11O verified original pinned 350M Body-JEPA target-mode mechanism — no stochastic effect
+
+2026-10-30. Review-only PR #1244, preregistration committed at `14c3ecf2c731ff4789713d9639d6543d275cf7b6` **before** probe source. Exact tested head `ecf37a0c5b3b53d4dcdfd101cb1ee2999adc46cc`. Original GitHub Actions **41031749744 SUCCESS**, artifact **12966845549**, original ZIP SHA256 **`1add11a3d62b2141d9143113036ae1874bdba2720ed21bef07d22d547ddbf3c2`**, 9340 bytes, CRC clean, **28/28** inner SHA256SUMS verified, all **11** original stage exit receipts zero (SOURCE, VENV, TORCH, DEPS, PIP_CHECK, SOFTWARE, COMPILE, DOWNLOAD, NATIVE, PRIVACY, DIFF). Original workflow software **10/10 PASS**. Independent original artifact download and private Library re-materialization SHA256 matched byte for byte. Backup: `/V13-Checkpoints/2026-10-30/Run11O-BodyJEPA-TargetMode/NATIVE_GREEN_41031749744_sha1ADD11.zip`.
+
+**Source/model provenance:** Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, Body-JEPA blob `b560d4e88fe457f381e89dfc5d6188a8ec3b306b`, LoRA blob `49a752879ae5d19391963742a0f042e740edb2cc`, assay script blob `d2065a5e023cbbe53bc0deaa17ecd8b4f99de6a1`. Public master `LiquidAI/LFM2.5-350M` exact revision `120bf032c36dd1273de754669da040dba7ad4982`, master SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`. Publisher model card declares custom `lfm1.0` license; no model weights or derivative adapters are exported. Original synthetic fixture SHA256 `be4925666ef6ffc2206dc450f775dee8ac7a6eb21fbc67082a0f49f1e3804e95` preserved.
+
+**Actual mechanism measurements (Linux FP32 Torch, seed 137, two target strings, 3 repeats each, no training):**
+
+| Probe | train-repeat max abs | eval-repeat max abs | train vs eval max abs |
+| --- | ---: | ---: | ---: |
+| Explicit p=0.6 toy dropout positive control | 1.7642006874084473 | 0.0 | 1.3755998611450195 |
+| Actual pinned 350M with initialized rank-2 PEFT LoRA, dropout=0 | **0.0** | **0.0** | **0.0** |
+
+Actual model reported **zero PyTorch dropout modules** in the inspected path. The positive control verifies that the assay detects real dropout. This supports the narrow causal diagnosis that toggling `ema_target_latent(eval_target=True)` is a **no-op on these real target forwards** with this master/adapter configuration. It is consistent with the independently verified Run11M result: three seeds, 12 native arms, EMA_EVAL minus EMA_TRAIN heldout NLL exactly 0.0, `DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN`. It does **not** establish a general JEPA failure, whole-model invariance for every possible input or a new utility gain. A target-mode flag without target stochasticity is not a promising next utility intervention.
+
+**Controls/gates:** `train_steps=0`, `exported_adapter=false`, `production_activation=false`, `utility_gate_pass=false`, `runtime_jepa_weight=0`, `age_authority=0`, `redmi_measured=false`, `whole_system_complete=false`. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE. Prior run11n unfiltered suite remains RED only at historical frozen Run34/Run37 preflights (3,734 tests, 2 errors, 14 skipped). No waiver.
+
+**Next substantive work:** Do not rerun the eval/train toggle as a utility candidate on this dropout-free source. Research and preregister a genuinely different Body-JEPA objective/target mechanism (or improve real B1/B2 and C2/C3 end-to-end utility) with separate immutable cohorts, strong controls, heldout transfer/retention, and independent review. Do not silently mutate Run11M source/model/seed hashes or turn a Linux synthetic signal into a Redmi/production gate.
