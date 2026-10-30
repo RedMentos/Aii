@@ -32,7 +32,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback retrieval <Memory-ID> relevant|irrelevant [--learn]
 :source budget <ProjectName> <WholeEuroAmount> [--confirm] (user-authored F1/F5 fact, no model or prior answer)\n:remember <Thema> | <Korrektur> / :memory / :forget <Memory-ID> --confirm
 :verified <Frage> | :verified exact <Frage> (F1/F5-Vorprüfung oder genaue Quellantwort; keine C3-Generierung)
-:jefsource <Event-ID> <PolicyMemory-ID> <SheetMemory-ID> (nur lokale F1/F5-SHADOW-Diagnose, keine Live-Antwort)
+:jefsource [explain] <Event-ID> <PolicyMemory-ID> <SheetMemory-ID> (lokale F1/F5-SHADOW-Diagnose, optionale Quellen-Rechnung, keine Live-Antwort)
 :experience [Event-ID] / :choose self|teacher [Start:Ende] [--kind fact|style|preference] [--learn]
 :export dataset [session|all]
 :replay [Anzahl] / :replay status
