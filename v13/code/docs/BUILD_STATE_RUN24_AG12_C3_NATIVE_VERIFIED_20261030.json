@@ -1,0 +1,71 @@
+{
+  "schema": "v13.run24.ag12_c3_native.verified.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "source_pr": 1351,
+  "source_head": "f86c93b40d84d66a05bad0fa672a1f35bb8ac93e",
+  "source_branch": "assistant/v13-run24-ag12-german-c3-native-20261030-hourly11",
+  "production_main_changed": false,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "runs": [
+    {
+      "github_actions": 41137027294,
+      "head": "b8f7d0d122a425881f9206ddacfa0cbcbb0ebcd3",
+      "result": "RED_EXPECTED_TEST_FAIL_176_VS_88",
+      "artifact_id": 13017012874,
+      "original_zip_sha256": "397ac04eff5ec18afc182ef296ac8b2c5db0e9deee421262b496c672df90c1d6",
+      "zip_crc": "PASS",
+      "inner_sha256": "20/20_PASS"
+    },
+    {
+      "github_actions": 41137225498,
+      "head": "f86c93b40d84d66a05bad0fa672a1f35bb8ac93e",
+      "result": "LINUX_NATIVE_C3_AG12_176_176_PASS",
+      "artifact_id": 13015534785,
+      "original_zip_sha256": "819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77",
+      "zip_crc": "PASS",
+      "inner_sha256": "23/23_PASS",
+      "test_count": "12/12_PASS",
+      "stage_exits": "PINS/VENV/DEPS/TEST/NATIVE/REPORT_CHECK/COMPILE/PRIVACY/DIFF=0"
+    }
+  ],
+  "native_report_sha256": "b7cde3fe04e69e954fdcdc424b0c1995e081218515b23d899a9838f5a45ed8cb",
+  "native_rows": {
+    "de": {
+      "sha256": "2863fd6ba8bfe2837744f8230745d0e8feb2139d5f404b3dace2b41103d6a35c",
+      "items": 88,
+      "overall": 0.25,
+      "unseen": 0.1731,
+      "suite_hash": "37c4c4283eeb3ea7e0c80b1336de586413c8078d6377210b0e2db534d93cb635"
+    },
+    "en": {
+      "sha256": "34b7ce5e51588bace1a116c243786690eba081f61661f93998abc4dd86482c0b",
+      "items": 88,
+      "overall": 0.2159,
+      "unseen": 0.1538,
+      "suite_hash": "218bd5bd89de161fb75e0fdc24dfb63919f7ee0d5abcd58b5a0c638c6cde5375"
+    }
+  },
+  "native_identity": {
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_tar_sha256": "9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443",
+    "runner_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "generation": "gen_82ec4bc521ff4230b6ff1eea3e921cc7"
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run24-AG12-C3Native/",
+  "backup_byte_identical": true,
+  "backup_evidence": "materialized library ZIPs independently sha256sum-verified",
+  "claim_limits": {
+    "evidence_kind": "LINUX_NATIVE_C3_ONLY",
+    "german_english_scores": "descriptive diagnostic; differing prompts, not learning or transfer",
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_package": "Run25 pinned B1_DETAIL and B2_GIST real Linux-native AG12 German/English serial diagnostic with distinct models; prereg before source; preserve raw failure and negative gates."
+}
