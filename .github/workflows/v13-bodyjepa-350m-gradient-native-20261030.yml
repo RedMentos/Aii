@@ -2,7 +2,10 @@ name: V13 pinned real-master Body-JEPA adapter gradient compatibility
 on:
   push:
     branches: [codex/v13-bodyjepa-350m-gradient-native-20261030-auto11o]
-    paths: ['.github/workflows/v13-bodyjepa-350m-gradient-native-20261030.yml']
+    paths:
+      - '.github/workflows/v13-bodyjepa-350m-gradient-native-20261030.yml'
+      - 'v13/code/scripts/bodyjepa_real_master_gradient_20261030.py'
+      - 'v13/code/tests/test_bodyjepa_real_master_gradient_20261030.py'
 permissions:
   contents: read
 concurrency:
