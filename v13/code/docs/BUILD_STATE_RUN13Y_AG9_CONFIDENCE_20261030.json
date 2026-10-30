@@ -8,7 +8,7 @@
   },
   "branch": "assistant/v13-run13y-ag9-confidence-input-guard-20261030-auto11",
   "pr": 1316,
-  "state": "SOURCE_COMMITTED_CI_QUEUED",
+  "state": "LOCAL_EXACT_SOURCE_MIRROR_RED_GREEN_CI_QUEUED",
   "prereg_commit": "5a9d99a8faecf63e16ebc76e9fb650022508ed3e",
   "bug": "AG9 clamp01 maps NaN/Inf to plausible 1.0/0.0; int(bool('false')) records false string as positive outcome.",
   "change": "Finite nonboolean confidence, exact bool/int0/1 outcome labels and bounded component names validated before StateBox mutation; invalid decide explicit abstention.",
@@ -37,5 +37,27 @@
     "redmi_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "When Actions 41101207117 and 41101270744 become terminal, download original raw ZIPs, check test-first RED and GREEN, CRC and SHA256SUMS, privacy and compile exits; fix isolated AG9 candidate if needed and privately byte-backup. Continue independent blueprint work while queued."
+  "next_command": "When Actions 41101207117 and 41101270744 become terminal, download original raw ZIPs, check test-first RED and GREEN, CRC and SHA256SUMS, privacy and compile exits; fix isolated AG9 candidate if needed and privately byte-backup. Continue independent blueprint work while queued.",
+  "local_isolated_exact_source_evidence": {
+    "scope": "LOCAL_ISOLATED_MIRROR_WITH_STUBBED_BASE_AND_GENERALITY_DEPENDENCIES; not full repo GitHub Actions",
+    "original_module_blob": "69a87b24f2a8d4fb7d00213688ac479561c421ed",
+    "guarded_module_blob": "bede3f29a39c6bd16b21c4b18aa2657a9fe1e459",
+    "test_blob": "3c6d545ab67e85eee00467d63478db54ec0fc052",
+    "red": {
+      "exit": 1,
+      "tests": 6,
+      "subtest_failures": 30,
+      "raw_sha256": "b222a0f2c831bdf06d168c69fcd1eefffd97f1d7dc03f40e6bc3bf3dd838ff4f"
+    },
+    "green": {
+      "exit": 0,
+      "tests": 6,
+      "failures": 0,
+      "raw_sha256": "369b65455da6f20ea7be46e96c8fe8702f564b83bd1b88571433c73fc8d28fca"
+    },
+    "original_zip_sha256": "dacba372f0e5591e70d2ca0f55bb86a5388bb64b4c33aaddab528c6b79dd1ef3",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13Y-AG9/run13y_local_exact_source_red_green.zip",
+    "private_backup_readback": "BYTE_IDENTICAL",
+    "limitation": "Dependency stubs reproduce StateBox/calibration behavior but are not exact full repository modules; CI remains queued."
+  }
 }
