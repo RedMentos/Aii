@@ -75,6 +75,10 @@ class Metacognition:
         return table
     def calibrated(self,component,confidence):
         try:
+            _component_name(component)
+        except ValueError:
+            return None
+        try:
             c = _finite_confidence(confidence)
         except ValueError:
             return None
@@ -82,6 +86,11 @@ class Metacognition:
         if not comp or not comp['calibrator']:return None  # unknown: callers must treat as uncalibrated
         return comp['calibrator'][min(BINS-1,int(c*BINS))]
     def decide(self,component,confidence):
+        try:
+            _component_name(component)
+        except ValueError:
+            return {'calibrated':None,'second_attempt':False,
+                    'abstain':True,'reason':'INVALID_COMPONENT'}
         try:
             _finite_confidence(confidence)
         except ValueError:

@@ -1,0 +1,115 @@
+{
+  "schema": "v13.run14c.ag9_ag12_crossorgan.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; disjoint AG9/AG12 integration review only",
+  "parent": {
+    "pr": 1317,
+    "commit": "7e7d57e1db88642f4fcd447eda2c012c1e625bfb"
+  },
+  "sources": [
+    {
+      "pr": 1318,
+      "head": "e575d93a2682fdbe78267075237efd90969c6ef5",
+      "ag9_blob": "658b3c04bd95907211d1f5f7601436d3370d68e1",
+      "testfirst_red_run": 41103491267,
+      "candidate_green_run": 41103632027
+    },
+    {
+      "pr": 1319,
+      "head": "07992eb4beed154c84ecfeffca321c9ff0c5d38e",
+      "ag12_blob": "6f7906c9b9352b9d4ffe9cf9f237fba684942308",
+      "testfirst_red_run": 41104149055,
+      "candidate_green_run": 41104211814
+    }
+  ],
+  "branch": "assistant/v13-run14c-ag9-ag12-crossorgan-review-20261030-hourly11",
+  "pr": 1320,
+  "state": "FOCUSED_23_GREEN_UNFILTERED_RED_ONE_MISSING_ORIGINAL_ZIP_PREREQUISITE",
+  "prereg_commit": "2bae118d95f369b8b129b147f3ea0c72fd08ca98",
+  "merge_commit": "22abfc9320bc3e4389f7cf778218a06704641cf0",
+  "merge_parents": [
+    "2bae118d95f369b8b129b147f3ea0c72fd08ca98",
+    "07992eb4beed154c84ecfeffca321c9ff0c5d38e"
+  ],
+  "workflow_commit": "730d335c40ee61fc47dd4d3ae1856a74a846f427",
+  "ci": {
+    "run_id": 41104878974,
+    "status": "completed/failure",
+    "focused": "completed/success",
+    "focused_tests": 23,
+    "focused_zip_sha256": "b45b6bcaabcf708a56b599d763d799d47f3e44170a91be7a3acb5b65f0df410b",
+    "focused_inner_sha256": "12/12 PASS",
+    "unfiltered": "completed/failure",
+    "unfiltered_tests": 4090,
+    "unfiltered_failures": 4,
+    "unfiltered_errors": 66,
+    "unfiltered_skips": 16,
+    "unfiltered_zip_sha256": "3936a9a32e95f5e954a19e6f16b79f2c879d30dece7e93e3b4fe07cbf550f4cc",
+    "unfiltered_inner_sha256": "30/30 PASS",
+    "unfiltered_crc": "PASS",
+    "unfiltered_stage_exits": {
+      "CANON": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TORCH": 0,
+      "TRANSFORMERS": 0,
+      "PEFT": 0,
+      "PIP_CHECK": 0,
+      "TORCH_IMPORT": 0,
+      "TRANSFORMERS_IMPORT": 0,
+      "PEFT_IMPORT": 0,
+      "FULL": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14C-CrossOrgan/",
+    "private_readback": "BYTE_IDENTICAL_SHA256"
+  },
+  "baseline": {
+    "run_id": 41088780210,
+    "artifact_id": 12994050614,
+    "original_zip_sha256": "4d4132478876762d14fd86d0acbd3632cdc4408988c81c363ceb8673f80c68fd",
+    "top_level_tests": 4027,
+    "failures": 4,
+    "errors": 65,
+    "skips": 15,
+    "nested_failure_identities": 120,
+    "unique_failure_identities": 86,
+    "status": "HISTORICAL_RED"
+  },
+  "evidence_scope": "EXACT_GITHUB_ACTIONS_SOFTWARE_FOCUSED_GREEN_FULLSUITE_RED_VERIFIED",
+  "open_questions": [
+    "Supply exact original Run13T native ZIP SHA256 86f728... via authorized read-only Actions artifact 12996917793; Run14E is queued.",
+    "Original 120 historical failures remain; no waiver or promotion.",
+    "No model/native/Redmi evidence or production merge."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Continue Run14E Actions 41106043575; verify exact original artifact fetch SHA/CRC/39 inner and fullsuite failure identity comparison; private backup. If fetch fails, record exact prerequisite and continue independent work.",
+  "comparison": {
+    "status": "RED_CHANGED_IDENTITIES",
+    "baseline_identities": 120,
+    "baseline_unique": 86,
+    "candidate_identities": 121,
+    "candidate_unique": 87,
+    "added": [
+      {
+        "kind": "ERROR",
+        "identity": "setUpClass (test_run13x_original_native_receipt_replay.OriginalNativeReceiptReplay)",
+        "reason": "RUN13X_REQUIRES_EXACT_ORIGINAL_NATIVE_ZIP"
+      }
+    ],
+    "removed": [],
+    "other_historical_identities_unchanged": true,
+    "software_suite_gate_pass": false,
+    "comparison_json_sha256": "bf9bc33ff587189940f5daa7db06eb3b6ffddb55201f921e89b706f519286693"
+  }
+}
