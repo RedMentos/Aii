@@ -96,20 +96,65 @@ def on_route_correction(store,event_id,value):
         return n
     return _mutate(store,f)
 
+def _valid_human_receipt(store, feedback, human, decision):
+    """Only a live, byte-exact explicit human receipt can outrank a self label.
+
+    Shared with learning.shadow_readout: a matching source_id alone does not
+    establish the human value, permission, source kind or decision/event.
+    """
+    if not isinstance(human, dict) or not isinstance(decision, dict):
+        return False
+    try:
+        if (human.get('kind') != feedback['kind']
+                or human.get('value') != feedback['value']
+                or human.get('learning_permission') != feedback['permission']
+                or human.get('event_id') != feedback['event_id']
+                or decision.get('event_id') != feedback['event_id']
+                or decision.get('component') != feedback['kind']
+                or human.get('decision_packet_id') != decision.get('packet_id')):
+            return False
+        ref = human.get('source_ref')
+        if not isinstance(ref, dict) or ref.get('source_id') != feedback['source_id']:
+            return False
+        src = store.one('SELECT hash,chars,kind,deleted FROM sources WHERE id=?',
+                        (feedback['source_id'],))
+        if (not src or src['deleted'] or src['kind'] != 'HUMAN_DECISION'
+                or ref.get('sha256') != src['hash']
+                or type(ref.get('char_start')) is not int or ref['char_start'] != 0
+                or type(ref.get('char_end')) is not int or ref['char_end'] != src['chars']
+                or ref.get('modality') != 'text'):
+            return False
+        return store.read_source(ref) == feedback['value']
+    except (ValueError, KeyError, TypeError, OSError, UnicodeError):
+        return False
+
+
 def _human_label_exists(store,component,revision,context_sha256):
-    """Exact active human feedback for this head/context, independent of recent-row limits."""
-    return bool(store.one(
-        "SELECT 1 FROM feedback f "
+    """Require an exact active human receipt, even outside recent-row limits."""
+    candidates = store.rows(
+        "SELECT f.*, h.payload AS human_payload, d.payload AS decision_payload "
+        "FROM feedback f "
         "JOIN sources s ON s.id=f.source_id AND s.deleted=0 "
+        " AND s.kind='HUMAN_DECISION' "
         "JOIN packets h ON h.kind='HumanDecision' AND h.event_id=f.event_id "
         " AND json_extract(h.payload,'$.source_ref.source_id')=f.source_id "
         "JOIN packets d ON d.kind='ExecutiveDecision' "
         " AND d.id=json_extract(h.payload,'$.decision_packet_id') "
+        " AND d.event_id=f.event_id "
         "WHERE f.kind=? AND json_extract(d.payload,'$.component')=? "
         "AND json_extract(d.payload,'$.context_revision')=? "
-        "AND json_extract(d.payload,'$.context_ref.sha256')=? LIMIT 1",
-        (component,component,revision,context_sha256)))
-
+        "AND json_extract(d.payload,'$.context_ref.sha256')=? "
+        "ORDER BY f.created DESC",
+        (component,component,revision,context_sha256))
+    for row in candidates:
+        try:
+            human=json.loads(row['human_payload'])
+            decision=json.loads(row['decision_payload'])
+        except (TypeError,ValueError):
+            continue
+        if _valid_human_receipt(store,row,human,decision):
+            return True
+    return False
 
 def training_rows(store,component,revision,human_keys):
     """Outcome rows for learning.shadow_readout: only in 'learn' mode, only contexts without a human label."""
