@@ -1,0 +1,11 @@
+# V13 review-chain source integration — checkpoint 2026-10-30
+
+**Owner:** `assistant/v13-review-chain-integration-20261030-0510`, child of PR #1209 at exact `277dc65df004439ff93b7129841531f2da1c2390`, no modifications to other owners' branches or main. This is **review-only integration staging**, not production merge or whole-system acceptance.
+
+Carried exact Git blobs, byte-verified remotely, from **#1206** (independent original v3 native audit docs/BUILD_STATE) and **#1208** (read-only expression diagnostic source/test/prereg/evidence/BUILD_STATE) onto the already native-verified #1209 parent (which includes #1207 isolated C2 native route and the v3 source chain). Eight imported files have identical Git blob SHA256 to their source branches; no code or frozen scorer was rewritten. C2 native 3/3 with actual selection 1/3 and auto integration 3/3 native C2+B1/B2 offers but 0/3 native-selected route, 0 C3 FINAL, remain separately documented.
+
+**Focused integration CI launched:** Actions **41000353507**, exact tested HEAD `ee911ce61a9bb5e867cbaf7674468cc85a0be72d`, status **QUEUED/UNVERIFIED**. Isolated software-only Ubuntu workflow pins 12 source/test/Canon/catalog/tool blobs, downloads original v3 native ZIP artifact 12951963045 and independently SHA-verifies original `98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46`, runs **37** expected focused tests across v3, isolated C2, seed47 auto smoke and expression sensitivity, then checks exact unchanged diagnostic 0/10/9 and 3 expression-only coverage, compile/privacy/diff, always archives SHA256SUMS/stage logs. No new native inference and no upload of original raw ZIP.
+
+**Next command:** wait for Actions 41000353507 terminal; download original CI artifact even if RED; verify SHA256/CRC/SHA256SUMS, exact test count and stage exits, private byte-identical backup, update scoped BUILD_STATE and PR. Preserve failed attempts. Continue new disjoint controlled native utility or another Canon organ after checkpoint; do not promote STEP2, B3, JEPA, Age or whole-system status from software-only integration.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; no Redmi; historical Run34/Run37 source-pin full-suite RED; V13 incomplete.
