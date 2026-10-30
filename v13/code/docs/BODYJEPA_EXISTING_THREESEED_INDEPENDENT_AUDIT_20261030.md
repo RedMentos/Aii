@@ -1,0 +1,11 @@
+# Independent raw audit — existing 350M Body-JEPA three-seed heldout (2026-10-30)
+
+This is an **independent read-only review of the pre-existing owner** `codex/v13-bodyjepa-350m-heldout-ablation-20261030-auto11p`, PR #1182, **not a rerun** or replacement. The original prereg `595a96efd449c7ab34cd223a10fefc00f087287f` fixed seeds 73/79/83, 4 invented train facts, paraphrases, near-miss controls, general retention, 2 steps, three CE/EMA/shuffled arms, same 350M FP32 master SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`.
+
+- Original Actions **`40978906996` success**, exact HEAD `4de4e0fd85478dcb0d38656d6e0dc1afad636332`, original artifact `12943573840`, ZIP SHA256 **`da1c6f3ab0f195bdc0c4c1c8e12e458c43c910c66d59b4e4c968fefe6c81f2be`**, CRC clean, **31/31 inner SHA256SUMS**, **13/13 stage exits0** (SOURCE/VENV/TORCH/DEPS/PIP_CHECK/SOFTWARE/COMPILE/DOWNLOAD/MASTER_SHA/LICENSE/NATIVE/PRIVACY/DIFF), privacy CLEAN, 14 software tests PASS.
+- Original report `v13.bodyjepa.350m_heldout_nll.v1`: **9/9 arms complete**, **`DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN`**, `utility_gate_pass=false`, no adapter exports, runtime jepa_weight0. Across seeds, EMA minus CE mean paraphrase NLL **−0.001884**, EMA minus shuffled **−0.000234**; prereg required **−0.05** vs both and 2/3 seed wins. Near-miss EMA−CE **−0.001658** and retention EMA−CE **−0.002205**; no established heldout benefit. Negative result remains negative; do not promote Body-JEPA.
+- Original artifact privately backed at `/V13-Checkpoints/2026-10-30/Run11-BodyJEPA-Heldout/existing-three-seed-40978906996.zip`, Library upload confirmed, re-materialized bytes SHA256 **`da1c6f3ab0f195bdc0c4c1c8e12e458c43c910c66d59b4e4c968fefe6c81f2be`** independently verified.
+
+The **new seed101** 8-fact/4-step single-seed study in this review branch is a **different, narrower follow-up**, not an override or re-score of PR #1182. Its separate prereg `2546cc0b84dbaeb3da6ebdc9dfadfc8479c26e2a` and frozen fixture `d7e999958de44d8cf04eac37241cc8f370a493ed` precede code. No native result exists for seed101 at this checkpoint. The new pilot must preserve the existing negative and its original artifacts.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; runtime jepa_weight=0; Redmi UNMEASURED; whole V13 INCOMPLETE. Platform remaining budget UNKNOWN.
