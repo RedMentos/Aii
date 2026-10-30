@@ -3601,5 +3601,31 @@
     "exact_next_command": "Preregister a fresh paired STEP2 no-body/one-body/both native semantic utility scorer against current pinned source; keep current historical cohorts unchanged.",
     "next_prerequisites": "Fixed disjoint semantic fixtures, original baseline and counterfactual, serialized pinned native runs, actual Redmi evidence separately.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_currentchain_jef_fullsuite": {
+    "scope": "CURRENT_CHAIN_JEF_REPORT_SOURCE_FULL_UNFILTERED_SOFTWARE",
+    "owner": "V13 hourly automation review-only",
+    "parent_head": "cee5af7064ec81f6eff27eb00b20a3f3aa7596f7",
+    "branch": "codex/v13-currentchain-jefsource-fullsuite-20261030-auto11ad",
+    "pr": null,
+    "tested_head": "81ca76bc6637a5f543f364cf7464f3a241ce0bf3",
+    "actions_run": 40987907341,
+    "status": "RED_EXPECTED_FROZEN_RUN34_RUN37_SOURCE_PINS_ONLY",
+    "tests": 3404,
+    "errors": 2,
+    "skipped": 11,
+    "other_failures": 0,
+    "elapsed_s": 352.172,
+    "dependencies": "CPU torch 2.5.1+cpu; transformers 4.44.2; peft 0.13.2; numpy 2.2.6",
+    "install_import_compile_privacy_diff": "PASS",
+    "raw_zip_sha256": "9c8a75ca343324e6df20a8a48a4a1c6d88b37570f052d2838ecbf8407e997f49",
+    "raw_crc_clean": true,
+    "inner_hashes": "30/30",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-CurrentChain-JEF-FullSuite/",
+    "remote_bytes_verified": true,
+    "claim": "SOFTWARE_ONLY_NO_NATIVE_NO_GATE_PROMOTION",
+    "later_selflabel_source_fix_included": false,
+    "exact_next_command": "Re-run same full unfiltered suite on combined PR1194 self-label source fix; retain frozen Run34/Run37 historical source-pin errors.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
