@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+import sqlite3
 
 from .common import dumps
 from .agi.context_source_link_budget_run13e import propose_pointer
@@ -80,7 +81,7 @@ def _last(r):
             return _deny("NO_UNIQUE_VERIFIED_SOURCE_LINK")
         return matches[0]
     except (ValueError, KeyError, TypeError, OSError, AttributeError,
-            UnicodeError, OverflowError):
+            UnicodeError, OverflowError, sqlite3.Error):
         return _deny("CONTEXT_LINK_LAST_INTEGRITY_RED")
 
 
@@ -97,17 +98,20 @@ def operator_command(r, args):
             or cfg.get("latents_enabled") is not False
             or cfg.get("jepa_weight", 0) != 0):
         raise ValueError("AGE0_RECORD_ONLY_REQUIRED")
-    r.require_idle()
-    if last:
-        result = _last(r)
-    else:
-        plan_id, query_event_id, source_event_id = args
-        row = r.store.one(
-            "SELECT session_id FROM events WHERE id=?", (query_event_id,))
-        if row is None or row["session_id"] != r.session:
-            raise ValueError("CURRENT_SESSION_QUERY_EVENT_REQUIRED")
-        result = propose_pointer(
-            r.store, plan_id, query_event_id, source_event_id)
+    try:
+        r.require_idle()
+        if last:
+            result = _last(r)
+        else:
+            plan_id, query_event_id, source_event_id = args
+            row = r.store.one(
+                "SELECT session_id FROM events WHERE id=?", (query_event_id,))
+            if row is None or row["session_id"] != r.session:
+                raise ValueError("CURRENT_SESSION_QUERY_EVENT_REQUIRED")
+            result = propose_pointer(
+                r.store, plan_id, query_event_id, source_event_id)
+    except sqlite3.Error:
+        result = _deny("JEF_LINK_SQLITE_INTEGRITY_RED")
     return dumps({
         **result, "operator_diagnostic": True,
         "not_chat_turn": True, "no_autonomous_egress": True,

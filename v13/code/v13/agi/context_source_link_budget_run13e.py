@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sqlite3
 
 from v13.agi.budget_answer_shadow_run13b import propose_text
 
@@ -110,5 +111,5 @@ def propose_pointer(store, plan_id, query_event_id, source_event_id):
             "delivery_authority": 0,
         }
     except (ValueError, KeyError, TypeError, OSError, AttributeError,
-            UnicodeError, OverflowError, json.JSONDecodeError):
+            UnicodeError, OverflowError, json.JSONDecodeError, sqlite3.Error):
         return _deny("CONTEXT_SOURCE_LINK_INTEGRITY_RED")
