@@ -29,7 +29,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           62c62e1978e7c2224e1536828203809a5f1e6049 v13/code/docs/BJEPA_CONTRASTIVE_350M_DISJOINT_PREREG_RUN12B_20261030.md
-          c72fa2aaba334f70c78030c0ac8c41ebb1ea94b1 v13/code/v13/body_jepa_contrastive_trainer_shadow.py
+          a31a18d9be0b1137a10304f24d3a241d720bd247 v13/code/v13/body_jepa_contrastive_trainer_shadow.py
           2fb084149a53600728a62fbe6db4dc5c8f9c2de1 v13/code/tests/test_body_jepa_contrastive_trainer_run12b.py
           acd40aeac9e286e93b40bda72c655c17725a522e v13/code/v13/body_jepa_contrastive_shadow.py
           b560d4e88fe457f381e89dfc5d6188a8ec3b306b v13/code/v13/body_jepa.py
