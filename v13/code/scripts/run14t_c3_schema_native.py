@@ -146,6 +146,7 @@ def fresh_case(base_home, base_cfg, case, index, out):
                    latents_enabled=False, jepa_weight=0,
                    observer_mode="off", history_turns=0,
                    route_override="simple", seed=SEED,
+                   c3_sampling="legacy", offer_logprobs=False,
                    temperature=0.0, answer_tokens=128,
                    context_tokens=1024, deadline_seconds=180)
         save_config(home, cfg)
@@ -182,6 +183,7 @@ def fresh_case(base_home, base_cfg, case, index, out):
                     "model_sha256": model_sha, "model_revision": revision,
                     "schema_sha256": SCHEMA_SHA256,
                     "schema_applied": arm == "JSON_SCHEMA",
+                    "c3_sampling": "legacy", "offer_logprobs": False,
                     "learning_mode": "RECORD_ONLY", "jepa_weight": 0,
                     "step2_status": "UTILITY_FAIL", "b3_status": "NO_PROMOTION",
                     "body_jepa_status": "UNAVAILABLE", "redmi_measured": False,
