@@ -21,10 +21,32 @@
   "native": {
     "run_id": 41092009944,
     "launch_head": "031abf9cfd3a3ec08f69776eec12641eed54a44f",
-    "status": "IN_PROGRESS_UNVERIFIED",
-    "heavy_concurrency_group": "v13-bodyjepa-350m-eval-paired-native-serial-20261030",
-    "completed_arms": "UNKNOWN",
-    "original_zip_sha256": null
+    "status": "SUCCESS_MECHANISM_ONLY_NO_UTILITY",
+    "artifact_id": 12994068020,
+    "zip_sha256": "3ab7acab16bd4329b4bca08756a8b76c1960b7aa2261f85c011c96af17e0cefc",
+    "zip_bytes": 11028,
+    "crc": "PASS",
+    "inner_hashes": "31/31",
+    "stage_exits": "11/11 zero",
+    "privacy": "CLEAN",
+    "source_pins": "7/7",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13P-BJEPA-Gradient/run13p-native-original-41092009944.zip",
+    "private_backup_byte_identical": true,
+    "completed_arms": "FIRST_STEP_GRADIENT_ONLY",
+    "independent_original_raw_review": true,
+    "measurement": {
+      "ce_adapter_l2": 13.966949380416676,
+      "contrastive_adapter_l2": 1.1653965363182082,
+      "shuffled_adapter_l2": 1.4075149294648932,
+      "contrastive_predictor_l2": 1.9192840072537583,
+      "weighted_contrastive_over_ce_l2": 0.020859897615728328,
+      "ce_vs_contrastive_signed_cosine": 0.012736124108614381,
+      "correct_vs_shuffled_signed_cosine": -0.09408751799694141,
+      "frozen_base_unchanged": true,
+      "optimizer_steps": 0,
+      "ema_updates": 0,
+      "model_exports": 0
+    }
   },
   "source_pins": {
     "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
@@ -54,10 +76,10 @@
     "whole_system_complete": false
   },
   "open_questions": [
-    "Does pinned real 350M CE vs contrastive LoRA gradient attribution pass source and native checks?",
-    "What is measured signed CE/JEPA gradient alignment and weighted magnitude ratio?",
-    "No heldout learning benefit or Redmi proof even if gradient mechanism succeeds."
+    "First-step JEPA gradient is only 2.09% of CE L2 at 0.25 weight, near orthogonal; no causal multi-step utility inference.",
+    "Design disjoint preregistered multi-step scale/retention cohort only after independent review; no tuning of Run12C or Run13P frozen data.",
+    "ContextOS/JEF/Body integration and Redmi resource gates remain open."
   ],
-  "next_command": "When Actions 41092009944 terminal, download original artifact, independently verify ZIP SHA/CRC/inner manifest/HEAD/source pins/stages/result and private byte-identical backup; keep all gates RED. Continue independent ContextOS/JEF work meanwhile.",
+  "next_command": "Review Run13P original raw and source pins, then implement new preregistered disjoint Body-JEPA multi-step attribution/heldout retention and independent ContextOS/JEF packages. No gate promotion.",
   "platform_remaining_budget": "UNKNOWN"
 }
