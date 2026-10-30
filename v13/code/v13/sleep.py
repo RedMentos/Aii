@@ -131,7 +131,13 @@ class ReplayQueue:
         if it['last_outcome']=='FAIL' or it['failures']>it['reps']:return 'failure'
         return 'recent' if it['reps']==0 else 'protected_old'
     def due(self,st,now,types=None,min_priority=0.):
-        return [(rid,it) for rid,it in st['items'].items() if not it['retired'] and it['next_due']<=now and it['priority']>=min_priority
+        # Sleep C retires expired entries durably, but wake/A-only cycles do not
+        # run C, and full Sleep A runs before C. TTL must bind selection itself.
+        # Missing/malformed expiry is not permission to rehearse an old source.
+        return [(rid,it) for rid,it in st['items'].items()
+                if not it['retired'] and type(it.get('expires')) in (int,float)
+                and math.isfinite(it['expires']) and it['expires']>now
+                and it['next_due']<=now and it['priority']>=min_priority
                 and it['type']!='COUNTERFACTUAL' and (types is None or it['type'] in types)]
     def sample(self,st,n,mix,now,min_priority=0.):
         """Bucketed sampling by `mix` (largest remainder), leftovers by score, then old/new interleave."""
