@@ -13,6 +13,18 @@ from v13.agi.language_compare import compare_languages
 
 
 class AG12BilingualCompareRun22(unittest.TestCase):
+    def test_empty_operator_comparison_is_read_only(self):
+        with tempfile.TemporaryDirectory() as td:
+            rt = Runtime(Path(td))
+            try:
+                before = (rt.store.state(KEY, None), rt.store.state(KEY + "_DE", None))
+                from v13.agi import operator_command
+                report = json.loads(operator_command(rt, ["eval", "compare", "en-de"]))
+                self.assertEqual(report["status"], "MISSING_EN")
+                self.assertEqual((rt.store.state(KEY, None), rt.store.state(KEY + "_DE", None)), before)
+            finally:
+                rt.close()
+
     def test_english_only_does_not_bootstrap_german_on_comparison(self):
         with tempfile.TemporaryDirectory() as td:
             rt = Runtime(Path(td))
