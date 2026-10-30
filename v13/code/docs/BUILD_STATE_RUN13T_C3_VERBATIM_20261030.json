@@ -1,0 +1,55 @@
+{
+  "schema": "v13.run13t.c3_verbatim_heldout_checkpoint.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "pr": 1311,
+  "branch": "assistant/v13-run13t-c3-verbatim-heldout-20261030-auto11",
+  "base": "964a862a7866d20a113194e448843eed2e0387c9",
+  "prereg_commit": "8f9a86b44d1d01716b78721749e5cf7e9851f04c",
+  "fixture_sha256": "c9a28de0e7fb198015b4b8845096d31f4af43f5c9679df7a8019a55ee4767b11",
+  "source_blobs": {
+    "fixture": "df7c23c7bf1af068a4cadc42fd1418fcbb05bf48",
+    "runner": "2d0b5e89a2735b9194a8e6204d3e23e90b97e956",
+    "verifier": "16060c6afcf6fe771157bab85972b6e700fa3a34",
+    "tests": "f6e8a809b476ae5cb758ce5448847d1e803f1dad",
+    "prereg": "dd2eaa4d7bc4c47df5808069ea89b184d6c10117",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "native_model": {
+    "id": "LiquidAI/LFM2.5-350M-QAD-Q4_0.gguf",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "cohort": {
+    "seed": 283,
+    "cases": 8,
+    "arms": [
+      "COPY_BASELINE",
+      "COPY_STRICT"
+    ],
+    "planned_native_calls": 16,
+    "only_system_changes": true,
+    "source_linked_jef": true,
+    "learning_mode": "RECORD_ONLY"
+  },
+  "preflight": {
+    "run_id": 41096979781,
+    "status": "QUEUED_UNVERIFIED",
+    "tested_head": "fad1f5b7423ac7ab17f995464dccd456c12b36cf"
+  },
+  "native": {
+    "status": "NOT_LAUNCHED",
+    "reason": "Preflight must pass and heavy runner owner must be clear"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect GitHub Actions 41096979781; if terminal GREEN download original preflight ZIP and verify SHA256/CRC/inner hashes/stage exits/tests/privacy; then recheck active heavy owners and create .github/workflows/v13-run13t-c3-verbatim-native.yml to launch one serialized native 16-call run. Preserve failures, never promote gates.",
+  "remaining_platform_budget": "UNKNOWN"
+}
