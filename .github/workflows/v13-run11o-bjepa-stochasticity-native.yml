@@ -1,0 +1,116 @@
+name: V13 pinned 350M Body-JEPA target-mode stochasticity native run11o
+on:
+  push:
+    branches: [assistant/v13-run11o-bjepa-target-stochasticity-20261030]
+    paths:
+      - 'v13/code/docs/BJEPA_TARGET_MODE_STOCHASTICITY_NATIVE_TRIGGER_RUN11O.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-bodyjepa-350m-eval-paired-native-serial-20261030
+  cancel-in-progress: false
+jobs:
+  native-target-mode:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Verify pins, measure actual target mode, and preserve raw exits
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11o-native-evidence"
+          w="$RUNNER_TEMP/v13-run11o-native-work"
+          mkdir -p "$e" "$w"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$e/BJEPA_BLOB.txt"
+          git hash-object v13/code/v13/lora_trainer.py > "$e/LORA_BLOB.txt"
+          git hash-object v13/code/scripts/bodyjepa_target_mode_stochasticity_run11o.py > "$e/PROBE_BLOB.txt"
+          test "$(cat "$e/CANON_BLOB.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7 &&
+          test "$(cat "$e/BJEPA_BLOB.txt")" = b560d4e88fe457f381e89dfc5d6188a8ec3b306b &&
+          test "$(cat "$e/LORA_BLOB.txt")" = 49a752879ae5d19391963742a0f042e740edb2cc &&
+          test "$(cat "$e/PROBE_BLOB.txt")" = d2065a5e023cbbe53bc0deaa17ecd8b4f99de6a1
+          echo "$?" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$w/venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/TORCH_RAW.log" 2>&1
+          echo "$?" > "$e/TORCH_EXIT.txt"
+          "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2 'numpy==2.2.6' 'transformers==5.20.2' 'tokenizers==0.23.1' 'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_bodyjepa_target_mode_stochasticity_run11o tests.test_body_jepa_target_eval_run11) > "$e/SOFTWARE_RAW.log" 2>&1
+          echo "$?" > "$e/SOFTWARE_EXIT.txt"
+          "$py" -m py_compile v13/code/scripts/bodyjepa_target_mode_stochasticity_run11o.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/SOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/SOFTWARE_EXIT.txt")" = 0 ]; then
+            MASTER="$w/master" "$py" - <<'PY' > "$e/DOWNLOAD_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+            echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          else echo SKIPPED > "$e/DOWNLOAD_EXIT.txt"; fi
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (cd v13/code && HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:scripts timeout --signal=TERM --kill-after=10s 600s "$py" scripts/bodyjepa_target_mode_stochasticity_run11o.py --master "$w/master" --out "$w/cohort" --execute-native) > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+            if [ -f "$w/cohort/report.json" ]; then cp "$w/cohort/report.json" "$e/REPORT.json"; fi
+          else echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 02e1f414c0ae48b70bcb49d728490da0916bdea0 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 02e1f414c0ae48b70bcb49d728490da0916bdea0 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-run11o-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11o-native-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source and mechanism integrity, not utility gain
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11o-native-evidence"
+          for stage in SOURCE VENV TORCH DEPS PIP_CHECK SOFTWARE COMPILE DOWNLOAD NATIVE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw preserved"
+              tail -100 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          "$RUNNER_TEMP/v13-run11o-native-work/venv/bin/python" - "$e/REPORT.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d['schema']=='v13.bodyjepa.350m_target_mode_stochasticity.v1'
+          assert d['master_sha256']=='1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e'
+          assert d['body_jepa_source_git_blob']=='b560d4e88fe457f381e89dfc5d6188a8ec3b306b'
+          assert d['seed']==137 and d['targets']==['Cobalt','Vermilion']
+          assert d['positive_control']['train_repeat_max_abs']>0
+          assert d['positive_control']['eval_repeat_max_abs']==0
+          assert d['train_steps']==0 and d['exported_adapter'] is False
+          assert d['utility_gate_pass'] is False and d['production_activation'] is False
+          assert d['runtime_jepa_weight']==0 and d['age_authority']==0
+          assert d['redmi_measured'] is False and d['whole_system_complete'] is False
+          print('ACTUAL_MASTER_TARGET_MODE_MECHANISM_ONLY',d['real_master'])
+          PY
