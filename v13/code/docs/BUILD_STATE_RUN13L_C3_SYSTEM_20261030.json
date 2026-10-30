@@ -1,0 +1,67 @@
+{
+  "package": "RUN13L_C3_SYSTEM_ABSTENTION_SEED251_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13l-c3-system-abstention-native-20261030-auto11",
+  "parent": "edaf8f5354ffc4f9d7091f705af7ceed17d75488",
+  "preregistered_commit": "962a9e7f6cc6de632a8f3575afc86b72c472218a",
+  "native_launch_source_head": "5a78f544ea349d7d787f2fb6ad5d4d8c86f8e3c9",
+  "fixture": {
+    "seed": 251,
+    "cases": 6,
+    "arms": [
+      "SYSTEM_ABSTAIN",
+      "SYSTEM_COPY"
+    ],
+    "cases_sha256": "ccf9e0aebdf5a4376f2b3a0b65460cce5dd1ac3198ac3dde189080f3dbeb4473"
+  },
+  "model": {
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "preflight": {
+    "actions_run": 41087408992,
+    "artifact_id": 12991947717,
+    "zip_sha256": "3fbb038452486bf36a2d144207e1f9fe0f5b5006a6f8c632a90add184d0c9821",
+    "crc": "PASS",
+    "inner_hashes": "16/16",
+    "tests": "16/16",
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13L-C3-System/run13l-preflight-41087408992.zip",
+    "byte_identical": true
+  },
+  "native": {
+    "actions_run": 41087610878,
+    "status": "PENDING",
+    "artifact": "PENDING"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "historical_negative": [
+    "Run13J native seed227 JEF 6/6 literal ABSTAIN., 0/6 exact copy",
+    "Run13K native seed239 both arms 6/6 literal ABSTAIN., 0/6 exact copy",
+    "Run13A native fulltask and G14 fullsuite RED"
+  ],
+  "open_questions": [
+    "Does changing only system-level instruction affect C3 exact copying on disjoint source facts?",
+    "No Redmi measurement; no whole-system acceptance."
+  ],
+  "next_command": "Check GitHub Actions 41087610878, download original ZIP, verify CRC/manifest/native rows/source/system prompt hashes and independent replay; private byte-identical backup. Do not change original source or scorer.",
+  "platform_remaining_budget": "UNKNOWN"
+}
