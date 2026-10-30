@@ -1,6 +1,13 @@
 """Source-only guards for isolated Needle/C2 route provenance; synthetic only."""
 import copy
+import json
+import tempfile
+import time
 import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from v13.runtime import Runtime
 
 from scripts import c2_native_route_provenance_20261030 as pilot
 
@@ -91,6 +98,41 @@ class C2NativeRouteProvenanceSoftware(unittest.TestCase):
         x = copy.deepcopy(self.info)
         x["executive_control_policy"] = "EXTERNAL_TOOLS"
         self.assertFalse(self.valid(info=x))
+
+    def test_real_store_route_boundary_with_synthetic_needle_stub(self):
+        # This test is explicitly SOFTWARE/SYNTHETIC, never native evidence.
+        with tempfile.TemporaryDirectory() as td:
+            r = Runtime(Path(td))
+            try:
+                r.sleep.cycle.set_policy("enabled", "off")
+                r.cfg["route_override"] = "auto"
+                text = "Hello. Is this a simple greeting?"
+                event = r.store.event(r.session, text)
+                def fake_control(*args):
+                    r.needle.last_metrics = copy.deepcopy(
+                        self.info["native_control_metrics"])
+                    return {"route": "both"}
+                with patch.object(r.learner, "propose", return_value=None), \\
+                     patch.object(r.needle, "control",
+                                  side_effect=fake_control), \\
+                     patch.object(r.pool, "get",
+                                  side_effect=AssertionError("C3_CALLED")):
+                    route, info = r._route(
+                        text, event, time.monotonic() + 20)
+                ctx_id = info.get("executive_control_context_id")
+                stored = r.store.one(
+                    "SELECT payload FROM packets WHERE id=? AND kind='ExecutiveControlContext'",
+                    (ctx_id,))
+                self.assertIsNotNone(stored)
+                context = json.loads(stored["payload"])
+                self.assertTrue(pilot.valid_control_evidence(
+                    {**event, "session_id": r.session}, text, route,
+                    info, context_packet=context))
+                self.assertEqual(r.store.read_source(event["source_ref"]), text)
+                self.assertIsNone(r.store.one(
+                    "SELECT id FROM messages WHERE role='assistant'"))
+            finally:
+                r.close()
 
     def test_missing_native_control_and_no_context_refused(self):
         x = copy.deepcopy(self.info)
