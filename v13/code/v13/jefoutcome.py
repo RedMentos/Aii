@@ -134,7 +134,18 @@ def report(r):
     for comp in ('wake','memory','skill'):
         labels=[x for x in st.get('labels',[]) if x['component']==comp];agree_h=n_h=0
         for x in labels:
-            h=r.store.one("SELECT f.value FROM feedback f JOIN packets p ON p.kind='HumanDecision' AND p.event_id=f.event_id AND json_extract(p.payload,'$.decision_packet_id')=? WHERE f.kind=? ORDER BY f.created DESC LIMIT 1",(x['decision_packet_id'],comp))
+            h=r.store.one(
+                "SELECT f.value FROM feedback f "
+                "JOIN sources src ON src.id=f.source_id AND src.deleted=0 AND src.kind='HUMAN_DECISION' "
+                "JOIN packets p ON p.kind='HumanDecision' AND p.event_id=f.event_id "
+                "AND json_extract(p.payload,'$.decision_packet_id')=? "
+                "AND json_extract(p.payload,'$.source_ref.source_id')=f.source_id "
+                "AND json_extract(p.payload,'$.source_ref.sha256')=src.hash "
+                "AND json_extract(p.payload,'$.kind')=f.kind "
+                "AND json_extract(p.payload,'$.value')=f.value "
+                "AND json_extract(p.payload,'$.learning_permission')=f.permission "
+                "WHERE f.kind=? ORDER BY f.created DESC LIMIT 1",
+                (x['decision_packet_id'],comp))
             if h:n_h+=1;agree_h+=int(h['value']==x['value'])
         counts={}
         for x in labels:counts[x['value']]=counts.get(x['value'],0)+1
