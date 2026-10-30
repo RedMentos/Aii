@@ -1,0 +1,49 @@
+{
+  "schema": "v13.run13f.jeflink_operator.review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13f-jeflink-operator-20261030-auto11",
+  "base_sha": "1ffca8c48c596db43fbffc5dba7f03b877ea53c5",
+  "prereg_commit": "169fca12410f2b9ab60221fa215e380c1902111a",
+  "tested_head": "d604dac679f740fd5fe76363bea2be52a4e8d576",
+  "pr": 1293,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "workflow_run": 41079477503,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12988088731,
+  "artifact_zip_sha256": "d8938419250e2d5e5a7d28d617b4e19603cc8f51c0577fd5d0a2d44f21d77afa",
+  "artifact_entries": 16,
+  "artifact_crc": "CLEAN",
+  "artifact_inner_sha256": "15/15 verified, full coverage",
+  "tests": "39/39 PASS in 1.755s",
+  "stage_exits": {
+    "CANON": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run13F/RUN13F_41079477503.zip",
+  "private_backup_byte_identical": true,
+  "utility": "Explicit :jeflink <ContextPlan-Packet-ID> <QueryEvent-ID> <SourceEvent-ID> TTY command returns source-exact budget answer-form JSON without native inference, tool action, assistant chat message, Store source write or active route; Age0/idle/session/origin guards verified.",
+  "original_native_run13a": "UTILITY_RED_UNCHANGED",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Operator must obtain three IDs from :ctxos last and current session receipts; a bounded unique-pointer :jeflink last option could reduce friction but requires preregistered ambiguity veto.",
+    "No native model full-task answer, automatic C3 integration, C5 egress, real user/device measurement or full V13 acceptance.",
+    "Historical G13 fullsuite RED unchanged; source handoff pins cannot be waived."
+  ],
+  "exact_next_command": "Consider separate preregistered bounded :jeflink last command with unique eligible SOURCE_LINKS pointer and strict conflict veto; no autonomous dispatch. Otherwise prioritize real native disjoint C2/C3/Body utility, if models and owners permit.",
+  "remaining_platform_budget": "UNKNOWN"
+}
