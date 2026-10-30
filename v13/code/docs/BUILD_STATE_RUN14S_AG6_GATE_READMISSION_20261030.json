@@ -1,0 +1,86 @@
+{
+  "schema": "v13.run14s.ag6_gate_readmission.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; review-only",
+  "parent": {
+    "pr": 1334,
+    "head_sha": "7379befc9c475988f25a44771652449cbda3418f"
+  },
+  "branch": "assistant/v13-run14s-ag6-gate-readmission-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "b4b86d789cbeecd2daaad732897fe169702ebde0",
+    "tests": "27a7788e694b0c30c6bf8e2f694d00e8bc475c50",
+    "weights_original": "2ea853c8517674f22bc551b361a8d96b9c89c9f5",
+    "weights_candidate": "a8124587149485ff7f18f7f2afebc8d82c80bf6e",
+    "generality": "84ca3580c37a00701286d0d9b00d535ee8c3153f"
+  },
+  "changes": [
+    "AG6 gate now revalidates live source lineage and registered EN/DE historical holdouts in the same SQLite write transaction that would insert a human approval request.",
+    "A newly invalid immutable batch becomes SOURCE_INVALID with bounded reason and no request; no positive neuromodulator signal.",
+    "Valid synthetic measured gate still creates PENDING_USER request and requires explicit human approval; no adapter auto-activation."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41118829055,
+      "head": "8b971a5217913acafbaecc8b70d116358cb5f212",
+      "artifact": 13006159913,
+      "zip_sha256": "b9b2e389ad89ebff06fd3bf3005712ad706039c9316db9f195aaeb14921cd8ee",
+      "tests": 10,
+      "failures": 4,
+      "errors": 0,
+      "crc": "PASS",
+      "inner_sha256": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14S-AG6Gate/Run14S_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41118897616,
+      "head": "5857ee7b1816d9479cb5db9edc2b2f8f0d7bf2e4",
+      "artifact": 13007880728,
+      "zip_sha256": "0ae7440f1f10ab696d9d6594ddde894167cb68a86be0ff09a95d44d80dfaf436",
+      "tests": 57,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "isolated_deps": [
+        "numpy==2.2.6"
+      ],
+      "crc": "PASS",
+      "inner_sha256": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14S-AG6Gate/Run14S_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Real SQLite source revocation after fit, fresh EN/DE suite registration after fit, corrupted historical registry, valid control and AG6/AG12/Sleep lifecycle tests passed.",
+    "No separate independent agent available. All original RED preserved. No native/model/Redmi proof.",
+    "Parent Run14R full unfiltered suite CI 41118615931 was still running at Run14S checkpoint; its result must be inspected and appended, not assumed GREEN."
+  ],
+  "limitations": [
+    "No real model fit, no weight promotion, no AGI evidence.",
+    "Full unfiltered suite may still have historical errors; no waivers.",
+    "Exact normalized prompt holdout only; future suites/semantic paraphrases not covered.",
+    "A suite can rotate while optimizer runs; current use-time guards and human approval block activation, but trainer serialization remains necessary."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect Run14R unfiltered CI 41118615931, download and hash-close full raw, compare with historical Run14M. Continue next substantive canonical package in Body/C3/ContextOS utility or JEPA learning; do not repeat only integrity helpers. Respect active owner/native resource constraints."
+}
