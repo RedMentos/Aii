@@ -45,10 +45,12 @@ class Run12MTests(unittest.TestCase):
         self.assertEqual(len(m.ARM_ORDER), 4)
         self.assertEqual(set(m.ARMS), set(frozen.ARMS) -
                          {"D_DISTINCT_BOTH", "E_SHARED_DUAL_COLD"})
-        for arm in m.ARMS:
-            self.assertEqual(sum(arm == row[i] for row in m.ARM_ORDER), 1)
-            for row in m.ARM_ORDER:
-                self.assertEqual(set(row), set(m.ARMS))
+        for position in range(4):
+            for arm in m.ARMS:
+                self.assertEqual(sum(arm == row[position]
+                                     for row in m.ARM_ORDER), 1)
+        for row in m.ARM_ORDER:
+            self.assertEqual(set(row), set(m.ARMS))
 
     def test_tampered_fixture_rejected(self):
         with TemporaryDirectory() as td:
@@ -107,10 +109,11 @@ class Run12MTests(unittest.TestCase):
     def test_source_bound_frozen_scorer_still_used(self):
         f = self.data["cases"][0]
         ans = "Birch leaves 163 Euro and Onyx leaves 41 Euro."
-        self.assertEqual(frozen.score_pair(f, ans),
-                         frozen.score_pair(f, ans))
-        self.assertEqual(frozen.score_primary(f, ans),
-                         frozen.score_primary(f, ans))
+        correct = frozen.score_pair(f, ans)
+        wrong = frozen.score_pair(f, "Birch leaves 999 Euro and Onyx leaves 999 Euro.")
+        self.assertEqual(correct["out_of"], 2)
+        self.assertLessEqual(wrong["correct"], correct["correct"])
+        self.assertEqual(frozen.score_primary(f, ans)["out_of"], 2)
 
 
 if __name__ == "__main__":
