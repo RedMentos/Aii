@@ -8,7 +8,7 @@
   },
   "branch": "assistant/v13-run13x-original-native-receipt-replay-20261030-auto11",
   "pr": 1315,
-  "state": "SOFTWARE_TEST_PENDING",
+  "state": "RAW_STAGE_GREEN_API_TERMINAL_PENDING",
   "prereg_commit": "72e06e70e3099df1db63a594f9889a4b3d6afa53",
   "original_native": {
     "run_id": 41097658020,
@@ -30,9 +30,35 @@
   ],
   "ci": {
     "run_id": 41100648167,
-    "observed_status": "QUEUED",
-    "tested_result": "NOT_YET_OBSERVED",
-    "artifact_sha256": null
+    "tested_commit": "1f55c71985fe1aecb1d28ceded63cc56f98a8819",
+    "raw_artifact_id": 12998542171,
+    "original_zip_sha256": "fcf3bbd80f27f901c1a864b1c8eaed2ec9868ea90a136d73771d6a020499ddab",
+    "crc": "PASS",
+    "inner_sha256": "21/21 PASS",
+    "tests": 26,
+    "failures": 0,
+    "stages": [
+      "PINS",
+      "FETCH",
+      "VENV",
+      "DEPS",
+      "TEST",
+      "REPORT",
+      "COMPILE",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "all_stage_exit": 0,
+    "report_status": "RUN13X_ORIGINAL_NATIVE_OUTPUT_RECEIPT_REPLAY_VALID",
+    "original_native_rows": 16,
+    "c3_facts_candidates": 3,
+    "jef_fallback_candidates": 13,
+    "source_store_rechecked": false,
+    "native_receipt_attested": false,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13X-Original-Native/run13x_original_replay_green.zip",
+    "backup_readback": "BYTE_IDENTICAL",
+    "observed_workflow_api_status": "IN_PROGRESS_DESPITE_COMPLETED_STAGE_LOGS",
+    "terminal_conclusion": "UNKNOWN"
   },
   "evidence_scope": "ORIGINAL_LINUX_NATIVE_RAW_READONLY_PLUS_SYNTHETIC_RECEIPT_AUGMENTATION",
   "limitations": [
