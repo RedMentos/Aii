@@ -84,6 +84,9 @@ class BodyJepaTargetEvalRun11(unittest.TestCase):
         for p, expected in zip(self.m.lin.parameters(), before):
             self.assertTrue(torch.equal(p, expected))
 
+    def test_registered_default_configuration_remains_unmodified(self):
+        self.assertNotIn("jepa_target_eval", bj.DEFAULTS)
+
     def test_non_boolean_eval_target_is_rejected(self):
         with self.assertRaises(ValueError):
             self.target("true")
