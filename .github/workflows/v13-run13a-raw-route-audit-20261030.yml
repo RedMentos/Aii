@@ -1,0 +1,76 @@
+name: V13 Run13A original ZIP route posthoc read-only software review
+on:
+  push:
+    branches: [assistant/v13-run13a-raw-route-diagnostic-20261030-auto11]
+    paths:
+      - '.github/workflows/v13-run13a-raw-route-audit-20261030.yml'
+      - 'v13/code/scripts/run13a_raw_route_readonly_audit_20261030.py'
+      - 'v13/code/tests/test_run13a_raw_route_readonly_audit_20261030.py'
+      - 'v13/code/docs/RUN13A_RAW_ROUTE_DIAGNOSTIC_PREREG_20261030.md'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-only synthetic ZIP tamper and immutable-score tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run13a-raw-route"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/scripts/run13a_raw_route_readonly_audit_20261030.py v13/code/tests/test_run13a_raw_route_readonly_audit_20261030.py v13/code/docs/RUN13A_RAW_ROUTE_DIAGNOSTIC_PREREG_20261030.md v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/SOURCE_BLOBS.txt"
+          test "$(tail -1 "$e/SOURCE_BLOBS.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          echo "$?" > "$e/CANON_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run13a-route-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run13a-route-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check -q 'numpy==2.2.6' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts timeout 240s "$py" -m unittest -v tests.test_run13a_raw_route_readonly_audit_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo DEPENDENCIES_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run13a_raw_route_readonly_audit_20261030.py v13/code/tests/test_run13a_raw_route_readonly_audit_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5ba394d08ab9494d77f0b406b74ea931532b0388 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 5ba394d08ab9494d77f0b406b74ea931532b0388 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve unfiltered synthetic original raw and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run13a-route-posthoc-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run13a-raw-route/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce checks with no native or score promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run13a-raw-route"
+          for stage in CANON VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN13A_POSTHOC_READONLY_SOFTWARE_PASS_NO_RESCORE_OR_GATE'
