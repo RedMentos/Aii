@@ -9,6 +9,7 @@ contain them (guard_training). Acceptance (does a mechanism run) stays separate.
 Solver contract: solver(view) -> {'answer': str, 'confidence': float in [0,1]} where view has
 id/family/prompt/level but never the answer. Exceptions count as wrong with confidence 0.
 """
+import math
 import random
 import time
 from ..common import digest,dumps,atomic_write,Cancelled
@@ -95,6 +96,18 @@ def build_suite(seed=13,families=None,per_level=PER_LEVEL,lang='en'):
 
 def normalize(a):return ' '.join(str(a).strip().casefold().split())
 
+def _solver_confidence(value):
+    """Reject malformed solver confidence before the unchanged AG12 scorer."""
+    if type(value) is bool:
+        raise ValueError('AG12_INVALID_CONFIDENCE')
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError('AG12_INVALID_CONFIDENCE') from exc
+    if not math.isfinite(number):
+        raise ValueError('AG12_INVALID_CONFIDENCE')
+    return clamp01(number)
+
 def calibration(pairs,bins=10):
     """pairs: [(confidence, correct)]. Returns ECE, Brier and reliability bins."""
     if not pairs:return {'ece':None,'brier':None,'bins':[]}
@@ -174,7 +187,7 @@ class GeneralityEval:
                     if view['id'] not in pre:status=getattr(solver,'stopped',None) or 'INTERRUPTED';break
                     out=pre[view['id']] or {}
                 else:out=solver(view) or {}
-                ans=out.get('answer','');conf=clamp01(out.get('confidence',0.))
+                ans=out.get('answer','');conf=_solver_confidence(out.get('confidence',0.))
             except Cancelled:status='INTERRUPTED';break
             except Exception as exc:ans,conf='',0.;out={'error':type(exc).__name__}
             results.append({'id':it['id'],'correct':int(normalize(ans)==normalize(it['answer'])),'confidence':conf})
