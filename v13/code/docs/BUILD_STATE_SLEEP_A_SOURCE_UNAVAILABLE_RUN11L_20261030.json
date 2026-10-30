@@ -1,0 +1,59 @@
+{
+  "schema": "v13.build_state.scoped.run11l.sleep_source_unavailable.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "parent_pr": 1240,
+  "parent_sha": "645c70e8c28fb9e016eaa5d068c2d3977075184d",
+  "prereg": "96e824908e43ed9f8446a00d2b09f1d6c18eaeb9",
+  "red": [
+    {
+      "run": 41028955114,
+      "head": "d0ccb8c32a009a043fb75b5ba94536662de42e16",
+      "artifact": 12965215780,
+      "sha256": "bc8022d2527ac84960d602b3dd393dac72394e5a9ddde102226e38fd691fc49c",
+      "tests": 51,
+      "failures": 1,
+      "errors": 2
+    },
+    {
+      "run": 41029066006,
+      "head": "e62bf72f715c69bf203fe3af228d38067418054e",
+      "artifact": 12965236257,
+      "sha256": "7cd565d0c8ce1f5f70a97991e5ae07f0828360a119d965cf24259761dced0b06",
+      "tests": 53,
+      "failures": 2,
+      "errors": 3
+    }
+  ],
+  "green": {
+    "run": 41029192030,
+    "head": "a11d1f7214b55a564fdc62f118da26c4de2dee35",
+    "artifact": 12964882895,
+    "sha256": "6507f288080a4940434ed58882ff21f8e65cde9c90cfe401b0e4165002006da0",
+    "tests": 53,
+    "failures": 0,
+    "errors": 0,
+    "inner_hashes_verified": 13,
+    "stages_exit_zero": 6
+  },
+  "source_blob": "903da6af1a23f82929a637389e98d6b4a966f3f4",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11L-Sleep-SourceIntegrity/",
+  "private_backup_byte_reverified": true,
+  "evidence_level": "SOFTWARE_SYNTHETIC_REAL_STORE_ONLY",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "blockers": [
+    "Historical full-suite Run34/Run37 source-pin RED remains",
+    "No Redmi measurement"
+  ],
+  "next": "Inspect run11k full-suite raw; continue separate preregistered 350M EMA eval native follow-up only when heavy owner terminal.",
+  "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_sleep_a_source_unavailable_run11l tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_validation tests.test_sleep_memory_authority_run274 tests.test_sleep_offline tests.test_sleep_scheduler"
+}

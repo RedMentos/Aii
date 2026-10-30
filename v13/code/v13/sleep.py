@@ -188,9 +188,29 @@ class SleepCycle:
         """Real retention test for one recorded episode. Returns (outcome, details)."""
         ev=self.s.one('SELECT * FROM events WHERE id=?',(it['event_id'],))
         if not ev:return 'RETIRE','EVENT_GONE',{}
-        env=json.loads(ev['packet'])
-        try:text=self.s.read_source(env['source_ref'])
-        except ValueError:return 'RETIRE','SOURCE_DELETED',{}
+        # A corrupt live source is not an explicit human revocation. Keep its
+        # replay due for retry, record a typed failed probe, and continue with
+        # other items instead of silently retiring or aborting Sleep A.
+        try:
+            env=json.loads(ev['packet'])
+            ref=env.get('source_ref') if isinstance(env,dict) else None
+            if (not isinstance(ref,dict)
+                    or env.get('event_id')!=it['event_id']
+                    or ref.get('source_id')!=ev['source_id']):
+                raise ValueError('event source lineage')
+        except (ValueError,TypeError,KeyError):
+            return 'FAIL',['EVENT_ENVELOPE_INVALID'],{
+                'checks':[{'probe':'EVENT_ENVELOPE','pass':False}],
+                'source_refs':[],'affected_paths':['source_integrity']}
+        source=self.s.one('SELECT deleted FROM sources WHERE id=?',(ev['source_id'],))
+        if not source or source['deleted']:
+            return 'RETIRE','SOURCE_DELETED',{}
+        try:
+            text=self.s.read_source(ref)
+        except (ValueError,TypeError,KeyError,OSError,UnicodeError):
+            return 'FAIL',['EVENT_SOURCE_UNAVAILABLE'],{
+                'checks':[{'probe':'EVENT_SOURCE','pass':False}],
+                'source_refs':[ref],'affected_paths':['source_integrity']}
         mems=self.s.rows('SELECT m.*,s.hash,s.chars FROM memories m JOIN sources s ON s.id=m.source_id WHERE m.event_id=? AND m.active=1 AND s.deleted=0',(it['event_id'],))
         if not mems:return 'RETIRE','SUPERSEDED_OR_FORGOTTEN',{}
         # Sleep A must not grant retention credit to a correction whose original
