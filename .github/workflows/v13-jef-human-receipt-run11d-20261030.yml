@@ -1,0 +1,73 @@
+name: V13 JEF human receipt strict provenance focused
+on:
+  push:
+    branches:
+      - 'assistant/v13-jef-human-receipt-run11d-20261030'
+    paths:
+      - '.github/workflows/v13-jef-human-receipt-run11d-20261030.yml'
+      - 'v13/code/tests/test_jef_human_receipt_integrity_20261030.py'
+      - 'v13/code/v13/jefoutcome.py'
+      - 'v13/code/v13/learning.py'
+permissions:
+  contents: read
+jobs:
+  human-receipt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Focused real-Store tests with closed RED raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/jef-human-receipt"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/jef-human-receipt-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/jef-human-receipt-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 7m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_jef_human_receipt_integrity_20261030 \
+              tests.test_jef_human_record_precedence_20261030 \
+              tests.test_jefoutcome_self_source_20261030 \
+              tests.test_jefoutcome_report_source_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/v13/jefoutcome.py v13/code/v13/learning.py \
+            v13/code/tests/test_jef_human_receipt_integrity_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 852f2c6ccef375cb03a0ad8318fec851f3b191ad \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 852f2c6ccef375cb03a0ad8318fec851f3b191ad HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-jef-human-receipt-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/jef-human-receipt/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce real test exit, never waive expected baseline RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/jef-human-receipt"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -90 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "JEF_RECEIPT_SOFTWARE_ONLY_NO_LEARNING_AGE_OR_NATIVE_PROMOTION"
