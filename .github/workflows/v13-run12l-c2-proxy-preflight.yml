@@ -30,9 +30,9 @@ jobs:
           cat > "$e/PINS.txt" <<'PINS'
           999561f79efccd334c8cc6e5a602d5169a969142 v13/code/docs/fixtures/c2_route_proxy_run12l_20261030.json
           6229b34739a5f4fd8d9e2201309a4e3c8193e2a1 v13/code/docs/C2_ROUTE_PROXY_RUN12L_PREREG_20261030.md
-          b2f71eaea4738509d64d5549e3714672fa76ac9d v13/code/scripts/c2_route_proxy_score_run12l.py
+          1130e34aca7208859204117b5e074ee0597b222d v13/code/scripts/c2_route_proxy_score_run12l.py
           f31947da2bce92a96d580d1f9cea1c0fda5a1974 v13/code/scripts/c2_route_proxy_native_run12l.py
-          315e65a6eeee3a4fb2eaa90260d143f2db1502c6 v13/code/tests/test_c2_route_proxy_run12l.py
+          dd162105fb97d1344c14325359330b6ce5fbea28 v13/code/tests/test_c2_route_proxy_run12l.py
           22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
           fb34dba97ae3700ba5accdcb928bfb72afcf4fcb v13/code/scripts/c2_native_route_provenance_20261030.py
           cee1980787f1217e9a7aa2a1f180686b4add67fb v13/code/scripts/c2_strict_native_compat_run12k.py
