@@ -137,12 +137,16 @@ def run(args):
                 json.dumps(s, indent=2, allow_nan=False) + "\n")
         if args.registered:
             criteria, summary = original.criteria(result["seeds"])
-            # A nonfinite statistic is a measured failure, not a success or
-            # JSON NaN; preserve seed raw and mark the overall verdict RED.
-            if not all(math.isfinite(float(v)) for v in (
-                    summary["spearman_conf_err_covered"],
-                    *summary["pooled_cf"].values())):
-                raise ValueError("RUN28_NONFINITE_EVALUATION_RED")
+            # Constant-confidence Spearman is undefined: this is a valid
+            # W4 FAIL, not an excuse to discard the measured W1/W2/W3 data.
+            # JSON NaN is forbidden; preserve the reason explicitly.
+            rho = float(summary["spearman_conf_err_covered"])
+            if not math.isfinite(rho):
+                criteria["W4_confidence_tracks_error"] = False
+                summary["spearman_conf_err_covered"] = None
+                summary["spearman_undefined_reason"] = "CONSTANT_OR_NONFINITE_CONFIDENCE"
+            if not all(math.isfinite(float(v)) for v in summary["pooled_cf"].values()):
+                raise ValueError("RUN28_NONFINITE_COVERAGE_RED")
             result["criteria"] = criteria
             result["summary"] = summary
             result["status"] = ("SHADOW_CANDIDATE_PASS_NOT_PROMOTED"
