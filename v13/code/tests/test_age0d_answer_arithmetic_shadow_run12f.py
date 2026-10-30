@@ -55,6 +55,16 @@ class AnswerAwareArithmeticRun12F(unittest.TestCase):
                 self.assert_shadow(r)
                 self.assertEqual(r["status"], "ABSTAIN")
 
+    def test_explained_false_equations_are_not_flagged_as_own_errors(self):
+        for answer in ("7 * 3 = 20 is wrong, the correct result is 21.",
+                       "Counterexample: 2 + 2 = 5",
+                       "Das Beispiel 3 * 3 = 8 ist falsch."):
+            with self.subTest(answer=answer):
+                r = a.inspect("Explain the mistake", answer)
+                self.assertEqual(r["status"], "ABSTAIN")
+                self.assertEqual(r["reason"], "METALINGUISTIC_EXAMPLE")
+                self.assert_shadow(r)
+
     def test_unsafe_expressions_abstain_without_eval(self):
         for q, answer in (
             ("What is 2 ** 30?", "1073741824"),
