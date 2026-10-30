@@ -112,11 +112,11 @@ class C2NativeRouteProvenanceSoftware(unittest.TestCase):
                     r.needle.last_metrics = copy.deepcopy(
                         self.info["native_control_metrics"])
                     return {"route": "both"}
-                with patch.object(r.learner, "propose", return_value=None), \\
-                     patch.object(r.needle, "control",
-                                  side_effect=fake_control), \\
-                     patch.object(r.pool, "get",
-                                  side_effect=AssertionError("C3_CALLED")):
+                with (patch.object(r.learner, "propose", return_value=None),
+                      patch.object(r.needle, "control",
+                                   side_effect=fake_control),
+                      patch.object(r.pool, "get",
+                                   side_effect=AssertionError("C3_CALLED"))):
                     route, info = r._route(
                         text, event, time.monotonic() + 20)
                 ctx_id = info.get("executive_control_context_id")
