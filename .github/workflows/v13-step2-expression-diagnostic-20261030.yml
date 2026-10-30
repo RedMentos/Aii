@@ -1,0 +1,123 @@
+name: V13 STEP2 expression scorer sensitivity source-only independent CI
+on:
+  push:
+    branches:
+      - assistant/v13-step2-expression-diagnostic-20261030-0450
+    paths:
+      - '.github/workflows/v13-step2-expression-diagnostic-20261030.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  expression-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen source and original artifact, run read-only adversarial tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-step2-expression-diagnostic"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          c6d190dd8748d4584ce878cc4363d6559b1768e8 v13/code/docs/STEP2_EXPRESSION_DIAGNOSTIC_PREREG_20261030.md
+          f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
+          1ef0799efb29b103fde0c82712c986271c395e4c v13/code/tests/test_step2_expression_diagnostic_20261030.py
+          fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          red=0
+          : > "$e/PINS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/PINS_EXIT.txt"
+          original="$RUNNER_TEMP/v13-step2-v3-original-40996792157.zip"
+          curl --fail --location --silent --show-error --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12951963045/zip' \
+            -o "$original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          dl="$?"
+          if [ "$dl" = 0 ]; then
+            printf '%s  %s\n' '98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46' "$original" | sha256sum --check >> "$e/DOWNLOAD_RAW.log" 2>&1
+            dl="$?"
+          fi
+          echo "$dl" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$dl" = 0 ] && [ "$red" = 0 ]; then
+            ln -s "$original" v13/code/tests/NATIVE_40996792157.zip
+            (cd v13/code && PYTHONPATH=.:scripts:tests timeout --signal=TERM --kill-after=5s 3m python3 -m unittest -v tests.test_step2_expression_diagnostic_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+              (cd v13/code && PYTHONPATH=.:scripts python3 scripts/step2_expression_diagnostic_20261030.py tests/NATIVE_40996792157.zip --out "$e/diagnostic.json") > "$e/DIAGNOSTIC_RAW.log" 2>&1
+              echo "$?" > "$e/DIAGNOSTIC_EXIT.txt"
+            else
+              echo SKIPPED_TEST_RED > "$e/DIAGNOSTIC_RAW.log"
+              echo SKIPPED_RED > "$e/DIAGNOSTIC_EXIT.txt"
+            fi
+            rm v13/code/tests/NATIVE_40996792157.zip
+          else
+            echo SKIPPED_DOWNLOAD_OR_PINS_RED > "$e/TEST_RAW.log"
+            echo SKIPPED_RED > "$e/TEST_EXIT.txt"
+            echo SKIPPED_TEST_RED > "$e/DIAGNOSTIC_RAW.log"
+            echo SKIPPED_RED > "$e/DIAGNOSTIC_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DIAGNOSTIC_EXIT.txt")" = 0 ]; then
+            python3 - "$e/diagnostic.json" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys
+          j=json.load(open(sys.argv[1]))
+          assert j['original_zip_sha256']=='98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46'
+          assert j['original_scores_out_of_18_unchanged']=={'A_C3_ONLY':0,'B_DEFAULT_BOTH':10,'C_ARITH_BOTH':9}
+          assert j['equation_correct_by_arm_not_a_new_score']=={'A_C3_ONLY':3,'B_DEFAULT_BOTH':0,'C_ARITH_BOTH':0}
+          assert len(j['lexical_missing_but_equation_correct'])==3
+          assert j['posthoc_only'] is True and j['native_run_performed'] is False
+          assert j['step2_gate_promoted'] is False and j['native_c2_control_proven'] is False
+          assert j['redmi_measured'] is False and j['jepa_weight']==0 and j['whole_system_complete'] is False
+          print('POSTHOC_EXPRESSION_COVERAGE_ONLY_NO_NEW_SCORE_OR_GATE')
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_DIAGNOSTIC_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 -m py_compile v13/code/scripts/step2_expression_diagnostic_20261030.py v13/code/tests/test_step2_expression_diagnostic_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3ff127ea14a5c9d3fac2e02619b9c9fa63c264eb --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3ff127ea14a5c9d3fac2e02619b9c9fa63c264eb HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-step2-expression-diagnostic-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-expression-diagnostic/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source-only scorer sensitivity and original evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-step2-expression-diagnostic"
+          for stage in PINS DOWNLOAD TEST DIAGNOSTIC REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original v3 scores unchanged"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'EXPRESSION_SENSITIVITY_POSTHOC_NO_NATIVE_OR_STEP2_GATE'
