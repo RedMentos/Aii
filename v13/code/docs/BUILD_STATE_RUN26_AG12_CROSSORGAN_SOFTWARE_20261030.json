@@ -23,9 +23,53 @@
     "private_backup": "/V13-Checkpoints/2026-10-30/Run26-AG12-CrossOrgan/",
     "private_backup_byte_identical": true
   },
-  "native_evidence": null,
+  "native_evidence": {
+    "evidence_kind": "OFFLINE_CLOSED_LINUX_NATIVE_AG12_CROSSORGAN_DIAGNOSTIC_ONLY",
+    "github_actions": 41143905516,
+    "source_head": "f14faa14e8224996a709e90aa3046ca254410894",
+    "artifact_id": 13019063138,
+    "original_zip_sha256": "ec053003810f9c237e85d9f209c04ce80bbf879b0bcb3a272cb0f02af28644ff",
+    "zip_crc": "PASS",
+    "inner_sha256": "24/24_PASS",
+    "stage_exits": "PINS/VENV/DEPS/C3_FETCH/BODIES_FETCH/ANALYSIS/RESULT_CHECK/COMPILE/PRIVACY/DIFF=0",
+    "privacy": "CLEAN",
+    "result_sha256": "cff3a5d231664821e7d39109f97efc3230b5f5a8a0e2a93d5daa501635a5219e",
+    "original_inputs": {
+      "c3_sha256": "819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77",
+      "bodies_sha256": "4a4b99a12cc2b60fa755aab7db5930cb9f8cd65ceea76272d8b2279e1b08331e"
+    },
+    "de": {
+      "items": 88,
+      "c3_correct": 22,
+      "b1_correct": 19,
+      "b2_correct": 30,
+      "b1_or_b2_oracle_correct": 34,
+      "all_three_oracle_correct": 36,
+      "exclusive": {
+        "b1": 4,
+        "b2": 8,
+        "c3": 2
+      }
+    },
+    "en": {
+      "items": 88,
+      "c3_correct": 19,
+      "b1_correct": 14,
+      "b2_correct": 31,
+      "b1_or_b2_oracle_correct": 32,
+      "all_three_oracle_correct": 32,
+      "exclusive": {
+        "b1": 1,
+        "b2": 8,
+        "c3": 0
+      }
+    },
+    "claim_limit": "Oracle coverage upper bound, not actual model fusion or German learning.",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run26-AG12-CrossOrgan/",
+    "private_backup_byte_identical": true
+  },
   "run25_native_actions": 41142873467,
-  "run25_native_status_at_checkpoint": "IN_PROGRESS_UNVERIFIED",
+  "run25_native_status_at_checkpoint": "VERIFIED_LINUX_NATIVE_352_CALLS",
   "run24_native_actions": 41137225498,
   "run24_native_zip_sha256": "819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77",
   "negative_gates": {
@@ -40,9 +84,9 @@
     "learned_german_transfer_proven": false
   },
   "open_questions": [
-    "Run25 original native terminal evidence must be verified and backed up before cross-organ real diagnostic.",
-    "Run26 oracle upper bounds do not demonstrate actual two-body cooperation or causal transfer.",
-    "Historical unfiltered suite remains RED; Redmi unavailable."
+    "Run27 native actual three-organ confidence vote must be run before any claim about practical fusion.",
+    "Oracle B1/B2 union adds 4 DE and 1 EN successes over B2 alone, but selecting the correct answer is not demonstrated.",
+    "No STEP2, B3, Body-JEPA, Redmi or learned German transfer promotion."
   ],
-  "next_command": "Inspect Actions 41142873467 terminal; download original Run25 ZIP; verify GitHub digest, ZIP CRC, SHA256SUMS, all stage exits, 352 native rows/role hashes, and private byte-identical backup. If GREEN, run Run26 analyzer on original Run24+Run25 ZIPs, preserve aggregate report privately and source checkpoint. If RED, retain raw, diagnose source without changing frozen seed/model cohort; continue independent Canon work."
+  "next_command": "Verify Run27 software Actions 41143742125 (18/18, raw ZIP sha57242219) and private backup. With Run25 native terminal and no active heavy owner, launch Run27 pinned three-organ vote on separate workflow branch; inspect original 528-call native raw and compare to these oracle upper bounds. Never infer full live JEF or STEP2."
 }
