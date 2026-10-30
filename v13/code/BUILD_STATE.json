@@ -3675,5 +3675,53 @@
     },
     "exact_next_command": "Preregister fresh paired native STEP2 semantic utility no-body/one-body/both with source-grounded budget arithmetic and fixed disjoint tasks.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_step2_paired_native_readonly_audit": {
+    "scope": "STEP2_ORIGINAL_PAIRED_NATIVE_PILOT_POSTHOC_READONLY_AUDIT",
+    "owner": "V13 hourly continuation independent review; original pilot branch untouched",
+    "parent_head": "c6a9de775c2e7f4f450472f75db0481458894386",
+    "branch": "codex/v13-step2-pilot-raw-validator-audit-20261030-hourly11",
+    "pr": null,
+    "prereg_commit": "ef24cb1d808204bb2eec54032b0f1179e049beb2",
+    "original_native_run": 40989187037,
+    "original_native_zip_sha256": "fcc66cf5d0d2c59bfe3bbd7a8b5b3c140169ee5a05020d9e4df12e566c30d9ce",
+    "original_pilot_status": "PILOT_PARTIAL_RED",
+    "original_valid_native": "0/12",
+    "original_registered_scores": "0/8 all three arms (fail-closed structural gate)",
+    "raw_structural_checks": "156/156",
+    "raw_native_model_generated": "12/12",
+    "native_c2_control_proven": false,
+    "validator_route_native_control_missing": "12/12",
+    "body_process_reaped": "16/16 (C3-only close not measured)",
+    "posthoc_semantic_diagnostic_out_of_8": {
+      "A_C3_ONLY": 0,
+      "B_DEFAULT_BOTH": 3,
+      "C_ARITH_BOTH": 5
+    },
+    "posthoc_comparative_utility_proven": false,
+    "source_blob": "fcd44ccce3b8b40d65a25187a78b0a8d49d9609d",
+    "test_blob": "e14e2161c75ab94f715f3c2216b23ea5f6e81837",
+    "green_run": 40991083424,
+    "green_tests": "6/6 PASS",
+    "stages_exit0": "5/5",
+    "green_zip_sha256": "e53930ca3a6bb355037d4e60d73b7af66c55950fcb158d2f120ce4d4164e1cbc",
+    "original_crc_clean": true,
+    "original_inner_hashes": "38/38",
+    "ci_crc_clean": true,
+    "ci_inner_hashes": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-STEP2-PairedNativeAudit/",
+    "private_backup_byte_identical": true,
+    "native_executed_here": false,
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Owner to preregister new paired native pilot with corrected evidence contract and contradictory remainder scorer; keep original RED. Independent source-exact opt-in explanation candidate is separate.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
