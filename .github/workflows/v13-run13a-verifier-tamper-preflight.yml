@@ -31,7 +31,7 @@ jobs:
           084fc8039dfae484d26b6ad595e33759acb8a46c v13/code/scripts/c2_body_fulltask_run13a.py
           4b7bb4b4007e550d8bd518cfd568adbd99579d32 v13/code/scripts/c2_body_fulltask_verify_run13a.py
           b3362017ea6c7e4d4671dff0952fe51b4bdb7d0d v13/code/tests/test_run13a_fulltask_runner.py
-          eed8f25578a51d218bdfd014ab5726856670c6f4 v13/code/tests/test_run13a_fulltask_verify_synthetic.py
+          67107d9e4860942d3f2d642d74b40bd968fe9a6f v13/code/tests/test_run13a_fulltask_verify_synthetic.py
           ede3b31b32620a680d2f22b0ad744c9237d182b5 v13/code/docs/fixtures/c2_body_fulltask_run13a_seed211_20261030.json
           073db9cadc135a6661a12f3064faef71f8d5c55e v13/code/docs/C2_BODY_FULLTASK_RUN13A_PREREG_20261030.md
           76322127674d50cd4c9cbb117fd60ca4b5c88213 v13/code/tests/test_run13a_fulltask_prereg.py
