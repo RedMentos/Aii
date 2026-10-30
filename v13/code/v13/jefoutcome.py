@@ -96,16 +96,37 @@ def on_route_correction(store,event_id,value):
         return n
     return _mutate(store,f)
 
+def _human_label_exists(store,component,revision,context_sha256):
+    """Exact active human feedback for this head/context, independent of recent-row limits."""
+    return bool(store.one(
+        "SELECT 1 FROM feedback f "
+        "JOIN sources s ON s.id=f.source_id AND s.deleted=0 "
+        "JOIN packets h ON h.kind='HumanDecision' AND h.event_id=f.event_id "
+        " AND json_extract(h.payload,'$.source_ref.source_id')=f.source_id "
+        "JOIN packets d ON d.kind='ExecutiveDecision' "
+        " AND d.id=json_extract(h.payload,'$.decision_packet_id') "
+        "WHERE f.kind=? AND json_extract(d.payload,'$.component')=? "
+        "AND json_extract(d.payload,'$.context_revision')=? "
+        "AND json_extract(d.payload,'$.context_ref.sha256')=? LIMIT 1",
+        (component,component,revision,context_sha256)))
+
+
 def training_rows(store,component,revision,human_keys):
     """Outcome rows for learning.shadow_readout: only in 'learn' mode, only contexts without a human label."""
     st=store.state(KEY)[0] or {}
     if st.get('mode','record')!='learn':return []
-    out={}
+    out={};human_cache={}
     for x in st.get('labels',[]):
         if x['component']!=component or x['context_revision']!=revision or x['context_sha256'] in human_keys:continue
+        key=x['context_sha256']
+        # At most MAX retained self labels are checked. A human RECORD older
+        # than the caller's recent 512 rows still vetoes self-label learning.
+        if key not in human_cache:
+            human_cache[key]=_human_label_exists(store,component,revision,key)
+        if human_cache[key]:continue
         row=store.one("SELECT payload FROM packets WHERE kind='ExecutiveDecision' AND id=?",(x['decision_packet_id'],))
         if not row:continue
-        out[x['context_sha256']]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},json.loads(row['payload']))
+        out[key]=({'value':x['value'],'source_id':x['source_id'],'event_id':x['event_id'],'permission':'learn','authority':AUTHORITY},json.loads(row['payload']))
     return [(k,row,p) for k,(row,p) in out.items()]
 
 def report(r):
