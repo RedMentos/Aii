@@ -13,6 +13,7 @@ import platform
 import shutil
 import subprocess
 import time
+from urllib.parse import urlsplit
 
 from v13.bootstrap import extract
 from v13.common import atomic_write, dumps, file_hash
@@ -44,6 +45,11 @@ def _pinned_catalog():
             or specs["runner"]["tag"] != RUNNER_TAG
             or runner["size"] != RUNNER_BYTES or runner["sha256"] != RUNNER_TAR_SHA):
         raise ValueError("RUN24_PINNED_PUBLIC_ARTIFACT_IDENTITY_RED")
+    model_url = urlsplit(file["url"])
+    runner_url = urlsplit(runner["url"])
+    if (model_url.scheme != "https" or model_url.hostname != "huggingface.co"
+            or runner_url.scheme != "https" or runner_url.hostname != "github.com"):
+        raise ValueError("RUN24_OFFICIAL_SOURCE_URL_RED")
     return specs, model, runner
 
 
