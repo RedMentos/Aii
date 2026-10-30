@@ -56,6 +56,12 @@ VOLATILE_HEAD='Context for the next message (reference material, not a question)
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
 QUOTE=re.compile(r'"[^"]+"|„[^“]+“')  # bounded by SPAN_CHARS/RAW fallback, not silent truncation
 SINGLE_QUOTE=re.compile(r"(?<!\w)'(?:[^'\n]|(?<=\w)'(?=\w)){1,400}'(?!\w)")
+# Paired typographic delimiters: German „...” closes with U+201C,
+# the glyph that opens English “...”. Inspect German pairs first.
+GERMAN_PAIR=re.compile(r'„[^“]+“')
+EN_CURLY=re.compile(r'“[^”]+”')
+FR_QUOTE=re.compile(r'«[^»]+»')
+CURLY_SINGLE=re.compile(r"(?<!\w)‘(?:[^’\n]|(?<=\w)’(?=\w)){1,400}’(?!\w)")
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
@@ -75,7 +81,7 @@ def empty():
 def exact_spans(text):
     """Spans that must survive any compression verbatim (exact-span pinning, §8.5)."""
     out=[]
-    for rx in (CODE,URL,QUOTE,SINGLE_QUOTE,NUMBER):
+    for rx in (CODE,URL,QUOTE,EN_CURLY,FR_QUOTE,CURLY_SINGLE,SINGLE_QUOTE,NUMBER):
         for m in rx.finditer(text):
             s=m.group(0).strip()
             if s and not any(s in o for o in out):out.append(s)
@@ -132,12 +138,30 @@ def _unsafe_single_quotes(text):
     return False
 
 
+def _unsafe_typographic_quotes(text):
+    """Fail closed on unmatched typographic delimiters, not contractions."""
+    remaining=GERMAN_PAIR.sub('',text)
+    if '„' in remaining:return True
+    for rx,opener,closer in ((EN_CURLY,'“','”'),(FR_QUOTE,'«','»')):
+        remaining=rx.sub('',remaining)
+        if opener in remaining or closer in remaining:return True
+    remaining=CURLY_SINGLE.sub('',remaining)
+    for match in re.finditer('[‘’]',remaining):
+        i=match.start()
+        if (match.group()=='’' and 0<i<len(remaining)-1
+                and remaining[i-1].isalnum() and remaining[i+1].isalnum()):
+            continue  # typographic apostrophe inside a word
+        return True
+    return False
+
+
 def compress(text,cap):
     """Extractive, deterministic, never invents content. Returns (text, spans, ok). ok=False keeps RAW."""
     spans=exact_spans(text)
-    if _unsafe_backticks(text) or _unsafe_single_quotes(text):return text,spans,False
+    if (_unsafe_backticks(text) or _unsafe_single_quotes(text)
+            or _unsafe_typographic_quotes(text)):return text,spans,False
     # An unmatched quote can span an unknown literal; never silently compress it.
-    if text.count('"')%2 or text.count('„')!=text.count('“'):return text,spans,False
+    if text.count('"')%2:return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
     head=first_sentence(text,cap);missing=[s for s in spans if s not in head]
     out='[compressed earlier turn; exact source kept] '+head+((' | exact: '+' ; '.join(missing)) if missing else '')
