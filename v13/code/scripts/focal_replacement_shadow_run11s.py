@@ -198,7 +198,7 @@ def evaluate(seed=SEED):
         result = propose(query, notes)
         needed = required_keys(fid, notes)
         if needed is None:
-            raise ValueError("ORACLE_SOURCE_SHAPE")
+            raise ValueError("ORACLE_SOURCE_SHAPE:" + fid + ":" + repr([k for k, _ in notes]))
         keys = [k for k, _ in notes]
         chosen = result["selected_keys"]
         if not set(chosen) <= set(keys) or len(chosen) > CAPACITY:
