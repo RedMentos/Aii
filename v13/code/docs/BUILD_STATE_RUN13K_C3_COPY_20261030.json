@@ -1,0 +1,63 @@
+{
+  "package": "RUN13K_C3_COPY_INSTRUCTION_SEED239_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13k-c3-copy-native-20261030-auto11",
+  "parent_review_commit": "91ff2eb31866c909381f9b5a36dc76064ffbf2c5",
+  "preregistered_commit": "33acfd5f4e1e95bc222055027b6071c44c38d273",
+  "source_head_at_native_launch": "234e5468fb38cfd24af2a5f14a4d30ec90b5b91f",
+  "cohort": {
+    "seed": 239,
+    "cases": 6,
+    "arms": [
+      "ORIGINAL_SHADOW",
+      "COPY_DIRECT"
+    ],
+    "fixture_sha256": "c2e98d20730ec653678bac0ee7393fa143b08508ee684b6f87b6d875ee0b0796",
+    "model_revision": "657e078c94084481950a2d555a941481f715536b",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "preflight": {
+    "actions_run": 41086332016,
+    "head": "74c07fa2c9f0cf00ec70a2d258c5454634d822f9",
+    "artifact_id": 12990863876,
+    "zip_sha256": "a1f01ee973bdf3a73990883604f4930bd97268151d36c1941f93c47225920698",
+    "crc": "PASS",
+    "inner_hashes": "16/16",
+    "tests": "10/10",
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13K-C3-Copy/run13k-preflight-41086332016.zip",
+    "backup_byte_identical": true
+  },
+  "native": {
+    "actions_run": 41086544571,
+    "launched": true,
+    "result": "PENDING_AT_CHECKPOINT",
+    "original_artifact": "PENDING"
+  },
+  "prior_negative": "Run13J seed227 JEF 6/6 ABSTAIN., exact copy 0/6; original native RED preserved.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Does the new disjoint COPY_DIRECT prompt change native exact-copy fidelity vs original SHADOW prefix?",
+    "Original Run13A native full-task and G14 full-suite RED remain; no whole-system gate."
+  ],
+  "next_command": "Check GitHub Actions 41086544571; download original raw ZIP, verify CRC/manifest/12 rows/native FINAL/reaping and independent frozen replay; private byte-identical backup before any claim.",
+  "platform_remaining_budget": "UNKNOWN"
+}
