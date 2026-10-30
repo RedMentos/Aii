@@ -37,7 +37,7 @@ jobs:
           854179b1c130a68e20ceea313e28193d63bef083 v13/code/scripts/c2_body_observer_closed_run11r.py
           e6931fee2d1e833baf83d39d95ad1888745fb661 v13/code/tests/test_c2_body_observer_closed_run11r.py
           325bc46b514502c1e9d91ef0d6126426a7de21ff v13/code/scripts/c2_body_observer_closed_verify_run11r.py
-          fb6d6677304543997fce751cc2bf666f4c649705 v13/code/tests/test_c2_body_observer_closed_verify_run11r.py
+          537d4e5bc46e5410c71b326c83d2a606e0a0a449 v13/code/tests/test_c2_body_observer_closed_verify_run11r.py
           d824690e942489b11c79c3aa68cd0f02e6176f06 v13/code/scripts/c2_c3_body_source_arithmetic_shadow_run11q.py
           fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
           f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
