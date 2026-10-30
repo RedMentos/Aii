@@ -47,7 +47,7 @@ jobs:
             echo "$?" > "$e/TORCH_EXIT.txt"
           else echo SKIPPED > "$e/TORCH_EXIT.txt"; fi
           if [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ]; then
-            "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2               'numpy==2.2.6' 'transformers==5.20.2' 'tokenizers==0.23.1'               'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub==2.3.0'               > "$e/DEPS_RAW.log" 2>&1
+            "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2               'numpy==2.2.6' 'transformers==5.20.2' 'tokenizers==0.23.1'               'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0'               > "$e/DEPS_RAW.log" 2>&1
             echo "$?" > "$e/DEPS_EXIT.txt"
             "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
             "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
