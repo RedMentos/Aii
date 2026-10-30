@@ -166,7 +166,7 @@ def _unsafe_typographic_quotes(text):
 def _unsafe_math(text):
     """Keep the full source when extractive spans could sever an equation."""
     # Code and URLs are already pinned whole; exponent signs are not operators.
-    clean=URL.sub(' ',CODE.sub(' ',SCIENTIFIC.sub('SCI',text)))
+    clean=URL.sub(' ',CODE.sub(' ',SCIENTIFIC.sub('1',text)))
     return MATH_REL.search(clean) is not None
 
 
