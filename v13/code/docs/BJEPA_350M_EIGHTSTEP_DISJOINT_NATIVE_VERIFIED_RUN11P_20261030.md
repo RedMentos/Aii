@@ -1,0 +1,17 @@
+# Run11P original native 350M eight-step disjoint Body-JEPA heldout — verified negative
+
+2026-10-30. Review-only PR #1245, preregistration `eb55df7eaf744becdfa20679868bab5fa1ebe79c` committed before source. Exact tested head `5184ef06ae1108db01caeb55aabebba2498c0067`. Original GitHub Actions **41032521554 SUCCESS**, artifact **12965978378**. ZIP **16454 bytes**, SHA256 **`a70cd3b6df954ad843437f893e0e572e1f492eae86874e96b863b0621dd511f9`**, CRC clean, **28/28** original manifest SHA256 files independently verified, **11/11** stage exits zero (SOURCE, TORCH, DEPS, PIP_CHECK, SOFTWARE, COMPILE, DOWNLOAD, NATIVE, PRIVACY, DIFF, VENV). Original native workflow software **19/19 PASS**. Independently recomputed every original per-arm per-category row NLL mean (all discrepancies <1e-7). Private Library raw backup `/V13-Checkpoints/2026-10-30/Run11P-BodyJEPA-8Step-Disjoint/NATIVE_GREEN_NEGATIVE_41032521554_shaA70CD3.zip` re-materialized and SHA256 compared **byte-identical**.
+
+**Pinned inputs:** `LiquidAI/LFM2.5-350M` revision `120bf032c36dd1273de754669da040dba7ad4982`, master SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`, custom license `lfm1.0` file SHA256 `4d28ca14dedc0b3d0fcc2b3339f0e79931faa33874f3d24f522183a8fc70068c`; Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`; Body-JEPA blob `b560d4e88fe457f381e89dfc5d6188a8ec3b306b`; LoRA blob `49a752879ae5d19391963742a0f042e740edb2cc`; new script blob `af685a22ddd4ff6412643a8849a1f00bf2112487`. New disjoint fixture SHA256 `1b2f71817200389d3f78fc87cf70512e23bd7273e75c2901768c3cc76ded56aa`, seeds **97,101,103**, **9/9** completed arms CE/EMA/SHUFFLED, **8 steps** each, rank2, `jepa_weight=2.0` EMA and SHUFFLED vs 0 CE, no EMA eval-mode toggle, no export/activation.
+
+**Heldout teacher-forced NLL (lower is better):**
+
+| Seed | CE paraphrase | EMA paraphrase | SHUFFLED paraphrase | CE retention | EMA retention |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 97 | 0.349310 | 0.400350 | 0.404331 | 3.067022 | 3.350567 |
+| 101 | 0.378668 | 0.467519 | 0.472070 | 3.131313 | 3.366305 |
+| 103 | 0.349350 | 0.485508 | 0.490522 | 3.372838 | 3.405056 |
+
+Mean paired deltas: **EMA−CE paraphrase +0.0920162753512462** (worse), **EMA−SHUFFLED paraphrase −0.004515114550789197** (too small for signal), **EMA−CE retention +0.18358520107964674** (worse), **EMA−CE near-miss +0.09546290648480256** (not an improved leak proxy). **Seed wins 0/3**. Original prereg verdict **`DIAGNOSTIC_HURT`**, `utility_gate_pass=false`. This is a real negative Linux FP32 Torch synthetic heldout result, not a CI failure. Stronger 8-step JEPA under this unanchored small-data configuration **hurts paraphrase and retention compared with CE**, and has negligible separation from shuffled-target control. It does **not** prove that JEPA generally fails or that all targets/weights are harmful.
+
+**Next:** Do not promote this objective/weight. Consider smaller JEPA weights, explicit retention anchors, better semantic target representations and genuinely disjoint larger heldout controls in a *new* preregistered cohort, or prioritize independent C2/C3 end-to-end answer utility. No retuning this frozen cohort. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; runtime jepa_weight0; Redmi UNMEASURED; V13 incomplete. Full unfiltered review chain remains RED at historical Run34/Run37 source-pin preflights only; no waiver.
