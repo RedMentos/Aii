@@ -48,7 +48,7 @@ jobs:
           "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
           echo "$?" > "$e/PIP_CHECK_EXIT.txt"
           if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=. "$py" -m unittest -v \
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=.:tests "$py" -m unittest -v \
               tests.test_context_os_outcome_replay_run14s \
               tests.test_context_os \
               tests.test_context_os_singlequote_exact_20261029 \
