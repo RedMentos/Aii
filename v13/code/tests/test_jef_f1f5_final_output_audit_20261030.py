@@ -1,4 +1,5 @@
 """Read-only F1/F5 stored assistant FINAL arithmetic discrepancy; software-only."""
+import copy
 import json
 import tempfile
 import unittest
@@ -199,6 +200,44 @@ class FinalOutputAudit(unittest.TestCase):
         finally:
             self.r.cfg.clear()
             self.r.cfg.update(old)
+
+    def test_ambiguous_shared_units_negative_claim_and_size_bound(self):
+        ambiguous = copy.deepcopy(self.arithmetic)
+        ambiguous["fields"][1]["unit"] = ambiguous["fields"][0]["unit"]
+        result = audit.diagnose(ambiguous, self.good)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertTrue(all(x["status"] == "UNSUPPORTED"
+                            for rows in result["options"].values()
+                            for x in rows))
+        signed = copy.deepcopy(self.arithmetic)
+        signed["options"]["A"]["remaining"][0] = -7
+        unit = signed["fields"][0]["unit"]
+        text = self.good.replace(
+            f'Option A leaves {self.arithmetic["options"]["A"]["remaining"][0]} {unit}',
+            f'Option A leaves -7 {unit}')
+        self.assertEqual(audit.diagnose(signed, text)["status"], "MATCH")
+        with self.assertRaisesRegex(ValueError, "FINAL_OUTPUT_SHAPE_RED"):
+            audit.diagnose(self.arithmetic, "A" * 8193)
+
+    def test_changed_final_between_two_reads_fails_closed(self):
+        self._final(self.good)
+        original = self.r.store.rows
+        calls = []
+        def mutate_once(query, params=()):
+            rows = original(query, params)
+            if query.startswith("SELECT id,text FROM messages"):
+                calls.append(rows)
+                if len(calls) == 1 and rows:
+                    with self.r.store.tx() as c:
+                        c.execute("UPDATE messages SET text=? WHERE id=?",
+                                  ("tampered after first read", rows[0]["id"]))
+            return rows
+        with patch.object(self.r.store, "rows", side_effect=mutate_once):
+            result = json.loads(self.op.run(self._command()))
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(result["audit_status"], "FINAL_CHANGED")
+        self.assertIsNone(result["stored_final_audit"])
+        self.assertFalse(result["native_execution_proven_here"])
 
     def test_restart_persists_exact_diagnostic(self):
         self._final(self.good)
