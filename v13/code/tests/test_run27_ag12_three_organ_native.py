@@ -113,17 +113,20 @@ class Run27ThreeOrganSoftware(unittest.TestCase):
 
     def _fake(self, bad=False):
         home, out = self.base / "home", self.base / "out"
-        home.mkdir()
-        (home / "exports").mkdir()
         paths = {role: home / (role + ".gguf") for role in pilot.ROLES}
-        for path in paths.values():
-            path.write_bytes(b"synthetic")
         archive = home / "llama-native.tar.gz"
-        archive.write_bytes(b"synthetic")
         binary = home / "llama-server"
-        binary.write_bytes(b"synthetic")
         runtime = FakeRuntime(home, paths)
         calls = []
+        def fake_install(actual_home):
+            self.assertEqual(actual_home, home)
+            home.mkdir()
+            (home / "exports").mkdir()
+            for path in paths.values():
+                path.write_bytes(b"synthetic")
+            archive.write_bytes(b"synthetic")
+            binary.write_bytes(b"synthetic")
+            return paths, archive, binary
         def fake_run(growth, runtime_, name, *, lang, **kwargs):
             calls.append((name, lang))
             filename = "generality-last-de.json" if lang == "de" else "generality-last.json"
@@ -132,7 +135,7 @@ class Run27ThreeOrganSoftware(unittest.TestCase):
             if bad and lang == "en":
                 stats["B2_GIST"]["items"] = 87
             return {"status": "DONE", "roles": list(pilot.ROLES), "stats": stats}
-        with patch.object(pilot, "install", return_value=(paths, archive, binary)), \
+        with patch.object(pilot, "install", side_effect=fake_install), \
              patch.object(pilot, "Runtime", return_value=runtime), \
              patch.object(pilot, "hub", return_value=object()), \
              patch.object(pilot.sv, "run", side_effect=fake_run):
