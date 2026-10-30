@@ -1,0 +1,10 @@
+RUN11R EXPLICIT NATIVE TRIGGER — 2026-10-30
+
+Source review PR #1247, exact parent HEAD 2907ce0832e407a633a336111aa63b44088c72d7; this is a distinct trigger-only branch, not a merge.
+Preregistration first commit c808239566ede844515f56a3ac95a777d8ab5825; new seed163, fixture SHA256 040e073bc1c544883a5d809d0883d6493366a8f241816c7e6dbefd30c87eaead.
+Source Git blobs pinned in .github/workflows/v13-run11r-c2body-closed-native.yml.
+Software CI 41035072572 28/28 PASS, 8/8 stage exits0, original ZIP SHA256 50cfd3b0580f891672ce08eb8bf2143c572a0f1e9f983ee617c36365ac8e0820, private byte-exact backup.
+Full-suite 41034867980 RED: 3780 tests, 1 Run11R test failure on older source b6bbee (already fixed in trigger source), 2 historical Run34/37 source-pin errors, 14 skips; original ZIP SHA256 22936aa4816bc5027c025ae1eda29d1cb6aa02796b8e09303fef6219d449c554, private byte-exact backup.
+No other native/model Actions job active when triggered; Run11S source-only synthetic CI may run independently.
+Explicitly launch 24 isolated Linux-native turns using pinned public model sources, serialized concurrency v13-step2-budget-paired-native-20261030. No Redmi device, no paid provisioning, no training, no promotion.
+All original raw, preclose witnesses, SHA256SUMS, process releases and failed attempts must be preserved. Native utility is UNKNOWN until independent original ZIP audit. Negative gates unchanged.
