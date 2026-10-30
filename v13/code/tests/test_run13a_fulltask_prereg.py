@@ -58,7 +58,7 @@ class Run13AFrozenPreflight(unittest.TestCase):
             for key in ("a", "b"):
                 remain = c["budget"] - c[key + "_cost"]
                 self.assertIsNone(re.search(
-                    rf"(?<!\\d){remain}(?!\\d)", prompt))
+                    rf"(?<!\d){remain}(?!\d)", prompt))
         self.assertEqual(len(names), 8)
 
     def test_frozen_eight_latin_square_cycles(self):
