@@ -19,6 +19,7 @@ import time
 from v13.agi import listarith
 from v13.agi import listarith_de_shadow_pipeline as pipeline
 from v13.agi import listarith_de_closedworld_candidate as closedworld
+from v13.agi import listarith_de_deterministic_source_candidate as deterministic_source
 from v13.common import file_hash
 from v13.config import initialize
 from v13.models import ModelManager
@@ -192,9 +193,10 @@ def _write_private_new(path, report):
         os.close(fd)
 
 
-def run(source_file, out, *, raw_json_file=None, home=None):
-    if (raw_json_file is None) == (home is None):
-        raise ValueError("EXACTLY_ONE_OF_RAW_REPLAY_OR_NATIVE_HOME")
+def run(source_file, out, *, raw_json_file=None, home=None, deterministic=False):
+    if sum((raw_json_file is not None, home is not None,
+            deterministic is True)) != 1:
+        raise ValueError("EXACTLY_ONE_OF_RAW_REPLAY_OR_NATIVE_HOME_OR_DETERMINISTIC")
     text = _read_text(source_file, max_bytes=4 * listarith.MAX_TEXT)
     if not text.strip() or len(text) > listarith.MAX_TEXT:
         raise ValueError("SOURCE_OUT_OF_SCOPE")
@@ -202,7 +204,8 @@ def run(source_file, out, *, raw_json_file=None, home=None):
         "schema": SCHEMA, "source_sha256": _sha(text.encode("utf-8")),
         "raw_output": None, "raw_sha256": None,
         "evidence_level": ("SOFTWARE_USER_SUPPLIED_RAW" if raw_json_file is not None
-                           else "LOCAL_NATIVE_IF_VERIFIED"),
+                           else "SOFTWARE_DETERMINISTIC_SOURCE_BOUND"
+                           if deterministic else "LOCAL_NATIVE_IF_VERIFIED"),
         "native_attempted": home is not None, "native_final": False,
         "postclose_process_reaped": False,
         "live_tool_execution": False, "external_action_authority": False,
@@ -213,6 +216,13 @@ def run(source_file, out, *, raw_json_file=None, home=None):
     }
     if raw_json_file is not None:
         raw = _read_text(raw_json_file, max_bytes=RAW_MAX_BYTES)
+    elif deterministic:
+        report["deterministic_parser_revision"] = deterministic_source.REVISION
+        try:
+            raw = deterministic_source.extract(text)
+        except ValueError as exc:
+            raw = None
+            report["reason"] = str(exc)[:120]
     else:
         native = _native_one(home, text)
         if not isinstance(native, dict):
@@ -240,8 +250,9 @@ def run(source_file, out, *, raw_json_file=None, home=None):
                 report["native_reported_error_type"] = report["error_type"]
             report["error_type"] = "NATIVE_RECEIPT_UNVERIFIED"
     if raw is None:
-        report.update(status="SHADOW_ABSTAIN", reason=report.get("error_type") or
-                      "NATIVE_UNAVAILABLE", baseline=None, closedworld=None)
+        report.update(status="SHADOW_ABSTAIN",
+                      reason=report.get("reason") or report.get("error_type")
+                      or "NATIVE_UNAVAILABLE", baseline=None, closedworld=None)
     else:
         report["raw_output"] = raw
         report["raw_sha256"] = _sha(raw.encode("utf-8"))
@@ -263,6 +274,7 @@ def main(argv=None):
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--raw-json-file", type=Path)
     g.add_argument("--native", action="store_true")
+    g.add_argument("--deterministic", action="store_true")
     p.add_argument("--home", type=Path)
     args = p.parse_args(argv)
     if args.native != (args.home is not None):
@@ -270,7 +282,8 @@ def main(argv=None):
     try:
         result = run(args.source_file, args.out,
                      raw_json_file=args.raw_json_file,
-                     home=args.home if args.native else None)
+                     home=args.home if args.native else None,
+                     deterministic=args.deterministic)
     except Exception as exc:
         print(json.dumps({"status": "ERROR", "error_type": type(exc).__name__}),
               file=sys.stderr)
