@@ -1,4 +1,4 @@
-name: V13 Run14J AG9 atomic feedback test-first RED
+name: V13 Run14J AG9 atomic feedback candidate GREEN
 on:
   push:
     branches: [assistant/v13-run14j-ag9-atomic-feedback-20261030-hourly11]
@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Exact-source original AG9 atomic feedback regression
+      - name: Exact-source candidate AG9 atomic feedback regression
         shell: bash
         run: |
           set +e
@@ -26,9 +26,9 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
-          e0daa99e5953caeba49a1167cfbbbc5885a7522f v13/code/v13/agi/generality.py
-          1e7d8dce2790c908dd294f3c3680dbab519adc10 v13/code/v13/agi/solver.py
-          658b3c04bd95907211d1f5f7601436d3370d68e1 v13/code/v13/agi/metacog.py
+          357837d8dd312a3a511d96f6e9c320fcf9dc9708 v13/code/v13/agi/generality.py
+          c745bce32159b7e70ecbb35fd44e2d5951b12f77 v13/code/v13/agi/solver.py
+          f5eda4dd2f56f3f7c558be69ecdc4516b0a1054d v13/code/v13/agi/metacog.py
           03c30d6d913de8b3ba155a2244fb5a68085015f5 v13/code/tests/test_ag9_atomic_feedback_run14j.py
           f2f323887d0295e5632bf944508b15d5ff58b89f v13/code/docs/RUN14J_AG9_ATOMIC_FEEDBACK_PREREG_20261030.md
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
@@ -40,7 +40,7 @@ jobs:
             if [ "$want" != "$got" ]; then bad=1; fi
           done < "$e/PINS.txt"
           echo "$bad" > "$e/PINS_EXIT.txt"
-          (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=. python3 -m unittest -v tests.test_ag9_atomic_feedback_run14j tests.test_ag12_ag9_direct_feedback_run14i tests.test_agi_solver.Solver tests.test_ag12_suite_identity_run14h tests.test_ag12_export_isolation_run14g tests.test_ag12_language_isolation_run14f tests.test_growth.G12Eval) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=. python3 -m unittest -v tests.test_ag9_atomic_feedback_run14j tests.test_ag9_finite_confidence_run13y tests.test_ag9_read_component_run14a tests.test_growth.G9Metacog tests.test_ag12_ag9_direct_feedback_run14i tests.test_agi_solver.Solver tests.test_ag12_suite_identity_run14h tests.test_ag12_export_isolation_run14g tests.test_ag12_language_isolation_run14f tests.test_growth.G12Eval) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 -m py_compile v13/code/v13/agi/generality.py v13/code/v13/agi/solver.py v13/code/v13/agi/metacog.py v13/code/tests/test_ag9_atomic_feedback_run14j.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
@@ -58,14 +58,12 @@ jobs:
           path: ${{ runner.temp }}/v13-run14j-feedback/
           retention-days: 30
           if-no-files-found: error
-      - name: Explicit test-first RED expected; pins and hygiene must pass
+      - name: Explicit candidate GREEN requires every stage
         if: always()
         run: |
           set -eu
           e="$RUNNER_TEMP/v13-run14j-feedback"
-          for stage in PINS COMPILE PRIVACY DIFF; do
+          for stage in PINS TEST COMPILE PRIVACY DIFF; do
             echo "$stage $(cat "$e/${stage}_EXIT.txt")"
             test "$(cat "$e/${stage}_EXIT.txt")" = 0
           done
-          echo "TEST $(cat "$e/TEST_EXIT.txt")"
-          test "$(cat "$e/TEST_EXIT.txt")" != 0
