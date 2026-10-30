@@ -1,0 +1,97 @@
+{
+  "schema": "v13.build_state.review_chain_independent_fullsuite.v1",
+  "date_utc": "2026-10-30",
+  "owner": "codex/v13-review-chain-audit-fullsuite-20261030-hourly11b",
+  "parent_pr": 1210,
+  "parent_head": "373d50e92c698163aa4ac773f46f27ec13379e85",
+  "review_pr": 1211,
+  "original_focused_run": 41000353507,
+  "original_focused_head": "ee911ce61a9bb5e867cbaf7674468cc85a0be72d",
+  "original_focused_artifact": 12953575978,
+  "original_focused_zip_sha256": "ceeea010461cd437d5c4ce81591898e0968df60992c8484528d54a34f48ed71b",
+  "original_focused_zip_bytes": 6841,
+  "original_focused_crc": "CLEAN",
+  "original_focused_inner_sha256": "23/23",
+  "original_focused_stage_exits": "10/10 EXIT0",
+  "original_focused_test_count_actual": 31,
+  "original_focused_test_count_expected_in_parent": 37,
+  "test_count_mismatch_type": "DOCUMENTATION_EXPECTATION_ONLY_NOT_TEST_FAILURE",
+  "original_focused_tests_passed": 31,
+  "privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/CI_41000353507.zip",
+  "private_backup_byte_identical": true,
+  "fullsuite_run": 41001121075,
+  "fullsuite_head": "a1d1a8c2bcac2dc62b1635e42f9fd0e31d4e06e9",
+  "fullsuite_status": "RUN1_AND_RUN2_RED_PRESERVED_RUN3_PENDING",
+  "fullsuite_unfiltered": true,
+  "learning_mode": "RECORD_ONLY",
+  "step2_gate_promoted": false,
+  "b3_promoted": false,
+  "body_jepa_available": false,
+  "jepa_weight": 0,
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Run1 3465 tests RED 3 errors (2 historical + missing ZIP fixture)",
+    "Run2 3465 tests RED 3 errors and 3 failures (2 historical + package-source rejects symlink)",
+    "Run3 regular ZIP fixture rerun pending",
+    "No gate promotion or Redmi"
+  ],
+  "next_command": "Inspect Actions run3 on branch, download raw, verify SHA/CRC/inner hashes and exact 3465 test failures; preserve RED if any; do not waive Run34/Run37.",
+  "original_focused_module_counts": {
+    "test_step2_budget_paired_native_v3_20261030": 6,
+    "test_c2_native_route_provenance_20261030": 7,
+    "test_c2_c3_body_auto_native_smoke_20261030": 8,
+    "test_step2_expression_diagnostic_20261030": 10
+  },
+  "original_focused_module_counts_sum": 31,
+  "fullsuite_run_1": {
+    "run": 41001121075,
+    "head": "a1d1a8c2bcac2dc62b1635e42f9fd0e31d4e06e9",
+    "conclusion": "RED",
+    "tests": 3465,
+    "errors": 3,
+    "skipped": 11,
+    "original_artifact_id": 12953053647,
+    "original_artifact_sha256": "2f2de3adf316c93fdbcb414cfdecd41c3934eb410604696a13cd21b0c8f12248",
+    "zip_crc": "CLEAN",
+    "inner_sha256": "33/33",
+    "focused_tests": "31/31 PASS",
+    "fullsuite_errors": [
+      "Run34 historical native_source_or_catalog_changed",
+      "Run37 historical native_source_or_catalog_changed",
+      "Expression diagnostic original ZIP fixture missing due workflow deleting symlink before fullsuite"
+    ],
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/FULLSUITE_RED_41001121075.zip",
+    "private_byte_identical": true
+  },
+  "fullsuite_run_2": {
+    "run": 41001786002,
+    "head": "2ff9e0bf91127a5c8aae8f8ce83194450b03b907",
+    "conclusion": "RED",
+    "tests": 3465,
+    "errors": 3,
+    "failures": 3,
+    "skipped": 11,
+    "original_artifact_id": 12953119319,
+    "original_artifact_sha256": "baa3ff7a90f486287c7bfa88a3003062f5058347a75299d05808d5d1f93c8319",
+    "zip_crc": "CLEAN",
+    "inner_sha256": "33/33",
+    "focused_tests": "31/31 PASS",
+    "fullsuite_errors": [
+      "Run34 historical native_source_or_catalog_changed",
+      "Run37 historical native_source_or_catalog_changed",
+      "test_werkzeug_handy symlink candidate rejection"
+    ],
+    "fullsuite_failures": [
+      "Three test_package_source ZIP extraction regressions rejected symlinked tests/NATIVE_40996792157.zip"
+    ],
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/FULLSUITE_RED_41001786002.zip",
+    "private_byte_identical": true
+  },
+  "fullsuite_run_3": {
+    "workflow_fix_commit": "b55ad7e4eb8709e96ffb7166c96d166df77556e2",
+    "status": "LAUNCHED_OR_QUEUED_UNVERIFIED",
+    "change": "Copy verified original 297655-byte ZIP as regular file, not symlink; retain through unfiltered suite. No source/runtime/model/test changes."
+  }
+}
