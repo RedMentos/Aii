@@ -139,7 +139,10 @@ def verify_report(directory):
             expected_secondary = (m.score_pair(fixture, row["final_output"])
                                   if flags["valid_native"] else
                                   {"a": False, "b": False, "correct": 0, "out_of": 2})
-            _require(expected == score and expected_secondary == row["secondary_score"],
+            # JSON evidence stores equation tuples as arrays; compare the wire
+            # representation, never change the frozen scorer or native bytes.
+            wire = lambda value: json.loads(json.dumps(value, sort_keys=True, allow_nan=False))
+            _require(wire(expected) == score and wire(expected_secondary) == row["secondary_score"],
                      "SOURCE_SCORE_REPLAY_MISMATCH")
             valid = valid and flags["valid_native"]
             secondary[arm] += row["secondary_score"]["correct"]
