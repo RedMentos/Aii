@@ -453,6 +453,24 @@ class WeightConsolidation:
             current=st['batches'].get(bid)
             if not current or current['status']!='TRAINED':
                 raise ValueError('Gate nur nach TRAINED')
+            # Do not ask the human to approve a candidate whose sources were
+            # revoked or whose prompts became registered unseen holdouts after
+            # fit. Recheck under the same write lock as request creation.
+            checked=0
+            try:
+                if type(current.get('items')) is not list or not current['items']:
+                    raise ValueError('Invalid gate items')
+                for item in current['items']:
+                    self._check_item_sources(item)
+                    checked+=1
+                self._guard_holdouts(current['items'])
+            except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
+                reason=str(exc)[:80] if str(exc).startswith('AG12_') else type(exc).__name__
+                current['source_check']={'status':'INVALID','checked_before_failure':checked,
+                                         'reason':reason,'boundary':'GATE'}
+                self._move(current,'SOURCE_INVALID')
+                proxy.set_state(KEY,st,expected=version)
+                return dict(current)
             f(st,current,c)
             proxy.set_state(KEY,st,expected=version)
             out=dict(current)
