@@ -1,0 +1,52 @@
+{
+  "schema": "v13.build_state.scoped.run11j.bodyjepa_ema_crossorgan.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "parent_pr": 1239,
+  "parent_sha": "d8713d53d71a15a2c04f04f2f21542241b068e63",
+  "integration_prereg": "95c30dcbf4dac479ee7367f0995aa1c07df65a3b",
+  "donor": {
+    "branch": "assistant/v13-bjepa-target-eval-run11-20261030-gpt6",
+    "head": "169b8a226aaa3815ff29fc3e0d1e489a44140baa",
+    "base_blob": "be022258cd46cc11e460dd7438563c0d0cc4a0eb",
+    "import_source_blob": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+    "import_test_blob": "da52ec5b1571c66aac89f03bd61243b8a4d0f2d6",
+    "import_prereg_blob": "a47c77bf01d3d10d70baf8846044ec4de5293ed6",
+    "red_run": 41026122046,
+    "red_sha256": "2f12db7f49f39b79f292daa7e03be7825a5229cd8c4f85d28017142bc42720cc",
+    "green_run": 41026282325,
+    "green_sha256": "73928e2e336aeed387fc5c1bb3100cf0b0cfb1a823f67a34db5dddb057e7d98b",
+    "original_artifacts_crc_and_inner_verified": true
+  },
+  "import_commit": "f0de864b9e53a2618952dafaee1da68edc60f55b",
+  "crossorgan": {
+    "run": 41028433639,
+    "head": "a882596e7b59e70b1baab96c7445e0e786a3efa6",
+    "artifact": 12965220101,
+    "sha256": "7f2b102e548fc198c9c9dee011c429982509b4a2462820d3963a8c1e29bfcc5f",
+    "tests": 121,
+    "failures": 0,
+    "inner_hashes_verified": 23,
+    "stages_exit_zero": 11
+  },
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11J-BodyJEPA-CrossOrgan/",
+  "private_backup_byte_reverified": true,
+  "posttested_workflow_only_commit": "de1d174e27296ed8f561b9b733962d6cbddbf148",
+  "evidence_level": "SOFTWARE_TINY_TORCH_SYNTHETIC_ONLY",
+  "production_integrated": false,
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "blockers": [
+    "Native/Redmi Body-JEPA utility unproven",
+    "Full unfiltered historical Run34/Run37 source-pin errors remain"
+  ],
+  "next": "Trigger unfiltered full current-chain CI with original pinned native artifact, archive raw, continue next independent canonical organ package",
+  "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'"
+}
