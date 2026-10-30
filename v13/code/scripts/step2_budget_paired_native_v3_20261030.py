@@ -111,7 +111,7 @@ def pilot_signal(totals, valid):
 
 def validate_fixtures():
     if (fixture_hash() != FIXTURE_SHA256 or len(FIXTURES) != 9
-            or len({f["project"] for f in FIXTURES}) != 4):
+            or len({f["project"] for f in FIXTURES}) != 9):
         raise ValueError("FIXTURE_COUNT_OR_DUPLICATE")
     for f in FIXTURES:
         if (not 0 < f["a_cost"] < f["budget"]
