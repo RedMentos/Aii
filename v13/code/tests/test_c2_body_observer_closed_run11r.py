@@ -18,7 +18,8 @@ class ObserverClosedRun11R(unittest.TestCase):
             offers = ([] if arm in ("A_C3_ONLY", "B_B1_ONLY", "C_B2_ONLY")
                       else sorted(m.expected_roles(route)))
         if releases is None:
-            releases = sorted(m.expected_roles(route))
+            releases = (["C3_LANGUAGE"] if role == "C3_LANGUAGE"
+                        else sorted(m.expected_roles(route)))
         route_info = {"source": source}
         if source != "OPERATOR_ROUTE_OVERRIDE":
             route_info["native_control_metrics"] = {"memory": {"pid": 1234}}
@@ -107,8 +108,9 @@ class ObserverClosedRun11R(unittest.TestCase):
 
     def test_c3_only_no_body_process_or_offer(self):
         audit, receipts = self.sample("simple", "A_C3_ONLY",
-                                      role="C3_LANGUAGE", releases=[])
+                                      role="C3_LANGUAGE", releases=["C3_LANGUAGE"])
         self.assertTrue(m.row_evidence(audit, "A_C3_ONLY", receipts)["valid_native"])
+        self.assertFalse(m.row_evidence(audit, "A_C3_ONLY", [])["valid_native"])
         self.assertFalse(m.row_evidence(audit, "A_C3_ONLY",
                          [{"role": "B1_DETAIL", "process_reaped": True}])["valid_native"])
 
@@ -136,7 +138,7 @@ class ObserverClosedRun11R(unittest.TestCase):
         context = {"query_ref": {"source_id": "synthetic"}}
         audit, receipts = self.sample(route="simple", arm="F_NATIVE_AUTO",
                                       source="BOOT_SCAFFOLD", role="C3_LANGUAGE",
-                                      offers=[], releases=[])
+                                      offers=[], releases=["C3_LANGUAGE"])
         with patch.object(m, "valid_control_evidence", return_value=True):
             kw = dict(native_context=context, native_alive=True, native_reaped=True,
                       native_pid=1234, source_exact=True, session="s", event_id="e",
