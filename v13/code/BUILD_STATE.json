@@ -3306,5 +3306,91 @@
     "next_command": "Close focused Actions 40962106944 original raw; after parent full 40961882891 closes, run combined unfiltered PEFT full suite on exact imported World-Model source; retain Run34/Run37 frozen pins.",
     "next_prerequisites": "Do not overlap heavy native/model jobs, preserve donor branch and registered source/model/seed/cohort hashes, no gate promotion.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_jef_c2_review_chain": {
+    "scope": "REVIEW_ONLY_JEF_HUMAN_RECORD_PRECEDENCE_AND_ARCHIVED_C2_VALIDATION",
+    "owner": "V13 hourly automation run; distinct from active Body-JEPA typed batch owner",
+    "chain_parent": "e1e9228318b2152875bd6e5b402f5cf2c50213df",
+    "chain_head_before_state": "f814482ae606eafc1d40ad5965cceed47a8d1c8a",
+    "pull_requests": [
+      1185,
+      1186,
+      1187
+    ],
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "packages": {
+      "jef_human_record": {
+        "pr": 1185,
+        "source_commit": "31c5ac5030f20708f8b98ad90fc2160b37ec4159",
+        "source_blob": "25347965d0f4e2d855a402453695157b8f3575bd",
+        "red_run": 40984318542,
+        "red_zip_sha256": "2ac2d48599ded81089ce947488c29a0d5d18e071458f3ea8be42e963900e9557",
+        "green_run": 40984400512,
+        "green_zip_sha256": "4925ccc384fc16f5a7b31cfd9aa4261d397b63e27d09abf9a9cfec481499ac95",
+        "tests": "32/32 PASS",
+        "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEF-HumanRecord",
+        "remote_bytes_verified": true
+      },
+      "jef_record_window": {
+        "pr": 1186,
+        "source_commit": "2a53f21c30aea18c3671aa68e9a2bfd353732031",
+        "source_blob": "25488d70f3143173dd74e7dcf2747102c8f15a57",
+        "red_run": 40984757745,
+        "red_zip_sha256": "a6068841eca8d5374bb7f3f7af171a0fd0974d1c6057c497e404235e414271ca",
+        "green_run": 40984852553,
+        "green_zip_sha256": "c7533a239d4b5a59ccf0c02d4c569aac07730abe07eaca0800964d1b94079897",
+        "tests": "33/33 PASS",
+        "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEF-RecordWindow",
+        "remote_bytes_verified": true
+      },
+      "c2_archived_validated": {
+        "pr": 1187,
+        "source_commit": "3030d197ec18eaa561a1235f922ac35e98b8413d",
+        "source_blob": "82176e7bd4545069fec93a48b61775f5a348764f",
+        "red_run": 40985086565,
+        "red_zip_sha256": "66cc3ba20c09a8634ea7ba8f77a0588f502dcc075a41bca2e28af726a06079db",
+        "green_run": 40985154216,
+        "green_zip_sha256": "ca6cf2c85ea24c36424c841e9411774061b387acc0671ed24a1d4d779f39e6f3",
+        "tests": "9/9 PASS",
+        "original_archive_sha256": "c4dd65ba18b446447271d4780b0741a4dc6994ab489496592ab3447123747076",
+        "hybrid_accuracy": 0.479167,
+        "scaffold_accuracy": 0.479167,
+        "native_accuracy": 0.15625,
+        "original_status": "NO_C2_HYBRID_GAIN",
+        "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2-ValidatedAdmission",
+        "remote_bytes_verified": true
+      }
+    },
+    "parallel_bodyjepa_witness": {
+      "branch": "codex/v13-bodyjepa-objective-input-boundary-20261030-auto11s",
+      "red_run": 40984160943,
+      "red_artifact": 12946063122,
+      "source_fix": "DEFERRED_TO_OTHER_ACTIVE_OWNER",
+      "no_merge": true
+    },
+    "unfiltered_crossorgan": {
+      "branch": "codex/v13-jef-record-fullsuite-20261030-auto11u",
+      "run": 40984606331,
+      "status": "IN_PROGRESS_RESULT_UNKNOWN",
+      "historical_frozen_Run34_Run37": "EXPECTED_RED_NOT_WAIVED"
+    },
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "exact_next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+    "next_prerequisites": "Audit unfiltered Actions 40984606331 raw and separate historical frozen Run34/Run37 failures from new regressions; preserve raw, do not overlap heavy native/model jobs. Review concurrent Body-JEPA typed batch owner's candidate when available. Never promote any gate from partial software.",
+    "open_questions": [
+      "Current Redmi device and resident-model energy/thermal/RSS evidence unavailable.",
+      "Full current-source STEP2 semantic complementarity still UTILITY_FAIL.",
+      "Body-JEPA latent objective lacks attributable heldout utility and remains inactive."
+    ],
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
