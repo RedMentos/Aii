@@ -1,0 +1,50 @@
+{
+  "schema": "V13_RUN12H_AGE0D_ASSERTION_SCOPE_SYNTHETIC_REVIEW_GREEN_NO_DELIVERY",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12h-age0d-assertion-scope-review-20261030",
+  "pr": 1264,
+  "parent_pr": 1263,
+  "parent_head": "fabe41540bf6d1230d88d64f817ef794db9723f2",
+  "source_blobs": {
+    "candidate": "74383c570df068de7d647184d8c6e85ae3e1e125",
+    "tests": "30b2817e9ac0ca2f5c3303c8be552cf5b79f862c",
+    "frozen_selfmodel": "072ae59d75c97d972433fedd3830002d2c8530ad",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41049787198,
+    "tested_head": "96bc5d5c808d5a41bd58a0a48e90d88a1902942d",
+    "status": "GREEN",
+    "tests": "16/16 PASS; 12 existing + 4 new with 16 negative assertions",
+    "stages": "6/6 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12973588922,
+    "zip_sha256": "8815dee61e54719a52a27a9edcdd946d645b4b9dae8336f670de1a9bcb279e7a",
+    "zip_bytes": 11133,
+    "crc": "PASS",
+    "inner_sha256": "17/17",
+    "original_counterexample": "Original flags negated 2+2=5 as possible arithmetic error; candidate ABSTAINS",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12H-Age0D-AssertionScope/V13_Run12H_Age0d_41049787198.zip",
+    "backup_byte_exact": true
+  },
+  "native": {
+    "launched": false,
+    "real_final_answer_calibration": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "late_correction_delivery": "NOT_AUTHORIZED",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Real final-answer false-alarm calibration on disjoint examples remains unmeasured",
+    "Global scope abstention is conservative; could miss valid asserted errors in mixed text"
+  ],
+  "next_command": "Do not activate or deliver. Preserve Run12F originals; run independent real-answer calibration before any authority consideration; continue next canonical organ. No user/device action needed for software-only work."
+}
