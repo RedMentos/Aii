@@ -1,0 +1,89 @@
+{
+  "schema": "v13.run14r.ag6_holdout_revalidate.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; review-only",
+  "parent": {
+    "pr": 1333,
+    "head_sha": "b83e19e07c1a662b8b54e98cc99649f95bf48a2e"
+  },
+  "branch": "assistant/v13-run14r-ag6-holdout-revalidate-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "49eceb86e95aa37c24cc2db88270898244e16eea",
+    "tests_original": "430ee32bc9ebed960d5e12f8eacca9909f09d768",
+    "tests_corrected": "392618ec6ece9c0fbfaf6241f1874d793d6701e8",
+    "weights_original": "eab5f8440bbfe3a584ac2dfb9fedc1401ae4e7a7",
+    "weights_candidate": "2ea853c8517674f22bc551b361a8d96b9c89c9f5",
+    "generality": "84ca3580c37a00701286d0d9b00d535ee8c3153f"
+  },
+  "changes": [
+    "AG6 stage now checks all registered EN/DE historical unseen prompts even when optional GeneralityEval is absent.",
+    "AG6 train rechecks all staged prompts, targets and teacher prompts immediately before fit; newly registered holdouts veto the immutable batch as SOURCE_INVALID with AG12 reason and no trainer call.",
+    "Both AG6 manual approval transactions recheck current AG12 holdouts while holding SQLite write lock; new holdouts veto adapter activation and leave PENDING_USER request unchanged.",
+    "No changes to age rights, model pins, registered seeds, human approval requirement or actual trainer."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41118121753,
+      "head": "e41e0b2a58d7177427f4c3149dc2cc487e862f68",
+      "artifact": 13006592933,
+      "zip_sha256": "75312fbc2d23adbdc721e69146715489d83f9f5b344f21a5f781014cac9a6cad",
+      "tests": 8,
+      "failures": 5,
+      "errors": 0,
+      "note": "Four true stage/fit/approval holdout bypasses plus one fixture expectation error: CountingTrainer intentionally returns no artifact (NO_TRAINER), corrected before candidate.",
+      "crc": "PASS",
+      "inner_sha256": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14R-AG6Holdout/Run14R_ORIGINAL_RED_WITH_COUNTING_FIXTURE.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41118296402,
+      "head": "f6d386456868c7ea3d02a254984139854d87afc1",
+      "artifact": 13008115070,
+      "zip_sha256": "cb4aa28934eb56e6b92608bbe64a2f0dd4bb0f69a73500b5c93e3f47b985e366",
+      "tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "isolated_deps": [
+        "numpy==2.2.6"
+      ],
+      "crc": "PASS",
+      "inner_sha256": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14R-AG6Holdout/Run14R_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Real SQLite stage, post-stage EN/DE suite rotation, synthetic counting fit veto, FakeLora measured gate/approval veto and unrelated control tested.",
+    "Existing AG6 rated-answer dependency/source revocation, request atomicity, gate finite, Run14P and Run14Q regressions passed.",
+    "No separate agent available. Source diff reviewed; unfiltered full-suite not claimed GREEN."
+  ],
+  "limitations": [
+    "No actual model fit, no Redmi proof, no AGI evidence.",
+    "External training can still change registered suite after pre-fit check while optimizer runs; approval-time check prevents activating a contaminated candidate but a model could have been trained before rejection. Serial coordinator policy remains required.",
+    "An AG6 gate can still create a PENDING_USER request if a suite rotates after fit but before gate; approval will block it. Next optional package: gate-time rejection or more substantive Body/C3 utility work.",
+    "Unfiltered historical full-suite failures remain unwaived."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Continue from Run14R review-only branch after independent review. Highest-priority substantive next work: measured B1/B2 complementarity/STEP2 or C3/Context OS utility on fresh registered cohort; avoid retuning existing hashes. If software-only, inspect AG6 gate-time revalidation or Sleep source-valid backlog. No user action needed for software."
+}

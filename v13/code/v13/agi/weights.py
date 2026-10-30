@@ -160,6 +160,9 @@ class WeightConsolidation:
         if not mix['check']['pass']:self.s.log('g6_data_mix',None,{'status':'DATA_MIX_FAIL','violations':mix['check']['violations'],'before':mix['before']});return {'status':'DATA_MIX_FAIL','data_mix':mix}
         nm=self._neuromod_gate()
         if nm and nm['veto']:return {'status':'SKIPPED_MODULATOR_VETO','neuromodulation':nm}
+        # Direct AG6 consumers may not have an optional GeneralityEval instance.
+        # Holdout admission is mandatory whenever a suite was registered.
+        self._guard_holdouts(items)
         if self.g is not None:self.g.guard_training([i['prompt'] for i in items]+[x for i in items for x in (i['target'],i.get('teacher_prompt')) if x])
         h=digest(dumps([[i['memory_id'],i['target']] for i in items]))
         def put(st):
@@ -187,6 +190,18 @@ class WeightConsolidation:
         return self.box.mutate(go)
     def _move(self,b,status):b['status']=status;b['history'].append([status,self.clock()])
     # -- training + gate -------------------------------------------------------------------------------
+    def _guard_holdouts(self,items):
+        """Use-time EN/DE historical AG12 exclusion; no suite bootstrap/writes."""
+        from .generality import registered_holdout_digests,normalize
+        hold=registered_holdout_digests(self.s)
+        for item in items:
+            if type(item) is not dict:raise ValueError('AG12_HOLDOUT_ITEM_INVALID')
+            for field in ('prompt','target','teacher_prompt'):
+                value=item.get(field)
+                if value is None:continue
+                if type(value) is not str:raise ValueError('AG12_HOLDOUT_ITEM_INVALID')
+                if digest(normalize(value)) in hold:raise ValueError('AG12_HOLDOUT_TRAINING')
+        return True
     def _check_item_sources(self,item):
         """Recheck direct and explicitly declared rated-answer lineage at use time.
 
@@ -285,6 +300,15 @@ class WeightConsolidation:
                 self._move(b,'ANCHOR_INVALID')
             return self._set(bid,invalid)
         except Exception as exc:anchor,override={'error':type(exc).__name__},None
+        # Suite rotation may occur after STAGED. Recheck immediately before
+        # the irreversible fit, not only at stage or before anchor selection.
+        try:self._guard_holdouts(b['items'])
+        except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
+            reason=str(exc)[:80] if str(exc).startswith('AG12_') else type(exc).__name__
+            def holdout_invalid(st,b):
+                b['source_check']={'status':'INVALID','checked_before_failure':checked,'reason':reason}
+                self._move(b,'SOURCE_INVALID')
+            return self._set(bid,holdout_invalid)
         saved=dict(self.trainer.cfg) if override else None
         try:
             if override:self.trainer.cfg.update(override)
@@ -500,7 +524,10 @@ class WeightConsolidation:
                     raise ValueError('Invalid approval items')
                 for item in b['items']:
                     self._check_item_sources(item)
-            except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                self._guard_holdouts(b['items'])
+            except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
+                if str(exc).startswith('AG12_'):
+                    raise ValueError('Freigabe gesperrt: AG12 Holdout') from None
                 raise ValueError('Freigabe gesperrt: Quelle widerrufen oder beschädigt') from None
             from ..drift import gate as drift_gate
             bad=drift_gate({'drift':b['drift']} if b.get('drift') else {},self.cfg)
@@ -525,7 +552,10 @@ class WeightConsolidation:
                         raise ValueError('Invalid approval items')
                     for item in b['items']:
                         self._check_item_sources(item)
-                except (ValueError,KeyError,TypeError,OSError,UnicodeError):
+                    self._guard_holdouts(b['items'])
+                except (ValueError,KeyError,TypeError,OSError,UnicodeError) as exc:
+                    if str(exc).startswith('AG12_'):
+                        raise ValueError('Freigabe gesperrt: AG12 Holdout') from None
                     raise ValueError('Freigabe gesperrt: Quelle widerrufen oder beschädigt') from None
                 t=b.get('trainer') or {};dep=(t.get('metrics') or {}).get('deployed') or {}
                 if required:
