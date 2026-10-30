@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12B_TINY_TRAINER_ORIGINAL_RED_FIX_PENDING",
+  "schema": "V13_RUN12B_TINY_TRAINER_SOFTWARE_GREEN_NO_NATIVE_350M",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12b-bjepa-contrastive-trainer-20261030",
@@ -43,8 +43,18 @@
   "second_software": {
     "run_id": 41044363071,
     "head": "2bb1ee8c5a643b5ec0f704720d72ba8c7eebcba0",
-    "status": "QUEUED",
-    "result": "UNKNOWN"
+    "status": "GREEN",
+    "artifact_id": 12971119132,
+    "zip_sha256": "8b7b765e6f67d6b73d9f8097c0ad8778f4529eed32779336d6a720b3273abc64",
+    "bytes": 4875,
+    "zip_entries": 23,
+    "inner_sha256": "22/22",
+    "crc": "PASS",
+    "stages": "10/10 zero",
+    "tests": "9/9 PASS, including 3 real two-step tiny Torch+PEFT trainer tests",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12B-BJEPA-Trainer239/SOFTWARE_GREEN_41044363071_sha8B7B765E.zip",
+    "backup_byte_exact": true
   },
   "native": {
     "launched": false,
@@ -59,5 +69,5 @@
     "redmi": "UNMEASURED",
     "whole_system_complete": false
   },
-  "next_command": "Inspect Actions 41044363071 terminal original raw, preserve failures; verify source/Canon pins, privacy, no export. If GREEN, separate disjoint seed239 native runner and independent verifier preflight; do not launch native while heavy owner active. Independently inspect Run11Z2 fullsuite 41044254663."
+  "next_command": "Prepare disjoint seed239 350M runner and prereg source-only preflight. Keep original Run11P source/model/seed pins unchanged. Only after native owner terminal launch explicit serialized native trigger, then verify raw and private backup. Continue other canonical packages meanwhile."
 }
