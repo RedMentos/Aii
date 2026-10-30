@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 jobs:
   shadow-only:
     runs-on: ubuntu-24.04
@@ -14,6 +15,7 @@ jobs:
       V13_NO_AUTOSTART: '1'
       NEEDLE_TELEMETRY: '0'
       DO_NOT_TRACK: '1'
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -26,14 +28,29 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           python3 --version > "$e/PYTHON_VERSION.txt" 2>&1
-          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && timeout 3m env PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_listarith_de_shadow_pipeline_20261030 tests.test_listarith_de_seed79_native_posthoc_replay_20261030) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
-          python3 -m py_compile v13/code/v13/agi/listarith_de_shadow_pipeline.py v13/code/tests/test_listarith_de_shadow_pipeline_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/v13/agi/listarith_de_shadow_pipeline.py v13/code/tests/test_listarith_de_shadow_pipeline_20261030.py v13/code/scripts/listarith_de_seed79_native_posthoc_replay.py v13/code/tests/test_listarith_de_seed79_native_posthoc_replay_20261030.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 542c8c426f4ff15dd5b26d94dd89152fe60d9dbc --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check 542c8c426f4ff15dd5b26d94dd89152fe60d9dbc HEAD > "$e/DIFF_RAW.log" 2>&1
           echo "$?" > "$e/DIFF_EXIT.txt"
+          original="$RUNNER_TEMP/seed79-original.zip"
+          curl --fail --silent --show-error --location --max-time 90 --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12958290116/zip" \
+            -o "$original" > "$e/ORIGINAL_FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/ORIGINAL_FETCH_EXIT.txt"
+          if [ "$(cat "$e/ORIGINAL_FETCH_EXIT.txt")" = 0 ]; then
+            timeout 3m env PYTHONPATH=v13/code python3 v13/code/scripts/listarith_de_seed79_native_posthoc_replay.py --zip "$original" --out "$e/POSTHOC_REPORT.json" > "$e/POSTHOC_RAW.log" 2>&1
+            echo "$?" > "$e/POSTHOC_EXIT.txt"
+          else
+            echo SKIPPED_FETCH_RED > "$e/POSTHOC_RAW.log"
+            echo SKIPPED_RED > "$e/POSTHOC_EXIT.txt"
+          fi
+          rm -f "$original"
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           exit 0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -48,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-de79-shadow"
-          for stage in TEST COMPILE PRIVACY DIFF; do
+          for stage in TEST COMPILE PRIVACY DIFF ORIGINAL_FETCH POSTHOC; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; original raw retained"
               tail -80 "$e/${stage}_RAW.log" || true
