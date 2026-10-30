@@ -1,0 +1,46 @@
+{
+  "schema": "v13.c2_c3_body.paired.run12m.fixture.v1",
+  "seed": 181,
+  "cases": [
+    {
+      "project": "Meridian197",
+      "budget": 382,
+      "a": "Birch",
+      "a_cost": 219,
+      "a_days": 6,
+      "b": "Onyx",
+      "b_cost": 341,
+      "b_days": 3
+    },
+    {
+      "project": "Vela197",
+      "budget": 527,
+      "a": "Opal",
+      "a_cost": 368,
+      "a_days": 4,
+      "b": "Hazel",
+      "b_cost": 479,
+      "b_days": 7
+    },
+    {
+      "project": "Nimbus197",
+      "budget": 463,
+      "a": "Cedar",
+      "a_cost": 287,
+      "a_days": 9,
+      "b": "Flint",
+      "b_cost": 392,
+      "b_days": 5
+    },
+    {
+      "project": "Solstice197",
+      "budget": 318,
+      "a": "Pearl",
+      "a_cost": 229,
+      "a_days": 2,
+      "b": "Moss",
+      "b_cost": 274,
+      "b_days": 8
+    }
+  ]
+}
