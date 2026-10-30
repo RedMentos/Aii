@@ -82,15 +82,7 @@ jobs:
             echo "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46  $original" \
               | sha256sum -c - > "$e/VERIFY_RAW.log" 2>&1
             echo "$?" > "$e/VERIFY_EXIT.txt"
-            python3 - "$original" > "$e/ZIP_VERIFY_RAW.log" 2>&1 <<'PY'
-import sys,zipfile
-with zipfile.ZipFile(sys.argv[1]) as z:
-    assert z.testzip() is None
-    assert len(z.namelist()) == len(set(z.namelist()))
-    assert z.read("HEAD.txt").decode().strip() == "5e802d235c9501879a3aff07e5134c1455e1769b"
-print("EXACT_ORIGINAL_NATIVE_ZIP_CRC_AND_HEAD_GREEN_NO_NEW_NATIVE")
-PY
-            echo "$?" > "$e/ZIP_VERIFY_EXIT.txt"
+            python3 -c 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None; assert len(z.namelist())==len(set(z.namelist())); assert z.read("HEAD.txt").decode().strip()=="5e802d235c9501879a3aff07e5134c1455e1769b"; z.close(); print("EXACT_ORIGINAL_NATIVE_ZIP_CRC_AND_HEAD_GREEN_NO_NEW_NATIVE")' "$original" > "$e/ZIP_VERIFY_RAW.log" 2>&1            echo "$?" > "$e/ZIP_VERIFY_EXIT.txt"
             if [ "$(cat "$e/VERIFY_EXIT.txt")" = 0 ] && [ "$(cat "$e/ZIP_VERIFY_EXIT.txt")" = 0 ]; then
               cp "$original" v13/code/tests/NATIVE_40996792157.zip
               echo "$?" > "$e/INJECT_EXIT.txt"
