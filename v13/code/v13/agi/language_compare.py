@@ -58,8 +58,8 @@ def _latest(st, lang, expected_hash, count, solver):
     metrics = {}
     for name in METRICS:
         value = summary.get(name)
-        if (type(value) not in (int, float) or not math.isfinite(value)
-                or not 0 <= value <= 1):
+        if (type(value) not in (int, float) or not 0 <= value <= 1
+                or not math.isfinite(value)):
             return None, "INVALID_METRIC_" + lang
         metrics[name] = float(value)
     generation = run.get("generation")
