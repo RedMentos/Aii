@@ -132,8 +132,16 @@ def job(sleep_runtime,event):
     if a=='growth_goal':return g.goals.on_wake(event)
     if a=='growth_eval':
         from .solver import BodySolver,run
-        name=(event.get('payload') or {}).get('solver') or (g.solver.name if isinstance(g.solver,BodySolver) else None)
-        if name:return run(g,r,name,label='user' if event['origin']=='USER' else 'scheduled',cancel=r.cancel_event)
+        payload=event.get('payload') or {}
+        if type(payload) is not dict:return {'status':'INVALID_PAYLOAD'}
+        lang=payload.get('lang','en')
+        if lang not in ('en','de'):return {'status':'INVALID_LANGUAGE'}
+        # German native evaluation is explicitly user-scheduled only; do not
+        # silently spend background native budget or register the DE suite.
+        if lang=='de' and event.get('origin')!='USER':return {'status':'USER_REQUIRED'}
+        if lang=='de' and not payload.get('solver'):return {'status':'NO_SOLVER','lang':'de'}
+        name=payload.get('solver') or (g.solver.name if isinstance(g.solver,BodySolver) else None)
+        if name:return run(g,r,name,label='user' if event['origin']=='USER' else 'scheduled',cancel=r.cancel_event,lang=lang)
         if g.solver is None:return {'status':'NO_SOLVER'}
         return {'status':g.eval.run(g.solver,label='scheduled',cancel=r.cancel_event)['status']}
     if a=='growth_teacher':
@@ -167,10 +175,20 @@ def operator_command(r,args):
     c=args[0]
     if c=='eval' and len(args)>1 and args[1]=='run':
         from .solver import ROLES
-        name=args[2] if len(args)>2 else 'v13'
+        parts=args[2:]
+        lang='en'
+        if parts and parts[0] in ('en','de'):
+            lang=parts[0];parts=parts[1:]
+        if len(parts)>1:raise ValueError('Usage: :growth eval run [de] <c3|b1|b2|v13>')
+        name=parts[0] if parts else 'v13'
         if name not in ROLES:raise ValueError('Solver: '+'|'.join(ROLES))
         if r.sleep is None:raise ValueError('Kein Scheduler')
-        r.sleep.scheduler.post('TIMER',origin='USER',action='growth_eval',payload={'solver':name},dedup='growth-eval-'+name)
+        payload={'solver':name}
+        if lang=='de':payload['lang']='de'
+        dedup='growth-eval-'+('de-' if lang=='de' else '')+name
+        r.sleep.scheduler.post('TIMER',origin='USER',action='growth_eval',payload=payload,dedup=dedup)
+        if lang=='de':
+            return f'AG12-Lauf de mit {name} eingeplant (88 Aufgaben); startet sobald nichts anderes läuft. Ergebnis: :growth eval compare en-de {name}'
         return f'AG12-Lauf mit {name} eingeplant (88 Aufgaben); startet sobald nichts anderes läuft. Ergebnis: :growth eval'
     if c=='eval' and len(args)>1 and args[1]=='curve':
         return dumps(g.eval.curve(args[3] if len(args)>3 else 'overall',args[2] if len(args)>2 else None)[-24:])
