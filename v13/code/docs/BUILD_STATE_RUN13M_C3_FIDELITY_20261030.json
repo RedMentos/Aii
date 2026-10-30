@@ -1,0 +1,46 @@
+{
+  "package": "RUN13M_C3_SOURCE_FIDELITY_SHADOW_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13m-c3-source-fidelity-shadow-20261030-auto11",
+  "parent": "b461c0b935e91cc8c28d489900a49900296df6a1",
+  "preregistered_commit": "3dfa286f372966d1137b52c96953f6200ebcdd4a",
+  "source_head_at_preflight_launch": "e44ee1be9160323ebf6d59847f7b44c824408cc9",
+  "source_module": "v13/code/v13/agi/c3_source_fidelity_shadow_run13m.py",
+  "test_module": "v13/code/tests/test_c3_source_fidelity_shadow_run13m.py",
+  "evidence": {
+    "preflight_actions_run": 41088362023,
+    "status": "PENDING",
+    "native": "NOT_REQUESTED",
+    "original_run13l_zip_sha256": "cb1c2786f663ca49840ff73d26146f60c3bbebd66546ac7b2d155e24fc72f4cb",
+    "original_run13l_raw": "PRIVATE_BACKUP_VERIFIED"
+  },
+  "expected_posthoc_fixture": {
+    "accepted": [
+      "Canyon251",
+      "Delta251",
+      "Ember251",
+      "Forest251"
+    ],
+    "rejected": [
+      "Atlas251",
+      "Beacon251"
+    ],
+    "not_new_utility_evidence": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "delivery_authority": 0,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Can the deterministic fullmatch grammar pass expected benign punctuation variants and reject every known wrong/missing/extra source claim?",
+    "Future active egress requires fresh Store revalidation, new heldout and user approval; none here."
+  ],
+  "next_command": "Check GitHub Actions 41088362023, retrieve original raw ZIP, verify all stage exits/CRC/SHA256SUMS/tests and preserve failure; fix only Run13M new module/tests if RED, keep prior native cohorts frozen.",
+  "platform_remaining_budget": "UNKNOWN"
+}
