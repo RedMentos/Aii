@@ -1,0 +1,51 @@
+{
+  "schema": "V13_RUN11Y_SEED197_SOFTWARE_GREEN_SHADOW_ONLY",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11y-jef-budget-source-shadow-20261030",
+  "parent_pr": 1254,
+  "parent_head": "adb828fe3a1a0a5f6f7fce284bcb5f4bbab4af4f",
+  "prereg_commit": "151a40e77bd63a585ae89be1f278a516ec0efa4e",
+  "fixture_sha256": "c900b1f498669f2b7192e1ea95cfe181270e25694d1f16374aac88b741642a0e",
+  "source_files": [
+    "v13/code/v13/agi/budget_en_source_shadow.py",
+    "v13/code/tests/test_budget_en_source_shadow_run11y.py",
+    ".github/workflows/v13-run11y-jef-budget-source-shadow.yml"
+  ],
+  "source_blobs": {
+    "candidate": "cc8188590379a1519219028940c4c96e95a7d6db",
+    "tests": "ac21a1d33c18081d0e73ebaed4c87ec5ad9b1d89",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41042568321,
+    "head": "1d02887590416da6063e3303843de9720a7edcdb",
+    "status": "GREEN",
+    "artifact_id": 12970732096,
+    "zip_sha256": "788bb9ac9ddb053214ea978a710f26634575ee2cd0a996f0146c54b522adea92",
+    "bytes": 3411,
+    "zip_entries": 17,
+    "sha256_manifest_entries": 16,
+    "crc": "PASS",
+    "stage_exits": "7/7 zero",
+    "tests": "6/6 PASS (8/8 seed197 Store positives, adversarial negatives, restart, revocation, tamper)",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Y-JEF-Budget197/SOFTWARE_GREEN_41042568321_sha788BB9AC.zip",
+    "private_backup_byte_exact": true
+  },
+  "native": {
+    "launched": false,
+    "proven": false
+  },
+  "scope": "New real Store source+query read-only JEF arithmetic SHADOW, no Runtime consumer or model inference",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Cross-review Run11Y candidate and independent negative counterexamples; then preregister actual native C3/Body/C2 consumer utility experiment on new disjoint sources. No authority or gate promotion from 6 software tests."
+}

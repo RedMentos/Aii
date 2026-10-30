@@ -1,0 +1,15 @@
+# Run11Y verified software checkpoint — bounded JEF budget arithmetic source SHADOW (2026-10-30)
+
+Parent Run11X PR #1254 at `adb828fe3a1a0a5f6f7fce284bcb5f4bbab4af4f`. Precommitted seed197 prereg `151a40e77bd63a585ae89be1f278a516ec0efa4e` before implementation. Frozen fixture SHA256 `c900b1f498669f2b7192e1ea95cfe181270e25694d1f16374aac88b741642a0e`. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged.
+
+**Implemented:** new `v13/agi/budget_en_source_shadow.py`, read-only Store-backed deterministic JEF arithmetic proposal. Requires independently full-span SHA-verified query and data SourceRefs, exact project match, bounded two-style English source grammar, two named options, positive costs strictly under budget, distinct positive days. Computes two Euro remainders and faster option; returns structured SHADOW candidate, not a model final answer. Invalid/missing/revoked/tampered sources, extra instructions, project substitution, malformed amounts and ambiguity abstain without proposed numbers. Two Store reads reduce but cannot eliminate post-return revocation race; a future runtime consumer must recheck live authorization at dispatch. No Runtime/route/model integration or approval granted.
+
+**Original CI:** GitHub Actions **41042568321 SUCCESS**, exact tested HEAD `1d02887590416da6063e3303843de9720a7edcdb`; artifact **12970732096**, ZIP SHA256 `788bb9ac9ddb053214ea978a710f26634575ee2cd0a996f0146c54b522adea92`, 3411 bytes. Independently downloaded ZIP, CRC PASS, **16/16** SHA256SUMS, **7/7** stage exits 0, privacy CLEAN, diff check clean, pinned source/test/Canon blobs unchanged. `python -m unittest -v tests.test_budget_en_source_shadow_run11y`: **6/6 PASS**; eight new real Store source positives, restart, adversarial grammar and query mismatch, revoked/tampered/partial/hash sources. No native calls; tests monkeypatch model-pool access to fail if invoked.
+
+Private Library backup `/V13-Checkpoints/2026-10-30/Run11Y-JEF-Budget197/SOFTWARE_GREEN_41042568321_sha788BB9AC.zip`; separately materialized and compared byte-for-byte with original ZIP: **identical**.
+
+**Limit:** This is a deliberately narrow closed-grammar deterministic software baseline, not natural-language understanding, generalized source reasoning, model/Body utility, online learning, JEF runtime decision authority, Android/Redmi performance or a production feature. The source's integrity is not evidence of human authorization. Frozen Run11V native primary B2-only 6/8 versus C2-auto 0/8 remains negative; this new software candidate does not revise or repair any native output. Historical RED attempts, source/model/seed hashes and all negative gates retained.
+
+**Gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi UNMEASURED, whole V13 incomplete.
+
+**Next:** independent code/security review, then a newly preregistered disjoint native source-bound answer-consumer experiment with C3/B1/B2/C2 controls, actual process/route receipts and source authorization. No promotion from software-only positives.
