@@ -248,15 +248,24 @@ class Runtime:
             if not allowed:return route,info|{'executive_control_abstention':reason}
             info['executive_control_policy']='LOCAL_PROCESSING_ONLY'
             info['native_control']=control;info['native_control_metrics']=dict(self.needle.last_metrics)
-            def routes(obj):
-                if isinstance(obj,dict):
-                    if obj.get('route') in ROUTES:yield obj['route']
-                    for v in obj.values():yield from routes(v)
-                elif isinstance(obj,list):
-                    for v in obj:yield from routes(v)
-                elif isinstance(obj,str) and obj.startswith('{'):
-                    with contextlib.suppress(ValueError):yield from routes(json.loads(obj))
-            proposals=list(routes(control));info['calibrated']=False
+            # Only a successful, validated, unambiguous native
+            # select_processing call can advise the scaffold. Never scan
+            # arbitrary nested JSON/diagnostics for a route string.
+            from .control_calibration_worker import observation
+            proposals=[]
+            try:
+                observed=observation(control)
+                calls=control.get('function_calls')
+                if (type(calls) is list and len(calls)==1
+                        and type(calls[0]) is dict
+                        and calls[0].get('name')=='select_processing'
+                        and observed['proposal_count']==1
+                        and observed['ambiguous'] is False):
+                    proposals=[observed['route']]
+                else:info['native_control_rejected']=True
+            except (ValueError,TypeError,KeyError,OverflowError):
+                info['native_control_rejected']=True
+            info['calibrated']=False
             calibrated=self.learner.control_calibrate(e,control)
             if calibrated and calibrated['in_support']:
                 info.update(calibrated=True,control_calibration=calibrated)
