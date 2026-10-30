@@ -153,8 +153,17 @@ def run(home, out, fixture_path):
                                      "native_c2_invocation": False},
                            "score": {"a": False, "b": False,
                                      "correct": 0, "out_of": 2}}
-                    (out / "raw" / f"{index:02d}_{arm}.json").write_text(
-                        json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
+                    raw_path = out / "raw" / f"{index:02d}_{arm}.json"
+                    # Preserve the original native raw if wrapper admission
+                    # or post-processing fails after frozen.fresh_turn wrote it.
+                    if not raw_path.exists():
+                        raw_path.write_text(
+                            json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
+                    else:
+                        (out / "raw" / f"{index:02d}_{arm}_WRAPPER_ERROR.json").write_text(
+                            json.dumps({"error_type": type(exc).__name__,
+                                        "error": str(exc)[:240]},
+                                       sort_keys=True, allow_nan=False) + "\n")
                 report["rows"].append(row)
                 (out / "progress.json").write_text(
                     json.dumps(report, indent=2, sort_keys=True,
