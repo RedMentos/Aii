@@ -18,7 +18,7 @@
   "turns_planned": 27,
   "score_per_arm": 18,
   "latin_square": true,
-  "native_status": "QUEUED_OR_RUNNING_UNVERIFIED",
+  "native_status": "PILOT_COMPLETE_NO_GATE_PILOT_SIGNAL_NEGATIVE",
   "step2_gate_promoted": false,
   "native_c2_control_proven": false,
   "redmi_measured": false,
@@ -31,8 +31,26 @@
     "No Redmi measurement",
     "Historical Run34/Run37 source-pin errors remain RED"
   ],
-  "next_command": "Inspect Actions run 40996792157 until terminal; download original raw ZIP even if RED; verify ZIP SHA256, CRC, SHA256SUMS, all 27 raw rows/351 structural flags/36 B1+B2 releases, score 18 per arm; private byte-verified backup; record gates unchanged.",
+  "next_command": "Use original Actions 40996792157 artifact 12951963045 SHA256 98a61f...e31c46 for audit; then launch separate PR1205 isolated C2 native workflow now that heavy owner is terminal; preserve STEP2 UTILITY_FAIL and source/model/seed pins.",
   "native_run_id": 40996792157,
   "native_head": "5e802d235c9501879a3aff07e5134c1455e1769b",
-  "native_workflow": ".github/workflows/v13-step2-paired-native-v3-20261030.yml"
+  "native_workflow": ".github/workflows/v13-step2-paired-native-v3-20261030.yml",
+  "native_artifact_id": 12951963045,
+  "native_zip_sha256": "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46",
+  "native_zip_bytes": 297655,
+  "inner_sha256": "53/53",
+  "zip_crc_clean": true,
+  "native_rows": "27/27",
+  "native_structural_checks": "351/351",
+  "native_body_releases": "36/36",
+  "native_stage_exits": "10/10 exit0",
+  "native_privacy": "CLEAN",
+  "native_scores_out_of_18": {
+    "A_C3_ONLY": 0,
+    "B_DEFAULT_BOTH": 10,
+    "C_ARITH_BOTH": 9
+  },
+  "pilot_gain": false,
+  "private_native_backup_byte_identical": true,
+  "lexical_scorer_equation_blindspot": "Prism C3-only exact 59/11 equations scored MISSING; no posthoc rescore"
 }
