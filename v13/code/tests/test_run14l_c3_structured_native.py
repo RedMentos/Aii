@@ -70,7 +70,7 @@ class Run14LSourcePreflight(unittest.TestCase):
 
     def build_synthetic_raw(self, out):
         raw = out / "raw"
-        raw.mkdir()
+        raw.mkdir(parents=True)
         rows = []
         for i, case in enumerate(self.cases):
             answer = jverify.expected_answer(case)
