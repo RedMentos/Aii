@@ -70,7 +70,10 @@ def verify_report(directory):
         _require(raw.get("index") == i and raw.get("arm") == arm
                  and raw.get("fixture") == fixture["project"], "RAW_IDENTITY_CHANGED")
         _require(raw.get("flags") == row.get("flags")
-                 and raw.get("score") == row.get("score"), "RAW_REPORT_DIVERGENCE")
+                 and raw.get("score") == row.get("score")
+                 and ("raw_audit" not in raw or
+                      raw.get("final_output") == row.get("final_output")),
+                 "RAW_REPORT_DIVERGENCE")
         score = row.get("score")
         _require(isinstance(score, dict)
                  and type(score.get("correct")) is int
