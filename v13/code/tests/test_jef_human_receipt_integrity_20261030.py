@@ -49,13 +49,22 @@ class HumanReceiptIntegrity(unittest.TestCase):
             c.execute("UPDATE packets SET payload=json_set(payload, ?, ?) WHERE id=?",
                       ("$." + key, value, self.human["id"]))
 
-    def assert_no_human_veto(self):
-        rows = self.rows()
-        self.assertEqual(len(rows), 1, "invalid human receipt cannot veto valid self row")
-        self.assertEqual(rows[0][1]["authority"], jo.AUTHORITY)
-        self.assertEqual(rows[0][1]["value"], "skill")
+    def receipt_valid(self):
+        feedback = self.r.store.one("SELECT * FROM feedback WHERE id=?",
+                                    (self.feedback["id"],))
+        human = json.loads(self.r.store.one(
+            "SELECT payload FROM packets WHERE id=?",
+            (self.human["id"],))["payload"])
+        return jo._valid_human_receipt(self.r.store, feedback, human, self.d)
+
+    def assert_suspect_blocks_self_but_is_not_valid_human(self):
+        self.assertFalse(self.receipt_valid(),
+                         "corrupt receipt cannot enter explicit-human optimizer")
+        self.assertEqual(self.rows(), [],
+                         "active suspect human feedback must conservatively veto self")
 
     def test_valid_human_record_vetoes_without_learning_permission(self):
+        self.assertTrue(self.receipt_valid())
         self.assertEqual(self.rows(), [])
         self.assertEqual(self.r.pool.pids(), [])
 
@@ -63,51 +72,58 @@ class HumanReceiptIntegrity(unittest.TestCase):
         with self.r.store.tx() as c:
             c.execute("UPDATE feedback SET value='skill' WHERE id=?",
                       (self.feedback["id"],))
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_tampered_human_packet_value_is_not_human_receipt(self):
         self.patch_human("value", "skill")
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_tampered_human_packet_permission_is_not_human_receipt(self):
         self.patch_human("learning_permission", "learn")
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_wrong_source_kind_is_not_human_receipt(self):
         with self.r.store.tx() as c:
             c.execute("UPDATE sources SET kind='OUTCOME_SELF_LABEL' WHERE id=?",
                       (self.feedback["source_id"],))
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_wrong_human_source_hash_is_not_human_receipt(self):
         self.patch_human("source_ref.sha256", "0" * 64)
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_human_packet_event_payload_mismatch_is_not_human_receipt(self):
         self.patch_human("event_id", "evt_forged_other")
-        self.assert_no_human_veto()
+        self.assert_suspect_blocks_self_but_is_not_valid_human()
 
     def test_deleted_human_source_is_not_human_receipt(self):
         with self.r.store.tx() as c:
             c.execute("UPDATE sources SET deleted=1 WHERE id=?",
                       (self.feedback["source_id"],))
-        self.assert_no_human_veto()
+        self.assertFalse(self.receipt_valid())
+        self.assertEqual(len(self.rows()), 1,
+                         "explicit revocation removes the active human veto")
 
     def test_learning_caller_does_not_veto_on_invalid_receipt(self):
         self.patch_human("value", "skill")
         seen = []
+        admitted_self = []
         original = jo.training_rows
 
         def capture(store, component, revision, human_keys):
             seen.append(set(human_keys))
-            return original(store, component, revision, human_keys)
+            result = original(store, component, revision, human_keys)
+            admitted_self.extend(result)
+            return result
 
         with patch.object(jo, "training_rows", side_effect=capture), patch.object(
                 self.r.guard, "update", return_value="NORMAL"):
             with self.assertRaisesRegex(ValueError, "Je Klasse"):
                 self.r.learner.shadow_readout("skill")
         self.assertEqual(seen, [set()],
-                         "learning caller must not treat an invalid receipt as human")
+                         "invalid receipt cannot enter human training set")
+        self.assertEqual(admitted_self, [],
+                         "suspect active human record must still veto self learning")
         self.assertEqual(self.r.pool.pids(), [])
 
 
