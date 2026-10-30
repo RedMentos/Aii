@@ -34,8 +34,9 @@ def _bound_remainder(text: str, option: str, other: str, amount: int) -> bool:
     # Stop at the other option or a sentence/clause boundary, so swapped
     # amounts in 'Rot has 10; Blau has 40' cannot accidentally score.
     between = rf"(?:(?!\b{foreign}\b)[^.!?;\n]){{0,90}}?"
-    patterns = (rf"\b{label}\b{between}{_NUM(amount)}",
-                rf"{_NUM(amount)}{between}\b{label}\b")
+    after = rf"(?:(?!\b{foreign}\b)[^.!?;\n]){{0,60}}"
+    patterns = (rf"\b{label}\b{between}{_NUM(amount)}{after}",
+                rf"{_NUM(amount)}{between}\b{label}\b{after}")
     for pattern in patterns:
         for m in re.finditer(pattern, text, re.I):
             if _LEFT.search(m.group(0)):
