@@ -102,7 +102,9 @@ class AG6HoldoutUseTime(unittest.TestCase):
         staged=w.stage(require_replay_pass=False)
         self.assertEqual(staged["status"],"STAGED")
         trained=w.train(staged["batch_id"])
-        self.assertEqual(trained["status"],"TRAINED")
+        # CountingTrainer deliberately returns no artifact; AG6 records
+        # NO_TRAINER, not TRAINED, while proving the fit seam was invoked.
+        self.assertEqual(trained["status"],"NO_TRAINER")
         self.assertEqual(len(trainer.calls),1)
 
 
