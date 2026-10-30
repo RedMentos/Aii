@@ -82,6 +82,20 @@ class Run28RegisteredOrchestration(unittest.TestCase):
         self.assertTrue(r["capacity_confounded"])
         self.assertEqual(r["world_jepa_authority"], "SHADOW")
 
+    def test_undefined_confidence_spearman_is_recorded_w4_fail(self):
+        a = args(self.root)
+        with patch.object(pilot, "run_seed", side_effect=fake_seed), \
+             patch.object(pilot.original, "criteria", return_value=(
+                 {"W1": True, "W2": True, "W4_confidence_tracks_error": True},
+                 {"spearman_conf_err_covered": float("nan"),
+                  "pooled_cf": {"jepa_covered": 0.82}})):
+            r = pilot.run(a)
+        self.assertEqual(r["status"], "SHADOW_CANDIDATE_FAIL")
+        self.assertFalse(r["criteria"]["W4_confidence_tracks_error"])
+        self.assertIsNone(r["summary"]["spearman_conf_err_covered"])
+        self.assertEqual(r["summary"]["spearman_undefined_reason"],
+                         "CONSTANT_OR_NONFINITE_CONFIDENCE")
+
     def test_mocked_pass_never_promotes_age_or_jepa(self):
         a = args(self.root)
         with patch.object(pilot, "run_seed", side_effect=fake_seed), \
