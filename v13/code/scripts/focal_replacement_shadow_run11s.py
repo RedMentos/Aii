@@ -81,14 +81,14 @@ _MONTH = {month.lower(): i for i, month in enumerate(MONTHS)}
 _MONTHS = "|".join(MONTHS)
 _BUDGET = re.compile(
     rf"^Budget note of (?:[0-9]{{1,2}} )?({_MONTHS}): the Project ([A-Za-z]+) "
-    r"main budget is ([0-9]+) units\\.$", re.I)
+    r"main budget is ([0-9]+) units\.$", re.I)
 _SPEND = re.compile(
     r"^Spending report: ([0-9]+) units of the Project ([A-Za-z]+) "
-    r"main budget have been spent\\.$", re.I)
+    r"main budget have been spent\.$", re.I)
 _CORRECTION = re.compile(
     r"^Correction after the recount: the Project ([A-Za-z]+) survey counted "
-    r"([0-9]+) bicycles at the station, not ([0-9]+)\\.$", re.I)
-_PROJECT = re.compile(r"\\bProject ([A-Za-z]+)\\b", re.I)
+    r"([0-9]+) bicycles at the station, not ([0-9]+)\.$", re.I)
+_PROJECT = re.compile(r"\bProject ([A-Za-z]+)\b", re.I)
 
 
 def _kind(query):
