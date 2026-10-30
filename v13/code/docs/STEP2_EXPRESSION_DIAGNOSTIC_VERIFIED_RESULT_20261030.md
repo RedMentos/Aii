@@ -1,0 +1,11 @@
+# STEP2 expression diagnostic — verified software CI result 2026-10-30
+
+Review-only PR #1208, child of #1206. Original v3 native ZIP SHA256 `98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46` downloaded with GitHub Actions read-only permission and independently SHA-verified. Source `f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3`, tests `1ef0799efb29b103fde0c82712c986271c395e4c`, prereg `c6d190dd8748d4584ce878cc4363d6559b1768e8` pinned exactly; original frozen scorer untouched.
+
+**Actions 40999116309 GREEN**, tested HEAD `e21826dff395839397c5342cdfafd711e550d432`. Original raw CI artifact **12952895374**, SHA256 **`6f57ffd39a9eea88813a7f863f6001b6f53b2be2a2c1fd22be8b6f0e36397734`**, 5259 bytes, CRC clean, **19/19** inner hashes, **8/8** stage exits0, privacy CLEAN. Full standard-library adversarial **10/10 PASS** (including original ZIP-bound positive case). Private Library `/V13-Checkpoints/2026-10-30/Run11-STEP2-ExpressionDiagnostic/CI_GREEN_40999116309.zip` independently re-materialized and compared **byte-identical**. Original raw v3 ZIP is not duplicated in this new CI artifact.
+
+Result remains **posthoc expression-coverage only**: frozen lexical A/B/C scores **0/10/9 out of 18**, new explicit-equation-only coverage A/B/C **3/0/0** (not replacement scores), exactly three C3-only correct explicit arithmetic expressions marked MISSING by lexical scorer: Meridian Amber, Prism Dawn, Prism Dusk. This reveals an evaluation limitation and does not establish a different comparative utility result; no changed seed, model, fixture, output, scorer or runtime. A fresh disjoint, preregistered native cohort is required before comparing improved scoring methods or making utility claims.
+
+**Negative gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; no Redmi measurement; whole system incomplete. Isolated native C2 invocation 3/3 from #1207 is a separate evidence level (native route selected only 1/3), not integrated C2+C3+Body utility. Historical Run34/Run37 full-suite RED retained.
+
+**Next:** preregister a fresh disjoint native C2+C3+Body comparison with `route_override=auto`, explicit native vs BOOT_SCAFFOLD route provenance and source-bound expression-aware option arithmetic scorer; test on synthetic fixtures first, then real Linux native, then Redmi only when available.
