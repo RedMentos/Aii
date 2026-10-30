@@ -129,6 +129,26 @@ def _validated_holdout_registry(st):
             raise ValueError('AG12_HOLDOUT_INTEGRITY')
     return reg
 
+def registered_holdout_digests(store):
+    """Read-only union of registered EN/DE unseen prompts for training consumers.
+
+    Evaluation suites remain language-local. Missing state is not a reason to
+    create a new suite; an existing invalid or unknown-history state vetoes
+    candidate reuse in *either* language.
+    """
+    hold=set()
+    for key in (KEY,KEY+'_DE'):
+        st,version=store.state(key,None)
+        if st is None and version==0:
+            continue
+        if type(st) is not dict or st.get('revision')!=REVISION:
+            raise ValueError('AG12_HOLDOUT_INTEGRITY')
+        _validated_holdout_registry(st)
+        if st['holdout_history_unknown']:
+            raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
+        hold.update(st['holdout'])
+    return hold
+
 def _solver_confidence(value):
     """Reject malformed solver confidence before the unchanged AG12 scorer."""
     if type(value) is bool:
@@ -240,27 +260,9 @@ class GeneralityEval:
         st['holdout_history_unknown']=unknown
         _validated_holdout_registry(st)
     def guard_training(self,texts):
-        """Exclude registered unseen prompts from *both* languages, including history.
-
-        EN/DE evaluation state remains separate; training exclusions do not. A
-        missing sibling state is allowed (English-first bootstrap), but an
-        existing damaged or unrecoverable sibling state blocks both languages.
-        No sibling evaluation suite is created or mutated by this read.
-        """
-        st=self._active_state()
-        _validated_holdout_registry(st)
-        if st['holdout_history_unknown']:
-            raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
-        hold=set(st['holdout'])
-        sibling_key=KEY+'_DE' if self.suite['lang']=='en' else KEY
-        sibling,version=self.s.state(sibling_key,None)
-        if sibling is not None or version:
-            if type(sibling) is not dict or sibling.get('revision')!=REVISION:
-                raise ValueError('AG12_HOLDOUT_INTEGRITY')
-            _validated_holdout_registry(sibling)
-            if sibling['holdout_history_unknown']:
-                raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
-            hold.update(sibling['holdout'])
+        """Exclude registered EN/DE historical unseen prompts; fail closed."""
+        self._active_state()  # still reject stale same-language evaluators
+        hold=registered_holdout_digests(self.s)
         bad=[t for t in texts if digest(normalize(t)) in hold]
         if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({len(bad)} Einträge)')
         return True
