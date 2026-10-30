@@ -27,8 +27,8 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
-          904e6a2b21c1bc4f9e1e61178adcdc78bd84fc08 v13/code/scripts/bodyjepa_350m_contrastive_raw_audit_run12d.py
-          8dc82984329bac7db14176bd20fca21e758e7518 v13/code/tests/test_bodyjepa_350m_contrastive_raw_audit_run12d.py
+          40d94e455091d411cf5e1619fbd61f2bbd2bc6b4 v13/code/scripts/bodyjepa_350m_contrastive_raw_audit_run12d.py
+          e0fbe189e3fc97460ebf8c668e1df8427d2302bd v13/code/tests/test_bodyjepa_350m_contrastive_raw_audit_run12d.py
           15597550100de6ca546b1b024fbc6597fc600839 v13/code/scripts/bodyjepa_350m_contrastive_disjoint_run12c.py
           a31a18d9be0b1137a10304f24d3a241d720bd247 v13/code/v13/body_jepa_contrastive_trainer_shadow.py
           b560d4e88fe457f381e89dfc5d6188a8ec3b306b v13/code/v13/body_jepa.py
