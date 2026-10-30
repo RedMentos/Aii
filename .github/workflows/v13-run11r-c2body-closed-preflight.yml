@@ -32,8 +32,8 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           2152a5d2205f8c3b3c52c987e6b5e36ab7c96c94 v13/code/docs/C2_BODY_OBSERVER_CLOSED_PREREG_RUN11R_20261030.md
-          34fe8c158f9e0716085f02b5c55eb9d4fee7b237 v13/code/scripts/c2_body_observer_closed_run11r.py
-          2853c860895509214b4616406022441f510a9a98 v13/code/tests/test_c2_body_observer_closed_run11r.py
+          db6eabf92cf06e45343f85202b937c6f65e1e0e9 v13/code/scripts/c2_body_observer_closed_run11r.py
+          e6931fee2d1e833baf83d39d95ad1888745fb661 v13/code/tests/test_c2_body_observer_closed_run11r.py
           d824690e942489b11c79c3aa68cd0f02e6176f06 v13/code/scripts/c2_c3_body_source_arithmetic_shadow_run11q.py
           fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
           f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
