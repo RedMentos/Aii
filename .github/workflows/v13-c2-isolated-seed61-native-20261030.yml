@@ -36,7 +36,7 @@ jobs:
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           45e3008b1bc38d0b7ebaeeda60e7292b1eb28e62 v13/code/docs/C2_NATIVE_ISOLATED_SEED61_PREREG_20261030.md
           631df9e4932bb7ace43d95dd4097c1733dc852c7 v13/code/scripts/c2_isolated_postclose_seed61_20261030.py
-          0f9edaf885b940f7d8ee368909ca25eb61aa6685 v13/code/tests/test_c2_isolated_postclose_seed61_20261030.py
+          15921a36c0dc83c5edeaea02c63f41e8db41d26e v13/code/tests/test_c2_isolated_postclose_seed61_20261030.py
           b10bcdcb2cf2a2151c95cd432b7b0b5e6c5aac6b v13/code/scripts/c2_body_controlled_utility_seed53_20261030.py
           fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
           f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
@@ -164,7 +164,7 @@ jobs:
           assert j['pilot_signals_not_gates']==pilot_signals(totals,valid,selected)
           assert j['status']==('PILOT_COMPLETE_NO_GATE' if valid else 'PILOT_PARTIAL_RED')
           print('SEED61_SOURCE_BOUND_POSTCLOSE_PID_RAW_VERIFIED',j['status'],totals,invoked,selected)
-                    PY
+          PY
             echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
           else
             echo NO_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
