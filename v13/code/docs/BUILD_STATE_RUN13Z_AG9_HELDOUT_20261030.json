@@ -45,7 +45,8 @@
     "No real heldout labels; synthetic source-disjoint only.",
     "No production AG9 state changes, no Age metric admission.",
     "No GitHub full source-only CI terminal result yet.",
-    "No native/model/Redmi evidence."
+    "No native/model/Redmi evidence.",
+    "source_disjoint=true is checked only against caller-supplied source_id strings; it does not authenticate original source provenance or prevent aliases for the same underlying source."
   ],
   "gates": {
     "learning_mode": "RECORD_ONLY",
