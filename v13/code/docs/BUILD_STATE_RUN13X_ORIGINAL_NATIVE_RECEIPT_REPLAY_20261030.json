@@ -1,0 +1,94 @@
+{
+  "schema": "v13.run13x.original_native_receipt_replay.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 Run13X isolated original-raw review",
+  "parent": {
+    "pr": 1314,
+    "commit": "0b2a64021c19c2886f6f1b90296f06a836f02e91"
+  },
+  "branch": "assistant/v13-run13x-original-native-receipt-replay-20261030-auto11",
+  "pr": 1315,
+  "state": "RAW_STAGE_GREEN_API_TERMINAL_PENDING",
+  "prereg_commit": "72e06e70e3099df1db63a594f9889a4b3d6afa53",
+  "original_native": {
+    "run_id": 41097658020,
+    "artifact_id": 12996917793,
+    "sha256": "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c",
+    "crc": "PASS",
+    "inner_sha256": "39/39 PASS",
+    "rows": 16,
+    "all_native_final_reaped": true,
+    "source_facts_verified": 3,
+    "original_verdict": "FIDELITY_HURT",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13X-Original-Native/run13t_original_native.zip",
+    "private_backup_readback": "BYTE_IDENTICAL"
+  },
+  "new_source": [
+    "v13/code/scripts/run13x_original_native_receipt_replay.py",
+    "v13/code/tests/test_run13x_original_native_receipt_replay.py",
+    ".github/workflows/v13-run13x-original-native-receipt-replay.yml"
+  ],
+  "ci": {
+    "run_id": 41100648167,
+    "tested_commit": "1f55c71985fe1aecb1d28ceded63cc56f98a8819",
+    "raw_artifact_id": 12998542171,
+    "original_zip_sha256": "fcf3bbd80f27f901c1a864b1c8eaed2ec9868ea90a136d73771d6a020499ddab",
+    "crc": "PASS",
+    "inner_sha256": "21/21 PASS",
+    "tests": 26,
+    "failures": 0,
+    "stages": [
+      "PINS",
+      "FETCH",
+      "VENV",
+      "DEPS",
+      "TEST",
+      "REPORT",
+      "COMPILE",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "all_stage_exit": 0,
+    "report_status": "RUN13X_ORIGINAL_NATIVE_OUTPUT_RECEIPT_REPLAY_VALID",
+    "original_native_rows": 16,
+    "c3_facts_candidates": 3,
+    "jef_fallback_candidates": 13,
+    "source_store_rechecked": false,
+    "native_receipt_attested": false,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13X-Original-Native/run13x_original_replay_green.zip",
+    "backup_readback": "BYTE_IDENTICAL",
+    "observed_workflow_api_status": "IN_PROGRESS_DESPITE_COMPLETED_STAGE_LOGS",
+    "terminal_conclusion": "UNKNOWN"
+  },
+  "evidence_scope": "ORIGINAL_LINUX_NATIVE_RAW_READONLY_PLUS_SYNTHETIC_RECEIPT_AUGMENTATION",
+  "limitations": [
+    "Original Store source snapshot absent: cannot execute Run13W source recheck.",
+    "Synthetic receipt augmentation is not authenticated native attestation.",
+    "Original source-facts 3/16 is historical negative evidence, not new utility score.",
+    "No active Runtime integration, native rerun, model training, Redmi test or gate promotion."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Wait for GitHub Actions 41100648167 terminal; download exact original raw verification artifact, inspect all stage exits and test failures; repair isolated Run13X code if needed, rerun CI and privately byte-back up original evidence. Continue independent blueprint work if GitHub queue stalls.",
+  "local_independent_audit": {
+    "status": "LOCAL_INDEPENDENT_READONLY_STRUCTURE_VALID",
+    "report_sha256": "115675601775809416005f489f3d68b20fcebfd9a0f41842675554c0ba590668",
+    "original_zip_sha256": "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c",
+    "crc": "PASS",
+    "inner_hashes": "39/39",
+    "rows": 16,
+    "distinct_pids": 16,
+    "original_source_facts_verified": 3,
+    "original_unverified": 13,
+    "source_store_rechecked": false,
+    "native_receipt_attested": false,
+    "scope": "Local independent stdlib structural audit of exact original ZIP, not execution of new GitHub Run13X script or new scorer."
+  }
+}
