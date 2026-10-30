@@ -10,6 +10,7 @@ on:
       - 'v13/code/docs/BUILD_STATE_G15_FULLSUITE_DIAGNOSTIC_20261030.json'
 permissions:
   contents: read
+  actions: read
 jobs:
   diagnostic-only:
     runs-on: ubuntu-24.04
@@ -42,6 +43,43 @@ jobs:
           echo "$?" > "$e/DIFF_EXIT.txt"
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           exit 0
+      - name: Compare exact original G13 and G14 GitHub Actions ZIPs without waiving RED
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-g15-verdict"
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/12984132884/zip" \
+            -o "$e/G13_ORIGINAL.zip" > "$e/FETCH_G13_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_G13_EXIT.txt"
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/12989104302/zip" \
+            -o "$e/G14_ORIGINAL.zip" > "$e/FETCH_G14_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_G14_EXIT.txt"
+          if [ "$(cat "$e/FETCH_G13_EXIT.txt")" = 0 ] && [ "$(cat "$e/FETCH_G14_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/g15_fullsuite_diagnostic.py \
+              --baseline "$e/G13_ORIGINAL.zip" \
+              --candidate "$e/G14_ORIGINAL.zip" \
+              --baseline-sha256 a3f9c4ea76a59865886eb759e9039c6840f0f6f2a009d7e4948ba9fd9c0a0ed1 \
+              --candidate-sha256 77906cc480e18a7695b833896730dded1e5f881278966259a7725440d766c27f \
+              --baseline-head 86c706eba2ece7da3234e245a8e3e8860e607b7e \
+              --candidate-head 4c789ae85758ca71bf86dd5067ab697913071a51 \
+              > "$e/ORIGINAL_VERDICT_RAW.json" 2>&1
+            echo "$?" > "$e/ORIGINAL_VERDICT_EXIT.txt"
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="HISTORICAL_RED_SAME_IDENTITIES"; assert d["evidence_valid"] and not d["software_suite_gate_pass"]; assert d["baseline"]["test_count"]==3972 and d["candidate"]["test_count"]==3987; assert d["baseline"]["identity_count"]==120 and d["candidate"]["identity_count"]==120; assert not d["added_failure_identities"] and not d["removed_failure_identities"]' "$e/ORIGINAL_VERDICT_RAW.json" > "$e/ORIGINAL_ASSERT_RAW.log" 2>&1
+            echo "$?" > "$e/ORIGINAL_ASSERT_EXIT.txt"
+          else
+            for stage in ORIGINAL_VERDICT ORIGINAL_ASSERT; do echo SKIPPED > "$e/${stage}_EXIT.txt"; echo FETCH_RED > "$e/${stage}_RAW.log"; done
+          fi
+          rm -f "$e/SHA256SUMS"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
       - name: Preserve raw and hashes on all outcomes
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -56,7 +94,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-g15-verdict"
-          for stage in CANON TEST COMPILE PRIVACY DIFF; do
+          for stage in CANON TEST COMPILE PRIVACY DIFF FETCH_G13 FETCH_G14 ORIGINAL_VERDICT ORIGINAL_ASSERT; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; raw retained"
               tail -100 "$e/${stage}_RAW.log" 2>/dev/null || true
