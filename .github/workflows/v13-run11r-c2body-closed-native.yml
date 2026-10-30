@@ -37,8 +37,8 @@ jobs:
           2152a5d2205f8c3b3c52c987e6b5e36ab7c96c94 v13/code/docs/C2_BODY_OBSERVER_CLOSED_PREREG_RUN11R_20261030.md
           e3c4b93bc1dafe24c23747105cf654aa59de2937 v13/code/scripts/c2_body_observer_closed_run11r.py
           e6931fee2d1e833baf83d39d95ad1888745fb661 v13/code/tests/test_c2_body_observer_closed_run11r.py
-          9ee1700270f443ca52de1e1c69976c593a629aa5 v13/code/scripts/c2_body_observer_closed_verify_run11r.py
-          92d58e89b3fa30e2def93c33d7ade1d929881360 v13/code/tests/test_c2_body_observer_closed_verify_run11r.py
+          9cef2f2edd8bbd2fae075f03690bd9f31b8c4c1e v13/code/scripts/c2_body_observer_closed_verify_run11r.py
+          d44dadd5954d0648e0d21d08bf836079435abe71 v13/code/tests/test_c2_body_observer_closed_verify_run11r.py
           d824690e942489b11c79c3aa68cd0f02e6176f06 v13/code/scripts/c2_c3_body_source_arithmetic_shadow_run11q.py
           fcd44ccce3b8b40d65a25187a78b0a8d49d9609d v13/code/scripts/step2_paired_raw_validator_audit_20261030.py
           f6bb6c26237f9c94a29a9eeac5ecc6c5fa129ad3 v13/code/scripts/step2_expression_diagnostic_20261030.py
