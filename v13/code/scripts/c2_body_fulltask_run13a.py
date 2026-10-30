@@ -105,6 +105,30 @@ def zero_offer_witness(audit, arm, releases, **kwargs):
     return original
 
 
+def full_task_score(fixture, output, numeric, valid_native):
+    """Prospective 2 frozen numeric points + explicit faster-choice point."""
+    expected = (fixture["a"] if fixture["a_days"] < fixture["b_days"]
+                else fixture["b"])
+    claim = (explicit_faster_claim(output, fixture["a"], fixture["b"])
+             if valid_native is True else "ABSTAIN")
+    status = ("ABSTAIN" if claim == "ABSTAIN" else
+              "CONTRADICTORY" if claim == "CONTRADICTORY" else
+              "CORRECT" if claim == expected else "WRONG")
+    numeric_points = numeric.get("correct", 0) if valid_native is True else 0
+    if type(numeric_points) is not int or not 0 <= numeric_points <= 2:
+        raise ValueError("FROZEN_NUMERIC_SCORE_INVALID")
+    faster_ok = status == "CORRECT"
+    return {
+        "claim": claim, "expected_faster": expected,
+        "faster_status": status, "faster_correct": faster_ok,
+        "numeric_points": numeric_points,
+        "components_correct": numeric_points + int(faster_ok),
+        "out_of": 3,
+        "strict_full_task": bool(numeric_points == 2 and faster_ok),
+        "posthoc": False, "production_gate": False,
+    }
+
+
 def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
     """Real Runtime API; fresh Store and native workers for each frozen arm."""
     text = frozen.prompt(fixture)
@@ -203,12 +227,14 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
         secondary = (frozen.score_primary(fixture, output)
                      if flags["valid_native"] else
                      {"a": False, "b": False, "correct": 0, "out_of": 2})
+        full_task = full_task_score(fixture, output, score, flags["valid_native"])
         raw = {
             **record, "body_process_releases": after,
             "native_c2_process_reaped": c2_reaped,
             "release_capture_phase": "after_close",
             "flags": flags, "score": score,
-            "secondary_score": secondary, "learning_mode": "RECORD_ONLY",
+            "secondary_score": secondary, "full_task": full_task,
+            "learning_mode": "RECORD_ONLY",
             "jepa_weight": 0,
             "step2_gate_promoted": False, "b3_promoted": False,
             "body_jepa_available": False, "redmi_measured": False,
