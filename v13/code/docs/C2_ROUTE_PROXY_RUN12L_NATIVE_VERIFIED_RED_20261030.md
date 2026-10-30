@@ -15,6 +15,12 @@ Owner GPT-6. Draft PR #1268 child of #1267; **not production-integrated**. This 
 - On the 12 simple-scaffold prompts, **9/12** native advisories were admitted. Fixed role-proxy label agreement **fell from 4/12 (boot scaffold) to 1/12 (native-selected final route)**: net **−3**. All **four greeting/acknowledgement controls regressed** from simple to detail/gist; native selected gist for several greetings. Only one of the eight detail/gist proxy targets was correctly routed. Predeclared threshold (>=3 admissions, net >=+2, zero greeting regressions) **FAIL**.
 - Native proposal distribution over 15 original rows: detail 2, gist 7, simple 5, both 1. This is a tiny synthetic, manually labelled role-proxy cohort, **not** real response utility or a representative benchmark. No tuning or threshold changes after results.
 
+## Diagnostic of the original native control traces (descriptive, posthoc)
+
+The native C2 tool output is not just noisy; some original `reasoning` fields treat `select_processing` as if it were an executable task tool. For a greeting it reasoned about a verb tool being unavailable and selected `detail`; for a written subtraction it reasoned that no calculator/math tool was available and selected `simple`. Other failures proposed nonexistent tool names or conflicting route calls and were correctly rejected by Run12J strict admission. One high-confidence wrong route selected `detail` for a request to state a report's big picture (confidence 1.0), so **raw Needle confidence is not an established correctness guarantee**. These are observations from the original 15 native rows, not preregistered causal explanations.
+
+This separates two problems: (a) strict structural admission successfully rejects malformed/ambiguous tool output; (b) a structurally valid unique `select_processing` call can still be semantically wrong. A future candidate must be independently preregistered on disjoint data; do not tune the existing frozen cohort or infer that a confidence-only filter is sufficient.
+
 ## Gates, risk and next package
 
 Age0 `RECORD_ONLY`, STEP2 `UTILITY_FAIL`, B3 `NO_PROMOTION`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi `UNMEASURED`, whole V13 incomplete. No C3/Body output was generated in Run12L; no model/weights/routing policy changed. The result argues **against granting native C2 additional routing authority without task-bound evidence**. It does not justify claiming that a different route improves answers.
