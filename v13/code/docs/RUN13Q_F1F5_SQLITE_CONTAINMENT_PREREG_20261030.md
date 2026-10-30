@@ -1,0 +1,9 @@
+# Run13Q — isolated F1/F5 SQLite fault containment candidate (2026-10-30)
+
+Owner GPT-6; sibling of Run13P native owner, based on Run13O `5d37d8cb25f5cc1dab347c3cea9a64fe08d077c5`. This branch **must not be merged into active frozen SourceHandoff runtime** until the owning cohort explicitly permits integration.
+
+Original `v13/code/v13/jef_f1f5_source_admission.py` Git blob `e417c3bb4afa34a226aa116752df8c10d659a113` has an exception handler for `OSError`, `ValueError`, etc. but not `sqlite3.Error`, although it directly invokes SQLite-backed `store.one`, `store.state`, `store.rows`, `store.read_source` and memory candidate/verified-row queries. A genuine database `sqlite3.OperationalError` can therefore escape the SHADOW admission function instead of returning a bounded `UNKNOWN`/no-authority denial. This is a specific fail-closed containment gap, not evidence of a previously observed live incident.
+
+**Minimal candidate patch:** add `import sqlite3` and catch `sqlite3.Error` in the existing exception tuple; retain original successful path and every prior reason/permission/age gate. Do not change typed-source parser, Store, Runtime, feedback, native route, model, scorer, cohort or data. Add adversarial tests injecting SQLite exceptions at early and later reads against a real Store and verifying `F1F5_SOURCE_OR_LINEAGE_RED`, `F1F5_DENIED_SHADOW`, `UNKNOWN`, zero authority, zero native calls, no writes or learning. Also rerun original F1/F5 positive/negative/revocation suite and independent source guard tests.
+
+No model downloads, no native inference, no Redmi proof, no age/STEP2/B3/Body-JEPA promotion. Keep all original negative gates and historical frozen source hashes in prior cohorts. Preserve full raw CI including failures; publish only on review branch.
