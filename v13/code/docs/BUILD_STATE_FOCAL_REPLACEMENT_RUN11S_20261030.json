@@ -1,0 +1,90 @@
+{
+  "schema": "V13_RUN11S_FOCAL_REPLACEMENT_SYNTHETIC_SOFTWARE_VERIFIED",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 review-only",
+  "parent_pr": 1246,
+  "parent_head": "5b6c515a058725fe3db88c0daf07505187ac5c72",
+  "pr": 1248,
+  "branch": "assistant/v13-run11s-focal-replacement-shadow-20261030",
+  "prereg_commit": "10d3b44d3974e91613d9294cbf2a857f7f7829f6",
+  "source_provenance": {
+    "original_z5b_generator_blob": "9d61acdd8f8aa47435ed682ac4b7013fd3e02df8",
+    "original_z5b_result_blob": "f8199a26e000ec9ff955d034f7b6fb99ea79fa79",
+    "new_candidate_blob": "bf9c7d8ee75bbe82a82c0c2d3dc4cefed4036bce",
+    "new_tests_blob": "47b49d6df8f42d49bee08f7b818a70710c7abea1",
+    "prereg_blob": "22361f6e6888bdc98c640ecc5f852a323fc1283f",
+    "utility_bench2_blob": "c81b6d38309311708cf03ffc47a9f279e86a4084",
+    "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "seed": 167,
+  "rows": 60,
+  "per_kind": 15,
+  "source_only": true,
+  "model_inference": false,
+  "gate_authority": false,
+  "software_green": {
+    "run_id": 41036127341,
+    "tested_head": "2b6d35ae9354b8b9d7b2cd50f35293a08ed0c286",
+    "artifact_id": 12967803097,
+    "zip_sha256": "8e5b3c4fabb28904e6a7bb6d1b7b0432175d3b1e3e24ec8ca7ccf0d713c21ab4",
+    "zip_bytes": 9029,
+    "crc_clean": true,
+    "inner_hashes": "19/19",
+    "tests": "10/10 PASS",
+    "stages": "8/8 PASS",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11S-Focal-Replacement/SOFTWARE_GREEN_41036127341_sha8E5B3C.zip",
+    "private_byte_exact": true
+  },
+  "software_red": [
+    {
+      "run_id": 41035855022,
+      "zip_sha256": "909d7593febb93c424f95a197c3763d001e9f0e21067380b624557b61a692802",
+      "reason": "oracle incorrectly included travel-budget spending",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11S-Focal-Replacement/SOFTWARE_RED_41035855022_sha909D75.zip",
+      "private_byte_exact": true
+    },
+    {
+      "run_id": 41036085616,
+      "zip_sha256": "c3aaa7120e4bf10a3651ef943e50ff053d428d797d0689a5daa9a00ec90fe43d",
+      "reason": "diagnostic reproduced combine00 two spending keys",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run11S-Focal-Replacement/SOFTWARE_RED_DIAGNOSTIC_41036085616_shaC3AAA7.zip"
+    }
+  ],
+  "metrics": {
+    "exact_required": 60,
+    "baseline_exact_required": 0,
+    "required_included": 60,
+    "baseline_required_included": 46,
+    "abstentions": 0,
+    "by_kind": {
+      "update": 15,
+      "combine": 15,
+      "correction": 15,
+      "distract": 15
+    },
+    "interpretation": "Synthetic evidence selection only; no model answer utility or generalization proof"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "focal_capacity": "PARTIAL",
+    "whole_system_complete": false
+  },
+  "native_owner": {
+    "run11r_actions": 41035932580,
+    "status": "IN_PROGRESS",
+    "run11s_native": "NOT_AUTHORIZED_OR_SCHEDULED"
+  },
+  "open_questions": [
+    "Fresh unseen paraphrases and model-output utility not measured",
+    "No deployment or authority to Runtime/FocalLoop",
+    "G-FOCAL capacity salience-only admission remains unproven",
+    "Independent reviewer must check task-specific grammar overfitting"
+  ],
+  "next_command": "Review Run11S source/test and original GREEN/RED raw; preregister a separate model-output paired coalition vs full/retrieval study after Run11R native heavy owner completes. Do not promote gates."
+}
