@@ -37,6 +37,14 @@ class ContextOSMathExactTests(unittest.TestCase):
                 self.assertIn(number, out)
                 self.assertTrue(ok or out == text)
 
+    def test_scientific_operand_in_equation_stays_raw(self):
+        text = "Intro. Later the equation was 1.23e-5 × 2 = 2.46e-5. " + TAIL
+        out, spans, ok = C.compress(text, 140)
+        self.assertFalse(ok)
+        self.assertEqual(out, text)
+        self.assertIn("1.23e-5", spans)
+        self.assertIn("2.46e-5", spans)
+
     def test_iso_date_does_not_trigger_arithmetic_guard(self):
         text = "The invoice date was 2026-10-09. " + TAIL
         out, spans, ok = C.compress(text, 140)
