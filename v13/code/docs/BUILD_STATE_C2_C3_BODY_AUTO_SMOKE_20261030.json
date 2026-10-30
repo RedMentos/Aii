@@ -11,8 +11,8 @@
   "test_blob": "6b4ee8d2ceaefc17ddb28420eead4d5b09ebf70e",
   "preflight_run": 40999508320,
   "preflight_head": "cb48f9f92ca428ee7b92a2390d143d50a29ad091",
-  "preflight_status": "QUEUED_UNVERIFIED",
-  "native_run": null,
+  "preflight_status": "GREEN_VERIFIED",
+  "native_run": 40999648419,
   "native_c2_invocations_proven": false,
   "native_route_selected_proven": false,
   "full_body_path_proven": false,
@@ -32,5 +32,13 @@
     "No disjoint comparative utility or Redmi acceptance",
     "Historical Run34/Run37 full-suite source-pin errors RED"
   ],
-  "next_command": "Inspect Actions 40999508320 original raw and gates; if GREEN and no other native owner, launch serial native seed47 three-turn smoke with exact source/test pins, then verify original ZIP and private backup. Do not promote utility/age/B3/JEPA."
+  "next_command": "Inspect Actions 40999648419 original raw and terminal state; independently verify SHA256/CRC/inner manifest, all 3 native C2/source/session/FINAL/Body receipts and private byte-identical backup; if RED preserve original and investigate; no utility/age/B3/JEPA promotion.",
+  "preflight_artifact_id": 12952652982,
+  "preflight_artifact_sha256": "e43af598585c3a4d7b10dfd38386105e8856de7c662898f40880e3f5ea5b6387",
+  "preflight_inner_sha256": "16/16",
+  "preflight_stage_exits": "7/7 exit0",
+  "preflight_tests": "8/8 PASS",
+  "preflight_private_backup_byte_identical": true,
+  "native_head": "4f73e39db16d9ff4570dc6d3b4586160dc18d0a3",
+  "native_status": "QUEUED_UNVERIFIED"
 }
