@@ -30,7 +30,7 @@ jobs:
           f9023c1d5e575279f333b4b99f0bb8bdea110e84 v13/code/docs/fixtures/run14l_c3_structured_seed307_20261030.json
           0dd1aa6db41c1258e13d4108316bcd850af3f589 v13/code/scripts/run14l_c3_structured_native.py
           711d789b466b5974b964e7d5faf10dc93453d458 v13/code/scripts/run14l_c3_structured_native_verify.py
-          ddc4e90e60213af485b41b48c7f31e0c19f839aa v13/code/tests/test_run14l_c3_structured_native.py
+          62af10d15de656316be8236534c48b82da70df16 v13/code/tests/test_run14l_c3_structured_native.py
           41ae26e01932ea7e89188e3a544bef103f1b3ec6 v13/code/v13/agi/c3_structured_source_shadow_run14k.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
           PINS
