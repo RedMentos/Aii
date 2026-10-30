@@ -110,7 +110,7 @@ class ControlledUtilitySoftware(unittest.TestCase):
             audit["output_metadata"]["route"]["source"] = "NATIVE_C2_ADVISORY"
             selected = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
                                       native_context=context, native_alive=True,
-                                      native_reaped=True, source_exact=True,
+                                      native_reaped=True, native_pid=1234, source_exact=True,
                                       session="chat_1", event_id="event_1", source_text="synthetic")
             self.assertTrue(selected["native_c2_selected"])
             missing = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
@@ -142,7 +142,7 @@ class ControlledUtilitySoftware(unittest.TestCase):
         with patch.object(m, "valid_control_evidence", return_value=False):
             flags = m.row_evidence(audit, "F_NATIVE_AUTO", releases,
                                    native_context={"query_ref": {"source_id": "synthetic"}},
-                                   native_alive=True, native_reaped=True,
+                                   native_alive=True, native_reaped=True, native_pid=1234,
                                    source_exact=True, session="s", event_id="e",
                                    source_text="synthetic")
         self.assertFalse(flags["native_c2_invocation"])
