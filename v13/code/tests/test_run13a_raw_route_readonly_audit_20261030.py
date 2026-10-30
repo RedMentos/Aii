@@ -42,7 +42,7 @@ def synthetic():
     report = {
         "schema": "v13.c2_c3_body.fulltask.run13a.v1",
         "seed": 211, "fixture_sha256": "synthetic-only",
-        "arms": audit.ARMS, "arm_order": audit.ARM_ORDER,
+        "arms": list(audit.ARMS), "arm_order": [list(x) for x in audit.ARM_ORDER],
         "fixtures": fixtures, "rows": rows,
         "learning_mode": "RECORD_ONLY", "jepa_weight": 0,
     }
