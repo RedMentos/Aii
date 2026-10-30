@@ -240,12 +240,27 @@ class GeneralityEval:
         st['holdout_history_unknown']=unknown
         _validated_holdout_registry(st)
     def guard_training(self,texts):
-        """Exclude all registered historical unseen prompts; unknown history blocks training."""
+        """Exclude registered unseen prompts from *both* languages, including history.
+
+        EN/DE evaluation state remains separate; training exclusions do not. A
+        missing sibling state is allowed (English-first bootstrap), but an
+        existing damaged or unrecoverable sibling state blocks both languages.
+        No sibling evaluation suite is created or mutated by this read.
+        """
         st=self._active_state()
         _validated_holdout_registry(st)
         if st['holdout_history_unknown']:
             raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
         hold=set(st['holdout'])
+        sibling_key=KEY+'_DE' if self.suite['lang']=='en' else KEY
+        sibling,version=self.s.state(sibling_key,None)
+        if sibling is not None or version:
+            if type(sibling) is not dict or sibling.get('revision')!=REVISION:
+                raise ValueError('AG12_HOLDOUT_INTEGRITY')
+            _validated_holdout_registry(sibling)
+            if sibling['holdout_history_unknown']:
+                raise ValueError('AG12_HOLDOUT_HISTORY_UNKNOWN')
+            hold.update(sibling['holdout'])
         bad=[t for t in texts if digest(normalize(t)) in hold]
         if bad:raise ValueError(f'AG12-Holdout im Trainingssatz ({len(bad)} Einträge)')
         return True
