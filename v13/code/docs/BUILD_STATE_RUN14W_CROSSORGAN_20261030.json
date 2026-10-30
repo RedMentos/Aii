@@ -1,5 +1,5 @@
 {
-  "schema": "v13.run14w.crossorgan.pending_ci.v1",
+  "schema": "v13.run14w.crossorgan.focused_green_fullsuite_in_progress.v1",
   "date_utc": "2026-10-30",
   "owner": "GPT-6 scheduled continuation; independent cross-organ integration witness",
   "parent": {
@@ -19,7 +19,37 @@
     "integrated": {
       "run": 41125526607,
       "head": "2e7cbd9ebc1595f20a56229d04036355015ed589",
-      "status": "QUEUED_UNVERIFIED_AT_CHECKPOINT"
+      "artifact": 13010482902,
+      "zip_sha256": "af30fb190e1bc410e9675402cdda0fb670681dc6b319cd80cb7c4be3327a9dbb",
+      "tests": 137,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14W-CrossOrgan/Run14W_CrossOrgan_FOCUSED_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "unfiltered_fullsuite": {
+      "run": 41125663275,
+      "head": "aa55380f373aa54bd77c578eca67f491c609a8d0",
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "baseline_run14r": {
+        "run": 41118615931,
+        "tests": 4140,
+        "failures": 4,
+        "errors": 66,
+        "skipped": 16
+      }
     }
   },
   "negative_gates": {
@@ -36,5 +66,9 @@
     "Historical full-suite RED unwaived.",
     "No native/Redmi or model proof."
   ],
-  "next_command": "Monitor Run14W integrated Actions 41125526607, preserve any original RED, inspect real SQLite restart witness, fix only evidenced regressions, privately back up byte-exact raw. Then run justified unfiltered full-suite comparison against Run14R 4140/4F/66E/16S and retain all failures. Update checkpoint and create draft review PR; do not merge or promote gates."
+  "next_command": "Wait for unfiltered Run14W Actions 41125663275 terminal; download original ZIP, CRC+SHA256SUMS+stage checks, compare exact test/failure/error counts with Run14R, preserve every failure, private byte-exact backup. Update checkpoint and create draft PR child #1338. If unfiltered fails only historical pins, retain RED; do not silently waive or promote gates.",
+  "review": [
+    "Focused 137/137 real SQLite ContextOS/World/C2/Sleep/neuromod regression passed, including two new integrated same-event restart witnesses.",
+    "Original unfiltered full suite launched with pinned numpy/torch/transformers/peft and no test waivers; no full result claimed yet."
+  ]
 }
