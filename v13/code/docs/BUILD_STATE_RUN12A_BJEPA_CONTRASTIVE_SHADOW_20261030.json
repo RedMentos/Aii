@@ -1,0 +1,37 @@
+{
+  "schema": "V13_RUN12A_CONTRASTIVE_BJEPA_SHADOW_SOFTWARE_PENDING",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12a-bjepa-contrastive-shadow-20261030",
+  "parent_pr": 1256,
+  "parent_head": "235c579e808fed26392cd31a4ee7b70a142ab1cd",
+  "prereg_commit": "055fbd041a6dd3561fc01228b58dfd7886826dc6",
+  "original_body_jepa_blob": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+  "original_run11p_blob": "af685a22ddd4ff6412643a8849a1f00bf2112487",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "new_candidate_blob": "acd40aeac9e286e93b40bda72c655c17725a522e",
+  "new_tests_blob": "4057e304685f9b804bcfd3dea73919f87f304460",
+  "new_seed": 223,
+  "objective": "EXPERIMENTAL_INFO_NCE_ALTERNATIVE_NOT_IJEPA",
+  "scope": "Source-only bounded Torch autograd loss with target detach, source-group false-negative mask and deranged target control; no native trainer consumer",
+  "software": {
+    "run_id": 41043341335,
+    "head": "e0ee81864a7fa783c67072f1c64cbf198573e6eb",
+    "status": "QUEUED",
+    "result": "UNKNOWN"
+  },
+  "native": {
+    "launched": false,
+    "proven": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect Run12A Actions 41043341335 terminal and original raw; preserve RED if failed, patch only new candidate/test; SHA/CRC/hash audit, private Library backup, scoped state update. Run11Z unfiltered fullsuite 41042932709 independently in progress; inspect original raw when terminal. Then plan disjoint native Body-JEPA alternative only after current heavy owner terminal."
+}
