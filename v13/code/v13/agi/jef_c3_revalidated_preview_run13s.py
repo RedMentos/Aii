@@ -53,7 +53,7 @@ def _valid_link(linked, plan_id, query_event_id, source_event_id):
         return False
     try:
         prompt_for(linked, "COPY_DIRECT")
-    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError):
+    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError, OverflowError):
         return False
     return True
 
@@ -73,7 +73,10 @@ def preview_after_native(store, plan_id, query_event_id, source_event_id,
             or native_calls != 1 or type(native_text) is not str):
         return _closed("ABSTAIN_NATIVE_RED",
                        native_calls=native_calls if type(native_calls) is int else 0)
-    candidate_sha = _hash(native_text)
+    try:
+        candidate_sha = _hash(native_text)
+    except UnicodeError:
+        return _closed("ABSTAIN_NATIVE_RED", native_calls=1)
     try:
         linked_after = propose_c3_context(
             store, plan_id, query_event_id, source_event_id)
@@ -86,10 +89,16 @@ def preview_after_native(store, plan_id, query_event_id, source_event_id,
         source_sha = linked_after["answer_sha256"]
         audit = audit_source_facts(linked_after, native_text)
         if (audit.get("status") != "SHADOW_NO_AUTHORITY"
-                or audit.get("answer_sha256") != source_sha):
+                or audit.get("reason") not in (
+                    "SOURCE_FACTS_VERIFIED", "CANDIDATE_FACT_MISMATCH",
+                    "OUTPUT_BUDGET_RED", "OUTPUT_ENCODING_RED")
+                or audit.get("answer_sha256") not in (None, source_sha)):
             return _closed("ABSTAIN_AUDIT_INTEGRITY_RED",
                            candidate_sha=candidate_sha, native_calls=1)
         if audit.get("result") == "FACTS_EXACT":
+            if audit.get("answer_sha256") != source_sha:
+                return _closed("ABSTAIN_AUDIT_INTEGRITY_RED",
+                               candidate_sha=candidate_sha, native_calls=1)
             return _closed(
                 "MODEL_VERIFIED_PREVIEW", candidate_sha=candidate_sha,
                 audit_reason=audit["reason"], native_calls=1,
