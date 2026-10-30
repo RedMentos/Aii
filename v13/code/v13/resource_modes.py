@@ -26,6 +26,7 @@ RED -> CRITICAL. A CRITICAL turn is still refused after the OOM/heat reflex (har
 forward below the floor risks the OOM it is meant to avoid); governor snapshot, rules,
 provenance log and cancel are untouched by every mode.
 """
+import math
 import time
 
 MODES=('GREEN','YELLOW','ORANGE','RED')
@@ -77,7 +78,7 @@ def boot_profile(cfg,device_info=None):
     if device_info is None:
         from .resources import device
         device_info=device()
-    android=bool(device_info.get('android'))
+    android=device_info.get('android') is True
     return {'revision':REVISION,'status':'UNCALIBRATED','source':'BOOT minimum_free_mb/thermal_limit_c',
             'mem_mb':{'RED':floor,'ORANGE':2*floor,'YELLOW':3*floor},'temp_c':{'RED':limit,'ORANGE':limit-3,'YELLOW':limit-6},
             # §73 Redmi lab targets (total_RSS_soft_budget 3.0-3.4 GB -> lower bound, hard_backoff 3.8 GB); not an OS guarantee.
@@ -85,14 +86,22 @@ def boot_profile(cfg,device_info=None):
             'rss_mb':dict(RSS_BOOT_MB) if android else None,'rss_status':'BOOT_REDMI_TARGET' if android else 'OFF_NOT_ANDROID',
             'thermal_status':'BOOT_UNMEASURED','hysteresis':{'mem_fraction':MEM_HYSTERESIS,'temp_c':TEMP_HYSTERESIS_C}}
 
+def _finite_number(value):
+    """Only finite numeric measurements; bool is not a physical reading."""
+    try:return type(value) in (int,float) and math.isfinite(value)
+    except (OverflowError,ValueError):return False
+
 def validate(p):
     for k in ('mem_mb','temp_c'):
         t=p[k]
-        if not all(isinstance(t[m],(int,float)) for m in ('RED','ORANGE','YELLOW')):raise ValueError('resource profile '+k)
+        if type(t) is not dict or not all(_finite_number(t.get(m)) for m in ('RED','ORANGE','YELLOW')):
+            raise ValueError('resource profile '+k+' requires finite numeric thresholds')
     if not p['mem_mb']['RED']<=p['mem_mb']['ORANGE']<=p['mem_mb']['YELLOW']:raise ValueError('mem thresholds must rise RED<=ORANGE<=YELLOW')
     if not p['temp_c']['RED']>=p['temp_c']['ORANGE']>=p['temp_c']['YELLOW']:raise ValueError('temp thresholds must fall RED>=ORANGE>=YELLOW')
     r=p.get('rss_mb')
-    if r is not None and not (isinstance(r.get('YELLOW'),(int,float)) and isinstance(r.get('ORANGE'),(int,float)) and 0<r['YELLOW']<=r['ORANGE']):raise ValueError('rss budget must rise 0<YELLOW<=ORANGE')
+    if r is not None and not (type(r) is dict and _finite_number(r.get('YELLOW')) and _finite_number(r.get('ORANGE'))
+                              and 0<r['YELLOW']<=r['ORANGE']):
+        raise ValueError('rss budget must rise 0<YELLOW<=ORANGE with finite numeric readings')
     return p
 
 def calibrate(cfg,body_rss_mb,device_info,clock=time.time,thermal=None):
@@ -103,13 +112,21 @@ def calibrate(cfg,body_rss_mb,device_info,clock=time.time,thermal=None):
     {'RED','ORANGE','YELLOW'} temperatures; otherwise the BOOT thermal thresholds remain.
     """
     need={'B1_DETAIL','B2_GIST'}
-    rss={k:float(v) for k,v in (body_rss_mb or {}).items() if k in need and v is not None and float(v)>0}
-    if set(rss)!=need:raise ValueError('Kalibrierung braucht gemessene RSS beider Beobachter-Körper (B1_DETAIL, B2_GIST); fehlt: '+','.join(sorted(need-set(rss))))
+    if type(body_rss_mb) is not dict:raise ValueError('RSS braucht ein Rollen-Dictionary')
+    rss={}
+    for role in sorted(need):
+        value=body_rss_mb.get(role)
+        if not _finite_number(value) or value<=0:
+            raise ValueError('Kalibrierung braucht positive endliche RSS: '+role)
+        rss[role]=float(value)
     p=boot_profile(cfg,device_info);floor=p['mem_mb']['RED']
     p['mem_mb']={'RED':floor,'ORANGE':round(floor+max(rss.values())*CALIBRATION_MARGIN,1),'YELLOW':round(floor+sum(rss.values())*CALIBRATION_MARGIN,1)}
     if thermal:
-        p['temp_c']={m:float(thermal[m]) for m in ('RED','ORANGE','YELLOW')};p['thermal_status']='DEVICE_MEASURED' if device_info.get('android') else 'HOST_MEASURED_NOT_REDMI'
-    p.update(status='DEVICE_MEASURED' if device_info.get('android') else 'HOST_MEASURED_NOT_REDMI',
+        if type(thermal) is not dict or not all(_finite_number(thermal.get(m)) for m in ('RED','ORANGE','YELLOW')):
+            raise ValueError('Thermal-Kalibrierung braucht endliche Messwerte RED/ORANGE/YELLOW')
+        p['temp_c']={m:float(thermal[m]) for m in ('RED','ORANGE','YELLOW')}
+        p['thermal_status']='DEVICE_MEASURED' if device_info.get('android') is True else 'HOST_MEASURED_NOT_REDMI'
+    p.update(status='DEVICE_MEASURED' if device_info.get('android') is True else 'HOST_MEASURED_NOT_REDMI',
              source='measured observer-body RSS',measured={'body_rss_mb':rss,'margin':CALIBRATION_MARGIN,'device':device_info,'at':clock()})
     return validate(p)
 
