@@ -64,6 +64,26 @@ class SleepASourceUnavailableRun11L(unittest.TestCase):
         self._blob(self.event).write_bytes(b"tampered event source")
         self.assert_source_fail(*self._probe(), self.event["source_ref"])
 
+    def test_malformed_event_envelope_is_typed_failure(self):
+        with self.store.tx() as db:
+            db.execute("UPDATE events SET packet=? WHERE id=?",
+                       ("{", self.event["event_id"]))
+        outcome, errors, detail = self._probe()
+        self.assertEqual(outcome, "FAIL")
+        self.assertIn("EVENT_ENVELOPE_INVALID", errors)
+        self.assertIn("source_integrity", detail["affected_paths"])
+        self.assertEqual(detail["source_refs"], [])
+
+    def test_event_source_id_substitution_is_typed_failure(self):
+        other = self.store.event(self.session, "different source")
+        with self.store.tx() as db:
+            db.execute("UPDATE events SET source_id=? WHERE id=?",
+                       (other["source_ref"]["source_id"], self.event["event_id"]))
+        outcome, errors, detail = self._probe()
+        self.assertEqual(outcome, "FAIL")
+        self.assertIn("EVENT_ENVELOPE_INVALID", errors)
+        self.assertIn("source_integrity", detail["affected_paths"])
+
     def test_one_missing_source_does_not_abort_other_replay(self):
         second = self._correct("Projekt Mondlicht Budget?", "250 Euro")
         self._blob(self.event).unlink()
