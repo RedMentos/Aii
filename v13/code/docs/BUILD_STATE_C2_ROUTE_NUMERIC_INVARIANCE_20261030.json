@@ -1,0 +1,48 @@
+{
+  "package": "C2_ROUTE_NUMERIC_INVARIANCE_V2_CANDIDATE",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "base_sha": "9d14c3cc0ffeacf3ac7fc2c8cffedae9b6ea5bb6",
+  "tested_head": "53f2aaaed201633144deb7c1410a37cdf99311e9",
+  "pr": 1287,
+  "mode": "ISOLATED_SHADOW_CANDIDATE_NOT_WIRED",
+  "changes": [
+    "v13/code/v13/route_words_numeric_candidate.py",
+    "v13/code/tests/test_route_words_numeric_candidate_20261030.py"
+  ],
+  "original_v1_blob": "901f993ce815a1ccc10808c6d3272078d4300580",
+  "candidate_v2_blob": "1ba6ec6c1b2002cbc44164286404cd9d915b2cac",
+  "workflow_run": 41069995202,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12983129031,
+  "artifact_status": "UPLOADED_NOT_DOWNLOADED_IN_THIS_SESSION",
+  "checks": [
+    "CANON",
+    "VENV",
+    "DEPS",
+    "TEST",
+    "COMPILE",
+    "PRIVACY",
+    "DIFF"
+  ],
+  "checks_result": "ALL_ENFORCED_ZERO_EXIT_PER_GITHUB_ACTIONS_SUCCESS",
+  "evidence_level": "SOFTWARE_FEATURE_ABLATION_NOT_TRAINED_HEAD_OR_NATIVE",
+  "claim_limit": "Seven matched numeric-notation pairs invariant in v2; does not prove route accuracy or model utility; active route v1 and learned weights untouched.",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Need preregistered disjoint route labels and v1-v2 head training/retention comparison",
+    "Numbers sometimes signal task complexity; v2 may reduce useful information",
+    "Original raw ZIP not independently downloaded in this connector session",
+    "Full unfiltered cross-organ G13 suite Actions 41069560040 still running at this checkpoint"
+  ],
+  "exact_next_command": "Preregister a disjoint route-label v1-v2 generalization ablation before any training, with exact frozen source labels and no live authority; continue other Canon organs while fullsuite completes.",
+  "remaining_platform_budget": "UNKNOWN"
+}
