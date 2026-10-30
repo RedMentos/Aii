@@ -136,7 +136,16 @@ class EventScheduler:
     def next(self,idle=True,resource_state='NORMAL',quiet=False):
         with self.s.mutex:return self._next(idle,resource_state,quiet)
     def _next(self,idle=True,resource_state='NORMAL',quiet=False):
-        st,v=self._load();now=self.clock();changed=False;best=None
+        # A corrupt/failed clock must not turn a future due event into an
+        # immediate dispatch (NaN comparisons are both false), or expire an
+        # event spuriously at +Inf. Check before touching durable queue state.
+        try:
+            now=float(self.clock())
+        except (TypeError,ValueError,OverflowError) as exc:
+            raise ValueError('Scheduler dispatch clock must be finite') from exc
+        if not math.isfinite(now):
+            raise ValueError('Scheduler dispatch clock must be finite')
+        st,v=self._load();changed=False;best=None
         for e in st['events']:
             if e['status'] not in {'PENDING','HELD_AGE'}:continue
             if e['expires'] is not None and e['expires']<now:e['status']='EXPIRED';changed=True;self._count(st,'expired');continue
