@@ -77,14 +77,21 @@ def score(fixture, rows):
             "reference_route": case["reference_route"],
             "scaffold": case["expected_scaffold"],
             "final_route": final_route, "native_selected": selected,
-            "source_exact": source_ok, "native_proven": native_ok,
+            "source_exact": source_ok, "prompt_bound": prompt_ok,
+            "native_proven": native_ok,
             "strict_match": strict_ok, "case_valid": valid,
             "scaffold_correct": case["expected_scaffold"] == case["reference_route"],
             "final_correct": bool(valid and final_route == case["reference_route"]),
         })
-    structural = (len(rows) == 15 and len(records) == 15 and
-                  all(r["case_valid"] for r in records) and
-                  all(not r["native_selected"] for r in records[12:]))
+    native_proven = (len(rows) == 15 and all(
+        r["native_proven"] and r["source_exact"] and r["prompt_bound"]
+        for r in records))
+    strict_compatibility = (native_proven and all(
+        r["case_valid"] for r in records))
+    non_simple_preserved = (strict_compatibility and all(
+        not r["native_selected"] and r["final_route"] == r["scaffold"]
+        for r in records[12:]))
+    structural = native_proven and strict_compatibility and non_simple_preserved
     first = records[:12]
     scaffold_correct = sum(r["scaffold_correct"] for r in first)
     final_correct = sum(r["final_correct"] for r in first)
@@ -98,9 +105,9 @@ def score(fixture, rows):
         "schema": SCHEMA, "status": (
             "NATIVE_ROUTE_PROXY_THRESHOLD_MET_NO_UTILITY_PROOF" if proxy_threshold
             else "NATIVE_ROUTE_PROXY_RED_NO_UTILITY_PROOF"),
-        "case_count": len(rows), "native_c2_proven": bool(structural),
-        "strict_compatibility": bool(structural),
-        "non_simple_scaffold_preserved": bool(structural),
+        "case_count": len(rows), "native_c2_proven": bool(native_proven),
+        "strict_compatibility": bool(strict_compatibility),
+        "non_simple_scaffold_preserved": bool(non_simple_preserved),
         "scaffold_correct_first12": scaffold_correct,
         "final_correct_first12": final_correct,
         "net_correct_gain_first12": net_gain,
