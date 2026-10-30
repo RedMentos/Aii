@@ -76,7 +76,7 @@ def _pair_spans(text, item):
     pattern = (r"(?<![\w-])" + name + r"(?![\w-])"
                + r"[ \t\r\n]*[:=]?[ \t\r\n]*"
                + r"(?:kostet[ \t]+)?\(?[ \t]*"
-               + sign + digits + r"(?![\d.,])")
+               + sign + digits + r"(?!\d|[.,]\d)")
     return [(m.start(), m.end()) for m in re.finditer(pattern, text, re.IGNORECASE)]
 
 
