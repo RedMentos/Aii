@@ -1,4 +1,4 @@
-name: V13 Run14M unfiltered full-suite regression raw audit
+name: V13 Run14M artifact-bound unfiltered full-suite regression
 on:
   push:
     branches: [assistant/v13-run14m-ag12-historical-holdout-20261030-2014]
@@ -6,6 +6,7 @@ on:
       - '.github/workflows/v13-run14m-fullsuite-unfiltered.yml'
 permissions:
   contents: read
+  actions: read
 jobs:
   unfiltered:
     runs-on: ubuntu-24.04
@@ -59,8 +60,23 @@ jobs:
               echo 99 > "$e/${stage}_EXIT.txt"; echo VENV_RED > "$e/${stage}_RAW.log"
             done
           fi
-          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=10s 20m env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+          # Run13X is an artifact-bound test, not a unit test with a synthetic replacement.
+          # Retrieve the exact original Run13T native ZIP privately into RUNNER_TEMP,
+          # verify the preregistered original SHA, and never upload the ZIP itself.
+          orig="$RUNNER_TEMP/v13-run13t-original-native.zip"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ]; then
+            curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12996917793/zip" \
+              --output "$orig" > "$e/ARTIFACT_RAW.log" 2>&1
+            rc="$?"
+            got="$(sha256sum "$orig" 2>/dev/null | cut -d' ' -f1)"
+            echo "original_sha256=$got expected=86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c" >> "$e/ARTIFACT_RAW.log"
+            if [ "$rc" = 0 ] && [ "$got" = "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c" ]; then echo 0 > "$e/ARTIFACT_EXIT.txt"; else echo 1 > "$e/ARTIFACT_EXIT.txt"; fi
+          else echo PIN_RED > "$e/ARTIFACT_RAW.log"; echo 99 > "$e/ARTIFACT_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/ARTIFACT_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 20m env RUN13X_ORIGINAL_ZIP="$orig" PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
             echo "$?" > "$e/FULL_EXIT.txt"
           else echo SKIPPED_DEPS_RED > "$e/FULL_RAW.log"; echo 99 > "$e/FULL_EXIT.txt"; fi
           "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
@@ -71,6 +87,8 @@ jobs:
           echo "$?" > "$e/DIFF_EXIT.txt"
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           exit 0
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Preserve complete unfiltered raw including historical RED
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -84,7 +102,7 @@ jobs:
         run: |
           set -eu
           e="$RUNNER_TEMP/v13-run14m-fullsuite"
-          for stage in PINS VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK COMPILE PRIVACY DIFF; do
+          for stage in PINS VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK ARTIFACT COMPILE PRIVACY DIFF; do
             echo "$stage $(cat "$e/${stage}_EXIT.txt")"
             test "$(cat "$e/${stage}_EXIT.txt")" = 0
           done
