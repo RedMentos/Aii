@@ -257,12 +257,14 @@ def fresh_turn(base_home, base_cfg, fixture, arm, index, out):
         record['postclose_releases'] = postclose
         record['native_c2_process_reaped'] = bool(needle_proc is not None and needle_proc.poll() is not None)
         record['native_c2_pid'] = needle_proc.pid if needle_proc is not None else None
+        record['native_c2_alive_before_close'] = record.pop('_native_alive_before_close')
+        record['native_c2_source_exact_before_close'] = record.pop('_source_exact_before_close')
         flags = row_evidence(record['raw_audit'], arm, record['preclose_releases'], postclose,
                              native_context=record['context_packet'],
-                             native_alive=record.pop('_native_alive_before_close'),
+                             native_alive=record['native_c2_alive_before_close'],
                              native_reaped=record['native_c2_process_reaped'],
                              native_pid=record['native_c2_pid'],
-                             source_exact=record.pop('_source_exact_before_close'),
+                             source_exact=record['native_c2_source_exact_before_close'],
                              session=record['session_id'], event_id=record['event_id'],
                              source_text=text)
         record['flags'] = flags
