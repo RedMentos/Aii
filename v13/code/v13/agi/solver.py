@@ -113,15 +113,23 @@ def make_solver(runtime,name='v13'):
     if not roles:return None
     s.roles=tuple(roles);return s
 
-def run(growth,runtime,name='v13',label='manual',cancel=None,deadline=None):
+def run(growth,runtime,name='v13',label='manual',cancel=None,deadline=None,lang='en'):
+    if lang not in ('en','de'):raise ValueError('AG12_LANGUAGE_EN_OR_DE_REQUIRED')
     solver=make_solver(runtime,name)
-    if solver is None:return {'status':'NO_SOLVER','solver':name}
-    out=growth.eval.run(solver,label=label,cancel=cancel,deadline=deadline,solver_name=name,include_results=True)
-    _feed_metacog(growth,name,out)
-    return {'status':out['status'],'solver':name,'roles':list(solver.roles),'overall':out['summary']['overall'],
+    if solver is None:return {'status':'NO_SOLVER','solver':name,'lang':lang}
+    # A German suite is registered only for an explicit evaluation with a
+    # real installed solver. English keeps its original persistent instance.
+    if lang=='de':
+        from .generality import GeneralityEval
+        evaluation=GeneralityEval(growth.s,growth.home,seed=growth.eval.suite['seed'],lang='de')
+    else:
+        evaluation=growth.eval
+    out=evaluation.run(solver,label=label,cancel=cancel,deadline=deadline,solver_name=name,include_results=True)
+    _feed_metacog(growth,name,out,evaluation=evaluation)
+    return {'status':out['status'],'solver':name,'lang':lang,'roles':list(solver.roles),'overall':out['summary']['overall'],
             'unseen':out['summary']['unseen'],'ece':out['summary']['calibration']['ece'],'stats':solver.stats}
 
-def _feed_metacog(growth,name,run_):
+def _feed_metacog(growth,name,run_,evaluation=None):
     """AG9 receives only validated rows from the exact completed AG12 run in memory.
 
     No export-file reread: that file may be stale, overwritten, or tampered.
@@ -129,7 +137,7 @@ def _feed_metacog(growth,name,run_):
     """
     if run_.get('status')!='DONE' or growth.home is None:return
     try:
-        suite=growth.eval.suite
+        suite=(evaluation if evaluation is not None else growth.eval).suite
         rows=run_.get('_results')
         items=suite['items']
         if (run_.get('suite_hash')!=suite['hash'] or run_.get('items')!=len(items)
