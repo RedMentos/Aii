@@ -1,0 +1,47 @@
+{
+  "schema": "V13_RUN12D_INDEPENDENT_ORIGINAL_ZIP_AUDIT_SOFTWARE_GREEN_NO_NATIVE_CLAIM",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12d-bjepa-native-raw-auditor-20261030-hourly11",
+  "pr": 1261,
+  "parent_pr": 1260,
+  "parent_head": "61d4b05d080296962e72e4501c933993545d4ce1",
+  "source_blobs": {
+    "auditor": "904e6a2b21c1bc4f9e1e61178adcdc78bd84fc08",
+    "tests": "8dc82984329bac7db14176bd20fca21e758e7518",
+    "frozen_runner": "15597550100de6ca546b1b024fbc6597fc600839",
+    "frozen_canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "run_id": 41047068994,
+    "tested_head": "94dc1c15be7b4b6319399ff3c1bdc581a87ce25f",
+    "status": "GREEN",
+    "tests": "15/15 PASS",
+    "stages": "5/5 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12972852317,
+    "zip_sha256": "71e4d7e5ea3591857d0e3134dd86d7e97b3961760cd1b863ed5f52b668619d56",
+    "zip_bytes": 3590,
+    "crc": "PASS",
+    "inner_sha256": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12D-BJEPA-Raw-Audit/SOFTWARE_GREEN_41047068994_sha71E4D7E5.zip",
+    "backup_byte_exact": true
+  },
+  "native": {
+    "run_id": 41046804934,
+    "launch_head": "35c163f19f3ccdc1e8ebed1df5821c679d96a13a",
+    "status": "IN_PROGRESS_AT_CHECKPOINT",
+    "verified": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "known_gap": "Raw auditor checks NLL row counts and means but not exact preregistered question/answer identity; add fixture binding before native report acceptance.",
+  "next_command": "Add byte-exact Run12B prereg fixture question/answer checks and a tamper test to auditor only, run source-only CI, preserve raw/private backup. Then audit terminal original Run12C native ZIP with exact SHA and launch HEAD. Continue other Canon organs if native pending."
+}
