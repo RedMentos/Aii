@@ -1,0 +1,222 @@
+{
+  "schema": "v13.listarith.de_shadow.v2.seed73.holdout.v1",
+  "seed": 73,
+  "rows": [
+    {
+      "id": "T01",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Bitte bilde die Summe aller Positionen."
+    },
+    {
+      "id": "T02",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Was ist der Endbetrag, wenn wir alles addieren?"
+    },
+    {
+      "id": "T03",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Zähle die Beträge zusammen."
+    },
+    {
+      "id": "T04",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Wie lautet das Resultat von 17 + 29 + 8?"
+    },
+    {
+      "id": "T05",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Errechne die Gesamtkosten aller Posten."
+    },
+    {
+      "id": "T06",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Addiere jeden einzelnen Preis."
+    },
+    {
+      "id": "T07",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Bitte summiere alle drei Zahlen."
+    },
+    {
+      "id": "T08",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Was ergibt sich beim Zusammenzählen?"
+    },
+    {
+      "id": "T09",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Was ist die Summe aus allen Einträgen?"
+    },
+    {
+      "id": "T10",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Wie viel Geld ergeben alle Ausgaben zusammen?"
+    },
+    {
+      "id": "T11",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Berechne den addierten Gesamtpreis."
+    },
+    {
+      "id": "T12",
+      "expected": "total",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Kannst du die Summe der Werte ausrechnen?"
+    },
+    {
+      "id": "D01",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Wie viel beträgt die Differenz von größtem und kleinstem Wert?"
+    },
+    {
+      "id": "D02",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Was bleibt, wenn du das Minimum vom Maximum abziehst?"
+    },
+    {
+      "id": "D03",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Finde die Spannweite der drei Beträge."
+    },
+    {
+      "id": "D04",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Wie weit ist der teuerste vom günstigsten Posten entfernt?"
+    },
+    {
+      "id": "D05",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Ziehe den niedrigsten Betrag vom höchsten ab."
+    },
+    {
+      "id": "D06",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Was ergibt max minus min?"
+    },
+    {
+      "id": "D07",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Errechne den Abstand vom größten zum kleinsten Preis."
+    },
+    {
+      "id": "D08",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Subtrahiere den kleinsten vom größten Wert."
+    },
+    {
+      "id": "D09",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Wie viel mehr kostet das teuerste gegenüber dem billigsten?"
+    },
+    {
+      "id": "D10",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Was ist die Differenz zwischen höchstem und niedrigstem Wert?"
+    },
+    {
+      "id": "D11",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Ermittle den Unterschied zwischen Minimum und Maximum."
+    },
+    {
+      "id": "D12",
+      "expected": "difference_max_min",
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Wie groß ist der Abstand zwischen Spitzenwert und Tiefstwert?"
+    },
+    {
+      "id": "N01",
+      "expected": null,
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Bitte summiere diese Werte ausdrücklich nicht."
+    },
+    {
+      "id": "N02",
+      "expected": null,
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Kannst du mir sagen, ob die Gesamtsumme richtig ist?"
+    },
+    {
+      "id": "N03",
+      "expected": null,
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Wie viele Einträge sind vorhanden?"
+    },
+    {
+      "id": "N04",
+      "expected": null,
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Was ist der Durchschnitt der Beträge?"
+    },
+    {
+      "id": "N05",
+      "expected": null,
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Welcher Betrag ist der höchste?"
+    },
+    {
+      "id": "N06",
+      "expected": null,
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Welche der beiden Positionen A und B ist teurer?"
+    },
+    {
+      "id": "N07",
+      "expected": null,
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Die Summe steht bereits da, oder?"
+    },
+    {
+      "id": "N08",
+      "expected": null,
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Warum stimmt der Gesamtbetrag nicht?"
+    },
+    {
+      "id": "N09",
+      "expected": null,
+      "split": "holdout",
+      "text": "Liste: 17 für A, 29 für B, 8 für C. Ohne etwas zu addieren: Welche Kategorie ist alphabetisch zuerst?"
+    },
+    {
+      "id": "N10",
+      "expected": null,
+      "split": "holdout",
+      "text": "Preise: A 17 Euro, B 29 Euro, C 8 Euro. Was ist die Differenz zwischen A und B?"
+    },
+    {
+      "id": "N11",
+      "expected": null,
+      "split": "holdout",
+      "text": "Messwerte: A=17; B=29; C=8. Wie lautet der Median?"
+    },
+    {
+      "id": "N12",
+      "expected": null,
+      "split": "holdout",
+      "text": "Notiz: Der Posten A hat 17, B hat 29, C hat 8. Prüfe, ob die Addition fehlerfrei ist."
+    }
+  ]
+}
