@@ -100,6 +100,8 @@ def verify(folder, fixture):
                     or row.get("system_sha256") != sha(system)
                     or row.get("schema_sha256") != pilot.SCHEMA_SHA256
                     or row.get("schema_applied") is not (arm == "JSON_SCHEMA")
+                    or row.get("c3_sampling") != "legacy"
+                    or row.get("offer_logprobs") is not False
                     or row.get("model_sha256") != pilot.MODEL_SHA
                     or row.get("model_revision") != pilot.MODEL_REVISION
                     or any(type(row.get(name)) is not str or not row[name]
