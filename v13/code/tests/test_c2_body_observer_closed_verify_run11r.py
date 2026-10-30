@@ -54,12 +54,12 @@ def synthetic_all_invalid(directory):
 
 
 
-def inject_valid_synthetic_c3(directory, report):
+def inject_valid_synthetic_c3(directory, report, output=None):
     """One positive *synthetic* replay row; other 23 remain explicit RED."""
     directory = Path(directory)
     fixture = m.FIXTURES[0]
     arm = "A_C3_ONLY"
-    output = "Cedar: 149 Euro remaining. Garnet: 41 Euro remaining."
+    output = output or "Cedar: 149 Euro remaining. Garnet: 41 Euro remaining."
     audit = {
         "event_id": "synthetic-event", "output": output,
         "checks": {"source_refs_valid": True}, "source_errors": [],
@@ -194,6 +194,20 @@ class VerifyRun11R(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "NATIVE_FLAGS_REPLAY_MISMATCH"):
                 v.verify_report(d)
 
+
+
+    def test_equation_tuple_json_list_roundtrip_replays(self):
+        with tempfile.TemporaryDirectory() as d:
+            report = synthetic_all_invalid(d)
+            output = ("Cedar: 368 - 219 = 149 Euro remaining. "
+                      "Garnet: 368 - 327 = 41 Euro remaining.")
+            raw = inject_valid_synthetic_c3(d, report, output=output)
+            equations = raw["secondary_score"]["equation"]["a"]["equations"]
+            self.assertTrue(equations)
+            self.assertIsInstance(equations[0], tuple)  # pre-wire scorer
+            verdict = v.verify_report(d)  # JSON stores lists, not tuples
+            self.assertEqual(verdict["status"], "PILOT_PARTIAL_RED")
+            self.assertFalse(verdict["utility_gate_pass"])
 
     def test_missing_preclose_witness_rejected(self):
         with tempfile.TemporaryDirectory() as d:
