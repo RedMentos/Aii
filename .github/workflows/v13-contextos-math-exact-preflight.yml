@@ -28,7 +28,7 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
-          0d3a474487ecfa21176507dc9e47e3338a5bb5cf v13/code/v13/context_os.py
+          ec5370b6eafc23a66e3e26d0f9b403d0ec24df3b v13/code/v13/context_os.py
           33356c48925b4dbf5f5fcc477ca5d58660688489 v13/code/tests/test_context_os_math_exact_20261030.py
           054ee37eda080a8686235c528fa8cce11cf5d5bd v13/code/docs/CONTEXT_OS_MATH_EXACT_GUARD_PREREG_20261030.md
           22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
