@@ -31,7 +31,8 @@ def _t8_source_object(raw):
     if type(obj) is not dict:raise ValueError('T8 source object required')
     return obj
 
-KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v3'  # v1 leaked heldout support; v2 accepted provisional C5 predictions; refit required
+KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v3'
+SOURCE_ADMISSION='T8_JSON_UNIQUE_KEYS_V1'  # v1 leaked heldout support; v2 accepted provisional C5 predictions; refit required
 ACTIONS=('simple','detail','gist','both')
 TARGETS=('log_duration','success','log_chars')
 RIDGE=1e-2;ENSEMBLE=5;MIN_FIT=8;MAX_ROWS=2048
@@ -126,7 +127,7 @@ def _split(n):
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
-    st={'revision':REVISION,'fitted':now(),'n':n,'counts':{a:sum(t['a']==a for t in T) for a in ACTIONS},'status':'TOO_FEW_TRANSITIONS'}
+    st={'revision':REVISION,'source_admission':SOURCE_ADMISSION,'fitted':now(),'n':n,'counts':{a:sum(t['a']==a for t in T) for a in ACTIONS},'status':'TOO_FEW_TRANSITIONS'}
     if n<MIN_FIT:store.set_state(KEY,st);return st
     S=np.array([t['s'] for t in T]);A=np.array([onehot(t['a']) for t in T]);Y=np.array([t['y'] for t in T])
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
@@ -161,7 +162,7 @@ def fit(store,rng_seed=0):
 
 def load(store):
     st=store.state(KEY,None)[0]
-    return st if st and st.get('revision')==REVISION else None
+    return st if st and st.get('revision')==REVISION and st.get('source_admission')==SOURCE_ADMISSION else None
 
 def coverage(st,s,a):
     if not _finite_vector(s,4):return {'samples':0,'ood_distance':None,'in_support':False,'invalid':True}
@@ -187,7 +188,7 @@ def counterfactual(store,s,a,st=None):
     """Predicted consequence of action a in state s; invalid evidence cannot create confidence."""
     st=st or load(store)
     if a not in ACTIONS:raise ValueError('Aktion '+'|'.join(ACTIONS))
-    if not st or st.get('revision')!=REVISION or st.get('status')!='FITTED':
+    if not st or st.get('revision')!=REVISION or st.get('source_admission')!=SOURCE_ADMISSION or st.get('status')!='FITTED':
         return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_WORLD_MODEL','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     if not _finite_vector(s,4) or st.get('support_scope')!='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED':
         return _invalid_numeric(a)
