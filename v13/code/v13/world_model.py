@@ -18,6 +18,18 @@ import json
 import math
 import numpy as np
 from .common import now
+from .world import _unique_world_object
+
+def _t8_source_object(raw):
+    """Reject duplicate JSON keys without changing legacy optional-latent admission.
+
+    Authoritative numeric forecast/outcome fields are checked by T8 below.
+    An invalid optional latent may still be ignored while the observed
+    action transition is retained, as required by existing T8 regressions.
+    """
+    obj=json.loads(raw,object_pairs_hook=_unique_world_object)
+    if type(obj) is not dict:raise ValueError('T8 source object required')
+    return obj
 
 KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v3'  # v1 leaked heldout support; v2 accepted provisional C5 predictions; refit required
 ACTIONS=('simple','detail','gist','both')
@@ -56,7 +68,7 @@ def transitions(store,limit=MAX_ROWS):
     out=[]
     for r in rows:
         try:
-            exp=json.loads(r['expected']);act=json.loads(r['outcome'])
+            exp=_t8_source_object(r['expected']);act=_t8_source_object(r['outcome'])
             if type(exp) is not dict or type(act) is not dict:continue
             fc=exp.get('forecast')
             if type(fc) is not dict:continue
@@ -77,7 +89,7 @@ def transitions(store,limit=MAX_ROWS):
             if len(sel)>=17:continue
             committed=[]
             for candidate in sel:
-                selected=json.loads(candidate['payload'])
+                selected=_t8_source_object(candidate['payload'])
                 if (type(selected) is not dict
                         or selected.get('event_id')!=r['event_id']
                         or selected.get('brain_generation_id')!=r['generation_id']):
@@ -216,7 +228,7 @@ def for_event(store,event_id,a):
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     try:
-        expected=json.loads(row['expected'])
+        expected=_t8_source_object(row['expected'])
         fc=expected.get('forecast') if type(expected) is dict else None
         if (type(fc) is not dict or not _finite_nonnegative(fc.get('input_chars'))
                 or not _finite_nonnegative(row['created'])):
