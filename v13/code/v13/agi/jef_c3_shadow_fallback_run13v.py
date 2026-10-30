@@ -69,8 +69,15 @@ def _source_snapshot_ok(snapshot, plan_id, query_id, source_id):
         return False
 
 
-def _native_receipt_ok(receipt, snapshot):
-    if type(receipt) is not dict:
+def _native_receipt_ok(receipt, snapshot, c3_text):
+    """Bind caller-supplied receipt to exact candidate bytes (not attestation)."""
+    if type(receipt) is not dict or type(c3_text) is not str:
+        return False
+    try:
+        output_bytes = c3_text.encode("utf-8")
+    except UnicodeError:
+        return False
+    if not output_bytes:
         return False
     answer = snapshot["answer"]
     allowed_prompts = {
@@ -79,7 +86,8 @@ def _native_receipt_ok(receipt, snapshot):
     }
     return (receipt.get("native_role") == "C3_LANGUAGE"
             and receipt.get("native_status") == "FINAL"
-            and receipt.get("native_calls") == 1
+            and type(receipt.get("native_calls")) is int
+            and receipt["native_calls"] == 1
             and receipt.get("native_reaped") is True
             and type(receipt.get("native_pid")) is int
             and receipt["native_pid"] > 0
@@ -91,7 +99,11 @@ def _native_receipt_ok(receipt, snapshot):
             and receipt.get("query_event_id") == snapshot["query_event_id"]
             and receipt.get("context_plan_packet_id") == snapshot["context_plan_packet_id"]
             and receipt.get("answer_sha256") == snapshot["answer_sha256"]
-            and receipt.get("prompt_sha256") in allowed_prompts)
+            and receipt.get("prompt_sha256") in allowed_prompts
+            and type(receipt.get("native_output_sha256")) is str
+            and receipt["native_output_sha256"] == hashlib.sha256(output_bytes).hexdigest()
+            and type(receipt.get("native_output_bytes")) is int
+            and receipt["native_output_bytes"] == len(output_bytes))
 
 
 def select_shadow(store, plan_id, query_id, source_id, snapshot,
@@ -106,7 +118,7 @@ def select_shadow(store, plan_id, query_id, source_id, snapshot,
                 or not _source_snapshot_ok(fresh, plan_id, query_id, source_id)):
             return _closed("SOURCE_CHANGED_OR_REVOKED_AT_SELECTION")
         answer = fresh["answer"]
-        receipt_ok = _native_receipt_ok(native_receipt, fresh)
+        receipt_ok = _native_receipt_ok(native_receipt, fresh, c3_text)
         if not receipt_ok:
             return _closed("NATIVE_RECEIPT_UNBOUND_JEF_FALLBACK",
                            text=answer, provenance="JEF_VERIFIED_FALLBACK_SHADOW",
