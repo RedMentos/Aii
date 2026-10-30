@@ -1,0 +1,16 @@
+# JEF report decision-lineage binding — verified RED → GREEN, 2026-10-30
+
+Owner GPT-6. Review-only child of current-chain PR #1237 at `0b6fb758828c2834a45c9879191a7854ac96060f`. Preregistration committed **before** test/source as `0591e101c67b326f11a56efea6bca355b27bd0d3`; test-only commit `8162b99211c5f0f63298a966fd9aef7e94b9b83e`. Scope: `v13/jefoutcome.py` report read model only, one new adversarial real-Store test file and dedicated isolated CI. No registered source/model/seed/cohort, Canon, training, Age0 or live authority changes.
+
+## Original RED (preserved)
+GitHub Actions **41027588342**, exact tested HEAD `5e208e0c6e7e22c2904e5636e2debd7ecabdd60a`, artifact **12964203312**, original ZIP SHA256 **`5cd8dafa13d2c08fe833a10d94d588cc3654728005a53c48d41791de912c1e24`**, CRC clean, **13/13 inner SHA256SUMS**. 36 tests in 1.654s: **5 genuine failures** (all preregistered tampered label/decision mismatches), other 31 PASS. VENV/DEPS/COMPILE/PRIVACY/DIFF all exit0, TEST exit1. In particular, substituting event B's valid ExecutiveDecision for event A's retained self-label caused false `human_overlap=1` despite the original self label belonging to A.
+
+## Candidate and verified GREEN
+Minimal source commit `6d74134b2b15e5cff975d84c02025a93bc9ac23a`, `jefoutcome.py` blob `b95ceed1f1c55af8f9a20432591f6f5cf6ade42d`. Report now requires exact stored decision packet ID, event ID, component, context revision, context SHA256 and baseline to match the retained self-label **before** validating a human receipt. This mirrors the already enforced training-row lineage check. Historical labels/live source counts remain visible and unchanged.
+
+GitHub Actions **41027700881**, exact tested HEAD `6d74134b2b15e5cff975d84c02025a93bc9ac23a`, artifact **12963724616**, ZIP SHA256 **`5eda41ad7bdcc5299f6fde6fff1102644dfdcc044232615ce0a477bfd7107d45`**, CRC clean, **13/13 inner SHA256SUMS**, **36/36 tests PASS** in 1.696s, all six VENV/DEPS/TEST/COMPILE/PRIVACY/DIFF exit0; privacy CLEAN. Both original RED and GREEN ZIPs privately uploaded to `/V13-Checkpoints/2026-10-30/Run11H-JEF-Report-Lineage/` and independently materialized back with byte-exact SHA256 comparison. Remote GitHub source blob and commit verified.
+
+## Claim limits / handoff
+This is a **software/synthetic real-Store report-integrity** fix, not a learned JEF improvement or native/Redmi test. The full unfiltered current-chain suite remains **RED** (two frozen Run34/Run37 source-pin errors) as independently recorded by #1237; it was not rerun here. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight 0; Redmi UNMEASURED; V13 INCOMPLETE. No merge to main.
+
+**Next command:** `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jef_report_decision_binding_run11h tests.test_jef_report_self_source_run11 tests.test_jef_human_receipt_integrity_20261030 tests.test_jef_human_report_receipt_integrity_20261030 tests.test_jefoutcome_self_source_20261030 tests.test_jefoutcome_report_source_20261030 tests.test_jefoutcome`. Current owner GPT-6, JEF package closed; continue independent ContextOS exact-literal scope from this verified child, then cross-organ regression and review. Do not promote any negative gate.
