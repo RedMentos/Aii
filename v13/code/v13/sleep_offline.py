@@ -128,15 +128,27 @@ def stage_ttt(store,home,checkpoint=None):
     extractive compression before reusing a persisted digest entry. This is a
     staging-time check, NOT authorization to train a later stale export.
     """
+    # Reuse the read-only AG12 registry; never register a new eval suite merely
+    # because Sleep is staging data. A damaged historical exclusion vetoes
+    # staging before the candidate export is touched.
+    from .agi.generality import registered_holdout_digests,normalize
+    from .common import digest as hash_digest
+    hold=registered_holdout_digests(store)
+    admissible=lambda text: hash_digest(normalize(text)) not in hold
     st=_load(store)[0];path=home/'exports/sleep-ttt-candidates.jsonl';rows=[]
     for sess,d in st['sessions'].items():
         checked=_checked_digest_entries(store,sess,d.get('entries'))
         for i,entry in enumerate(checked[1:],1):
             if checkpoint and i%16==0:checkpoint()
             if entry is None:continue
-            prior=[x[0] for x in checked[max(0,i-4):i] if x is not None]
+            # The original full source messages, not shortened digest snippets,
+            # determine whether a context item is an AG12 unseen holdout.
+            prior=[x[0] for x in checked[max(0,i-4):i]
+                   if x is not None and admissible(x[1]['text']) and admissible(x[2]['text'])]
             if not prior:continue  # a context-conditioned example needs valid earlier context
             e,u,a=entry
+            if not admissible(u['text']) or not admissible(a['text']):
+                continue
             try:
                 if not json.loads(a['metadata']).get('model_generated'):continue
             except (TypeError,ValueError):continue
