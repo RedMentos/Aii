@@ -1,0 +1,49 @@
+{
+  "schema": "v13.run14b.ag12_solver_confidence.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; isolated AG12 generality.py only",
+  "parent": {
+    "pr": 1317,
+    "commit": "7e7d57e1db88642f4fcd447eda2c012c1e625bfb"
+  },
+  "branch": "assistant/v13-run14b-ag12-nonfinite-eval-20261030-hourly11",
+  "pr": 1319,
+  "state": "SOURCE_REMOTE_VERIFIED_TEST_FIRST_AND_CANDIDATE_CI_QUEUED",
+  "prereg_commit": "6f4796d07a58e456b393e447ad7aeec54b6b649f",
+  "test_first_commit": "f5411d3fba7b58dba2e02113643f72389ddc5d73",
+  "test_first_workflow_commit": "235534658a2ab7f36471b65a897e7bb9e5bf960e",
+  "candidate_commit": "5c8bfc98d5ed9ea67773f84d42f2241f2a4c6619",
+  "blobs": {
+    "original_module": "dec1b1555750cf19685a88ba89e09270acc8b868",
+    "candidate_module": "6f7906c9b9352b9d4ffe9cf9f237fba684942308",
+    "test": "ad1b97ef3ce9e136fd78e4795544d9985697fb39",
+    "candidate_workflow": "0ec286e7ceb32f1a064708ac0c7abf7350cdd48e",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "red_run": 41104149055,
+    "green_run": 41104211814,
+    "observed_status": "QUEUED_OR_IN_PROGRESS",
+    "red_result": "UNKNOWN",
+    "green_result": "UNKNOWN",
+    "raw_artifact_sha256": null
+  },
+  "change": "AG12 direct/batch solver confidence must be finite nonboolean before existing clamp/scorer; invalid rows follow existing solver error path and count wrong. No scorer/cohort changes.",
+  "tests": "4 new preregistered tests plus existing G12Eval focused tests, pending exact GitHub CI",
+  "evidence_scope": "SOFTWARE_SOURCE_ONLY_PENDING",
+  "open_questions": [
+    "Verify test-first RED and candidate GREEN original Actions ZIPs, CRC/SHA256SUMS, exact stage exits and privacy.",
+    "Run independent cross-organ full-suite and regression review without historical RED waivers.",
+    "No private raw backup until terminal artifacts; source checkpoint is remote-verified."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Poll Actions 41104149055 and 41104211814; verify exact raw artifacts, privately byte-back up, fix candidate if needed; continue next independent canonical package."
+}
