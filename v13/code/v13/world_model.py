@@ -14,10 +14,10 @@ Coverage (§7.2.2) per query: samples for that action, OOD distance of s to that
 their median nearest-neighbour distance), ensemble spread, cause tag SELF_CAUSED (all digital actions are own),
 and counterfactual confidence in [0,1]. Low coverage -> label SIMULATION_UNCERTAIN; a counterfactual is never REAL.
 """
-import json
 import math
 import numpy as np
 from .common import now
+from .world import _strict_json_object
 
 KEY='T8_WORLD_MODEL';REVISION='t8-world-model-v3'  # v1 leaked heldout support; v2 accepted provisional C5 predictions; refit required
 ACTIONS=('simple','detail','gist','both')
@@ -56,7 +56,7 @@ def transitions(store,limit=MAX_ROWS):
     out=[]
     for r in rows:
         try:
-            exp=json.loads(r['expected']);act=json.loads(r['outcome'])
+            exp=_strict_json_object(r['expected']);act=_strict_json_object(r['outcome'])
             if type(exp) is not dict or type(act) is not dict:continue
             fc=exp.get('forecast')
             if type(fc) is not dict:continue
@@ -77,7 +77,7 @@ def transitions(store,limit=MAX_ROWS):
             if len(sel)>=17:continue
             committed=[]
             for candidate in sel:
-                selected=json.loads(candidate['payload'])
+                selected=_strict_json_object(candidate['payload'])
                 if (type(selected) is not dict
                         or selected.get('event_id')!=r['event_id']
                         or selected.get('brain_generation_id')!=r['generation_id']):
@@ -216,7 +216,7 @@ def for_event(store,event_id,a):
     row=store.one("SELECT expected,created FROM actions WHERE event_id=? AND expected LIKE ? ORDER BY created DESC LIMIT 1",(event_id,'%"forecast"%'))
     if not row:return {'action':a,'prediction':None,'confidence':0.,'label':'SIMULATION_UNCERTAIN','reason':'NO_OBSERVED_STATE','cause':'SELF_CAUSED','authority':'HYPOTHESIS'}
     try:
-        expected=json.loads(row['expected'])
+        expected=_strict_json_object(row['expected'])
         fc=expected.get('forecast') if type(expected) is dict else None
         if (type(fc) is not dict or not _finite_nonnegative(fc.get('input_chars'))
                 or not _finite_nonnegative(row['created'])):
