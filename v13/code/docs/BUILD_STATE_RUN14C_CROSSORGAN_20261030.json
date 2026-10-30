@@ -24,7 +24,7 @@
   ],
   "branch": "assistant/v13-run14c-ag9-ag12-crossorgan-review-20261030-hourly11",
   "pr": 1320,
-  "state": "EXPLICIT_TWO_PARENT_MERGE_REMOTE_VERIFIED_FULLSUITE_CI_QUEUED",
+  "state": "FOCUSED_23_GREEN_UNFILTERED_RED_ONE_MISSING_ORIGINAL_ZIP_PREREQUISITE",
   "prereg_commit": "2bae118d95f369b8b129b147f3ea0c72fd08ca98",
   "merge_commit": "22abfc9320bc3e4389f7cf778218a06704641cf0",
   "merge_parents": [
@@ -34,10 +34,37 @@
   "workflow_commit": "730d335c40ee61fc47dd4d3ae1856a74a846f427",
   "ci": {
     "run_id": 41104878974,
-    "status": "QUEUED",
-    "focused": "UNKNOWN",
-    "unfiltered": "UNKNOWN",
-    "raw_sha256": null
+    "status": "completed/failure",
+    "focused": "completed/success",
+    "focused_tests": 23,
+    "focused_zip_sha256": "b45b6bcaabcf708a56b599d763d799d47f3e44170a91be7a3acb5b65f0df410b",
+    "focused_inner_sha256": "12/12 PASS",
+    "unfiltered": "completed/failure",
+    "unfiltered_tests": 4090,
+    "unfiltered_failures": 4,
+    "unfiltered_errors": 66,
+    "unfiltered_skips": 16,
+    "unfiltered_zip_sha256": "3936a9a32e95f5e954a19e6f16b79f2c879d30dece7e93e3b4fe07cbf550f4cc",
+    "unfiltered_inner_sha256": "30/30 PASS",
+    "unfiltered_crc": "PASS",
+    "unfiltered_stage_exits": {
+      "CANON": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TORCH": 0,
+      "TRANSFORMERS": 0,
+      "PEFT": 0,
+      "PIP_CHECK": 0,
+      "TORCH_IMPORT": 0,
+      "TRANSFORMERS_IMPORT": 0,
+      "PEFT_IMPORT": 0,
+      "FULL": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14C-CrossOrgan/",
+    "private_readback": "BYTE_IDENTICAL_SHA256"
   },
   "baseline": {
     "run_id": 41088780210,
@@ -51,11 +78,11 @@
     "unique_failure_identities": 86,
     "status": "HISTORICAL_RED"
   },
-  "evidence_scope": "SOFTWARE_GITHUB_ACTIONS_PENDING",
+  "evidence_scope": "EXACT_GITHUB_ACTIONS_SOFTWARE_FOCUSED_GREEN_FULLSUITE_RED_VERIFIED",
   "open_questions": [
-    "Wait for 41104878974 focused and unfiltered jobs; inspect exact original raw and compare failure identities, not only counts.",
-    "No native/model/Redmi proof; full-suite may preserve 120 historical RED identities; no waiver.",
-    "No main/production merge, no user approval/age gate promotion."
+    "Supply exact original Run13T native ZIP SHA256 86f728... via authorized read-only Actions artifact 12996917793; Run14E is queued.",
+    "Original 120 historical failures remain; no waiver or promotion.",
+    "No model/native/Redmi evidence or production merge."
   ],
   "gates": {
     "learning_mode": "RECORD_ONLY",
@@ -66,5 +93,23 @@
     "redmi_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Fetch Actions 41104878974 jobs/artifacts when terminal; verify ZIP CRC/inner hashes/stage exits; compare unfiltered failure identities against original Run13N artifact 12994050614; privately byte-backup and checkpoint, then select next substantive canonical package."
+  "next_command": "Continue Run14E Actions 41106043575; verify exact original artifact fetch SHA/CRC/39 inner and fullsuite failure identity comparison; private backup. If fetch fails, record exact prerequisite and continue independent work.",
+  "comparison": {
+    "status": "RED_CHANGED_IDENTITIES",
+    "baseline_identities": 120,
+    "baseline_unique": 86,
+    "candidate_identities": 121,
+    "candidate_unique": 87,
+    "added": [
+      {
+        "kind": "ERROR",
+        "identity": "setUpClass (test_run13x_original_native_receipt_replay.OriginalNativeReceiptReplay)",
+        "reason": "RUN13X_REQUIRES_EXACT_ORIGINAL_NATIVE_ZIP"
+      }
+    ],
+    "removed": [],
+    "other_historical_identities_unchanged": true,
+    "software_suite_gate_pass": false,
+    "comparison_json_sha256": "bf9bc33ff587189940f5daa7db06eb3b6ffddb55201f921e89b706f519286693"
+  }
 }
