@@ -34,6 +34,18 @@ class Run24PinnedNativePreflight(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "PINNED_PUBLIC_ARTIFACT"):
                         pilot._pinned_catalog()
 
+    def test_nonofficial_model_or_runner_host_is_vetoed(self):
+        specs, _, _ = pilot._pinned_catalog()
+        for which in ("model", "runner"):
+            modified = copy.deepcopy(specs)
+            if which == "model":
+                modified["models"]["language"]["files"][0]["url"] = "https://example.org/fake.gguf"
+            else:
+                modified["runner"]["linux_binaries"]["linux-x86_64"]["url"] = "http://github.com/unsafe"
+            with patch.object(pilot, "catalog", return_value=modified):
+                with self.assertRaisesRegex(ValueError, "OFFICIAL_SOURCE_URL"):
+                    pilot._pinned_catalog()
+
     def test_nonfresh_paths_refused_before_download_or_state(self):
         with tempfile.TemporaryDirectory() as td:
             home = Path(td) / "existing"
