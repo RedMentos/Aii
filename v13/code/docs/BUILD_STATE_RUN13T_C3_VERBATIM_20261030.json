@@ -55,9 +55,41 @@
     }
   },
   "native": {
-    "status": "AUTHORIZED_NOT_LAUNCHED",
-    "prerequisites": "Amended preflight 18/18 GREEN, no active heavy owner",
-    "workflow_path": ".github/workflows/v13-run13t-c3-verbatim-native.yml"
+    "status": "STRUCTURAL_GREEN_DIAGNOSTIC_HURT",
+    "run_id": 41097658020,
+    "tested_head": "d9d0b312168000283e84109ec3e7951304e6520b",
+    "original_artifact_id": 12996917793,
+    "original_zip_sha256": "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c",
+    "crc": "PASS",
+    "inner_hashes": "39/39",
+    "stage_exits": "10/10",
+    "tests": "18/18",
+    "privacy": "CLEAN",
+    "native_calls": "16/16",
+    "native_final": "16/16",
+    "process_reaped": "16/16",
+    "independent_native_verifier": "PASS",
+    "diagnostic": "FIDELITY_HURT",
+    "totals": {
+      "COPY_BASELINE": {
+        "exact_copy": 0,
+        "strict_full": 6,
+        "source_facts_verified": 3,
+        "numeric_correct": 12,
+        "faster_correct": 8,
+        "wrong_claims": 0
+      },
+      "COPY_STRICT": {
+        "exact_copy": 0,
+        "strict_full": 4,
+        "source_facts_verified": 0,
+        "numeric_correct": 12,
+        "faster_correct": 7,
+        "wrong_claims": 0
+      }
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13T-C3-Verbatim/run13t-native-original.zip",
+    "private_backup_byte_identical": true
   },
   "negative_gates": {
     "age0": "RECORD_ONLY",
@@ -68,11 +100,22 @@
     "redmi_measured": false,
     "whole_system_complete": false
   },
-  "next_command": "Create only the pinned .github/workflows/v13-run13t-c3-verbatim-native.yml on this review branch; this triggers one serialized Linux-native 16-call C3 run. Then inspect terminal run, download original ZIP, verify SHA/CRC/inner hashes/10 stage exits/16 raw rows/reaped PIDs/independent replay and private byte-identical backup. Preserve RED and all negative gates.",
+  "next_command": "Commit independent Run13U stdlib raw verifier and synthetic tamper tests on new review-only child of native tested head d9d0b312168000283e84109ec3e7951304e6520b, run original-artifact CI and private backup. Then investigate source-bound deterministic fallback / C3 SHADOW gating without changing frozen native cohort or activating delivery. Retain FIDELITY_HURT and all negative gates.",
   "remaining_platform_budget": "UNKNOWN",
   "amendment": {
     "commit": "376d8e0714d97758601a65b7a70fedebe6b63546",
     "blob": "acce2ae73238298109a156a29608f852b4de3ad7",
     "reason": "Operationalize prereg wrong numeric/faster claims before native"
+  },
+  "independent_readonly_local_replay": {
+    "script": "run13u_independent_c3_raw_audit.py",
+    "status": "FIDELITY_HURT",
+    "manifest_hashes": "39/39",
+    "stage_exits": "10/10",
+    "native_rows": 16,
+    "distinct_pids": 16,
+    "synthetic_tamper_tests": "6/6 PASS",
+    "source_only_no_model": true,
+    "git_checkpoint": "PENDING"
   }
 }
