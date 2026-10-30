@@ -1,0 +1,9 @@
+# Native Body Train Port artifact path containment prereg — 2026-10-30
+
+Owner `assistant/v13-body-train-port-containment-20261030`, independent review-only sibling of native C3 PR #1220, based on verified PR #1219 head `30bcf62f22c70107f920276263df6a7e9f8872de`. File ownership: **only** `v13/code/v13/body_training.py`, a new focused test file and scoped docs/workflow. No native C3 or German code is touched.
+
+Existing `inspect_train_port` checks that declared artifact paths are relative and have no lexical `..`, but `Path.is_file()` and `file_hash()` follow symlinks. A descriptor inside the home can bind model/master/runner/requantizer bytes **outside** the authorized home through an escaping symlink while still returning `PORT_BOUND_PROOF_REQUIRED` (authority remains zero, but provenance/containment is false). The descriptor path itself can also escape through a symlink. This is a fail-closed boundary issue, not proof of any current exploit.
+
+Preregister negative tests before code change: external artifact symlink, external parent-directory symlink, external descriptor symlink, lexical traversal and absolute path, plus positive in-home relative files and in-home symlink to pinned internal target. All rejected external paths must return an explicit non-promoting reason, never `port_bound=true`. Do not reject legitimate in-home symlink aliases if their resolved targets stay within home. Keep missing artifacts and hash mismatches distinguishable. Preserve existing master/inference separation, dtype, requantization, executable, hash, role and zero-authority rules. No training execution.
+
+Acceptance: existing `test_body_training_port` plus new tests, privacy/diff clean, no change to native body-learning availability, no Body-JEPA promotion, no training authority. This is software-only and cannot establish actual native TrainRunnerProof. Checkpoint exact source/tests/hashes/next command before ending.
