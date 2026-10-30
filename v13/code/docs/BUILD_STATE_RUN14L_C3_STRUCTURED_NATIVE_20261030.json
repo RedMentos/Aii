@@ -105,7 +105,16 @@
     "structured_six_slots_exact": "0/8",
     "copy_exact_bytes": "0/8",
     "copy_strict_task_full": "7/8",
-    "note": "Structured native responses typically fenced JSON with VERIFIED_FACTS arrays and wrong schema. Two arms differ in system and user prompts, only combined protocol contrast is identified."
+    "note": "Structured native responses typically fenced JSON with VERIFIED_FACTS arrays and wrong schema. Two arms differ in system and user prompts, only combined protocol contrast is identified.",
+    "structured_reasons": {
+      "C3_STRUCTURED_SOURCE_OR_JSON_RED": 8
+    },
+    "structured_fenced_markdown": "8/8",
+    "structured_contains_VERIFIED_FACTS_literal": "8/8",
+    "copy_fidelity_reasons": {
+      "SOURCE_FACTS_VERIFIED": 4,
+      "CANDIDATE_FACT_MISMATCH": 4
+    }
   },
   "limitations": [
     "Eight synthetic cases are not end-to-end task utility or production readiness.",
