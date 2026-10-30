@@ -1,0 +1,13 @@
+# JEF F1/F5 source-exact explanatory operator — prereg 2026-10-30
+
+Parent PR #1197 review-only branch head `d5581223f0caaf40972d619fef5ef6f056dba134`. Existing `jef_f1f5_operator.py` blob `28702e82594655a4ef4e5e018a5ca80c343f73a0`; typed arithmetic blob `f092369bf5f4674191dbd43cd80ed50ed8283475`; Canon `218464b12a2d27d92524c751922fa8e1c3fb0ea7`. Owner V13 hourly continuation; separate review-only child, no original native/STEP2 changes.
+
+## Goal and bounded authority
+Existing `:jefsource` already provides JSON arithmetic metrics under F1/F5 human RECORD lineage but no concise readable explanation. Add an **explicit local TTY-only** `:jefsource explain <Event-ID> <PolicyMemory-ID> <SheetMemory-ID>` variant that renders the two exact signed residuals and eligibility for A/B plus suggested action from verified typed SourceRefs. Do not alter default `:jefsource`, chat output, C3 prompt, source or model pins, learning/age/approval gates, or state. Result remains `SHADOW_NO_AUTHORITY`, `no_live_answer=true`, `authority=0`, no native/model calls.
+
+Only render if both F1/F5 admission checks return `F1F5_SESSION_VERIFIED_SHADOW` and `human_source_lineage_verified=true`, with exact same SourceRef hash list and action. The second check is a bounded mitigation against revocation between first check and rendering; it is **not** an atomic transaction or general authorization proof. Any missing/revoked/superseded/foreign source or shape error must produce no explanation, no source numbers, no live answer. Keep Age0 RECORD_ONLY, idle and local operator origin checks.
+
+## Tests before source change
+Preregistered tests must first fail because `explain` is not accepted, then pass for: exact signed field residuals and correct action from real Store human records; default command byte-equivalent to old semantics; 36 calibration source decisions and negative cases; restart stability; revoked source and tampered blob fail-closed; simulated revocation after first admission check suppresses explanation; invalid IDs, extra arguments, non-TTY, busy and Age0 nonrecord modes rejected; no Store mutations, model calls, weights, STEP2/B3/JEPA gate promotions.
+
+`cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jefsource_explain_optin_20261030 tests.test_jef_f1f5_operator tests.test_jef_source_arithmetic_shadow_20261030`. Save original RED and GREEN raw, SHA256, privacy scan and BUILD_STATE/handoff. Claim limit: software/real Store operator diagnostic only, not native C3 correctness, mobile measurement, JEPA learning or comparative STEP2 utility. All negative gates stay.
