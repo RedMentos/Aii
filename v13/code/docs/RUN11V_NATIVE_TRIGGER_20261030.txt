@@ -1,0 +1,27 @@
+RUN11V_EXPLICIT_NATIVE_TRIGGER_2026-10-30
+owner=GPT-6 Run11V review-only
+parent_source_branch=assistant/v13-run11v-disjoint-c2body-paired181-20261030
+parent_source_head=b8c225d122b970ae199ea36c6d712e9fa8d039f5
+native_workflow_blob=a5bf25933381d3278a410e8e827aa3d46b8d92e5
+prereg_commit=be617e194503ef38e1e225aef23741ae7ff6dc22
+seed=181
+fixture_sha256=ae4799f60316cf51412d228547662de8cb4b6523dedffd5fc02b2862d84477e3
+software_green_run=41039208355
+software_green_head=9306a3c0a90e3453650dc996c5120ec596eb8c88
+software_green_zip_sha256=0a9510ae1cc1cd74af1fea54a387f7c191497f922eda545a80b5dc05d5718eb2
+software_green_tests=55/55
+software_green_privacy=CLEAN
+software_red_runs=41039010262,41039102942
+native_expected=24 Linux-native turns, six arms, 4 new disjoint source tasks
+primary_scorer=frozen Run11R score_pair contradiction-veto
+secondary_scorer=frozen Run11R score_primary strict
+concurrency_group=v13-step2-budget-paired-native-20261030
+active_heavy_owner_at_trigger=none observed in GitHub Actions latest 30
+age0=RECORD_ONLY
+step2=UTILITY_FAIL
+b3=NO_PROMOTION
+body_jepa=UNAVAILABLE
+jepa_weight=0
+redmi=UNMEASURED
+whole_system_complete=false
+next_command=Inspect this native workflow terminal original ZIP, SHA256, CRC, manifest, 24 raw/preclose rows, score and process receipts; preserve any RED, private byte-exact backup, independent posthoc audit if needed. Do not rerun seed163 or promote gates.
