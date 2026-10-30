@@ -5,6 +5,7 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from v13.runtime import Runtime
 from v13.agi import hub, job, operator_command
@@ -26,6 +27,19 @@ class GermanBodyEvalRun23(unittest.TestCase):
         self.r.close()
         self.tmp.cleanup()
 
+    def scheduled(self, args):
+        captured = []
+        def capture(event_type, **kwargs):
+            captured.append((event_type, kwargs))
+            return "synthetic"
+        with patch.object(self.r.sleep.scheduler, "post", side_effect=capture):
+            message = operator_command(self.r, args)
+        self.assertEqual(len(captured), 1)
+        event_type, kwargs = captured[0]
+        self.assertEqual(event_type, "TIMER")
+        return message, {"id": "synthetic", "action": kwargs["action"],
+                         "origin": kwargs["origin"], "payload": kwargs["payload"]}
+
     def fake(self, lang="de", installed=("C3_LANGUAGE",)):
         gold = {i["prompt"]: i["answer"] for i in build_suite(lang=lang)["items"]}
         runner = FakeRunner("C3_LANGUAGE", gold, True, 0.9)
@@ -37,15 +51,12 @@ class GermanBodyEvalRun23(unittest.TestCase):
         runner = self.fake()
         before_events = self.r.store.one("SELECT COUNT(*) n FROM events")["n"]
         self.assertEqual(self.r.store.state(KEY + "_DE", None), (None, 0))
-        message = operator_command(self.r, ["eval", "run", "de", "c3"])
+        message, event = self.scheduled(["eval", "run", "de", "c3"])
         self.assertIn("de", message)
-        events = [x for x in self.r.sleep.scheduler._load()[0]["events"]
-                  if x["action"] == "growth_eval"]
-        self.assertEqual(len(events), 1)
-        self.assertEqual(events[0]["payload"], {"solver": "c3", "lang": "de"})
-        self.assertEqual(events[0]["origin"], "USER")
+        self.assertEqual(event["payload"], {"solver": "c3", "lang": "de"})
+        self.assertEqual(event["origin"], "USER")
         self.assertEqual(self.r.store.state(KEY + "_DE", None), (None, 0))
-        result = job(self.r.sleep, events[0])
+        result = job(self.r.sleep, event)
         self.assertEqual(result["status"], "DONE")
         self.assertEqual(result["lang"], "de")
         self.assertEqual(result["overall"], 1.0)
@@ -68,16 +79,13 @@ class GermanBodyEvalRun23(unittest.TestCase):
 
     def test_legacy_english_payload_and_german_system_origin_veto(self):
         self.fake(lang="en")
-        operator_command(self.r, ["eval", "run", "c3"])
-        events = [x for x in self.r.sleep.scheduler._load()[0]["events"]
-                  if x["action"] == "growth_eval"]
-        self.assertEqual(len(events), 1)
-        self.assertEqual(events[0]["payload"], {"solver": "c3"})
+        _, event = self.scheduled(["eval", "run", "c3"])
+        self.assertEqual(event["payload"], {"solver": "c3"})
         system = {"id": "system-fake", "action": "growth_eval",
                   "origin": "SYSTEM", "payload": {"solver": "c3", "lang": "de"}}
         self.assertEqual(job(self.r.sleep, system)["status"], "USER_REQUIRED")
         self.assertEqual(self.r.store.state(KEY + "_DE", None), (None, 0))
-        self.assertEqual(job(self.r.sleep, events[0])["status"], "DONE")
+        self.assertEqual(job(self.r.sleep, event)["status"], "DONE")
         self.assertEqual(self.r.store.state(KEY + "_DE", None), (None, 0))
 
     def test_no_model_invalid_language_and_cancel_are_explicit(self):
