@@ -1,0 +1,40 @@
+{
+  "package": "RUN13Q_F1F5_SQLITE_CONTAINMENT_CANDIDATE_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13q-f1f5-sqlite-guard-candidate-20261030-auto11",
+  "base": "5d37d8cb25f5cc1dab347c3cea9a64fe08d077c5",
+  "original_blob": "e417c3bb4afa34a226aa116752df8c10d659a113",
+  "candidate_blob": "16590da170358b99b57595c63585f542c924c3ff",
+  "test_blob": "c77a538f479c23e1351e7a151bf98cabe144e676",
+  "workflow": {
+    "run": 41092363549,
+    "head": "166f629a81a684e48851bfb011621dd85348dea4",
+    "status": "SOFTWARE_GREEN_REVIEW_ONLY",
+    "artifact_id": 12994277474,
+    "zip_sha256": "c42db6baf4ab8c9ca738ae812c9bfb7edc2ca930fda8d2a88a3b854cb4de8e47",
+    "crc": "PASS",
+    "inner_hashes": "20/20",
+    "tests": "19/19",
+    "stage_exits": "8/8 zero",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13Q-F1F5-SQLite/run13q-original-41092363549.zip",
+    "private_backup_byte_identical": true
+  },
+  "scope": "Isolated two-line exception containment candidate, frozen Runtime SourceHandoff not integrated",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "SourceHandoff owner approval and original frozen cohort integration remain required.",
+    "Actual production SQLite failure not observed; injection tests only.",
+    "Whole-system C2/C3/B1/B2 and JEPA learning utility remain unproven."
+  ],
+  "next_command": "Independent owner review, then integrate only if SourceHandoff freeze lifted; meanwhile continue canonical cross-organ utility.",
+  "platform_remaining_budget": "UNKNOWN"
+}
