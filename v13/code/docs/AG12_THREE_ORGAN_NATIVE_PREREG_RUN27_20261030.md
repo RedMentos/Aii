@@ -1,0 +1,15 @@
+# Run27 preregistration — real native three-organ BodySolver vote, not live JEF
+
+Owner: GPT-6 scheduled continuation. Review-only child of Run26 #1353 at exact `503f73faab73b1aa780813f605c68362ac7bd7d9`. Binding Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`. This prereg is committed before Run27 implementation and any native run.
+
+## Fixed cohort and measurement
+
+Use existing unchanged `v13/code/v13/agi/solver.py` blob `66a9419143c456f01747b4796fb327b3b36711b3`, existing seed13 `build_suite` 88 German then 88 English items, unchanged JSON answer grammar, seed, sampler and `combine()` confidence-weighted vote. Solver name **v13** with exactly three roles in this order: `B1_DETAIL`, `B2_GIST`, `C3_LANGUAGE`. Public pinned GGUFs (unchanged catalog blob `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`): B1 LiquidAI/LFM2.5-1.2B-Instruct-GGUF `bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1`, B2 ggml-org/Qwen3.5-0.8B-GGUF `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf`, C3 LiquidAI/LFM2.5-350M-GGUF `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`. Exact existing revisions and licenses as catalog. Official pinned llama.cpp b10964 Linux x86_64 tar SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`; verify all model and runner bytes, no fallback or substitution.
+
+On isolated Ubuntu x86_64, fresh home and Store, Age0 RECORD_ONLY, no approved adapters or learning authority. Set the native RunnerPool to exclusive one-process residency for this **measurement only**, not live production behavior. Run the existing `sv.run(..., name='v13', lang='de')` full 88 items, then English full 88, each with a 20-minute per-language deadline; expected 3×88×2 = **528 actual native role-calls**, 176 final voted row results. Record exact role-specific stats/errors, release/reap each worker, closed Store, source and model hashes. No tools, episodic writes, training, or raw prompt/answer export. Save only ID/correct/confidence, summary and bounded native metrics. Retain all failed, partial, timeout or interrupted attempts, and do not replace them with synthetic results.
+
+Do not launch Run27 heavy native while Run25 Actions `41142873467` or another owner has an active native/model job; queue/serialize under shared native group after terminal verification. A Run25 failure does not authorize changing Run27 models, seed, solver or benchmark; diagnose before launch.
+
+## Claim limits
+
+This tests the actual existing **AG12 BodySolver confidence vote**, not the live JEF/ContextOS/Callosum turn, not a full two-hemisphere utility intervention, not STEP2. Comparison against individual native B1/B2/C3 rows is descriptive and only after original ZIP integrity/row alignment verification. It does not establish causal learned German transfer, Body-JEPA or AGI. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, Redmi unmeasured, whole V13 incomplete. No paid provisioning or auto-merge.
