@@ -64,6 +64,14 @@ FR_QUOTE=re.compile(r'«[^»]+»')
 CURLY_SINGLE=re.compile(r"(?<!\w)‘(?:[^’\n]|(?<=\w)’(?=\w)){1,400}’(?!\w)")
 URL=re.compile(r'https?://\S+')
 NUMBER=re.compile(r'(?<![\w.])[-+]?\d[\d.,:/-]*\d(?:%|[a-zA-Z]{0,3})?|(?<![\w.])\d(?:%|[a-zA-Z]{0,3})?(?![\w])')
+SCIENTIFIC=re.compile(r'(?<![\w.])[+-]?(?:\d+(?:\.\d+)?|\.\d+)[eE][+-]?\d+(?!\w)')
+# Preserve arithmetic relationships, not merely the individual operands.
+# ASCII unspaced numeric date/range hyphens remain covered by NUMBER spans.
+MATH_REL=re.compile(
+    r'(?<!\w)(?:\d[\d.,]*|[A-Za-z])\s*'
+    r'(?:<=|>=|==|!=|[=×÷*+−<>≤≥/]|(?<=\s)-(?=\s))'
+    r'\s*(?:[+-]?\d|[A-Za-z])'
+)
 LITERAL=re.compile(r'\b(exact(ly)?|verbatim|literal(ly)?|word for word|quote|exakt|wörtlich|genau so|zitier\w*|wortgleich)\b',re.I)
 CRITIQUE=re.compile(r'\b(source|sources|according to|cite|citation|evidence|proof|quelle\w*|laut|beleg\w*|nachweis\w*)\b',re.I)
 CODEISH=re.compile(r'```|`|\bdef |\bclass |=>|[{};]\s*$|\(\)|\w+\.\w+\(',re.M)
@@ -81,7 +89,7 @@ def empty():
 def exact_spans(text):
     """Spans that must survive any compression verbatim (exact-span pinning, §8.5)."""
     out=[]
-    for rx in (CODE,URL,QUOTE,EN_CURLY,FR_QUOTE,CURLY_SINGLE,SINGLE_QUOTE,NUMBER):
+    for rx in (CODE,URL,QUOTE,EN_CURLY,FR_QUOTE,CURLY_SINGLE,SINGLE_QUOTE,SCIENTIFIC,NUMBER):
         for m in rx.finditer(text):
             s=m.group(0).strip()
             if s and not any(s in o for o in out):out.append(s)
@@ -155,11 +163,19 @@ def _unsafe_typographic_quotes(text):
     return False
 
 
+def _unsafe_math(text):
+    """Keep the full source when extractive spans could sever an equation."""
+    # Code and URLs are already pinned whole; exponent signs are not operators.
+    clean=URL.sub(' ',CODE.sub(' ',SCIENTIFIC.sub('1',text)))
+    return MATH_REL.search(clean) is not None
+
+
 def compress(text,cap):
     """Extractive, deterministic, never invents content. Returns (text, spans, ok). ok=False keeps RAW."""
     spans=exact_spans(text)
     if (_unsafe_backticks(text) or _unsafe_single_quotes(text)
-            or _unsafe_typographic_quotes(text)):return text,spans,False
+            or _unsafe_typographic_quotes(text) or _unsafe_math(text)):
+        return text,spans,False
     # An unmatched quote can span an unknown literal; never silently compress it.
     if text.count('"')%2:return text,spans,False
     if sum(len(s) for s in spans)>SPAN_CHARS or len(spans)>SPAN_MAX:return text,spans,False
