@@ -39,8 +39,8 @@ class JefReportLiveSelfSourceRun11(unittest.TestCase):
         h = self.head()
         self.assertEqual(h["labels"], 1, "historical retained count is audit history")
         self.assertEqual(h["by_value"], {"skip": 1})
-        self.assertEqual(h["live_labels"], 0)
         self.assertEqual(h["human_overlap"], 0)
+        self.assertEqual(h["live_labels"], 0)
         self.assertIsNone(h["human_agreement"])
         self.assertEqual(self.r.pool.pids(), [])
 
