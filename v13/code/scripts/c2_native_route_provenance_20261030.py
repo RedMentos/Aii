@@ -9,6 +9,7 @@ import time
 import traceback
 from pathlib import Path
 
+from v13.common import file_hash
 from v13.config import initialize, save_config
 from v13.models import ModelManager
 from v13.runtime import Runtime
@@ -141,7 +142,8 @@ def run(base_home, out):
         if (cfg["learning_mode"] != "RECORD_ONLY" or cfg["system_stage"] != 0
                 or cfg["latents_enabled"] or cfg.get("jepa_weight", 0) != 0):
             raise ValueError("BASE_NOT_AGE0")
-        verified = ModelManager(base_home).verify(deep=True)
+        manager = ModelManager(base_home)
+        verified = manager.verify(deep=True)
         if (not verified.get("needle", {}).get("ok")
                 or verified["needle"].get("hash_checked") is not True):
             raise ValueError("NEEDLE_NATIVE_PIN_NOT_VERIFIED")
@@ -149,6 +151,14 @@ def run(base_home, out):
             "ok": verified["needle"]["ok"],
             "hash_checked": verified["needle"]["hash_checked"],
         }
+        report["needle_model_sha256"] = file_hash(manager.path_for("C2_CONTROL"))
+        if report["needle_model_sha256"] != (
+                "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"):
+            raise ValueError("NEEDLE_MODEL_SHA_MISMATCH")
+        worker = base_home / "bin/needle-worker"
+        if not worker.is_file():
+            raise ValueError("NATIVE_NEEDLE_WORKER_MISSING")
+        report["needle_worker_sha256"] = file_hash(worker)
         for i, text in enumerate(PROMPTS):
             try:
                 row = _turn(base_home, cfg, text, i, out)
