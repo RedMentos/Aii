@@ -55,6 +55,11 @@ def verify_report(directory):
         f"{i:02d}_{m.ARM_ORDER[i // 6][i % 6]}.json" for i in range(24)
     }
     _require({p.name for p in rawdir.iterdir()} == expected_names, "RAW_FILES_MISMATCH")
+    preclosedir = directory / "preclose"
+    _require(preclosedir.is_dir() and not preclosedir.is_symlink(),
+             "PRECLOSE_DIRECTORY_INVALID")
+    preclose_names = {p.name for p in preclosedir.iterdir()}
+    _require(preclose_names <= expected_names, "PRECLOSE_FILES_UNREGISTERED")
     totals = {a: 0 for a in m.ARMS}
     secondary = {a: 0 for a in m.ARMS}
     invocations = selected = 0
@@ -85,6 +90,12 @@ def verify_report(directory):
             _require(raw.get("error_type") == row.get("error_type"), "ERROR_ROW_DIVERGENCE")
             valid = False
         else:
+            preclose_name = f"{i:02d}_{arm}.json"
+            _require(preclose_name in preclose_names, "PRECLOSE_WITNESS_MISSING")
+            witness = _read_json(preclosedir / preclose_name)
+            _require(type(witness) is dict and all(
+                raw.get(k) == value for k, value in witness.items()),
+                "PRECLOSE_WITNESS_CHANGED")
             _require(raw.get("raw_audit", {}).get("event_id") == row.get("event_id")
                      and raw["raw_audit"].get("output") == row.get("final_output")
                      and raw.get("prompt") == m.prompt(fixture), "SOURCE_OR_EVENT_CHANGED")
