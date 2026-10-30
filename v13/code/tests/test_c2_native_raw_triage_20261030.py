@@ -8,7 +8,7 @@ import unittest
 import zipfile
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import c2_native_raw_triage_20261030 as m
 
 
