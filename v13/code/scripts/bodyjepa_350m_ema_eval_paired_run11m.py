@@ -145,6 +145,17 @@ def verdict(results):
             "mean_deltas": mean, "utility_gate_pass": False}
 
 
+def arm_cfg(seed, arm):
+    if seed not in SEEDS or arm not in ARMS:
+        raise ValueError("Unregistered seed or arm")
+    cfg = dict(CONFIG, seed=seed,
+               jepa_weight=0. if arm == "CE" else .5,
+               jepa_target="shuffled" if arm == "SHUFFLED" else "ema")
+    if arm == "EMA_EVAL":
+        cfg["jepa_target_eval"] = True  # sole experimental toggle
+    return cfg
+
+
 def run(master, out):
     rows = fixture()
     report = {
@@ -168,11 +179,7 @@ def run(master, out):
     for seed in SEEDS:
         per = {}
         for arm in ARMS:
-            cfg = dict(CONFIG, seed=seed,
-                       jepa_weight=0. if arm == "CE" else .5,
-                       jepa_target="shuffled" if arm == "SHUFFLED" else "ema")
-            if arm == "EMA_EVAL":
-                cfg["jepa_target_eval"] = True  # sole experimental toggle
+            cfg = arm_cfg(seed, arm)
             items = [{"memory_id": f"synthetic_{i}", "prompt": q, "target": a}
                      for i, (q, a) in enumerate(rows["train"])]
             tr = ExportFreeTrainer(master, out / "work" / f"{seed}-{arm}",
