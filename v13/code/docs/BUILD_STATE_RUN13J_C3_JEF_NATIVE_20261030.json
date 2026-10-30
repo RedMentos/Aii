@@ -1,0 +1,75 @@
+{
+  "package": "RUN13J_C3_JEF_NATIVE_SEED227_20261030",
+  "owner": "GPT-6",
+  "status": "PREREG_AND_SOURCE_PREFLIGHT_GREEN_NATIVE_NOT_YET_RUN",
+  "branch": "assistant/v13-run13j-c3-jef-native-fidelity-20261030-auto11",
+  "parent_commit": "edb156ea91ad0a3a4052491423e43361eea89902",
+  "preregistered_commit": "43da5fc68593da411f0bc381be2293096fb13b34",
+  "tested_preflight_head": "7b34e79f2c63ad07cc7a5f95602dcc68db10e87a",
+  "fixture": {
+    "seed": 227,
+    "cases": 6,
+    "arms": [
+      "RAW_C3",
+      "JEF_C3"
+    ],
+    "cases_sha256": "d43a65572d85a3f3c1b2ef81d2903c19de880e643887c9bae96f0facbc1b6712",
+    "git_blob": "3820924ada9c45178529aafba4052819da766623"
+  },
+  "c3_model": {
+    "model_id": "LiquidAI/LFM2.5-350M-GGUF",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "gguf_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "spec_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99"
+  },
+  "source_blobs": {
+    "runner": "de5cf4541bb45e2764ea424747dacd08e6f212e0",
+    "verifier": "f27822fbd78e2ae37038df96f5a31ebb04ee11e1",
+    "preflight_test": "802470f7e09f91bae1aec92c5be180a483d935fb",
+    "verifier_test": "c3a13c39593b43296f46235fc591caa612b5b3e7",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "preflight": {
+    "actions_run": 41084216579,
+    "artifact_id": 12991266246,
+    "zip_sha256": "bfab0b3aa608f7f08621c63c36358b3595266c4aa3a8e0a9c641ef41788d3bee",
+    "crc": "PASS",
+    "inner_hashes": "15/15",
+    "tests": "11/11",
+    "stage_exits": {
+      "CANON": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "UPLOADED"
+  },
+  "scope": "New disjoint six-case paired Linux-native C3 prompt-fidelity experiment. No native evidence yet; software fixture/JEF/source verifier only.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "persistence": {
+    "github_review_branch": true,
+    "private_library": "/V13-Checkpoints/2026-10-30/Run13J-C3-Native",
+    "native_original_raw": "PENDING"
+  },
+  "open_questions": [
+    "Will pinned C3 350M produce exact-copy or numeric/faster claims from verified facts? Native not yet run.",
+    "Does bootstrap install pinned public GGUF on Linux runner within resource budget?",
+    "Run13A native full-task and G14 historical unfiltered suite remain RED."
+  ],
+  "next_command": "GitHub Actions v13-run13j-c3-jef-native-20261030.yml on isolated review branch; verify PINS, bootstrap, 12 native calls, independent replay and raw SHA256SUMS.",
+  "next_work": "After native, inspect original raw, preserve failure attempts and compare frozen exploratory metrics; no gate promotion.",
+  "platform_remaining_budget": "UNKNOWN"
+}

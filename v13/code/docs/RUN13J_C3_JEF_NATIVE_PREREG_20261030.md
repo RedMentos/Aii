@@ -1,0 +1,13 @@
+# Run13J — pinned actual C3-language native JEF prompt-fidelity pilot (preregistered 2026-10-30)
+
+Review-only child of Run13I #1298 at `edb156ea91ad0a3a4052491423e43361eea89902`. Owner GPT-6; isolated new fixture, runner, tests, workflow and checkpoint. No existing registered cohort/model/source/seed/scorer or Canon modifications. No production runtime changes.
+
+## Fixed before native
+
+- NEW six-source seed **227** fixture schema `v13.run13j.c3_jef_prompt_native.fixture.v1`, ordered canonical cases SHA256 **d43a65572d85a3f3c1b2ef81d2903c19de880e643887c9bae96f0facbc1b6712**. Projects Pioneer227, Orchid227, Harbor227, Lattice227, Vertex227, Nimbus227. Source grammar uses existing Run11V `frozen.prompt`; exact answer grammar is Run11Y/Run13B. Cases are synthetic, not user labels, not existing seed211/197.
+- Arms per case: **RAW_C3** (source text plus exact query) and **JEF_C3** (Run13I source-verified bounded four-line fact prompt). Balanced order: even-index RAW first, odd-index JEF first. Same pinned installed C3 model/revision, seed 227, same system prompt, max 128 generated tokens and same sampling config. Native C3 worker unloaded/reaped between arms, no model weight updates. Actual Runtime/Store/Context OS source refs and prompt hash recorded; JEF prompt must pass exact two-witness integrity first. A native C3 call is never a live chat turn or operator answer.
+- Prespecified outcomes: C3 exact-copy diagnostic from Run13I; frozen Run11V `score_pair` numeric two-component score; frozen Run12N `explicit_faster_claim` lexical faster correctness; strict full requires both numeric and faster correct. No scorer adjustment or selection by outcome. Report all six paired raw outputs and failures, not only successes. No claims of semantic generalization from lexical scorer. No STEP2/B3/Body-JEPA/JEPA/Redmi or whole-system promotion from this pilot.
+- Provenance: original raw outputs, source/query/plan IDs, candidate prompt SHA, model file SHA, process PID/reaped, metrics, per-arm status, report, all stage exit codes and SHA256SUMS. Failed attempts remain. Native run must be serialized under existing `v13-step2-budget-paired-native-20261030` group; download pinned public models with isolated dependencies as authorized, no paid provisioning.
+- Before native, focused software fixture/disjoint/score/negative-gate tests. Actual native evidence only if all prerequisites and native jobs pass. Native 12-call result is exploratory Linux, **not** Redmi or full architecture acceptance.
+
+Stop native on integrity or resource failure; preserve original failure raw and continue other independent work. Future C3 language-quality or live-output activation requires separate human approval/heldout cohort and egress revalidation.
