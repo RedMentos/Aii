@@ -91,6 +91,10 @@ def inspect(question, final_answer):
     # Quoted examples or code can be intentionally false; do not call them errors.
     if any(marker in final_answer for marker in ('`', '"', '“', '”', '„', '«', '»', '‘', '’', "'")):
         return _base("ABSTAIN", "QUOTED_OR_CODE_EXAMPLE")
+    # A stated counterexample is not the assistant endorsing an equation.
+    if re.search(r"\\b(?:wrong|incorrect|false|falsch|fehlerhaft|counterexample|gegenbeispiel|example|beispiel)\\b",
+                 final_answer, re.I):
+        return _base("ABSTAIN", "METALINGUISTIC_EXAMPLE")
     matches = list(EQ.finditer(final_answer))
     if matches:
         evidence = []
