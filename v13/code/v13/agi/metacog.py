@@ -16,11 +16,42 @@ BINS=10;WINDOW=512;MIN_SUPPORT=20
 SECOND_ATTEMPT=(.35,.75)  # BOOT: retry band of calibrated confidence
 ABSTAIN_BELOW=.2
 
+
+def _finite_confidence(value):
+    """Never map NaN/Inf/bool to plausible confidence via clamp01."""
+    if type(value) is bool:
+        raise ValueError("AG9_INVALID_CONFIDENCE")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("AG9_INVALID_CONFIDENCE") from exc
+    if not math.isfinite(number):
+        raise ValueError("AG9_INVALID_CONFIDENCE")
+    return clamp01(number)
+
+
+def _binary_label(value):
+    if type(value) is bool:
+        return int(value)
+    if type(value) is int and value in (0, 1):
+        return value
+    raise ValueError("AG9_INVALID_OUTCOME_LABEL")
+
+
+def _component_name(value):
+    if (type(value) is not str or not value or len(value) > 64
+            or value != value.strip()
+            or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+        raise ValueError("AG9_INVALID_COMPONENT")
+    return value
+
+
 class Metacognition:
     def __init__(self,store):
         self.box=StateBox(store,KEY,REVISION,lambda:{'components':{}})
     def record(self,component,confidence,correct,evidence=None):
-        c,k=clamp01(confidence),int(bool(correct))
+        component = _component_name(component)
+        c, k = _finite_confidence(confidence), _binary_label(correct)
         def f(st):
             comp=st['components'].setdefault(component,{'pairs':[],'calibrator':None})
             comp['pairs']=(comp['pairs']+[[c,k]])[-WINDOW:];comp['calibrator']=self._fit(comp['pairs'])
@@ -43,10 +74,19 @@ class Metacognition:
             for j in idx:table[j]=round(v,6)
         return table
     def calibrated(self,component,confidence):
+        try:
+            c = _finite_confidence(confidence)
+        except ValueError:
+            return None
         comp=self.box.load()[0]['components'].get(component)
         if not comp or not comp['calibrator']:return None  # unknown: callers must treat as uncalibrated
-        return comp['calibrator'][min(BINS-1,int(clamp01(confidence)*BINS))]
+        return comp['calibrator'][min(BINS-1,int(c*BINS))]
     def decide(self,component,confidence):
+        try:
+            _finite_confidence(confidence)
+        except ValueError:
+            return {'calibrated':None,'second_attempt':False,
+                    'abstain':True,'reason':'INVALID_CONFIDENCE'}
         p=self.calibrated(component,confidence)
         if p is None:return {'calibrated':None,'second_attempt':True,'abstain':False,'reason':'UNCALIBRATED'}
         return {'calibrated':p,'second_attempt':SECOND_ATTEMPT[0]<=p<SECOND_ATTEMPT[1],'abstain':p<ABSTAIN_BELOW,'reason':'CALIBRATED'}
