@@ -31,7 +31,8 @@
     "tests": "43/43 PASS",
     "stage_exits": "8/8 zero",
     "privacy": "CLEAN",
-    "native_inference": false
+    "native_inference": false,
+    "private_library_backup_byte_exact": true
   },
   "frozen": {
     "seed": 197,
@@ -50,9 +51,13 @@
     "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
   },
   "native_retry": {
-    "status": "PENDING_LAUNCH",
+    "status": "IN_PROGRESS",
     "concurrency_group": "v13-step2-budget-paired-native-20261030",
-    "rationale": "Original failed before any model-generated turn; retry fixes only Runtime API and scalar release witness, retains exact registered fixture/scorer/models."
+    "rationale": "Original failed before any model-generated turn; retry fixes only Runtime API and scalar release witness, retains exact registered fixture/scorer/models.",
+    "run_id": 41061289187,
+    "exact_tested_head": "6a5e9af1e83da8d4c16817b88d4aee55198f1495",
+    "result": "UNKNOWN_PENDING_TERMINAL",
+    "original_red_preserved": true
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -68,6 +73,6 @@
     "Whether native-auto C2 improves source-bound answer score vs best single model",
     "Redmi and §100 acceptance unavailable"
   ],
-  "next_command": "Create pinned review-only retry workflow, serialize behind current native owners, inspect terminal raw ZIP, 16 preclose/16 raw/4 strict; independently verify original ZIP SHA/CRC/SHA256SUMS and persist private byte-exact backup; do not promote gates.",
+  "next_command": "Inspect terminal Actions 41061289187; download original ZIP and independently verify SHA256, CRC, every SHA256SUMS, stage exits, 16 raw/preclose and 4 strict C2; preserve any RED and byte-exact private backup. Then select next independent blueprint package; do not promote gates.",
   "remaining_platform_budget": "UNKNOWN"
 }
