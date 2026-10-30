@@ -1,0 +1,67 @@
+{
+  "schema": "v13.run13k.c3_copy_instruction.fixture.v1",
+  "seed": 239,
+  "cases": [
+    {
+      "project": "Aster239",
+      "budget": 731,
+      "a": "Moss",
+      "a_cost": 287,
+      "a_days": 9,
+      "b": "Flint",
+      "b_cost": 344,
+      "b_days": 4
+    },
+    {
+      "project": "Comet239",
+      "budget": 843,
+      "a": "Cloud",
+      "a_cost": 491,
+      "a_days": 3,
+      "b": "Pearl",
+      "b_cost": 322,
+      "b_days": 7
+    },
+    {
+      "project": "Dune239",
+      "budget": 927,
+      "a": "Kite",
+      "a_cost": 528,
+      "a_days": 11,
+      "b": "Cedar",
+      "b_cost": 673,
+      "b_days": 5
+    },
+    {
+      "project": "Echo239",
+      "budget": 694,
+      "a": "Slate",
+      "a_cost": 369,
+      "a_days": 2,
+      "b": "Orchid",
+      "b_cost": 428,
+      "b_days": 8
+    },
+    {
+      "project": "Fjord239",
+      "budget": 582,
+      "a": "Birch",
+      "a_cost": 264,
+      "a_days": 7,
+      "b": "Iris",
+      "b_cost": 385,
+      "b_days": 3
+    },
+    {
+      "project": "Grove239",
+      "budget": 761,
+      "a": "Ember",
+      "a_cost": 417,
+      "a_days": 8,
+      "b": "Lumen",
+      "b_cost": 296,
+      "b_days": 4
+    }
+  ],
+  "cases_sha256": "c2e98d20730ec653678bac0ee7393fa143b08508ee684b6f87b6d875ee0b0796"
+}
