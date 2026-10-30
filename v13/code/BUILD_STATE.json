@@ -3977,5 +3977,54 @@
     },
     "exact_next_command": "Audit exact original artifacts for preflight 41008170038 and both serialized native runs 41007813416 / 41008162051 after terminal; preserve all failures, hash-verify and privately back up original raw; no third heavy native job.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run12_20261030_listarith_de_shadow_seed67": {
+    "owner": "V13 independent German list_arith SHADOW package",
+    "scope": "SOFTWARE_SYNTHETIC_SHADOW_ONLY_NO_LIVE_CONSUMER",
+    "branch": "assistant/v13-listarith-german-shadow-seed67-20261030",
+    "prereg_commit": "3286ddd680fcc46b6f89950269000482edd326ca",
+    "fixture_commit": "45506ebab8595cea59cba85b2c773a6c0f44d438",
+    "fixture_sha256": "468b231fd196f28e773fba1d541f4ed7c7436d180d78b835e0ad3eb3f85a3d05",
+    "source_path": "v13/code/v13/agi/listarith_de_shadow.py",
+    "source_blob": "d13120bcd6be6572b6e63af5f2b5a3242e7d0b98",
+    "evaluator_path": "v13/code/scripts/listarith_de_shadow_seed67_eval.py",
+    "evaluator_blob": "7ae45dbfbfbc74c9af8a5bb19f909d47fe2a3b1b",
+    "original_english_listarith_blob": "35893e9f829a591ffb9a792a73cef9bce986b3c4",
+    "dev": {
+      "run": 41008481290,
+      "artifact": 12956477979,
+      "zip_sha256": "41b11aca7a2f1edbf6dcd0af6a02f2946656ce2558d9d1bd87df20bae731a6fa",
+      "status": "GREEN",
+      "tests": "6/6",
+      "inner_sha256": "14/14",
+      "privacy_diff": "PASS"
+    },
+    "holdout": {
+      "run": 41008645454,
+      "artifact": 12956302340,
+      "zip_sha256": "d1f1a2f9d6317c077a5a12fa8ba58b1b6c60f299bbba4bf4801c1837c8c05168",
+      "status": "SHADOW_DE_SUPPORTED",
+      "correct": "24/24",
+      "false_positive_none": "0/8",
+      "english_regressions": "8/8",
+      "inner_sha256": "18/18",
+      "stage_exits": "7/7 zero",
+      "original_raw_rows": "24/24"
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12-Listarith-GermanShadow-Seed67/",
+    "private_backup_byte_identical": true,
+    "live_consumers": 0,
+    "native_model_inference": false,
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Do not activate live. Preregister a new disjoint German paraphrase/count/ambiguity holdout and native C3 typed-value ToolStep->C5->TOOL_RESULT utility; keep seed67 frozen.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
