@@ -203,6 +203,15 @@ def prefix_reuse(old,new):
 
 def fingerprint(messages):return [(digest(dumps(m).encode())[:16],len(m['content'])) for m in messages]
 
+def _capability_value(state,role,cap):
+    """G6B: only an exact persisted JSON boolean True proves a template capability."""
+    roles=state.get('capabilities')
+    if type(roles) is not dict:return False
+    caps=roles.get(role)
+    if type(caps) is not dict:return False
+    evidence=caps.get(cap)
+    return type(evidence) is dict and evidence.get('value') is True
+
 class ContextOS:
     def __init__(self,store,cfg,age=None,neuromod=None):
         self.s=store;self.cfg=cfg;self.age=age;self.n=neuromod
@@ -241,10 +250,11 @@ class ContextOS:
         if mode=='ACTIVE' and authority!='EXPLICIT_HUMAN':raise PermissionError('ACTIVE nur per expliziter Nutzerfreigabe (Age 0)')
         def fn(st):st[which]=mode;return mode
         return self._mutate(fn)
-    def digest_enabled(self):return self._load()[0].get('digest',True)
+    def digest_enabled(self):return self._load()[0].get('digest',True) is True
     def set_digest(self,on):
-        """WP-S7: sleep day digest of turns outside the history window as a COMPRESSED context layer (measured default on)."""
-        def fn(st):st['digest']=bool(on);return st['digest']
+        """WP-S7: sleep day digest; only typed booleans change the persisted switch."""
+        if type(on) is not bool:raise ValueError('digest: bool required')
+        def fn(st):st['digest']=on;return st['digest']
         return self._mutate(fn)
     def set_layout(self,layout):
         if layout not in LAYOUTS:raise ValueError('Layout: '+'|'.join(LAYOUTS))
@@ -252,11 +262,13 @@ class ContextOS:
         return self._mutate(fn)
     def set_capability(self,role,cap,value,evidence=None):
         if cap not in CAPABILITIES:raise ValueError('Unbekannte Fähigkeit: '+str(cap))
+        if type(value) is not bool:raise ValueError('G6B capability: bool required')
         def fn(st):
-            st['capabilities'].setdefault(role,{})[cap]={'value':bool(value),'evidence':evidence or 'operator'};return st['capabilities'][role]
+            st['capabilities'].setdefault(role,{})[cap]={'value':value,'evidence':evidence or 'operator'}
+            return st['capabilities'][role]
         return self._mutate(fn)
     def capability(self,role,cap):
-        return bool(self._load()[0]['capabilities'].get(role,{}).get(cap,{}).get('value'))
+        return _capability_value(self._load()[0],role,cap)
     # -- warm memory (§9.1) ----------------------------------------------------------------------------
     def warm(self,query,session,recalled,threshold=WARM_ADMIT):
         """Reactivate only still-human-authorized F1 memories in warm order.
@@ -357,7 +369,7 @@ class ContextOS:
         if archived:items.append({'item_id':'archive','layer':'ARCHIVE','form':'POINTER','chars':0,'count':int(archived)})
         recall=span_kept/span_total if span_total else 1.
         layout=st['layout'];reason=None
-        if layout in ('stable_prefix','append_only') and not st['capabilities'].get(role,{}).get('consecutive_user',{}).get('value'):layout,reason='legacy','template_capability_unknown'
+        if layout in ('stable_prefix','append_only') and not _capability_value(st,role,'consecutive_user'):layout,reason='legacy','template_capability_unknown'
         vtext=''.join(h+dumps(p) for _,h,p in vol);tail=([{'role':'user','content':VOLATILE_HEAD+vtext}] if vtext else [])+[{'role':'user','content':query}]
         planned=None
         if layout=='append_only':

@@ -1,0 +1,83 @@
+{
+  "schema": "v13.run16.contextos_typed_capability.software_focused_green.fullsuite_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent ContextOS G6B typed authority package",
+  "parent": {
+    "pr": 1342,
+    "branch": "codex/v13-run15-fullsuite-pin-recovery-20261030",
+    "sha": "a35813a2cbf051d9bed004bca5be06fb8c81a079",
+    "review_only": true
+  },
+  "branch": "assistant/v13-run16-contextos-capability-proof-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "4238cd406cc630ee46b6720bec53da219bc2dece",
+    "test_first": "2921b4be177ba213dd8dfdf3ca251be809511635",
+    "contextos_original": "40a77a9c3717db7899bfd8966acfa4b9e315e966",
+    "contextos_candidate": "e2abb957edce797a235febfcf287b947b3621087"
+  },
+  "change": "ContextOS G6B set_capability accepts exact bool only; capability() and plan() require exact persisted JSON boolean True instead of Python truthiness. set_digest accepts exact bool; digest_enabled fails closed on malformed persisted values. Existing typed operator/probe inputs remain compatible. No new model/template capability claim.",
+  "evidence": {
+    "original_red": {
+      "run": 41130692864,
+      "head": "7aa1cdcf7b4ef8363a04a99f764d46bff3dd6984",
+      "artifact": 13013306459,
+      "sha256": "1724066a12865e19c2d6fa5b5c9056ed0b5fa4e301894680e8480ba2917538b1",
+      "tests": 4,
+      "failures": 22,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; TEST 1 expected",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run16_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41130763810,
+      "head": "9fae2ee1e9e367689728a203896cf8a95e108e17",
+      "artifact": 13012957191,
+      "sha256": "4872ab7ae1e2f2d0854b455c84f12a18822c7a701fab62595949e6d8b1e49cd5",
+      "tests": 106,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run16_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "parent_run15_unfiltered": {
+      "run": 41129755100,
+      "head": "a35813a2cbf051d9bed004bca5be06fb8c81a079",
+      "artifact": 13012842350,
+      "sha256": "4643f362887c6ad27134f23a7c726a81ea2da068ff3ec28444046f43bee03c07",
+      "tests": 4164,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "stage_exits": "PINS/VENV/DEPS/TORCH/TRANSFORMERS/PEFT/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; FULL 1",
+      "crc": "PASS",
+      "inner_sha256": "25/25",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run15_UNFILTERED_PARENT_RAW.zip",
+      "readback": "BYTE_IDENTICAL",
+      "comparison": "Run14W 4154 tests/4 failures/66 errors/16 skipped; 10 added tests, historical failures unwaived; no full-suite green"
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Software-only SQLite Linux tests, no native C3/Body, Redmi or real template proof.",
+    "No independent external agent available; manual source review and adversarial persisted-value test performed.",
+    "Historical full-suite failures persist; Run15 fullsuite predates Run16 candidate.",
+    "No production merge."
+  ],
+  "next_command": "Run exact-head unfiltered fullsuite on Run16 candidate, preserve original ZIP, verify CRC/inner SHA/stage exits and failure identity against Run15; review all gates. Then continue another canonical organ package from latest integrated review chain."
+}
