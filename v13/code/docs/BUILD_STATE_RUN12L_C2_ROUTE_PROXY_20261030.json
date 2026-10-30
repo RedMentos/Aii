@@ -1,5 +1,5 @@
 {
-  "schema": "V13_RUN12L_C2_ROUTE_PROXY_SOURCE_PENDING_NATIVE",
+  "schema": "V13_RUN12L_C2_ROUTE_PROXY_NATIVE_STRUCTURAL_GREEN_PROXY_RED_NO_GATE",
   "date_utc": "2026-10-30",
   "owner": "GPT-6",
   "branch": "assistant/v13-run12l-c2-route-proxy-native-20261030",
@@ -45,12 +45,36 @@
     "private_byte_exact": true
   },
   "native": {
-    "launched": false,
+    "launched": true,
+    "run_id": 41053980498,
+    "tested_head": "e1e0adb85b9ceb93bc1e9dba72df20f4189e0a1c",
+    "artifact_id": 12976151861,
+    "zip_sha256": "0dce25e919296a5faf40830f529becf75e5ff8a0c9561c29720ad68d0a9167f9",
+    "zip_bytes": 47138,
+    "crc": "PASS",
+    "inner_sha256": "54/54",
+    "raw_rows": "15/15",
+    "strict_rows": "15/15",
+    "stages": "10/10 EXIT0",
+    "software_tests": "22/22 PASS",
+    "privacy": "CLEAN",
     "model_sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38",
+    "native_c2_proven": "15/15",
+    "strict_admission": "15/15",
+    "non_simple_preserved": "3/3",
+    "native_admissions_first12": 9,
+    "scaffold_correct_first12": 4,
+    "final_correct_first12": 1,
+    "net_correct_gain_first12": -3,
+    "greeting_regressions": 4,
+    "proxy_threshold_met": false,
+    "route_semantic_utility_proven": false,
     "c3_called": false,
     "body_called": false,
-    "route_semantic_utility_proven": false,
-    "redmi_measured": false
+    "redmi_measured": false,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12L-C2RouteProxy/V13_Run12L_NATIVE_41053980498.zip",
+    "private_byte_exact": true,
+    "independent_raw_replay": "15/15 PASS"
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -62,9 +86,9 @@
     "whole_system_complete": false
   },
   "open_questions": [
-    "Will frozen role-proxy labels show net native C2 improvement on 12 simple-scaffold prompts without greeting regressions?",
+    "Run12L answered: native C2 route-label proxy FAILED (4/12 scaffold vs 1/12 selected; 4/4 greeting regressions).",
     "Even a positive proxy cannot establish actual C3/Body response utility; paired native response benchmark remains necessary.",
     "Actual Redmi sustained resource/thermal proof unavailable in cloud."
   ],
-  "next_command": "Source-only GREEN verified with original ZIP/18 hashes and private byte-exact backup. Commit isolated serialized pinned C2-only native workflow, then verify exact original native ZIP SHA/CRC/manifest/15 raw and private backup; no gate promotion."
+  "next_command": "Build next disjoint preregistered paired Linux-native C2/C3/B1/B2 answer-utility cohort with frozen Run11V source-bound scorer and single-body baselines; serialize heavy job, independently audit raw. Do not alter Run12L RED or promote any gate."
 }
