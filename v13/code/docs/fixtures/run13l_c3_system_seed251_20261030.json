@@ -1,0 +1,67 @@
+{
+  "schema": "v13.run13l.c3_system_abstention.fixture.v1",
+  "seed": 251,
+  "cases": [
+    {
+      "project": "Atlas251",
+      "budget": 873,
+      "a": "Juniper",
+      "a_cost": 342,
+      "a_days": 6,
+      "b": "Silver",
+      "b_cost": 528,
+      "b_days": 3
+    },
+    {
+      "project": "Beacon251",
+      "budget": 764,
+      "a": "Cobalt",
+      "a_cost": 461,
+      "a_days": 4,
+      "b": "Hazel",
+      "b_cost": 299,
+      "b_days": 9
+    },
+    {
+      "project": "Canyon251",
+      "budget": 916,
+      "a": "Basil",
+      "a_cost": 387,
+      "a_days": 10,
+      "b": "Lark",
+      "b_cost": 604,
+      "b_days": 5
+    },
+    {
+      "project": "Delta251",
+      "budget": 685,
+      "a": "Marble",
+      "a_cost": 258,
+      "a_days": 2,
+      "b": "Topaz",
+      "b_cost": 419,
+      "b_days": 7
+    },
+    {
+      "project": "Ember251",
+      "budget": 957,
+      "a": "Olive",
+      "a_cost": 632,
+      "a_days": 8,
+      "b": "Copper",
+      "b_cost": 571,
+      "b_days": 3
+    },
+    {
+      "project": "Forest251",
+      "budget": 821,
+      "a": "Plum",
+      "a_cost": 473,
+      "a_days": 9,
+      "b": "Frost",
+      "b_cost": 386,
+      "b_days": 4
+    }
+  ],
+  "cases_sha256": "ccf9e0aebdf5a4376f2b3a0b65460cce5dd1ac3198ac3dde189080f3dbeb4473"
+}
