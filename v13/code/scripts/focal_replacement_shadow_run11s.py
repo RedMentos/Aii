@@ -182,7 +182,7 @@ def required_keys(fid, notes):
     if len(latest) != 1:
         return None
     if kind == "combine":
-        spending = [k for k, _ in notes if k.endswith("budget spending")]
+        spending = [k for k, _ in notes if re.fullmatch(r"Project [A-Za-z]+ budget spending", k)]
         return latest + spending if len(spending) == 1 else None
     return latest
 
