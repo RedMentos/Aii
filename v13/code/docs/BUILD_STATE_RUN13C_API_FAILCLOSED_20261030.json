@@ -1,0 +1,52 @@
+{
+  "schema": "v13.run13c.python_api_fail_closed_review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13c-jef-exact-cli-20261030-auto11",
+  "parent_checkpoint_commit": "2718d566bee6587e9922be3fbcd0af8f995b3e4c",
+  "prereg_commit": "f1b246d6a946a1015a9c30384d4c8c072a090792",
+  "test_first_commit": "fdf71b4dfbdf00ab08589cba7ea57fd0d6786cfc",
+  "fix_commit": "de0f43c27215e2d6c0190660f35283611117ce9e",
+  "original_green_run": 41077572019,
+  "test_first_red_run": 41078203093,
+  "test_first_red_zip_sha256": "8a210561670bff32dd724da69655aaf9c9a085af04a09b9288a320c431b4f11f",
+  "test_first_red": "17 tests: 2 ERROR, corrupt zlib and closed sqlite3.ProgrammingError; TEST_EXIT=1, raw retained",
+  "fixed_green_run": 41078392727,
+  "fixed_green_artifact_id": 12988212598,
+  "fixed_green_zip_sha256": "6a62bcc4a8872df741799ceec8dd2c436bd50ca376b8f5f7f747849818fc88d5",
+  "fixed_green_tests": "17/17 PASS in 0.735s",
+  "fixed_green_stage_exits": {
+    "CANON": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "fixed_green_crc": "CLEAN",
+  "fixed_green_inner_sha256": "15/15 verified",
+  "private_backups": [
+    "/V13-Checkpoints/2026-10-30/Run13C/RUN13C_41077572019.zip",
+    "/V13-Checkpoints/2026-10-30/Run13C/RUN13C_TESTFIRST_RED_41078203093.zip",
+    "/V13-Checkpoints/2026-10-30/Run13C/RUN13C_API_FIXED_GREEN_41078392727.zip"
+  ],
+  "fixed_green_private_byte_identical": true,
+  "original_native_run13a": "UTILITY_RED_UNCHANGED",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Operator must supply trusted SourceRefs; no general user interface or active egress.",
+    "SQLite WAL reader may race with later source revocation after final read.",
+    "No native model, JEPA, Redmi or whole-system proof; historical G13 fullsuite RED unchanged."
+  ],
+  "exact_next_command": "Review PR #1290 source and both RED/GREEN original raw. Do not merge without independent review; pursue another canonical organ with real evidence, not more pin-helper churn.",
+  "remaining_platform_budget": "UNKNOWN"
+}
