@@ -103,7 +103,17 @@
     "privacy": "CLEAN",
     "private_backup": "/V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239/ORIGINAL_NATIVE_41046804934_sha67F56F5E.zip",
     "backup_byte_exact": true,
-    "independent_run12d_audit": "PENDING_ACTIONS_41047976128"
+    "independent_run12d_audit": {
+      "run_id": 41047976128,
+      "status": "GREEN",
+      "tested_head": "2867b66ae574f75ba25b0f1e1760f43cb78260a9",
+      "result": "RAW_REPORT_CONSISTENT_NOT_UTILITY_GATE",
+      "replayed_status": "DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN",
+      "artifact_id": 12972963260,
+      "zip_sha256": "bb111cdfb2444802338a9fea7f7ed321e5bee935ecf82cd7d605beb28ede9c09",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run12D-BJEPA-Raw-Audit/ORIGINAL_NATIVE_INDEPENDENT_GREEN_41047976128_shaBB111CDF.zip",
+      "backup_byte_exact": true
+    }
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -119,5 +129,5 @@
     "Independent raw scoring after original 12-arm native artifact",
     "Redmi thermal/RSS remains unmeasured"
   ],
-  "next_command": "Read terminal Run12D independent original native ZIP audit Actions 41047976128; preserve RED if fails, verify raw SHA/CRC/inner hashes, backup privately byte-exact. Update branch-scoped evidence only. Run12C 12/12 Linux-native arms completed with NO_ATTRIBUTABLE_GAIN; all gates negative."
+  "next_command": "Run12C native complete, independent Run12D original raw replay GREEN with DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN. Do not rerun registered cohort posthoc; select new preregistered hypothesis or next canonical organ. All negative gates unchanged."
 }
