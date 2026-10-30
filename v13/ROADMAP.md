@@ -1,3 +1,7 @@
+## 2026-10-30 — new preregistered STEP2 paired native v2 (pending raw)
+
+Review-only child `codex/v13-step2-paired-native-v2-20261030-hourly11`: fixed new four-task disjoint seed29, option-bound contradiction-vetoing scorer and route override validator corrected without claiming native Needle/C2 control. Software preflight `40992003721` 12/12 PASS. Linux-native 12-turn run `40992102064` launched in serialized native concurrency group; **result pending**. See `code/docs/STEP2_PAIRED_NATIVE_V2_LAUNCH_CHECKPOINT_20261030.md`. Original pilot RED and STEP2 UTILITY_FAIL/B3/Body-JEPA/JEPA/age gates remain; do not promote from a small pilot.
+
 ## 2026-10-30 — independent original STEP2 paired native RED review (non-promoting)
 
 The four-task 3-arm original native pilot `40989187037` remains RED. Read-only checker on `codex/v13-step2-pilot-raw-validator-audit-20261030-hourly11` proves 12 native-generated raw turns, 156 structural checks, but detects a route native-control validator schema mismatch on all 12. Exploratory contradictory-aware semantic readout A 0/8, B 3/8, C 5/8 is **not** the original registered scorer or a utility gate. CI 6/6 PASS; exact source, hashes, raw evidence and limitations in `code/docs/STEP2_PAIRED_PILOT_RAW_VALIDATOR_AUDIT_VERIFIED_RESULT_20261030.md`. Next: a new preregistered paired native experiment with fixed evidence schema, independently validated C2 if required, and contradiction-vetoing scorer. Keep original RED and all Canon gates unchanged.
