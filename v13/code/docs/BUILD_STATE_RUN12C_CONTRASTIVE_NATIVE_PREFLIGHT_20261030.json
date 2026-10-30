@@ -51,13 +51,33 @@
     "crc": "PASS",
     "inner_sha256": "12/12",
     "private_backup": "/V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239/PREFLIGHT_GREEN_41046307491_sha3FFA408D.zip",
-    "backup_byte_exact": true
+    "backup_byte_exact": true,
+    "native_workflow_static_review": {
+      "run_id": 41046648653,
+      "tested_head": "d9d7f2daab1e85759d7450d548874338e2a4818c",
+      "status": "GREEN",
+      "tests": "12/12 PASS",
+      "stages": "6/6 EXIT0",
+      "artifact_id": 12971659249,
+      "zip_sha256": "c5ca814744a9bf1cf68500cfbbed373eb7c83262154ed1bf88cf2da53366eb83",
+      "zip_bytes": 3799,
+      "crc": "PASS",
+      "inner_sha256": "14/14",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run12C-BJEPA-Contrastive239/NATIVE_WORKFLOW_STATIC_GREEN_41046648653_shaC5CA8147.zip",
+      "backup_byte_exact": true
+    }
   },
   "native": {
-    "workflow_prepared": false,
+    "workflow_prepared": true,
     "triggered": false,
     "proven": false,
-    "owner": "NONE_ASSIGNED"
+    "owner": "NONE_ASSIGNED",
+    "workflow_git_blob": "11b5612e32d07042c4c2d6e5052cb23b809dbc97",
+    "explicit_trigger_path": "v13/code/docs/BJEPA_CONTRASTIVE_350M_NATIVE_TRIGGER_RUN12C.txt",
+    "concurrency_group": "v13-bodyjepa-350m-eval-paired-native-serial-20261030",
+    "active_heavy_owner_checked_at": "2026-10-30T11:15Z",
+    "active_workflows_observed": 0
   },
   "gates": {
     "age0": "RECORD_ONLY",
@@ -73,5 +93,5 @@
     "Independent raw scoring after original 12-arm native artifact",
     "Redmi thermal/RSS remains unmeasured"
   ],
-  "next_command": "Create separate non-autotriggered native workflow pinned to Run12C and existing serial concurrency group; independently review, inspect heavy owner, then explicit trigger only after owner terminal. Audit original raw SHA/CRC/12 arms and private backup. Continue independent Canon work."
+  "next_command": "Native preflight GREEN and no active Actions owner observed. Create the exact explicit trigger file on own review branch to launch serial pinned 12-arm Linux-native diagnostic; immediately persist trigger HEAD/run ID and independently audit terminal original raw. Continue other organs while pending."
 }
