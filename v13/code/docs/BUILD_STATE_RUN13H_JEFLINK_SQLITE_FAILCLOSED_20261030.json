@@ -1,0 +1,87 @@
+{
+  "package": "RUN13H_JEFLINK_SQLITE_FAILCLOSED_20261030",
+  "status": "SOFTWARE_FOCUSED_GREEN_REVIEW_ONLY",
+  "owner": "GPT-6",
+  "parent_commit": "4c789ae85758ca71bf86dd5067ab697913071a51",
+  "tested_head": "5591b91d3188eb1b551680f10d88b93280bd941a",
+  "preregistered_commit": "906db2ee9daaedfb27b7f829c243cfc2bb4b0732",
+  "branch": "assistant/v13-run13h-jeflink-sqlite-failclosed-20261030-auto11",
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "source_blobs": {
+    "v13/code/v13/jef_context_link_operator_run13f.py": "8bd0b9a1c9a72807d4e0dd5cf4f36dae79149e32",
+    "v13/code/v13/agi/context_source_link_budget_run13e.py": "6ed4b14d0067714281a7b9d22f87e0c9a7d57519",
+    "v13/code/tests/test_jeflink_sqlite_failclosed_run13h.py": "e92ff5a8b03e289377a09e0d42dfedcdfe14cb02"
+  },
+  "red_evidence": [
+    {
+      "actions_run": 41081353479,
+      "head": "456ccd8e2f60e34be30a1706a493222001263b5a",
+      "test_count": 15,
+      "errors": 6,
+      "zip_sha256": "4c45ee4a5458a97821daf50320109f32d879c07e21cd56a1dcfd726ae99c6e5c",
+      "artifact_id": 12990045829,
+      "crc": "PASS",
+      "inner_hashes": "15/15",
+      "private_backup": "BYTE_IDENTICAL"
+    },
+    {
+      "actions_run": 41081478134,
+      "head": "5597949075f0e8d1d2e585fd24739b59ddc7d042",
+      "test_count": 16,
+      "errors": 7,
+      "zip_sha256": "3383f95bfc0f39a3089bd1e345501c3d95f39b66c40159959f9cc928ab66f8eb",
+      "artifact_id": 12989571725,
+      "crc": "PASS",
+      "inner_hashes": "15/15",
+      "private_backup": "BYTE_IDENTICAL"
+    }
+  ],
+  "green_evidence": {
+    "actions_run": 41081522838,
+    "head": "5591b91d3188eb1b551680f10d88b93280bd941a",
+    "tests": "16/16",
+    "stage_exits": {
+      "CANON": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "zip_sha256": "eeb76a3f3e29e9be22af19583ecac7936a72b147ee182682a0005793787f0589",
+    "artifact_id": 12990046006,
+    "crc": "PASS",
+    "inner_hashes": "15/15",
+    "private_backup": "BYTE_IDENTICAL"
+  },
+  "persistence": {
+    "github_review_branch": true,
+    "private_library": "/V13-Checkpoints/2026-10-30/Run13H-JEF-SQLite",
+    "verified_remote_code_blobs": true
+  },
+  "scope": "Only read-only opt-in Age0 :jeflink diagnostics; sqlite3.Error normalized to SHADOW_NO_AUTHORITY. No active Runtime route or learning changed.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Independent full unfiltered G14 suite at Actions 41080416868 is separate and pending; its historical RED must not be waived.",
+    "SQLite corruption beyond read-only JEF diagnostics remains out of scope; no production authority granted.",
+    "Real Redmi and native end-to-end utility remain unmeasured here."
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jeflink_sqlite_failclosed_run13h tests.test_jeflink_last_run13g tests.test_jeflink_operator_run13f tests.test_context_source_link_budget_run13e",
+  "next_work": "Inspect G14 original raw and compare historical failure identities; then pursue substantive canonical C2/C3/Body and JEPA utility work without gate promotion.",
+  "platform_remaining_budget": "UNKNOWN"
+}
