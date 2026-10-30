@@ -34,7 +34,7 @@ def synthetic_all_invalid(directory):
     report = {
         "schema": m.SCHEMA, "status": "PILOT_PARTIAL_RED",
         "seed": m.SEED, "fixture_sha256": m.FIXTURE_SHA256,
-        "fixtures": m.FIXTURES, "arms": m.ARMS,
+        "fixtures": [dict(f) for f in m.FIXTURES], "arms": m.ARMS,
         "arm_order": m.ARM_ORDER, "rows": rows,
         "model_verification": {k: {"ok": True, "hash_checked": True}
                                for k in ("needle", "language", "body", "gist")},
