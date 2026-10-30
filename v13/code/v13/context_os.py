@@ -257,7 +257,9 @@ class ContextOS:
                 if r['id'] not in verified:continue
                 ref={'source_id':r['source_id'],'sha256':r['hash'],'char_start':0,'char_end':r['chars'],'modality':'text'}
                 try:value=self.s.read_source(ref)
-                except ValueError:continue
+                # The blob can disappear after F5 verification but before
+                # delivery; a late OSError is not permission to serve stale data.
+                except (ValueError,OSError):continue
                 if value!=r['value']:continue
                 r.update(source_ref=ref,value=value,retrieval_score=rel,retrieval_policy=None,warm_activation=a);out.append(r)
                 if len(out)>=WARM_PREFETCH_MAX:break

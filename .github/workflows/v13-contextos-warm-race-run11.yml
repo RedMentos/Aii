@@ -1,0 +1,76 @@
+name: V13 Context OS warm postverify source-loss run11
+on:
+  push:
+    branches:
+      - 'assistant/v13-contextos-warm-race-run11-20261030-gpt6'
+    paths:
+      - '.github/workflows/v13-contextos-warm-race-run11.yml'
+      - 'v13/code/tests/test_context_warm_postverify_race_run11.py'
+      - 'v13/code/v13/context_os.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  warm-race:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Context OS synthetic real-Store tests and raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/contextos-warm-race"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/contextos-warm-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/contextos-warm-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 7m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_context_warm_postverify_race_run11 \
+              tests.test_context_warm_authority_run271 \
+              tests.test_context_warm_final_20261029 \
+              tests.test_context_os_singlequote_exact_20261029 \
+              tests.test_context_os_unclosed_code_20261029 \
+              tests.test_context_os) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/v13/context_os.py \
+            v13/code/tests/test_context_warm_postverify_race_run11.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 75daa272237a5800e8577e59d9eca834cc878918 \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 75daa272237a5800e8577e59d9eca834cc878918 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-contextos-warm-race-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/contextos-warm-race/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed preserving RED evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/contextos-warm-race"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/"$stage"_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -100 "$e/"$stage"_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "CONTEXTOS_SOFTWARE_SHADOW_NO_NATIVE_OR_GATE_PROMOTION"
