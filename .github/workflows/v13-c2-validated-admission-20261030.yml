@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/v13-c2-validated-shadow-cv-20261030-auto11x]
     paths:
-      - '.github/workflows/v13-c2-validated-admission-archived-20261030.yml'
+      - '.github/workflows/v13-c2-validated-admission-20261030.yml'
       - 'v13/code/scripts/c2_route96_hybrid_archived_20261030.py'
       - 'v13/code/tests/test_c2_route96_hybrid_archived_20261030.py'
       - 'v13/code/tests/test_c2_archived_validated_admission_20261030.py'
