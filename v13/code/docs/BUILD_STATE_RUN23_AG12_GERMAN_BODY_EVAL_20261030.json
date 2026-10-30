@@ -1,0 +1,76 @@
+{
+  "schema": "v13.run23.ag12_german_body_eval.software_review_only.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run23-ag12-german-body-eval-20261030-hourly11",
+  "base_pr": 1349,
+  "base_sha": "018c3fc875de36690545ec31731b0968a0e22466",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "prereg_blob": "95f4361704caf236ef4a80c46776ae9982ec60f0",
+  "source_blobs": {
+    "solver": "66a9419143c456f01747b4796fb327b3b36711b3",
+    "agi_operator": "8e4727140e9f1e88b64c6d3bfdccb8526f772647",
+    "operator_help": "32a03faf746f3bb4a3d7968b6d9b5d06e7db0a2c",
+    "test": "3f5e0d72b06588a5cf837b56f7da4af4493a47b6",
+    "generality": "a1cab60363814cb86472a42defb5089d4cdbd432",
+    "bilingual_compare": "1944cffced498a32a28d74ec13bc9674df8e55fb"
+  },
+  "changes": [
+    "User-scheduled :growth eval run de c3|b1|b2|v13 with distinct German payload/dedup and English default unchanged",
+    "Native BodySolver path now accepts explicit lang=de and writes German AG12 state/export only after installed solver preflight",
+    "AG9 feedback uses exact in-memory German suite/rows and isolated ag12:<solver>:de component",
+    "SYSTEM-origin German eval and invalid payload/lang rejected before native work",
+    "Operator help documents German route"
+  ],
+  "original_red": {
+    "actions": 41136251660,
+    "head": "4bc9fc2869587865b5aa73865933ad161c601a81",
+    "tests": 3,
+    "failures": 1,
+    "errors": 2,
+    "test_exit": 1,
+    "pins": 0,
+    "compile": 0,
+    "privacy": 0,
+    "diff": 0,
+    "zip_sha256": "d01649730cb750a81c2f69f9c1141de5fa3dadd39c3d55fb96980eb910cda7ca",
+    "crc": "PASS",
+    "inner": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run23-AG12-GermanBodyEval/ORIGINAL_RED_shaD0164973.zip",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "candidate_green": {
+    "actions": 41136405708,
+    "head": "10a2c7f50c3ffa64f517074e191c043a83062052",
+    "tests": 51,
+    "failures": 0,
+    "errors": 0,
+    "test_exit": 0,
+    "pins": 0,
+    "compile": 0,
+    "privacy": 0,
+    "diff": 0,
+    "zip_sha256": "e76bedb77dbeed7816a0c63dd1b598b58cb47f81ffbb744e668b0b6d6b9541b6",
+    "crc": "PASS",
+    "inner": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run23-AG12-GermanBodyEval/CANDIDATE_GREEN_shaE76BEDB7.zip",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "evidence_level": "software Runtime/SQLite with fake native RunnerPool; no real GGUF model or Redmi execution",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "learned_german_transfer": false
+  },
+  "known_limitations": [
+    "Real installed C3/B1/B2 German evaluation has not run on Linux or Redmi",
+    "AG12 procedural tasks do not prove general German ability or learned transfer",
+    "Run20 unfiltered historical suite remains 4 failures / 66 errors / 16 skipped"
+  ],
+  "next_command": "Run registered German AG12 cohort with pinned real C3/B1/B2 on isolated Linux native runner; preserve full raw outputs, model/source hashes, no memory/tool leakage, then compare with matched English baseline. If native unavailable, continue another independent Canon package; do not promote utility or Age gates."
+}
