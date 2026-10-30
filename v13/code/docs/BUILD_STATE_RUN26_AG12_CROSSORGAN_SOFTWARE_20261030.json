@@ -1,0 +1,48 @@
+{
+  "schema": "v13.run26.closed_native_crossorgan.software_green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run26-ag12-crossorgan-diagnostic-20261030-hourly11",
+  "review_pr": 1353,
+  "parent_pr": 1352,
+  "parent_head": "5a7262bd23592cad69ea1af2b266c90383268be9",
+  "tested_head": "e1397124764249772990c59b4b9122f0bddf36b9",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "prereg_blob": "120488c5cb906b0c8a962505c3b7c7dd3cfe3ae3",
+  "analyzer_blob": "dc956cd488aec969ebb37e7562238b5e5c48e397",
+  "test_blob": "dfec1968331155e7e8c4cbd0a87b827107a0129a",
+  "software_evidence": {
+    "github_actions": 41143244226,
+    "artifact_id": 13020236883,
+    "original_zip_sha256": "a9a5858dac337c292da7bfc61fb7218df5f087d40e00a21e7c4ac0a748f8da51",
+    "zip_crc": "PASS",
+    "inner_sha256": "16/16_PASS",
+    "focused_tests": "16/16_PASS",
+    "stage_exits": "PINS/VENV/DEPS/TEST/COMPILE/PRIVACY/DIFF=0",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run26-AG12-CrossOrgan/",
+    "private_backup_byte_identical": true
+  },
+  "native_evidence": null,
+  "run25_native_actions": 41142873467,
+  "run25_native_status_at_checkpoint": "IN_PROGRESS_UNVERIFIED",
+  "run24_native_actions": 41137225498,
+  "run24_native_zip_sha256": "819a4972dd9ed036d5b1f96946f08fc3bdcd16dd8d7f01425a79528f8f1e8d77",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "actual_fusion_proven": false,
+    "learned_german_transfer_proven": false
+  },
+  "open_questions": [
+    "Run25 original native terminal evidence must be verified and backed up before cross-organ real diagnostic.",
+    "Run26 oracle upper bounds do not demonstrate actual two-body cooperation or causal transfer.",
+    "Historical unfiltered suite remains RED; Redmi unavailable."
+  ],
+  "next_command": "Inspect Actions 41142873467 terminal; download original Run25 ZIP; verify GitHub digest, ZIP CRC, SHA256SUMS, all stage exits, 352 native rows/role hashes, and private byte-identical backup. If GREEN, run Run26 analyzer on original Run24+Run25 ZIPs, preserve aggregate report privately and source checkpoint. If RED, retain raw, diagnose source without changing frozen seed/model cohort; continue independent Canon work."
+}
