@@ -1,0 +1,7 @@
+# Run14Z — candidate 1 cross-organ regression, preserved
+
+Original test-first Actions **41128723022**: 16 tests, 2 failures and 2 errors, all setup/pin/compile/privacy/diff exits 0; original ZIP SHA256 `417431782704670503986ac6e89ed664752beef8619f6a2cc4c25cdbdb95ced0`, CRC and 18/18 inner hashes PASS, private readback exact.
+
+Candidate 1 Actions **41128848423**: 54 tests, **6 failures** in historical `test_world_model_output_domain_20261029`, all setup/pin/compile/privacy/diff exits 0; ZIP SHA256 `21fe49306cf6d1eec9ebb9cfa6bf303fbc90a4a7b2ce8e3c256ce6950c6c5876`, CRC and 18/18 hashes PASS. These preregistered synthetic output-domain tests deliberately call `counterfactual(store=None, st=synthetic_state)` without persistence or a real Store. Candidate 1 rejected these manually assembled synthetic states, masking their intended physical-output numeric checks. Historical tests must not be changed.
+
+Candidate 2 will require `source_admission` on every **real Store** read/explicit candidate, while preserving the existing read-only `store=None` synthetic test path. A real Store always rejects unmarked cached or explicit fits; synthetic direct scoring is not a runtime learning/approval path and cannot promote a gate. This deviation is explicit and does not modify the frozen original RED or existing tests. Both original and failed candidate raw retained under `/V13-Checkpoints/2026-10-30/Run14Z-WorldModel/`.
