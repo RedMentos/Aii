@@ -1,5 +1,5 @@
 {
-  "schema": "v13.build_state.step2_expression_diagnostic.v1",
+  "schema": "v13.build_state.step2_expression_diagnostic_verified.v1",
   "date_utc": "2026-10-30",
   "owner": "assistant/v13-step2-expression-diagnostic-20261030-0450",
   "parent_pr": 1206,
@@ -29,7 +29,7 @@
   "posthoc_only": true,
   "ci_run": 40999116309,
   "ci_head": "e21826dff395839397c5342cdfafd711e550d432",
-  "ci_status": "QUEUED_UNVERIFIED",
+  "ci_status": "GREEN_VERIFIED",
   "private_library": "/V13-Checkpoints/2026-10-30/Run11-STEP2-ExpressionDiagnostic/",
   "native_run_performed": false,
   "step2_gate_promoted": false,
@@ -46,5 +46,13 @@
     "No Redmi acceptance",
     "Historical Run34/Run37 full-suite source-pin errors RED"
   ],
-  "next_command": "Inspect Actions 40999116309 original ZIP and stage exits; if GREEN, independently verify closed raw and backup; next preregister disjoint integrated native C2+C3+Body utility with route_override=auto and source-bound option arithmetic scorer."
+  "next_command": "Preregister fresh disjoint C2+C3+Body native utility cohort with route_override=auto and expression-aware source-bound scorer; first software preflight, then serialized Linux native and original raw audit, then Redmi when available. Keep all negative gates.",
+  "ci_artifact_id": 12952895374,
+  "ci_artifact_sha256": "6f57ffd39a9eea88813a7f863f6001b6f53b2be2a2c1fd22be8b6f0e36397734",
+  "ci_artifact_bytes": 5259,
+  "ci_inner_sha256": "19/19",
+  "ci_stage_exits": "8/8 exit0",
+  "ci_tests": "10/10 PASS",
+  "ci_privacy": "CLEAN",
+  "private_backup_byte_identical": true
 }
