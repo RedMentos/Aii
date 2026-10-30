@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/v13-jef-human-receipt-run11d-20261030.yml'
       - 'v13/code/tests/test_jef_human_receipt_integrity_20261030.py'
+      - 'v13/code/tests/test_jef_human_report_receipt_integrity_20261030.py'
       - 'v13/code/v13/jefoutcome.py'
       - 'v13/code/v13/learning.py'
 permissions:
@@ -36,13 +37,15 @@ jobs:
           (cd v13/code && timeout --signal=TERM --kill-after=5s 7m \
             env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
               tests.test_jef_human_receipt_integrity_20261030 \
+              tests.test_jef_human_report_receipt_integrity_20261030 \
               tests.test_jef_human_record_precedence_20261030 \
               tests.test_jef_human_record_window_20261030 \
               tests.test_jefoutcome_self_source_20261030 \
               tests.test_jefoutcome_report_source_20261030) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 -m py_compile v13/code/v13/jefoutcome.py v13/code/v13/learning.py \
-            v13/code/tests/test_jef_human_receipt_integrity_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+            v13/code/tests/test_jef_human_receipt_integrity_20261030.py \
+            v13/code/tests/test_jef_human_report_receipt_integrity_20261030.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base 852f2c6ccef375cb03a0ad8318fec851f3b191ad \
