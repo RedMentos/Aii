@@ -1,0 +1,71 @@
+{
+  "schema": "v13.run13d.c2_route_numeric_generalization.review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13d-c2-numeric-generalization-20261030-auto11",
+  "base_sha": "7baea8983bf4aeb7ebe24fda19b79e97b46a136c",
+  "prereg_commit": "1bd013b88c2b1c5e6fc34a8f7b95c5086b80b307",
+  "tested_head": "5b65c4e41c2933152754950bd89166ab5598dcd1",
+  "pr": 1291,
+  "frozen_cohort_sha256": "563f530aac86a1e4ab5314d0833538ffe3587013742951e5a1cf9474a60c6140",
+  "original_v1_blob": "901f993ce815a1ccc10808c6d3272078d4300580",
+  "original_v2_blob": "1ba6ec6c1b2002cbc44164286404cd9d915b2cac",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "workflow_run": 41078037641,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12987259342,
+  "artifact_zip_sha256": "ad4abdcaa3c8b5506000dc7a8fd2d1c56292cbf509bcca4a318dd80d0aa3ee99",
+  "artifact_entries": 19,
+  "artifact_crc": "CLEAN",
+  "artifact_inner_sha256": "18/18 verified, full coverage",
+  "tests": "17/17 PASS in 0.537s",
+  "stage_exits": {
+    "PINS": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "RESULT": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run13D/RUN13D_41078037641.zip",
+  "private_backup_byte_identical": true,
+  "evidence_level": "SYNTHETIC_CONSTANT_EMBEDDING_ROUTE_WORD_HEAD_LEARNING_NOT_NATIVE",
+  "measurements": {
+    "v1": {
+      "train": "32/32",
+      "holdout": "32/32"
+    },
+    "v2": {
+      "train": "32/32",
+      "holdout": "32/32"
+    },
+    "deranged_labels": {
+      "train_original_labels": "0/32",
+      "holdout_original_labels": "0/32"
+    },
+    "prospective_v2_gain_signal": false,
+    "v1_numeric_notation_cosine": 0.814157,
+    "v2_numeric_notation_cosine": 1
+  },
+  "interpretation": "v2 feature normalization is more invariant to numeric notation, but this preregistered easy lexical synthetic cohort gives no downstream accuracy gain. Do not reroll or promote.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Need disjoint real human-route labels and native C2 embeddings to evaluate generalization, not synthetic word-only templates",
+    "Feature revision incompatible with v1 learned weights; active v1 remains unchanged",
+    "No measured downstream native routing, Redmi latency, retention or utility",
+    "Historical Run13A native utility RED and G13 fullsuite RED remain"
+  ],
+  "exact_next_command": "Do not retune Run13D. Review original synthetic raw; continue independent canonical package. For real C2 route-head transfer, first obtain explicit human labels and pinned native embeddings with disjoint holdout and preregister before any model fit.",
+  "remaining_platform_budget": "UNKNOWN"
+}
