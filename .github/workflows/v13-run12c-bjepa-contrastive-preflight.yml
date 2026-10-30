@@ -4,6 +4,7 @@ on:
     branches: [assistant/v13-run12c-bjepa-contrastive-native-runner-20261030-hourly11]
     paths:
       - '.github/workflows/v13-run12c-bjepa-contrastive-preflight.yml'
+      - '.github/workflows/v13-run12c-bjepa-contrastive-native.yml'
 permissions:
   contents: read
 jobs:
@@ -45,6 +46,27 @@ jobs:
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 -m py_compile v13/code/scripts/bodyjepa_350m_contrastive_disjoint_run12c.py v13/code/tests/test_bodyjepa_350m_contrastive_disjoint_run12c.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 - <<'PY' > "$e/NATIVE_WORKFLOW_RAW.log" 2>&1
+          from pathlib import Path
+          s = Path(".github/workflows/v13-run12c-bjepa-contrastive-native.yml").read_text()
+          for required in (
+              "BJEPA_CONTRASTIVE_350M_NATIVE_TRIGGER_RUN12C.txt",
+              "group: v13-bodyjepa-350m-eval-paired-native-serial-20261030",
+              "cancel-in-progress: false",
+              "timeout-minutes: 58",
+              "2700s",
+              "120bf032c36dd1273de754669da040dba7ad4982",
+              "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+              "v13-run12c-native-evidence",
+              "if: always()",
+              "privacy_scan.py",
+          ):
+              assert required in s, "MISSING_NATIVE_WORKFLOW_GUARD: " + required
+          assert "workflow_dispatch" not in s, "NATIVE_WORKFLOW_MUST_NOT_AUTODISPATCH"
+          assert "on:\\n  push:" not in s  # ensure this check is never silently mistaken for YAML parsing
+          print("STATIC_NATIVE_WORKFLOW_GUARDS_PASS; YAML parser/execution not yet verified")
+          PY
+          echo "$?" > "$e/NATIVE_WORKFLOW_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base f4fb9b9ae443c4486730a827dfbd199b5cc75bb2 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check f4fb9b9ae443c4486730a827dfbd199b5cc75bb2 HEAD > "$e/DIFF_RAW.log" 2>&1
@@ -65,7 +87,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-run12c-preflight"
-          for stage in PINS TEST COMPILE PRIVACY DIFF; do
+          for stage in PINS TEST COMPILE NATIVE_WORKFLOW PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "${stage} RED; raw artifact preserved"
               tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
