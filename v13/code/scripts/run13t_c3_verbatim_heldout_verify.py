@@ -91,7 +91,8 @@ def verify(pilot, fixture):
             if (row.get("score") != j.score(case, output, True)
                     or row.get("exact_copy") is not (output == answer)
                     or row.get("source_facts_verified") is not expected_fidelity
-                    or row.get("fidelity_reason") != fidelity["reason"]):
+                    or row.get("fidelity_reason") != fidelity["reason"]
+                    or row.get("wrong_claims") != t.explicit_wrong_claims(case, output)):
                 raise ValueError("RUN13T_SCORE_OR_FIDELITY_RED")
             pair.append(row)
             rows.append(row)
@@ -108,6 +109,7 @@ def verify(pilot, fixture):
                             and r["native_reaped"] for r in rows),
         "exact_copy": sum(r["arm"] == arm and r["exact_copy"] for r in rows),
         "source_facts_verified": sum(r["arm"] == arm and r["source_facts_verified"] for r in rows),
+        "wrong_claims": sum(r["wrong_claims"] for r in rows if r["arm"] == arm),
         "numeric_correct": sum(r["score"]["numeric"]["correct"]
                                for r in rows if r["arm"] == arm),
         "faster_correct": sum(r["score"]["faster_correct"]
