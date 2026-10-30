@@ -9,6 +9,7 @@ contain them (guard_training). Acceptance (does a mechanism run) stays separate.
 Solver contract: solver(view) -> {'answer': str, 'confidence': float in [0,1]} where view has
 id/family/prompt/level but never the answer. Exceptions count as wrong with confidence 0.
 """
+import hashlib
 import math
 import random
 import time
@@ -97,6 +98,25 @@ def build_suite(seed=13,families=None,per_level=PER_LEVEL,lang='en'):
     return {'version':SUITE_VERSION,'seed':seed,'lang':lang,'hash':digest(dumps([[i['id'],i['answer']] for i in items])),'items':items}
 
 def normalize(a):return ' '.join(str(a).strip().casefold().split())
+
+def _solver_key(name, *, lookup=False):
+    """Stable bounded AG12 curve key; never silently alias long model names.
+
+    Existing short keys remain byte-identical. Long names use a 124-bit SHA256
+    namespace disjoint from accepted short names. The read-only curve lookup
+    may accept the already encoded key returned by run().
+    """
+    if name is None or name == '':
+        return 'default'
+    if (type(name) is not str or not name or name != name.strip()
+            or len(name) > 256):
+        raise ValueError('AG12_SOLVER_IDENTITY')
+    if len(name) <= 32:
+        if (not lookup and len(name) == 32 and name.startswith('~')
+                and all(ch in '0123456789abcdef' for ch in name[1:])):
+            raise ValueError('AG12_SOLVER_RESERVED')
+        return name
+    return '~' + hashlib.sha256(name.encode('utf-8')).hexdigest()[:31]
 
 def _holdout_digest_ok(value):
     return (type(value) is str and len(value)==64
@@ -280,7 +300,7 @@ class GeneralityEval:
         A solver may offer batch(views, cancel, deadline) -> {id: out}: lets a body adapter answer all items with
         one model before switching to the next (one resident body on the phone)."""
         self._active_state()
-        started=self.clock();results=[];status='DONE';key=str(solver_name or 'default')[:32]
+        started=self.clock();results=[];status='DONE';key=_solver_key(solver_name)
         views=[{k:it[k] for k in ('id','family','level','prompt')} for it in self.suite['items']]
         pre=None
         if callable(getattr(solver,'batch',None)):
@@ -322,9 +342,10 @@ class GeneralityEval:
         return (run | {'_results':results,'_feedback_nonce':uid('g12fb')}) if include_results else run
     def curve(self,axis='overall',solver=None):
         """Time series for one axis: overall|seen|unseen|generalization_gap|planning_depth|forgetting|ece; optionally one solver."""
+        wanted=_solver_key(solver, lookup=True) if solver is not None else None
         out=[]
         for r in self._current_runs():
-            if solver is not None and r.get('solver','default')!=solver:continue
+            if wanted is not None and r.get('solver','default')!=wanted:continue
             s=r['summary'];v=(s['forgetting'] or {}).get('rate') if axis=='forgetting' else s['calibration']['ece'] if axis=='ece' else s.get(axis)
             out.append({'finished':r['finished'],'generation':r['generation'],'label':r['label'],'solver':r.get('solver','default'),'value':v})
         return out
