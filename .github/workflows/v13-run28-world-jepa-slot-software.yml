@@ -32,6 +32,8 @@ jobs:
           14a641750ef65ea291897c1e0e2f24aa094f24ec v13/code/docs/WORLD_JEPA_SLOT_COMPOSITION_PREREG_RUN28_20261030.md
           7a1156c24f2a7863555da579a6b1d0ca80c1edaf v13/code/v13/world_jepa_slot_candidate.py
           fe8e605bc56262e59b8871747fa968f66d88b61b v13/code/tests/test_world_jepa_slot_candidate_run28.py
+          9cad5e592455f44527528e37eccff14286dcef1b v13/code/scripts/run28_world_jepa_slot_real.py
+          e69d08fc64a7661746938159ae2227332cc5dd2d v13/code/tests/test_run28_world_jepa_slot_real.py
           99a686a131a1bdc89efe0d0cf9610ec54cbd853b v13/code/v13/world_jepa.py
           2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4 v13/code/scripts/z12b_world_jepa.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
@@ -51,10 +53,10 @@ jobs:
             echo "$?" > "$e/DEPS_EXIT.txt"
           else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
           if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_world_jepa_slot_candidate_run28 tests.test_world_jepa tests.test_world_jepa_fit_input_guard tests.test_world_jepa_action_permutation_control tests.test_world_jepa_atomic_fit) > "$e/TEST_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_world_jepa_slot_candidate_run28 tests.test_run28_world_jepa_slot_real tests.test_world_jepa tests.test_world_jepa_fit_input_guard tests.test_world_jepa_action_permutation_control tests.test_world_jepa_atomic_fit) > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
           else echo SKIPPED_PIN_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
-          "$py" -m py_compile v13/code/v13/world_jepa_slot_candidate.py v13/code/tests/test_world_jepa_slot_candidate_run28.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m py_compile v13/code/v13/world_jepa_slot_candidate.py v13/code/tests/test_world_jepa_slot_candidate_run28.py v13/code/scripts/run28_world_jepa_slot_real.py v13/code/tests/test_run28_world_jepa_slot_real.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 740b376132405d77923d53400b59c5e0cee0cc96 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
