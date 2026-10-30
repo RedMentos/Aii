@@ -21,6 +21,12 @@ The native C2 tool output is not just noisy; some original `reasoning` fields tr
 
 This separates two problems: (a) strict structural admission successfully rejects malformed/ambiguous tool output; (b) a structurally valid unique `select_processing` call can still be semantically wrong. A future candidate must be independently preregistered on disjoint data; do not tune the existing frozen cohort or infer that a confidence-only filter is sufficient.
 
+## Primary-source design follow-up (researched 2026-10-30; NOT implemented)
+
+Cactus Compute's official Needle 3 README and `llms.txt` distinguish **tool selection/execution** (the model may return an empty call when no declared action fits) from **structured extraction**, which explicitly supports enum-based classification. The observed "no calculator tool available" rationale is consistent with that tool-calling contract; it does not prove the mechanism. Sources: `https://github.com/cactus-compute/needle/blob/main/README.md`, `https://github.com/cactus-compute/needle/blob/main/llms.txt`, and `https://huggingface.co/Cactus-Compute/needle3` (Apache-2.0).
+
+A separately preregistered candidate should test Needle's **one-shot structured extraction of a route enum** against the current `select_processing` action-tool setup on disjoint source prompts. First verify that the **pinned native worker** actually supports the required extraction operation; the Python API's `needle.extract` does not establish that the existing C2 worker protocol supports it. If unsupported, retain the blocker and work on an isolated adapter without replacing pinned source/model or claiming native parity. No automatic production route authority or confidence-only approval follows from this research.
+
 ## Gates, risk and next package
 
 Age0 `RECORD_ONLY`, STEP2 `UTILITY_FAIL`, B3 `NO_PROMOTION`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, Redmi `UNMEASURED`, whole V13 incomplete. No C3/Body output was generated in Run12L; no model/weights/routing policy changed. The result argues **against granting native C2 additional routing authority without task-bound evidence**. It does not justify claiming that a different route improves answers.
