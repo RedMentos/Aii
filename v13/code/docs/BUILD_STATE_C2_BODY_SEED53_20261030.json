@@ -1,0 +1,53 @@
+{
+  "schema": "v13.build_state.c2_body_controlled_seed53.v1",
+  "date_utc": "2026-10-30",
+  "owner": "codex/v13-c2-body-controlled-native-20261030-hourly11c",
+  "parent_head": "373d50e92c698163aa4ac773f46f27ec13379e85",
+  "pr": 1212,
+  "prereg_commit": "25c409468b1e3412e676124329624e78569bdf8a",
+  "prereg_blob": "decf9a6bafb2d5b15d6b7df224b191caf05cb98a",
+  "source_blob": "d14a7d171c99d9ff9947ea55ab3c5d4709909d7d",
+  "tests_blob": "a1229441e38edca3aad99caea615665c5790c845",
+  "seed": 53,
+  "fixture_sha256": "7c5da29e274c3d63a34b68baac6ac9b6e31a968d5632b938eff7de01cf2f24d4",
+  "arms": [
+    "A_C3_ONLY",
+    "B_B1_ONLY",
+    "C_B2_ONLY",
+    "D_DISTINCT_BOTH",
+    "E_SHARED_DUAL_COLD",
+    "F_NATIVE_AUTO"
+  ],
+  "expected_native_rows": 24,
+  "software_preflight": {
+    "run": 41001429136,
+    "head": "12e754a9fde4d3ff97a526cdc279c1424e88fe2b",
+    "conclusion": "SUCCESS",
+    "tests": "11/11 PASS",
+    "stages": "8/8 EXIT0",
+    "privacy": "CLEAN",
+    "artifact_id": 12953606594,
+    "artifact_sha256": "d8c08ade7126d8b6ab965b2c539aff7ab922f19248ae02c3e123cb18eb0c8a83",
+    "artifact_bytes": 4327,
+    "zip_crc": "CLEAN",
+    "inner_sha256": "18/18",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C2Body-ControlledSeed53/PREFLIGHT_41001429136.zip",
+    "private_byte_identical": true
+  },
+  "native_status": "NOT_LAUNCHED_PENDING_SERIAL_HEAVY_SLOT_AND_WORKFLOW",
+  "learning_mode": "RECORD_ONLY",
+  "jepa_weight": 0,
+  "step2_gate_promoted": false,
+  "b3_promoted": false,
+  "body_jepa_available": false,
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "open_questions": [
+    "Full unfiltered review-chain Actions 41001121075 still running at this checkpoint",
+    "Native 24-row pilot not yet executed",
+    "One-body dual state control cold-start only",
+    "Historical Run34/Run37 full suite source-pin errors remain RED",
+    "No Redmi device"
+  ],
+  "next_command": "After fullsuite run 41001121075 terminal, create and launch pinned native workflow under v13-step2-budget-paired-native-20261030 concurrency; then verify original raw SHA/CRC/24 row source/output/roles/route/reaping and private byte backup. No gate promotion."
+}
