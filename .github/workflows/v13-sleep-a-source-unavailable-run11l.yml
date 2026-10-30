@@ -1,0 +1,76 @@
+name: V13 Sleep A live source unavailable run11l
+on:
+  push:
+    branches:
+      - 'assistant/v13-sleep-source-unavailable-run11l-20261030'
+    paths:
+      - '.github/workflows/v13-sleep-a-source-unavailable-run11l.yml'
+      - 'v13/code/tests/test_sleep_a_source_unavailable_run11l.py'
+      - 'v13/code/v13/sleep.py'
+      - 'v13/code/docs/SLEEP_A_SOURCE_UNAVAILABLE_CI_TRIGGER_RUN11L.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sleep-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Real-Store Sleep A source integrity with raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/sleep-source-run11l"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/sleep-source-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/sleep-source-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 8m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_sleep_a_source_unavailable_run11l \
+              tests.test_sleep_a_exact_recall_identity_review \
+              tests.test_sleep_validation \
+              tests.test_sleep_memory_authority_run274 \
+              tests.test_sleep_offline \
+              tests.test_sleep_scheduler) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/v13/sleep.py \
+            v13/code/tests/test_sleep_a_source_unavailable_run11l.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 645c70e8c28fb9e016eaa5d068c2d3977075184d \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 645c70e8c28fb9e016eaa5d068c2d3977075184d HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-sleep-source-run11l-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/sleep-source-run11l/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed and preserve original raw
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/sleep-source-run11l"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained"
+              tail -100 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "SLEEP_A_SOFTWARE_ONLY_NO_FACT_WRITE_OR_AGE_PROMOTION"
