@@ -32,14 +32,16 @@ def research_loss(batch):
     sources = batch["source_ids"]
     targets = batch["target_source_ids"]
     if (type(sources) not in (list, tuple) or type(targets) not in (list, tuple)
-            or len(sources) < 2 or len(sources) != len(set(sources))
+            or len(sources) < 2
             or any(type(v) is not str or not v for v in sources)
+            or len(sources) != len(set(sources))
             or list(sources) != list(targets)):
         raise ValueError("Body-JEPA source alignment invalid")
     torch = batch["torch"]
     ctx, tgt = batch["context_view_ids"], batch["target_view_ids"]
     if (not isinstance(ctx, (list, tuple)) or not isinstance(tgt, (list, tuple))
             or len(ctx) != 2 or len(tgt) != 2
+            or not torch.is_tensor(ctx[0]) or not torch.is_tensor(tgt[0])
             or ctx[0].shape[0] != len(sources)
             or tgt[0].shape[0] != len(sources)):
         raise ValueError("Body-JEPA batch/source row count invalid")
