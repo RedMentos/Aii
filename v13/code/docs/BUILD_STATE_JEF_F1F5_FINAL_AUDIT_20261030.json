@@ -48,5 +48,17 @@
     "No native persisted FINAL cohort measured with new audit",
     "Shared units and adversarial repeated option labels need independent review"
   ],
-  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_jef_f1f5_final_output_audit_20261030 tests.test_jefsource_explain_optin_20261030 tests.test_jef_f1f5_operator"
+  "next_command": "cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_jef_f1f5_final_output_audit_20261030 tests.test_jefsource_explain_optin_20261030 tests.test_jef_f1f5_operator",
+  "fullsuite_pin_audit": {
+    "run_id": 40991785171,
+    "tests": 3425,
+    "errors": 2,
+    "skipped": 11,
+    "artifact_sha256": "c4fb54cbbd7bf28a65764c4f2e31bf3ae3010d3f91a11da9a0b14f480d03abb2",
+    "expected_utility_blob": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd",
+    "observed_utility_blob": "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53",
+    "other_three_pins_match": true,
+    "status": "RED_UNWAIVED",
+    "private_backup_byte_verified": true
+  }
 }
