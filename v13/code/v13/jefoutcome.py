@@ -130,31 +130,24 @@ def _valid_human_receipt(store, feedback, human, decision):
 
 
 def _human_label_exists(store,component,revision,context_sha256):
-    """Require an exact active human receipt, even outside recent-row limits."""
-    candidates = store.rows(
-        "SELECT f.*, h.payload AS human_payload, d.payload AS decision_payload "
-        "FROM feedback f "
+    """Conservative veto: active linked human feedback outranks self labels.
+
+    A suspect active receipt is not valid human *training* data, but must not
+    silently unlock lower-authority self learning. Explicitly revoked sources
+    do not count. Exact admission to the human optimizer is separately
+    enforced by _valid_human_receipt in learning.shadow_readout.
+    """
+    return bool(store.one(
+        "SELECT 1 FROM feedback f "
         "JOIN sources s ON s.id=f.source_id AND s.deleted=0 "
-        " AND s.kind='HUMAN_DECISION' "
         "JOIN packets h ON h.kind='HumanDecision' AND h.event_id=f.event_id "
         " AND json_extract(h.payload,'$.source_ref.source_id')=f.source_id "
         "JOIN packets d ON d.kind='ExecutiveDecision' "
         " AND d.id=json_extract(h.payload,'$.decision_packet_id') "
-        " AND d.event_id=f.event_id "
         "WHERE f.kind=? AND json_extract(d.payload,'$.component')=? "
         "AND json_extract(d.payload,'$.context_revision')=? "
-        "AND json_extract(d.payload,'$.context_ref.sha256')=? "
-        "ORDER BY f.created DESC",
-        (component,component,revision,context_sha256))
-    for row in candidates:
-        try:
-            human=json.loads(row['human_payload'])
-            decision=json.loads(row['decision_payload'])
-        except (TypeError,ValueError):
-            continue
-        if _valid_human_receipt(store,row,human,decision):
-            return True
-    return False
+        "AND json_extract(d.payload,'$.context_ref.sha256')=? LIMIT 1",
+        (component,component,revision,context_sha256)))
 
 def training_rows(store,component,revision,human_keys):
     """Outcome rows for learning.shadow_readout: only in 'learn' mode, only contexts without a human label."""
