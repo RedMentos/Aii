@@ -71,12 +71,12 @@ def _pair_spans(text, item):
     """
     name = re.escape(item["name"])
     n = str(item["number"])
-    sign = r"(?:-|\\u2212)" if n.startswith("-") else r"\\+?"
+    sign = r"(?:-|\u2212)" if n.startswith("-") else r"\+?"
     digits = re.escape(n.lstrip("-"))
-    pattern = (r"(?<![\\w-])" + name + r"(?![\\w-])"
-               + r"[ \\t\\r\\n]*[:=]?[ \\t\\r\\n]*"
-               + r"(?:kostet[ \\t]+)?\\(?[ \\t]*"
-               + sign + digits + r"(?![\\d.,])")
+    pattern = (r"(?<![\w-])" + name + r"(?![\w-])"
+               + r"[ \t\r\n]*[:=]?[ \t\r\n]*"
+               + r"(?:kostet[ \t]+)?\(?[ \t]*"
+               + sign + digits + r"(?![\d.,])")
     return [(m.start(), m.end()) for m in re.finditer(pattern, text, re.IGNORECASE)]
 
 
