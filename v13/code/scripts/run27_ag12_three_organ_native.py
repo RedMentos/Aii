@@ -23,6 +23,7 @@ from v13.models import ModelManager, download_file, platform_tag
 from v13.runtime import Runtime
 
 DEADLINE_S = 1200
+RUNNER_BINARY_SHA = "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
 ROLES = ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
 
 
@@ -124,6 +125,13 @@ def run(home, out):
         report["model_sha256"] = {role: file_hash(path) for role, path in paths.items()}
         report["runner_tar_sha256"] = file_hash(archive)
         report["runner_binary_sha256"] = file_hash(binary)
+        if (report["model_sha256"] != {
+                "C3_LANGUAGE": C3_SHA,
+                "B1_DETAIL": BODIES["b1"]["sha"],
+                "B2_GIST": BODIES["b2"]["sha"]}
+                or report["runner_tar_sha256"] != RUNNER_SHA
+                or report["runner_binary_sha256"] != RUNNER_BINARY_SHA):
+            raise ValueError("RUN27_POST_INSTALL_PIN_RED")
         runtime = Runtime(home)
         runtime.sleep.cycle.set_policy("enabled", "off")
         cfg = runtime.cfg
