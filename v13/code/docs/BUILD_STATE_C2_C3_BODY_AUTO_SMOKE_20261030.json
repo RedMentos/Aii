@@ -1,5 +1,5 @@
 {
-  "schema": "v13.build_state.c2_c3_body_auto_native_smoke.v1",
+  "schema": "v13.build_state.c2_c3_body_auto_native_verified.v1",
   "date_utc": "2026-10-30",
   "owner": "assistant/v13-c2-c3-body-auto-native-smoke-20261030-0500",
   "parent_pr": 1207,
@@ -13,9 +13,9 @@
   "preflight_head": "cb48f9f92ca428ee7b92a2390d143d50a29ad091",
   "preflight_status": "GREEN_VERIFIED",
   "native_run": 40999648419,
-  "native_c2_invocations_proven": false,
+  "native_c2_invocations_proven": true,
   "native_route_selected_proven": false,
-  "full_body_path_proven": false,
+  "full_body_path_proven": true,
   "comparative_utility_proven": false,
   "learning_mode": "RECORD_ONLY",
   "jepa_weight": 0,
@@ -26,13 +26,13 @@
   "whole_system_complete": false,
   "private_library": "/V13-Checkpoints/2026-10-30/Run11-C2-C3-Body-AutoNativeSmoke/",
   "open_questions": [
-    "Software preflight not yet terminal",
-    "Full native auto-route C2+C3+Body turn unmeasured",
-    "Native selected route vs scaffold may differ",
-    "No disjoint comparative utility or Redmi acceptance",
-    "Historical Run34/Run37 full-suite source-pin errors RED"
+    "C2 native selected route 0/3 due current simple-only authority guard",
+    "All three FINAL outputs B1_DETAIL; no C3 FINAL in this smoke",
+    "Source arithmetic explicitly wrong 4/6; no comparative utility",
+    "Need fresh disjoint C3/B1/B2/Both/one-body-two-states controls",
+    "No Redmi acceptance, historical Run34/Run37 full-suite source-pin RED"
   ],
-  "next_command": "Inspect Actions 40999648419 original raw and terminal state; independently verify SHA256/CRC/inner manifest, all 3 native C2/source/session/FINAL/Body receipts and private byte-identical backup; if RED preserve original and investigate; no utility/age/B3/JEPA promotion.",
+  "next_command": "Preregister fresh disjoint controlled native utility cohort with C3-only, B1-only, B2-only, B1+B2, one-body-two-states controls; preserve route provenance and current authority guard; source-bound contradiction-veto scorer, software preflight, serialized Linux native, independent raw and Redmi later.",
   "preflight_artifact_id": 12952652982,
   "preflight_artifact_sha256": "e43af598585c3a4d7b10dfd38386105e8856de7c662898f40880e3f5ea5b6387",
   "preflight_inner_sha256": "16/16",
@@ -40,5 +40,28 @@
   "preflight_tests": "8/8 PASS",
   "preflight_private_backup_byte_identical": true,
   "native_head": "4f73e39db16d9ff4570dc6d3b4586160dc18d0a3",
-  "native_status": "QUEUED_UNVERIFIED"
+  "native_status": "NATIVE_AUTO_ROUTE_3_OF_3_LINUX_ONLY",
+  "native_run_terminal": "SUCCESS",
+  "native_artifact_id": 12952434876,
+  "native_artifact_sha256": "df680697f65f9879b7817179b8d4a2d1f8625656579c68f03c0268d599f6d4c4",
+  "native_artifact_bytes": 186391,
+  "native_inner_sha256": "27/27",
+  "native_stage_exits": "10/10 exit0",
+  "native_privacy": "CLEAN",
+  "native_c2_invocations": 3,
+  "native_c2_selected_route": 0,
+  "full_body_offer_paths": 3,
+  "native_final_outputs": 3,
+  "final_runner_roles": [
+    "B1_DETAIL",
+    "B1_DETAIL",
+    "B1_DETAIL"
+  ],
+  "c3_final_output_proven": false,
+  "exploratory_correct_remainders_out_of_6": "2/6 NOT_PREREG_UTILITY",
+  "independent_audit": "PASS 27/27 inner hashes 10/10 exits",
+  "independent_tests": "5/5 PASS",
+  "initial_auditor_false_red_preserved": true,
+  "private_native_backup_byte_identical": true,
+  "private_native_backup_path": "/V13-Checkpoints/2026-10-30/Run11-C2-C3-Body-AutoNativeSmoke/NATIVE_40999648419.zip"
 }
