@@ -198,7 +198,11 @@ class KnobAndLearningTests(Base):
         traces=self.r.store.rows("SELECT payload FROM packets WHERE kind='LearningTrace' AND event_id=?",(e,))
         self.assertTrue(any(json.loads(t['payload'])['path_id']==C.PATH for t in traces))
         self.assertEqual(N.kind_of(C.PATH),'control');self.assertEqual(N.kind_of('attention_policy'),'control')
-        for _ in range(3):self.c.outcome(e,0.)
+        self.c.outcome(e,0.)
+        for i in range(2):
+            later=self.ev('q-distinct-%d'%i)
+            self.c.plan(later,'C3_LANGUAGE','SYS',[],hist,'q-distinct-%d'%i)
+            self.c.outcome(later,0.)  # independent events, not replay of one rating
         st=self.c.report();self.assertLess(st['policy']['compress']['mean'],.5)
         self.assertEqual(self.c._shift(self.c._load()[0],'compress'),0.)  # learned prior stays SHADOW
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN','learned');self.assertLess(self.c._shift(self.c._load()[0],'compress'),0.)
