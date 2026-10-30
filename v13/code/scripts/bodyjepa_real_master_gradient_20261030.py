@@ -44,6 +44,21 @@ def norm(grads):
                          for g in grads if g is not None))
 
 
+def prompt_ids(tok, prompt):
+    """Pinned LFM2.5 chat-template BatchEncoding -> one explicit token row."""
+    import torch
+    encoded = tok.apply_chat_template(
+        [{"role": "user", "content": prompt}],
+        add_generation_prompt=True, tokenize=True,
+        return_dict=True, return_tensors="pt")
+    ids = encoded.input_ids if hasattr(encoded, "input_ids") else (
+        encoded.get("input_ids") if isinstance(encoded, dict) else None)
+    if (not isinstance(ids, torch.Tensor) or ids.dtype != torch.long
+            or ids.ndim != 2 or ids.shape[0] != 1 or ids.shape[1] < 1):
+        raise ValueError("Expected a single nonempty int64 prompt token row")
+    return ids[0].tolist()
+
+
 def probe(master):
     import torch
     from peft import LoraConfig, get_peft_model
@@ -57,9 +72,7 @@ def probe(master):
     model = AutoModelForCausalLM.from_pretrained(
         str(master), dtype=torch.float32, local_files_only=True)
     model.eval()
-    prompts = [tok.apply_chat_template(
-        [{"role": "user", "content": q}], add_generation_prompt=True,
-        tokenize=True) for q in PROMPTS]
+    prompts = [prompt_ids(tok, q) for q in PROMPTS]
     targets = [tok.encode(t, add_special_tokens=False)[:2] for t in TARGETS]
     if not all(len(row) >= 2 for row in targets) or targets[0] == targets[1]:
         raise ValueError("Two distinct 2-token target views required")
