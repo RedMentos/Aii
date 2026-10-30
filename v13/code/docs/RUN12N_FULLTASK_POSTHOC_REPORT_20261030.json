@@ -1,0 +1,195 @@
+{
+  "baseline": "Exact integer subtraction and min(days) yields 4/4 full tasks; task-specific deterministic control, not an LLM.",
+  "comparative_utility_proven": false,
+  "evidence": "POSTHOC_READONLY_NOT_A_GATE",
+  "limitations": "Explicit lexical faster claims only; no negation, pragmatics, or semantic entailment calibration. Frozen numeric scorer unchanged.",
+  "manifest_verified": 60,
+  "native_rows": 16,
+  "preclose_rows": 16,
+  "redmi_measured": false,
+  "rows": [
+    {
+      "arm": "A_C3_ONLY",
+      "claim": "Vale",
+      "expected_faster": "Vale",
+      "faster_status": "CORRECT",
+      "index": 0,
+      "numeric_points": 0,
+      "project": "CedarGate197"
+    },
+    {
+      "arm": "B_B1_ONLY",
+      "claim": "Elm",
+      "expected_faster": "Vale",
+      "faster_status": "WRONG",
+      "index": 1,
+      "numeric_points": 0,
+      "project": "CedarGate197"
+    },
+    {
+      "arm": "C_B2_ONLY",
+      "claim": "Elm",
+      "expected_faster": "Vale",
+      "faster_status": "WRONG",
+      "index": 2,
+      "numeric_points": 2,
+      "project": "CedarGate197"
+    },
+    {
+      "arm": "F_NATIVE_AUTO",
+      "claim": "Elm",
+      "expected_faster": "Vale",
+      "faster_status": "WRONG",
+      "index": 3,
+      "numeric_points": 0,
+      "project": "CedarGate197"
+    },
+    {
+      "arm": "B_B1_ONLY",
+      "claim": "Pollen",
+      "expected_faster": "Ridge",
+      "faster_status": "WRONG",
+      "index": 4,
+      "numeric_points": 0,
+      "project": "Helix197"
+    },
+    {
+      "arm": "C_B2_ONLY",
+      "claim": "Pollen",
+      "expected_faster": "Ridge",
+      "faster_status": "WRONG",
+      "index": 5,
+      "numeric_points": 2,
+      "project": "Helix197"
+    },
+    {
+      "arm": "F_NATIVE_AUTO",
+      "claim": "Pollen",
+      "expected_faster": "Ridge",
+      "faster_status": "WRONG",
+      "index": 6,
+      "numeric_points": 0,
+      "project": "Helix197"
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "claim": "Ridge",
+      "expected_faster": "Ridge",
+      "faster_status": "CORRECT",
+      "index": 7,
+      "numeric_points": 0,
+      "project": "Helix197"
+    },
+    {
+      "arm": "C_B2_ONLY",
+      "claim": "ABSTAIN",
+      "expected_faster": "Lumen",
+      "faster_status": "ABSTAIN",
+      "index": 8,
+      "numeric_points": 0,
+      "project": "Tundra197"
+    },
+    {
+      "arm": "F_NATIVE_AUTO",
+      "claim": "Wisp",
+      "expected_faster": "Lumen",
+      "faster_status": "WRONG",
+      "index": 9,
+      "numeric_points": 0,
+      "project": "Tundra197"
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "claim": "Wisp",
+      "expected_faster": "Lumen",
+      "faster_status": "WRONG",
+      "index": 10,
+      "numeric_points": 0,
+      "project": "Tundra197"
+    },
+    {
+      "arm": "B_B1_ONLY",
+      "claim": "Wisp",
+      "expected_faster": "Lumen",
+      "faster_status": "WRONG",
+      "index": 11,
+      "numeric_points": 2,
+      "project": "Tundra197"
+    },
+    {
+      "arm": "F_NATIVE_AUTO",
+      "claim": "Kite",
+      "expected_faster": "Lotus",
+      "faster_status": "WRONG",
+      "index": 12,
+      "numeric_points": 1,
+      "project": "Aster197"
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "claim": "Lotus",
+      "expected_faster": "Lotus",
+      "faster_status": "CORRECT",
+      "index": 13,
+      "numeric_points": 0,
+      "project": "Aster197"
+    },
+    {
+      "arm": "B_B1_ONLY",
+      "claim": "Kite",
+      "expected_faster": "Lotus",
+      "faster_status": "WRONG",
+      "index": 14,
+      "numeric_points": 1,
+      "project": "Aster197"
+    },
+    {
+      "arm": "C_B2_ONLY",
+      "claim": "ABSTAIN",
+      "expected_faster": "Lotus",
+      "faster_status": "ABSTAIN",
+      "index": 15,
+      "numeric_points": 0,
+      "project": "Aster197"
+    }
+  ],
+  "schema": "v13.run12n.fulltask.posthoc.readonly.v1",
+  "source_zip_sha256": "c058f33d1055d838000cc31e27b6e6ba6d37f86caa8e7b0d15a643672d44c447",
+  "stats": {
+    "A_C3_ONLY": {
+      "faster_abstain": 0,
+      "faster_contradictory": 0,
+      "faster_correct": 3,
+      "faster_wrong": 1,
+      "numeric_points": 0,
+      "strict_full_task": 0
+    },
+    "B_B1_ONLY": {
+      "faster_abstain": 0,
+      "faster_contradictory": 0,
+      "faster_correct": 0,
+      "faster_wrong": 4,
+      "numeric_points": 3,
+      "strict_full_task": 0
+    },
+    "C_B2_ONLY": {
+      "faster_abstain": 2,
+      "faster_contradictory": 0,
+      "faster_correct": 0,
+      "faster_wrong": 2,
+      "numeric_points": 4,
+      "strict_full_task": 0
+    },
+    "F_NATIVE_AUTO": {
+      "faster_abstain": 0,
+      "faster_contradictory": 0,
+      "faster_correct": 0,
+      "faster_wrong": 4,
+      "numeric_points": 1,
+      "strict_full_task": 0
+    }
+  },
+  "step2_gate_promoted": false,
+  "strict_c2": 4,
+  "whole_system_complete": false
+}
