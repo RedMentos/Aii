@@ -1,0 +1,81 @@
+{
+  "schema": "v13.c2.route_agreement_proxy.run12l.fixture.v1",
+  "seed": 43,
+  "cases": [
+    {
+      "prompt": "Hi from project Larch; say hello in five words.",
+      "reference_route": "simple",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Thank you for your help; acknowledge briefly.",
+      "reference_route": "simple",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Goodbye from project Quartz; respond politely.",
+      "reference_route": "simple",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Is this message received? Reply yes or no.",
+      "reference_route": "simple",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "What is seventeen minus nine? Show each step.",
+      "reference_route": "detail",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Solve eighty-one minus twenty-seven and check the answer.",
+      "reference_route": "detail",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Explain why a number divisible by six might not be divisible by nine.",
+      "reference_route": "detail",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Which fraction is larger, three fifths or two thirds? Show reasoning.",
+      "reference_route": "detail",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Give the main idea of this note in one sentence: blue trees grow slowly and green trees grow fast.",
+      "reference_route": "gist",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Condense these points into one takeaway: rain fell, roads flooded, buses stopped.",
+      "reference_route": "gist",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Distill the core message: local teams found errors, fixed them, and retested.",
+      "reference_route": "gist",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "State the big picture of this short report: three groups met, voted, and agreed.",
+      "reference_route": "gist",
+      "expected_scaffold": "simple"
+    },
+    {
+      "prompt": "Calculate 6 + 7.",
+      "reference_route": "detail",
+      "expected_scaffold": "detail"
+    },
+    {
+      "prompt": "Summarize this note: the pilot was delayed by heavy rain.",
+      "reference_route": "gist",
+      "expected_scaffold": "gist"
+    },
+    {
+      "prompt": "Compare the two options: a cheap slow trip and an expensive fast trip.",
+      "reference_route": "both",
+      "expected_scaffold": "both"
+    }
+  ]
+}
