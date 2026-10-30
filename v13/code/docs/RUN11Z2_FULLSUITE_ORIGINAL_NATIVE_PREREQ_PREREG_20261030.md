@@ -1,0 +1,13 @@
+# Run11Z2 prereg — unfiltered fullsuite with exact original native ZIP prerequisite (2026-10-30)
+
+Parent Run11Z PR #1256 original RED Actions **41042932709**: 3825 tests, 3 errors, 14 skipped, ZIP SHA256 `b76c9bef9cb20411f09535be9c1e23c18580096d5bba3d74f48bae90b251df09`. Two Run34/Run37 source/catalog pin mismatches and one missing public artifact `v13/code/tests/NATIVE_40996792157.zip`. Preserve original RED and source bytes.
+
+The exact missing artifact is publicly available as original Actions **40996792157**, artifact **12951963045**, exact SHA256 **`98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46`**, 297655 bytes, HEAD `5e802d235c9501879a3aff07e5134c1455e1769b`, 54 ZIP entries CRC clean, 53/53 SHA256SUMS, 27 original native raw rows, `PILOT_COMPLETE_NO_GATE`, fixture SHA256 `fe9b86fdf561778ad540dd4767111f04c10a147a8a44cf783fa16f0d2c8a45ca`, original totals 0/10/9. Original artifact independently downloaded and privately backed byte-exact to `/V13-Checkpoints/2026-10-30/Run11Z-Fullsuite/OriginalNative40996792157/NATIVE_40996792157_sha98A61F62.zip`.
+
+**Before implementation freeze:** create a new source-only workflow, no production source/test changes. Download original artifact through authenticated GitHub Actions endpoint, verify SHA256/HEAD/CRC/internal hashes, stage **exact bytes** only at `v13/code/tests/NATIVE_40996792157.zip` in ephemeral runner workspace. Do not commit ZIP to public Git, replace it with synthetic content, edit the frozen test or waive failures. Then run full unfiltered `unittest discover -s tests -p 'test_*.py'` with same pinned Torch/Transformers/PEFT dependencies. Preserve raw even if RED, including the exact original fullsuite errors. Remove ephemeral ZIP before artifact upload so raw report does not duplicate native data.
+
+**Expected interpretation:** if the third error disappears, 2 Run34/Run37 source-pin errors remain. This is not fullsuite GREEN, nor proof that Run34/37 should be bypassed. If additional errors appear, preserve and investigate. No source/Canon/model/seed/gate changes, no native inference, no Redmi.
+
+**Next:** launch source-only CI, verify terminal artifact, private backup, scoped state. Resolve remaining original pin drift only by recovering its registered historical source/model catalog, never by rewriting the frozen acceptance pins.
+
+**Gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight0; Redmi UNMEASURED; whole V13 incomplete.
