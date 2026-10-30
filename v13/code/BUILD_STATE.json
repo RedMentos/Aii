@@ -3564,5 +3564,42 @@
     },
     "exact_next_command": "Run full unfiltered software cross-organ suite with isolated pinned PEFT on combined native/JEF review chain, preserve frozen Run34/Run37 source-pin errors.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run11_20261030_currentchain_connected_age0_native": {
+    "scope": "CURRENT_CHAIN_CONNECTED_AGE0_LINUX_NATIVE_VERTICAL_INTERMEDIATE",
+    "owner": "V13 hourly automation; review branch only",
+    "parent_head": "2895f9a52aded6d7d84846fd79c5664b53eeeff6",
+    "branch": "codex/v13-currentchain-age0-integrated-native-20261030-auto11ab",
+    "pr": 1192,
+    "prereg_commit": "da92fcb6fdf2a1180df9317e5b08235fa4470c17",
+    "tested_head": "3c9e961d123e5bed1826802fc3e236c19078f5ee",
+    "actions_run": 40987192595,
+    "status": "GREEN_SCOPED_LINUX_NATIVE_VERTICAL_ONLY_SEMANTIC_UNPROVEN",
+    "stages_exit0": "10/10",
+    "focused_tests": "31/31",
+    "jef_modes_checks": "8/8",
+    "step12_checks": "8/8",
+    "step2_persisted_role_states": {
+      "B1_DETAIL": 1,
+      "B2_GIST": 2
+    },
+    "raw_zip_sha256": "ad961abb8eea8d567f58cbc4f1fed67f7a79920e36564bb5527b7ea08fa4f3f7",
+    "raw_inner_hashes": "27/27",
+    "raw_zip_crc_clean": true,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11-CurrentChain-Age0-Connected/RAW_GREEN_40987192595_SHA256_ad961abb8eea8d56.zip",
+    "remote_bytes_verified": true,
+    "semantic_quality": "NOT_DEMONSTRATED_UNSUPPORTED_110_EURO_PREFERENCE",
+    "redmi_measured": false,
+    "gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "whole_system_complete": false
+    },
+    "exact_next_command": "Preregister a fresh paired STEP2 no-body/one-body/both native semantic utility scorer against current pinned source; keep current historical cohorts unchanged.",
+    "next_prerequisites": "Fixed disjoint semantic fixtures, original baseline and counterfactual, serialized pinned native runs, actual Redmi evidence separately.",
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
