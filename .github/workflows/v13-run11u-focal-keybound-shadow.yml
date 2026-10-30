@@ -27,8 +27,8 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           257df28b2548dbc546e68c7e0899897c06ad25f8 v13/code/docs/FOCAL_SOURCE_IDENTITY_PREREG_RUN11U_20261030.md
-          fabd634ac1394ff074fcf07d2b648ff51e601810 v13/code/scripts/focal_source_identity_guard_run11u.py
-          4bda7ba459cce637ea00215c79944915b57fd9ba v13/code/tests/test_focal_source_identity_guard_run11u.py
+          f0fde30d4e29385bfeea8c598322d085d8923617 v13/code/scripts/focal_source_identity_guard_run11u.py
+          343866fd9d1c5f5f4ceb4127f7008e1b2cb72d17 v13/code/tests/test_focal_source_identity_guard_run11u.py
           22361f6e6888bdc98c640ecc5f852a323fc1283f v13/code/docs/FOCAL_RECENCY_REPLACEMENT_SHADOW_PREREG_RUN11S_20261030.md
           bf9c7d8ee75bbe82a82c0c2d3dc4cefed4036bce v13/code/scripts/focal_replacement_shadow_run11s.py
           47b49d6df8f42d49bee08f7b818a70710c7abea1 v13/code/tests/test_focal_replacement_shadow_run11s.py
