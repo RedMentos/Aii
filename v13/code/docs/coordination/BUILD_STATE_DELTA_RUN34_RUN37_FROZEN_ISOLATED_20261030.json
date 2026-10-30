@@ -1,0 +1,53 @@
+{
+  "package": "RUN34_RUN37_FROZEN_SOURCE_ISOLATED_PREFLIGHT_20261030",
+  "parent_pr": 1179,
+  "review_pr": 1180,
+  "base_sha": "ef29bc777910067da28fa2b41445ebf7e3cccb0a",
+  "prereg_commit": "8761de1ce21061370f69e66432134790482ebdfb",
+  "workflow_commit": "775c5bf4dfe3743ff38cf701f49bbd1d1a892ab3",
+  "tested_head": "775c5bf4dfe3743ff38cf701f49bbd1d1a892ab3",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "current_utility_blob": "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53",
+  "frozen_utility_blob": "f4a92dab9c4a40761d64394cdca1c052e9a76bfd",
+  "historical_source_blobs_all_match": true,
+  "run": {
+    "id": 40976768148,
+    "status": "SUCCESS_ISOLATED_HISTORICAL_PREFLIGHT_ONLY",
+    "current_tests": 11,
+    "current_errors": 2,
+    "current_error_reason": "native_source_or_catalog_changed",
+    "frozen_tests": 11,
+    "frozen_passed": 11,
+    "frozen_errors": 0,
+    "artifact": 12942593609,
+    "zip_sha256": "ce00daa8ab42f9554643bca04c153fab64f5a16b9836d63beff2d4283880ce2d",
+    "inner_hashes_ok": 30,
+    "crc_ok": true,
+    "privacy": "CLEAN",
+    "active_checkout_clean": true
+  },
+  "private_backup": {
+    "path": "/V13/automation-evidence/20261030/github-actions-artifact-12942593609.zip",
+    "remote_sha256_verified": true,
+    "total_verified_raw_zips": 10
+  },
+  "full_suite_current": {
+    "run": 40975677615,
+    "tests": 3372,
+    "errors": 2,
+    "skipped": 11,
+    "status": "RED_UNCHANGED"
+  },
+  "gates": {
+    "native_executed": false,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "OFF",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "whole_system_complete": false
+  },
+  "next_priority": "Actual native Body-/Train-Port and ObjectiveAdapter functional evidence or STEP2 semantic complementary utility; stop historical helper iteration",
+  "next_command": "git fetch origin && git switch -c review-frozen-run34 origin/codex/v13-frozen-run34-run37-isolated-20261030-auto11n && cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'",
+  "remaining_platform_budget": "UNKNOWN"
+}
