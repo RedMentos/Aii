@@ -1,0 +1,48 @@
+{
+  "schema": "V13_RUN11Z2_FULLSUITE_ORIGINAL_NATIVE_PREREQ_PENDING",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11z2-fullsuite-pinned-native-prereq-20261030",
+  "parent_pr": 1256,
+  "parent_head": "31c8f073c97c773a7c91ad371dda18ed4e48e57f",
+  "original_fullsuite": {
+    "run_id": 41042932709,
+    "head": "235c579e808fed26392cd31a4ee7b70a142ab1cd",
+    "zip_sha256": "b76c9bef9cb20411f09535be9c1e23c18580096d5bba3d74f48bae90b251df09",
+    "status": "RED",
+    "tests": 3825,
+    "errors": 3,
+    "skipped": 14,
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Z-Fullsuite/ORIGINAL_RED_41042932709_shaB76C9BEF.zip"
+  },
+  "recovered_prerequisite": {
+    "native_run_id": 40996792157,
+    "artifact_id": 12951963045,
+    "zip_sha256": "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46",
+    "head": "5e802d235c9501879a3aff07e5134c1455e1769b",
+    "bytes": 297655,
+    "crc": "PASS",
+    "inner_sha256": "53/53",
+    "rows": 27,
+    "status": "PILOT_COMPLETE_NO_GATE",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run11Z-Fullsuite/OriginalNative40996792157/NATIVE_40996792157_sha98A61F62.zip",
+    "backup_byte_exact": true
+  },
+  "followup": {
+    "run_id": 41044254663,
+    "head": "afee95ce233fda476fd6f705561785baf5f9aa05",
+    "status": "IN_PROGRESS",
+    "result": "UNKNOWN",
+    "method": "stage exact original native ZIP in ephemeral tests path, no source edits, unfiltered suite"
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Inspect original Actions 41044254663 terminal raw; expected Run34/37 pin errors remain, missing native ZIP error should resolve. Preserve original RED and new raw, private byte-exact backup; no waivers or gate promotion."
+}
