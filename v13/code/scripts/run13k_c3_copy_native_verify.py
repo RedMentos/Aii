@@ -8,6 +8,7 @@ from pathlib import Path
 from scripts import run13k_c3_copy_native as k
 from scripts import run13j_c3_jef_native as j
 from scripts.run13j_c3_jef_native_verify import expected_answer
+from v13.agi.jef_c3_shadow_prompt_run13i import PREFIX
 
 
 def strict_json(path):
@@ -35,7 +36,7 @@ def verify(pilot, fixture):
         answer = expected_answer(case)
         for arm in k.ARMS:
             row = strict_json(pilot / "raw" / f"{i:02d}_{arm}.json")
-            prompt = (j.PREFIX + answer if arm == "ORIGINAL_SHADOW"
+            prompt = (PREFIX + answer if arm == "ORIGINAL_SHADOW"
                       else k.COPY_PREFIX + answer + k.COPY_SUFFIX)
             if (row.get("schema") != k.SCHEMA
                     or row.get("seed") != k.SEED
