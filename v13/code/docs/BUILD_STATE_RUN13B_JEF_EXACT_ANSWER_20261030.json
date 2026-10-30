@@ -1,0 +1,61 @@
+{
+  "schema": "v13.run13b.jef_exact_answer.review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13b-jef-exact-answer-20261030-auto11",
+  "base_sha": "95470883a74672530f75f5c8e0623dd25c9da6d1",
+  "prereg_commit": "20c221818f549e15885cf483c4039ccc04e78baa",
+  "tested_head": "c5c3a55cc9e16ca1d9fa36323f02ef3a411a1fc9",
+  "pr": 1289,
+  "scope": "SOFTWARE_REAL_STORE_EXACT_SOURCE_ANSWER_FORM_SHADOW_NOT_NATIVE",
+  "source_blob": "a5ea76be96f2924f28c3184ff71da902062fb6ae",
+  "test_blob": "e1e766798984baf61bb4f259ed4022357c565aa7",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "frozen_run13a_fixture_sha256": "e6718093ccd83d556019223eca2d5317668d1ada25659519a699aee681a8b97f",
+  "workflow_run": 41077103322,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12986924286,
+  "artifact_zip_sha256": "21d72ba9ab48d7c6983165602ae3318cbd017c65823e0d5b12ff5064f83f4fdf",
+  "artifact_entries": 16,
+  "artifact_crc": "CLEAN",
+  "artifact_inner_sha256": "15/15 verified, full coverage",
+  "tests": "10/10 PASS in 0.211s",
+  "tests_scope": "4 new Run13B + 4 original Run13A prereg + 2 original Run12N JEF baseline",
+  "stage_exits": {
+    "CANON": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "output_utility": "8/8 frozen seed211 source texts formatted with numeric scorer 2/2 and explicit faster-choice correct; software-only deterministic source task",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run13B/RUN13B_41077103322.zip",
+  "private_backup_byte_identical": true,
+  "original_native_run13a": {
+    "run": 41065858620,
+    "zip_sha256": "52b1e6c8209dba364f41a157496cccfd9d59590e84e79139879ad87e5f576a6f",
+    "status": "STRUCTURAL_GREEN_UTILITY_RED",
+    "f_numeric": "0/16",
+    "f_strict": "0/8"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "No Runtime/CLI consumer or active answer delivery; this is only a software answer-form candidate",
+    "Closed-world exact grammar, no general language understanding or transfer",
+    "Double read cannot prove absence of revocation after final read",
+    "Existing unfiltered G13 fullsuite RED 4 FAIL 65 ERROR preserved; no waiver"
+  ],
+  "exact_next_command": "Preregister an operator-only existing-home exact SourceRef CLI on a new child review branch; implement with no Runtime turn or model calls; test stale/cross-home/malformed refs and no persistent source mutation; run isolated Actions and independently audit original raw.",
+  "remaining_platform_budget": "UNKNOWN"
+}
