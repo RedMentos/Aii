@@ -1,3 +1,12 @@
+## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
+
+- **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.
+- **#1207 C2 native route provenance:** Actions 40998638374, 3/3 genuine Linux-native Needle/C2 operation C/FINAL calls, source/event/session/ExecutiveControlContext and process reaping verified, but **actual native route selected 1/3**, BOOT_SCAFFOLD after native 2/3. Current runtime guard only accepts native proposals when scaffold route is `simple`; not an integrated C2+C3/Body utility proof.
+- **#1208 expression sensitivity candidate:** separate preregistered read-only posthoc diagnostic, Actions 40999116309 GREEN 10/10, original v3 ZIP byte-bound; equation-only coverage A/B/C 3/0/0 is **not** a replacement score. New disjoint cohort required.
+- **#1209 seed47 native auto-route integration smoke:** three disjoint synthetic fixtures preregistered before code; software preflight 40999508320 GREEN 8/8, 7/7 stages, original ZIP privately backed; Linux-native Actions **40999648419 launched, result pending** at this checkpoint. No STEP2/JEPA/B3/Redmi/age promotion.
+
+All four are **review-only branches**. Original Canon v10.16.1 and all historical negative evidence remain binding. The prior dated entries below are preserved as historical checkpoints, not current proof of completion.
+
 ## 2026-10-30 — C2/Needle auto-route provenance isolated follow-up
 
 Preregistered 3 fresh source prompts seed43; real Store ExecutiveControlContext/route binding software preflight Actions 40997339478 GREEN 7/7, private raw verified. Actual native C2 invocation **not yet measured**; heavy v3 STEP2 native Actions 40996792157 owns runner, next C2 native workflow must wait. This probe is C2-only and cannot prove integrated C2+C3, Body complementarity, Redmi or STEP2. `v13/code/docs/C2_NATIVE_ROUTE_PROVENANCE_PREFLIGHT_GREEN_20261030.md`. All negative gates unchanged.
