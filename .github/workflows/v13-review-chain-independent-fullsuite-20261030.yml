@@ -94,7 +94,8 @@ jobs:
               tests.test_c2_c3_body_auto_native_smoke_20261030 \
               tests.test_step2_expression_diagnostic_20261030) > "$e/FOCUSED_RAW.log" 2>&1
             echo "$?" > "$e/FOCUSED_EXIT.txt"
-            rm v13/code/tests/NATIVE_40996792157.zip
+            # Keep original digest-verified ZIP symlink for the unfiltered suite.
+            # Its expression diagnostic test also needs the exact native fixture.
             "$py" - "$e/FOCUSED_RAW.log" > "$e/COUNT_RAW.log" 2>&1 <<'PY'
           import pathlib,re,sys
           raw=pathlib.Path(sys.argv[1]).read_text()
