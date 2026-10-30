@@ -143,7 +143,15 @@ def resolve_wake(plan,learned=None):
     """
     if learned is None or not plan['learned_wake_allowed']:return plan['wake'],'EFFORT_POLICY'
     if learned not in WAKES:raise ValueError('wake action')
-    capped=cap_wake(learned,plan['wake_ceiling'],plan.get('one_body','detail'))
+    # The hard resource/deadline ceiling is not the effort budget. A low
+    # adaptive turn can have resource headroom for two bodies while its
+    # DIRECT_C_NATIVE / C_NATIVE_ONE_BODY band forbids that compute.
+    effort_ceiling={'DIRECT_C_NATIVE':'none','C_NATIVE_ONE_BODY':'one',
+                    'FOCAL_TARGETED':'both','DEEP_FOCAL':'both'}.get(plan['band'])
+    if effort_ceiling is None:raise ValueError('unknown effort band')
+    prefer=plan.get('one_body','detail')
+    within_effort=cap_wake(learned,effort_ceiling,prefer)
+    capped=cap_wake(within_effort,plan['wake_ceiling'],prefer)
     return capped,'LEARNED_WAKE' if capped==learned else 'LEARNED_WAKE_CAPPED'
 
 def get_mode(store):
