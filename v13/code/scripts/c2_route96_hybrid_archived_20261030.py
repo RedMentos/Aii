@@ -65,7 +65,9 @@ def validate(native, scaffold, exact_n=None):
                 or type(a.get("id")) is not str or a["id"] in ids
                 or a["id"] != b.get("id") or a.get("label") != b.get("label")
                 or a.get("label") not in ROUTES or b.get("pred") not in ROUTES
-                or a.get("pred") not in (*ROUTES, None)):
+                or a.get("pred") not in (*ROUTES, None)
+                or type(a.get("validated")) is not bool
+                or (a["validated"] and a.get("pred") not in ROUTES)):
             raise ValueError("C2 source ID, label or route mismatch")
         ids.add(a["id"])
         counts[a["label"]] += 1
@@ -91,7 +93,8 @@ def fold_ids(native):
 
 def predict(a, b, threshold):
     conf = a.get("confidence")
-    if (a.get("pred") in ROUTES and type(conf) in (float, int)
+    if (a.get("validated") is True and a.get("pred") in ROUTES
+            and type(conf) in (float, int)
             and math.isfinite(conf) and conf >= threshold):
         return a["pred"], True
     return b["pred"], False
