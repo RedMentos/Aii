@@ -1,0 +1,70 @@
+name: V13 Run14K JEF C3 structured facts test-first RED
+on:
+  push:
+    branches: [assistant/v13-run14k-c3-structured-facts-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-run14k-c3-structured-facts.yml'
+permissions:
+  contents: read
+jobs:
+  ag12-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact-source original JEF C3 structured facts regression
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run14k-structured"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          0044a96979db760fdd0c9fe35d6be17152289170 v13/code/v13/agi/jef_c3_shadow_fallback_run13v.py
+          82d1f1e2af5bf565f9d5f081844e1da55c88084c v13/code/v13/agi/c3_source_fidelity_shadow_run13m.py
+          75c7b21427b4a661889875879871405e8d9e78af v13/code/tests/test_c3_structured_source_shadow_run14k.py
+          e4fa158fa1c8555392753d6ed78c9adf6e41f91b v13/code/docs/RUN14K_C3_STRUCTURED_FACTS_PREREG_20261030.md
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=. python3 -m unittest -v tests.test_c3_structured_source_shadow_run14k tests.test_jef_c3_shadow_fallback_run13v tests.test_c3_source_fidelity_shadow_run13m tests.test_jef_c3_output_binding_run13w) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/v13/agi/jef_c3_shadow_fallback_run13v.py v13/code/tests/test_c3_structured_source_shadow_run14k.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6f8957ee0b14deb49f06a131f025167de69fc1c4 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 6f8957ee0b14deb49f06a131f025167de69fc1c4 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve candidate raw even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run14k-structured-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run14k-structured/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Explicit test-first RED expected; pins and hygiene must pass
+        if: always()
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run14k-structured"
+          for stage in PINS COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
+          echo "TEST $(cat "$e/TEST_EXIT.txt")"
+          test "$(cat "$e/TEST_EXIT.txt")" != 0
