@@ -148,7 +148,8 @@ class GeneralityEval:
     def __init__(self,store,home=None,seed=13,clock=time.time,interval_s=INTERVAL_S,lang='en'):
         self.s=store;self.home=home;self.clock=clock;self.interval_s=interval_s
         self.suite=build_suite(seed,lang=lang)
-        self.box=StateBox(store,KEY,REVISION,lambda:{'runs':[],'last_items':{},'holdout':[],'suite_hash':None})
+        self.box=StateBox(store,KEY if lang=='en' else KEY+'_DE',REVISION,
+                          lambda:{'runs':[],'last_items':{},'holdout':[],'suite_hash':None})
         self.box.mutate(self._register)
     def _register(self,st):
         """Holdout digests of unseen families; a suite change is recorded, never silently mixed into old curves."""
@@ -216,7 +217,7 @@ class GeneralityEval:
         return out
     def report(self):
         st=self.box.load()[0]
-        return {'revision':REVISION,'suite':{'version':SUITE_VERSION,'hash':self.suite['hash'],'items':len(self.suite['items']),
+        return {'revision':REVISION,'suite':{'version':SUITE_VERSION,'hash':self.suite['hash'],'lang':self.suite['lang'],'items':len(self.suite['items']),
                 'families':{k:v[0] for k,v in FAMILIES.items()}},'runs':len(st['runs']),'due':self.due(),
                 'last':st['runs'][-1] if st['runs'] else None,
                 'solvers':sorted({r.get('solver','default') for r in st['runs']}),

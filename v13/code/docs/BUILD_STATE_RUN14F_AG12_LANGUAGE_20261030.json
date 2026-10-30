@@ -1,0 +1,67 @@
+{
+  "schema": "v13.run14f.ag12_language_state.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; language-isolated AG12 StateBox only",
+  "parent": {
+    "pr": 1322,
+    "commit": "b2e8cc28cf05538f81cc5fd913c9f216c746d8bd"
+  },
+  "branch": "assistant/v13-run14f-ag12-language-isolation-20261030-hourly11",
+  "state": "ENGLISH_DEFAULT_UNCHANGED_GERMAN_STATE_ISOLATED_SOFTWARE_GREEN_TESTFIRST_RED_PRIVATE_BYTE_VERIFIED",
+  "prereg_commit": "5670304ffc0630368ae4a4ca5c1906849f7e0e01",
+  "test_commit": "f6945871ac59d6160db976c8d851aae9efa7935c",
+  "candidate_commit": "3653a063f3e6714c3a60c695c1c01a87a9e90ccf",
+  "candidate_workflow_commit": "5a619099af019fe6d2ea7be3ad8a6ff2ba82f3f8",
+  "source_blobs": {
+    "original_generality": "6f7906c9b9352b9d4ffe9cf9f237fba684942308",
+    "candidate_generality": "42a06579f8b01ae525b730cd36244e407c7eeef8",
+    "test": "ca37009075610a9d937f5327bbb2222d470025f0",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "red_run": 41106507420,
+    "green_run": 41106568728,
+    "red_tests": 6,
+    "red_failures": 2,
+    "green_tests": 6,
+    "green_failures": 0,
+    "red_zip_sha256": "aa658aafe9f9ab72819f16edcd5bb74503fa6aa38603e3e783c06d8e37dc1984",
+    "green_zip_sha256": "0f0079d09ba6ab5c132ba18fa1d5f317e29d1d1ec7751a076daa8c4d51ba5ddb",
+    "red_crc": "PASS",
+    "green_crc": "PASS",
+    "red_inner_sha256": "12/12 PASS",
+    "green_inner_sha256": "12/12 PASS",
+    "green_stage_exits": {
+      "PINS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "red_stage_exits": {
+      "PINS": 0,
+      "TEST": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14F-AG12LanguageState/",
+    "private_readback": "BYTE_IDENTICAL_SHA256"
+  },
+  "scope": "REAL_SQLITE_SOFTWARE_LANGUAGE_STATE_ISOLATION_NOT_LANGUAGE_LEARNING_PROOF",
+  "open_questions": [
+    "Run14G must isolate German export artifact; current GeneralityEval.run still uses English exports/generality-last.json for both languages when home is provided.",
+    "German native solver/scheduler integration and AG9 calibration component naming require separate prereg; not activated.",
+    "Run14E unfiltered fullsuite original ZIP prerequisite pending terminal result; historical RED remains."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Preregister Run14G language-scoped export file, test-first real SQLite source red and candidate green; do not enable German native evaluation or AG9 cross-language feedback until explicit separate review."
+}
