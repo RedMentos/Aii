@@ -1,0 +1,18 @@
+# F1/F5 source-exact signed arithmetic SHADOW — verified 2026-10-30
+
+## Source and purpose
+Parent review-only PR #1196 head `d7dddf8ab6c23f187003d919570dc18b650d5a8b`; branch `codex/v13-f1f5-exact-arithmetic-20261030-hourly11`. Preregistration committed **before** tests/source edit at `296fc44e64483d25d4194733f13d916c29d3f62d`, blob `5d31d6d063972997350eadff05f2abafead01214`. Frozen Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`. Original typed source blob `7cfae3d54e49718181813cea68238301e2ffae87`; changed source blob `f092369bf5f4674191dbd43cd80ed50ed8283475`; test blob `6e62e7c4e1825103877f20438aac3342b893c9df`.
+
+Existing `jef_typed_source_shadow.decide` now exposes `source_exact_arithmetic` only after complete two-source grammar/integrity success. It reports both option values, signed differences (limit minus used), source field names/units, exact flag, eligibility and project/domain. The existing JEF F1/F5 human SourceRef admission returns these metrics **only** when its preexisting live human RECORD lineage passes. Typed-only output is explicitly `STORE_INTEGRITY_ONLY`, `SHADOW_NO_AUTHORITY`, not human authorization. No new operator command, live answer authority, model prompt, weight update, cohort/seed change or gate promotion.
+
+## Test-first evidence
+**Original RED** GitHub Actions run `40990408494`, exact test-only head `a9cd9b012f1aa0360ff99c0234d7006a6c52c5a3`: **21 tests, 3 expected errors**, each missing `source_exact_arithmetic` in the preregistered positive cases. Existing negative/integrity tests passed. Raw artifact ID `12949131612`, ZIP SHA256 `e513d32e61ee4bf38b41a091ddeb8d16ff1079557436d39a94cd964838294356`.
+
+**Source GREEN** GitHub Actions run `40990465358`, exact tested head `fd0697700d6f000d87f7c71210da6d83a73b50cd`: **21/21 tests PASS**, including all 36 exact two-source calibration cases, 144 negative arms, signed overlimit, F1/F5 human record, restart, forget, tampered source. All 8 stages exit0: SOURCE, VENV, DEPS, PIP_CHECK, TEST, COMPILE, PRIVACY, DIFF. Privacy scan `CLEAN`. Raw artifact ID `12948802891`, ZIP SHA256 `eae13d12bdd2e798e7f637d6b4e07c6af185572e7f16baa390493d5a15c77d78`.
+
+Both ZIPs independently downloaded and checked: CRC clean, **20/20** inner SHA256SUMS each, byte-identical private Library copies at `/V13-Checkpoints/2026-10-30/Run11-F1F5-SourceArithmetic/` (RED and GREEN). No private data in public repository. GitHub Actions artifacts expire after 30 days; Library copies retain original bytes.
+
+## Limitations and next action
+This is a functional read-only exact-source arithmetic diagnostic on **software/real Store**, not an actual native C3 answer, and not proof of B1/B2 complementary utility. The real Linux-native STEP12 answer still misses both requested budget remainders: `SEMANTIC_REQUIREMENT_FAIL` (0/2). The separate current-chain native paired STEP2 pilot on `codex/v13-step2-budget-prompt-paired-native-20261030-auto11ag` is owned by another active branch and was **RED** at Actions `40989187037`; do not overwrite or infer its cause without reviewing raw evidence.
+
+Age0 `RECORD_ONLY`, STEP2 `UTILITY_FAIL`, B3 `NO_PROMOTION`, Body-JEPA `UNAVAILABLE`, `jepa_weight=0`, whole-system incomplete. Concurrent source revocation between checks remains a TOCTOU risk; no atomic authorization claim. Next: independent review of source arithmetic and test whether a strictly opt-in source-exact explanatory operator can render the verified remainder with a second lineage check; separately preserve and inspect the ongoing paired native STEP2 pilot, without modifying frozen cohort pins. Full unfiltered suite on parent remains historical RED (Run34/Run37 source pins), not waived.
