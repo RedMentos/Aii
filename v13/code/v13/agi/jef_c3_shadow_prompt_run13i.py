@@ -46,7 +46,7 @@ def propose_c3_context(store, plan_id, query_event_id, source_event_id):
     try:
         first = propose_pointer(store, plan_id, query_event_id, source_event_id)
         if (type(first) is not dict
-                or first.get("reason") != "CONTEXT_SOURCE_LINK_BUDGET_SHADOW"
+                or first.get("reason") != "SOURCE_EXACT_ANSWER_FORM_SHADOW"
                 or first.get("status") != "SHADOW_NO_AUTHORITY"
                 or first.get("delivery_authority") != 0
                 or first.get("native_calls") != 0
