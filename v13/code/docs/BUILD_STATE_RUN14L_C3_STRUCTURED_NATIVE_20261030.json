@@ -1,0 +1,122 @@
+{
+  "schema": "v13.run14l.c3_structured_native.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 V13 continuation; review-only C3 structured vs copy Linux-native",
+  "parent": {
+    "pr": 1328,
+    "commit": "033cd9326cb2c7b8329f577b8eb32ded3839987c"
+  },
+  "pr": 1329,
+  "branch": "assistant/v13-run14l-c3-structured-native-20261030-2008",
+  "native_source_commit": "067920aa2d3896917e9cdd07e24b5ba0be28201c",
+  "state": "PREREGISTERED_DISJOINT_SEED307_LINUX_NATIVE_16_16_FINAL_REAPED_FIDELITY_HURT_ORIGINAL_RAW_VERIFIED_PRIVATE_BYTE_BACKED",
+  "prereg_commit": "ae64847e45355a3adff6cc8538fc1165ec3603a4",
+  "fixture_commit": "5f57af9e0a701a8852de1a50a550fe197ffbb68b",
+  "collector_commit": "48d512914f756ed6b1ce8bdf12b1ae3531c06633",
+  "independent_verifier_commit": "666119c5a719f53863d209b73e8e00fcef7876f2",
+  "test_commit": "1803f48249cc71415f59c871448f9394692ccea1",
+  "test_fix_commit": "840152b1dc36c713b833fb5e19f530adce0e6b15",
+  "source_blobs": {
+    "prereg": "27f290a1cf519eb9b053b6acacb53f62ea5612fb",
+    "fixture": "f9023c1d5e575279f333b4b99f0bb8bdea110e84",
+    "collector": "0dd1aa6db41c1258e13d4108316bcd850af3f589",
+    "verifier": "711d789b466b5974b964e7d5faf10dc93453d458",
+    "test": "62af10d15de656316be8236534c48b82da70df16",
+    "structured": "41ae26e01932ea7e89188e3a544bef103f1b3ec6",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "cohort": {
+    "seed": 307,
+    "cases": 8,
+    "arms": [
+      "COPY_BASELINE",
+      "STRUCTURED_JSON"
+    ],
+    "calls": 16,
+    "fixture_cases_sha256": "a598c5f6eed3c956c3aa2f1e6f9419b8054d155e1f145aa0ca58776b26f1ffd1",
+    "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+    "model_revision": "657e078c94084481950a2d555a941481f715536b",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "license": "LFM Open License 1.0"
+  },
+  "ci": {
+    "original_test_first_red": {
+      "run": 41113162930,
+      "artifact": 13003394640,
+      "zip_sha256": "635b71e0f74d5c89783e5db39b6c8cc269eb2fdff4c4791a4987e44af02b1e02",
+      "tests": 16,
+      "errors": 1,
+      "reason": "Synthetic temporary raw parent directory missing; original attempt preserved"
+    },
+    "corrected_preflight": {
+      "run": 41113258774,
+      "artifact": 13003868388,
+      "zip_sha256": "bf8535180964f1d6c54990abf4b512e8e903d6579f9cdada92172f79c7896cfe",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14L-C3StructuredNative/Run14L_SOURCE_PREFLIGHT_GREEN.zip",
+      "private_readback": "BYTE_IDENTICAL"
+    },
+    "native": {
+      "run": 41113458556,
+      "artifact": 13005550483,
+      "zip_sha256": "8ab389b2ebe5876f1b37696460a650e0f8e9d2bf49d9a2b0afa9d9c7639f8b8a",
+      "crc": "PASS",
+      "inner_sha256": "39/39 PASS",
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "TEST": 0,
+        "BOOTSTRAP": 0,
+        "NATIVE": 0,
+        "REPORT_CHECK": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "raw_rows": 16,
+      "native_final": 16,
+      "distinct_native_pids": 16,
+      "native_reaped": 16,
+      "independent_replay": "ORIGINAL_NATIVE_RAW_REPLAY_VALID",
+      "offline_independent_second_replay": "16 unique PIDs, 16 model+gate+output hashes, source paired, copy full 4/8, structured 0/8, exact copy 0/8",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14L-C3StructuredNative/Run14L_NATIVE16_ORIGINAL_FIDELITY_HURT.zip",
+      "private_readback": "BYTE_IDENTICAL"
+    }
+  },
+  "result": {
+    "status": "FIDELITY_HURT",
+    "copy_full_source_faithful": "4/8",
+    "structured_six_slots_exact": "0/8",
+    "copy_exact_bytes": "0/8",
+    "copy_strict_task_full": "7/8",
+    "note": "Structured native responses typically fenced JSON with VERIFIED_FACTS arrays and wrong schema. Two arms differ in system and user prompts, only combined protocol contrast is identified."
+  },
+  "limitations": [
+    "Eight synthetic cases are not end-to-end task utility or production readiness.",
+    "No native C3 structured output passed strict Run14K source-bound JSON verifier; do not enable output.",
+    "No actual Redmi, no learned C3 improvement, no JEPA or STEP2/B3 gate promotion.",
+    "Historical unfiltered Run14E full-suite remains RED (4098 tests, 4 failures, 65 errors, 16 skips)."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Continue independent Run14M AG12 historical holdout registry test-first branch assistant/v13-run14m-ag12-historical-holdout-20261030-2014, then meaningful focused/full regression and durable raw. Do not reuse seed307 for a posthoc retry; any further C3 protocol needs new preregistered disjoint cohort."
+}
