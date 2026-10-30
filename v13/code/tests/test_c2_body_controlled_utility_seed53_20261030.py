@@ -5,10 +5,11 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts import c2_body_controlled_utility_seed53_20261030 as m
+from v13.models import model_key
 
 
 class ControlledUtilitySoftware(unittest.TestCase):
-    def sample(self, route="both", source="OPERATOR_ROUTE_OVERRIDE", role="B1_DETAIL"):
+    def sample(self, route="both", source="OPERATOR_ROUTE_OVERRIDE", role="B1_DETAIL", shared=False):
         offers = [{"role": k} for k in m.expected_roles(route)]
         audit = {"checks": {"source_refs_valid": True, "final_output": True},
                  "source_errors": [], "offers": offers,
@@ -16,7 +17,9 @@ class ControlledUtilitySoftware(unittest.TestCase):
                  "output_metadata": {"route": {"source": source},
                                      "c2_packet": {"route": route},
                                      "runner": {"role": role,
-                                                "actual_model": m.LANGUAGE_MODEL if role == "C3_LANGUAGE" else m.BODY_MODEL},
+                                                "actual_model": (m.LANGUAGE_MODEL if role == "C3_LANGUAGE"
+                                                                 else m.GIST_MODEL if role == "B2_GIST" and not shared
+                                                                 else m.BODY_MODEL)},
                                      "model_generated": True}}
         releases = [{"role": k, "process_reaped": True} for k in m.expected_roles(route)]
         return audit, releases
@@ -77,6 +80,18 @@ class ControlledUtilitySoftware(unittest.TestCase):
         self.assertFalse(m.row_evidence(audit, "C_B2_ONLY", releases)["valid_native"])
         audit["output_metadata"]["runner"]["role"] = "C3_LANGUAGE"
         self.assertFalse(m.row_evidence(audit, "B_B1_ONLY", releases)["valid_native"])
+
+    def test_distinct_b2_qwen_vs_shared_body_model_identity(self):
+        self.assertEqual(model_key("B1_DETAIL", "two_body"), "body")
+        self.assertEqual(model_key("B2_GIST", "two_body"), "gist")
+        self.assertEqual(model_key("B2_GIST", "shared_body_dual_state"), "body")
+        audit, releases = self.sample(route="gist", role="B2_GIST")
+        self.assertTrue(m.row_evidence(audit, "C_B2_ONLY", releases)["valid_native"])
+        audit["output_metadata"]["runner"]["actual_model"] = m.BODY_MODEL
+        self.assertFalse(m.row_evidence(audit, "C_B2_ONLY", releases)["valid_native"])
+        shared, releases = self.sample(route="both", role="B2_GIST", shared=True)
+        self.assertTrue(m.row_evidence(shared, "E_SHARED_DUAL_COLD", releases)["valid_native"])
+        self.assertFalse(m.row_evidence(shared, "D_DISTINCT_BOTH", releases)["valid_native"])
 
     def test_auto_invocation_not_selection(self):
         audit, releases = self.sample(source="BOOT_SCAFFOLD")
