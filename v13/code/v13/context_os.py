@@ -52,6 +52,7 @@ CONFLICT_VERDICTS={'CONTESTED','VIOLATION','SOURCE_LOSS'}
 WARM_DECAY=.6;WARM_MIN=.15;WARM_MAX=16;WARM_ADMIT=.5;WARM_PREFETCH_MAX=2  # BOOT §9.1 warm set per experience event
 SUMMARY_USER=140;SUMMARY_ASSISTANT=200;SPAN_MAX=12;SPAN_CHARS=400  # BOOT compression shape
 LEARNED_MAX=.25;POLICY_RATE=.2;LEARNED_MIN_N=3  # BOOT, as WP-N5
+OUTCOME_HISTORY_MAX=256  # BOOT bounded durable replay guard for rated ContextPlan events
 VOLATILE_HEAD='Context for the next message (reference material, not a question):'
 CODE=re.compile(r'```[\s\S]*?```|`[^`\n]+`')
 QUOTE=re.compile(r'"[^"]+"|„[^“]+“')  # bounded by SPAN_CHARS/RAW fallback, not silent truncation
@@ -76,7 +77,8 @@ def clamp(x,lo=0.,hi=1.):
 
 def empty():
     return {'revision':REVISION,'mode':'SHADOW','learned':'SHADOW','layout':'append_only','knobs':dict(CTX),'capabilities':{},
-            'warm':{},'seq':0,'last':{},'policy':{},'recall':[],'plans':0,'cache':{'n':0,'cached_tokens':0,'prompt_tokens':0}}
+            'warm':{},'seq':0,'last':{},'policy':{},'recall':[],'plans':0,'cache':{'n':0,'cached_tokens':0,'prompt_tokens':0},
+            'outcome_receipts':{'floor':0,'rows':[]}}
 
 def exact_spans(text):
     """Spans that must survive any compression verbatim (exact-span pinning, §8.5)."""
@@ -453,21 +455,43 @@ class ContextOS:
                 'warm':list(memory_ids) if status=='FINAL' else [],
                 'cache_rejected':rejected or bool(ratio is not None and not outcome['credited'])}
     def outcome(self,event_id,utility,source_class='internal_crosscheck'):
-        """Usefulness of the context decisions of one event (e.g. a rating). Updates the learned prior per decision."""
-        u=clamp(utility);row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY created DESC LIMIT 1",(event_id,))
+        """One rating per ContextPlan event; bounded durable replay guard.
+
+        A repeated rating is not another independent outcome. Keep a bounded
+        sorted window of event rowids and a high-water floor: once an old
+        receipt is evicted, an unrecognized older event is rejected rather
+        than silently counted again. CAS retries keep this atomic with policy.
+        """
+        u=clamp(utility)
+        event=self.s.one("SELECT rowid AS seq FROM events WHERE id=?",(event_id,))
+        if event is None:raise ValueError('Event nicht gefunden')
+        seq=int(event['seq'])
+        row=self.s.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=? ORDER BY created DESC LIMIT 1",(event_id,))
         if not row:raise ValueError('Kein ContextPlan für dieses Event')
         import json
         sc=step(self.n,PATH)  # WP-U6 §12.7
-        plan=json.loads(row['payload']);keys={'compress' if d.startswith('compress') else d for d in plan['decisions'] if d.startswith('compress') or d=='restore'}
+        plan=json.loads(row['payload'])
+        keys={'compress' if d.startswith('compress') else d for d in plan['decisions'] if d.startswith('compress') or d=='restore'}
         def fn(st):
+            ledger=st.setdefault('outcome_receipts',{'floor':0,'rows':[]})
+            if seq<=ledger['floor'] or any(r[1]==event_id for r in ledger['rows']):
+                return {'credited':False,'policy':{}}
             for key in keys:
-                q=st['policy'].setdefault(key,{'n':0,'mean':.5});q['n']+=1;q['mean']+=sc*POLICY_RATE*(u-q['mean'])
-            return {k2:dict(st['policy'][k2]) for k2 in keys}
+                q=st['policy'].setdefault(key,{'n':0,'mean':.5})
+                q['n']+=1
+                q['mean']+=sc*POLICY_RATE*(u-q['mean'])
+            ledger['rows'].append([seq,event_id])
+            ledger['rows'].sort(key=lambda r:r[0])
+            if len(ledger['rows'])>OUTCOME_HISTORY_MAX:
+                expired=ledger['rows'][:-OUTCOME_HISTORY_MAX]
+                ledger['floor']=max(int(ledger['floor']),expired[-1][0])
+                ledger['rows']=ledger['rows'][-OUTCOME_HISTORY_MAX:]
+            return {'credited':True,'policy':{k2:dict(st['policy'][k2]) for k2 in keys}}
         out=self._mutate(fn)
-        if self.n is not None:
+        if self.n is not None and out['credited']:
             try:self.n.signal(event_id,path=PATH,source_class=source_class,task_success=u)
             except Exception:pass
-        return out
+        return out['policy']
     def report(self):
         st,_=self._load();self._decay(st);c=st['cache'];r=st['recall'][-RECALL_WINDOW:]
         return {'revision':REVISION,'mode':st['mode'],'learned':st['learned'],'layout':st['layout'],'knobs':st['knobs'],'capabilities':st['capabilities'],
