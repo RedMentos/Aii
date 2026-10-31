@@ -12,13 +12,33 @@ from scripts.run51_f1f5_second_attempt_native import load_fixture
 from tests.test_run52_b1b2_cross_turn import FakeRuntime
 from scripts.run52_b1b2_cross_turn_native import OVERRIDES
 
+
+class CypressBody:
+    """Isolated synthetic schema-compliant body; never a native claim."""
+    def __init__(self, role):
+        self.role = role
+        self.last_metrics = {"status": "FINAL", "synthetic": True}
+
+    def generate(self, messages, *args, **kwargs):
+        if "Cypress" not in messages[1]["content"]:
+            raise AssertionError("Cypress synthetic source missing")
+        return [json.dumps({"summary": "Cypress source observed; not a fact",
+                            "quotes": [], "uncertainty": "unknown",
+                            "needs_reentry": True})]
+
+
+class CypressRuntime(FakeRuntime):
+    def _body(self, role):
+        return CypressBody(role)
+
+
 FIXTURE = Path(__file__).resolve().parents[1] / "docs/fixtures/run51_f1f5_second_attempt_seed467.json"
 
 
 class Run58CrossOrganC6Tests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.r = FakeRuntime(Path(self.temp.name))
+        self.r = CypressRuntime(Path(self.temp.name))
         self.r.cfg.update(OVERRIDES)
         self.f = load_fixture(FIXTURE)["fixtures"][0]
         self.correction = self.r.store.event(self.r.session, self.f["correction_event"])
