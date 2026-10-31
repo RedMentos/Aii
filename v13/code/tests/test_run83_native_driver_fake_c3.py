@@ -26,6 +26,15 @@ class FakeC3:
 
 
 class DryRuntime(FakeRuntime):
+    def __init__(self, home):
+        super().__init__(home)
+        # Synthetic C3 path seam ONLY: the driver hashes a model path before
+        # its fake generator runs. Keep ModelManager.path_for strict in reality.
+        real_path_for = self.models.path_for
+        self.models.path_for = lambda role: (
+            Path(home) / "synthetic-only-c3.gguf"
+            if role == "C3_LANGUAGE" else real_path_for(role))
+
     def _body(self, role):
         if role == "C3_LANGUAGE":
             return FakeC3()
@@ -37,6 +46,19 @@ class DryRuntime(FakeRuntime):
 
 
 class DriverFakeC3Tests(unittest.TestCase):
+    def test_real_missing_model_gate_is_not_relaxed_by_fake_seam(self):
+        from v13.common import Unavailable
+        from v13.models import ModelManager
+        with tempfile.TemporaryDirectory() as d:
+            runtime = DryRuntime(Path(d))
+            try:
+                with self.assertRaises(Unavailable):
+                    ModelManager.path_for(runtime.models, "C3_LANGUAGE")
+                self.assertEqual(runtime.models.path_for("C3_LANGUAGE"),
+                                 Path(d) / "synthetic-only-c3.gguf")
+            finally:
+                runtime.close()
+
     def test_twelve_calls_full_store_pipeline_synthetic_only(self):
         with tempfile.TemporaryDirectory() as d, \
                 patch.object(native.cli, "Runtime", DryRuntime), \
