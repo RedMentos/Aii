@@ -60,6 +60,7 @@ def run_row(home, installed, row, arm):
     save_config(home, RUN_CONFIG)
     installed_links(home, installed)
     r = Runtime(home)
+    r.sleep.cycle.set_policy("enabled", "off")
     start = time.monotonic()
     out = {
         "schema": "v13.run63.jef_c3_native_row.v1",
