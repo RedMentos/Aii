@@ -1,0 +1,65 @@
+name: V13 Run83 C3 body hypothesis interference software preflight
+on:
+  push:
+    branches: [assistant/v13-run83-c3-body-hypothesis-interference-native-20261031-gpt6]
+    paths: ['.github/workflows/v13-run83-c3-interference-software.yml']
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run frozen fixture and independent verifier software tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run83-software"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run83-software-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run83-software-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=5s 7m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest tests.test_run83_c3_interference_verify tests.test_run82_jef_b1b2_c3_dual_source tests.test_jef_range_c3_typed_envelope_shadow tests.test_run75_jef_range_c3_verify -v > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/scripts/jef_body_c3_interference_fixture_839.py v13/code/scripts/run83_jef_body_c3_interference_native.py v13/code/scripts/run83_jef_body_c3_interference_verify.py v13/code/tests/test_run83_c3_interference_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e3ab533ecd0109c26f7d00d6189f01d9704739bc --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check e3ab533ecd0109c26f7d00d6189f01d9704739bc HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original preflight
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run83-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run83-software/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require every preflight stage
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run83-software"
+          for s in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || { cat "$e/TEST_RAW.log"; exit 1; }
+          done
+          tail -n 5 "$e/TEST_RAW.log"
+          echo RUN83_SOFTWARE_ONLY_NO_NATIVE_CLAIM
