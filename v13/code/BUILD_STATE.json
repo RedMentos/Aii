@@ -4168,5 +4168,50 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117ao_20261031_authenticated_body_prewarm": {
+    "owner": "GPT-6 / Run117AO cross-chain integration",
+    "branch": "assistant/v13-run117ao-bound-prewarm-20261031-gpt6",
+    "pr": 1521,
+    "parent_verified": "f65fbde8b273d883bdbe5fad1a14403794aa17e9",
+    "prereg_commit": "838bf27f89cd471a619e44b97e0b8c77071d6ffe",
+    "imported_run117ai_guard_blob": "d3b19676db4c90a5febfdbe05606311fbed16e31",
+    "imported_run117ai_tests_blob": "3527460b7c467ec6a5534a2bf553ca79fd87f94d",
+    "source_test_head": "da46b7b60cc129f8a80daaa9f37f11d41e2c0785",
+    "status": "SOFTWARE_AUTHENTICATED_PREWARM_GREEN_NATIVE_NOT_INTEGRATED",
+    "tests": "35/35 real SQLite; Actions 41240332556 SUCCESS; all eight stage exits 0",
+    "raw_artifact_id": 13057126604,
+    "raw_zip_sha256": "c57874bcc27b37150bb394f92adc405ecea4cdb40edb5c6d7a9d48e55fcd9779",
+    "raw_byte_audit": "independently downloaded; ZIP CRC and 17/17 inner SHA256SUMS PASS",
+    "native_run117am": {
+      "run_id": 41239863119,
+      "source_head": "5edeeffe9689ac32faabf0ff3bff7572e579c918",
+      "artifact_id": 13056893368,
+      "original_zip_sha256": "9a853e3e8cfbd16228b0573d9023fda01746c59a79a6c7e17c51c33254eb8131",
+      "status": "NATIVE_COMPLETE_BODY_ID_DIAGNOSTIC",
+      "native_body_calls": 30,
+      "baseline_quote_ready_count": 4,
+      "model_id_pair_correct_count": 2,
+      "by_role_correct": {
+        "B1_DETAIL": 3,
+        "B2_GIST": 4
+      },
+      "evidence": "Linux-native, not Redmi; original ZIP CRC and 31/31 inner hashes checked; full independent semantic/SourceRef audit pending"
+    },
+    "original_native_seed1069": {
+      "status": "STRUCTURAL_RED",
+      "run_id": 41237524795
+    },
+    "next_command": "Independently audit original Run117AM native 30-call ZIP incl 12 SourceRefs/packets, nested source ZIP/manifest, role/model/seed pins; preserve 2/6 utility result. Do not promote; then choose next canonical C3/ContextOS integration package.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
