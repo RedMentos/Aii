@@ -4105,5 +4105,68 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117an_20261031_independent_original_artifact_audit": {
+    "owner": "GPT-6 / Run117AN independent read-only reviewer",
+    "branch": "assistant/v13-run117an-independent-preflight-audit-20261031-gpt6",
+    "pr": 1520,
+    "parent_native_launch_head": "5edeeffe9689ac32faabf0ff3bff7572e579c918",
+    "prereg_commit": "3931bce72f8d5676466f060a7ef9944136c0ba3b",
+    "audit_source_head": "c00c706541f8270f4c23ed2b924be5b69596c862",
+    "status": "INDEPENDENT_ORIGINAL_SOFTWARE_GREEN_AND_FULLSUITE_RED_VERIFIED",
+    "original_artifacts": {
+      "AL": {
+        "id": 13055904791,
+        "sha256": "859e8cb57c21f9fe6532086a25e9a0e952e01339862bcce9911ed4e05907fb9d",
+        "inner_hashes": 15,
+        "tests": "10/10",
+        "result": "SOFTWARE_GREEN"
+      },
+      "AM": {
+        "id": 13056872547,
+        "sha256": "7b6e96a3ec2f6c7e35b02724cb727e28010be28ec8d96988bf1eb6b2a1d78a5f",
+        "inner_hashes": 18,
+        "tests": "17/17",
+        "result": "SOFTWARE_GREEN"
+      },
+      "AJ": {
+        "id": 13055762789,
+        "sha256": "bbf62ce125b2df42760252b5491b10ee817065623b13f6d0cc818471a297ad48",
+        "inner_hashes": 30,
+        "tests": "5152 total; 5 FAIL, 68 ERROR, 28 SKIP",
+        "result": "ORIGINAL_FULLSUITE_RED"
+      }
+    },
+    "audit_ci": {
+      "run": 41240080874,
+      "job": 124651975836,
+      "tests": "9/9",
+      "all_exits_zero": true,
+      "artifact_id": 13057476147,
+      "artifact_sha256": "b2b7f1740f57f13e710d3e12deb59869be4d48147a24cf565785acfa55aa6499",
+      "outer_crc": true,
+      "inner_hashes_verified": 26
+    },
+    "source_files": [
+      "v13/code/scripts/run117an_independent_original_artifact_audit.py",
+      "v13/code/tests/test_run117an_independent_original_artifact_audit.py"
+    ],
+    "evidence_level": "Original GitHub Actions ZIP bytes independently downloaded, SHA/CRC/manifest verified; software only; no native inference by auditor",
+    "native_run117am": {
+      "run_id": 41239863119,
+      "source_head": "5edeeffe9689ac32faabf0ff3bff7572e579c918",
+      "status": "PENDING_AT_AUDIT_CHECKPOINT"
+    },
+    "next_command": "After native Run117AM 41239863119 terminal, download exact original ZIP and independently audit closed native receipts/manifest/source/model pins; preserve any RED. Continue other canonical packages without changing frozen seed1073.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
