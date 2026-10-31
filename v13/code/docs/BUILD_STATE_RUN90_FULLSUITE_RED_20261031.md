@@ -1,0 +1,9 @@
+# Run90 unfiltered full-suite result — original raw verified RED (2026-10-31)
+
+**Owner:** GPT-6 Auto11. Exact Actions `41198044250`, tested HEAD `8368e70a018a638bb0173549a826469fc1aec40f`, terminal **FAILURE**. Original artifact `13040899121`, ZIP SHA256 `f8dd0f771057ac824ebd41921eb641c1a732bc876122b85711a55534dc866894`, CRC PASS, 20/20 SHA256SUMS PASS, all dependency/compile/privacy/diff exits0, privacy CLEAN, **FULL_EXIT=1**. Python3.12 pinned torch/transformers/peft environment. `Ran 4899 tests in 263.396s; FAILED (failures=1, errors=4, skipped=28)`.
+
+**Comparison:** historical original parent Actions `41176551097` at `611724bee6b6511826c36af64421d96d1b276016` had **4612 tests / 4 FAIL / 66 ERROR / 28 SKIP**. Current suite has 287 additional tests and different reviewed source chain, so these are **not matched-cohort efficacy scores**. Still, strict SourceHandoff/native-firing source mismatch failures no longer appear in this full-suite trace, consistent with the exact Run12J lineage reconstruction; focused 38/38 passed including one-byte tamper refusal.
+
+**Remaining 5 top-level failures:** (1) missing exact Run13T native ZIP environment `RUN13X_ORIGINAL_ZIP`; (2) missing STEP2 `tests/NATIVE_40996792157.zip`; (3–4) two Run34/Run37 `native_source_or_catalog_changed` source-pin refusals, **do not relax**; (5) Run83 synthetic full Store fake C3 test `STRUCTURAL_RED` vs expected `DUAL_FORMATTER_NONINFERIOR_SMALL_SHADOW` (error_type `Unavailable`). This is a real regression/fixture mismatch to investigate independently, not to suppress.
+
+**Next:** Run91 exact-original-artifact prerequisite control is preregistered and staged; launch now that Run90 terminal is verified, preserving source pins and the Run83 failure. No native rerun, no Redmi, no STEP2/B3/Body-JEPA/World-JEPA/age/jepa_weight/whole-system promotion. Original RED evidence retained; remaining platform budget UNKNOWN.
