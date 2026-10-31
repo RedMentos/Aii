@@ -3,6 +3,7 @@
 No native inference or human approval; callbacks are controlled test doubles.
 """
 import json
+import sqlite3
 from pathlib import Path
 import tempfile
 import time
@@ -179,6 +180,27 @@ class PostgenRoleBridgeTests(unittest.TestCase):
         controller(self.r).set_mode("ACTIVE", authority="EXPLICIT_HUMAN")
         r = self.run_guard()
         self.assertEqual(r["status"], "SOURCE_PREFLIGHT_RED", r)
+        self.assert_no_authority(r)
+
+    def test_external_connection_write_detected(self):
+        dbfile = self.r.store.db.execute("PRAGMA database_list").fetchone()[2]
+        def external(_):
+            with sqlite3.connect(dbfile) as db:
+                db.execute("UPDATE packets SET payload=payload || ' ' WHERE id=?",
+                           (self.ids["B2_GIST"],))
+            return '{"choice":"A","remaining":10}'
+        r = self.run_guard(external)
+        self.assertEqual(r["status"], "CALLBACK_STORE_CHANGED_RED", r)
+        self.assert_no_authority(r)
+
+    def test_external_source_blob_tamper_detected(self):
+        source = self.prior["source_ref"]["sha256"]
+        blob = Path(self.r.store.home) / "data/blobs" / source
+        def tamper(_):
+            blob.write_bytes(b"forged content")
+            return '{"choice":"A","remaining":10}'
+        r = self.run_guard(tamper)
+        self.assertEqual(r["status"], "POSTGEN_SOURCE_OR_OFFER_CHANGED_RED", r)
         self.assert_no_authority(r)
 
     def test_generator_exception_and_invalid_generator(self):
