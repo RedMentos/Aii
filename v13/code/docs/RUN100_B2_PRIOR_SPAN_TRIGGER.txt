@@ -1,1 +1,2 @@
 Run100 prereg 35f121c9b7e6aa607dc56714e5f537a4e9bdc4d7; software-only candidate and frozen scorer controls; original seed877 native report unchanged.
+Retry after original crosschain RED Actions 41204997472; preserve 11/11 SourceHandoff errors; only Run87 owner-compatible 9+12+16 tests run.\n
