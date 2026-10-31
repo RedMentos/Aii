@@ -1,0 +1,109 @@
+name: V13 Run44 seed307 current B2 to C3 source-handoff Linux native pilot
+on:
+  push:
+    branches: [assistant/v13-run44-current-source-handoff-native-seed307-20261031-hourly11]
+    paths: ['.github/workflows/v13-run44-current-source-handoff-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen pins, isolated bootstrap, serial native pilot and independent raw replay
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run44-native"
+          mkdir -p "$e/receipts"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          aafa2d5524730f2533764e54f6303750b40be00d v13/code/docs/fixtures/run44_source_handoff_seed307.json
+          5a51ba94ca9af6d8dfa659b63ad33816f6bcf075 v13/code/docs/CURRENT_SOURCE_HANDOFF_NATIVE_PREREG_RUN44_20261031.md
+          3f60dcb6843d7e726db9ba6a1210b1a212d09801 v13/code/scripts/run44_current_source_handoff_native.py
+          e97382dc810586ef720fe9052ddcb4078f1740fd v13/code/scripts/run44_current_source_handoff_verify.py
+          9ae86908a8e33dac768a8178000a0efaefb05921 v13/code/tests/test_run44_current_source_handoff_native.py
+          22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
+          1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py
+          9c9f2f198d43f8df55904a7f9a2cdaa46bc90601 v13/code/v13/bodyview.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run44-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run44-native-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run44_current_source_handoff_native tests.test_run43_current_source_handoff_realstore) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PINS_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          export V13_HOME="$RUNNER_TEMP/v13-run44-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else echo SKIPPED_TEST_RED > "$e/BOOTSTRAP_RAW.log"; echo 99 > "$e/BOOTSTRAP_EXIT.txt"; fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 36m env PYTHONPATH=v13/code "$py" v13/code/scripts/run44_current_source_handoff_native.py --home "$V13_HOME" --out "$e/pilot" --fixture v13/code/docs/fixtures/run44_source_handoff_seed307.json > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"; echo 99 > "$e/NATIVE_EXIT.txt"; fi
+          if [ -f "$e/pilot/report.json" ]; then
+            timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=v13/code "$py" v13/code/scripts/run44_current_source_handoff_verify.py --report "$e/pilot/report.json" --fixture v13/code/docs/fixtures/run44_source_handoff_seed307.json > "$e/REPORT_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else echo NO_ORIGINAL_NATIVE_REPORT_RED > "$e/REPORT_CHECK_RAW.log"; echo 99 > "$e/REPORT_CHECK_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run44_current_source_handoff_native.py v13/code/scripts/run44_current_source_handoff_verify.py v13/code/tests/test_run44_current_source_handoff_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6590c91e13543ea21c3ff839be161fd05a8bb05f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 6590c91e13543ea21c3ff839be161fd05a8bb05f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          cp "$e/HEAD.txt" "$e/PINS.txt" "$e/receipts/"
+          for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            cp "$e/${stage}_RAW.log" "$e/${stage}_EXIT.txt" "$e/receipts/" 2>/dev/null || true
+          done
+          [ ! -f "$e/pilot/report.json" ] || cp "$e/pilot/report.json" "$e/receipts/ORIGINAL_REPORT.json"
+          (cd "$e/receipts" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain all original raw, stage exits and manifest on success or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run44-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run44-native/receipts/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Preserve frozen scientific RED and require all ten stages
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run44-native"
+          for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${stage}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN44_EXPLORATORY_LINUX_NATIVE_ONLY_NO_STEP2_B3_JEPA_REDMI_OR_WHOLE_SYSTEM_PROMOTION
