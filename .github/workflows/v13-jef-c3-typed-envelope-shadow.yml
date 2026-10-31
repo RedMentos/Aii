@@ -1,0 +1,85 @@
+name: V13 JEF human F1 F5 to C3 typed formatter envelope SHADOW software
+on:
+  push:
+    branches: [assistant/v13-jef-c3-typed-envelope-gpt6-20261031]
+    paths:
+      - '.github/workflows/v13-jef-c3-typed-envelope-shadow.yml'
+      - 'v13/code/v13/jef_c3_typed_envelope_candidate.py'
+      - 'v13/code/tests/test_jef_c3_typed_envelope_candidate.py'
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      NEEDLE_TELEMETRY: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned JEF F1 F5 source and C3 formatter software proof
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-jef-c3-typed"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          8c0b647ec49a7fef45136917338b1ea49bdb191c v13/code/docs/JEF_C3_TYPED_ENVELOPE_PREREG_20261031.md
+          e94d70be7ec5f4666392a50ea17f813bd92c0879 v13/code/v13/jef_c3_typed_envelope_candidate.py
+          a486507731274e2d554e50dbf3e170c97305b029 v13/code/tests/test_jef_c3_typed_envelope_candidate.py
+          de59302a2fb8880758cc9dce3249b919dde63bf3 v13/code/v13/jef_f1f5_live_current_candidate.py
+          e417c3bb4afa34a226aa116752df8c10d659a113 v13/code/v13/jef_f1f5_source_admission.py
+          7cfae3d54e49718181813cea68238301e2ffae87 v13/code/v13/jef_typed_source_shadow.py
+          8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-jef-c3-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-jef-c3-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 8m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_jef_c3_typed_envelope_candidate tests.test_jef_f1f5_live_current_candidate tests.test_jef_f1f5_source_admission tests.test_jef_typed_source_shadow) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PINS_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/jef_c3_typed_envelope_candidate.py v13/code/tests/test_jef_c3_typed_envelope_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8774987507f8082a7fdf0a65e8e37c82a08910dd --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8774987507f8082a7fdf0a65e8e37c82a08910dd HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original software raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-jef-c3-typed-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-jef-c3-typed/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Require all seven stages zero
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-jef-c3-typed"
+          for s in PINS VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo JEF_C3_TYPED_SOURCE_SHADOW_NO_MODEL_OR_DELIVERY_AUTHORITY
