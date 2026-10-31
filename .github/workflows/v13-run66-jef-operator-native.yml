@@ -36,7 +36,7 @@ jobs:
           a14941e4b3e3554ce9490b329f6a88378e0cb01d v13/code/docs/JEF_OPERATOR_NATIVE_STRUCTURAL_REPLAY_PREREG_20261031.md
           c921d6a0f791d67c4788fbfed2d212ad7696d224 v13/code/docs/JEF_OPERATOR_BACKGROUND_POLICY_ISOLATION_PREREG_20261031.md
           d31c93c438f3e15f435b60603866713005c59f93 v13/code/scripts/jef_c3_c5_c6_operator_cli.py
-          4acece0287aededbd03db82f0e09ef38248b1000 v13/code/scripts/run66_jef_operator_native_structural.py
+          fe3a5a90cc4c2a23c7c5cfe6e52ffe9ff7ccfbd1 v13/code/scripts/run66_jef_operator_native_structural.py
           c4f28e661284c82f5c09506d16d974ee04cd866a v13/code/tests/test_run66_jef_operator_native_structural.py
           4409692865d284382de9a14aae55aa3a4315ecfc v13/code/scripts/run63_jef_c3_native.py
           01464d215933bf6de22c6c585f0aa8b16d056678 v13/code/scripts/run65_jef_c3_c5_native.py
