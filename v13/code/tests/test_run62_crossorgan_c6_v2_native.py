@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts import run62_crossorgan_c6_v2_native as run62
-from scripts import run62_crossorgan_c6_v2_native_verify as verify62
+from scripts import run62_crossorgan_c6_v2_verify as verify62
 from scripts.run51_f1f5_second_attempt_native import load_fixture
 from tests.test_run52_b1b2_cross_turn import FakeRuntime
 
