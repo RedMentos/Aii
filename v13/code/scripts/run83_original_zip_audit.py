@@ -31,6 +31,48 @@ MODEL_SHA = "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
 RUNNER_SHA = "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
 PROJECTS = ("Juniper", "Kestrel", "Linden", "Mistral", "Nacre", "Orchid")
 EXPECTED = ("A", "B", "NONE", "A", "B", "NONE")
+SYSTEM_SHA256 = {
+    "TYPED_ONLY": "3f27ef8203871896ced691b0e1da9836265c83253936141f315ece42542337fc",
+    "DUAL_SOURCE": "e3e0d2367141cfbd2cefcb29acbc2af13d6beafd4332fe982993085fc07338bc",
+}
+# Frozen Run83 TABLE, reproduced literally; separate from imported V13 runtime.
+TABLE = (
+    ("Juniper", "harbor cranes", "Minimum", "Maximum", (107, 22, True), (127, 20, True), (97, 17, True), "A"),
+    ("Kestrel", "museum drones", "Minimum", "Maximum", (107, 22, True), (137, 27, True), (147, 20, True), "B"),
+    ("Linden", "forest robotics", "Maximum", "Minimum", (107, 22, True), (97, 17, True), (117, 27, True), "NONE"),
+    ("Mistral", "island cargo", "Maximum", "Minimum", (207, 12, False), (157, 14, False), (187, 13, True), "A"),
+    ("Nacre", "school bots", "Minimum", "Minimum", (77, 12, True), (67, 17, True), (82, 13, True), "B"),
+    ("Orchid", "archive gliders", "Maximum", "Maximum", (157, 22, True), (127, 12, False), (137, 17, False), "NONE"),
+)
+
+
+def frozen_source_texts(row):
+    project, domain, op1, op2, rule, option_a, option_b, _ = row
+    tf = lambda value: "true" if value else "false"
+    current = (f"Project {project}. Choose Option A or Option B using the "
+               f"archived {domain} policy and latest option sheet. "
+               "If neither qualifies, choose NONE.")
+    policy = (f"Project {project} archived {domain} policy. "
+              f"{op1} battery quota: {rule[0]} units. "
+              f"{op2} start window: {rule[1]} ticks. "
+              f"Required sealed: {tf(rule[2])}.")
+    def option(label, x):
+        return (f"Option {label}: battery quota {x[0]} units; "
+                f"start window {x[1]} ticks; sealed {tf(x[2])}.")
+    sheet = (f"Project {project} latest {domain} option sheet. "
+             + option("A", option_a) + " " + option("B", option_b))
+    return current, policy, sheet
+
+
+def frozen_oracle(row):
+    _, _, op1, op2, rule, option_a, option_b, _ = row
+    eligible = []
+    for name, opt in (("A", option_a), ("B", option_b)):
+        bounds = all((opt[i] >= rule[i] if op == "Minimum" else opt[i] <= rule[i])
+                     for i, op in enumerate((op1, op2)))
+        if bounds and (not rule[2] or opt[2]):
+            eligible.append((opt[0], opt[1], name))
+    return min(eligible)[2] if eligible else "NONE"
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 PIN_LINE = re.compile(r"([0-9a-f]{64})  (\./[A-Za-z0-9_./-]+)\Z")
 MEMBERS = ({f"{s}_{kind}.{ext}" for s in STAGES for kind, ext in (("EXIT", "txt"), ("RAW", "log"))}
@@ -85,6 +127,16 @@ def audit_report(raw: bytes) -> dict:
     for key, value in pins.items():
         require(type(report.get(key)) is type(value) and report[key] == value,
                 "RUN83_REPORT_PIN_OR_AUTHORITY_RED:" + key)
+    require(sha(json.dumps(TABLE, sort_keys=True, separators=(",", ":")).encode()) == TABLE_SHA
+            and tuple(row[-1] for row in TABLE) == EXPECTED
+            and all(frozen_oracle(row) == row[-1] for row in TABLE),
+            "RUN83_FROZEN_TABLE_OR_ORACLE_RED")
+    expected_sources = []
+    for row in TABLE:
+        current, policy, sheet = frozen_source_texts(row)
+        expected_sources.append({"current": sha(current.encode()),
+                                 "policy_source": sha(policy.encode()),
+                                 "sheet_source": sha(sheet.encode())})
     cases = report.get("cases")
     require(type(cases) is list and len(cases) == 12, "RUN83_CASE_COUNT_RED")
     scores = {"TYPED_ONLY": 0, "DUAL_SOURCE": 0}
@@ -114,12 +166,15 @@ def audit_report(raw: bytes) -> dict:
         require(type(sources) is dict and set(sources) == {"current", "policy_source", "sheet_source"}
                 and all(type(v) is str and HEX64.fullmatch(v) for v in sources.values()),
                 "RUN83_SOURCE_SHA_RED")
+        require(sources == expected_sources[index], "RUN83_FROZEN_SOURCE_BINDING_RED")
         messages = c.get("input_messages")
         require(type(messages) is list and len(messages) == 2
                 and all(type(m) is dict and set(m) == {"role", "content"} for m in messages)
                 and messages[0]["role"] == "system" and type(messages[0]["content"]) is str
                 and messages[1]["role"] == "user" and type(messages[1]["content"]) is str,
                 "RUN83_MESSAGES_RED")
+        require(sha(messages[0]["content"].encode()) == SYSTEM_SHA256[arm],
+                "RUN83_FROZEN_SYSTEM_PROMPT_RED")
         require(c.get("input_sha256") == sha(json.dumps(messages, ensure_ascii=False,
                 separators=(",", ":")).encode()), "RUN83_INPUT_HASH_RED")
         try:
@@ -156,7 +211,7 @@ def audit_report(raw: bytes) -> dict:
                         "RUN83_DUAL_BODY_HYPOTHESIS_RED")
             current = payload.get("current_source")
             require(type(current) is dict and type(current.get("text")) is str
-                    and current["text"].startswith("Project " + PROJECTS[index] + ".")
+                    and current["text"] == frozen_source_texts(TABLE[index])[0]
                     and type(current.get("source_ref")) is dict,
                     "RUN83_CURRENT_SOURCE_RED")
             sr = current["source_ref"]
