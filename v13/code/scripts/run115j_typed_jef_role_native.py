@@ -267,8 +267,7 @@ def run(fixture_path, work, out, *, installed=None):
                          if r["id"] in ("Oxara", "Valtor")]
             no_false_none = all(
                 next(a for a in r["arms"] if a["arm"] == ARMS[1])
-                ["score"]["parsed"] in (
-                    {"choice": "NONE", "remaining": None}, None)
+                ["score"]["parsed"] == {"choice": "NONE", "remaining": None}
                 for r in none_rows)
             report["exploratory_role_signal"] = (
                 full >= 5 and full - control >= 2 and no_false_none)
