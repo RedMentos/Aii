@@ -1,0 +1,57 @@
+name: V13 Run93 combined original-ZIP source focused regression
+on:
+  push:
+    branches:
+      - assistant/v13-run93-fullsuite-combined-20261031-auto11
+permissions:
+  contents: read
+jobs:
+  fake:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      PYTHONPATH: ".:tests:scripts"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test real missing-model refusal and synthetic C3 driver
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run93"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run93-venv"
+          py="$RUNNER_TEMP/run93-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          (cd v13/code && "$py" -m unittest -v \
+            tests.test_run83_native_driver_fake_c3 \
+            tests.test_run52_b1b2_cross_turn \
+            tests.test_run90_exact_route_lineage) > "$e/TEST_RAW.log" 2>&1
+          echo 0 > "$e/TEST_EXIT.txt"
+          "$py" -m compileall -q v13/code/tests/test_run83_native_driver_fake_c3.py
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base fd4f006eb7f127f075466409621c524a15bb1529 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check fd4f006eb7f127f075466409621c524a15bb1529 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/TEST_RAW.log"
+          echo RUN92_SYNTHETIC_ONLY_NO_PROMOTION
+      - name: Upload original raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run93-fake-c3-${{ github.sha }}
+          path: ${{ runner.temp }}/run93/
+          if-no-files-found: error
+          retention-days: 90
