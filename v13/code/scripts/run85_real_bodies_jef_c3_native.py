@@ -175,7 +175,9 @@ def run(home, out):
         runtime.pool.get = original_get
         report["native_body"] = (
             len(report["body_offers"]) == 2
-            and all(x.get("process_reaped") for x in report["body_offers"]))
+            and all(x.get("status") == "RECORDED"
+                    and x.get("process_reaped")
+                    for x in report["body_offers"]))
         if not report["native_body"]:
             raise ValueError("RUN85_BODY_RELEASE_RED")
         typed = typed_build(
