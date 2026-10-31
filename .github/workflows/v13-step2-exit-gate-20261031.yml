@@ -1,0 +1,85 @@
+name: V13 STEP2 harness versus canonical exit negative-gate review
+on:
+  push:
+    branches:
+      - assistant/v13-step2-exit-gate-20261031-gpt6
+    paths:
+      - v13/code/docs/STEP2_EXIT_GATE_SPLIT_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      V13_NO_AUTOSTART: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify explicit STEP2 EXIT RED with original immutable native results
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-step2-exit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-step2-exit-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-step2-exit-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/v13/gates.py v13/code/tests/test_step2_exit_gate_split_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_step2_exit_gate_split_20261031.py -v) > "$e/SPLIT_RAW.log" 2>&1
+          split_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_register_gates.py -v) > "$e/ORIGINAL_RAW.log" 2>&1
+          original_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -c 'from v13.gates import summary; import json; print(json.dumps(summary(),sort_keys=True))') > "$e/GATE_SUMMARY_RAW.log" 2>&1
+          summary_rc=$?
+          set -e
+          echo "$split_rc" > "$e/SPLIT_EXIT.txt"
+          echo "$original_rc" > "$e/ORIGINAL_EXIT.txt"
+          echo "$summary_rc" > "$e/SUMMARY_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9fc4a85930b22ddb0c0f306d48bcddfad4806842 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9fc4a85930b22ddb0c0f306d48bcddfad4806842 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          r={'schema':'v13.step2_harness_exit_split.software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'split_exit':int((e/'SPLIT_EXIT.txt').read_text()),
+             'original_exit':int((e/'ORIGINAL_EXIT.txt').read_text()),
+             'summary_exit':int((e/'SUMMARY_EXIT.txt').read_text()),
+             'native_model_executed':False,'redmi_measured':False,
+             'step2_promoted':False,'b3_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 14 "$e/SPLIT_RAW.log"
+          tail -n 5 "$e/ORIGINAL_RAW.log"
+          cat "$e/GATE_SUMMARY_RAW.log"
+          test "$split_rc" -eq 0
+          test "$original_rc" -eq 0
+          test "$summary_rc" -eq 0
+      - name: Upload original raw evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-step2-exit-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-step2-exit/
+          if-no-files-found: error
+          retention-days: 90
