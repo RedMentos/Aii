@@ -1,0 +1,17 @@
+# JEF/F1F5 → C3 → C5/F3 DRAFT → C6 local operator CLI preregistration
+
+Date: 2026-10-31 UTC. Owner GPT-6 automation11, review-only child of verified Run65 PR #1410 exact `e49027c991aef11049a4d253fc1becf4495ddfe5`. This preregistration precedes CLI/tests/CI. No production Runtime command integration or Canon redesign.
+
+## Functional utility and scope
+
+Expose a **standalone default-OFF local operator command** that reads an operator-owned UTF-8 JSON file containing exactly `project`, `domain`, `policy_source`, `sheet_source`, `current`, creates real human `record`-permission F1/F5 source memories and latest USER in a local V13 Store, then runs the already source-bound JEF/C3→C5/F3 atomic DRAFT→C6 read-only preflight path. Require two explicit command-line opt-ins and an explicit mode: `synthetic_exact`, `synthetic_wrong` or `native`. Without both opt-ins, return OFF **before reading the input file or opening Runtime**. Synthetic modes are engineering tests, not model proof. Native mode must verify installed C3 GGUF SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d` and local runner SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39` **before creating user source records**, call C3 only once, release it, and never download or silently swap models. Do not override existing operator config or claim a registered native benchmark from an arbitrary CLI invocation.
+
+Only print redacted status, SHA digests, synthetic/native mode, C5/C6 preflight status and release flags; **never print raw input, raw model text, source memory values, user event, or a visible answer**. DRAFT remains local and uncommitted; positive C6 status `NEEDS_REAL_TTY_APPROVAL` is not a TTY approval. On bad input (duplicate JSON keys, invalid types, oversize, bad UTF-8, invalid project/domain) fail before Store writes. On source grammar refusal, callback error, native pin mismatch or postgen RED, do not claim DRAFT success.
+
+## Fixed software controls and gates
+
+Reuse original unchanged P2X seed `2026102921` calibration engineering fixture: three selected A/B/NONE rows × synthetic_exact and synthetic_wrong, **6/6** local Store DRAFT/C6 preflight positive paths; wrong formatter remains `FORMATTER_MISMATCH_RED` and source-only fallback, not native C3 success. Negatives: no opt-in and integer 1, unreadable input while OFF, duplicate JSON key, extra/missing fields, oversized/invalid UTF-8, bad source grammar, missing native artifacts/pin mismatch, no assistant FINAL/OUTPUT_COMMITTED, no raw content in output, no native model calls in synthetic tests. Preserve all original Run63/Run65 source/model/cohort/seed/scorer and negative gates.
+
+Acceptance: software test suite, Python compile, privacy CLEAN, exact GitHub source pins, closed raw ZIP+SHA256SUMS and byte-verified permitted private Library backup. Optional operator/Redmi native CLI execution is a separate evidence level; Run65's three pinned Linux-native C3 calls remain separate and original C3 strict 1/3, source-only fallback 2/3. No real TTY, tools, learning, STEP2/B3/Body-JEPA/age promotion or whole-system completion. Preserve Age0 RECORD_ONLY.
+
+Planned command: `PYTHONPATH=v13/code python v13/code/scripts/jef_c3_c5_c6_operator_cli.py --home <LOCAL_V13_HOME> --input-file <LOCAL_JSON> --mode native --operator-opt-in --callback-opt-in`. Synthetic modes are test-only and must be labeled. Do not run without the operator's conscious consent.
