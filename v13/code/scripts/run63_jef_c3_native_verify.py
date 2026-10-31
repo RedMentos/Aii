@@ -64,6 +64,18 @@ def verify(path):
         need(row.get("source_sha256") == {
             k:sha(fixture[k].encode("utf-8"))
             for k in ("current","b1_source","b2_source")}, "source_"+str(i))
+        refs = row.get("source_refs") or {}
+        for label, field in (("current","current"),("policy","b2_source"),
+                             ("sheet","b1_source")):
+            ref = refs.get(label) or {}
+            need(ref.get("sha256") == sha(fixture[field].encode("utf-8"))
+                 and ref.get("char_start") == 0
+                 and ref.get("char_end") == len(fixture[field])
+                 and ref.get("modality") == "text",
+                 "source_ref_"+label+"_"+str(i))
+        need(len({(refs.get(k) or {}).get("source_id")
+                  for k in ("current","policy","sheet")}) == 3,
+             "source_ref_distinct_"+str(i))
         need(row.get("negative_gates") == NEGATIVE
              and row.get("tty_approved") is False
              and row.get("output_committed") is False
