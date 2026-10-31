@@ -69,7 +69,7 @@ def _packet_ok(runtime, packet_id, event, role, snapshot, result):
             or packet.get('brain_generation_id') != snapshot['generation']
             or packet.get('role') != role
             or packet.get('source_ref') != snapshot['ref']
-            or packet.get('source_refs') != [snapshot['ref']]
+            or packet.get('provenance') != [snapshot['ref']]
             or packet.get('model_revision') != runtime.models.revision(role)
             or packet.get('delivery_authority') != 0
             or packet.get('learning_authority') != 0
