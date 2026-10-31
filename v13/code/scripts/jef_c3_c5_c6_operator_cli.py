@@ -56,12 +56,12 @@ def _read_input(path):
     if not all(type(data[k]) is str for k in FIELDS):
         raise ValueError("INPUT_TYPE_RED")
     project, domain = data["project"], data["domain"]
-    if (re.fullmatch(r"[A-Za-z0-9_-]{1,40}", project) is None
-            or re.fullmatch(r"[A-Za-z][A-Za-z ]{0,60}", domain) is None):
+    if (re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,39}", project) is None
+            or re.fullmatch(r"[A-Za-z][A-Za-z -]{0,39}", domain) is None):
         raise ValueError("PROJECT_DOMAIN_RED")
     for key in ("policy_source", "sheet_source", "current"):
         value = data[key]
-        if not 0 < len(value) <= (2048 if key == "current" else 4096):
+        if not 0 < len(value) <= 2048:
             raise ValueError("SOURCE_SIZE_RED")
         if any(c in value for c in "\r\n\t\x00"):
             raise ValueError("SOURCE_CONTROL_RED")
