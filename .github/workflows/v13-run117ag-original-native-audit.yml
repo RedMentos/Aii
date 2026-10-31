@@ -7,6 +7,7 @@ on:
       - .github/workflows/v13-run117ag-original-native-audit.yml
       - v13/code/scripts/run117ag_independent_native_audit.py
       - v13/code/tests/test_run117ag_independent_native_audit.py
+      - v13/code/tests/test_run117ag_original_native_mutations.py
       - v13/code/docs/RUN117AG_*
 permissions:
   contents: read
@@ -55,14 +56,22 @@ jobs:
           else
             audit_rc=125;echo OUTER_SHA_RED > "$e/AUDIT_RAW.log"
           fi
-          python3 -m compileall -q v13/code/scripts/run117ag_independent_native_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          if test "$audit_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. V13_RUN117AF_ORIGINAL_ZIP="$original" \
+              python3 -m unittest -v tests.test_run117ag_original_native_mutations) > "$e/MUTATION_RAW.log" 2>&1
+            mutation_rc=$?
+          else
+            mutation_rc=125;echo AUDIT_RED > "$e/MUTATION_RAW.log"
+          fi
+          python3 -m compileall -q v13/code/scripts/run117ag_independent_native_audit.py \
+            v13/code/tests/test_run117ag_original_native_mutations.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base f767480f5d79e8b8493f458e8579aefa78721ca5 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           privacy_rc=$?
           git diff --check f767480f5d79e8b8493f458e8579aefa78721ca5 HEAD > "$e/DIFF_RAW.log" 2>&1
           diff_rc=$?
-          for x in "DOWNLOAD:$download_rc" "OUTER:$outer_rc" "AUDIT:$audit_rc" \
+          for x in "DOWNLOAD:$download_rc" "OUTER:$outer_rc" "AUDIT:$audit_rc" "MUTATION:$mutation_rc" \
                    "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
             echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
           done
@@ -70,7 +79,7 @@ jobs:
           python3 - "$e" <<'PY' > "$e/RESULT_RAW.log"
           import json,sys
           from pathlib import Path
-          e=Path(sys.argv[1]);names=('DOWNLOAD','OUTER','AUDIT','COMPILE','PRIVACY','DIFF')
+          e=Path(sys.argv[1]);names=('DOWNLOAD','OUTER','AUDIT','MUTATION','COMPILE','PRIVACY','DIFF')
           exits={n:int((e/(n+'_EXIT.txt')).read_text()) for n in names}
           audit=json.loads((e/'AUDIT_RAW.log').read_text()) if exits['AUDIT']==0 else None
           r={'schema':'v13.run117ag.independent_original_native_audit_receipt.v1',
@@ -86,7 +95,8 @@ jobs:
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           cat "$e/RESULT_RAW.log"
           cat "$e/AUDIT_RAW.log"
-          for rc in "$download_rc" "$outer_rc" "$audit_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+          tail -n 7 "$e/MUTATION_RAW.log"
+          for rc in "$download_rc" "$outer_rc" "$audit_rc" "$mutation_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
           python3 - "$e/AUDIT_RAW.log" <<'PY'
           import json,sys
           a=json.load(open(sys.argv[1]))
