@@ -1,4 +1,4 @@
-name: V13 F1F5 C5C6 atomic DRAFT software SHADOW preflight
+name: V13 F1F5 C5C6 atomic DRAFT semantic transaction isolation preflight
 on:
   push:
     branches: [assistant/v13-f1f5-c5c6-atomic-draft-20261031-auto11]
