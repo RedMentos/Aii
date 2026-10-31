@@ -198,6 +198,31 @@ class RealStoreBridgeReview(unittest.TestCase):
                 self.assertNotIn("messages", result)
                 self.assertIn("orphaned_shadow_plan_packet_id", result)
 
+    def test_context_plan_changed_during_final_jef_recheck_refuses(self):
+        from v13 import b1b2_jef_c3_source_role_bridge_candidate as module
+        original = module.propose
+        runtime = self.r
+
+        def mutate_during_final_recheck(*args, **kwargs):
+            row = runtime.store.one(
+                "SELECT id,payload FROM packets "
+                "WHERE kind='ContextPlan' ORDER BY rowid DESC LIMIT 1")
+            self.assertIsNotNone(row)
+            plan = json.loads(row["payload"])
+            plan["provenance"] = [{"source_id": "late_forger"}]
+            with runtime.store.tx() as db:
+                db.execute("UPDATE packets SET payload=? WHERE id=?",
+                           (dumps(plan), row["id"]))
+            return original(*args, **kwargs)
+
+        with patch.object(module, "propose",
+                          side_effect=mutate_during_final_recheck):
+            result = self.build()
+        self.assertNotEqual(result["status"],
+                            "SHADOW_B1B2_JEF_C3_ROLE_BRIDGE_VERIFIED")
+        self.assertNotIn("messages", result)
+        self.assertIn("orphaned_shadow_plan_packet_id", result)
+
     def test_deleted_prior_source_refuses(self):
         with self.r.store.tx() as db:
             db.execute("UPDATE sources SET deleted=1 WHERE id=?",
