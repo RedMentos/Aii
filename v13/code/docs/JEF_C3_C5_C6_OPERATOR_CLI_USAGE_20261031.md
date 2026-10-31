@@ -1,6 +1,6 @@
 # JEF/C3 → C5/F3 DRAFT → C6 local operator CLI (SHADOW only)
 
-This is a **standalone, opt-in diagnostic** for one bounded two-source A/B/NONE choice. It is **not** a general conversation interface, real approval flow, or proof of AGI. Source records and the DRAFT persist in the local V13 SQLite Store, but no FINAL or user-visible answer is committed. The CLI prints only redacted status/hashes, not source text or raw C3 output. Do not put private input JSON in this public repository or GitHub Actions.
+This is a **standalone, opt-in diagnostic** for one bounded two-source A/B/NONE choice. It is **not** a general conversation interface, real approval flow, or proof of AGI. Source records and the uncommitted assistant message row persist in the local V13 SQLite Store, but no FINAL or user-visible answer is committed. On Runtime restart, canonical Store recovery changes any pending DRAFT to INTERRUPTED; it is not a resumable delivery authorization. The CLI prints only redacted status/hashes, not source text or raw C3 output. Do not put private input JSON in this public repository or GitHub Actions.
 
 ## Local input example
 
@@ -36,6 +36,6 @@ PYTHONPATH=v13/code python v13/code/scripts/jef_c3_c5_c6_operator_cli.py \
 
 Without **both** explicit opt-ins, the command returns `OFF` before reading input or opening Runtime. `native` refuses if the installed C3 GGUF SHA256 is not `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d` or the runner SHA256 is not `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`. It does not download models, change config, or claim a registered benchmark. `synthetic_exact` and `synthetic_wrong` are software tests only.
 
-A successful `SHADOW_DRAFT_PREFLIGHT_READY` means an independently source-verified A/B/NONE DRAFT and C5/F3 packets exist, and the read-only C6 challenge returned `NEEDS_REAL_TTY_APPROVAL`. That status **does not approve or deliver** anything. A C3 formatter mismatch remains `FORMATTER_MISMATCH_RED`; the source-only JEF fallback is separate. If a later source changes, a future preflight must recheck it before any authorized delivery. No model learning or Age promotion occurs.
+A successful `SHADOW_DRAFT_PREFLIGHT_READY` means an independently source-verified A/B/NONE DRAFT and C5/F3 packets existed during that invocation, and the read-only C6 challenge returned `NEEDS_REAL_TTY_APPROVAL`. Restart invalidates that DRAFT to INTERRUPTED; rerun with current human sources rather than trying to deliver a stale draft. That status **does not approve or deliver** anything. A C3 formatter mismatch remains `FORMATTER_MISMATCH_RED`; the source-only JEF fallback is separate. If a later source changes, a future preflight must recheck it before any authorized delivery. No model learning or Age promotion occurs.
 
 The original Run63 native strict receiver pilot remains RED (RAW 2/3, TYPED 1/3); Run65's native 3/3 C5/C6 structural fallback PASS with strict C3 1/3 is independent. Linux software/native evidence is not Redmi evidence. Do not merge this CLI into the production Runtime command router without a separately authorized, tested age/TTY/output path.
