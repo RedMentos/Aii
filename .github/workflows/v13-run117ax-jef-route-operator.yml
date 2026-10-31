@@ -41,7 +41,7 @@ jobs:
           fi
           if test "$deps_rc" -eq 0; then
             (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
-              tests.test_run117ax_jef_route_operator_cli
+              tests.test_run117ax_jef_route_operator_cli \
               tests.test_run117aw_jef_c2_c3_formatter_route_shadow \
               tests.test_c2_monotone_route_shadow \
               tests.test_jef_c3_c5_c6_operator_cli) > "$e/TEST_RAW.log" 2>&1
