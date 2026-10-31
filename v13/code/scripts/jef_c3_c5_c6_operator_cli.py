@@ -17,7 +17,19 @@ import stat
 import time
 
 from v13.common import dumps, file_hash
-from v13.runtime import Runtime
+from v13.runtime import Runtime as _BaseRuntime
+
+
+class Runtime(_BaseRuntime):
+    """Synchronous operator Store only; never dispatch queued user/sleep work.
+
+    Base Runtime starts its coordinator in __init__. Override the thread
+    target rather than changing the frozen production Runtime or writing
+    SLEEP_POLICY. close() sets stop and joins this inert worker normally.
+    """
+    def _worker(self):
+        self.stop.wait()
+
 from v13.jef_c3_typed_envelope_candidate import build_jef_c3_typed_envelope
 from v13.jef_c3_c5_c6_fallback_draft_candidate import stage, preflight, STAGED
 
@@ -145,7 +157,6 @@ def run(home, input_file, mode, *, operator_opt_in=False,
                      native_model_called=False,
                      native_process_reaped=None)
     try:
-        runtime.sleep.cycle.set_policy("enabled", "off")
         if mode == "native":
             try:
                 model_sha = file_hash(runtime.models.path_for("C3_LANGUAGE"))
