@@ -171,6 +171,33 @@ class SchemaDraftTests(unittest.TestCase):
                 import shutil
                 shutil.rmtree(self.root / "store")
 
+    def test_timeout_mutated_prompt_and_foreign_source_fail_closed(self):
+        import shutil
+        for mode in ("timeout", "prompt_mutated", "foreign"):
+            with self.subTest(mode=mode):
+                r, ids, event = self._store()
+                try:
+                    invoked = []
+                    def cb(messages, spec):
+                        invoked.append(True)
+                        if mode == "timeout":
+                            raise TimeoutError("simulated model timeout")
+                        if mode == "prompt_mutated":
+                            messages[0]["content"] = "untrusted replacement"
+                        return json.dumps({"action": self.row["oracle_action"]})
+                    selected_ids = ids[::-1] if mode == "foreign" else ids
+                    result = self._stage(
+                        r, selected_ids, event, cb,
+                        operator_opt_in=True, callback_opt_in=True)
+                    self.assertEqual(result["status"], "JEF_C3_GENERATION_RED")
+                    self.assertEqual(self._counts(r, event), (0, 0))
+                    self.assertEqual(invoked, [] if mode == "foreign" else [True])
+                    self.assertEqual(result["delivery_authority"], 0)
+                    self.assertFalse(result["output_committed"])
+                finally:
+                    r.close()
+                shutil.rmtree(self.root / "store")
+
     def test_cli_schema_modes_and_old_mode_preserved(self):
         inp = self._input()
         for mode, expected_status in (
