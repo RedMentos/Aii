@@ -1,0 +1,11 @@
+# Run39 action-balanced all-slot prelaunch checkpoint — 2026-10-31 UTC
+
+Owner GPT-6 scheduled continuation. Review-only branch `assistant/v13-run39-world-jepa-action-balanced-fullslot-20261031-hourly11`, child of Run38 PR #1365 at `804918aaac79676f3872bf8dba0edbe1d3accc35`. Prereg committed **before** code at `1cf7dd7cd10f97f1e27cbc39846ac3f9f4aa91e2`, frozen seeds501–503, train4000/cf150/attr300/steps3000, three exact-row arms. Canon unchanged.
+
+**Failed attempt retained:** first expanded software preflight Actions `41152024660` at `bc425ede77bed5062e579d007789d5463f57b725` RED, 25/27 tests PASS and 2 FAIL because candidate used `AFFECTED_COPIES=SLOTS-1=5` instead of preregistered **four extra** affected rows. Original ZIP artifact `13023247786` SHA256 `a54c74f4ad38d087f45e027fe87d6eb8d283cfac10ecdb638cd4a9471390c0ed`, CRC PASS, 18/18 inner hashes; original TEST_EXIT=1 preserved. Private Library `/V13-Checkpoints/2026-10-31/Run39-WorldJepa-ActionBalanced/Run39_SOFTWARE_FAILED_ORIGINAL_41152024660.zip` independently materialized byte-identical. No original failed artifact erased.
+
+**Correction:** only new isolated candidate `AFFECTED_COPIES=SLOTS-2=4` at `073188f10f34d63c36f3ebe5da64ba976c733bc4`; corrected source blob `c65467f1f000c187f46542270dfc53ee569824a1`. Original frozen WorldJEPA, Run28/38, collector, seeds, W1–W7 and H1/H2/H3 unchanged. Pinned corrected software preflight `41152204145` at `0fe208c5a32bbf02644d6bae38bf37ad1e2b7618` pending terminal verification.
+
+**Next command:** verify terminal `https://github.com/RedMentos/Aii/actions/runs/41152204145`; if GREEN, fetch its original ZIP and independently check CRC, manifest, stage exits, test count, privacy and source pins; back up privately with SHA readback. Confirm no heavy owner; only then create the serialized Run39 real-file workflow for disjoint seeds501–503. Preserve raw on failure. The Run38 original real-file negative W6/W7b/W7c remains binding and must not be overwritten.
+
+Negative gates Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, World-JEPA SHADOW; no Redmi, learned German transfer, JEF fusion or whole-system completion. Platform remaining budget UNKNOWN.
