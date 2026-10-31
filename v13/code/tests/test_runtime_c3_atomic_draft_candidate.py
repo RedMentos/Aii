@@ -55,7 +55,7 @@ class RuntimeC3DraftTests(unittest.TestCase):
             event["event_id"], "fact", self.f["value"], permission="record",
             key=self.f["key"], scope="session")
 
-    def run(self, opt=True, model_opt=True, deadline=None, tokens=96):
+    def stage(self, opt=True, model_opt=True, deadline=None, tokens=96):
         return bridge.stage_runtime_c3_draft(
             self.r, self.current["event_id"],
             time.monotonic()+30 if deadline is None else deadline,
@@ -74,7 +74,7 @@ class RuntimeC3DraftTests(unittest.TestCase):
     def test_runtime_c3_f1f5_atomic_draft_no_delivery(self):
         self.correction()
         before = self.counts()
-        r = self.run()
+        r = self.stage()
         self.assertEqual(r["status"], "RUNTIME_C3_DRAFT_BOUND_SHADOW_NO_COMMIT")
         self.assertEqual(self.roles, ["C3_LANGUAGE"])
         self.assertEqual(len(self.c3.calls), 1)
@@ -100,7 +100,7 @@ class RuntimeC3DraftTests(unittest.TestCase):
 
     def test_missing_human_correction_never_calls_c3_or_stages(self):
         before = self.counts()
-        r = self.run()
+        r = self.stage()
         self.assertEqual(r["status"], "CLARIFY")
         self.assertFalse(r["model_called"])
         self.assertEqual(self.roles, [])
@@ -111,10 +111,10 @@ class RuntimeC3DraftTests(unittest.TestCase):
         before = self.counts()
         for opt, model in [(False, True), (True, False), (1, True),
                            (True, "yes"), (None, None)]:
-            self.assertEqual(self.run(opt=opt, model_opt=model)["status"], "OFF")
+            self.assertEqual(self.stage(opt=opt, model_opt=model)["status"], "OFF")
         for tokens in (0, 257, True, 1.5):
-            self.assertEqual(self.run(tokens=tokens)["status"], "INVALID_INPUT")
-        self.assertEqual(self.run(deadline=time.monotonic()-1)["status"],
+            self.assertEqual(self.stage(tokens=tokens)["status"], "INVALID_INPUT")
+        self.assertEqual(self.stage(deadline=time.monotonic()-1)["status"],
                          "DEADLINE_EXPIRED")
         self.assertEqual(self.roles, [])
         self.assertEqual(self.counts(), before)
@@ -123,10 +123,10 @@ class RuntimeC3DraftTests(unittest.TestCase):
         self.correction()
         before = self.counts()
         self.r.current = object()
-        self.assertEqual(self.run()["status"], "RUNTIME_NOT_IDLE")
+        self.assertEqual(self.stage()["status"], "RUNTIME_NOT_IDLE")
         self.r.current = None
         self.r.cancel_event.set()
-        self.assertEqual(self.run()["status"], "RUNTIME_NOT_IDLE")
+        self.assertEqual(self.stage()["status"], "RUNTIME_NOT_IDLE")
         self.r.cancel_event.clear()
         self.assertEqual(self.roles, [])
         self.assertEqual(self.counts(), before)
@@ -135,16 +135,16 @@ class RuntimeC3DraftTests(unittest.TestCase):
         self.correction()
         before = self.counts()
         self.c3.last_metrics = {"status": "ERROR", "synthetic": True}
-        self.assertEqual(self.run()["status"], "GENERATION_ERROR")
+        self.assertEqual(self.stage()["status"], "GENERATION_ERROR")
         self.assertEqual(self.counts(), before)
         self.c3.last_metrics = {"status": "FINAL", "synthetic": True}
         self.c3.output = ""
-        self.assertEqual(self.run()["status"], "INVALID_CANDIDATE")
+        self.assertEqual(self.stage()["status"], "INVALID_CANDIDATE")
         self.assertEqual(self.counts(), before)
         def fail():
             raise RuntimeError("fake native failure")
         self.c3.on_generate = fail
-        self.assertEqual(self.run()["status"], "GENERATION_ERROR")
+        self.assertEqual(self.stage()["status"], "GENERATION_ERROR")
         self.assertEqual(self.counts(), before)
         self.assertEqual(len(self.releases), 3)
 
@@ -152,18 +152,18 @@ class RuntimeC3DraftTests(unittest.TestCase):
         mid = self.correction()
         before = self.counts()
         self.c3.on_generate = lambda: self.r.memory.forget(mid)
-        self.assertEqual(self.run()["status"], "SOURCE_CHANGED_BEFORE_DRAFT")
+        self.assertEqual(self.stage()["status"], "SOURCE_CHANGED_BEFORE_DRAFT")
         self.assertEqual(self.counts(), before)
         self.c3.on_generate = None
         with self.r.store.tx() as db:
             db.execute("UPDATE sources SET deleted=1 WHERE id=?",
                        (self.current["source_ref"]["source_id"],))
-        self.assertEqual(self.run()["status"], "EVENT_OR_SOURCE_RED")
+        self.assertEqual(self.stage()["status"], "EVENT_OR_SOURCE_RED")
         self.assertEqual(self.counts(), before)
 
     def test_restart_interrupts_draft_and_does_not_promote(self):
         self.correction()
-        r = self.run()
+        r = self.stage()
         self.assertEqual(r["status"], "RUNTIME_C3_DRAFT_BOUND_SHADOW_NO_COMMIT")
         mid = r["draft_message_id"]
         session = self.r.session
