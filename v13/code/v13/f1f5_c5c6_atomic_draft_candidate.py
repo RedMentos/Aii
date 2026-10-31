@@ -22,8 +22,13 @@ def _result(status, **extra):
 
 
 def _candidate_ok(candidate):
-    return (type(candidate) is str and bool(candidate.strip())
-            and len(candidate.encode("utf-8", errors="surrogatepass")) <= 512
+    if type(candidate) is not str or not candidate.strip():
+        return False
+    try:
+        encoded = candidate.encode("utf-8")
+    except UnicodeError:
+        return False
+    return (len(encoded) <= 512
             and not any(ord(ch) < 32 and ch not in "\n\t" for ch in candidate))
 
 
