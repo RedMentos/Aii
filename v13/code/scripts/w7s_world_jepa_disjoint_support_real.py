@@ -50,7 +50,7 @@ def assert_frozen_sources(root=None):
     for key, path in FROZEN_PATHS.items():
         raw = (root / path).read_bytes()
         blob = hashlib.sha1(
-            ("blob " + str(len(raw)) + "\\0").encode("ascii") + raw
+            ("blob " + str(len(raw)) + "\0").encode("ascii") + raw
         ).hexdigest()
         if blob != FROZEN[key]:
             raise ValueError("W7S_SOURCE_PIN_RED:" + key)
