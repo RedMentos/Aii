@@ -37,7 +37,7 @@ PY
 if [[ "${PREFIX:-}" == *com.termux* ]]; then
   ln -sfn "$V13_DATA_HOME/bin/v13" "$PREFIX/bin/v13"
 fi
-"$V13_PYTHON" "$V13_APP_DIR/scripts/install_selftest.py"
+"$V13_PYTHON" "$V13_APP_DIR/scripts/install_selftest.py" --cohort run102_c3
 printf '\nErster echter Modelltest. Auf dem Handy kann das einige Minuten dauern.\n'
 if ! "$V13_DATA_HOME/bin/v13" probe; then
   printf '\nMindestens ein Modelltest ist fehlgeschlagen. Der Bericht liegt in exports/native-probe.json. Mit :doctor/:logs prüfen; der Chat zeigt auch Fehler ausdrücklich an.\n'
