@@ -1,0 +1,7 @@
+RUN94 unfiltered full-suite trigger, 2026-10-31.
+Run93 original combined full-suite terminal RED: Actions 41199460706, HEAD 4ef9017f876444e2d31719f4e194fe6a4315a9f9.
+Original Run93 ZIP artifact 13041614531, SHA256 76884d366a924892ffb586a4a1faf92ce3e87d38f0fd10239f36104e14a7c2e0, CRC PASS, 23/23 inner hashes PASS, all prerequisites/compile/privacy/diff exit0.
+Run93 FULL_EXIT 1: 4906 tests, 2 ERROR (Run34/37 historical utility source drift), 28 SKIP, zero FAIL.
+Run94 test-only repair asserts strict historical refusal and tests isolated original metadata; focused Actions 41199577311 exact HEAD 9750e685f7e10921d51823ac8532356b5aaa2033, 24/24 GREEN, ZIP SHA256 3f50e81262bd1c72f7cf152bce2133451d0fd9edfc3cfb995afd48c7c4805b14.
+Run94 full-suite uses exact original STEP2 ZIP SHA256 98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46 and Run13T ZIP SHA256 86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c, no test exclusions or scientific gate changes.
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; V13 INCOMPLETE.
