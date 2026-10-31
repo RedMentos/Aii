@@ -1,0 +1,69 @@
+{
+  "schema": "v13.build_state.run37.independent_native_audit.v1",
+  "owner": "GPT-6 scheduled continuation",
+  "scope": "REVIEW_ONLY_BRANCH_NOT_MAIN",
+  "parent_head": "9d3bffd28e010b472fbc4e5d423bdca217f43e6a",
+  "branch": "assistant/v13-run37-ag12-native-raw-audit-20261031-hourly11",
+  "native_original": {
+    "workflow_run": 41149111278,
+    "artifact_id": 13022018458,
+    "source_head": "d421badbc5adde9707ad37ea8f219fa0483bf01a",
+    "sha256": "2ad28dc3823751971254fc4b34501c3a131895cfad6eb4299993eb92b2b07f0f",
+    "zip_crc": "PASS",
+    "inner_hashes": "21/21",
+    "stage_exits": "9/9 ZERO",
+    "native_role_calls": 528,
+    "voted_rows": 176,
+    "invalid_present_role_calls": {
+      "de": 29,
+      "en": 28
+    },
+    "changed_votes": {
+      "de": 0,
+      "en": 0
+    },
+    "legacy_correct": {
+      "de": 28,
+      "en": 34
+    },
+    "finite_correct": {
+      "de": 28,
+      "en": 34
+    },
+    "evidence_class": "LINUX_NATIVE_AG12_SAME_OUTPUT_SHADOW"
+  },
+  "independent_audit": {
+    "script": "v13/code/scripts/run37_audit_run36_native_zip.py",
+    "tests": "v13/code/tests/test_run37_audit_run36_native_zip.py",
+    "focused_tests": "10/10 PASS",
+    "ci_run": 41151001568,
+    "ci_head": "c15c2d272c32134615bc425a32bbe3845369bda3",
+    "ci_conclusion": "SUCCESS",
+    "original_zip_retrieved_in_ci": true,
+    "privacy": "CLEAN",
+    "source_and_model_pins": "EXACT"
+  },
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-31/Run36-AG12-NativeConfidence-Incidence/Run36_ORIGINAL_NATIVE_41149111278_sha2ad28dc3.zip",
+    "sha256_readback_identical": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "world_jepa": "SHADOW",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Why did 57/528 role calls have invalid present field_min_prob? The original aggregate cannot distinguish NaN/+Inf/subtypes.",
+    "Why did the finite rule change zero answers despite invalid confidence on this cohort? No paired raw per-role answer/confidence retained.",
+    "Can any finite confidence improvement pass a separately preregistered real utility gate? Not demonstrated.",
+    "No Redmi sustained proof, C2/JEF fusion or learned German transfer; other canonical organs remain open."
+  ],
+  "exact_next_command": "cd v13/code && PYTHONPATH=. python3 -m unittest -v tests.test_run37_audit_run36_native_zip && python3 scripts/run37_audit_run36_native_zip.py --zip /path/to/original-13022018458.zip",
+  "remaining_platform_budget": "UNKNOWN",
+  "status": "REVIEWABLE_CI_GREEN_NOT_PRODUCTION_INTEGRATED"
+}

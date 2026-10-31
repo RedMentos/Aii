@@ -1,0 +1,51 @@
+name: V13 Run37 independent Run36 native raw audit
+on:
+  push:
+    branches:
+      - assistant/v13-run37-ag12-native-raw-audit-20261031-hourly11
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Run stdlib-only synthetic and negative controls
+        run: |
+          python3 -m compileall -q v13/code/scripts/run37_audit_run36_native_zip.py v13/code/tests/test_run37_audit_run36_native_zip.py
+          cd v13/code
+          PYTHONPATH=. python3 -m unittest -v tests.test_run37_audit_run36_native_zip
+      - name: Download exact original Run36 artifact (not regenerated)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --fail --location --retry 3 --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13022018458/zip" \
+            --output /tmp/run36-original.zip
+          printf '2ad28dc3823751971254fc4b34501c3a131895cfad6eb4299993eb92b2b07f0f  /tmp/run36-original.zip\n' | sha256sum --check
+      - name: Independently verify original closed native receipt and negative gates
+        run: |
+          python3 v13/code/scripts/run37_audit_run36_native_zip.py --zip /tmp/run36-original.zip
+      - name: Public diff privacy scan
+        run: |
+          git fetch --no-tags --depth=1 origin 9d3bffd28e010b472fbc4e5d423bdca217f43e6a
+          python3 - <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "v13/code")
+          from scripts.public_repo_privacy_scan import scan
+          base = "9d3bffd28e010b472fbc4e5d423bdca217f43e6a"
+          diff = subprocess.check_output(
+              ["git", "diff", "--no-color", "-U0", "--text", base, "HEAD"],
+              text=True)
+          hits = scan(diff)
+          for hit in hits:
+              print(hit)
+          print("privacy scan exact-parent..HEAD:", "CLEAN" if not hits else "RED")
+          sys.exit(1 if hits else 0)
+          PY
