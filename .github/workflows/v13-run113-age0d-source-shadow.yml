@@ -1,0 +1,116 @@
+name: V13 Run113 Age0d answer-sees-source SHADOW candidate
+on:
+  push:
+    branches:
+      - assistant/v13-run113-age0d-answer-source-shadow-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run113-age0d-source-shadow.yml
+      - v13/code/v13/age0d_answer_source_shadow_candidate.py
+      - v13/code/tests/test_age0d_answer_source_shadow_candidate.py
+      - v13/code/docs/fixtures/RUN113_AGE0D_ANSWER_SOURCE_SEED941.json
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Execute frozen source-bound checker and original late-correction tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run113"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run113-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run113-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_age0d_answer_source_shadow_candidate.py -v) > "$e/NEW_TEST_RAW.log" 2>&1
+          new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_late_correction.py -v) > "$e/ORIGINAL_TEST_RAW.log" 2>&1
+          original_rc=$?
+          "$py" -m compileall -q v13/code/v13/age0d_answer_source_shadow_candidate.py v13/code/tests/test_age0d_answer_source_shadow_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run113.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$new_rc" > "$e/NEW_TEST_EXIT.txt"
+          echo "$original_rc" > "$e/ORIGINAL_TEST_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run113.zip'
+          frozen=Path('v13/code/docs/fixtures/RUN113_AGE0D_ANSWER_SOURCE_SEED941.json').read_bytes()
+          assert hashlib.sha256(frozen).hexdigest()=='553a068e38c15a10c8b477ac18c14bf45f437da09fb58a3006168616552e2d43'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              name='v13/age0d_answer_source_shadow_candidate.py'
+              assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'files':len(manifest['files']),
+                            'zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'registered_fixture_sha256':hashlib.sha256(frozen).hexdigest(),
+                            'model_executed':False,'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 313e1906d046271f7bde00b8c3f9fbf85aa2a93a --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 313e1906d046271f7bde00b8c3f9fbf85aa2a93a HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['NEW_TEST','ORIGINAL_TEST','COMPILE','PACK','ZIP','PRIVACY','DIFF']
+          r={'schema':'v13.run113.age0d_answer_source_shadow.software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed':False,'deliver_enabled':False,
+             'redmi_measured':False,'step2_promoted':False,
+             'b3_promoted':False,'body_jepa_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 10 "$e/NEW_TEST_RAW.log"
+          for rc in "$new_rc" "$original_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run113-age0d-answer-source-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run113/
+          if-no-files-found: warn
+          retention-days: 90
