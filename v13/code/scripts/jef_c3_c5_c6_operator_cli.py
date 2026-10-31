@@ -46,7 +46,9 @@ def _nonfinite(_):
 
 
 def _read_input(path):
-    raw = Path(path).read_bytes()
+    # Never allocate the entire untrusted file before checking its bound.
+    with Path(path).open("rb") as source:
+        raw = source.read(MAX_INPUT_BYTES + 1)
     if not 0 < len(raw) <= MAX_INPUT_BYTES:
         raise ValueError("INPUT_SIZE_RED")
     data = json.loads(raw.decode("utf-8", "strict"),
@@ -83,6 +85,22 @@ def _result(status, *, mode=None, **extra):
         "native_proof": False, "real_tty_approved": False,
         "age0": "RECORD_ONLY", **extra,
     }
+
+
+def _finalize_native_release(report, releases):
+    """Fail closed when native process reaping cannot be evidenced.
+
+    A software receipt check, not proof of actual native execution.
+    """
+    reaped = (
+        report.get("native_model_called") is True
+        and any(x.get("before") is not None for x in releases)
+        and all(x.get("process_reaped") is True for x in releases)
+    )
+    report["native_process_reaped"] = bool(reaped)
+    if (report.get("status") == "SHADOW_DRAFT_PREFLIGHT_READY"
+            and not reaped):
+        report["status"] = "NATIVE_RELEASE_RED"
 
 
 def run(home, input_file, mode, *, operator_opt_in=False,
@@ -202,14 +220,20 @@ def run(home, input_file, mode, *, operator_opt_in=False,
         report["error_type"] = type(exc).__name__
         return report
     finally:
+        # A failed unload must never prevent the independent Store close.
         try:
             runtime.pool.unload()
-            releases = list(runtime.pool.release_history)
-            if mode == "native":
-                report["native_process_reaped"] = (
-                    report["native_model_called"]
-                    and any(x.get("before") is not None for x in releases)
-                    and all(x.get("process_reaped") is True for x in releases))
+        except Exception:
+            report["pool_release_status"] = "UNLOAD_RED"
+            report["status"] = "CLI_CLOSE_RED"
+        if mode == "native":
+            try:
+                _finalize_native_release(
+                    report, list(runtime.pool.release_history))
+            except Exception:
+                report["native_process_reaped"] = False
+                report["status"] = "CLI_CLOSE_RED"
+        try:
             runtime.close()
         except Exception:
             report["close_status"] = "CLOSE_RED"
