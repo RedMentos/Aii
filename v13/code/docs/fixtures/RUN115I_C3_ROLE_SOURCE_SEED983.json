@@ -1,0 +1,64 @@
+{
+  "arms": [
+    "FULL_TWO_SOURCE",
+    "CURRENT_ONLY"
+  ],
+  "rows": [
+    {
+      "current": "Project Vireo. Option A costs 160 euros, takes 4 days, local: true. Option B costs 130 euros, takes 7 days, local: true.",
+      "id": "Vireo",
+      "oracle": {
+        "choice": "A",
+        "remaining": 20
+      },
+      "prior": "Project Vireo. Maximum budget 180 euros. Deadline 5 days. Local-only required: true."
+    },
+    {
+      "current": "Project Solara. Option A costs 230 euros, takes 7 days, local: true. Option B costs 210 euros, takes 6 days, local: true.",
+      "id": "Solara",
+      "oracle": {
+        "choice": "B",
+        "remaining": 40
+      },
+      "prior": "Project Solara. Maximum budget 250 euros. Deadline 8 days. Local-only required: false."
+    },
+    {
+      "current": "Project Nyxford. Option A costs 95 euros, takes 2 days, local: true. Option B costs 85 euros, takes 5 days, local: true.",
+      "id": "Nyxford",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "prior": "Project Nyxford. Maximum budget 90 euros. Deadline 3 days. Local-only required: true."
+    },
+    {
+      "current": "Project Etrion. Option A costs 260 euros, takes 8 days, local: true. Option B costs 220 euros, takes 7 days, local: false.",
+      "id": "Etrion",
+      "oracle": {
+        "choice": "A",
+        "remaining": 40
+      },
+      "prior": "Project Etrion. Maximum budget 300 euros. Deadline 9 days. Local-only required: true."
+    },
+    {
+      "current": "Project Quendia. Option A costs 210 euros, takes 6 days, local: false. Option B costs 180 euros, takes 5 days, local: true.",
+      "id": "Quendia",
+      "oracle": {
+        "choice": "B",
+        "remaining": 40
+      },
+      "prior": "Project Quendia. Maximum budget 220 euros. Deadline 6 days. Local-only required: true."
+    },
+    {
+      "current": "Project Morenix. Option A costs 160 euros, takes 3 days, local: true. Option B costs 140 euros, takes 6 days, local: true.",
+      "id": "Morenix",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "prior": "Project Morenix. Maximum budget 150 euros. Deadline 4 days. Local-only required: false."
+    }
+  ],
+  "schema": "v13.run115i.c3_role_native_seed983.v1",
+  "seed": 983
+}
