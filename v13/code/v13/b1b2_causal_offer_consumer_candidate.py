@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 
 from .cognition import Cognition
-from .b1b2_causal_context_candidate import causal_body_context, _bound_user_event
+from .b1b2_causal_context_candidate import causal_body_context, _bound_user_event, _project_scope
 
 
 def _result(status, **extra):
@@ -55,6 +55,12 @@ class CausalOfferConsumer(Cognition):
                 previous = _bound_user_event(self.s, prior["event_id"], self.r.session)
                 if previous["message_id"] >= current["message_id"]:
                     return _result("STALE_REPLAY_NO_OFFER", runner_called=False)
+                # Frozen Cognition.offer injects previous.summary as B1 prior_hypothesis
+                # even when source-context refs are empty. Never pass a foreign
+                # or ambiguous retained topic to that runner.
+                current_topic = _project_scope(current["text"])
+                if not current_topic or _project_scope(previous["text"]) != current_topic:
+                    return _result("CROSS_TOPIC_RETAINED_STATE_RED", runner_called=False)
         except Exception:
             return _result("EVENT_OR_RETAINED_STATE_RED", runner_called=False)
         try:
