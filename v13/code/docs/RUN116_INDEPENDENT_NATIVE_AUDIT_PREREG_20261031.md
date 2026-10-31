@@ -1,0 +1,9 @@
+# Run116 independent original-native raw auditor prereg, 2026-10-31
+
+Owner GPT-6 independent reviewer, separate branch from exact native source `df08a4ce311317bdfd322ba7c7520d9fe8fb2b93`; do not modify or rerun the frozen native cohort. Native Actions `41224639354` was IN_PROGRESS at prereg. This auditor must not use the native script's scorer or trust its aggregate scores.
+
+Frozen inputs: seed1019 fixture SHA256 `e31e2d68331cc4280e161b2dbdbd022f493325ca234f050cda06065fa6775a69`; six Ardent/Birch/Cetus/Dawn/Eider/Fjord rows, exact A/B/NONE 2/2/2; three fixed arms RAW_TWO_SOURCE_ROLE, TYPED_JEF_ROLE, TYPED_JEF_WITH_BODY_ROLE. Expected 18 real native B1/B2 FINAL/reaped and 18 real native C3 FINAL/reaped, no native JEF/C2. Original ZIP SHA256 must be supplied from GitHub artifact digest after terminal; no fabricated expected hash.
+
+Auditor must reject wrong outer digest, ZIP CRC/duplicate/missing entries, SHA256SUMS mismatch, bad HEAD, fixture/source ZIP manifest, nonzero stage exits, incomplete Store/row lifecycle, wrong source refs/roles, source leak into system, oracle leakage, typed candidate mismatch, body hypothesis promoted to fact, forged verified quote semantic authority, wrong model metrics, original score disagreements, false NONE, output/tool/learning/age authority, and signal mismatch. Independently parse original raw outputs and recompute exact 6-row scores and noninterference threshold. Tests use explicitly synthetic artifact construction/tampering and are **not** native proof. Run auditor on original artifact only after GitHub terminal evidence; preserve RED rather than repairing/rescoring frozen data.
+
+No native model downloads, no new source/model/seed changes, no STEP2/B3/Body-JEPA promotion. Age0 RECORD_ONLY, jepa_weight=0, Redmi UNMEASURED, whole V13 incomplete.
