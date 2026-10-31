@@ -162,5 +162,67 @@ class C6BodyOfferLifecycleTests(unittest.TestCase):
         self.assertEqual(calls, [])
 
 
+    def test_second_invocation_refuses_without_callback_or_extra_rows(self):
+        first = self.run_guarded(lambda b, f: GOOD)
+        self.assertEqual(first["status"],
+                         "LIFECYCLE_C6_PREFLIGHT_ONLY_NEEDS_REAL_TTY")
+        before = self._counts()
+        calls = []
+        second = self.run_guarded(lambda b, f: calls.append(True) or GOOD)
+        self.assertEqual(second["status"], "EXISTING_OUTPUT_OR_ACTION_RED")
+        self.assertEqual(calls, [])
+        self.assertEqual(self._counts(), before)
+        self._assert_no_authority(second)
+
+    def test_prior_final_refuses_before_callback(self):
+        first = self.run_guarded(lambda b, f: GOOD)
+        with self.r.store.tx() as db:
+            db.execute("UPDATE messages SET status='FINAL' WHERE id=?",
+                       (first["draft_message_id"],))
+        before = self._counts()
+        calls = []
+        second = self.run_guarded(lambda b, f: calls.append(True) or GOOD)
+        self.assertEqual(second["status"], "EXISTING_OUTPUT_OR_ACTION_RED")
+        self.assertEqual(calls, [])
+        self.assertEqual(self._counts(), before)
+        self._assert_no_authority(second)
+
+    def test_orphan_text_report_action_refuses_without_callback(self):
+        first = self.run_guarded(lambda b, f: GOOD)
+        with self.r.store.tx() as db:
+            db.execute("DELETE FROM messages WHERE id=?",
+                       (first["draft_message_id"],))
+        before = self._counts()
+        calls = []
+        second = self.run_guarded(lambda b, f: calls.append(True) or GOOD)
+        self.assertEqual(second["status"], "EXISTING_OUTPUT_OR_ACTION_RED")
+        self.assertEqual(calls, [])
+        self.assertEqual(self._counts(), before)
+        self._assert_no_authority(second)
+
+    def test_poststage_offer_tamper_downgrades_without_fingerprint(self):
+        from unittest.mock import patch
+        from v13 import c6_body_offer_lifecycle_candidate as life
+        original = life.stage_crossorgan_c6_shadow
+
+        def mutate_after_stage(*args, **kwargs):
+            staged = original(*args, **kwargs)
+            self.assertEqual(staged["status"],
+                             "CROSSORGAN_C6_PREFLIGHT_ONLY_NEEDS_REAL_TTY")
+            self._tamper_packet("B1_DETAIL")
+            return staged
+
+        with patch.object(life, "stage_crossorgan_c6_shadow",
+                          side_effect=mutate_after_stage):
+            result = self.run_guarded(lambda b, f: GOOD)
+        self.assertEqual(result["status"], "BODY_OFFER_LIFECYCLE_RED")
+        self.assertTrue(result["shadow_draft_may_exist"])
+        self.assertNotIn("c6_fingerprint_sha256", result)
+        self._assert_no_authority(result)
+        self.assertEqual(self.r.store.one(
+            "SELECT COUNT(*) AS n FROM messages WHERE role='assistant' "
+            "AND status='DRAFT'")["n"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
