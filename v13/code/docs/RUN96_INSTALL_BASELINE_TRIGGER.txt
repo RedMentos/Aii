@@ -1,0 +1,5 @@
+RUN96 original installer selftest minimal-deps diagnostic trigger, 2026-10-31.
+Prereg 9c658532d7a88b76f3d21c48c8385e1507e716a7 before workflow, parent Run95 cca4a8ad562c9e80bdbf3f085d0c3926bbf4f2c8.
+Original setup.sh blob e7302f9e2ce74b6c98bea4df604552993ca44340; original v13/__main__.py blob 9248e46e199a4227c296d538e6a2ef969e8e10cb.
+Original setup installs numpy and prompt-toolkit explicitly, then calls unfiltered v13 selftest. This test reproduces exact command under setup-only Python deps, NO_MODEL_DOWNLOADS=1, 90s bounded, records all RED/timeout. No native/Redmi claims, no source/model/gate changes.
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; whole V13 INCOMPLETE.

@@ -1,0 +1,79 @@
+name: V13 Run96 original installer selftest minimal-deps diagnostic
+on:
+  push:
+    branches:
+      - assistant/v13-run96-bounded-installer-selftest-20261031-auto11
+    paths:
+      - v13/code/docs/RUN96_INSTALL_BASELINE_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture exact original full selftest with setup-only Python deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run96-baseline"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run96-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run96-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          bash -n v13/code/setup.sh v13/code/STARTEN.sh > "$e/SHELL_RAW.log" 2>&1
+          echo 0 > "$e/SHELL_EXIT.txt"
+          set +e
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 90s \
+            env PYTHONPATH=.:tests:scripts "$py" -m v13 \
+            --home "$RUNNER_TEMP/run96-original-home" selftest) > "$e/ORIGINAL_SELFTEST_RAW.log" 2>&1
+          rc=$?
+          set -e
+          echo "$rc" > "$e/ORIGINAL_SELFTEST_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/DIAGNOSTIC_RAW.log" 2>&1
+          import json,re,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);s=(e/'ORIGINAL_SELFTEST_RAW.log').read_text(errors='replace')
+          result={'schema':'v13.run96.original_installer_minimal_deps_diagnostic.v1',
+                  'original_exit':int((e/'ORIGINAL_SELFTEST_EXIT.txt').read_text()),
+                  'module_not_found':sorted(set(re.findall(r"ModuleNotFoundError: No module named '([^']+)'",s))),
+                  'ran_count':int(re.findall(r'Ran (\d+) tests?',s)[-1]) if re.findall(r'Ran (\d+) tests?',s) else None,
+                  'has_failed_summary':'FAILED (' in s,
+                  'timeout':int((e/'ORIGINAL_SELFTEST_EXIT.txt').read_text())==124,
+                  'native_model_proven':False,'phone_measured':False,
+                  'canonical_gate_pass':False}
+          (e/'DIAGNOSTIC.json').write_text(json.dumps(result,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+          echo 0 > "$e/DIAGNOSTIC_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base cca4a8ad562c9e80bdbf3f085d0c3926bbf4f2c8 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check cca4a8ad562c9e80bdbf3f085d0c3926bbf4f2c8 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/DIAGNOSTIC_RAW.log"
+          echo "Original installer selftest exit=$rc; diagnostic only; no native/phone promotion"
+      - name: Upload original diagnostic RED or GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run96-installer-baseline-${{ github.sha }}
+          path: ${{ runner.temp }}/run96-baseline/
+          if-no-files-found: error
+          retention-days: 90
