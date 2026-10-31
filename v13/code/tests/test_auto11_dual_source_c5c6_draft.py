@@ -65,7 +65,7 @@ class DualSourceDraftTests(unittest.TestCase):
             (r["draft_message_id"],))
         self.assertEqual((row["text"], row["status"]), ("A", "DRAFT"))
         meta = json.loads(row["metadata"])
-        self.assertEqual(meta["origin"], "MODEL_EXACT_SHADOW")
+        self.assertEqual(meta["origin"], "DUAL_SOURCE_SCHEMA_EXACT_SHADOW")
         self.assertEqual(meta["dual_source_messages_sha256"],
                          r["dual_source_messages_sha256"])
         self.assertEqual(meta["callback_output_sha256"],
@@ -135,7 +135,7 @@ class DualSourceDraftTests(unittest.TestCase):
             self.r.memory.forget(self.ids[0])
             return original(*args, **kwargs)
 
-        with patch.object(bridge.draft, "stage",
+        with patch.object(bridge, "_stage_range",
                           side_effect=revoke_before_stage):
             r = self.call()
         self.assertEqual(r["status"], "C5_DRAFT_STAGE_RED", r)
@@ -150,7 +150,7 @@ class DualSourceDraftTests(unittest.TestCase):
                 self.r.store.event(self.r.session, "newer user after draft")
             return r
 
-        with patch.object(bridge.draft, "stage", side_effect=after_stage):
+        with patch.object(bridge, "_stage_range", side_effect=after_stage):
             r = self.call()
         self.assertEqual(r["status"], "SOURCE_CHANGED_AFTER_DRAFT", r)
         self.assertTrue(r["shadow_draft_may_exist"])
@@ -165,7 +165,7 @@ class DualSourceDraftTests(unittest.TestCase):
             self.r.store.db.commit()
             return original(*args, **kwargs)
 
-        with patch.object(bridge.draft, "preflight",
+        with patch.object(bridge, "_c6_preflight",
                           side_effect=corrupt_before_c6):
             r = self.call()
         self.assertEqual(r["status"], "C6_DRAFT_PREFLIGHT_RED", r)
@@ -203,7 +203,7 @@ class DualSourceDraftTests(unittest.TestCase):
                 self.r.store.event(self.r.session, "newer user after C6")
             return r
 
-        with patch.object(bridge.draft, "preflight", side_effect=new_user):
+        with patch.object(bridge, "_c6_preflight", side_effect=new_user):
             r = self.call()
         self.assertEqual(r["status"], "SOURCE_CHANGED_AFTER_C6_PREFLIGHT",
                          r)
