@@ -1,0 +1,33 @@
+{
+  "accepted": {
+    "raw": 1,
+    "typed": 6,
+    "typed_body": 6
+  },
+  "branch": "assistant/v13-run117r-native-output-replay-postgen-20261031-hourly11",
+  "evidence_level": "REAL_SQLITE_SYNTHETIC_BODY_ORIGINAL_NATIVE_C3_OUTPUT_REPLAY",
+  "negative_gates": {
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "Run CI exact original artifact replay, verify raw receipt, then preregister disjoint Body-complementarity cohort",
+  "original_native_sha256": "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5",
+  "owner": "hourly-gpt6-run11",
+  "parent": "acc014728918a2d1cf1c382693996243a8ab7fa6",
+  "raw_log_sha256": "5241e2fe3b80c40af2ffe8211fa59d19189495b844774993b45d5dfa68dfdbcc",
+  "replay_result_sha256": "7614df23523938da23fbe0d903f329b8d3cfcbefc8343fef0ba436841fac601f",
+  "schema": "v13.run117r.branch_build_state.v1",
+  "scope": "ORIGINAL_NATIVE_C3_TEXT_SOFTWARE_REPLAY",
+  "source_sha256": "8b8b72199a0245827e4fc72a7bd541e6fb59c4914438fea371ad425f45d21503",
+  "test_sha256": "bf98ca2748179c1b3cece69b5c59ca51e8180cb50d43aa152828f0405f4f4397",
+  "tests": {
+    "combined_failed": 0,
+    "combined_total": 67,
+    "compile_exit": 0,
+    "new_native_inference": false
+  }
+}
