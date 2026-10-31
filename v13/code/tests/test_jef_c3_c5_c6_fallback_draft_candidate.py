@@ -53,8 +53,11 @@ class JefC3C5C6FallbackDraftTests(unittest.TestCase):
             event["source_ref"], ids, staged, **kwargs)
 
     def count(self, table, event):
+        # Store.event also records a USER message; only assistant DRAFTs
+        # belong to the C5 output boundary under test.
+        suffix = " AND role='assistant'" if table == "messages" else ""
         return self.r.store.one(
-            "SELECT COUNT(*) AS n FROM " + table + " WHERE event_id=?",
+            "SELECT COUNT(*) AS n FROM " + table + " WHERE event_id=?" + suffix,
             (event["event_id"],))["n"]
 
     def assert_safe(self, result):
