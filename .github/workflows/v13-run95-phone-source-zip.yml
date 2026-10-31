@@ -1,0 +1,116 @@
+name: V13 Run95 current Age0 phone source ZIP and extracted smoke
+on:
+  push:
+    branches:
+      - assistant/v13-run95-phone-source-package-20261031-auto11
+    paths:
+      - v13/code/docs/RUN95_PHONE_ZIP_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pack exact current source and verify extracted model-free smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run95"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run95-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run95-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          cat > "$e/PINS.txt" <<'PINS'
+          06167e0bcb82b36cb08841cd31b9618c4ba0926e v13/code/scripts/package_source.py
+          0ee88aa7d470c9b7824bfb534214375f75a12dbe v13/code/scripts/phone_release_audit_candidate.py
+          25b7e8d6864cc84d6791bd638aabdf14a077852b v13/code/STARTEN.sh
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          while read -r want path; do
+            got="$(git hash-object "$path")"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            test "$want" = "$got"
+          done < "$e/PINS.txt"
+          echo 0 > "$e/PINS_EXIT.txt"
+          "$py" v13/code/scripts/package_source.py --root v13/code \
+            --out "$e/V13-Redmi-Install-Run95.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          echo 0 > "$e/PACK_EXIT.txt"
+          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run95.zip" "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          from scripts.phone_release_audit_candidate import verify_archive
+          archive=Path(sys.argv[1]); evidence=Path(sys.argv[2])
+          files=verify_archive(archive)
+          required={'STARTEN.sh','scripts/package_source.py','scripts/phone_release_audit_candidate.py',
+                    'docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md',
+                    'tests/test_package_source.py','tests/test_run34_c3_native_quote_intervention_pilot.py',
+                    'tests/test_run37_c3_rule_use_native_pilot.py',
+                    'tests/test_run83_native_driver_fake_c3.py',
+                    'tests/test_run90_exact_route_lineage.py'}
+          assert required<=set(files),sorted(required-set(files))
+          assert any(x.startswith('v13/') for x in files)
+          assert any(x.startswith('specs/') for x in files)
+          assert not any(x.endswith(('.gguf','.sqlite','.sqlite3','.db','.pyc')) for x in files)
+          assert not any('/data/' in x or x.startswith('data/') for x in files)
+          with zipfile.ZipFile(archive) as z:
+              z.extractall(evidence/'extracted')
+          root=evidence/'extracted'/'V13-Phone'
+          assert all((root/x).is_file() and
+                     hashlib.sha256((root/x).read_bytes()).hexdigest()==sha
+                     for x,sha in files.items())
+          (evidence/'ZIP_AUDIT.json').write_text(json.dumps({
+              'status':'EXTRACTED_SOURCE_BYTES_VERIFIED_SOFTWARE_ONLY',
+              'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),
+              'files':len(files),'phone_measured':False,'canonical_gate_pass':False,
+              'native_model_calls':0,'whole_system_complete':False},sort_keys=True)+'\n')
+          print('RUN95_PHONE_SOURCE_ZIP_VERIFIED',len(files))
+          PY
+          echo 0 > "$e/VERIFY_EXIT.txt"
+          set +e
+          (cd "$e/extracted/V13-Phone" && PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+            tests.test_package_source \
+            tests.test_source_handoff_candidate \
+            tests.test_native_firing_runtime_candidate \
+            tests.test_run34_c3_native_quote_intervention_pilot \
+            tests.test_run37_c3_rule_use_native_pilot \
+            tests.test_run83_native_driver_fake_c3 \
+            tests.test_run90_exact_route_lineage) > "$e/TEST_RAW.log" 2>&1
+          rc=$?
+          set -e
+          echo "$rc" > "$e/TEST_EXIT.txt"
+          "$py" -m compileall -q "$e/extracted/V13-Phone/v13" "$e/extracted/V13-Phone/scripts" > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 8d3d4d28313394de7ec023fcd29497d56bfd3b81 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8d3d4d28313394de7ec023fcd29497d56bfd3b81 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 30 "$e/TEST_RAW.log"
+          echo "EXTRACTED_TEST_EXIT=$rc; no Redmi or whole-system promotion"
+          exit "$rc"
+      - name: Upload original ZIP, manifest and all test receipts (including RED)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run95-phone-source-${{ github.sha }}
+          path: ${{ runner.temp }}/run95/
+          if-no-files-found: error
+          retention-days: 90
