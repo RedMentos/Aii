@@ -14,3 +14,7 @@
 ## Stopping and acceptance boundaries
 
 Native run must wait until Run117BR owner is terminal and its original artifact is preserved. Software tests and preregistration are independent authorized work. This pilot cannot promote STEP2, B3, Body-JEPA, World-JEPA, jepa_weight, Age, tool/output delivery or whole-system completion. Preserve all negative results. Next: commit exact fixture with hash and software tests; run isolated CI; launch only when heavy native group is free; independently rescore original raw and privately back it up. Owner: Run117BS prereg/fixture only, native owner to be assigned separately. Remaining platform budget UNKNOWN.
+
+## Post-prereg exact fixture freeze
+
+Prereg commit **`35b5c8228775c85834cb475baa52838348735af1`** precedes all fixture/test code. Exact fixture Git blob **`4c5fc5b1d439c8e143d69371a1bcdd3f0ccaa935`**, SHA256 **`f8ca7a22c47f991d630c9df1b1b2ee2943d24123246c8ffaf45db65998403f65`**, 4032 UTF-8 bytes, path `docs/fixtures/RUN117BS_C3_DISJOINT_BUDGET_SEED1103.json`. It is frozen from this point. Separate source-bound real SQLite software tests validate the fixed grammar/recipe and default-OFF callback without native C3. No native model run or threshold change.
