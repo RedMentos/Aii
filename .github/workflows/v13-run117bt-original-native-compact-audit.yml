@@ -99,7 +99,7 @@ jobs:
               for name in ('NATIVE_RAW.log','VERIFY_RAW.log','NOEXPORT_RAW.log',
                            'INSTALL_C3_RAW.log','PINS_RAW.log','ZIP_RAW.log'):
                   if name in names:(out/name).write_bytes(z.read(name))
-              result={'original_head':head,'original_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),
+              result={'original_head':head,'original_sha256':hashlib.file_digest(archive.open('rb'),'sha256').hexdigest(),
                       'zip_crc_all_entries_checked':True,'inner_sha256_verified':verified,
                       'inner_bytes_verified':total,'stage_exits':exits,'persisted_evidence_files':len(wanted),
                       'evidence_class':'LINUX_NATIVE_C3_KNOWN_SEED401_REGRESSION_ONLY',
