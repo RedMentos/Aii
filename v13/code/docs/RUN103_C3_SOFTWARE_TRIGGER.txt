@@ -1,0 +1,1 @@
+Run103 prereg 8e4a5c8da810f927dc12c9d70c3be2ddf7cd3671; 6 disjoint seed1031, 4 C3-only arms, no native until software preflight green.
