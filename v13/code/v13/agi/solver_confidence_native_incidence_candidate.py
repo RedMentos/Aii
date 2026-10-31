@@ -11,7 +11,7 @@ import threading
 import time
 
 from . import solver as original
-from .generality import normalize
+from .generality import normalize, calibration
 from .solver_confidence_finite_candidate import safe_confidence
 
 REVISION = "run36-ag12-native-confidence-incidence-shadow-v1"
@@ -75,6 +75,8 @@ class PairedConfidenceBodySolver(original.BodySolver):
         new_correct_all = 0
         old_comparable = 0
         changed = 0
+        old_pairs = []
+        finite_pairs = []
         for item, scored in zip(items, scored_rows):
             original_votes = []
             finite_votes = []
@@ -97,6 +99,9 @@ class PairedConfidenceBodySolver(original.BodySolver):
                 old_correct += int(normalize(old["answer"]) == normalize(item["answer"]))
                 new_correct_comparable += correct
                 changed += int(normalize(old["answer"]) != normalize(new["answer"]))
+                old_pairs.append((old["confidence"],
+                                  int(normalize(old["answer"]) == normalize(item["answer"]))))
+                finite_pairs.append((new["confidence"], correct))
                 old_comparable += 1
         by_role = {}
         for role in self.roles:
@@ -120,6 +125,8 @@ class PairedConfidenceBodySolver(original.BodySolver):
             "finite_correct_on_comparable": new_correct_comparable,
             "finite_correct_all": new_correct_all,
             "same_output_changed_votes": changed,
+            "legacy_calibration_on_comparable": calibration(old_pairs),
+            "finite_calibration_on_comparable": calibration(finite_pairs),
         }
         self._rows.clear()  # no retained native answers after aggregate
         return out
