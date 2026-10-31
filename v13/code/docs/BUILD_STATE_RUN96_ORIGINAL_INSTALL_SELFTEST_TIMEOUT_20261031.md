@@ -1,0 +1,9 @@
+# Run96 original installer selftest bounded diagnostic RED — 2026-10-31
+
+Owner GPT-6 Auto11, draft PR #1462, exact tested HEAD `004b3aa9852473807b31e7e3503202b48ac33a2e`, prereg `9c658532d7a88b76f3d21c48c8385e1507e716a7` before workflow. Source `setup.sh` still calls unfiltered `v13 selftest`, which discovers all `test_*.py`; setup explicitly installs only numpy and prompt-toolkit.
+
+**Observed Linux diagnostic:** Actions `41200809286` terminal SUCCESS as *diagnostic collector*; **original selftest EXIT=124 (90-second timeout)**, no final test count, no `FAILED` summary or `ModuleNotFoundError` in the captured interval. Test output was still progressing through Context OS cases when bounded. VENV/DEPS/SHELL/DIAGNOSTIC/PRIVACY/DIFF all exit0; privacy CLEAN. This is evidence that the original install-time full developer suite does not finish within 90s on this Linux runner, **not** proof of a missing dependency or Redmi failure. The fully provisioned unfiltered suite separately took 461.260s for 4907 tests/28 skips on Run94.
+
+Original artifact `13042925787`, ZIP SHA256 `ac9d72556ee3e249f59bbc3f4521935dc818e35e4eadf1949361d66b5c0fe2a9`, CRC PASS, 17/17 inner SHA256SUMS PASS, exact HEAD. Privately saved `/V13-Checkpoints/2026-10-31/Run96-Installer-Selftest/RUN96_ORIGINAL_SETUP_SELFTEST_TIMEOUT_41200809286.zip`, rematerialized byte-identical SHA256. Original source unchanged and RED preserved.
+
+**Next package:** add a separate small model-free installer smoke runner with a fixed allowlist of real Runtime/Store/queue/age/source-handoff tests and explicit output scope; update only `setup.sh` to call it after bootstrap. Keep `v13 selftest` full developer discovery untouched, and keep native `v13 probe` after the bounded smoke. Test under exact minimal setup Python deps and preserve original full suite result. No model/Redmi/learning/STEP2/B3/JEPA promotion.
