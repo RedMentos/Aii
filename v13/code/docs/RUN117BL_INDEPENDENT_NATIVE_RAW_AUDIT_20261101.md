@@ -1,0 +1,18 @@
+# Run117BL — independent original Run117BJ Linux-native raw audit (2026-11-01 UTC)
+
+Review-only child of Run117BJ PR #1541, parent `49a3d2a11c14d98fd8ca3372dc32e13e5483fc53`. Original GitHub Actions **41248055523** completed SUCCESS 2026-10-31 22:31 UTC; original artifact **13060626619** ZIP SHA256 **e81f132cef7fa27acbab3ba5cf584bb7355d659df4b20ba5e668798e155602d2**. No new native training, source/seed/threshold changes or model exports by this review.
+
+## Independent raw checks
+
+- ZIP CRC PASS; **36/36** inner SHA256SUMS; **12/12** stage exits zero; exact source HEAD; **10/10** source Git blob pins matched the original PINS_RAW.log; original privacy scan CLEAN. Original 6 Linux FP32 Torch arms (seeds 263/269, CE/UNGROUPED_EMA/GROUPED_EMA) completed eight steps each; model master/license SHA, synthetic fixture and all negative gates match the frozen preregistration.
+- Independently recomputed every per-item NLL mean, all per-seed and mean arm deltas and frozen-master baselines from the original `NATIVE_CASE/report.json`. This is an independent **raw-data rescore**, not independent native retraining.
+- Mean GROUPED_EMA minus UNGROUPED_EMA NLL: paraphrase **−0.0230842** (required ≤−0.03); retention **+0.1701913** (required ≤+0.05, worse); near-miss wrong-answer **−0.0181248** (lower wrong-answer NLL is worse); source-disjoint **+0.0591174** (required ≤+0.05, worse). GROUPED_EMA minus CE paraphrase **−0.0564201**. Both per-seed grouped paraphrase gains (~−0.0223, ~−0.0239) do not rescue the failed mean/retention/heldout conditions. **GROUPED_MASK_NO_ATTRIBUTABLE_SIGNAL** remains unchanged.
+- **New negative finding:** original ZIP contains two `predictor.pt` model-state files at `NATIVE_CASE/work/263-CE/.../predictor.pt` and `NATIVE_CASE/work/269-CE/.../predictor.pt`. Each is **4,200,309 bytes**, SHA256 **2e96175778a1e0820ab30b52ddd16c8c5a083ba9b2a455bf6a13a6f279ca3b31**; they are byte-identical. They are not the 350M master weights, but contradict the preregistered **no adapter/predictor export** condition for the artifact. Their training state is not independently established. Original evidence MUST remain intact, including this failure; do not silently delete or repack the original ZIP. Future artifact packaging needs an explicit fail-closed no-weight-export assertion.
+
+## Tests, backup, next step
+
+Local standard-library independent auditor `audit_run117bj_artifact.py` plus `test_audit_run117bj_artifact.py`: **9/9 PASS** (hash/stage/summary/mean/baseline/gate/source-class/export tamper controls), `py_compile` PASS, original raw verdict `NUMERIC_AND_INTEGRITY_VERIFIED_EXPORT_BOUNDARY_RED`. Script does not execute or deserialize `.pt` data. Source and tests are saved in the run's local evidence bundle; if unavailable in another session, use the exact artifact ID and hashes above to re-audit. The GitHub review document is a durable scope/result checkpoint, not a claim of upstream test execution.
+
+Private Library backup **/V13-Checkpoints/2026-11-01/Run117BL-Independent-Audit/RAW_41248055523_shaE81F132C.zip** was re-materialized and `cmp` byte-identical, same SHA256. The original raw is not republished to GitHub.
+
+**Next:** isolate a future-only artifact no-export guard (no edits to frozen Run117BJ) and complete the Run117BK 18-call C3 native pilot after verifying native-owner clearance. Preserve all failed attempts. No STEP2, B3, Body-JEPA, age, World-JEPA, jepa_weight, Redmi or whole-system promotion. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; runtime jepa_weight=0; `canonical_architecture_complete=false`, `user_full_scope_complete=false`. Owner: Run117BL isolated review branch. Remaining execution budget UNKNOWN.
