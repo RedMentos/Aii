@@ -32,12 +32,15 @@ class Runtime(_BaseRuntime):
 
 from v13.jef_c3_typed_envelope_candidate import build_jef_c3_typed_envelope
 from v13.jef_c3_c5_c6_fallback_draft_candidate import stage, preflight, STAGED
+from v13.jef_c3_schema_draft_candidate import stage_schema, SCHEMA
 
 C3_SHA256 = "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
 RUNNER_SHA256 = "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39"
 FIELDS = frozenset(("project", "domain", "policy_source",
                     "sheet_source", "current"))
-MODES = ("native", "synthetic_exact", "synthetic_wrong")
+MODES = ("native", "synthetic_exact", "synthetic_wrong",
+         "native_schema", "synthetic_schema_exact",
+         "synthetic_schema_wrong", "synthetic_schema_duplicate")
 MAX_INPUT_BYTES = 16384
 
 
@@ -157,7 +160,7 @@ def run(home, input_file, mode, *, operator_opt_in=False,
                      native_model_called=False,
                      native_process_reaped=None)
     try:
-        if mode == "native":
+        if mode in ("native", "native_schema"):
             try:
                 model_sha = file_hash(runtime.models.path_for("C3_LANGUAGE"))
                 runner_path = Path(os.environ.get(
@@ -196,18 +199,30 @@ def run(home, input_file, mode, *, operator_opt_in=False,
             return report
         action = envelope["typed_jef_action"]
 
-        def generate(messages):
+        schema_mode = mode in ("native_schema", "synthetic_schema_exact",
+                               "synthetic_schema_wrong", "synthetic_schema_duplicate")
+
+        def generate(messages, schema=None):
+            if schema_mode and schema != SCHEMA:
+                raise ValueError("SCHEMA_CHANGED")
             if mode == "synthetic_exact":
                 return action
             if mode == "synthetic_wrong":
                 return "Option " + action
+            if mode == "synthetic_schema_exact":
+                return dumps({"action": action})
+            if mode == "synthetic_schema_wrong":
+                return dumps({"action": "B" if action != "B" else "A"})
+            if mode == "synthetic_schema_duplicate":
+                return '{"action":"A","action":"B"}'
             if dumps(messages) != dumps(envelope["messages"]):
                 raise ValueError("PROMPT_CHANGED")
             runner = runtime.pool.get("C3_LANGUAGE")
             report["native_model_called"] = True
             output = "".join(runner.generate(
                 messages, runtime.cancel_event, time.monotonic() + 90,
-                32, None, seed=13))
+                32, schema if schema_mode else None,
+                seed=727 if schema_mode else 13))
             report["native_output_sha256"] = _sha(output.encode("utf-8"))
             metrics = dict(runner.last_metrics)
             report["native_final"] = metrics.get("status") == "FINAL"
@@ -216,11 +231,16 @@ def run(home, input_file, mode, *, operator_opt_in=False,
                 raise RuntimeError("NATIVE_NOT_FINAL")
             return output
 
-        staged = stage(
+        staged = (stage_schema if schema_mode else stage)(
             runtime.memory, runtime.session, event["event_id"],
             event["source_ref"], ids, generate,
             operator_opt_in=True, callback_opt_in=True)
         report["stage_status"] = staged.get("status")
+        if schema_mode:
+            report["schema_adapter"] = True
+            report["schema_sha256"] = staged.get("schema_sha256")
+            report["schema_formatter_status"] = staged.get("schema_formatter_status")
+            report["schema_output_sha256"] = staged.get("schema_output_sha256")
         if staged.get("status") != STAGED:
             report["status"] = "DRAFT_STAGE_RED"
             return report
@@ -256,7 +276,7 @@ def run(home, input_file, mode, *, operator_opt_in=False,
         except Exception:
             report["pool_release_status"] = "UNLOAD_RED"
             report["status"] = "CLI_CLOSE_RED"
-        if mode == "native":
+        if mode in ("native", "native_schema"):
             try:
                 _finalize_native_release(
                     report, list(runtime.pool.release_history))
