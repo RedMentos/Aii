@@ -1,0 +1,86 @@
+{
+  "accepted_counts": {
+    "RAW_TWO_SOURCE_ROLE": 1,
+    "TYPED_JEF_ROLE": 6,
+    "TYPED_JEF_WITH_BODY_ROLE": 6
+  },
+  "body_jepa_promoted": false,
+  "claim": "SOFTWARE_REPLAY_OF_ORIGINAL_NATIVE_C3_TEXT_NOT_NEW_NATIVE",
+  "delivery_authority": 0,
+  "jepa_weight": 0,
+  "learning_authority": 0,
+  "native_inference_this_run": false,
+  "original_sha256": "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5",
+  "original_source_head": "df08a4ce311317bdfd322ba7c7520d9fe8fb2b93",
+  "output_committed": false,
+  "real_sqlite_store": true,
+  "redmi_measured": false,
+  "rows": [
+    {
+      "id": "Ardent",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    },
+    {
+      "id": "Birch",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "FORMATTER_CANDIDATE_MISMATCH_RED",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    },
+    {
+      "id": "Cetus",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "FORMATTER_CANDIDATE_MISMATCH_RED",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    },
+    {
+      "id": "Dawn",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "FORMATTER_CANDIDATE_MISMATCH_RED",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    },
+    {
+      "id": "Eider",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "FORMATTER_CANDIDATE_MISMATCH_RED",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    },
+    {
+      "id": "Fjord",
+      "native_inference_this_run": false,
+      "statuses": {
+        "RAW_TWO_SOURCE_ROLE": "FORMATTER_CANDIDATE_MISMATCH_RED",
+        "TYPED_JEF_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH",
+        "TYPED_JEF_WITH_BODY_ROLE": "SHADOW_C3_TYPED_CHOICE_REMAINING_MATCH"
+      },
+      "synthetic_body_observers": true
+    }
+  ],
+  "schema": "v13.run117r.native_output_replay_postgen.v1",
+  "status": "ORIGINAL_NATIVE_OUTPUT_REPLAY_SHADOW_PASS",
+  "step2_promoted": false,
+  "synthetic_body_observers": true,
+  "tool_dispatches": 0,
+  "whole_system_complete": false
+}
