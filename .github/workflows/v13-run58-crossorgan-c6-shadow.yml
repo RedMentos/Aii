@@ -47,7 +47,7 @@ jobs:
           30bb3269fa89621f78db893cf566d04f8768cf27 v13/code/v13/c6_positive_assertion_candidate.py
           0ef8309a4323cda02783c8a8ff8bd378a0512870 v13/code/tests/test_c6_positive_assertion_candidate.py
           b401e0ba26a1031007ad939397947b6d2d01850d v13/code/v13/run58_crossorgan_c6_shadow_candidate.py
-          155e91e9f780deb4ef2c91af4822961ec3ab11ae v13/code/tests/test_run58_crossorgan_c6_shadow_candidate.py
+          fe0a07c3b5bee5a00431e9d344a6e7f58e99787e v13/code/tests/test_run58_crossorgan_c6_shadow_candidate.py
           PINS
           bad=0
           while read -r want path; do
