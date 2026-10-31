@@ -71,7 +71,7 @@ def _locked_human(memory, session, event_id, current_ref, memory_ids,
 
 def stage(memory, session, event_id, current_ref, memory_ids, generator, *,
           operator_opt_in=False, callback_opt_in=False,
-          approval_receipt=None):
+          approval_receipt=None, formatter_receipt=None):
     """Stage exactly one source-verified DRAFT; never commit output."""
     if operator_opt_in is not True or callback_opt_in is not True:
         return _result("OFF", callback_invoked=False)
@@ -127,6 +127,25 @@ def stage(memory, session, event_id, current_ref, memory_ids, generator, *,
             "candidate_sha256": candidate_sha,
             "model_formatter_status": status,
         }
+        schema_receipt = None
+        if formatter_receipt is not None:
+            if not callable(formatter_receipt) or status != "FORMATTER_MATCH_SHADOW":
+                return _result("SCHEMA_RECEIPT_RED", callback_invoked=True)
+            try:
+                from .jef_c3_schema_draft_candidate import decode_action, SCHEMA_SHA256
+                raw_schema_output = formatter_receipt()
+                if decode_action(raw_schema_output) != action:
+                    return _result("SCHEMA_RECEIPT_RED", callback_invoked=True)
+                raw_bytes = raw_schema_output.encode("utf-8", "strict")
+                schema_receipt = {
+                    "schema_sha256": SCHEMA_SHA256,
+                    "output_sha256": _sha(raw_bytes),
+                    "output_bytes": len(raw_bytes),
+                    "prompt_sha256": prompt_sha,
+                }
+                metadata["schema_receipt"] = schema_receipt
+            except Exception:
+                return _result("SCHEMA_RECEIPT_RED", callback_invoked=True)
         with store.tx() as db:
             if _existing(store, session, event_id):
                 return _result("EXISTING_OUTPUT_OR_ACTION_RED",
@@ -168,7 +187,7 @@ def stage(memory, session, event_id, current_ref, memory_ids, generator, *,
                 "VALUES (?,?,?,?,?,?,?)",
                 (session, event_id, "assistant", action, "DRAFT",
                  dumps(metadata), now())).lastrowid
-        return _result(
+        result = _result(
             STAGED, callback_invoked=True,
             draft_message_id=mid, c5_action_id=aid,
             source_action=action, source_ref_sha256=refs,
@@ -177,6 +196,10 @@ def stage(memory, session, event_id, current_ref, memory_ids, generator, *,
             model_formatter_status=status, draft_origin=origin,
             source_only_fallback=(status == "FORMATTER_MISMATCH_RED"),
             shadow_draft_may_exist=True)
+        if schema_receipt is not None:
+            result["schema_receipt"] = schema_receipt
+            result["schema_receipt_persisted"] = True
+        return result
     except Exception:
         return _result("STORE_OR_BINDING_RED", callback_invoked=True,
                        shadow_draft_may_exist=True)
@@ -236,15 +259,36 @@ def preflight(memory, session, event_id, current_ref, memory_ids, staged, *,
                 "SELECT metadata FROM messages WHERE id=?",
                 (staged["draft_message_id"],))
             meta = json.loads(row["metadata"])
-            if (type(meta) is not dict or meta != {
-                    "shadow": True,
-                    "origin": staged["draft_origin"],
-                    "source_action": action,
-                    "source_ref_sha256": refs,
-                    "prompt_sha256": staged["prompt_sha256"],
-                    "candidate_sha256": staged["candidate_sha256"],
-                    "model_formatter_status": staged["model_formatter_status"],
-            } or staged["candidate_sha256"] != _sha(action.encode("utf-8"))
+            expected_meta = {
+                "shadow": True,
+                "origin": staged["draft_origin"],
+                "source_action": action,
+                "source_ref_sha256": refs,
+                "prompt_sha256": staged["prompt_sha256"],
+                "candidate_sha256": staged["candidate_sha256"],
+                "model_formatter_status": staged["model_formatter_status"],
+            }
+            if "schema_receipt" in staged:
+                receipt = staged["schema_receipt"]
+                from .jef_c3_schema_draft_candidate import SCHEMA_SHA256
+                if (type(receipt) is not dict
+                        or set(receipt) != {"schema_sha256", "output_sha256",
+                                            "output_bytes", "prompt_sha256"}
+                        or staged.get("schema_receipt_persisted") is not True
+                        or receipt["schema_sha256"] != SCHEMA_SHA256
+                        or receipt["prompt_sha256"] != staged["prompt_sha256"]
+                        or type(receipt["output_sha256"]) is not str
+                        or len(receipt["output_sha256"]) != 64
+                        or any(ch not in "0123456789abcdef"
+                               for ch in receipt["output_sha256"])
+                        or type(receipt["output_bytes"]) is not int
+                        or not 0 < receipt["output_bytes"] <= 1024):
+                    return _result("SCHEMA_RECEIPT_REFERENCE_RED")
+                expected_meta["schema_receipt"] = receipt
+            elif staged.get("schema_receipt_persisted") is True:
+                return _result("SCHEMA_RECEIPT_REFERENCE_RED")
+            if (type(meta) is not dict or meta != expected_meta
+                or staged["candidate_sha256"] != _sha(action.encode("utf-8"))
                 or staged["candidate_bytes"] != len(action.encode("utf-8"))
                 or (staged["source_only_fallback"]
                     != (staged["model_formatter_status"]
