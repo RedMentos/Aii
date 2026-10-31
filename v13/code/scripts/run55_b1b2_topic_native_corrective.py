@@ -63,7 +63,7 @@ def persisted_offer(store, result, role, event, revision):
             or offer.get("role") != role
             or offer.get("model_revision") != revision
             or offer.get("query_packet_id") != result["query_packet_id"]
-            or offer.get("source_refs") != [event["source_ref"]]):
+            or (offer.get("provenance") or [None])[0] != event["source_ref"]):
         raise ValueError("RUN55_OFFER_PACKET_BINDING_RED")
     qrow = store.one("SELECT event_id,payload FROM packets "
                      "WHERE id=? AND kind='QueryPacket'",
