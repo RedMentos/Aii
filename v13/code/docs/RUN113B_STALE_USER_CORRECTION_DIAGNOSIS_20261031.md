@@ -1,0 +1,9 @@
+# Run113B stale USER correction between B2 offer and C3 plan — independent software counterexample
+
+2026-10-31, owner GPT-6. Tested **current extracted original Run113B phone source ZIP** from original preflight artifact `13046929627`, verified ZIP CRC and 2125/2125 manifest hashes. No model downloaded; synthetic observer only.
+
+Counterexample: patch `Cognition.offer` to append a newer USER event immediately after the current B2 offer returns: `Project Aster latest correction: Option A cancelled. Choose NONE.` The source-bound old current event is still passed to `analyst_context`. Observed original `run113b_b1b2_c3_native.run` returned `MODEL_FREE_TWO_SOURCE_PREFLIGHT_PASS` with B1/B2 source quote checks true, even though a newer authoritative USER correction exists. This is a genuine **pilot consumer freshness gap**; it does not establish that production Runtime accepts the same race (production has other guards). No native model or Redmi proof.
+
+Root: `Cognition.analyst_context` checks stored packet event/generation/source/version but not that its event is the latest authoritative USER event. Existing default-OFF `b1b2_latest_user_offer_candidate._bound_latest` provides a source-bound latest-USER check; reuse it in this isolated pilot before rendering, before C3 native invocation and after invocation. Add regression test that injects correction after B2 and demands `STRUCTURAL_RED`, zero native C3, no output/actions, closed Store. Keep original GREEN preflight raw as evidence of the gap, do not rewrite fixture/seed/scorer or historical cohorts. This guard does not promote STEP2, B3, JEPA, Age or C2/JEF native claims.
+
+Native Actions Run113B `41215461963` was launched on earlier exact source HEAD `47c168c46ff004498c9a2e33fa00d67702b08ba4` before this counterexample; its result must be audited as **pre-guard** and never misrepresented as testing the correction. No model calls in this diagnostic.
