@@ -46,7 +46,7 @@ jobs:
           "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
           test "$(git hash-object v13/code/scripts/run117al_prewarmed_body_source_id_native.py)" = f9923cadd37ec2993e23806111fcae8b9a623bdd
           source_a=$?
-          test "$(git hash-object v13/code/tests/test_run117al_prewarmed_body_source_id_candidate.py)" = 9b230586725b1814c95b58daa994ed6392cebdbd
+          test "$(git hash-object v13/code/tests/test_run117al_prewarmed_body_source_id_candidate.py)" = 767fd565e0085aabd2072f48cf65c1d4d80130e8
           source_b=$?
           test "$(git hash-object v13/code/v13/b1b2_source_id_quote_candidate.py)" = e431eecaa4a7643a548a512036225343f681ee23
           source_c=$?
