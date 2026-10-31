@@ -113,8 +113,8 @@ def audit_bytes(blob, label, *, expected_outer=None):
                 fail("EXIT_COVERAGE")
             for key, rc in exits.items():
                 expected = pin["expected_exit"] if key == pin["exit_key"] else 0
-                if type(rc) is not int or rc != expected or
-                        z.read(key + "_EXIT.txt").decode("utf-8").strip() != str(rc):
+                if (type(rc) is not int or rc != expected or
+                        z.read(key + "_EXIT.txt").decode("utf-8").strip() != str(rc)):
                     fail("EXIT_FORGED")
             if (result.get("step2_promoted") is not False or
                     result.get("b3_promoted") is not False or
