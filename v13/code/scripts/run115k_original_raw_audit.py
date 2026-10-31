@@ -76,6 +76,16 @@ def audit(path, *, expected_sha=ORIGINAL_SHA):
         with zipfile.ZipFile(io.BytesIO(z.read("V13-Phone-Run115J-Native.zip"))) as phone:
             _require(phone.testzip() is None and len(phone.namelist()) == len(set(phone.namelist())),
                      "PHONE_ZIP")
+            _require("V13-Phone/WORKSPACE_FILES.json" in phone.namelist(),
+                     "PHONE_MANIFEST_MISSING")
+            manifest = _json(phone.read("V13-Phone/WORKSPACE_FILES.json"))
+            files = manifest["files"]
+            _require(set(phone.namelist()) ==
+                     {"V13-Phone/" + name for name in files} |
+                     {"V13-Phone/WORKSPACE_FILES.json"}, "PHONE_MANIFEST_COVERAGE")
+            for name, digest in files.items():
+                _require(_sha(phone.read("V13-Phone/" + name)) == digest,
+                         "PHONE_SOURCE_HASH")
             _require(FIXTURE in phone.namelist(), "PHONE_FIXTURE_MISSING")
             frozen = phone.read(FIXTURE)
             _require(_sha(frozen) == FIXTURE_SHA, "FIXTURE_HASH")
@@ -142,12 +152,18 @@ def audit(path, *, expected_sha=ORIGINAL_SHA):
                          "ORIGINAL_SCORE_DISAGREES")
                 scores[name] += int(parsed == expected)
         _require(report["scores"] == scores, "REPORT_SCORES")
-        signal = scores[ARMS[1]] >= 5 and scores[ARMS[1]] - scores[ARMS[0]] >= 2
+        none_rows = [r for r in report["rows"] if r["id"] in ("Oxara", "Valtor")]
+        no_false_none = all(_pair(_json(next(a for a in r["arms"]
+            if a["arm"] == ARMS[1])["output"])) == ("NONE", None)
+            for r in none_rows)
+        signal = (scores[ARMS[1]] >= 5 and scores[ARMS[1]] - scores[ARMS[0]] >= 2
+                  and no_false_none)
         _require(report["exploratory_role_signal"] is signal
                  and report["status"] == ("NATIVE_COMPLETE_TYPED_SIGNAL" if signal
                  else "NATIVE_COMPLETE_NO_GAIN"), "REPORT_SIGNAL")
         return {"status": "ORIGINAL_NATIVE_AUDIT_PASS", "outer_sha256": expected_sha,
                 "source_head": HEAD, "inner_sha256_checked": len(entries),
+                "phone_source_sha256_checked": len(files),
                 "native_c3_final_reaped": 12, "scores": scores,
                 "typed_signal_exploratory_only": signal,
                 "scope": "six exact-grammar synthetic tasks; deterministic JEF copied by C3; no promotion"}
