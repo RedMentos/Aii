@@ -49,7 +49,8 @@ def _project_scope(text):
     return names if len(names) == 1 else set()
 
 
-def causal_body_context(runtime, role, event, *, operator_opt_in=False):
+def causal_body_context(runtime, role, event, *, operator_opt_in=False,
+                        context_reader=None):
     """Read original B1/B2 context, conservatively filter out future sources.
 
     This is a software SHADOW candidate only, not an actual native body
@@ -71,7 +72,10 @@ def causal_body_context(runtime, role, event, *, operator_opt_in=False):
                 or event.get("brain_generation_id") != current["generation"]
                 or current["generation"] != store.generation_id):
             raise ValueError("CURRENT_EVENT_BINDING_RED")
-        original = runtime.cognition.body_context(role, event)
+        reader = runtime.cognition.body_context if context_reader is None else context_reader
+        if not callable(reader):
+            raise ValueError("CONTEXT_READER_INVALID")
+        original = reader(role, event)
         if type(original) is not list:
             raise ValueError("CONTEXT_TYPE_RED")
         accepted = []
