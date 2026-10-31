@@ -27,7 +27,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           15833fef85d1e7884d956588b43066489d4a8ddb v13/code/docs/CURRENT_SOURCE_HANDOFF_REALSTORE_PREREG_RUN43_20261031.md
-          57acb60757bbaaf114c4df57897e0a094f87c9ab v13/code/tests/test_run43_current_source_handoff_realstore.py
+          d73ba59ed794c078185a29651bab0b001c7a482f v13/code/tests/test_run43_current_source_handoff_realstore.py
           22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
           1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py
           9c9f2f198d43f8df55904a7f9a2cdaa46bc90601 v13/code/v13/bodyview.py

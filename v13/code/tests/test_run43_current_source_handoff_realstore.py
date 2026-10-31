@@ -31,7 +31,15 @@ class CurrentSourceHandoffRealStore(unittest.TestCase):
 
         def generate(messages, *args, **kwargs):
             self.calls.append(copy.deepcopy(messages))
-            return iter([dumps(self.output)])
+            response = copy.deepcopy(self.output)
+            # Current default B2 pointer mode has an integer-id quote schema.
+            # The fake runner must obey that schema rather than emit old text.
+            query = json.loads(messages[-1]["content"])
+            if response["quotes"] and query.get("quote_choices"):
+                matches = [choice["id"] for choice in query["quote_choices"]
+                           if "Budget 47 euros." in choice["text"]]
+                response["quotes"] = matches[:1]
+            return iter([dumps(response)])
 
         self.fake = SimpleNamespace(last_metrics={"status": "FINAL"},
                                     generate=generate)
