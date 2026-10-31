@@ -1,3 +1,9 @@
+# FINAL UPDATE — original native structural RED, independently verified
+
+Actions `41217444357` exact tested source `0e1d2a60b331480fababd503b76b2d805951db49` terminal FAILURE, not an unresolved launch. Original artifact `13048159840` outer SHA256 `f2f105dcd5582eef257cd9d5ee944d5ba0a64c4999c3e1c65451ff89924a1cd7`, CRC PASS, SHA256SUMS 30/30, phone source 2135/2135 PASS. 18/18 actual B1/B2 FINAL and reaped, only 6/12 C3 FINAL and reaped; Boreal, Delta, Nimbus refused fail-closed at B1/B2 source quote gate. NATIVE exit 2, VERIFY skipped 125, privacy CLEAN. Private Library raw backup byte-verified at `/V13-Checkpoints/2026-10-31/Run115C-Native-RED/ORIGINAL_NATIVE_RED_41217444357_SHAf2f105dc.zip`. Full case-level forensic: `docs/RUN115C_NATIVE_ORIGINAL_RED_20261031.md`. Original frozen seed971 cannot be rescored or retried as a fresh cohort; prereg replication signal NOT DEMONSTRATED. Next: new preregistered disjoint source pointer or independent native C2/JEF package, no alteration to original. Negative gates unchanged. Remaining platform budget UNKNOWN.
+
+---
+
 # BUILD_STATE — Run115C native six-case replication, 2026-10-31
 
 Owner GPT-6; review-only PR #1486, branch `assistant/v13-run115c-native-replication-20261031-gpt6`; exact parent Run115B PR #1485 HEAD `853d207148d1376b1ac2a75431ce73850f62292f`. Frozen prereg commit `4bf3d9d7bdb80aea9ef7d178e1213f3ea87bbbf4`; seed971 fixture SHA256 `21617baf735436af9a388c9be596bf763dc46f8bb394548daa961ad5ec1f57fd`. Run114B source pipeline SHA256 `f51ea8745c31082ee87aab98741ddacb01082827bfb00d406958b535131be7d1` unchanged; B1/B2/C3 pins unchanged. Native execution owner: GitHub Actions concurrency group `v13-native-c3-ag12-20261030`; no concurrent heavy job at launch.
