@@ -1,0 +1,45 @@
+{
+  "schema": "v13.run117v.branch_build_state.v1",
+  "branch": "assistant/v13-run117v-original-native-readonly-audit-20261031-1927",
+  "base_sha": "a85eb4d3d0050f26404517d49c51c7843f0e933e",
+  "pr": 1502,
+  "owner": "Run117V independent original-native auditor",
+  "auditor_preflight_run": 41229747393,
+  "auditor_tests_passed": 33,
+  "original_auditor_red_run": 41229659078,
+  "original_native_run": 41229372694,
+  "original_native_artifact_id": 13053405975,
+  "original_native_zip_sha256": "eca6ca3801c98fb1afc9cdb41c39f3ba27a4438cb89ad103820397716da699a8",
+  "independent_audit_run": 41229877976,
+  "independent_audit_artifact_id": 13053207460,
+  "independent_audit_zip_sha256": "6cee2d1021aa2c0fc1d9a59473e30d27f5e647443a9be2e83195be5a85e19722",
+  "artifact_integrity": "ORIGINAL_ARTIFACT_INTEGRITY_PASS",
+  "phone_source_files_verified": 2227,
+  "original_native_status": "PARTIAL_BODY_QUOTE_RED",
+  "native_body_calls": 18,
+  "native_c3_calls": 15,
+  "strict_scores": {
+    "RAW_FULL_SOURCES": 0,
+    "SOURCE_SPANS_ONLY": 0,
+    "BODY_VERIFIED_QUOTES": 0
+  },
+  "recorded": {
+    "RAW_FULL_SOURCES": 6,
+    "SOURCE_SPANS_ONLY": 6,
+    "BODY_VERIFIED_QUOTES": 3
+  },
+  "original_raw_private_path": "/V13-Checkpoints/2026-10-31/Run117U-Native-Seed1061/run117u-original-native-red-a85eb4d3.zip",
+  "audit_raw_private_path": "/V13-Checkpoints/2026-10-31/Run117V-Original-Native-Audit/run117v-original-native-audit-green-7f562fec.zip",
+  "age0": "RECORD_ONLY",
+  "step2_exit": "EVIDENCE_NOT_PASSING",
+  "b3": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "next": "Investigate C3 remaining-budget failure and B2 quote omissions with a new preregistered disjoint study, not a seed1061 rescore",
+  "blocked": [
+    "No Redmi device native evidence",
+    "No Body complementarity signal"
+  ]
+}
