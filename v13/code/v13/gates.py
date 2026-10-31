@@ -9,7 +9,7 @@ import json
 import re
 from .common import APP
 
-REAL_DATA_PREFIXES=('../bench-results/','docs/proofs/','docs/canon/')
+REAL_DATA_PREFIXES=('../bench-results/','bench-results/','docs/proofs/','docs/canon/')
 
 def spec():return json.loads((APP/'specs/gate-graph.json').read_text())
 
