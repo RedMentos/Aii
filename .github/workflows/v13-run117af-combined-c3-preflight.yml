@@ -8,6 +8,8 @@ on:
       - v13/code/docs/RUN117AF_*
       - v13/code/docs/fixtures/RUN117AF_*
       - v13/code/tests/test_run117af_combined_c3_native_preflight.py
+      - v13/code/tests/test_run117af_combined_c3_native_runner.py
+      - v13/code/scripts/run117af_combined_c3_native.py
 permissions:
   contents: read
 jobs:
@@ -42,13 +44,16 @@ jobs:
           if test "$deps_rc" -eq 0 && test "$fixture_rc" -eq 0 && test "$blob_rc" -eq 0; then
             (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
               tests.test_run117af_combined_c3_native_preflight \
+              tests.test_run117af_combined_c3_native_runner \
               tests.test_b1b2_jef_span_c3_bridge_candidate \
               tests.test_jef_span_budget_shadow_candidate) > "$e/TEST_RAW.log" 2>&1
             test_rc=$?
           else
             test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
           fi
-          "$py" -m compileall -q v13/code/tests/test_run117af_combined_c3_native_preflight.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m compileall -q v13/code/tests/test_run117af_combined_c3_native_preflight.py \
+            v13/code/tests/test_run117af_combined_c3_native_runner.py \
+            v13/code/scripts/run117af_combined_c3_native.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base 31fa3551a9c375e4fe09abc0e3e0eeb12ae26501 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
