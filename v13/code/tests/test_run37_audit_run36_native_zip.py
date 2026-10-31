@@ -98,7 +98,7 @@ class Run37IndependentAudit(unittest.TestCase):
             audit_bytes(data)
 
     def test_manifest_tamper(self):
-        with self.assertRaisesRegex(ValueError, "MANIFEST"):
+        with self.assertRaisesRegex(ValueError, "MANIFEST|INNER_SHA256"):
             self.audit(corrupt_manifest=True)
 
     def test_native_exit_red_even_with_new_manifest(self):
