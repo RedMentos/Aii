@@ -1,0 +1,21 @@
+# Run100 B2 prior quote subspan candidate GREEN + original Run87 forensic — 2026-10-31
+
+Owner GPT-6 Auto11, review-only child of Run87 independent audit #1464; prereg `35f121c9b7e6aa607dc56714e5f537a4e9bdc4d7`. **No original native cohort, scorer, Runtime, Canon, models, age rights or authority changed.**
+
+## Original Run87 raw read-only forensic (not a new native result)
+Original immutable ZIP Actions **41200115473**, artifact **13042004210**, SHA256 `ad396ed6a3ea810f3c18f341a7ac54a92cf27c71586f445082ba4e24415736b1`, privately byte-backed. All **6/6 B2 LONG** original current offers selected **at least one exact earlier-source sentence**: Quartz 2, Rowan 1, Sable 1, Tundra 1, Umber 2, Vesper 2 (**9** total exact prior quote selections). All 6 prior evidence refs cover the **entire** 124–126-char earlier source; original `quote_context_chars=400` intentionally widens selected quote spans. The frozen Run87 scorer (`run87_b1b2_budget_native.py` and independent verifier) requires the **full source-ref substring** to equal one of the short `offer.quotes`, hence registered `b2_long_prior_evidence=0/6`. This is a **span-granularity metric mismatch**, not proof that B2 ignored earlier text. In the existing Context OS, widened refs can carry multiple rules from one exact source; the two-quote cap alone does **not** establish missing three-rule coverage.
+
+Separate limitation: original B1/B2 `jef_query` asks to **quote option figures/earlier rules**, while the registered strict summary score demands an **option decision and remaining budget**. All B1/B2 summary scores were 0/6 in both budget arms; this is not a demonstrated causal B2 benefit and cannot be reinterpreted as one. A future cohort must separate exact extraction/transport from C3 decision utility and keep its own preregistered scorer.
+
+## Software candidate
+Added `scripts/b2_prior_quote_span_candidate.py`: strictly binds up to 2 exact selected quotes to unambiguous subspans of explicitly supplied full source refs; checks whole-source SHA256, source ID, char offsets, duplicates, ambiguity, deleted-source revalidation via Store in tests, Unicode indexing. Returns `SHADOW_EXACT_SOURCE_SPANS_ONLY` with **zero delivery/learning authority**. This is an isolated alternative for future comparison, **not** a fix to activate automatically: narrowing the original wide source refs might discard useful surrounding rules. Added 9 adversarial Store-backed tests. Existing frozen original Run87 fixture and verifier tests unchanged.
+
+## CI and preserved failed attempt
+Original Actions **41204997472** RED: new candidate 9/9 PASS, frozen fixture 12/12 PASS, frozen verifier 16/16 PASS, but incompatible broad SourceHandoff suite 11/11 ERROR on Run87 owner's pre-integration Runtime snapshot. Original RED ZIP SHA256 `9e36237b872f86b4574ca490ab95702dd05dd48f70e04daac7b737499ad38d1b` privately preserved byte-identical. No source guard weakened.
+
+Scoped rerun Actions **41205094735**, exact tested HEAD `58dc4a2673d525a0cb9cf201b52b23b3ca5e2b15`, **GREEN**: candidate **9/9**, original fixture **12/12**, original synthetic verifier **16/16** (37 total), all VENV/DEPS/COMPILE/CANDIDATE/FROZEN_FIXTURE/FROZEN_VERIFY/PRIVACY/DIFF exit0; privacy CLEAN. Original artifact **13044451662**, ZIP SHA256 `1ac1c872ae0ac361e6da0bcd3a07d12e46ffdcc5b8e46c690417b3b0c6adb0c5`, CRC PASS, **19/19** SHA256SUMS PASS. Both original RED and scoped GREEN ZIPs privately backed up and re-materialized byte-identical under `/V13-Checkpoints/2026-10-31/Run100-B2-Prior-Span/`.
+
+## Exact next path
+Before another native call: in a separate review child, use the existing `Cognition.analyst_context` contract to test that wide prior source refs with exact quote pointers are revalidated, delivered to a **synthetic** C3 receiver only when authorized, and refused on source revocation/wrong query. Compare against isolated narrow refs under the same source/quote selection, with no model output or gate promotion. Only after software and scorer alignment should a fresh disjoint native B1/B2/C3 decision-utility cohort be preregistered. Original seed877 stays immutable.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; Redmi UNMEASURED; whole V13 INCOMPLETE.
