@@ -49,6 +49,32 @@ def _deny(status, *, orphaned_shadow_plan_packet_id=None):
     return result
 
 
+def _read_bound_shadow_plan(runtime, packet_id, current_event, source_refs):
+    """Return exact stored plan payload only when its lineage is still valid."""
+    if type(packet_id) is not str or not packet_id:
+        return None
+    row = runtime.store.one(
+        "SELECT event_id,payload FROM packets "
+        "WHERE id=? AND kind='ContextPlan'", (packet_id,))
+    if row is None or row["event_id"] != current_event.get("event_id"):
+        return None
+    raw = row["payload"]
+    plan = json.loads(raw)
+    if (type(plan) is not dict
+            or plan.get("packet_id") != packet_id
+            or plan.get("event_id") != current_event.get("event_id")
+            or plan.get("brain_generation_id") !=
+            current_event.get("brain_generation_id")
+            or plan.get("brain_generation_id") != runtime.store.generation_id
+            or plan.get("producer_component") != "N7_CONTEXT_OS"
+            or plan.get("role") != "C3_LANGUAGE"
+            or plan.get("mode") != "SHADOW"
+            or plan.get("applied") is not False
+            or plan.get("provenance") != source_refs):
+        return None
+    return raw
+
+
 def build_b1b2_jef_c3_source_role_bridge(
         runtime, prior_event, current_event, offer_packet_ids, *,
         operator_opt_in=False):
@@ -107,6 +133,11 @@ def build_b1b2_jef_c3_source_role_bridge(
                 or typed.get("learning_authority") != 0):
             return _deny("TYPED_JEF_ROLE_RED",
                          orphaned_shadow_plan_packet_id=packet_id)
+        plan_before = _read_bound_shadow_plan(
+            runtime, packet_id, current_event, refs)
+        if plan_before is None:
+            return _deny("CONTEXT_PLAN_LINEAGE_RED",
+                         orphaned_shadow_plan_packet_id=packet_id)
         payload = json.loads(typed["messages"][1]["content"])
         if payload.get("sources") != before["sources"]:
             return _deny("TYPED_JEF_SOURCE_DATA_RED",
@@ -140,6 +171,8 @@ def build_b1b2_jef_c3_source_role_bridge(
         jef_after = propose(runtime.store, refs[0], refs[1])
         if (after != before
                 or body_after != body
+                or _read_bound_shadow_plan(
+                    runtime, packet_id, current_event, refs) != plan_before
                 or jef_after.get("status") != "SHADOW_NO_AUTHORITY"
                 or jef_after.get("reason") != "EXACT_USER_SOURCE_RECIPE_SHADOW"
                 or jef_after.get("authority") != 0
