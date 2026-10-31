@@ -85,5 +85,32 @@ class Run113BTwoSource(unittest.TestCase):
             self.assertEqual(score(text, "A")["correct"], 0)
 
 
+    def test_new_user_correction_after_b2_must_invalidate_old_plan(self):
+        from v13.cognition import Cognition
+        original = Cognition.offer
+        injected = []
+
+        def correction(self, role, event, *args, **kwargs):
+            result = original(self, role, event, *args, **kwargs)
+            if (role == "B2_GIST" and not injected
+                    and "latest" in self.s.read_source(event["source_ref"])):
+                self.r.store.event(
+                    self.r.session,
+                    "Project Aster latest correction: Option A cancelled. Choose NONE.")
+                injected.append(True)
+            return result
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch.object(Cognition, "offer", correction):
+                result = pilot.run(FIXTURE, root / "work", root / "evidence")
+            self.assertEqual(injected, [True])
+            self.assertEqual(result["status"], "STRUCTURAL_RED")
+            self.assertEqual(result["native_c3_calls"], 0)
+            self.assertTrue(result["no_live_output"])
+            self.assertTrue(result["closed_store_ok"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
