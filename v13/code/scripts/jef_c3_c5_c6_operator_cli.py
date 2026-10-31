@@ -140,7 +140,7 @@ def _finalize_native_release(report, releases):
 
 
 def run(home, input_file, mode, *, operator_opt_in=False,
-        callback_opt_in=False, route_shadow=False):
+        callback_opt_in=False, route_shadow=False, seed_override=None):
     """Return redacted diagnostic; do not log the operator's source values."""
     if operator_opt_in is not True or callback_opt_in is not True:
         return _result("OFF", mode=mode, input_read=False, runtime_opened=False)
@@ -149,6 +149,11 @@ def run(home, input_file, mode, *, operator_opt_in=False,
                        runtime_opened=False)
     if mode not in MODES:
         return _result("INVALID_MODE", mode=mode, input_read=False,
+                       runtime_opened=False)
+    if seed_override is not None and (mode not in ("native", "native_schema")
+            or type(seed_override) is not int
+            or not 0 <= seed_override <= 2147483647):
+        return _result("SEED_OVERRIDE_RED", mode=mode, input_read=False,
                        runtime_opened=False)
     try:
         data, input_sha = _read_input(input_file)
@@ -230,6 +235,9 @@ def run(home, input_file, mode, *, operator_opt_in=False,
 
         schema_mode = mode in ("native_schema", "synthetic_schema_exact",
                                "synthetic_schema_wrong", "synthetic_schema_duplicate")
+        if mode in ("native", "native_schema"):
+            report["native_seed"] = (seed_override if seed_override is not None
+                                     else (727 if schema_mode else 13))
 
         def generate(messages, schema=None):
             if schema_mode and schema != SCHEMA:
@@ -251,7 +259,7 @@ def run(home, input_file, mode, *, operator_opt_in=False,
             output = "".join(runner.generate(
                 messages, runtime.cancel_event, time.monotonic() + 90,
                 32, schema if schema_mode else None,
-                seed=727 if schema_mode else 13))
+                seed=report["native_seed"]))
             report["native_output_sha256"] = _sha(output.encode("utf-8"))
             metrics = dict(runner.last_metrics)
             report["native_final"] = metrics.get("status") == "FINAL"
@@ -328,11 +336,13 @@ def main():
     p.add_argument("--callback-opt-in", action="store_true")
     p.add_argument("--route-shadow", action="store_true",
                    help="require source-bound JEF/C2 formatter-only advisory before C5/C6 DRAFT")
+    p.add_argument("--seed-override", type=int, default=None,
+                   help="optional native-only seed 0..2147483647; defaults unchanged")
     a = p.parse_args()
     result = run(a.home, a.input_file, a.mode,
                  operator_opt_in=a.operator_opt_in,
                  callback_opt_in=a.callback_opt_in,
-                 route_shadow=a.route_shadow)
+                 route_shadow=a.route_shadow, seed_override=a.seed_override)
     print(dumps(result))
     raise SystemExit(0 if result["status"] in (
         "OFF", "SHADOW_DRAFT_PREFLIGHT_READY") else 1)
