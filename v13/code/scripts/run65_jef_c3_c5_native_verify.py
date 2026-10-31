@@ -11,6 +11,8 @@ from v13.common import dumps
 from scripts import p2x_disjoint_receiver_trainset as p2x
 from scripts.run63_jef_c3_native import C3_SHA256, RUNNER_SHA256, cohort
 from scripts.run47_jef_c3_typed_receiver_native import NEGATIVE
+from v13.jef_c3_typed_envelope_candidate import SYSTEM
+from v13.jef_typed_source_shadow import _canonical
 
 
 def sha(raw):
@@ -73,15 +75,20 @@ def verify(path):
              else False, "prompt_hash_"+str(i))
         if type(messages) is list and len(messages) == 2:
             try:
-                need([m["role"] for m in messages] == ["system", "user"],
-                     "roles_"+str(i))
+                need([m["role"] for m in messages] == ["system", "user"]
+                     and messages[0]["content"] == SYSTEM,
+                     "roles_and_system_"+str(i))
                 payload = json.loads(messages[1]["content"])
                 need(payload.get("current_source") == fixture["current"]
                      and payload.get("policy_source") == fixture["b2_source"]
                      and payload.get("sheet_source") == fixture["b1_source"]
                      and payload.get("typed_jef_action")
                      == fixture["oracle_action"]
-                     and len(payload.get("source_ref_sha256", [])) == 2
+                     and payload.get("current_source_sha256")
+                     == sha(fixture["current"].encode("utf-8"))
+                     and payload.get("source_ref_sha256") == [
+                         sha(_canonical(refs["policy"])),
+                         sha(_canonical(refs["sheet"]))]
                      and payload.get("candidate_authority") == 0
                      and "oracle_action" not in payload and "oracle" not in payload,
                      "typed_sources_"+str(i))
@@ -119,6 +126,14 @@ def verify(path):
                            else "SOURCE_ONLY_FALLBACK_C3_RED")
         need(staged.get("status") == "JEF_C5_SOURCE_ONLY_DRAFT_STAGED_SHADOW"
              and staged.get("source_action") == fixture["oracle_action"]
+             and type(staged.get("draft_message_id")) is int
+             and staged.get("draft_message_id") > 0
+             and type(staged.get("c5_action_id")) is str
+             and bool(staged.get("c5_action_id"))
+             and staged.get("source_ref_sha256") == [
+                 sha(_canonical(refs["policy"])),
+                 sha(_canonical(refs["sheet"]))]
+             and staged.get("prompt_sha256") == row.get("input_sha256")
              and staged.get("candidate_sha256")
              == sha(fixture["oracle_action"].encode("utf-8"))
              and staged.get("candidate_bytes")
@@ -161,6 +176,7 @@ def verify(path):
              and c6.get("c5_binding_verified") is True
              and c6.get("candidate_sha256") == staged.get("candidate_sha256")
              and c6.get("source_only_fallback") is (not bool(correct))
+             and c6.get("model_formatter_status") == expected_formatter
              and c6.get("delivery_authority") == 0
              and c6.get("output_committed") is False
              and c6.get("tool_dispatches") == 0
