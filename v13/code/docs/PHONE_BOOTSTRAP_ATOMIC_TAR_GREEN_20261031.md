@@ -1,0 +1,16 @@
+# Phone bootstrap transactional tar extraction — verified software checkpoint (2026-10-31)
+
+Owner GPT-6; review-only child of Run98 #1465 exact parent `bc80a0d7df7031f5c18a11531969f5fc482b5891`; prereg `926473a16bb4e1c58c9e8a72f16ffa46743eb0f3` committed before implementation. No other owner branch touched; no force, no production merge.
+
+## Concrete implementation
+`v13/code/v13/safe_tar.py` is now used by real `bootstrap.extract`. A tarball is fully validated/staged on the same filesystem before promotion; normal files are written before in-tree symlinks. Refuses traversal, duplicate normalized members, hardlinks/devices, symlink descendants, outside/broken/cyclic symlinks, empty archives, existing destination symlink and file/dir collisions. On validation failure, the prior extracted tree is untouched; on injected promotion failure, the prior tree is restored. Existing pinned `download_file` retains hash/size authority. No model, seed, native source pin, learning or Age change.
+
+## Original closed Linux software evidence
+- Initial Actions `41206579353`, exact tested HEAD `c0e3b925bf159a2926534d4a6ca393d7c6a9b623`, 8/8 actual bootstrap tests and 18/18 bounded first-install smoke PASS. Original ZIP artifact `13043809097`, SHA256 `8d20e4db17d48e3df689a272408f08bed076543d9a60a1ca6a35837cec320a34`, CRC PASS, 19/19 inner SHA256SUMS PASS, all 8 stage exit receipts 0, privacy CLEAN. Private Library original byte-identical at `/V13-Checkpoints/2026-10-31/Phone-Bootstrap-Atomic-Tar/FIRST_PASS_ORIGINAL_ACTIONS_41206579353_SHA8D20E4DB.zip`.
+- Expanded Actions `41206665368`, exact tested HEAD `5a8aacffe654e8c443f1d0620056bbc96b45b874`, 11/11 actual bootstrap tests including injected rename rollback, cyclic link and empty archive; 18/18 install smoke PASS. Original artifact `13044223485`, SHA256 `ab1e6ce0c1fa2409f354f87c748751035f70171e5147fde06c83d873cd96ec67`, CRC PASS, 19/19 inner SHA256SUMS PASS, all 8 stage exit receipts 0, privacy CLEAN. Private Library original byte-identical at `/V13-Checkpoints/2026-10-31/Phone-Bootstrap-Atomic-Tar/SECOND_PASS_ORIGINAL_ACTIONS_41206665368_SHAAB1E6CE0.zip`.
+- Independent local Python 3.13 isolated copy: 10/10 adversarial safe-tar tests PASS; GitHub Actions Linux Python test suite above is the source-of-truth execution proof.
+
+## Claim limits, owner, exact continuation
+Only software/synthetic archive tests on Linux. **Not** verified with actual pinned llama.cpp tarball, Termux/Redmi install, native model execution, native train or whole-system acceptance. The archive source/binary pin in `v13/code/specs/models.json` is unchanged. Next: create independent child branch from this verified checkpoint; download and SHA256-verify the original pinned b10964 source and Linux-x86_64 binary archives on isolated Actions, run the real `bootstrap.extract` against both and assert exact expected files. Preserve any compatibility RED, do not silently alter pins. Do not start heavy native inference or training. If incompatibility is found, fix only extraction compatibility with tests, preserve originals and rerun. Then continue separate functional blueprint packages.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; Redmi UNMEASURED; canonical_architecture_complete=false; user_full_scope_complete=false. No gate promotion.
