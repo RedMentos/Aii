@@ -87,18 +87,18 @@ def strict_summary(summary, action, remaining):
     text = summary.lower()
     if action == "NONE":
         none = (
-            re.search(r"\\b(?:choose|select|answer|recommend)\\s+(?:option\\s+)?none\\b", text)
-            or re.search(r"\\bneither\\s+option\\b", text)
-            or re.search(r"\\bno\\s+(?:option|candidate)\\s+qualifies\\b", text))
-        invented = re.search(r"\\bremaining\\s+\\d+\\b|\\b\\d+\\s+credits\\s+remaining\\b", text)
+            re.search(r"\b(?:choose|select|answer|recommend)\s+(?:option\s+)?none\b", text)
+            or re.search(r"\bneither\s+option\b", text)
+            or re.search(r"\bno\s+(?:option|candidate)\s+qualifies\b", text))
+        invented = re.search(r"\bremaining\s+\d+\b|\b\d+\s+credits\s+remaining\b", text)
         return int(bool(none) and not invented)
     chosen = (
-        re.search(r"\\b(?:choose|select|recommend|answer|best|pick)\\s+(?:is\\s+)?(?:option\\s+)?"
-                  + action.lower() + r"\\b", text)
-        or re.search(r"\\boption\\s+" + action.lower()
-                     + r"\\s+(?:is\\s+)?(?:best|recommended|qualifies)\\b", text))
+        re.search(r"\b(?:choose|select|recommend|answer|best|pick)\s+(?:is\s+)?(?:option\s+)?"
+                  + action.lower() + r"\b", text)
+        or re.search(r"\boption\s+" + action.lower()
+                     + r"\s+(?:is\s+)?(?:best|recommended|qualifies)\b", text))
     n = str(remaining)
     rem = (
-        re.search(r"\\bremaining\\b.{0,30}\\b" + n + r"\\b", text)
-        or re.search(r"\\b" + n + r"\\b.{0,30}\\bremaining\\b", text))
+        re.search(r"\bremaining\b.{0,30}\b" + n + r"\b", text)
+        or re.search(r"\b" + n + r"\b.{0,30}\bremaining\b", text))
     return int(bool(chosen) and bool(rem))
