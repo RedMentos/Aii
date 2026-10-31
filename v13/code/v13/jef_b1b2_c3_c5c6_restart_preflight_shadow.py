@@ -117,11 +117,19 @@ def preflight(runtime, event, offer_packet_ids, memory_ids,
                     "SELECT COUNT(*) AS n FROM actions WHERE event_id=? "
                     "AND kind='TEXT_REPORT'", (event_id,))["n"] != 1):
                 return _result("DUPLICATE_DRAFT_OR_ACTION_RED")
-            if (not _draft(store, draft_message_id, event_id, session,
-                           meta["source_action"])
-                    or _c5_shadow(store, c5_action_id,
-                                  event_id, session) is None):
-                return _result("C5_F3_OR_DRAFT_BINDING_RED")
+            draft_ok = bool(_draft(
+                store, draft_message_id, event_id, session,
+                meta["source_action"]))
+            c5_ok = _c5_shadow(store, c5_action_id,
+                               event_id, session) is not None
+            if not draft_ok or not c5_ok:
+                action_row = store.one(
+                    "SELECT status FROM actions WHERE id=?", (c5_action_id,))
+                return _result(
+                    "C5_F3_OR_DRAFT_BINDING_RED",
+                    draft_binding_ok=draft_ok, c5_binding_ok=c5_ok,
+                    action_status=(
+                        action_row["status"] if action_row else "MISSING"))
         return _result(
             STATUS, source_rechecked=True, c6_preflight_only=True,
             c6_is_not_approval=True,
