@@ -1,0 +1,188 @@
+"""Default-OFF Run117AD B1/B2 + Store JEF span + ContextOS C3 postgen guard.
+
+Only a trusted, explicitly opted-in callback is invoked. It can have external
+side effects: this is neither a sandbox nor a production approval/delivery
+gate. A PASS is software SHADOW formatter agreement, not native inference.
+"""
+from __future__ import annotations
+
+from copy import deepcopy
+import hashlib
+import json
+
+from .b1b2_c3_source_envelope_candidate import build_c3_source_envelope
+from .b1b2_jef_c3_source_role_bridge_candidate import _read_bound_shadow_plan
+from .b1b2_jef_span_c3_bridge_candidate import (
+    SYSTEM, build_b1b2_jef_span_c3_bridge,
+)
+from .common import dumps
+from .context_os import controller
+from .jef_b1b2_c3_role_postgen_shadow_candidate import _epoch, _parse
+from .jef_span_budget_shadow_candidate import build_jef_span_budget_shadow
+from .two_source_pointer_shadow_candidate import bind_two_source
+
+SCHEMA = "v13.b1b2_jef_span_c3_postgen_shadow.v1"
+PASS = "SHADOW_B1B2_JEF_SPAN_C3_FORMATTER_MATCH"
+
+
+def _result(status, **extra):
+    return {
+        "schema": SCHEMA, "status": status, "callback_invoked": False,
+        "source_rechecked": False, "formatter_match_shadow": False,
+        "native_proof": False, "native_b1_proven": False,
+        "native_b2_proven": False, "native_c2_proven": False,
+        "native_jef_proven": False, "native_c3_proven": False,
+        "body_model_quote_verified": False,
+        "body_hypotheses_are_facts": False,
+        "source_semantic_truth_authority": False,
+        "output_committed": False, "tool_dispatches": 0,
+        "delivery_authority": 0, "learning_authority": 0,
+        "age0": "RECORD_ONLY", "step2_exit": "EVIDENCE_NOT_PASSING",
+        "b3": "NO_PROMOTION", "body_jepa": "UNAVAILABLE",
+        "jepa_weight": 0, "redmi_measured": False,
+        "whole_system_complete": False, **extra,
+    }
+
+
+def evaluate(runtime, prior_event, current_event, offer_packet_ids, generator,
+             *, operator_opt_in=False, callback_opt_in=False,
+             approval_receipt=None):
+    """Check exactly one trusted callback; return only a non-delivering receipt."""
+    if operator_opt_in is not True or callback_opt_in is not True:
+        return _result("OFF")
+    if approval_receipt is not None:
+        return _result("REAL_TTY_APPROVAL_UNSUPPORTED_RED")
+    if not callable(generator):
+        return _result("INVALID_GENERATOR_RED")
+    try:
+        if (type(offer_packet_ids) is not dict
+                or set(offer_packet_ids) != {"B1_DETAIL", "B2_GIST"}
+                or any(type(v) is not str or not v
+                       for v in offer_packet_ids.values())):
+            return _result("OFFER_ID_SHAPE_RED")
+        ids = dict(offer_packet_ids)
+        before = build_b1b2_jef_span_c3_bridge(
+            runtime, prior_event, current_event, ids, operator_opt_in=True)
+        if before.get("status") != "SHADOW_B1B2_JEF_SPAN_C3_BRIDGE_VERIFIED":
+            return _result("BRIDGE_PREFLIGHT_RED",
+                           component_status=before.get("status"))
+        prompt = before["messages"]
+        if (type(prompt) is not list or len(prompt) != 2
+                or [m.get("role") for m in prompt] != ["system", "user"]
+                or prompt[0].get("content") != SYSTEM
+                or before.get("messages_sha256") != hashlib.sha256(
+                    dumps(prompt).encode("utf-8")).hexdigest()
+                or before.get("offer_packet_ids") != ids
+                or before.get("output_committed") is not False
+                or before.get("delivery_authority") != 0
+                or before.get("learning_authority") != 0
+                or before.get("body_hypotheses_are_facts") is not False
+                or before.get("body_model_quote_verified") is not False
+                or before.get("source_semantic_truth_authority") is not False
+                or before.get("jepa_weight") != 0):
+            return _result("PROMPT_INTEGRITY_RED")
+        payload = json.loads(prompt[1]["content"])
+        candidate = before["typed_jef_candidate"]
+        if (type(candidate) is not dict
+                or set(candidate) != {"choice", "remaining"}
+                or candidate["choice"] not in ("A", "B", "NONE")
+                or (candidate["choice"] == "NONE") !=
+                (candidate["remaining"] is None)
+                or (candidate["remaining"] is not None
+                    and (type(candidate["remaining"]) is not int
+                         or candidate["remaining"] < 0))
+                or payload.get("typed_jef_candidate") != candidate
+                or payload.get("candidate_authority") != 0
+                or payload.get("candidate_origin") !=
+                "DETERMINISTIC_EXACT_USER_SOURCE_RECIPE_NOT_MODEL"
+                or payload.get("body_hypotheses_are_facts") is not False
+                or payload.get("body_model_quote_verified") is not False
+                or payload.get("source_semantic_truth_authority") is not False
+                or payload.get("context_plan_packet_id") !=
+                before["context_plan_packet_id"]
+                or type(payload.get("body_observations")) is not list
+                or [o.get("role") for o in payload["body_observations"]] !=
+                ["B1_DETAIL", "B2_GIST"]
+                or any(o.get("hypothesis_authority") !=
+                       "MODEL_HYPOTHESIS_NOT_FACT"
+                       or any(q.get("semantic_truth_authority") is not False
+                              for q in o.get("verified_quotes", []))
+                       for o in payload["body_observations"])):
+            return _result("TYPED_BODY_PAYLOAD_RED")
+        refs = before["source_refs"]
+        bound = bind_two_source(
+            runtime, prior_event, current_event, operator_opt_in=True)
+        body = build_c3_source_envelope(
+            runtime, current_event, ids, operator_opt_in=True)
+        jef = build_jef_span_budget_shadow(
+            runtime, prior_event, current_event, operator_opt_in=True)
+        plan = _read_bound_shadow_plan(
+            runtime, before["context_plan_packet_id"], current_event, refs)
+        if (bound.get("status") != "SHADOW_TWO_SOURCE_POINTER_VERIFIED"
+                or [s["source_ref"] for s in bound["sources"]] != refs
+                or body.get("status") !=
+                "C3_SOURCE_ENVELOPE_SHADOW_NO_MODEL_CALL"
+                or body.get("verified_quote_count") !=
+                before["verified_quote_count"]
+                or jef.get("status") !=
+                "SHADOW_SOURCE_BOUND_JEF_BUDGET_VERIFIED"
+                or jef.get("typed_jef_candidate") != candidate
+                or plan is None
+                or controller(runtime)._load()[0]["mode"] != "SHADOW"):
+            return _result("PREFLIGHT_LINEAGE_RED")
+        epoch = _epoch(runtime.store)
+        frozen = (dumps(prompt), dumps(bound), dumps(body), dumps(jef),
+                  plan, dumps(ids))
+    except Exception:
+        return _result("PREFLIGHT_INTEGRITY_RED")
+
+    messages = deepcopy(prompt)
+    try:
+        raw = generator(messages)
+    except Exception as exc:
+        return _result("CALLBACK_EXCEPTION_RED", callback_invoked=True,
+                       error_type=type(exc).__name__)
+    try:
+        if dumps(messages) != frozen[0]:
+            return _result("CALLBACK_PROMPT_MUTATED_RED",
+                           callback_invoked=True)
+        if _epoch(runtime.store) != epoch:
+            return _result("CALLBACK_STORE_CHANGED_RED",
+                           callback_invoked=True)
+        if dumps(offer_packet_ids) != frozen[5]:
+            return _result("CALLBACK_OFFER_IDS_MUTATED_RED",
+                           callback_invoked=True)
+        after_bound = bind_two_source(
+            runtime, prior_event, current_event, operator_opt_in=True)
+        after_body = build_c3_source_envelope(
+            runtime, current_event, ids, operator_opt_in=True)
+        after_jef = build_jef_span_budget_shadow(
+            runtime, prior_event, current_event, operator_opt_in=True)
+        after_plan = _read_bound_shadow_plan(
+            runtime, before["context_plan_packet_id"], current_event, refs)
+        if (dumps(after_bound) != frozen[1]
+                or dumps(after_body) != frozen[2]
+                or dumps(after_jef) != frozen[3]
+                or after_plan != frozen[4]
+                or controller(runtime)._load()[0]["mode"] != "SHADOW"
+                or _epoch(runtime.store) != epoch):
+            return _result("POSTGEN_SOURCE_OFFER_PLAN_CHANGED_RED",
+                           callback_invoked=True)
+        metadata = {
+            "callback_invoked": True, "source_rechecked": True,
+            "messages_sha256": before["messages_sha256"],
+            "source_refs": refs,
+            "offer_packet_ids": ids,
+            "context_plan_packet_id": before["context_plan_packet_id"],
+        }
+        parsed = _parse(raw)
+        if parsed is None:
+            return _result("FORMATTER_JSON_RED", **metadata)
+        if parsed != candidate:
+            return _result("FORMATTER_CANDIDATE_MISMATCH_RED", **metadata)
+        return _result(
+            PASS, formatter_match_shadow=True,
+            output_sha256=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+            output_bytes=len(raw.encode("utf-8")), **metadata)
+    except Exception:
+        return _result("POSTGEN_INTEGRITY_RED", callback_invoked=True)
