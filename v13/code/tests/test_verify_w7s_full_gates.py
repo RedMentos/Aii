@@ -5,12 +5,12 @@ from pathlib import Path
 import unittest
 
 from scripts import verify_w7s_full_gates as full
-from tests.test_verify_w7s_world_jepa_report import W7SIndependentReplayTests
+from tests import test_verify_w7s_world_jepa_report as fixture_module
 
 
 class W7SFullGateReplayTests(unittest.TestCase):
     def setUp(self):
-        self.helper = W7SIndependentReplayTests(
+        self.helper = fixture_module.W7SIndependentReplayTests(
             "test_positive_nine_row_replay_is_not_native_proof")
         self.helper.setUp()
         self.data = self.helper.data
