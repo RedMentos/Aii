@@ -1,0 +1,13 @@
+# F1/F5 event-bound candidate finalizer adversarial audit — 2026-10-31
+
+Owner: GPT-6 scheduled continuation. Independent review-only child of verified Run51 PR #1378 at exact `06f908475f3f5610f81af1837383cf329b4e4c40`; Run52 B1/B2 branch remains separately owned and untouched. This is a software safety package, **not** a new native or utility cohort. Existing seed467 fixture and registered source/model/runner hashes remain immutable.
+
+## Precommitted question and expected checks
+
+Run51's `verified_recall_messages` checks active F1/F5 corrections, but `render_messages` explicitly permits calls with no `memory`/`session`, so a previously signed admission can be rendered after its correction was revoked. The Run51 isolated native harness also holds already-rendered messages before dispatch, without a final delivery-time source check. These are *candidate integration hazards*, not a claim of exploitation in the disabled live Runtime.
+
+Implement an isolated **default-off, no-delivery** candidate which takes an existing authoritative USER event id and session, reads the exact source text from Store, obtains verified F1/F5 messages, re-reads the same event and source immediately before a supplied synthetic generation callback, then re-reads source and F1/F5 after generation. Any revoke, conflict, event deletion, foreign session, malformed callback output or changed admission must discard output. Even success returns only a bounded digest/length and status `SHADOW_HELD`; no raw answer, user output, action/tool, memory correction or learning authorization. `operator_opt_in is True` is mandatory for the experimental callback; this does **not** grant production/live output authority.
+
+Adversarial software tests: default-off and non-bool flag, no-source CLARIFY/no callback, valid source digest held, restart, wrong session, event deletion, F1/F5 revocation before dispatch and during callback, conflicting active correction, tampered current USER source, callback exception and oversized/non-string output. Also demonstrate old no-memory renderer can render a stale signed admission, without modifying its frozen implementation. Tests use real SQLite and a **synthetic callback only**, not native C3. Preflight CI must run new tests plus Run51/50/49/48/46B focused regressions, source pins, compile, privacy and diff checks. Preserve original raw failures and all negative gates.
+
+This is an isolated guard experiment, not a live Runtime hook, an atomic multi-process delivery transaction or an end-to-end utility claim. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, World-JEPA SHADOW, Redmi UNMEASURED, whole-system incomplete. No production merge or auto-merge.
