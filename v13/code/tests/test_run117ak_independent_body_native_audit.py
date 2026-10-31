@@ -109,6 +109,33 @@ class NativeAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'SELECTION_PACKET_AUTHORITY_RED'):
             audit._selection(item,'B2_GIST',row['prior'],ref,row['policy_span'])
 
+    def test_baseline_offer_native_final_is_metrics_not_missing_key(self):
+        row, ref, _, _ = fixture_item()
+        offer = {'schema_version':'1.0','packet_id':'offer1',
+                 'event_id':'event1','provenance':[ref],
+                 'role':'B2_GIST'}
+        query = {'schema_version':'1.0','packet_id':'query1',
+                 'event_id':'event1','provenance':[ref],
+                 'target_role':'B2_GIST'}
+        def evidence(kind, packet):
+            raw = raw_json(packet)
+            return {'kind':kind,'raw':raw,
+                    'sha256':sha256(raw.encode()).hexdigest()}
+        item = {'role':'B2_GIST','phase':'prior','status':'RECORDED',
+                'source_ref':ref,'process_reaped':True,
+                'native_metrics':{'status':'FINAL',
+                    'actual_model':audit.MODELS['B2_GIST'],
+                    'role':'B2_GIST'},
+                'packet_id':'offer1','query_packet_id':'query1',
+                'packet_evidence':evidence('OfferPacket',offer),
+                'query_evidence':evidence('QueryPacket',query)}
+        # Original Run117AH _observe does not emit native_final on offers.
+        audit._offer(item,'B2_GIST',ref)
+        query['provenance'] = []
+        item['query_evidence'] = evidence('QueryPacket',query)
+        with self.assertRaisesRegex(ValueError,'OFFER_QUERY_PROVENANCE_RED'):
+            audit._offer(item,'B2_GIST',ref)
+
     def test_full_source_wrong_sha_and_offsets(self):
         row, ref, packet, item = fixture_item()
         for forged in (dict(ref,sha256='0'*64),
