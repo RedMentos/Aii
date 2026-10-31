@@ -2,7 +2,7 @@ name: V13 F1 F5 Runtime C3 atomic draft synthetic preflight
 on:
   push:
     branches: [assistant/v13-f1f5-runtime-c3-draft-20261031-auto11]
-    paths: ['.github/workflows/v13-f1f5-runtime-c3-draft.yml']
+    paths: ['.github/workflows/v13-f1f5-runtime-c3-draft.yml', 'v13/code/tests/test_runtime_c3_atomic_draft_candidate.py', 'v13/code/v13/runtime_c3_atomic_draft_candidate.py']
 permissions:
   contents: read
 jobs:
