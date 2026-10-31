@@ -1,7 +1,8 @@
-"""Default-OFF read-only C6 integrity replay after Store/Runtime restart.
+"""Default-OFF read-only C6 integrity replay with Store recovery quarantine.
 
 Rechecks persisted single-call callback JSON and SHA, current human F1/F5,
 dual B1/B2 offers, C5/F3 SHADOW_DRAFT and exactly one assistant DRAFT.
+Store recovery INTERRUPTED is audited as QUARANTINED, never resumed as DRAFT.
 Does NOT re-invoke a model, authorize output/TTY, or certify native evidence.
 """
 from __future__ import annotations
@@ -19,6 +20,7 @@ from .jef_c3_schema_draft_candidate import (
 )
 
 STATUS = "RESTART_C5_C6_DRAFT_INTEGRITY_SHADOW"
+QUARANTINED = "RESTART_SHADOW_DRAFT_QUARANTINED"
 META_KEYS = frozenset({
     "shadow", "origin", "source_action", "source_ref_sha256",
     "dual_source_messages_sha256", "jef_messages_sha256",
@@ -65,7 +67,8 @@ def preflight(runtime, event, offer_packet_ids, memory_ids,
         event_id = event["event_id"]
         with store.tx():
             row = store.one(
-                "SELECT metadata FROM messages WHERE id=?",
+                "SELECT session_id,event_id,role,text,status,metadata "
+                "FROM messages WHERE id=?",
                 (draft_message_id,))
             if row is None:
                 return _result("DRAFT_MISSING")
@@ -117,9 +120,20 @@ def preflight(runtime, event, offer_packet_ids, memory_ids,
                     "SELECT COUNT(*) AS n FROM actions WHERE event_id=? "
                     "AND kind='TEXT_REPORT'", (event_id,))["n"] != 1):
                 return _result("DUPLICATE_DRAFT_OR_ACTION_RED")
-            draft_ok = bool(_draft(
-                store, draft_message_id, event_id, session,
-                meta["source_action"]))
+            # Store recovery intentionally changes all DRAFT messages to
+            # INTERRUPTED on reopen. Never resurrect that quarantined state.
+            if row["status"] == "DRAFT":
+                draft_ok = bool(_draft(
+                    store, draft_message_id, event_id, session,
+                    meta["source_action"]))
+            elif row["status"] == "INTERRUPTED":
+                draft_ok = (
+                    row["session_id"] == session
+                    and row["event_id"] == event_id
+                    and row["role"] == "assistant"
+                    and row["text"] == meta["source_action"])
+            else:
+                draft_ok = False
             c5_ok = _c5_shadow(store, c5_action_id,
                                event_id, session) is not None
             if not draft_ok or not c5_ok:
@@ -130,9 +144,17 @@ def preflight(runtime, event, offer_packet_ids, memory_ids,
                     draft_binding_ok=draft_ok, c5_binding_ok=c5_ok,
                     action_status=(
                         action_row["status"] if action_row else "MISSING"))
+        if row["status"] == "INTERRUPTED":
+            return _result(
+                QUARANTINED, source_rechecked=True,
+                c6_preflight_only=False, resumable=False,
+                recovery_interrupted=True, c6_is_not_approval=True,
+                callback_json_digest_replayed=True,
+                draft_message_id=draft_message_id,
+                c5_action_id=c5_action_id)
         return _result(
             STATUS, source_rechecked=True, c6_preflight_only=True,
-            c6_is_not_approval=True,
+            resumable=False, c6_is_not_approval=True,
             callback_json_digest_replayed=True,
             dual_source_messages_sha256=meta[
                 "dual_source_messages_sha256"],
