@@ -1,0 +1,13 @@
+# Run94 unfiltered original-ZIP full-suite GREEN — 2026-10-31
+
+Owner GPT-6 Auto11. Review-only PR #1459, branch `assistant/v13-run94-frozen-utility-drift-20261031-auto11`, parent Run93 exact `4ef9017f876444e2d31719f4e194fe6a4315a9f9`. Prereg `d540aa0111699ef1798bd42a16f3dfd07d9535d5` before test changes. No production Runtime/Store/Canon/frozen native source/model/seed/cohort edits.
+
+**FULL ENGINEERING GREEN:** GitHub Actions `41200093567`, exact tested HEAD `8d3d4d28313394de7ec023fcd29497d56bfd3b81`, **4907 tests OK, 28 skipped, zero failures/errors** in 461.260s. All VENV/DEPS/TORCH/TRANSFORMERS_PEFT/PIP_CHECK/ORIGINAL_PINS/FULL/COMPILE/PRIVACY/DIFF stage exits 0; privacy CLEAN. Original STEP2 and Run13T ZIP prerequisites fetched at exact pinned SHA256 `98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46` and `86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c`, inner 53/39 manifests checked, no test exclusions.
+
+Original full-suite artifact `13042855701`, ZIP SHA256 `5b346370e6bd8f24b6f337a29f7ea19aabe9043d257c85fa37cb1b08f67b4458`, CRC PASS, 23/23 SHA256SUMS PASS, 24 unique members, HEAD.txt exact. Independent audit and private Library backup `/V13-Checkpoints/2026-10-31/Run94-Original-Raw/RUN94_FULLSUITE_GREEN_41200093567.zip` materialized back byte-identical SHA256. Original Run91 4905/1 FAIL/2 ERROR and Run93 4906/2 ERROR artifacts retained privately with their original hashes; no rewritten history.
+
+Run94 source changes only historical Run34/37 test assumptions: current hardened utility source must refuse frozen original native prereg, isolated historical hash mock tests metadata, adversarial other-pin drift still refuses. Focused Actions `41199577311` 24/24 GREEN, private raw backed up. **Engineering full-suite GREEN is not scientific gate promotion**; 28 skips, Linux software/synthetic with historical native artifacts, not current Redmi or end-to-end native model acceptance.
+
+Next: Run95 draft PR #1461 marker-gated `V13-Redmi-Install-Run95.zip` source package can now launch, verify reproducible ZIP, manifest/CRC, extracted model-free tests, private backup and actual user download artifact. Run87 child PR #1460 native 48-call Actions `41200115473` remains separate active heavy owner; inspect only at terminal. No competing native launch. After ZIP, pursue next independent canonical implementation and Termux installer selftest regression.
+
+Negative gates: Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; whole V13 INCOMPLETE. No merge to main.
