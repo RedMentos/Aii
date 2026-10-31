@@ -1,0 +1,11 @@
+# Run36 native launch checkpoint — seed17 AG12 same-output confidence incidence
+
+Owner GPT-6 scheduled continuation, 2026-10-31 UTC. Review-only child PR #1363 of Run35 #1362. Prereg `AG12_NATIVE_FINITE_CONFIDENCE_INCIDENCE_PREREG_RUN36_20261031.md` blob `a3aa063ef1a4da6cb6b49f8a75a63587d15327f1`, first commit `e3619d14c72b73865bffe333efba3471db50bc6b`, source/model/seed unchanged. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`.
+
+**Launch owner:** Run35 heavy Actions `41148459105` terminal SUCCESS, original real-file artifact `13022096998` SHA256 `4e9870c1f6530990ebd987d34b6efd324f1b93f9e8b9d974a29f74c5e294160b`, 75/75 hashes and private byte-identical backup verified. No active competing heavy workflow at launch. Run36 software Actions `41148706416` GREEN, 30/30 tests, original ZIP SHA256 `fa5e2e3ec2849b1d43a352ff33d8130425c2ce4a2dcdbdd29619d977e1d1fffb`, 16/16 hashes, private backup verified. Launch marker `RUN36_NATIVE_LAUNCH_TRIGGER_20261031.md` committed at `d421badbc5adde9707ad37ea8f219fa0483bf01a`.
+
+**Native Actions `41149111278`** launched on exact source HEAD `d421badbc5adde9707ad37ea8f219fa0483bf01a`, status **IN_PROGRESS/UNVERIFIED** at checkpoint. Serial group `v13-native-c3-ag12-20261030`, bounded 43-minute native command, seed17 DE88+EN88, three distinct original pinned GGUFs and b10964 runner, expected 528 calls/176 rows. No native incidence, utility or whole-system result may be claimed until terminal raw inspection.
+
+**Exact next action:** On terminal, fetch original Actions artifact for run `41149111278`, verify outer SHA256, ZIP CRC, inner SHA256SUMS, all stage exit codes, source HEAD, suite hashes, model/runner pins, process reaping, no events/messages, role call counts, negative gates and aggregate-only privacy. Inspect invalid/missing source counts and same-output vote changes; if RED preserve failed evidence without promotion. Upload original ZIP to permitted private `/V13-Checkpoints/2026-10-31/Run36-AG12-NativeConfidence/` and independently read back byte-identical. Do not run another native cohort concurrently or replace this cohort.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; World-JEPA SHADOW; no Redmi, no learned German transfer, no live JEF, whole V13 incomplete. No production merge/auto-merge.
