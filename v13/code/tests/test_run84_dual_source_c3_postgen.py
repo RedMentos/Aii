@@ -113,13 +113,13 @@ class Run84PostgenTests(unittest.TestCase):
         self.assertEqual(self.call(mutate)["status"],
                          "CALLBACK_STORE_MUTATION_RED")
 
-    def test_external_connection_noop_update_is_red(self):
+    def test_external_connection_material_update_is_red(self):
         def mutate(messages, schema):
             db_path = self.r.store.db.execute(
                 "PRAGMA database_list").fetchone()[2]
             with sqlite3.connect(db_path) as external:
-                external.execute("UPDATE packets SET payload=payload WHERE id=?",
-                                 (self.offers["B1_DETAIL"],))
+                external.execute("UPDATE sessions SET title=? WHERE id=?",
+                                 ("run84 material external mutation", self.r.session))
             return '{"action":"A"}'
         self.assertEqual(self.call(mutate)["status"],
                          "CALLBACK_STORE_MUTATION_RED")
