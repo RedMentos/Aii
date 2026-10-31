@@ -107,7 +107,7 @@ def replay(report_path, fixture_path):
                     and q.get('source_view_width_chars') == (240 if role == 'B1_DETAIL' else 960)
                     and p.get('brain_generation_id') == q.get('brain_generation_id')
                     and p.get('native_metrics', {}).get('status') == 'FINAL', 'QUERY_OFFER')
-            require(p.get('model_revision') == MODELS[role], 'MODEL_REVISION')
+            require(p.get('model_revision') == binding.get('model_revisions', {}).get(role), 'MODEL_REVISION')
             if stage == 'current':
                 require(any(x.get('source_id') == prior['source_id']
                             for x in q.get('context_source_refs', [])), 'PRIOR_CONTEXT_PRESENT')
