@@ -31,6 +31,8 @@ class Runtime(_BaseRuntime):
         self.stop.wait()
 
 from v13.jef_c3_typed_envelope_candidate import build_jef_c3_typed_envelope
+from v13.jef_c2_c3_formatter_route_shadow_candidate import (
+    propose as propose_jef_c2_route, READY as JEF_C2_ROUTE_READY)
 from v13.jef_c3_c5_c6_fallback_draft_candidate import stage, preflight, STAGED
 from v13.jef_c3_schema_draft_candidate import stage_schema, SCHEMA
 
@@ -138,10 +140,13 @@ def _finalize_native_release(report, releases):
 
 
 def run(home, input_file, mode, *, operator_opt_in=False,
-        callback_opt_in=False):
+        callback_opt_in=False, route_shadow=False):
     """Return redacted diagnostic; do not log the operator's source values."""
     if operator_opt_in is not True or callback_opt_in is not True:
         return _result("OFF", mode=mode, input_read=False, runtime_opened=False)
+    if type(route_shadow) is not bool:
+        return _result("ROUTE_FLAG_RED", mode=mode, input_read=False,
+                       runtime_opened=False)
     if mode not in MODES:
         return _result("INVALID_MODE", mode=mode, input_read=False,
                        runtime_opened=False)
@@ -198,6 +203,30 @@ def run(home, input_file, mode, *, operator_opt_in=False,
             report["source_status"] = envelope.get("status")
             return report
         action = envelope["typed_jef_action"]
+        if route_shadow:
+            routed = propose_jef_c2_route(
+                runtime, event, ids, operator_opt_in=True,
+                callback_opt_in=True)
+            report["route_shadow_status"] = routed.get("status")
+            if (routed.get("status") != JEF_C2_ROUTE_READY
+                    or routed.get("formatter_route")
+                    != "JEF_TYPED_C3_FORMATTER_ONLY"
+                    or routed.get("route_applied") is not False
+                    or routed.get("messages_sha256")
+                    != envelope.get("messages_sha256")
+                    or routed.get("source_ref_sha256")
+                    != envelope.get("source_ref_sha256")
+                    or routed.get("typed_jef_action") != action
+                    or routed.get("source_rechecked") is not True
+                    or routed.get("delivery_authority") != 0
+                    or routed.get("learning_authority") != 0
+                    or routed.get("tool_dispatches") != 0):
+                report["status"] = "ROUTE_SOURCE_RED"
+                return report
+            report["route_applied"] = False
+            report["route_prompt_sha256"] = routed["messages_sha256"]
+            report["c2_advisory_status"] = routed["c2_advisory"]["status"]
+
 
         schema_mode = mode in ("native_schema", "synthetic_schema_exact",
                                "synthetic_schema_wrong", "synthetic_schema_duplicate")
@@ -297,10 +326,13 @@ def main():
     p.add_argument("--mode", choices=MODES, required=True)
     p.add_argument("--operator-opt-in", action="store_true")
     p.add_argument("--callback-opt-in", action="store_true")
+    p.add_argument("--route-shadow", action="store_true",
+                   help="require source-bound JEF/C2 formatter-only advisory before C5/C6 DRAFT")
     a = p.parse_args()
     result = run(a.home, a.input_file, a.mode,
                  operator_opt_in=a.operator_opt_in,
-                 callback_opt_in=a.callback_opt_in)
+                 callback_opt_in=a.callback_opt_in,
+                 route_shadow=a.route_shadow)
     print(dumps(result))
     raise SystemExit(0 if result["status"] in (
         "OFF", "SHADOW_DRAFT_PREFLIGHT_READY") else 1)
