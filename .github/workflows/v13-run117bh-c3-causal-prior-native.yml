@@ -1,0 +1,209 @@
+name: V13 Run117BH pinned C3 source-only causal-prior seed1081 native
+
+on:
+  push:
+    branches:
+      - assistant/v13-run117bh-c3-causal-prior-native-20261031-hourly11
+    paths:
+      - .github/workflows/v13-run117bh-c3-causal-prior-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+
+jobs:
+  native-c3-causal-prior:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve pinned phone source and serial native C3 with closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117bh-native"
+          extracted="$RUNNER_TEMP/v13-run117bh-extracted"
+          source_root="$extracted/V13-Phone"
+          installed="$RUNNER_TEMP/v13-run117bh-installed"
+          fixture="$GITHUB_WORKSPACE/v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          a02d3fb052531a9c131648fdde5f5953de28fbfa v13/code/scripts/run117bg_c3_source_only_native.py
+          5183beda2f62f1ad92f433d40ddafbd861d741bd v13/code/tests/test_run117bg_c3_source_only_native.py
+          676fed6fef8e735de9d76baba694116ecfb666e5 v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json
+          9e74d8a64741ce909133ddd8cf42434b738a5d04 v13/code/v13/body_source_id_c3_evidence_bridge_candidate.py
+          e431eecaa4a7643a548a512036225343f681ee23 v13/code/v13/b1b2_source_id_quote_candidate.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          echo 'aeea2b0cec9bdca9a8fa8133eec4072a0e16587addf4887068e5b64d1e184d5f  v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          echo "$?" > "$e/FIXTURE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117bh-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117bh-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else
+            for stage in DEPS PIP_CHECK; do echo SKIPPED > "$e/${stage}_RAW.log"; echo SKIPPED > "$e/${stage}_EXIT.txt"; done
+          fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/FIXTURE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run117BH.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+            echo "$?" > "$e/PACK_EXIT.txt"
+          else echo SKIPPED > "$e/PACK_RAW.log"; echo SKIPPED > "$e/PACK_EXIT.txt"; fi
+          if [ "$(cat "$e/PACK_EXIT.txt")" = 0 ]; then
+            "$py" - "$e" "$extracted" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);p=e/'V13-Phone-Run117BH.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              assert set(z.namelist())=={'V13-Phone/'+x for x in manifest['files']}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for name,digest in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest,name
+              for name in ('scripts/run117bg_c3_source_only_native.py',
+                           'v13/body_source_id_c3_evidence_bridge_candidate.py',
+                           'docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            echo "$?" > "$e/ZIP_EXIT.txt"
+          else echo SKIPPED > "$e/ZIP_RAW.log"; echo SKIPPED > "$e/ZIP_EXIT.txt"; fi
+          if [ "$(cat "$e/ZIP_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:scripts:tests "$py" -m unittest -v tests.test_run117bg_c3_source_only_native tests.test_run117aq_body_source_c3_bridge tests.test_run117ai_event_source_binding_candidate) > "$e/PREFLIGHT_RAW.log" 2>&1
+            echo "$?" > "$e/PREFLIGHT_EXIT.txt"
+          else echo SKIPPED > "$e/PREFLIGHT_RAW.log"; echo SKIPPED > "$e/PREFLIGHT_EXIT.txt"; fi
+          if [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 12m env PYTHONPATH=.:scripts:tests "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_C3_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_C3_EXIT.txt"
+          else echo SKIPPED > "$e/INSTALL_C3_RAW.log"; echo SKIPPED > "$e/INSTALL_C3_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_C3_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 20m env PYTHONPATH=.:scripts:tests "$py" scripts/run117bg_c3_source_only_native.py --fixture "$fixture" --installed "$installed" --work "$RUNNER_TEMP/v13-run117bh-work" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_RAW.log"; echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          if [ -f "$e/NATIVE_CASE/report.json" ]; then
+            "$py" - "$e" "$fixture" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys,hashlib
+          from pathlib import Path
+          e=Path(sys.argv[1]);fixture=Path(sys.argv[2]);r=json.loads((e/'NATIVE_CASE/report.json').read_text())
+          f=json.loads(fixture.read_text());rows={x['id']:x for x in f['rows']}
+          assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='aeea2b0cec9bdca9a8fa8133eec4072a0e16587addf4887068e5b64d1e184d5f'
+          assert r['schema']=='v13.run117bg.c3_source_only_native.v1'
+          assert r['seed']==1081 and r['fixture_sha256']=='aeea2b0cec9bdca9a8fa8133eec4072a0e16587addf4887068e5b64d1e184d5f'
+          assert r['native_body_calls']==0 and r['native_jef_calls']==0 and r['native_c2_calls']==0
+          assert r['output_committed'] is False and r['tool_dispatches']==0
+          assert r['learning_authority']==0 and r['delivery_authority']==0
+          assert r['age0']=='RECORD_ONLY' and r['step2_exit']=='EVIDENCE_NOT_PASSING'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['redmi_measured'] is False
+          assert r['whole_system_complete'] is False
+          assert r['status'] in ('STRUCTURAL_RED',
+              'NATIVE_COMPLETE_EXPLORATORY_CAUSAL_PRIOR_SIGNAL',
+              'NATIVE_COMPLETE_NO_CAUSAL_PRIOR_SIGNAL')
+          assert 0<=r['native_c3_calls']<=12 and len(r['rows'])<=6
+          counts={'BOTH_EXACT_SOURCES':0,'CURRENT_ONLY':0}
+          scores={'BOTH_EXACT_SOURCES':0,'CURRENT_ONLY':0}
+          paired=0
+          for row in r['rows']:
+              frow=rows[row['id']]
+              assert len(row['arms'])<=2
+              if row['status']=='RECORDED':
+                  assert row['no_live_output'] is True and row['closed_store_ok'] is True
+              per={}
+              for a in row['arms']:
+                  arm=a['arm'];assert arm in counts and arm not in per
+                  per[arm]=a
+                  if a['status']=='RECORDED':
+                      assert a['native_final'] is True and a['process_reaped'] is True
+                      assert a['native_metrics']['status']=='FINAL'
+                      assert a['native_metrics']['actual_model']=='LFM2.5-350M-QAD-Q4_0.gguf'
+                      assert [m['role'] for m in a['messages']]==['system','user']
+                      assert '"oracle"' not in a['messages'][1]['content']
+                      payload=json.loads(a['messages'][1]['content'])
+                      assert payload['typed_jef_candidate'] is None
+                      assert payload['typed_candidate_authority']==0
+                      obs=payload['body_observations']
+                      if arm=='BOTH_EXACT_SOURCES':
+                          assert [o['role'] for o in obs]==['B2_GIST','B1_DETAIL']
+                          assert [o['exact_source_excerpt'] for o in obs]==[frow['policy_span'],frow['option_span']]
+                      else:
+                          assert [o['role'] for o in obs]==['B1_DETAIL']
+                          assert obs[0]['exact_source_excerpt']==frow['option_span']
+                          assert frow['policy_span'] not in json.dumps(a['messages'])
+                      expected=frow['oracle'] if arm=='BOTH_EXACT_SOURCES' else {'choice':'NONE','remaining':None}
+                      raw=json.loads(a['output'])
+                      exact=int(type(raw) is dict and set(raw)=={'choice','remaining'} and raw==expected)
+                      assert a['score']['correct']==exact
+                      counts[arm]+=1;scores[arm]+=exact
+              if len(per)==2 and all(a['status']=='RECORDED' for a in per.values()):
+                  paired+=int(per['BOTH_EXACT_SOURCES']['score']['correct']==1 and per['CURRENT_ONLY']['score']['correct']==1)
+          if r['status']!='STRUCTURAL_RED':
+              assert r['native_c3_calls']==12 and len(r['rows'])==6
+              assert counts=={'BOTH_EXACT_SOURCES':6,'CURRENT_ONLY':6}
+              assert scores==r['scores']
+              assert paired==r['paired_both_correct_current_abstains']
+          print(json.dumps({'original_native_report_checked':True,'status':r['status'],
+                            'native_c3_calls':r['native_c3_calls'],
+                            'independent_scores':scores,'paired':paired},sort_keys=True))
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo SKIPPED > "$e/VERIFY_RAW.log"; echo SKIPPED > "$e/VERIFY_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run117bg_c3_source_only_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 518cd8c64631edacea44b349543f66d95c580b52 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 518cd8c64631edacea44b349543f66d95c580b52 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native phone/source/rows GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117bh-c3-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117bh-native/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Enforce pinned native and zero-authority result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117bh-native"
+          for stage in PINS FIXTURE VENV DEPS PIP_CHECK PACK ZIP PREFLIGHT INSTALL_C3 NATIVE VERIFY COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved, no gate promotion"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN117BH_LINUX_NATIVE_C3_SOURCE_ONLY_NO_STEP2_OR_BODY_JEPA_GATE'
