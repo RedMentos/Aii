@@ -26,7 +26,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/PINS.txt" <<'PINS'
           ed9238770eaf0a9a5af20260a246a9b8257a849f v13/code/docs/WORLD_JEPA_ACTION_BALANCED_FULLSLOT_PREREG_RUN39_20261031.md
-          76ab0f4fe842472afd185a9132dbb806bf9da041 v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py
+          c65467f1f000c187f46542270dfc53ee569824a1 v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py
           cad9dd0f7877ed0243ea6a9cf387a34c433e5f59 v13/code/tests/test_run39_world_jepa_action_balanced_fullslot.py
           411c98de52ab3fbec5437ce12bf0c29591ff79a7 v13/code/scripts/run39_world_jepa_action_balanced_real.py
           8c68e6cbd8bd49a9fe9245d6740428f714e5a6e8 v13/code/tests/test_run39_world_jepa_action_balanced_real.py
