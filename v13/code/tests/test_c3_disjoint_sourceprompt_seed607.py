@@ -16,7 +16,7 @@ FIXTURE = (Path(__file__).resolve().parents[1] /
 class C3Seed607Tests(unittest.TestCase):
     def test_registered_fixture_order_and_tamper(self):
         fixture = probe.load_fixture(FIXTURE)
-        self.assertEqual([x["id"] for x in fixture["cases"],
+        self.assertEqual([x["id"] for x in fixture["cases"]],
                          ["Ambercrest", "Foxglove", "Northstarlet"])
         self.assertEqual([x["order"][0] for x in fixture["cases"]],
                          list(probe.ARMS))
