@@ -1,0 +1,75 @@
+name: V13 Run90 unfiltered full-suite compatibility control
+on:
+  push:
+    branches:
+      - assistant/v13-run90-strict-route-lineage-20261031-auto11
+    paths:
+      - v13/code/docs/RUN90_FULLSUITE_TRIGGER.txt
+permissions:
+  contents: read
+concurrency:
+  group: v13-run90-unfiltered-software
+  cancel-in-progress: false
+jobs:
+  full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run exact dependency-pinned unfiltered full-suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run90-full"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run90-full-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run90-full-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+          echo 0 > "$e/TORCH_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'transformers==4.44.2' 'peft==0.13.2' > "$e/TRANSFORMERS_PEFT_RAW.log" 2>&1
+          echo 0 > "$e/TRANSFORMERS_PEFT_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo 0 > "$e/PIP_CHECK_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 25m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+          rc=$?
+          set -e
+          echo "$rc" > "$e/FULL_EXIT.txt"
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 626c4eba6b7dcb66a063cfb354b16e57e01b395b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 626c4eba6b7dcb66a063cfb354b16e57e01b395b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 20 "$e/FULL_RAW.log"
+          echo "FULL_EXIT=$rc; no promotion"
+          exit "$rc"
+      - name: Upload original RED or GREEN raw, including all exit receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run90-fullsuite-${{ github.sha }}
+          path: ${{ runner.temp }}/run90-full/
+          if-no-files-found: error
+          retention-days: 90
