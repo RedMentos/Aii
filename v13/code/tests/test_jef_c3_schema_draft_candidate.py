@@ -113,7 +113,7 @@ class SchemaDraftTests(unittest.TestCase):
             self.assertEqual(c6["delivery_authority"], 0)
             self.assertFalse(c6["output_committed"])
             self.assertEqual(r.store.one(
-                "SELECT COUNT(*) AS n FROM messages WHERE event_id=? AND status='FINAL'",
+                "SELECT COUNT(*) AS n FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL'",
                 (event["event_id"],))["n"], 0)
             invoked = []
             again = self._stage(r, ids, event,
