@@ -72,11 +72,45 @@ class CausalOfferConsumerTests(unittest.TestCase):
         current = self.r.store.event(self.r.session, willow["current"])
         for role in run52.ROLES:
             with self.subTest(role=role):
+                before = self.counts()
+                state_before = self.r.store.state(role+":"+self.r.session)
                 r = self.offer(role, current)
-                self.assertEqual(r["status"], "SHADOW_OFFER_PRODUCED")
-                query = self.packet(r["query_packet_id"])
-                self.assertEqual(query["context_source_refs"], [])
-                self.assertEqual(query["context_offer_ids"], [])
+                self.assertEqual(r["status"], "CROSS_TOPIC_RETAINED_STATE_RED")
+                self.assertFalse(r["runner_called"])
+                self.assertEqual(self.counts(), before)
+                self.assertEqual(self.r.store.state(role+":"+self.r.session), state_before)
+
+    def test_unguarded_cognition_injects_foreign_prior_hypothesis_even_with_filtered_context(self):
+        harbor = self.fixtures[0]
+        willow = self.fixtures[1]
+        captured = []
+        original_get = self.r.pool.get
+
+        def capture_body(role):
+            body = original_get(role)
+            original_generate = body.generate
+            def generate(messages, *args, **kwargs):
+                query = json.loads(messages[1]["content"])
+                captured.append(query)
+                raw = original_generate(messages, *args, **kwargs)
+                if "Project Harbor" in query.get("source_segments", [{}])[0].get("text", ""):
+                    obj = json.loads(raw[0])
+                    obj["summary"] = "HARBOR_ONLY_120_EUROS"
+                    return [json.dumps(obj)]
+                return raw
+            body.generate = generate
+            return body
+
+        self.r.pool.get = capture_body
+        prior = self.r.store.event(self.r.session, harbor["prior"])
+        self.consumer.offer("B1_DETAIL", prior, 0, time.monotonic()+30)
+        current = self.r.store.event(self.r.session, willow["current"])
+        # Direct inherited Cognition.offer intentionally bypasses guarded_offer.
+        # It still uses filtered source context but blindly injects prior summary.
+        offer = self.consumer.offer("B1_DETAIL", current, 0, time.monotonic()+30)
+        query_packet = self.packet(offer["query_packet_id"])
+        self.assertEqual(query_packet["context_source_refs"], [])
+        self.assertEqual(captured[-1]["prior_hypothesis"], "HARBOR_ONLY_120_EUROS")
 
     def test_older_replay_after_newer_retained_never_invokes_offer(self):
         f = self.fixtures[0]
