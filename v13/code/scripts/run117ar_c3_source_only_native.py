@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run117AR: preregistered disjoint seed1077 two-arm pinned native C3.
 
-Synthetic B1/B2 offers are persisted in a real SQLite Store. Deterministic
-JEF-only and combined ContextOS prompts are both *actually* sent to pinned
-native C3; this is not native Body/JEF/C2 or live V13 output.
+Two exact USER source spans are read from real SQLite Store SourceRefs.
+NO_PRIOR and EXACT_SOURCE prompts are sent to pinned native C3 with no
+JEF typed answer, native Body/JEF/C2 calls or live V13 output.
 """
 from __future__ import annotations
 
