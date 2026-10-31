@@ -9,3 +9,13 @@
 **Exact next command:** `GET /repos/RedMentos/Aii/actions/runs/41182276152`; when terminal download original artifact, verify ZIP SHA256, CRC, all SHA256SUMS, HEAD, 11 exit receipts, full 37-test counts, privacy; preserve original RED if any; private Library byte-identical backup. Then open draft PR to Run70 parent, not main, and request independent review. Keep read-only Run69 and Store-mutating Run11 modes distinct, default-OFF and zero authority.
 
 **Unchanged negative gates:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, Redmi unmeasured, full-suite 4 FAIL/66 ERROR/28 SKIP, whole V13 incomplete. Software compatibility does not promote native C3 independent reasoning (Run70 RED), utility, learning, or production.
+
+## Terminal exact-blob cross-package software verification
+
+First combined Actions **41182276152**, exact HEAD `38e8fe7ce12ff29e5bdab7199cbe97126bf89d73`, terminal SUCCESS: **37/37** original five focused suites, all source pins, privacy CLEAN, compile/diff PASS. Original artifact **13034624048**, ZIP SHA256 `c4a291cb49d2da1ee3340419538023d38f86e8532f4e76412cebb9c686a59c4d`, CRC PASS, **24/24** inner hashes, 11/11 stage exits zero.
+
+Additional direct cross-adapter real Store test `test_run71_schema_crosspackage_integration.py`, Git blob `d56984141128ea9299d4c2a53baae9e8dc5097df`, exercises: (1) Run69 read-only exact diagnostic → Run11 atomic C5 DRAFT → C6 read-only NEEDS_REAL_TTY_APPROVAL on the *same* source; (2) wrong action diagnostic RED never becomes source-only C5 fallback; (3) source revocation after diagnostic blocks later DRAFT. All zero output/tool/learning authority, no native model call. Donor source files and original Run70 fixture/model/scorer untouched.
+
+Corrected integrated Actions **41182366162**, exact tested HEAD `0c77e1919111335dc4867952b84d7363f9527059`, terminal **SUCCESS**, **40/40** tests across six suites, all **12/12** stage exits zero, privacy CLEAN, compile/diff PASS. Original artifact **13035731669**, ZIP SHA256 **`47d29cac0d53254b43e4ddba170d20b4a6476f07dfe0ef53a996fa6c034b6a0f`**, CRC PASS, **26/26** inner hashes. Both original ZIPs backed up privately under `/V13-Checkpoints/2026-10-31/Run71-C3-Crosspackage/`, rematerialized from Library and SHA256 matched original GitHub bytes exactly.
+
+**Next:** independent PR review and decide if Run69 diagnostic should remain separate API from Run11 source-bound DRAFT; no auto-merge to main. Production C6 approval/visible output still absent. Run70 SOURCE_SCHEMA 3/6 scientific RED and all Canon negative gates remain. New higher-priority work should pursue real JEF/C2/B1/B2 semantic utility or the native learning paths, not repeatedly rescore this frozen source-only cohort.
