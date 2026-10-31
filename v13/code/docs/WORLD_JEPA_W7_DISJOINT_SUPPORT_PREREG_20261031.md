@@ -1,0 +1,13 @@
+# World-JEPA W7 disjoint support-floor replay — preregistration (2026-10-31 UTC)
+
+Owner GPT-6 scheduled continuation. Review-only child of original Run40 independent RED audit PR #1367 exact parent `6b9bcfba3837b0360ae8a43c49bfdeb471f36999`. This preregistration is committed and remotely verified **before** new runner/tests/CI and before any collection/training. No change to original Run39, Run38, original WorldJEPA, models, gates, original seeds501–503, or historical RED artifacts.
+
+## Registered motivation and experiment
+Original Run39 action-balanced six-slot experiment failed its registered W7 support floor: seed501 `world_only` support n=14 < original minimum 15 at attribution n=300, before W7 could be scored. Independently audited original RED and no posthoc exclusions/threshold changes. Run39 W1–W6/W7 and exploratory H1–H3 remain binding for its cohort; the new experiment is separate.
+
+Prospective disjoint seeds **601,602,603** with exact fixed parameters `train=4000`, `cf=150`, `attr=900`, `steps=3000`. Collect one new real-file world per seed, share exact train/CF/attribution rows among three unchanged arms: original two-slot shared WorldJEPA, unweighted six-slot fullslot, and action-balanced six-slot. Keep all original W1–W6 and W7a/b/c thresholds, original W7 per-class support floor **>=15** each seed/arm, original zero-action/shuffled controls, and the same Run39 exploratory H1/H2/H3 thresholds. Increasing attribution sample size is a new preregistered cohort, **not** rescoring Run39; no retries or seed replacement on a RED. Do not infer statistical independence of duplicated training examples.
+
+## Preflight and acceptance
+New runner must reject altered seed list/parameter dict, platform other than Linux x86_64, reused output paths, source/model blob mismatch and missing/ambiguous support; write all per-seed arm rows and an explicit RED result on failure. Software tests must prove cohort disjointness, original W7 floor, controls, exact output shape and deterministic source/seed identity; no native claim from software tests. A heavy real-file experiment may run only after software CI GREEN and checking active native owners; use the existing serialized concurrency group, pinned dependency environment, closed raw logs and SHA256 manifest. Preserve any failed native run as RED and privately byte-verified backup.
+
+All outputs remain research-only World-JEPA SHADOW, with no runtime authority, no new learning gate, no promotion of Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, or Redmi/unmeasured status. No production merge or auto-merge.
