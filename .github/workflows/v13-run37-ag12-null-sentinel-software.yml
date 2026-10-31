@@ -29,7 +29,7 @@ jobs:
           cat > "$e/PINS.txt" <<'PINS'
           c01026947c36dfa4614bf02d3806b2b479197417 v13/code/docs/AG12_NULL_SENTINEL_CONFIDENCE_PREREG_RUN37_20261031.md
           82019c70cb82fb1ad86b3c920a3354d20c95dd96 v13/code/v13/agi/solver_confidence_null_sentinel_candidate.py
-          ab0f5785c4fe4fe3e1681ab69aacc36e270d0ee0 v13/code/tests/test_run37_ag12_null_sentinel_confidence.py
+          5d72bd5a1a921d6a0358e90a86ab21ae5f1ff26e v13/code/tests/test_run37_ag12_null_sentinel_confidence.py
           2135f4404f241cfc198abd7fe2288f13a622f4fc v13/code/v13/focal.py
           46982818f6c6078d823c97388c1a4ec250d82e14 v13/code/v13/agi/solver_confidence_finite_candidate.py
           66a9419143c456f01747b4796fb327b3b36711b3 v13/code/v13/agi/solver.py
