@@ -2,7 +2,7 @@ name: V13 B1 B2 topic partition real Cognition synthetic preflight
 on:
   push:
     branches: [assistant/v13-b1b2-topic-state-partition-20261031-auto11]
-    paths: ['.github/workflows/v13-b1b2-topic-partition-consumer.yml']
+    paths: ['.github/workflows/v13-b1b2-topic-partition.yml']
 permissions:
   contents: read
 jobs:
