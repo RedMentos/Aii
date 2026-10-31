@@ -4267,5 +4267,38 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117aq_20261031_body_source_id_c3_bridge": {
+    "owner": "GPT-6 / Run117AQ cross-organ B1/B2→C3",
+    "branch": "assistant/v13-run117aq-body-source-c3-bridge-20261031-gpt6",
+    "pr": 1523,
+    "parent_verified": "47935b6e8160db527f8e2eb5964e752981329b6b",
+    "prereg_commit": "28aaac977d081c3a99a0b3a308b7219f6a1d22b3",
+    "source_test_head": "eb8fb7c4e902921cea1f487efcb31d555f72f7d0",
+    "status": "SOFTWARE_CAUSAL_B1B2_SOURCE_ID_C3_PROMPT_GREEN_NATIVE_C3_NOT_RUN",
+    "tests": "45/45 real SQLite including six causal rows, forged SourceRef, wrong/abstain/stale/tamper; Actions 41240904242 SUCCESS; six exits 0",
+    "raw_artifact_id": 13056909362,
+    "raw_zip_sha256": "692bd24e9cc517611981e58665358883e301675a9c3db748fe4a104779f635f5",
+    "raw_byte_audit": "independently downloaded; ZIP CRC and 15/15 inner SHA256SUMS PASS",
+    "source_file": "v13/code/v13/body_source_id_c3_evidence_bridge_candidate.py",
+    "evidence_level": "software-only source-bound C3 prompt, no native C3 or Body calls in this package; no typed answer leakage",
+    "original_native_body_id": {
+      "run_id": 41239863119,
+      "artifact_id": 13056893368,
+      "pair_correct": 2,
+      "total_pairs": 6,
+      "status": "INDEPENDENT_ORIGINAL_NATIVE_COMPLETE_LOW_UTILITY"
+    },
+    "next_command": "Preregister disjoint fresh native C3 source-only vs no-prior control to measure unassisted policy/offer reasoning without typed JEF answer. If utility poor, pursue fixed-reader C3 integration and other Canon organs. Preserve all negative gates.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
