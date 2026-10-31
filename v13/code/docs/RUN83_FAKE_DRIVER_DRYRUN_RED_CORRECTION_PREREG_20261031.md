@@ -1,0 +1,7 @@
+# Run83 fake-C3 driver rehearsal correction — prereg before test-only edit
+
+2026-10-31 UTC. The original pinned **real native** Run83 Actions `41189536088` at `a4b4f9a63cbe27cbeea88cbd6e901e3be6d99d19` is independently verified **SUCCESS 12/12** (6/6 each arm), all 10 stages0, original ZIP SHA256 `6577ea998cac2bb1706a2879bee3d8ba865742ef80fa6b7b8dab606d9669154e`, CRC/23 hashes PASS, private byte-exact backup. It is not modified or rerun by this correction.
+
+A **later optional software-only fake-C3 driver rehearsal** Actions `41189613689` at `de1b8d4a0bc01f19381793a67c96d3d54e2385b4` is **RED**: 23/24 tests passed; the new test failed because a scratch `FakeRuntime` has no installed C3 GGUF and `runtime.models.path_for('C3_LANGUAGE')` raises `Unavailable` before the mocked file-hash seam. This is a test fixture prerequisite, not an observed native failure. Original RED ZIP SHA256 `7a2a670936248ce1363fe0f7b2de878246750381865db343f0dbb9d73aa0f9e2`, CRC/13 hashes PASS, private byte-exact backup. Do not hide the failed attempt.
+
+**Bounded correction:** update only `tests/test_run83_native_driver_fake_c3.py` so `DryRuntime` supplies a fake C3 model path to the *already-mocked* `file_hash`; no real model file, no native inference, no changes to pinned Run83 fixture/runner/verifier/Canon or original native. Rerun software CI, retain raw and private backup, preserve both results. No science or gate promotion. Next command: patch `DryRuntime.__init__` and re-trigger software workflow. Remaining budget UNKNOWN.
