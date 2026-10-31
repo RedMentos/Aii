@@ -1,0 +1,9 @@
+# Auto11 second package — isolate SHADOW C5 action status (2026-10-31)
+
+Owner GPT-6 automation, isolated review child of #1448 exact `771caf41c6d23f305b69beceb4aee32116d7d3e1`. First package has 50/50 software GREEN with raw byte-verified backup, but its C5 action uses the legacy `DISPATCHED` status. This may be mistaken for a delivered action by a future worker, despite the message being DRAFT and zero output authority. The live runtime and original legacy stager must not be altered.
+
+**Hypothesis:** a new isolated status `SHADOW_DRAFT` on the C5 action plus a strict read-only C5/F3 verifier can preserve the exact packet/event/generation/expected bindings without ever recording a `DISPATCHED` action. Acceptance: new C5/F3 verifier rejects action status DISPATCHED, corrupt CorollaryCopy, corrupt ActionIntent, changed expected, wrong session/event, duplicate intent and mismatched generation. All previous 50 software tests still pass; at least one test asserts the real Store action remains SHADOW_DRAFT and no assistant FINAL or external tool output is created. No live production claim or automatic model call.
+
+**Scope:** add `v13/code/v13/c5_shadow_action_binding.py` and tests, edit only Auto11 bridge and Auto11 test in this review child, new isolated CI and scoped checkpoint. Preserve original Run84/Run75/Run77, Canon, seeds and all gates. Use the existing _c5 strict validator as a reference, but NEVER mutate a DB status temporarily to trick it into accepting a shadow action. Fail closed and preserve RED. The resulting DRAFT is still not a real TTY/visible-output approval, nor proof of native model quality. This is software-only.
+
+**Tests:** focused Auto11 + Run84/82 + strict C5/F3 negative tests, pin blobs, privacy and diff checks, raw artifact/manifest independent audit. All earlier RED and first GREEN retained, new branch never force-pushes other owners. Active Run85/Run87 native owners untouched.
