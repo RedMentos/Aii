@@ -15,6 +15,7 @@ import re
 import zipfile
 
 from scripts.run77_native_forensic_diagnostic import diagnose
+from scripts.run77_prompt_transport_audit import audit_report as audit_prompt_transport
 
 MAX_ZIP_BYTES = 25 * 1024 * 1024
 MAX_UNCOMPRESSED = 40 * 1024 * 1024
@@ -125,9 +126,13 @@ def audit_zip(raw):
         if code != "0":
             red("RECEIPT_" + s + "_RED")
     report = None
+    prompt_transport = None
     try:
         report = json.loads(data["report.json"])
         diagnostic = diagnose(report)
+        prompt_transport = audit_prompt_transport(report)
+        if prompt_transport['status'] != 'PROMPT_BYTES_SOURCE_TRANSPORT_VERIFIED_SHADOW':
+            red('NATIVE_PROMPT_TRANSPORT_RED')
         if diagnostic["status"] != "INDEPENDENT_RUN77_NATIVE_REPARSE_PASS":
             red("ORIGINAL_REPORT_VERIFIER_RED")
         archived_diag = json.loads(data["DIAG.json"])
@@ -156,6 +161,7 @@ def audit_zip(raw):
         "raw_rows": len(row_files),
         "store_audits": len(audit_files),
         "native_report_status": (report or {}).get("status"),
+        "prompt_transport_status": (prompt_transport or {}).get("status"),
         "step2_promoted": False,
         "redmi_measured": False,
         "whole_system_complete": False,
