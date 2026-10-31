@@ -61,6 +61,7 @@ def run_row(home, installed, fixture):
         row["model_revision"] = r.models.revision("C3_LANGUAGE")
         first = r.store.event(r.session, fixture["first_query"])
         row["first_query_event_id"] = first["event_id"]
+        row["first_query_source_ref"] = first["source_ref"]
         row["session_id"] = r.session
         deadline = time.monotonic() + 90
         row["off_control"] = stage_runtime_c3_draft(
