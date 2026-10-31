@@ -1,0 +1,68 @@
+name: V13 Run117BL independent no-export guard software audit
+
+on:
+  push:
+    branches:
+      - assistant/v13-run117bl-independent-native-audit-20261101-hourly11
+    paths:
+      - .github/workflows/v13-run117bl-no-export-guard.yml
+      - v13/code/scripts/assert_no_weight_artifacts.py
+      - v13/code/tests/test_assert_no_weight_artifacts.py
+      - v13/code/docs/RUN117BL_INDEPENDENT_NATIVE_RAW_AUDIT_20261101.md
+
+permissions:
+  contents: read
+
+jobs:
+  future-no-export-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run independent synthetic guard and preserve original software raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117bl"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/scripts/assert_no_weight_artifacts.py > "$e/GUARD_SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_assert_no_weight_artifacts.py > "$e/TEST_SOURCE_BLOB.txt"
+          (cd v13/code && timeout 90s python3 -m unittest -v tests.test_assert_no_weight_artifacts) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/assert_no_weight_artifacts.py v13/code/tests/test_assert_no_weight_artifacts.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 49a3d2a11c14d98fd8ca3372dc32e13e5483fc53 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 49a3d2a11c14d98fd8ca3372dc32e13e5483fc53 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          python3 v13/code/scripts/assert_no_weight_artifacts.py "$e" > "$RUNNER_TEMP/GUARD_RESULT_RAW.log" 2>&1
+          echo "$?" > "$e/GUARD_EXIT.txt"
+          cp "$RUNNER_TEMP/GUARD_RESULT_RAW.log" "$e/GUARD_RAW.log"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve software raw even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117bl-no-export-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117bl/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce software-only no-export boundary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117bl"
+          for stage in TEST COMPILE PRIVACY DIFF GUARD; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original software raw preserved"
+              cat "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'RUN117BL_SOFTWARE_ONLY_NO_NATIVE_OR_GATE_PROMOTION'
