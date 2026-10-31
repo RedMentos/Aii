@@ -116,9 +116,12 @@ def _packet(evidence, kind):
 
 
 def _native(item, role):
+    # Baseline _observe records FINAL in native_metrics but does not expose
+    # a separate native_final key; ID selections expose both.
     require(item.get('role') == role
-            and item.get('native_final') is True
-            and item.get('process_reaped') is True,
+            and item.get('process_reaped') is True
+            and (item.get('native_final') is True
+                 if 'native_final' in item else True),
             'NATIVE_ROLE_FINAL_REAP_RED')
     metrics = item.get('native_metrics')
     require(type(metrics) is dict
