@@ -1,0 +1,111 @@
+name: V13 Run117AL seed1071 prewarmed Body source-ID software preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run117al-prewarmed-body-native-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117al-prewarm-preflight.yml
+      - v13/code/scripts/run117al_prewarmed_body_source_id_native.py
+      - v13/code/tests/test_run117al_prewarmed_body_source_id_candidate.py
+      - v13/code/docs/fixtures/RUN117AL_PREWARMED_BODY_SOURCE_ID_SEED1071.json
+      - v13/code/docs/RUN117AL_*
+permissions:
+  contents: read
+jobs:
+  prewarm-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Reproduce callback epoch RED and prewarmed exact-source PASS
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117al-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          echo 'be5cadca42348bd42b3a9ed1c553c59e2bd9684966608c45c320d3cadb577bb5  v13/code/docs/fixtures/RUN117AL_PREWARMED_BODY_SOURCE_ID_SEED1071.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          test "$(git hash-object v13/code/docs/fixtures/RUN117AL_PREWARMED_BODY_SOURCE_ID_SEED1071.json)" = 271c1e7816671ad7f2b495e36eb338a6293590fa
+          fixture_blob_rc=$?
+          test "$(git hash-object v13/code/v13/b1b2_source_id_quote_candidate.py)" = e431eecaa4a7643a548a512036225343f681ee23
+          frozen_rc=$?
+          test "$(git hash-object v13/code/v13/b1b2_source_id_event_binding_candidate.py)" = d3b19676db4c90a5febfdbe05606311fbed16e31
+          wrapper_rc=$?
+          test "$(git hash-object v13/code/scripts/run117al_prewarmed_body_source_id_native.py)" = f9923cadd37ec2993e23806111fcae8b9a623bdd
+          runner_rc=$?
+          python3 -m venv "$RUNNER_TEMP/v13-run117al-venv" > "$e/VENV_RAW.log" 2>&1
+          venv_rc=$?
+          py="$RUNNER_TEMP/v13-run117al-venv/bin/python"
+          if test "$venv_rc" -eq 0; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q \
+              'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            deps_rc=$?
+          else
+            deps_rc=125;echo VENV_RED > "$e/DEPS_RAW.log"
+          fi
+          if test "$fixture_rc" -eq 0 && test "$fixture_blob_rc" -eq 0 && \
+             test "$frozen_rc" -eq 0 && test "$wrapper_rc" -eq 0 && \
+             test "$runner_rc" -eq 0 && test "$deps_rc" -eq 0; then
+            (cd v13/code && PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_run117al_prewarmed_body_source_id_candidate \
+              tests.test_run117ai_event_source_binding_candidate \
+              tests.test_run117ah_body_source_id_candidate \
+              tests.test_run117ah_body_source_id_native_runner) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          "$py" -m compileall -q \
+            v13/code/scripts/run117al_prewarmed_body_source_id_native.py \
+            v13/code/tests/test_run117al_prewarmed_body_source_id_candidate.py \
+            v13/code/v13/b1b2_source_id_event_binding_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 8b745b6303969c29ed26330d39d6a29946331140 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 8b745b6303969c29ed26330d39d6a29946331140 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "FIXTURE:$fixture_rc" "FIXTURE_BLOB:$fixture_blob_rc" \
+                   "FROZEN:$frozen_rc" "WRAPPER:$wrapper_rc" "RUNNER:$runner_rc" \
+                   "VENV:$venv_rc" "DEPS:$deps_rc" "TEST:$test_rc" \
+                   "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          names=('FIXTURE','FIXTURE_BLOB','FROZEN','WRAPPER','RUNNER',
+                 'VENV','DEPS','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117al.prewarmed_body_source_id_preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'seed':1071,
+             'fixture_sha256':'be5cadca42348bd42b3a9ed1c553c59e2bd9684966608c45c320d3cadb577bb5',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'synthetic_body_only':True,'native_model_calls':0,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 16 "$e/TEST_RAW.log"
+          for rc in "$fixture_rc" "$fixture_blob_rc" "$frozen_rc" "$wrapper_rc" "$runner_rc" "$venv_rc" "$deps_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do
+            if test "$rc" -ne 0; then exit 1; fi
+          done
+      - name: Preserve original model-free GREEN or RED preflight
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117al-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117al-preflight/
+          if-no-files-found: warn
+          retention-days: 90
