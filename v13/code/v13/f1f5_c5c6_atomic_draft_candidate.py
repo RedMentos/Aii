@@ -12,6 +12,7 @@ import sqlite3
 from .common import uid, now, dumps
 from .contracts import packet, validate
 from .f1f5_event_finalizer_candidate import _event_snapshot, _verified
+from .memory import Memory
 from .agi import jef_c3_c5_c6_draft_shadow_run49 as c5
 
 
@@ -30,6 +31,16 @@ def _candidate_ok(candidate):
         return False
     return (len(encoded) <= 512
             and not any(ord(ch) < 32 and ch not in "\n\t" for ch in candidate))
+
+
+def _locked_verified(memory, cfg, session, snapshot):
+    """Exact lexical F1/F5 recheck without native embedding or telemetry writes.
+
+    Conservative: a semantic-only admission cannot acquire DRAFT authority.
+    Source/value/session/alias conflict checks still use the current Store.
+    """
+    lexical_cfg = dict(memory.cfg, memory_embedding="off")
+    return _verified(Memory(memory.s, lexical_cfg), cfg, session, snapshot)
 
 
 def stage_draft(cfg, memory, session, event_id, generate, *, operator_opt_in=False):
@@ -64,7 +75,7 @@ def stage_draft(cfg, memory, session, event_id, generate, *, operator_opt_in=Fal
     try:
         with store.tx() as db:
             if (_event_snapshot(memory, event_id, session) != initial
-                    or _verified(memory, cfg, session, initial) != admitted):
+                    or _locked_verified(memory, cfg, session, initial) != admitted):
                 return _result("SOURCE_CHANGED_BEFORE_DRAFT", callback_invoked=True)
             aid = uid("act")
             expected = {"stream_owner": "C5_REPORT_BROKER", "type": "TEXT_REPORT"}
@@ -111,7 +122,7 @@ def check_staged_draft(cfg, memory, session, event_id, staged):
     try:
         with store.tx():
             snapshot = _event_snapshot(memory, event_id, session)
-            admitted = _verified(memory, cfg, session, snapshot)
+            admitted = _locked_verified(memory, cfg, session, snapshot)
             if (admitted is None or
                     admitted["source"]["memory_id"] != staged.get("source_memory_id")):
                 return _result("SOURCE_REVOKED_OR_CHANGED")
