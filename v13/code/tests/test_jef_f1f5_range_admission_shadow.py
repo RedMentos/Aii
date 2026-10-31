@@ -133,10 +133,12 @@ class HumanRangeAdmission(unittest.TestCase):
                                         permission="record", key=key,
                                         scope="session")
         self.r.memory.candidate(new_id, self.r.session)
-        # A newer user event already invalidates the earlier current request;
-        # the hidden duplicate must never create authority either.
-        result = self.invoke(event, ids)
+        # Restore an authoritative latest current event so this test does
+        # not pass solely due to the stale-user veto.
+        current = self.r.store.event(self.r.session, texts(TABLE[4])[0])
+        result = self.invoke(current, ids)
         self.assertEqual(result["suggested_action"], "UNKNOWN")
+        self.assertFalse(result["human_source_lineage_verified"])
         self.assert_no_authority(result)
 
     def test_wrong_project_memory_denied(self):
