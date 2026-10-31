@@ -36,7 +36,16 @@ def verdicts(gate):
         try:
             cur=json.loads((APP/v['file']).read_text())
             for part in v['path'].split('.'):cur=cur[part]
-            ok={'==':cur==v['value'],'>=':cur>=v['value'],'<=':cur<=v['value']}[v['op']]
+            expected=v['value'];op=v['op']
+            if op=='==':
+                # Python's 1 == True must never satisfy a Boolean proof gate.
+                if isinstance(expected,bool) or isinstance(cur,bool):
+                    ok=type(cur) is type(expected) and cur==expected
+                else:ok=cur==expected
+            elif op in ('>=','<='):
+                if isinstance(cur,bool) or isinstance(expected,bool):ok=False
+                else:ok=cur>=expected if op=='>=' else cur<=expected
+            else:raise ValueError('Unbekannter Gate-Vergleich')
         except Exception as exc:ok=False;cur=type(exc).__name__
         if not ok:fails.append({'file':v['file'],'path':v['path'],'expected':f"{v['op']} {v['value']}",'actual':cur})
     return fails
