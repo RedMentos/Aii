@@ -75,7 +75,8 @@ class JefC3PostgenRecheckTests(unittest.TestCase):
                 ok = self.check(event, ids, lambda _: action,
                                 operator_opt_in=True)
                 self.assertEqual(ok["status"], "FORMATTER_MATCH_SHADOW")
-                self.assertTrue(ok["c3_receiver_success"])
+                self.assertTrue(ok["formatter_exact_match_shadow"])
+                self.assertFalse(ok["c3_receiver_success"])
                 self.assertTrue(ok["source_rechecked"])
                 self.assertTrue(ok["generator_invoked"])
                 self.assertIsNone(ok["source_only_fallback_action"])
@@ -84,6 +85,7 @@ class JefC3PostgenRecheckTests(unittest.TestCase):
                 bad = self.check(event, ids, lambda _: "Option " + action,
                                  operator_opt_in=True)
                 self.assertEqual(bad["status"], "FORMATTER_MISMATCH_RED")
+                self.assertFalse(bad["formatter_exact_match_shadow"])
                 self.assertFalse(bad["c3_receiver_success"])
                 self.assertTrue(bad["source_only_fallback_verified"])
                 self.assertEqual(bad["source_only_fallback_action"], action)
