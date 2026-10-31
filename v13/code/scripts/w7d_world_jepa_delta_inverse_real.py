@@ -113,6 +113,32 @@ def w7(rows):
                    "mean_balanced_gap": mean("balanced_gap")}
 
 
+def per_seed_w4_rho(rows):
+    """Recompute frozen W4 rank method on retained covered raw pairs.
+
+    This diagnostic is *not* the original pooled W4 gate. Raw pairs must
+    still exist when called; incomplete/nonfinite evidence is a hard RED.
+    """
+    if [row["seed"] for row in rows] != list(SEEDS):
+        raise ValueError("W7D_D3_SEED_IDENTITY")
+    out = []
+    for row in rows:
+        pairs = row.get("_conf_err")
+        if not isinstance(pairs, list) or len(pairs) < 2:
+            raise ValueError("W7D_D3_COVERED_SUPPORT")
+        if any(not isinstance(pair, (list, tuple)) or len(pair) != 2
+               or any(type(v) not in (int, float, np.integer, np.floating)
+                      or not math.isfinite(float(v)) for v in pair)
+               for pair in pairs):
+            raise ValueError("W7D_D3_RAW_PAIRS")
+        rho = original.spearman([pair[0] for pair in pairs],
+                                [pair[1] for pair in pairs])
+        if not math.isfinite(rho):
+            raise ValueError("W7D_D3_RHO_NONFINITE")
+        out.append(float(rho))
+    return out
+
+
 def delta_exploratory(result):
     """Prospective D1/D2/D3; never overrides original W1-W7."""
     baseline, delta = result["balanced_slot"], result["delta_slot"]
@@ -130,13 +156,18 @@ def delta_exploratory(result):
     d_w7 = result["delta_slot_w7_summary"]["per_seed"]
     d2 = [round(a["none_self_gap"]-b["none_self_gap"], 6)
           for a, b in zip(d_w7, b_w7)]
-    rho_b = [r["spearman_conf_err_covered"]
-             for r in result["balanced_slot_summary"]["per_seed"]] if False else None
-    # Original summary is pooled, so use pooled W4 delta only; do not invent
-    # per-seed rho from absent original per-seed raw rank receipts.
+    # The original W4 gate uses pooled raw; preregistered exploratory D3
+    # instead requires the mean of *paired per-seed* W4 rho changes and
+    # explicitly refuses any seed regression > +0.05.
+    r_b = per_seed_w4_rho(baseline)
+    r_d = per_seed_w4_rho(delta)
+    rho_per_seed = [round(d-b, 6) for d, b in zip(r_d, r_b)]
+    rho_mean = round(float(np.mean(rho_per_seed)), 6)
     rb = result["balanced_slot_summary"]["spearman_conf_err_covered"]
     rd = result["delta_slot_summary"]["spearman_conf_err_covered"]
-    rho_delta = round(rd-rb, 6) if rb is not None and rd is not None else None
+    rho_delta = (round(rd-rb, 6) if type(rb) in (int, float)
+                 and type(rd) in (int, float)
+                 and math.isfinite(rb) and math.isfinite(rd) else None)
     return {
         "per_seed_w6_margin_delta": d1,
         "mean_w6_margin_delta": round(float(np.mean(d1)), 6),
@@ -146,10 +177,16 @@ def delta_exploratory(result):
         "mean_w7b_none_gap_delta": round(float(np.mean(d2)), 6),
         "D2_w7b_none_improvement": float(np.mean(d2)) >= .05
             and all(v >= -.02 for v in d2),
+        "per_seed_w4_rho_baseline": [round(x, 6) for x in r_b],
+        "per_seed_w4_rho_delta_arm": [round(x, 6) for x in r_d],
+        "per_seed_w4_rho_delta": rho_per_seed,
+        "mean_per_seed_w4_rho_delta": rho_mean,
+        "D3_w4_rho_improvement": rho_mean <= -.05
+            and all(v <= .05 for v in rho_per_seed),
+        "D3_per_seed_rho_measured": True,
         "pooled_w4_rho_delta": rho_delta,
-        "D3_pooled_w4_rho_improvement": rho_delta is not None
+        "pooled_w4_rho_improvement_diagnostic": rho_delta is not None
             and rho_delta <= -.05,
-        "D3_per_seed_rho_unmeasured": True,
     }
 
 
