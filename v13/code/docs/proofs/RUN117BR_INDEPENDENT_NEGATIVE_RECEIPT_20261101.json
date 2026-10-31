@@ -1,0 +1,79 @@
+{
+  "archive_regular_hashes_verified": 77,
+  "artifact_extra_weight_link_entries": 48,
+  "body_jepa": "UNAVAILABLE",
+  "formatter_matches": 0,
+  "jepa_weight": 0,
+  "native_c3_calls": 6,
+  "native_report_status": "NATIVE_FORMATTER_SMOKE_NO_FULL_SIGNAL",
+  "redmi_measured": false,
+  "rows": [
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Helios",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "b660e5addf9afaa0a44a1e5d21474507825d4a08a2e693c65b582df171a7c976",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    },
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Lyra",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "9dcbce14acacbf5ddd592200a0cadfb828dd802fdd7b4d71143db3ae191348a8",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    },
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Orion",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "10b59d297b256dba86a04f451ab56c9779a25f46c360a020921a876c450a261e",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    },
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Cedar",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "cd3fcbf2220f616f8ada7dbabea7fc7d1766be6da7f427379ad2086e8ddcaefd",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    },
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Mistral",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "105063869901dd9a254dde83302d83a966b4f7cf714147c66ea3999288c91b9a",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    },
+    {
+      "guard_status": "CALLBACK_STORE_MUTATION_RED",
+      "id": "Nexus",
+      "native_final": true,
+      "output_exact": true,
+      "process_reaped": true,
+      "row_sha256": "ff613f73155123836b7730e1c0da2541b93655ec07cce2316ca41d77fa5acd4e",
+      "source_rechecked": false,
+      "store_two_refs_and_blobs_verified": true
+    }
+  ],
+  "schema": "v13.run117br.independent_negative_receipt.v1",
+  "source_artifact_id": 13062136743,
+  "source_artifact_sha256": "bbdefb2209f502ae87fbfa8c32607c183bea63c4af43b15e369aee9029c2a622",
+  "source_rechecks": 0,
+  "source_run_id": 41253050432,
+  "step2": "UTILITY_FAIL",
+  "whole_system_complete": false
+}
