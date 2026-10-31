@@ -1,4 +1,4 @@
-name: V13 B1 B2 causal replay and strict project scope software audit
+name: V13 B1 B2 causal replay strict project scope regex-corrected audit
 on:
   push:
     branches: [assistant/v13-b1b2-causal-context-audit-20261031-auto11]
