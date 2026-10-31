@@ -33,7 +33,7 @@ jobs:
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
           58dec7e7b896541080334c30d6e71e896463c49c v13/code/docs/JEF_C3_C5_C6_OPERATOR_CLI_PREREG_20261031.md
           02a80c57a15b9667499e1b248debbfa7b3ef4841 v13/code/scripts/jef_c3_c5_c6_operator_cli.py
-          d208db30eaa52314856aac03f1c4cd1caab4d2c4 v13/code/tests/test_jef_c3_c5_c6_operator_cli.py
+          a13d75a2953d8a867e8b93b694e0a4467c7d527a v13/code/tests/test_jef_c3_c5_c6_operator_cli.py
           5e095feb81157b3a4be41dd7459c9f44cdcb7036 v13/code/v13/jef_c3_c5_c6_fallback_draft_candidate.py
           d80c9398a216ebf488eb501ed88404b05682848c v13/code/tests/test_jef_c3_c5_c6_fallback_draft_candidate.py
           6f2f878bb162c3325634b05e1c4c5f16e3d817b6 v13/code/v13/jef_c3_postgen_recheck_candidate.py
