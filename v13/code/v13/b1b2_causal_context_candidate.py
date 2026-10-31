@@ -44,7 +44,7 @@ _NON_NAMES = {"rules", "rule", "budget", "budgets", "requirements",
 def _project_scope(text):
     """Conservative explicit proper-name scope; generic 'project rules' is not an entity."""
     names = {name.lower() for name in re.findall(
-        r"(?i:\\bproject)\\s+([A-Z][A-Za-z0-9_-]{1,63})\\b", text)
+        r"(?i:\bproject)\s+([A-Z][A-Za-z0-9_-]{1,63})\b", text)
         if name.lower() not in _NON_NAMES}
     return names if len(names) == 1 else set()
 
