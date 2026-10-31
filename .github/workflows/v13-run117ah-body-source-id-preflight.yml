@@ -8,6 +8,8 @@ on:
       - v13/code/v13/b1b2_source_id_quote_candidate.py
       - v13/code/v13/contracts.py
       - v13/code/tests/test_run117ah_body_source_id_candidate.py
+      - v13/code/tests/test_run117ah_body_source_id_native_runner.py
+      - v13/code/scripts/run117ah_body_source_id_native.py
       - v13/code/docs/RUN117AH_*
       - v13/code/docs/fixtures/RUN117AH_*
 permissions:
@@ -43,14 +45,17 @@ jobs:
           blob_rc=$?
           if test "$deps_rc" -eq 0 && test "$fixture_rc" -eq 0 && test "$blob_rc" -eq 0; then
             (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
-              tests.test_run117ah_body_source_id_candidate) > "$e/TEST_RAW.log" 2>&1
+              tests.test_run117ah_body_source_id_candidate \
+              tests.test_run117ah_body_source_id_native_runner) > "$e/TEST_RAW.log" 2>&1
             test_rc=$?
           else
             test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
           fi
           "$py" -m compileall -q v13/code/v13/b1b2_source_id_quote_candidate.py \
             v13/code/tests/test_run117ah_body_source_id_candidate.py \
-            v13/code/v13/contracts.py > "$e/COMPILE_RAW.log" 2>&1
+            v13/code/v13/contracts.py \
+            v13/code/scripts/run117ah_body_source_id_native.py \
+            v13/code/tests/test_run117ah_body_source_id_native_runner.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
