@@ -1,0 +1,5 @@
+# Run91 nested SHA256SUMS paths — prelaunch correction prereg (2026-10-31)
+
+Independent local audit of **unchanged original** STEP2 `12951963045` and Run13T `12996917793` ZIPs found the staged workflow verifier incorrectly required every SHA256SUMS path to have no slash (`./([^/]+)`). Original valid manifests include nested `./pilot/progress.json` and other nested paths. The staged Run91 workflow has **not been triggered**. This is a verifier bug, not a source/model/experiment RED.
+
+**Minimal authorized fix before launch:** accept exact `./relative/path` manifest entries only when nonempty, POSIX-relative, without backslash or `..`/`.` components, unique, present in ZIP, and SHA256-matched; continue requiring exact full member coverage, CRC PASS, 53/53 and 39/39 entries, unchanged outer SHA256. Reject traversal, absolute paths, duplicate members and unmanifested files. Local independent check of both original ZIPs with this rule: **53/53 PASS**, **39/39 PASS**, CRC PASS, exact outer SHA256. Do not weaken other gates or modify frozen source/cohort/test files.

@@ -1,0 +1,9 @@
+# Run91 original raw full-suite prerequisite staging checkpoint — 2026-10-31
+
+**Owner:** GPT-6 Auto11, draft PR #1456 child of Run90 PR #1455. Prereg `f1abb90e0c49ca8c943edc4ff852405602a48b1f` remotely verified before workflow. Staged workflow `.github/workflows/v13-run91-fullsuite-original-raw.yml` commit `e5ace3a233476df18675151f98f59afbee384827` verified in remote bytes. **Not triggered yet**; no scientific or full-suite result claimed.
+
+**Original immutable prerequisites:** STEP2 v3 `40996792157` artifact `12951963045`, SHA256 `98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46`, CRC PASS, 53/53 original SHA; Run13T `41097658020` artifact `12996917793`, SHA256 `86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c`, CRC PASS, 39/39 original SHA. Both privately backed up at `/V13-Checkpoints/2026-10-31/Run88-FullSuite-Compat/` and read back with byte-identical SHA256; no anyone-writable Drive used.
+
+**No source edits:** Run91 CI restores exact ZIPs only in ephemeral test checkout and sets `RUN13X_ORIGINAL_ZIP`, then runs identical unfiltered dependency-pinned software tests and retains all raw results. It never downloads new model weights, alters frozen cohort/source/seed/model hashes, or treats restored evidence as a new native experiment. Original STEP2 A/B/C = 0/10/9 of 18 remains RED; Run13T FIDELITY_HURT remains.
+
+**Next exact command after Run90 `41198044250` terminal:** create only `v13/code/docs/RUN91_FULLSUITE_TRIGGER.txt` on `assistant/v13-run91-fullsuite-raw-prereqs-20261031-auto11` recording original Run90 artifact SHA and terminal counts; this triggers the staged workflow. Inspect original raw, ZIP/CRC/manifest/exit receipts, compare top-level test results; do not promote any gate. Remaining platform budget UNKNOWN. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight0, no Redmi or whole-system completion.
