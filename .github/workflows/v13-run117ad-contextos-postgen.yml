@@ -1,0 +1,111 @@
+name: V13 Run117AD ContextOS B1/B2 JEF C3 postgen SHADOW
+on:
+  push:
+    branches:
+      - assistant/v13-run117ad-contextos-postgen-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117ad-contextos-postgen.yml
+      - v13/code/v13/b1b2_jef_span_c3_postgen_candidate.py
+      - v13/code/tests/test_b1b2_jef_span_c3_postgen_candidate.py
+      - v13/code/docs/RUN117AD_*
+permissions:
+  contents: read
+  actions: read
+jobs:
+  contextos-postgen-and-recorded-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      ORIGINAL_ARTIFACT_ID: '13054946077'
+      ORIGINAL_ARTIFACT_SHA: '65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify real Store Body/ContextOS bridge and original native-record replay
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117ad-postgen"
+          original="$RUNNER_TEMP/run117z-original-native.zip"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ab-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117ab-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$ORIGINAL_ARTIFACT_ID/zip" \
+            --output "$original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          download_rc=$?
+          if test "$download_rc" -eq 0; then
+            printf '%s  %s\n' "$ORIGINAL_ARTIFACT_SHA" "$original" | sha256sum -c - > "$e/OUTER_SHA_RAW.log" 2>&1
+            outer_rc=$?
+          else
+            outer_rc=125;echo DOWNLOAD_RED > "$e/OUTER_SHA_RAW.log"
+          fi
+          if test "$deps_rc" -eq 0 && test "$outer_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. V13_RUN117Z_ORIGINAL_ZIP="$original" \
+              "$py" -m unittest -v \
+              tests.test_jef_span_c3_postgen_shadow_candidate \
+              tests.test_b1b2_jef_span_c3_bridge_candidate \
+              tests.test_b1b2_c3_source_envelope_candidate \
+              tests.test_b1b2_topic_partition_candidate \
+              tests.test_two_source_c3_role_boundary_candidate \
+              tests.test_jef_span_budget_shadow_candidate \
+              tests.test_run117z_real_store_jef_c3_native \
+              tests.test_run117aa_original_real_jef_native_audit \
+              tests.test_run117_b1b2_jef_c3_role_postgen) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          "$py" -m compileall -q v13/code/v13/jef_span_c3_postgen_shadow_candidate.py \
+            v13/code/tests/test_jef_span_c3_postgen_shadow_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 750768012c64d0ed7575b7cb735eee0d1064d9f3 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 750768012c64d0ed7575b7cb735eee0d1064d9f3 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DEPS:$deps_rc" "DOWNLOAD:$download_rc" "OUTER:$outer_rc" \
+                   "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DEPS','DOWNLOAD','OUTER','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117ad.contextos_b1b2_jef_c3_postgen_baseline_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'original_artifact_id':13054946077,
+             'original_artifact_sha256':'65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'recorded_native_output_replayed_not_inferred':True,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 7 "$e/TEST_RAW.log"
+          for rc in "$deps_rc" "$download_rc" "$outer_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve recorded native replay GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ad-postgen-replay-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ad-postgen/
+          if-no-files-found: warn
+          retention-days: 90
