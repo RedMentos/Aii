@@ -33,10 +33,10 @@ jobs:
             echo "$?" > "$e/DEPS_EXIT.txt"
           else echo SKIPPED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
           if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            timeout --signal=TERM --kill-after=5s 7m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest tests.test_run83_c3_interference_verify tests.test_run82_jef_b1b2_c3_dual_source tests.test_jef_range_c3_typed_envelope_shadow tests.test_run75_jef_range_c3_verify -v > "$e/TEST_RAW.log" 2>&1
+            timeout --signal=TERM --kill-after=5s 7m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest tests.test_run83_native_driver_fake_c3 tests.test_run83_c3_interference_verify tests.test_run82_jef_b1b2_c3_dual_source tests.test_jef_range_c3_typed_envelope_shadow tests.test_run75_jef_range_c3_verify -v > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
           else echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
-          python3 -m compileall -q v13/code/scripts/jef_body_c3_interference_fixture_839.py v13/code/scripts/run83_jef_body_c3_interference_native.py v13/code/scripts/run83_jef_body_c3_interference_verify.py v13/code/tests/test_run83_c3_interference_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/jef_body_c3_interference_fixture_839.py v13/code/scripts/run83_jef_body_c3_interference_native.py v13/code/scripts/run83_jef_body_c3_interference_verify.py v13/code/tests/test_run83_c3_interference_verify.py v13/code/tests/test_run83_native_driver_fake_c3.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base e3ab533ecd0109c26f7d00d6189f01d9704739bc --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
