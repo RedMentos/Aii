@@ -11,7 +11,8 @@ import platform
 import sqlite3
 
 from scripts import jef_c3_c5_c6_operator_cli as cli
-from scripts.run63_jef_c3_native import cohort
+from scripts.run63_jef_c3_native import cohort, RUN_CONFIG
+from v13.config import initialize, save_config
 
 SCHEMA = "v13.jef.operator.native.structural_replay.v1"
 COHORT_N = 3
@@ -83,6 +84,10 @@ def run(home, out, input_root):
         out.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
 
     try:
+        # Match the original frozen Run63/Run65 seed13, temperature0,
+        # max32 native decoding. This is a fresh isolated bootstrap home.
+        initialize(home)
+        save_config(home, RUN_CONFIG)
         # The policy is intentionally enabled/nondefault so the CLI cannot
         # accidentally pass a no-mutation check against a default OFF home.
         runtime = cli.Runtime(home)
