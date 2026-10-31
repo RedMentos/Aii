@@ -1,0 +1,115 @@
+name: V13 Run105 unfiltered phone C3 C5 STEP2 original ZIP full-suite
+on:
+  push:
+    branches:
+      - assistant/v13-run104-fullsuite-originalzip-20261031-auto11
+    paths:
+      - v13/code/docs/RUN105_FULLSUITE_TRIGGER.txt
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-run105-unfiltered-software
+  cancel-in-progress: false
+jobs:
+  full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run exact dependency-pinned unfiltered full-suite
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run105-full"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run105-full-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run105-full-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+          echo 0 > "$e/TORCH_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'transformers==4.44.2' 'peft==0.13.2' > "$e/TRANSFORMERS_PEFT_RAW.log" 2>&1
+          echo 0 > "$e/TRANSFORMERS_PEFT_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo 0 > "$e/PIP_CHECK_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          # Fetch exact original Linux-native evidence as test prerequisites,
+          # never substitute a new run or silently skip a missing artifact.
+          curl -fLsS --retry 3 --max-time 90 -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12951963045/zip" \
+            -o "$e/STEP2_ORIGINAL.zip"
+          echo "98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46  $e/STEP2_ORIGINAL.zip" | sha256sum -c -
+          curl -fLsS --retry 3 --max-time 90 -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12996917793/zip" \
+            -o "$e/RUN13T_ORIGINAL.zip"
+          echo "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c  $e/RUN13T_ORIGINAL.zip" | sha256sum -c -
+          python3 - "$e/STEP2_ORIGINAL.zip" "$e/RUN13T_ORIGINAL.zip" <<'PY'
+          import hashlib,re,sys,zipfile
+          from pathlib import PurePosixPath
+          for path,count in ((sys.argv[1],53),(sys.argv[2],39)):
+              with zipfile.ZipFile(path) as z:
+                  assert z.testzip() is None
+                  names=z.namelist()
+                  assert len(names)==len(set(names))
+                  rows=z.read('SHA256SUMS').decode('ascii').splitlines()
+                  assert len(rows)==count
+                  seen=set()
+                  for row in rows:
+                      m=re.fullmatch(r'([0-9a-f]{64})  \./(.+)',row)
+                      assert m
+                      name=m.group(2);parts=PurePosixPath(name).parts
+                      assert (name not in seen and '\\' not in name and parts
+                              and not name.startswith('/') and all(x not in ('..','.') for x in parts))
+                      seen.add(name)
+                      assert hashlib.sha256(z.read(name)).hexdigest()==m.group(1)
+                  assert seen==set(names)-{'SHA256SUMS'}
+              print('ORIGINAL_NATIVE_ARTIFACT_HASHES_PASS',path,count)
+          PY
+          echo 0 > "$e/ORIGINAL_PINS_EXIT.txt"
+          cp "$e/STEP2_ORIGINAL.zip" v13/code/tests/NATIVE_40996792157.zip
+          export RUN13X_ORIGINAL_ZIP="$e/RUN13T_ORIGINAL.zip"
+          set +e
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 25m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+          rc=$?
+          set -e
+          echo "$rc" > "$e/FULL_EXIT.txt"
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 35113fc42f0b4594ca46ef33194877b8e277054f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 35113fc42f0b4594ca46ef33194877b8e277054f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 20 "$e/FULL_RAW.log"
+          echo "FULL_EXIT=$rc; no promotion"
+          exit "$rc"
+      - name: Upload original RED or GREEN raw, including all exit receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run105-fullsuite-${{ github.sha }}
+          path: ${{ runner.temp }}/run105-full/
+          if-no-files-found: error
+          retention-days: 90
