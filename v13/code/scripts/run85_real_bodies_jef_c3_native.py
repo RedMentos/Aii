@@ -135,30 +135,42 @@ def run(home, out):
         for role in ROLES:
             key[0] = role
             before = len(runtime.pool.release_history)
+            entry = {"role": role, "status": "INCOMPLETE",
+                     "process_reaped": False}
+            report["body_offers"].append(entry)
+            save(path, report)
             try:
                 result = consumer.guarded_offer(
                     role, event, 0, time.monotonic() + 180,
                     operator_opt_in=True)
+                entry["offer_status"] = result.get("status")
                 if result.get("status") != "SHADOW_OFFER_PRODUCED":
                     raise ValueError("RUN85_NATIVE_BODY_OFFER_RED_" + role)
                 offer, query = persisted_offer(
                     runtime.store, result, role, event,
                     runtime.models.revision(role))
+                entry.update(offer=offer, query=query,
+                             offer_packet_id=result["offer_packet_id"],
+                             query_packet_id=result["query_packet_id"])
                 metrics = offer.get("native_metrics") or {}
                 if (metrics.get("status") != "FINAL"
                         or metrics.get("actual_model") != MODELS[role][0]):
                     raise ValueError("RUN85_NATIVE_BODY_METRICS_RED_" + role)
-                report["body_offers"].append({
-                    "role": role, "offer": offer, "query": query,
-                    "offer_packet_id": result["offer_packet_id"],
-                    "query_packet_id": result["query_packet_id"]})
                 offers[role] = result["offer_packet_id"]
                 report["native_body_calls"] += 1
+                entry["status"] = "RECORDED"
+            except Exception as exc:
+                entry["error_type"] = type(exc).__name__
+                entry["status"] = "STRUCTURAL_RED"
+                raise
             finally:
-                runtime.pool.unload()
-                releases = runtime.pool.release_history[before:]
-                report["body_offers"][-1]["process_reaped"] = reaped(
-                    releases) if report["body_offers"] else False
+                try:
+                    runtime.pool.unload()
+                except Exception as exc:
+                    entry["release_error_type"] = type(exc).__name__
+                    entry["status"] = "STRUCTURAL_RED"
+                entry["process_reaped"] = reaped(
+                    runtime.pool.release_history[before:])
                 save(path, report)
         runtime.pool.get = original_get
         report["native_body"] = (
