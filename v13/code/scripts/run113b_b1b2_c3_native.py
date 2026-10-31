@@ -17,6 +17,7 @@ from unittest.mock import patch
 from v13.common import atomic_write, dumps, file_hash
 from v13.config import DEFAULTS
 from v13.cognition import scaffold_route
+from v13.b1b2_latest_user_offer_candidate import _bound_latest
 from v13.models import ModelManager
 from v13.runtime import Runtime
 from v13.store import audit_closed
@@ -194,6 +195,7 @@ def run(fixture_path, work, out, *, installed=None):
         report["current_source_ref"] = current["source_ref"]
         b1 = observe("B1_DETAIL", current, "current")
         b2 = observe("B2_GIST", current, "current")
+        _bound_latest(runtime, "B1_DETAIL", current)
         rendered = runtime.cognition.analyst_context([b1, b2], current, 0)
         if [x["role"] for x in rendered] != ["B1_DETAIL", "B2_GIST"]:
             raise ValueError("RUN113B_BODY_ORDER_RED")
@@ -224,6 +226,7 @@ def run(fixture_path, work, out, *, installed=None):
         report["c3_input_sha256"] = sha256(dumps(messages).encode()).hexdigest()
         report["c3_messages"] = messages
         save()
+        _bound_latest(runtime, "B1_DETAIL", current)
         if native:
             before = len(runtime.pool.release_history)
             try:
@@ -243,6 +246,7 @@ def run(fixture_path, work, out, *, installed=None):
                 report["c3_process_reaped"] = _reaped(
                     runtime.pool.release_history[before:])
                 save()
+            _bound_latest(runtime, "B1_DETAIL", current)
             if (metric.get("status") != "FINAL"
                     or metric.get("actual_model") !=
                     "LFM2.5-350M-QAD-Q4_0.gguf"
