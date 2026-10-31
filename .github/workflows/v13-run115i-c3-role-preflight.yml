@@ -1,0 +1,111 @@
+name: V13 Run115I seed983 C3 source-role model-free preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run115i-native-c3-role-source-ablation-20261031-hourly11
+    paths:
+      - .github/workflows/v13-run115i-c3-role-preflight.yml
+      - v13/code/scripts/run115i_c3_role_source_native.py
+      - v13/code/tests/test_run115i_c3_role_source_native.py
+      - v13/code/docs/fixtures/RUN115I_C3_ROLE_SOURCE_SEED983.json
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Real Store six-case preflight and immutable fixture audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run115i-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run115i-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run115i-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115i_c3_role_source_native.py -v) > "$e/NEW_RAW.log" 2>&1
+          new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_two_source_c3_role_boundary_candidate.py -v) > "$e/INHERITED_H_RAW.log" 2>&1
+          h_rc=$?
+          "$py" -m compileall -q v13/code/scripts/run115i_c3_role_source_native.py v13/code/tests/test_run115i_c3_role_source_native.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run115I.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$new_rc" > "$e/NEW_EXIT.txt"
+          echo "$h_rc" > "$e/INHERITED_H_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run115I.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('scripts/run115i_c3_role_source_native.py',
+                           'tests/test_run115i_c3_role_source_native.py',
+                           'docs/fixtures/RUN115I_C3_ROLE_SOURCE_SEED983.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'source_files':len(manifest['files']),
+                            'native_executed':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 39f0244fab8e1ac6252a3ea8730184cda82ae10f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 39f0244fab8e1ac6252a3ea8730184cda82ae10f HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['NEW','INHERITED_H','COMPILE','PACK','ZIP','PRIVACY','DIFF']
+          r={'schema':'v13.run115i.seed983.preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed':False,'native_c3_calls':0,
+             'redmi_measured':False,'step2_promoted':False,
+             'b3_promoted':False,'body_jepa_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 20 "$e/NEW_RAW.log"
+          for rc in "$new_rc" "$h_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run115i-seed983-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run115i-preflight/
+          if-no-files-found: warn
+          retention-days: 90
