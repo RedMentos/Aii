@@ -28,7 +28,7 @@ jobs:
           c887e3db355df8b68d3bd35c6c86d1573ea2d081 v13/code/docs/fixtures/run52_b1b2_cross_turn_seed479.json
           f8a7219cd4f0f15e23fee8cf6b221fc6a6255e7c v13/code/docs/RUN52_B1B2_CROSS_TURN_PREREG_20261031.md
           a73ad91409dbf5b6a62b2b935b6491aad7301db8 v13/code/scripts/run52_b1b2_cross_turn_native.py
-          04026544e410c231ae47d39d9f24392455012a77 v13/code/scripts/run52_b1b2_cross_turn_verify.py
+          85936a10302ae03714d9a0056f7ec7a31acb14f0 v13/code/scripts/run52_b1b2_cross_turn_verify.py
           9e2dc8c83cfee68d7a60776c7a071e73ce71d9f9 v13/code/tests/test_run52_b1b2_cross_turn.py
           1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py
           4705a46640134e213aa00a86e02375d972c76cda v13/code/scripts/run47_jef_c3_typed_receiver_native.py
