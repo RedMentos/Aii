@@ -9,6 +9,7 @@ import hashlib
 import json
 
 from .agi.jef_eligibility_source_shadow_run46b import propose
+from .agi import jef_eligibility_source_shadow_run46b as jef_module
 from .common import dumps
 from .context_os import controller
 from .two_source_c3_role_boundary_candidate import (
@@ -61,6 +62,8 @@ def build_typed_jef_role_formatter(runtime, prior_event, current_event, *,
             return _base("SOURCE_POINTER_RED")
         refs = [s["source_ref"] for s in before["sources"]]
         jef = propose(runtime.store, refs[0], refs[1])
+        if jef != jef_module.propose(runtime.store, refs[0], refs[1]):
+            return _base("TYPED_JEF_CANDIDATE_MISMATCH_RED")
         if (jef.get("status") != "SHADOW_NO_AUTHORITY"
                 or jef.get("reason") != "EXACT_USER_SOURCE_RECIPE_SHADOW"
                 or jef.get("authority") != 0
