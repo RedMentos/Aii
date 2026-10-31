@@ -52,6 +52,11 @@ jobs:
           "$py" v13/code/scripts/package_source.py --root v13/code \
             --out "$e/V13-Redmi-Install-Run95.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
           echo 0 > "$e/PACK_EXIT.txt"
+          "$py" v13/code/scripts/package_source.py --root v13/code \
+            --out "$RUNNER_TEMP/V13-Redmi-Install-Run95-repro.zip" --phone-install > "$e/REPRO_RAW.log" 2>&1
+          cmp "$e/V13-Redmi-Install-Run95.zip" "$RUNNER_TEMP/V13-Redmi-Install-Run95-repro.zip"
+          sha256sum "$e/V13-Redmi-Install-Run95.zip" "$RUNNER_TEMP/V13-Redmi-Install-Run95-repro.zip" > "$e/REPRO_SHA256_RAW.log"
+          echo 0 > "$e/REPRO_EXIT.txt"
           PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run95.zip" "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
           import hashlib,json,sys,zipfile
           from pathlib import Path
