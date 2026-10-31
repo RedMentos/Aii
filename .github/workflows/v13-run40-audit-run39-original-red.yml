@@ -1,0 +1,65 @@
+name: V13 Run40 independently audit original Run39 RED native ZIP
+on:
+  push:
+    branches: [assistant/v13-run40-audit-run39-original-red-20261031-hourly11]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-red-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Download and independently audit original Run39 RED raw (never regenerate)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run40-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          curl --fail --location --retry 3 --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13022689982/zip' \
+            --output "$e/RUN39_ORIGINAL_RED.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          printf 'b329db427059274a34d51fd5c4d06e90173c9cae06c478a8648aec7249a8410a  %s\n' "$e/RUN39_ORIGINAL_RED.zip" | sha256sum --check > "$e/SHA_RAW.log" 2>&1
+          echo "$?" > "$e/SHA_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/run40_audit_run39_red.py v13/code/tests/test_run40_audit_run39_red.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && RUN39_ORIGINAL_ZIP="$e/RUN39_ORIGINAL_RED.zip" PYTHONPATH=.:scripts python3 -m unittest -v tests.test_run40_audit_run39_red) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/run40_audit_run39_red.py --zip "$e/RUN39_ORIGINAL_RED.zip" --out "$e/AUDIT_RESULT.json" > "$e/AUDIT_RAW.log" 2>&1
+          echo "$?" > "$e/AUDIT_EXIT.txt"
+          git fetch --no-tags --depth=1 origin d05ad63679efed8c6af24a6904c79a4920efa30c > "$e/FETCH_RAW.log" 2>&1
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base d05ad63679efed8c6af24a6904c79a4920efa30c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check d05ad63679efed8c6af24a6904c79a4920efa30c HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve audit raw including any failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run40-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run40-audit/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require exact original RED, seven tamper controls and no gate promotion
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run40-audit"
+          for s in DOWNLOAD SHA COMPILE TEST AUDIT FETCH PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN40_ORIGINAL_RUN39_RED_VERIFIED_NO_W7_OR_WORLD_JEPA_OR_AGE_PROMOTION
