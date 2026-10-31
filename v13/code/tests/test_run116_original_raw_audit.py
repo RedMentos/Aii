@@ -104,7 +104,7 @@ def synthetic_artifact(change=None, stage=None):
               "b3": "NO_PROMOTION", "body_jepa": "UNAVAILABLE"}
     if change:
         change(report, fixture)
-    frozen = _dumps(fixture)
+    frozen = FROZEN.read_bytes()  # preserve registered fixture bytes
     phone_files = {FIXTURE: frozen}
     phone_manifest = {"schema_version": 1, "files": {
         name.removeprefix("V13-Phone/"): hashlib.sha256(data).hexdigest()
