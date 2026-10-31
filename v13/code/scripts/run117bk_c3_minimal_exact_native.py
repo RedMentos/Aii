@@ -139,13 +139,13 @@ def _prompts(runtime, prior, current, row, b2):
         raise ValueError("RUN117BK_SOURCE_OR_TYPED_LEAK_RED")
     system = dict(full[0])
     minimal_text = (
-        "Binding policy (exact source):\\n" + row["policy_span"]
-        + "\\nCurrent options (exact source):\\n" + row["option_span"]
-        + "\\nApply only the binding policy. Choose the cheapest eligible "
+        "Binding policy (exact source):\n" + row["policy_span"]
+        + "\nCurrent options (exact source):\n" + row["option_span"]
+        + "\nApply only the binding policy. Choose the cheapest eligible "
           "option and give remaining euros. Return only the required JSON.")
     current_text = (
-        "Current options (exact source):\\n" + row["option_span"]
-        + "\\nNo binding policy was provided. Do not invent missing "
+        "Current options (exact source):\n" + row["option_span"]
+        + "\nNo binding policy was provided. Do not invent missing "
           "constraints. If insufficient, return NONE with null. Return JSON.")
     minimal = [dict(system), {"role": "user", "content": minimal_text}]
     current_only = [dict(system), {"role": "user", "content": current_text}]
