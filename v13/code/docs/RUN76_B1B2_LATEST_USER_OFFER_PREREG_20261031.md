@@ -9,3 +9,11 @@
 **Limits:** this is source chronology containment, **not** proof of B1/B2 semantic complementarity, native utility, STEP2, production use or rollback. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, Redmi unmeasured, full-suite 4 FAIL/66 ERROR/28 SKIP and whole V13 incomplete. No native model, output, TTY, tools, learning or Age authority.
 
 **Next:** implement wrapper + focused adversarial real-Store tests, CI raw, private byte-identical backup, independent review. Continue separately with actual B1/B2 semantic utility and native learning gates. **Remaining platform budget:** UNKNOWN.
+
+## Terminal software checkpoint
+
+Original Actions **41184033523** at executed HEAD `9e180a631e9bd3e061a97a8008c7916cc36c88e1`: terminal **SUCCESS**, **26/26** real-Store/synthetic-runner tests (6 new latest-USER + 5 original topic partition + 8 causal offer + 7 causal context), all **10/10** stage exits zero, Canon/donor/source pins exact, privacy CLEAN, compile/diff PASS. Original artifact **13035856418**, ZIP SHA256 **`9d71ab3d4122a69f1cc17ab5f8a7af2b8799c2302ce32c7a9950c6f70424a366`**, CRC PASS, **22/22** inner SHA256SUMS. Private Library `/V13-Checkpoints/2026-10-31/Run76-B1B2-Latest-User-Offer/ORIGINAL_ACTIONS_41184033523_SHA9D71AB3D.zip`, re-materialized and `cmp` byte-identical. Source blob `7c1ea152d511783a47a1e55cc6a968ecd9d7e338`, test blob `c4557ab411e664e132e6ab4639082badf7cd9475`.
+
+**Observed counterexample:** legacy isolated topic consumer did persist an older USER OfferPacket when a newer USER existed and no retained same-topic state was present; new wrapper refused that replay **before** model/packet. Injecting a newer USER inside synthetic generation produced a persisted orphaned SHADOW OfferPacket, and new wrapper returned explicit `POST_OFFER_STALE_USER_OR_SOURCE_RED` with no delivery/learning authority. **Detection does not roll back the orphaned packet.** Not production or native utility.
+
+**Next:** independent review of this branch; later real B1/B2 semantic heldout utility and end-to-end C5/C6 consumer must refuse orphaned/stale offers atomically. Original Run52/Run54/Run55 and full-suite RED unchanged. **Remaining platform budget:** UNKNOWN.
