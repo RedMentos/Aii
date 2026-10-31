@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - assistant/v13-run108-runner-atomic-activation-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run108-runner-activation.yml
+      - v13/code/v13/bootstrap.py
+      - v13/code/v13/runner_activation.py
+      - v13/code/tests/test_runner_activation_20261031.py
 permissions:
   contents: read
 jobs:
