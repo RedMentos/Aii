@@ -156,30 +156,47 @@ class RealStoreBridgeReview(unittest.TestCase):
         from v13 import b1b2_jef_c3_source_role_bridge_candidate as module
         original = module.build_typed_jef_role_formatter
         runtime = self.r
+        cases = (
+            ("provenance", [{"source_id": "forged"}]),
+            ("event_id", "evt_foreign"),
+            ("brain_generation_id", "gen_foreign"),
+            ("mode", "ACTIVE"),
+            ("applied", True),
+            ("role", "B1_DETAIL"),
+            ("producer_component", "untrusted"),
+            ("packet_id", "pkt_forged"),
+            ("delete", None),
+        )
+        for field, value in cases:
+            with self.subTest(field=field):
+                def tamper_after_plan(*args, **kwargs):
+                    result = original(*args, **kwargs)
+                    self.assertEqual(
+                        result["status"],
+                        "SHADOW_TYPED_JEF_ROLE_FORMATTER_VERIFIED")
+                    pid = result["context_plan_packet_id"]
+                    row = runtime.store.one(
+                        "SELECT payload FROM packets "
+                        "WHERE id=? AND kind='ContextPlan'", (pid,))
+                    if field == "delete":
+                        with runtime.store.tx() as db:
+                            db.execute("DELETE FROM packets WHERE id=?", (pid,))
+                    else:
+                        plan = json.loads(row["payload"])
+                        plan[field] = value
+                        with runtime.store.tx() as db:
+                            db.execute("UPDATE packets SET payload=? WHERE id=?",
+                                       (dumps(plan), pid))
+                    return result
 
-        def tamper_after_plan(*args, **kwargs):
-            result = original(*args, **kwargs)
-            self.assertEqual(result["status"],
-                             "SHADOW_TYPED_JEF_ROLE_FORMATTER_VERIFIED")
-            pid = result["context_plan_packet_id"]
-            row = runtime.store.one(
-                "SELECT payload FROM packets WHERE id=? AND kind='ContextPlan'",
-                (pid,))
-            plan = json.loads(row["payload"])
-            plan["provenance"] = [{"source_id": "forged"}]
-            with runtime.store.tx() as db:
-                db.execute("UPDATE packets SET payload=? WHERE id=?",
-                           (dumps(plan), pid))
-            return result
-
-        with patch.object(module, "build_typed_jef_role_formatter",
-                          side_effect=tamper_after_plan):
-            result = self.build()
-        self.assertNotEqual(result["status"],
-                            "SHADOW_B1B2_JEF_C3_ROLE_BRIDGE_VERIFIED")
-        self.assertNotIn("messages", result)
-        self.assertIn("orphaned_shadow_plan_packet_id", result)
-        self.assertEqual(self.count("packets", "kind='ContextPlan'"), 1)
+                with patch.object(module, "build_typed_jef_role_formatter",
+                                  side_effect=tamper_after_plan):
+                    result = self.build()
+                self.assertNotEqual(
+                    result["status"],
+                    "SHADOW_B1B2_JEF_C3_ROLE_BRIDGE_VERIFIED")
+                self.assertNotIn("messages", result)
+                self.assertIn("orphaned_shadow_plan_packet_id", result)
 
     def test_deleted_prior_source_refuses(self):
         with self.r.store.tx() as db:
