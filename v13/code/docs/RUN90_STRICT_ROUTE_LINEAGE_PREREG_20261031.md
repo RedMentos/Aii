@@ -1,0 +1,11 @@
+# Run90 exact validated C2-route source-lineage compatibility candidate prereg — 2026-10-31
+
+**Owner:** GPT-6 Auto11, independent child of Run89 PR #1454 exact parent `626c4eba6b7dcb66a063cfb354b16e57e01b395b`. No live Runtime/Store/Canon/model/cohort edits. No native model calls.
+
+**Prior verified diagnosis:** Run88 original parent `41176551097` 4612 / 4 FAIL / 66 ERROR / 28 SKIP. Run89 exact diff `41197795978` GREEN 8/8, original artifact SHA256 `ffc9ebc2e0664f4fd7772565eb0ad149ef360b93b8bb7ed6ab9cf519b9bf96f4`: native integrated chain and SourceHandoff rebased candidate each differ from current live in **one** `v13/runtime.py` hunk starting line 251.
+
+**Original change provenance:** commit `47b7825704970de86766c3a57fd9ee999ca199a4`, PR #1266. It replaces permissive recursive search for any nested route with exactly one validated native `select_processing` call via `control_calibration_worker.observation`. PR #1266 original software CI `41051158002` 57/57 GREEN, artifact `12974936511` SHA256 `c24b39bca80909450c78cbac77503788cb996ea206c89305997042622ba22341`; fake Needle/software, not native. This is a **safety hardening**, never revert it.
+
+**Fixed candidate before code:** add a single exact anchored transform reproducing commit 47b782's hunk in the frozen integrated **expected-source reconstruction only** (`scripts/integrated_candidates.py`), after existing reviewed transforms. No dynamic accept-any-live-hash or modifying frozen manifests. Tests must prove reconstructed four files byte-equal current reviewed live, strict SourceHandoff and native firing candidate checks accept exactly this composition, and one-byte runtime tamper fails closed. Verify old security counterexamples (foreign route / failed native route) remain rejected; retain old 57-test proof. Run focused source/package regressions and if possible a fresh full-suite source compatibility control; preserve every remaining RED.
+
+**No promotion:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight0, whole V13 incomplete. This candidate repairs historical test source-lineage matching only, not native C2/Body utility or production integration. Do not alter registered seeds, source/model hashes, original negative evidence.
