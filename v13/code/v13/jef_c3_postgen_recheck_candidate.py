@@ -26,7 +26,8 @@ def _result(status, *, generator_invoked=False, source_rechecked=False,
         "source_only_fallback_action": source_only_fallback_action,
         "source_only_fallback_verified": (
             source_rechecked and source_only_fallback_action in ("A", "B", "NONE")),
-        "c3_receiver_success": status == "FORMATTER_MATCH_SHADOW",
+        "c3_receiver_success": False,
+        "formatter_exact_match_shadow": status == "FORMATTER_MATCH_SHADOW",
         "delivery_authority": 0,
         "output_committed": False,
         "tool_dispatches_by_guard": 0,
@@ -66,7 +67,11 @@ def evaluate(memory, session, event_id, current_ref, memory_ids, generator,
     except Exception as exc:
         return _result("GENERATOR_EXCEPTION_RED", generator_invoked=True,
                        generator_error_type=type(exc).__name__)
-    if dumps(messages) != dumps(before["messages"]):
+    try:
+        prompt_unchanged = dumps(messages) == dumps(before["messages"])
+    except (TypeError, ValueError, UnicodeError, OverflowError):
+        prompt_unchanged = False
+    if not prompt_unchanged:
         return _result("CALLBACK_PROMPT_MUTATED_RED", generator_invoked=True)
     after = typed.build_jef_c3_typed_envelope(
         memory, session, event_id, current_ref, memory_ids,
