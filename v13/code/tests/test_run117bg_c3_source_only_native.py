@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from scripts import run117bg_c3_source_only_native as pilot
 from tests.test_run117s_b2_salient_source_shadow import QuoteRuntime
@@ -74,7 +75,7 @@ class C3CausalPriorPreflight(unittest.TestCase):
                     runtime.close()
 
     def test_selector_is_synthetic_and_no_native_body(self):
-        with unittest.mock.patch.object(self.r.pool, "get",
+        with patch.object(self.r.pool, "get",
                                         side_effect=AssertionError("NATIVE_BODY_CALLED")):
             prompts, bridge = self.prepare(self.r, self.rows[0])
         self.assertEqual(bridge["status"], "SHADOW_C3_SOURCE_ID_EVIDENCE_READY")
