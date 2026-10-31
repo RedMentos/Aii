@@ -11,10 +11,10 @@ from hashlib import sha256
 import json
 import re
 import time
-from uuid import uuid4
 
 from .b1b2_c3_source_envelope_candidate import _latest_authoritative_user
 from .common import dumps
+from .contracts import packet as make_packet
 from .jef_b1b2_c3_role_postgen_shadow_candidate import _epoch
 
 SCHEMA = "v13.body_source_id_selection_shadow.v1"
@@ -190,11 +190,9 @@ def select(runtime,event,role,generator,*,operator_opt_in=False,
         status=("SHADOW_ABSTAIN_RECORDED" if selected=="NONE"
                 else "SHADOW_SOURCE_ID_SELECTED" if selected==target
                 else "SHADOW_WRONG_SOURCE_ID_RECORDED")
-        packet={
-            "schema":SCHEMA,"packet_id":"pkt_"+uuid4().hex,
-            "event_id":event["event_id"],
-            "brain_generation_id":runtime.store.generation_id,
-            "role":role,"model_revision":revision,
+        packet=make_packet(KIND,role,event["event_id"],
+            runtime.store.generation_id,[event["source_ref"]],
+            role=role,model_revision=revision,
             "source_ref":event["source_ref"],
             "candidates":[{"span_id":key,**span}
                           for key,span in candidates],
@@ -206,8 +204,8 @@ def select(runtime,event,role,generator,*,operator_opt_in=False,
             "source_semantic_truth_authority":False,
             "model_hypothesis_not_fact":True,
             "delivery_authority":0,"learning_authority":0,
-            "output_committed":False,
-        }
+            output_committed=False,
+        )
         runtime.store.add_packet(KIND,packet)
         stored=runtime.store.one(
             "SELECT payload FROM packets WHERE id=? AND kind=?",
