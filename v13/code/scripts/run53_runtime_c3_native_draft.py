@@ -59,22 +59,29 @@ def run_row(home, installed, fixture):
     native = []
     try:
         row["model_revision"] = r.models.revision("C3_LANGUAGE")
-        current = r.store.event(r.session, fixture["followup"])
-        row["current_event_id"] = current["event_id"]
+        first = r.store.event(r.session, fixture["first_query"])
+        row["first_query_event_id"] = first["event_id"]
         row["session_id"] = r.session
-        row["current_source_ref"] = current["source_ref"]
         deadline = time.monotonic() + 90
         row["off_control"] = stage_runtime_c3_draft(
-            r, current["event_id"], deadline, operator_opt_in=False,
+            r, first["event_id"], deadline, operator_opt_in=False,
             model_call_opt_in=True)
         row["missing_correction_control"] = stage_runtime_c3_draft(
-            r, current["event_id"], deadline, operator_opt_in=True,
+            r, first["event_id"], deadline, operator_opt_in=True,
             model_call_opt_in=True)
         correction = r.store.event(r.session, fixture["correction_event"])
+        row["correction_event_id"] = correction["event_id"]
         row["correction_source_ref"] = correction["source_ref"]
         row["memory_id"] = r.memory.feedback(
             correction["event_id"], "fact", fixture["value"],
             permission="record", key=fixture["key"], scope="session")
+        current = r.store.event(r.session, fixture["followup"])
+        row["current_event_id"] = current["event_id"]
+        row["current_source_ref"] = current["source_ref"]
+        row["source_message_order"] = [
+            r.store.one("SELECT id FROM messages WHERE event_id=? AND role='user'",
+                        (event["event_id"],))["id"]
+            for event in (first, correction, current)]
         original_get = r.pool.get
         def get(role):
             if role != "C3_LANGUAGE":
@@ -125,7 +132,8 @@ def run_row(home, installed, fixture):
             and row["draft_row"]["status"] == "DRAFT"
             and row["action_count"] == 1 and row["draft_count"] == 1
             and len(row["c5_packets"]) == 2
-            and row["no_live_output"]) else "STRUCTURAL_RED"
+            and row["no_live_output"]
+            and row["source_message_order"] == sorted(set(row["source_message_order"]))) else "STRUCTURAL_RED"
     except (Exception, KeyboardInterrupt) as exc:
         row["error_type"] = type(exc).__name__
         row["error"] = str(exc)[:500]
