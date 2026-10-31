@@ -6,6 +6,7 @@ The C6 temporal source, action, DRAFT and egress preflight remains mandatory.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 
 from .c6_temporal_draft_preflight_candidate import preflight_temporal_draft
@@ -53,6 +54,18 @@ def exact_positive_budget_v2(candidate, source):
                for p in patterns)
 
 
+def _latest_authoritative_user(store, session):
+    """Fail closed on a later authoritative USER event in this session."""
+    for row in store.rows(
+            "SELECT id,packet FROM events WHERE session_id=? ORDER BY rowid DESC",
+            (session,)):
+        packet = json.loads(row["packet"])
+        if (packet.get("authority") == "AUTHORITATIVE"
+                and packet.get("kind") == "USER_TEXT"):
+            return row["id"]
+    return None
+
+
 def preflight_budget_lexical_v2(cfg, memory, session, event_id, staged, *,
                                 operator_opt_in=False, approval_receipt=None):
     """Read-only C6 recheck of exact staged source and candidate, no approval.
@@ -70,6 +83,8 @@ def preflight_budget_lexical_v2(cfg, memory, session, event_id, staged, *,
         return _result("BASE_PREFLIGHT_RED", base_status=first.get("status"))
     try:
         with memory.s.tx():
+            if _latest_authoritative_user(memory.s, session) != event_id:
+                return _result("STALE_USER_EVENT_RED")
             snapshot = _event_snapshot(memory, event_id, session)
             admitted = _locked_verified(memory, cfg, session, snapshot)
             if (admitted is None or type(staged) is not dict
@@ -86,6 +101,8 @@ def preflight_budget_lexical_v2(cfg, memory, session, event_id, staged, *,
                 return _result("POSITIVE_ASSERTION_RED", base_status=first["status"])
         second = preflight_temporal_draft(
             cfg, memory, session, event_id, staged, operator_opt_in=True)
+        if _latest_authoritative_user(memory.s, session) != event_id:
+            return _result("STALE_USER_EVENT_RED")
         if (second.get("status") != "NEEDS_REAL_TTY_APPROVAL"
                 or second.get("fingerprint_sha256") != first.get("fingerprint_sha256")
                 or second.get("candidate_sha256") != first.get("candidate_sha256")):
