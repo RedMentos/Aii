@@ -67,9 +67,10 @@ jobs:
               assert manifest['schema_version']==1
               for name,expected in manifest['files'].items():
                   assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
-              for name in ('scripts/run111_c3_b2_context_native.py',
-                           'docs/fixtures/RUN111_C3_PRIOR_RULES_SEED881.json'):
-                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              name='scripts/run111_c3_b2_context_native.py'
+              assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          frozen=Path('v13/code/docs/fixtures/RUN111_C3_PRIOR_RULES_SEED881.json').read_bytes()
+          assert hashlib.sha256(frozen).hexdigest()=='3683f38a0c7ca00411c623d223a4b965de2f6203eb314750d163e4a9426cbb42'
           print(json.dumps({'files':len(manifest['files']),
                             'zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
                             'manifest_verified':True,'native_c3_executed':False},sort_keys=True))
