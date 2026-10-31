@@ -1,0 +1,75 @@
+name: V13 pinned b10964 real archive extraction compatibility
+on:
+  push:
+    branches:
+      - assistant/v13-phone-pinned-tar-compat-20261031-gpt6
+    paths:
+      - v13/code/docs/PHONE_PINNED_TAR_COMPAT_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download exact pinned upstream tarballs and verify transactional extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-pinned-tar-evidence"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m compileall -q v13/code/v13/safe_tar.py v13/code/v13/bootstrap.py v13/code/scripts/phone_pinned_tar_compat_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          env PYTHONPATH=v13/code python3 v13/code/scripts/phone_pinned_tar_compat_20261031.py \
+            --work "$RUNNER_TEMP/v13-pinned-tar-input" --out "$e/PINNED_REPORT.json" > "$e/PINNED_RAW.log" 2>&1
+          pinned_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts python3 -m unittest discover -s tests -p test_bootstrap_safe_tar_20261031.py -v) > "$e/REGRESSION_RAW.log" 2>&1
+          regression_rc=$?
+          set -e
+          echo "$pinned_rc" > "$e/PINNED_EXIT.txt"
+          echo "$regression_rc" > "$e/REGRESSION_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3d411865554a82e267796277cc4d03f09be628a7 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3d411865554a82e267796277cc4d03f09be628a7 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          python3 - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          r={'schema':'v13.phone_pinned_tar_compat.linux_software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'pinned_exit':int((e/'PINNED_EXIT.txt').read_text()),
+             'regression_exit':int((e/'REGRESSION_EXIT.txt').read_text()),
+             'native_executed':False,'model_downloaded':False,'redmi_measured':False,
+             'step2_promoted':False,'b3_promoted':False,'body_jepa_promoted':False,
+             'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 15 "$e/PINNED_RAW.log"
+          tail -n 5 "$e/REGRESSION_RAW.log"
+          test "$pinned_rc" -eq 0
+          test "$regression_rc" -eq 0
+      - name: Upload raw results including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-phone-pinned-tar-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-pinned-tar-evidence/
+          if-no-files-found: error
+          retention-days: 90
