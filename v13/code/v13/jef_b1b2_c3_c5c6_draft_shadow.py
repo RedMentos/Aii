@@ -1,23 +1,35 @@
-"""Default-OFF cross-organ JEF/B1/B2/C3 -> C5/F3 DRAFT -> C6 SHADOW.
+"""Default-OFF mixed-range JEF/B1/B2/C3 -> C5/F3 DRAFT -> C6 SHADOW.
 
-One trusted C3 callback is evaluated by Run84's post-generation guard.
-Its verified typed action is reused in the existing JEF source-bound C5
-transaction, WITHOUT another model invocation. The original C5 metadata
-does not persist the dual-source/C3 digest; this bridge must not be used as
-a durable C3 or body provenance credential, or as delivery authorization.
+The legacy C5 stager accepts only Maximum/Maximum JEF grammar. This isolated
+candidate instead preserves the authenticated mixed Minimum/Maximum grammar
+of Run73/74, with an atomic C5 DRAFT and independently rechecked C6 shadow.
+A trusted C3 callback is called ONCE by Run84, never again by this module.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+
+from .common import dumps, uid, now
+from .contracts import packet, validate
 from . import jef_b1b2_c3_dual_source_shadow as dual
 from . import jef_b1b2_c3_postgen_shadow as postgen
-from . import jef_c3_c5_c6_fallback_draft_candidate as draft
+from . import jef_f1f5_range_admission_shadow as admission
+from .jef_f1f5_live_current_candidate import _latest_authoritative_user
+from .jef_c3_c5_c6_fallback_draft_candidate import (
+    _existing, _c5, _draft, EXPECTED,
+)
 
 STATUS = "DUAL_SOURCE_C5_C6_DRAFT_PREFLIGHT_SHADOW"
 
 
+def _sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
 def _result(status, **extra):
     return {
-        "schema": "v13.jef_b1b2_c3_c5c6_draft_shadow.v1",
+        "schema": "v13.jef_b1b2_c3_c5c6_draft_shadow.v2",
         "status": status,
         "delivery_authority": 0,
         "learning_authority": 0,
@@ -25,8 +37,7 @@ def _result(status, **extra):
         "output_committed": False,
         "native_proof": False,
         "real_tty_approved": False,
-        "dual_source_receipt_persisted": False,
-        "c3_output_receipt_persisted": False,
+        "c3_native_output_receipt_persisted": False,
         "c3_receiver_success": False,
         "whole_system_complete": False,
         "jepa_weight": 0,
@@ -34,23 +45,138 @@ def _result(status, **extra):
     }
 
 
-def _still_current(runtime, event, offers, ids, prompt_sha):
-    """Read-only dual-source revalidation; never treat hypotheses as facts."""
+def _still_current(runtime, event, offers, ids, expected):
+    """Reconstruct all sources, role revisions, retained state and JEF action."""
     current = dual.build(runtime, event, offers, ids, operator_opt_in=True)
     return (current.get("status") == dual.STATUS
-            and current.get("messages_sha256") == prompt_sha
+            and current.get("messages_sha256")
+            == expected["dual_source_messages_sha256"]
+            and current.get("jef_messages_sha256")
+            == expected["jef_messages_sha256"]
+            and current.get("b1b2_messages_sha256")
+            == expected["b1b2_messages_sha256"]
+            and current.get("typed_jef_action") == expected["source_action"]
             and current.get("human_source_lineage_verified") is True
             and current.get("formatter_only") is True)
+
+
+def _human(runtime, event, ids, action, refs):
+    """Source and human lineage recheck, also valid under Store.tx lock."""
+    decision = admission.decide(
+        runtime.memory, runtime.session, event["event_id"],
+        event["source_ref"], ids, operator_opt_in=True)
+    return (decision.get("admission_status") == admission.READY
+            and decision.get("human_source_lineage_verified") is True
+            and decision.get("suggested_action") == action
+            and decision.get("source_ref_sha256") == refs
+            and decision.get("authority") == 0
+            and decision.get("model_called") is False
+            and decision.get("native_calls") == 0)
+
+
+def _stage_range(runtime, event, offers, ids, meta):
+    """Atomic source-bound C5/F3 SHADOW DRAFT; no model and no delivery."""
+    store = runtime.store
+    session = runtime.session
+    event_id = event["event_id"]
+    try:
+        with store.tx() as db:
+            if _existing(store, session, event_id):
+                return _result("EXISTING_DRAFT_OR_ACTION_RED")
+            if (_latest_authoritative_user(store, session) != event_id
+                    or not _human(runtime, event, ids,
+                                  meta["source_action"],
+                                  meta["source_ref_sha256"])
+                    or not _still_current(runtime, event, offers, ids, meta)):
+                return _result("SOURCE_CHANGED_BEFORE_ATOMIC_DRAFT")
+            row = store.one(
+                "SELECT session_id,generation_id FROM events WHERE id=?",
+                (event_id,))
+            if (row is None or row["session_id"] != session
+                    or row["generation_id"] != store.generation_id):
+                return _result("EVENT_GENERATION_BINDING_RED")
+            generation = row["generation_id"]
+            aid = uid("act")
+            intent = packet(
+                "ActionIntent", "C5_REPORT_BROKER", event_id, generation,
+                action_id=aid, action_type="TEXT_REPORT",
+                permission="local_text_only")
+            corollary = packet(
+                "CorollaryCopy", "F3_SELF", event_id, generation,
+                action_id=aid, expected=EXPECTED, self_caused=True)
+            validate("ActionIntent", intent)
+            validate("CorollaryCopy", corollary)
+            db.execute(
+                "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                (intent["packet_id"], "ActionIntent", event_id,
+                 generation, dumps(intent), now()))
+            db.execute(
+                "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                (corollary["packet_id"], "CorollaryCopy", event_id,
+                 generation, dumps(corollary), now()))
+            db.execute(
+                "INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)",
+                (aid, event_id, "TEXT_REPORT", "DISPATCHED",
+                 corollary["packet_id"], dumps(EXPECTED), None, now()))
+            mid = db.execute(
+                "INSERT INTO messages(session_id,event_id,role,text,status,"
+                "metadata,created) VALUES (?,?,?,?,?,?,?)",
+                (session, event_id, "assistant", meta["source_action"],
+                 "DRAFT", dumps(meta), now())).lastrowid
+        return _result("ATOMIC_RANGE_DRAFT_STAGED_SHADOW",
+                       draft_message_id=mid, c5_action_id=aid,
+                       shadow_draft_may_exist=True)
+    except Exception:
+        return _result("ATOMIC_RANGE_DRAFT_STORE_RED",
+                       shadow_draft_may_exist=True)
+
+
+def _c6_preflight(runtime, event, offers, ids, meta, staged):
+    """Read-only integrity challenge of persisted draft; no approval."""
+    store = runtime.store
+    session = runtime.session
+    event_id = event["event_id"]
+    try:
+        with store.tx():
+            if (_latest_authoritative_user(store, session) != event_id
+                    or not _human(runtime, event, ids,
+                                  meta["source_action"],
+                                  meta["source_ref_sha256"])
+                    or not _still_current(runtime, event, offers, ids, meta)):
+                return _result("C6_SOURCE_CHANGED_RED")
+            if (store.one(
+                    "SELECT COUNT(*) AS n FROM messages WHERE event_id=? "
+                    "AND session_id=? AND role='assistant'",
+                    (event_id, session))["n"] != 1
+                    or store.one(
+                    "SELECT COUNT(*) AS n FROM actions WHERE event_id=? "
+                    "AND kind='TEXT_REPORT'", (event_id,))["n"] != 1):
+                return _result("C6_DUPLICATE_DRAFT_OR_ACTION_RED")
+            if (not _draft(store, staged["draft_message_id"], event_id,
+                           session, meta["source_action"])
+                    or _c5(store, staged["c5_action_id"],
+                           event_id, session) is None):
+                return _result("C6_C5_F3_BINDING_RED")
+            row = store.one(
+                "SELECT metadata FROM messages WHERE id=?",
+                (staged["draft_message_id"],))
+            stored = json.loads(row["metadata"])
+            if (type(stored) is not dict or stored != meta
+                    or _sha(meta["source_action"].encode("utf-8"))
+                    != meta["candidate_sha256"]):
+                return _result("C6_PERSISTED_METADATA_RED")
+        return _result("C6_DRAFT_INTEGRITY_SHADOW")
+    except Exception:
+        return _result("C6_STORE_OR_BINDING_RED")
 
 
 def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
              operator_opt_in=False, callback_opt_in=False,
              approval_receipt=None):
-    """Stage one C5 SHADOW DRAFT, then perform read-only C6 preflight.
+    """Stage one SHADOW draft from one validated callback, C6 read-only check.
 
-    A successful return is not a C6 approval token. Callback side effects
-    cannot be sandboxed or undone. A post-stage race may leave an orphan
-    DRAFT, explicitly flagged for operator inspection.
+    A post-stage race can leave an orphan DRAFT; it is never rolled back by
+    this bridge and never becomes an output/TTY permission credential.
     """
     if operator_opt_in is not True or callback_opt_in is not True:
         return _result("OFF", callback_invoked=False)
@@ -62,15 +188,11 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
         return _result("INVALID_INPUT", callback_invoked=False)
     try:
         event_id = event["event_id"]
-        session = runtime.session
-        store = runtime.store
-        # Avoid a second model call when a DRAFT/action already exists.
-        if draft._existing(store, session, event_id):
+        if _existing(runtime.store, runtime.session, event_id):
             return _result("EXISTING_DRAFT_OR_ACTION_RED",
                            callback_invoked=False)
     except Exception:
         return _result("PREFLIGHT_INTEGRITY_RED", callback_invoked=False)
-
     checked = postgen.evaluate(
         runtime, event, offer_packet_ids, memory_ids, generator,
         operator_opt_in=True, callback_opt_in=True)
@@ -79,61 +201,66 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
                        callback_invoked=checked.get("callback_invoked", False),
                        component_status=checked.get("status"))
     action = checked.get("parsed_action")
-    prompt_sha = checked.get("messages_sha256")
     if (action not in ("A", "B", "NONE")
-            or type(prompt_sha) is not str
-            or type(checked.get("output_sha256")) is not str
-            or checked.get("source_rechecked") is not True):
+            or checked.get("source_rechecked") is not True
+            or any(type(checked.get(key)) is not str
+                   for key in ("messages_sha256", "jef_messages_sha256",
+                               "b1b2_messages_sha256", "output_sha256"))):
         return _result("POSTGEN_RECEIPT_RED", callback_invoked=True)
+    decision = admission.decide(
+        runtime.memory, runtime.session, event_id, event["source_ref"],
+        memory_ids, operator_opt_in=True)
+    if (decision.get("admission_status") != admission.READY
+            or decision.get("suggested_action") != action
+            or decision.get("human_source_lineage_verified") is not True
+            or type(decision.get("source_ref_sha256")) is not list):
+        return _result("RANGE_HUMAN_SOURCE_RED", callback_invoked=True)
+    meta = {
+        "shadow": True,
+        "origin": "DUAL_SOURCE_SCHEMA_EXACT_SHADOW",
+        "source_action": action,
+        "source_ref_sha256": decision["source_ref_sha256"],
+        "dual_source_messages_sha256": checked["messages_sha256"],
+        "jef_messages_sha256": checked["jef_messages_sha256"],
+        "b1b2_messages_sha256": checked["b1b2_messages_sha256"],
+        "callback_output_sha256": checked["output_sha256"],
+        "candidate_sha256": _sha(action.encode("utf-8")),
+        "model_formatter_status": postgen.STATUS,
+        "body_hypotheses_are_facts": False,
+    }
     try:
         if not _still_current(runtime, event, offer_packet_ids, memory_ids,
-                              prompt_sha):
+                              meta):
             return _result("SOURCE_CHANGED_BEFORE_DRAFT",
                            callback_invoked=True)
     except Exception:
         return _result("SOURCE_RECHECK_INTEGRITY_RED",
                        callback_invoked=True)
-
-    # The existing stager independently rechecks JEF sources before, after,
-    # and INSIDE its SQLite write transaction. This callback returns the
-    # already verified action: never a second C3/model inference.
-    staged = draft.stage(
-        runtime.memory, session, event_id, event["source_ref"], memory_ids,
-        lambda _messages: action, operator_opt_in=True, callback_opt_in=True)
-    if staged.get("status") != draft.STAGED:
+    staged = _stage_range(runtime, event, offer_packet_ids, memory_ids, meta)
+    if staged.get("status") != "ATOMIC_RANGE_DRAFT_STAGED_SHADOW":
         return _result("C5_DRAFT_STAGE_RED", callback_invoked=True,
                        component_status=staged.get("status"),
                        shadow_draft_may_exist=staged.get(
                            "shadow_draft_may_exist", False))
-    staged_action = staged.get("source_action")
-    if (staged_action != action
-            or staged.get("draft_origin") != "MODEL_EXACT_SHADOW"
-            or staged.get("source_only_fallback") is not False):
-        return _result("C5_DRAFT_BINDING_RED", callback_invoked=True,
-                       shadow_draft_may_exist=True)
     try:
         if not _still_current(runtime, event, offer_packet_ids, memory_ids,
-                              prompt_sha):
+                              meta):
             return _result("SOURCE_CHANGED_AFTER_DRAFT",
-                           callback_invoked=True,
-                           shadow_draft_may_exist=True)
+                           callback_invoked=True, shadow_draft_may_exist=True)
     except Exception:
         return _result("POSTSTAGE_SOURCE_INTEGRITY_RED",
                        callback_invoked=True, shadow_draft_may_exist=True)
-
-    c6 = draft.preflight(
-        runtime.memory, session, event_id, event["source_ref"], memory_ids,
-        staged, operator_opt_in=True)
-    if c6.get("status") != "NEEDS_REAL_TTY_APPROVAL":
+    c6 = _c6_preflight(runtime, event, offer_packet_ids, memory_ids,
+                       meta, staged)
+    if c6.get("status") != "C6_DRAFT_INTEGRITY_SHADOW":
         return _result("C6_DRAFT_PREFLIGHT_RED", callback_invoked=True,
                        component_status=c6.get("status"),
                        shadow_draft_may_exist=True)
     try:
         if not _still_current(runtime, event, offer_packet_ids, memory_ids,
-                              prompt_sha):
+                              meta):
             return _result("SOURCE_CHANGED_AFTER_C6_PREFLIGHT",
-                           callback_invoked=True,
-                           shadow_draft_may_exist=True)
+                           callback_invoked=True, shadow_draft_may_exist=True)
     except Exception:
         return _result("POSTC6_SOURCE_INTEGRITY_RED",
                        callback_invoked=True, shadow_draft_may_exist=True)
@@ -141,12 +268,10 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
         STATUS, callback_invoked=True, source_rechecked=True,
         formatter_match_shadow=True, c5_draft_staged=True,
         c6_preflight_only=True, shadow_draft_may_exist=True,
-        c6_is_not_approval=True,
-        typed_jef_action=action,
-        dual_source_messages_sha256=prompt_sha,
-        c3_output_sha256=checked["output_sha256"],
-        jef_messages_sha256=checked["jef_messages_sha256"],
-        b1b2_messages_sha256=checked["b1b2_messages_sha256"],
+        c6_is_not_approval=True, typed_jef_action=action,
+        dual_source_messages_sha256=meta["dual_source_messages_sha256"],
+        callback_output_sha256=meta["callback_output_sha256"],
+        dual_source_digest_persisted=True,
+        callback_output_digest_persisted=True,
         draft_message_id=staged["draft_message_id"],
-        c5_action_id=staged["c5_action_id"],
-        c5_prompt_sha256=staged["prompt_sha256"])
+        c5_action_id=staged["c5_action_id"])
