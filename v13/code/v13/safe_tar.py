@@ -61,6 +61,8 @@ def extract(archive, dest):
                     target = (stage / rel.parent / member.linkname).resolve()
                     if not target.is_relative_to(stage.resolve()):
                         raise ValueError('Archiv-Symlink außerhalb Ziel')
+            if not entries:
+                raise ValueError('Leeres Archiv')
             for member, rel in entries:
                 if any(parent in symlinks for parent in rel.parents):
                     raise ValueError('Archivmitglied unter Symlink')
@@ -85,7 +87,7 @@ def extract(archive, dest):
                 path.symlink_to(member.linkname)
             for rel in symlinks:
                 try:
-                    target = stage.joinpath(*rel.parts).resolve()
+                    target = stage.joinpath(*rel.parts).resolve(strict=True)
                 except (RuntimeError, OSError) as exc:
                     raise ValueError('Zyklischer Archiv-Symlink') from exc
                 if not target.is_relative_to(stage.resolve()):
