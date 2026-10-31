@@ -30,7 +30,7 @@ jobs:
           f95e7b4d380589b26e63f3d782a74cb178d5607e v13/code/docs/AUTO11_DUAL_SOURCE_C5C6_DRAFT_BRIDGE_PREREG_20261031.md
           d1380250630aec582935a218c36bfec90b4520cd v13/code/docs/AUTO11_RUN1_RED_RANGE_STAGER_CORRECTION_PREREG_20261031.md
           ccf0661689b54e178c990880573e6a12b3cee0b8 v13/code/v13/jef_b1b2_c3_c5c6_draft_shadow.py
-          785a96c2c7e104ff7fcedb32498f6b72eb1319d2 v13/code/tests/test_auto11_dual_source_c5c6_draft.py
+          438398e0c94da2bdb064f4e9e6bbdd19a036296b v13/code/tests/test_auto11_dual_source_c5c6_draft.py
           PINS
           bad=0
           while read -r want file; do
