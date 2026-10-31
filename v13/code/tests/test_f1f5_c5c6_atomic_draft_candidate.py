@@ -47,8 +47,15 @@ class F1F5C5C6AtomicDraftTests(unittest.TestCase):
             operator_opt_in=opt)
 
     def counts(self):
-        return {name: self.store.one("SELECT COUNT(*) AS n FROM " + name)["n"]
-                for name in ("packets", "actions", "messages")}
+        # Human :forget may legitimately delete its own provenance packets;
+        # count only the four C5/C6 staging objects for rollback assertions.
+        return {
+            "packets": self.store.one(
+                "SELECT COUNT(*) AS n FROM packets WHERE kind IN ('ActionIntent','CorollaryCopy')")["n"],
+            "actions": self.store.one("SELECT COUNT(*) AS n FROM actions")["n"],
+            "messages": self.store.one(
+                "SELECT COUNT(*) AS n FROM messages WHERE role='assistant'")["n"],
+        }
 
     def test_default_off_and_missing_correction_have_no_c5_writes(self):
         before = self.counts()
