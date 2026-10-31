@@ -4300,5 +4300,43 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117ar_20261031_c3_source_only_native": {
+    "owner": "GPT-6 / Run117AR isolated C3 native utility experiment",
+    "branch": "assistant/v13-run117ar-c3-source-only-native-20261031-gpt6",
+    "pr": 1524,
+    "parent_verified": "87fdcf060ddb7dd43005025dd6dbb307c4a18254",
+    "prereg_commit": "e1b9325972720d6fa0f9283005e2417476d7d6a9",
+    "fixture_commit": "5754f345865111357c02a70276b4f958aec8ac95",
+    "fixture_sha256": "7f3c226f2bb2dee4616cf4ca5a83a59773071e1104c487387a55212a9bc5c59f",
+    "fixture_git_blob": "f5eae3b077c9bd3b221fd9b4ff636ad9b1652ee2",
+    "seed": 1077,
+    "preflight_head": "8c484377c85307ecbd8e17c32bde877c5cc9ad37",
+    "status": "SOFTWARE_PREFLIGHT_GREEN_NATIVE_STAGED_NOT_LAUNCHED",
+    "tests": "17/17 real Store; Actions 41241138153 SUCCESS; eight exits 0",
+    "raw_artifact_id": 13057780723,
+    "raw_zip_sha256": "9bb2a2171eb922ffcd2ca2b8c424fffafd0acc2bf03cf0993aaab1edfaf9e6c3",
+    "raw_byte_audit": "independently downloaded; CRC and 18/18 inner SHA256SUMS PASS",
+    "native_source_blob": "e55a59052e39843fcfa1e649c3de1e214bf36325",
+    "native_workflow": ".github/workflows/v13-run117ar-c3-source-only-native.yml",
+    "native_concurrency_group": "v13-native-c3-ag12-20261030",
+    "arms": [
+      "NO_PRIOR",
+      "EXACT_SOURCE"
+    ],
+    "planned_native_c3_calls": 12,
+    "planned_native_body_calls": 0,
+    "no_typed_jef_answer": true,
+    "next_command": "Check no active native owner; push RUN117AR_NATIVE_LAUNCH_20261031.md sentinel to trigger pinned 12-call C3 native. After terminal independently audit original raw ZIP/source/metrics/paired score and preserve RED. Continue other Canon packages.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
