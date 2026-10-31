@@ -1,6 +1,8 @@
 """Phone bootstrap tar extraction: real production entry and failure/retry paths."""
 import io
 from pathlib import Path
+import os
+from unittest.mock import patch
 import tarfile
 import tempfile
 import unittest
@@ -90,6 +92,38 @@ class PhoneBootstrapSafeTar(unittest.TestCase):
         with self.assertRaises(ValueError):
             bootstrap_extract(self.tar, self.dest)
         self.assertFalse((outside / 'new').exists())
+
+    def test_empty_archive_preserves_original(self):
+        self.dest.mkdir()
+        (self.dest / 'original').write_text('old')
+        archive(self.tar, [])
+        with self.assertRaises(ValueError):
+            bootstrap_extract(self.tar, self.dest)
+        self.assertEqual((self.dest / 'original').read_text(), 'old')
+
+    def test_failed_promotion_restores_original(self):
+        self.dest.mkdir()
+        (self.dest / 'original').write_text('old')
+        archive(self.tar, [('new', 'file', 'v2')])
+        real_replace = os.replace
+
+        def fail_stage(src, dst):
+            if Path(src).name == 'tree' and Path(dst) == self.dest:
+                raise OSError('injected promote failure')
+            return real_replace(src, dst)
+
+        with patch('v13.safe_tar.os.replace', side_effect=fail_stage):
+            with self.assertRaises(OSError):
+                bootstrap_extract(self.tar, self.dest)
+        self.assertEqual((self.dest / 'original').read_text(), 'old')
+        self.assertFalse((self.dest / 'new').exists())
+        self.assertEqual(list(self.root.glob('.dest.extract-*')), [])
+
+    def test_symlink_cycle_rejected(self):
+        archive(self.tar, [('a', 'link', 'b'), ('b', 'link', 'a')])
+        with self.assertRaises(ValueError):
+            bootstrap_extract(self.tar, self.dest)
+        self.assertFalse(self.dest.exists())
 
     def test_file_directory_conflict_preserves_original(self):
         self.dest.mkdir()
