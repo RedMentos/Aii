@@ -1,0 +1,60 @@
+{
+  "schema": "v13.run49.jef_c3_final_shadow_native_seed431.v1",
+  "seed": 431,
+  "fixtures": [
+    {
+      "id": "Alder",
+      "prior": "Project Alder. Budget 77 euros. Deadline 6 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Alder. Apply the earlier project rules. Option A costs 61 euros, takes 4 days, and is local. Option B costs 47 euros, takes 5 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 16
+      }
+    },
+    {
+      "id": "Beacon",
+      "prior": "Project Beacon. Budget 54 euros. Deadline 5 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Beacon. Apply the earlier project rules. Option A costs 50 euros, takes 7 days, and is local. Option B costs 42 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 12
+      }
+    },
+    {
+      "id": "Grove",
+      "prior": "Project Grove. Budget 32 euros. Deadline 2 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Grove. Apply the earlier project rules. Option A costs 37 euros, takes 1 days, and is local. Option B costs 26 euros, takes 4 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Haze",
+      "prior": "Project Haze. No budget has been supplied. Deadline 6 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Haze. Apply the earlier project rules. Option A costs 24 euros, takes 4 days, and is local. Option B costs 31 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "UNKNOWN",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Lumen",
+      "prior": "Project Lumen. Spending limit: 88 euros. Finish within 7 days. Must remain local: yes. This policy is binding.",
+      "current": "Project Lumen. Decide using the saved policy. Option A: cost 70 euros, duration 6 days, local true. Option B: cost 62 euros, duration 5 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 18
+      }
+    },
+    {
+      "id": "Reef",
+      "prior": "Project Reef. Spending limit: 53 euros. Finish within 5 days. Must remain local: no. This policy is binding.",
+      "current": "Project Reef. Decide using the saved policy. Option A: cost 48 euros, duration 4 days, local true. Option B: cost 44 euros, duration 3 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 9
+      }
+    }
+  ]
+}
