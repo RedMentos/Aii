@@ -4026,5 +4026,42 @@
     },
     "exact_next_command": "Do not activate live. Preregister a new disjoint German paraphrase/count/ambiguity holdout and native C3 typed-value ToolStep->C5->TOOL_RESULT utility; keep seed67 frozen.",
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117al_20261031_body_source_id_prewarm": {
+    "owner": "GPT-6 / Run117AL isolated review branch",
+    "branch": "assistant/v13-run117al-body-prewarm-20261031-gpt6",
+    "pr": 1518,
+    "parent_verified": "5f66cd9d3f2eba3bcfe75a873c5bc3e068d7c85b",
+    "prereg_commit": "adf28f48c9fafdae216493963a5ed90fde0bf2b7",
+    "source_test_head": "7a9b18c8cbf46a48411beac3167a31d875a7c723",
+    "status": "SOFTWARE_SHADOW_GREEN_NATIVE_NOT_RUN",
+    "tests": "10/10 real-SQLite model-free, Actions 41239530681 SUCCESS, all VENV/DEPS/TEST/COMPILE/PRIVACY/DIFF exits 0",
+    "raw_artifact_id": 13055904791,
+    "raw_zip_sha256": "859e8cb57c21f9fe6532086a25e9a0e952e01339862bcce9911ed4e05907fb9d",
+    "evidence_level": "Linux Actions model-free software only; not independent raw ZIP byte audit",
+    "original_native": {
+      "run_id": 41237524795,
+      "artifact_id": 13056238483,
+      "sha256": "256efa611a31d3696d9e8f6f125c917ac242de280ae1e64b4ecc6f2e4d567195",
+      "status": "STRUCTURAL_RED",
+      "source_id_rejections": "12/12 CALLBACK_STORE_CHANGED_RED"
+    },
+    "files_owned": [
+      "v13/code/v13/body_source_id_prewarm_candidate.py",
+      "v13/code/tests/test_run117al_body_source_id_prewarm.py",
+      ".github/workflows/v13-run117al-body-prewarm.yml",
+      "v13/code/docs/RUN117AL_PREWARM_PREREG_20261031.md"
+    ],
+    "next_command": "Preregister fresh disjoint seed1073 source-ID native cohort; pin fixture hash before code/native; do not reuse seed1069; serialize native jobs; independently audit original raw.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
