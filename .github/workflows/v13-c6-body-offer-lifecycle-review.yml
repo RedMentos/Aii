@@ -31,6 +31,8 @@ jobs:
           277d34a46b14633c52b5e7d59b3fdf0f16ea4159 v13/code/v13/b1b2_topic_partition_candidate.py
           8aaccb96c3fca43fa4450ab9bdc15f0e787bf093 v13/code/v13/b1b2_c3_source_envelope_candidate.py
           b401e0ba26a1031007ad939397947b6d2d01850d v13/code/v13/run58_crossorgan_c6_shadow_candidate.py
+          ee37a0482abb9ef70784cb232f52e3d06080f22a v13/code/v13/c6_body_offer_lifecycle_candidate.py
+          44082471c6379c92034ab4e2a5e6d2216e2f019b v13/code/tests/test_c6_body_offer_lifecycle_candidate.py
           fe0a07c3b5bee5a00431e9d344a6e7f58e99787e v13/code/tests/test_run58_crossorgan_c6_shadow_candidate.py
           30bb3269fa89621f78db893cf566d04f8768cf27 v13/code/v13/c6_positive_assertion_candidate.py
           c887e3db355df8b68d3bd35c6c86d1573ea2d081 v13/code/docs/fixtures/run52_b1b2_cross_turn_seed479.json
