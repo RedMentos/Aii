@@ -141,7 +141,7 @@
    ]
   },
   "STEP2": {
-   "title": "B1/B2 observer + offer schema (G1B)",
+   "title": "STEP2_HARNESS (legacy STEP2 key): B1/B2 observer and offer schema; NOT complementary utility",
    "deps": [
     "STEP1"
    ],
@@ -171,6 +171,49 @@
     {
      "file": "docs/proofs/step2-final-full-audit-20261009.json",
      "path": "all70_rowchecks_pass",
+     "op": "==",
+     "value": true
+    }
+   ]
+  },
+  "STEP2_EXIT": {
+   "title": "STEP2_EXIT: measured B1/B2 complementary utility (canonical gate)",
+   "deps": [
+    "STEP2"
+   ],
+   "code": [
+    "v13/cognition.py"
+   ],
+   "test": [
+    "tests/test_step2_utility.py",
+    "tests/test_step2_analysis.py"
+   ],
+   "real_data": [
+    "bench-results/step2-z2b-seeds-20261021/z2b_result.json",
+    "bench-results/step2-z2c-b2-rule-20261021/z2c_result.json"
+   ],
+   "persistence": [
+    "tests/test_step2_checkpoint.py"
+   ],
+   "telemetry": [
+    "offer_rejected"
+   ],
+   "ablation": [
+    "bench-results/step2-z2-timescale-20261021/z2_result.json"
+   ],
+   "limitations": [
+    "docs/STEP2_SEMANTIC_UTILITY_SCOPE.md"
+   ],
+   "verdict": [
+    {
+     "file": "bench-results/step2-z2b-seeds-20261021/z2b_result.json",
+     "path": "gate.canonical_gate_pass",
+     "op": "==",
+     "value": true
+    },
+    {
+     "file": "bench-results/step2-z2c-b2-rule-20261021/z2c_result.json",
+     "path": "gate.canonical_gate_pass",
      "op": "==",
      "value": true
     }
@@ -250,7 +293,8 @@
    "title": "Callosum (G2 BodyPort, G2B effect, G2C utility)",
    "deps": [
     "STEP2",
-    "STEP5"
+    "STEP5",
+    "STEP2_EXIT"
    ],
    "code": [
     "v13/body_training.py",
@@ -270,7 +314,8 @@
   "G-B-TIMESCALE-DIVERGENCE-001": {
    "title": "B1/B2 timescale divergence (§85.1)",
    "deps": [
-    "STEP2"
+    "STEP2",
+    "STEP2_EXIT"
    ],
    "code": [
     "scripts/timescale_gate.py",
@@ -332,7 +377,8 @@
   "G-FOCAL-CAPACITY-003": {
    "title": "Focal coalition capacity",
    "deps": [
-    "STEP2"
+    "STEP2",
+    "STEP2_EXIT"
    ],
    "code": [
     "v13/focal.py"

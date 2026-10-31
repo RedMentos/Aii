@@ -37,6 +37,16 @@ PHONE_REQUIRED_FIXTURES.update({
     'docs/proofs/continuation-20261012/rule-transport-ablation/report.json'})
 
 
+# Immutable native-negative STEP2 exit evidence is required on phone so the
+# installed :gates report cannot silently lose the two canonical FAIL verdicts.
+# Keep the original registered bytes; never regenerate or rescore in packaging.
+PHONE_REQUIRED_FIXTURES.update({
+    'bench-results/step2-z2b-seeds-20261021/z2b_result.json',
+    'bench-results/step2-z2c-b2-rule-20261021/z2c_result.json',
+    'bench-results/step2-z2-timescale-20261021/z2_result.json',
+})
+
+
 def _sha_stream(stream):
     h=hashlib.sha256()
     while block:=stream.read(CHUNK):h.update(block)
