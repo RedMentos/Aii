@@ -1,0 +1,70 @@
+name: V13 Run117AU freeze fresh seed1081 fixture and independent oracle
+on:
+  push:
+    branches:
+      - assistant/v13-run117au-c3-plain-source-ablation-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117au-fixture-freeze.yml
+      - v13/code/docs/fixtures/RUN117AU_C3_PLAIN_SOURCE_SEED1081.json
+permissions:
+  contents: read
+jobs:
+  fixture-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Independently verify source and oracle before native runner exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117au-fixture"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          f="v13/code/docs/fixtures/RUN117AU_C3_PLAIN_SOURCE_SEED1081.json"
+          test "$(git hash-object "$f")" = 413b32902ba671d882877d016b4dd10ff9f0b9e0
+          sha256sum "$f" > "$e/FIXTURE_SHA256.txt"
+          python3 - "$f" <<'PY' > "$e/ORACLE_RAW.log"
+          import hashlib,json,re,sys
+          from pathlib import Path
+          p=Path(sys.argv[1]);raw=p.read_bytes();d=json.loads(raw)
+          assert d['schema']=='v13.run117au.c3_plain_source_seed1081.v1'
+          assert d['seed']==1081
+          assert d['arms']==['NO_PRIOR_JSON','EXACT_JSON','EXACT_PLAIN']
+          assert [r['id'] for r in d['rows']]==['Amber','Beacon','Cedar','Delta','Ember','Frost']
+          for r in d['rows']:
+              p=re.fullmatch(r'Binding policy: budget (\d+) euros; deadline (\d+) days; local-only (true|false)\.',r['policy_span'])
+              assert p
+              budget,deadline=int(p[1]),int(p[2]);local_only=p[3]=='true'
+              offers=re.findall(r'Option ([AB]): cost (\d+) euros, duration (\d+) days, local (true|false)\.',r['option_span'])
+              assert [x[0] for x in offers]==['A','B']
+              valid=[(a,int(c)) for a,c,days,local in offers
+                     if int(c)<=budget and int(days)<=deadline
+                     and (not local_only or local=='true')]
+              winner=min(valid,key=lambda x:x[1]) if valid else ('NONE',None)
+              expected={'choice':winner[0],'remaining':None if winner[1] is None else budget-winner[1]}
+              assert expected==r['oracle'],(r['id'],expected,r['oracle'])
+              assert r['prior'].count(r['policy_span'])==1
+              assert r['current'].count(r['option_span'])==1
+              assert r['prior'].startswith('Project '+r['id']+'.')
+              assert r['current'].startswith('Project '+r['id']+'.')
+          print(json.dumps({'sha256':hashlib.sha256(raw).hexdigest(),'rows':len(d['rows']),
+                            'oracles':[r['oracle'] for r in d['rows']],
+                            'native_calls':0,'redmi_measured':False,'step2_promoted':False,
+                            'b3_promoted':False,'jepa_weight':0,'whole_system_complete':False},sort_keys=True))
+          PY
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4fd336de1376e2898222838c23b1fa117f89dc16 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log"
+          git diff --check 4fd336de1376e2898222838c23b1fa117f89dc16 HEAD > "$e/DIFF_RAW.log"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/ORACLE_RAW.log"
+          cat "$e/FIXTURE_SHA256.txt"
+      - name: Preserve frozen fixture proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117au-fixture-freeze-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117au-fixture/
+          if-no-files-found: warn
+          retention-days: 90
