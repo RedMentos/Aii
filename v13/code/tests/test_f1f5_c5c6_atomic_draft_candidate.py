@@ -91,6 +91,37 @@ class F1F5C5C6AtomicDraftTests(unittest.TestCase):
             DEFAULTS, self.memory, self.session, self.current["event_id"], r)["status"],
             "DRAFT_BOUND_SHADOW_NO_COMMIT")
 
+    def test_semantic_key_logging_outside_tx_but_lexical_inside(self):
+        self.correction()
+        class SyntheticSemanticKeys:
+            def __init__(self):
+                self.calls = 0
+                self.last_query = None
+                self.last = {"status": "SYNTHETIC"}
+
+            def mode(self):
+                return "on"
+
+            def similarities(self, query, rows, cancel, deadline, cap=None):
+                self.calls += 1
+                self.last = {"status": "SYNTHETIC"}
+                return {row["id"]: .99 for row in rows}
+
+        keys = SyntheticSemanticKeys()
+        self.memory.semantic_keys = keys
+        r = self.stage()
+        self.assertEqual(r["status"], "DRAFT_STAGED_SHADOW_NO_COMMIT")
+        self.assertGreaterEqual(keys.calls, 1)
+        # The synthetic semantic scorer was used outside BEGIN IMMEDIATE;
+        # inside it the new lexical-only Memory view must not call it.
+        calls_before = keys.calls
+        checked = draft.check_staged_draft(
+            DEFAULTS, self.memory, self.session, self.current["event_id"], r)
+        self.assertEqual(checked["status"], "DRAFT_BOUND_SHADOW_NO_COMMIT")
+        self.assertEqual(keys.calls, calls_before)
+        self.assertEqual(self.store.one(
+            "SELECT COUNT(*) AS n FROM messages WHERE status='FINAL' AND role='assistant'")["n"], 0)
+
     def test_foreign_session_and_tampered_current_source_no_stage(self):
         self.correction()
         before = self.counts()
