@@ -40,6 +40,7 @@ class Run65VerifierTests(unittest.TestCase):
                 }
             payload = {
                 "current_source": fixture["current"],
+                "current_source_sha256": sha(fixture["current"].encode("utf-8")),
                 "policy_source": fixture["b2_source"],
                 "sheet_source": fixture["b1_source"],
                 "typed_jef_action": action,
