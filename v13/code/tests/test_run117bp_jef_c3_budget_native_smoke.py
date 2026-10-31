@@ -42,7 +42,7 @@ class BudgetNativeHarness(unittest.TestCase):
     def test_six_model_free_stubbed_rows_not_native_proof(self):
         with tempfile.TemporaryDirectory() as t:
             out=Path(t)/'out'
-            with patch.object(s,'installed_artifacts',return_value={'synthetic':'not native'}),\
+            with patch.object(s,'pinned_c3',return_value={'synthetic':'not native'}),\
                  patch.object(s,'run_row',side_effect=lambda h,i,row:self.fake(row)) as stub:
                 r=s.run(Path(t)/'fake-installed',out,FIXTURE)
             self.assertEqual(stub.call_count,6)
@@ -58,7 +58,7 @@ class BudgetNativeHarness(unittest.TestCase):
     def test_one_failed_row_keeps_failure_and_denies_signal(self):
         with tempfile.TemporaryDirectory() as t:
             out=Path(t)/'out'
-            with patch.object(s,'installed_artifacts',return_value={'synthetic':'not native'}),\
+            with patch.object(s,'pinned_c3',return_value={'synthetic':'not native'}),\
                  patch.object(s,'run_row',side_effect=lambda h,i,row:self.fake(row,match=row['id']!='Orion')):
                 r=s.run(Path(t)/'fake-installed',out,FIXTURE)
             self.assertEqual(r['status'],'NATIVE_FORMATTER_SMOKE_NO_FULL_SIGNAL')
