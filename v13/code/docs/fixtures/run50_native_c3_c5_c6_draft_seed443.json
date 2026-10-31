@@ -1,0 +1,30 @@
+{
+  "schema": "v13.run50.native_c3_c5_c6_draft_seed443.v1",
+  "seed": 443,
+  "fixtures": [
+    {
+      "id": "Pine",
+      "prior": "Project Pine. Budget 86 euros. Deadline 6 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Pine. Apply the earlier project rules. Option A costs 60 euros, takes 4 days, and is local. Option B costs 35 euros, takes 3 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "A", "remaining": 26}
+    },
+    {
+      "id": "Orchid",
+      "prior": "Project Orchid. Budget 71 euros. Deadline 5 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Orchid. Apply the earlier project rules. Option A costs 65 euros, takes 6 days, and is local. Option B costs 57 euros, takes 4 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "B", "remaining": 14}
+    },
+    {
+      "id": "Slate",
+      "prior": "Project Slate. Budget 28 euros. Deadline 2 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Slate. Apply the earlier project rules. Option A costs 29 euros, takes 1 days, and is local. Option B costs 20 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "NONE", "remaining": null}
+    },
+    {
+      "id": "Amber",
+      "prior": "Project Amber. No budget has been supplied. Deadline 7 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Amber. Apply the earlier project rules. Option A costs 21 euros, takes 5 days, and is local. Option B costs 18 euros, takes 6 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "UNKNOWN", "remaining": null}
+    }
+  ]
+}
