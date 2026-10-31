@@ -1,4 +1,4 @@
-name: V13 Run77 independent B2 source-quote provenance review
+name: V13 Run77 independent B2 source-quote provenance review (400-char frozen)
 on:
   push:
     branches: [assistant/v13-run77-b2-quote-provenance-review-20261031-gpt6]
