@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Independent read-only Run117BP known-seed401 C3 receipt audit.
+"""Read-only independent structural audit of Run117BP known-seed401 C3 smoke.
 
-Structural consistency is not native attestation or independent generalization.
-No writes, model execution, output authority, or promotion.
+A passing report is still only a self-reported Linux-native regression receipt,
+not a model-execution attestation or independent generalization. No writes.
 """
 from __future__ import annotations
 import argparse
@@ -10,6 +10,8 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sqlite3
+import zlib
 
 IDS = ('Helios', 'Lyra', 'Orion', 'Cedar', 'Mistral', 'Nexus')
 FIXTURE_SHA = '8aa69cc86d2e2067e809d4f703ddbff3fc575ea111d7afd97a73012e0bda0e21'
@@ -41,7 +43,7 @@ def unique(pairs):
 
 
 def strict(raw):
-    def reject(_): raise ValueError('nonfinite JSON')
+    def reject(_):raise ValueError('nonfinite JSON')
     return json.loads(raw,object_pairs_hook=unique,parse_constant=reject)
 
 
@@ -100,7 +102,8 @@ def audit(report, fixture, root=None):
               guard.get('output_committed') is False,label+'_GUARD')
         refs=row.get('source_ref_sha256')
         check(type(refs) is list and len(refs)==2 and all(type(x) is str and re.fullmatch('[0-9a-f]{64}',x) for x in refs),label+'_REFS')
-        if type(guard) is dict:check(guard.get('source_ref_sha256')==refs,label+'_GUARD_REFS')
+        if type(guard) is dict:
+            check(guard.get('source_ref_sha256')==refs,label+'_GUARD_REFS')
         messages=row.get('native_prompt')
         if type(messages) is list and len(messages)==2 and all(type(m) is dict for m in messages):
             check(messages[0].get('role')=='system' and messages[1].get('role')=='user',label+'_PROMPT_ROLES')
@@ -130,17 +133,82 @@ def audit(report, fixture, root=None):
         else:errors.append(label+'_OUTPUT_SHAPE')
         check(row.get('oracle_visible_to_native') is False,label+'_ORACLE_VISIBILITY_CLAIM')
         check('error_type' not in row and 'close_error_type' not in row,label+'_ROW_ERRORS')
-    check(report.get('summary')=={'rows':6,'native_final':6,'process_reaped':6,'source_rechecked':6,'formatter_match':6},'SUMMARY')
+    summary=report.get('summary')
+    check(summary=={'rows':6,'native_final':6,'process_reaped':6,'source_rechecked':6,'formatter_match':6},'SUMMARY')
     check(report.get('native_c3_calls')==6 and type(report.get('native_c3_calls')) is int,'NATIVE_CALL_COUNT')
     check(report.get('status')=='NATIVE_FORMATTER_SMOKE_MATCH_6_OF_6','SELF_REPORTED_STATUS')
     if root is not None:
-        for p in Path(root).rglob('*'):
+        errors.extend(audit_persisted_user_sources(root,rows,fixture))
+        root=Path(root)
+        for p in root.rglob('*'):
             if p.is_file() and p.suffix.lower() in EXPORT_SUFFIXES:
                 errors.append('MODEL_EXPORT_PRESENT:'+str(p.relative_to(root)))
     return {'status':'AUDIT_STRUCTURAL_PASS_NO_NATIVE_ATTESTATION' if not errors else 'AUDIT_RED',
             'errors':errors,'rows_checked':len(rows),'native_attested':False,
             'independent_generalization':False,'step2':'UTILITY_FAIL',
             'body_jepa':'UNAVAILABLE','jepa_weight':0,'whole_system_complete':False}
+
+
+def audit_persisted_user_sources(root, rows, fixture):
+    """Independently read exact persisted USER events, refs and blobs (no writes)."""
+    errors=[]
+    for i, item in enumerate(rows):
+        if i>=len(fixture.get('fixtures',[])) or type(item) is not dict:
+            errors.append('STORE_ROW_'+str(i)+'_MISSING');continue
+        label='STORE_'+str(i)
+        ident=fixture['fixtures'][i]['id']
+        home=Path(root)/('home-'+ident)
+        dbpath=home/'data/db/brain.sqlite3'
+        if not dbpath.is_file():
+            errors.append(label+'_DB_MISSING');continue
+        try:
+            with sqlite3.connect(dbpath.as_uri()+'?mode=ro',uri=True,timeout=2) as db:
+                db.execute('PRAGMA query_only=ON')
+                events=db.execute('SELECT id,session_id,source_id,generation_id,packet '
+                                  'FROM events ORDER BY rowid DESC').fetchall()
+                user=[]
+                for eid,session,source,generation,raw in events:
+                    packet=strict(raw)
+                    if packet.get('kind')=='USER_TEXT' and packet.get('authority')=='AUTHORITATIVE':
+                        user.append((eid,session,source,generation,packet))
+                if len(user)!=2:
+                    errors.append(label+'_LATEST_TWO_USER');continue
+                current,prior=user
+                if prior[1]!=current[1] or prior[3]!=current[3]:
+                    errors.append(label+'_SESSION_GENERATION');continue
+                refs=[]
+                for name,record in (('prior',prior),('current',current)):
+                    eid,session,source,generation,packet=record
+                    ref=packet.get('source_ref')
+                    if (type(ref) is not dict or set(ref)!={'source_id','sha256','char_start','char_end','modality'}
+                            or ref.get('source_id')!=source or packet.get('event_id')!=eid
+                            or packet.get('brain_generation_id')!=generation
+                            or packet.get('provenance')!=[ref]):
+                        errors.append(label+'_'+name+'_ENVELOPE');continue
+                    row=db.execute('SELECT hash,kind,bytes,chars,deleted FROM sources WHERE id=?',(source,)).fetchone()
+                    if row is None or row[1]!='USER' or row[4]!=0:
+                        errors.append(label+'_'+name+'_SOURCE_ROW');continue
+                    path=home/'data/blobs'/row[0]
+                    if path.is_file():blob=path.read_bytes()
+                    else:
+                        zpath=path.with_name(row[0]+'.z')
+                        if not zpath.is_file():
+                            errors.append(label+'_'+name+'_BLOB_MISSING');continue
+                        blob=zlib.decompress(zpath.read_bytes())
+                    text=blob.decode('utf-8')
+                    if (sha(blob)!=row[0] or ref.get('sha256')!=row[0]
+                            or row[2]!=len(blob) or row[3]!=len(text)
+                            or type(ref.get('char_start')) is not int or ref['char_start']!=0
+                            or type(ref.get('char_end')) is not int or ref['char_end']!=len(text)
+                            or ref.get('modality')!='text'
+                            or text!=fixture['fixtures'][i][name]):
+                        errors.append(label+'_'+name+'_SOURCE_BYTES')
+                    refs.append(sha(canonical(ref).encode()))
+                if len(refs)!=2 or item.get('source_ref_sha256')!=refs:
+                    errors.append(label+'_REF_DIGEST')
+        except (sqlite3.Error,ValueError,TypeError,KeyError,UnicodeError,OSError,zlib.error):
+            errors.append(label+'_READ_ERROR')
+    return errors
 
 
 def main():
