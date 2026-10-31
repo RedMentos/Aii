@@ -1,0 +1,32 @@
+name: V13 Run115K independent raw audit synthetic guard tests
+on:
+  push:
+    branches:
+      - assistant/v13-run115k-independent-raw-audit-20261031-hourly11
+permissions:
+  contents: read
+concurrency:
+  group: v13-run115k-source-only-20261031
+  cancel-in-progress: false
+jobs:
+  model-free-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Seven synthetic guard tests and compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd v13/code
+          python3 -m unittest discover -s tests -p 'test_run115k_original_raw_audit.py' -v
+          python3 -m py_compile scripts/run115k_original_raw_audit.py tests/test_run115k_original_raw_audit.py
+      - name: Privacy and diff integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5ad05ec4c70d75a9e872ba0b6083481a01b04394 --head HEAD --no-worktree
+          git diff --check 5ad05ec4c70d75a9e872ba0b6083481a01b04394 HEAD
