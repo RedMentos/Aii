@@ -1,0 +1,26 @@
+# BUILD_STATE — Run115K-R independent cross-organ authority and ContextPlan review, 2026-10-31
+
+## Scope and owner
+Owner: GPT-6 independent review; draft PR #1493 against Run115K owner branch `assistant/v13-run115k-b1b2-jef-c3-source-bridge-20261031-hourly11`, exact unchanged base `5edf9d64e2c0793a942e99f0af2f9c049d477a5b`. Source verified/tested HEAD `08e39e4ebd5606a3e5f83635e3f81e7a6625e300`. Canon `V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md` blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged. No owner branch rewrite, no production Runtime, model, seed, fixture, registered cohort, approval or age change.
+
+## Concrete code and tests
+- `v13/b1b2_jef_c3_source_role_bridge_candidate.py`: reject typed JEF user-role JSON candidate/hash/provenance/authority disagreement with returned metadata; require final deterministic JEF zero-authority/status/no native/model calls/no writes/no tools. Before/after prompt assembly validate persisted ContextPlan packet ID, event, generation, producer, C3 role, SHADOW mode, applied=false, exact two SourceRefs and byte-stable payload.
+- `tests/test_run115k_postassembly_authority_review.py`: 5 synthetic collaborator tests, including 10 pre-fix failures and missing-plan negative.
+- `tests/test_run115k_realstore_bridge_review.py`: 8 real SQLite/Context OS tests using explicitly synthetic, wrong B1/B2 runners. Covers exact two USER SourceRefs, untrusted hypotheses and zero verified body quotes, deterministic JEF A/10, no output/tools, OFF, ACTIVE, stale correction, tampered OfferPacket, deleted prior source, nine ContextPlan corruption cases, and late postassembly tamper.
+- CI `.github/workflows/v13-run115k-postassembly-authority-review.yml`: isolated pinned Python dependencies, source-only; raw logs/exits, manifest, privacy and diff receipts. No native models downloaded or run.
+
+## Original evidence, including failed attempts
+1. Original pre-fix authority RED: Actions `41223522704`, HEAD `a3bdd1b9b45afd80aad5401ba12614f68bd4094b`, artifact `13050379617`, SHA256 `3beacae427e73fac013cfc7d9e05157980b8de009a49e985fa48c1665c4d2842`. New adversarial tests had 10 failures; inherited JEF/B1B2 tests passed. Private Library `/V13-Checkpoints/2026-10-31/Run115K-Authority-Review/run115k-authority-original-red-a3bdd1b9.zip`, ID `libfile_597eb1a7f6d08191b33f858dbfde87b5`, byte-identical.
+2. Initial guard GREEN: Actions `41223556232`, HEAD `c9d2bac5fea9531243aaa917b6232c25624222db`, artifact `13050817999`, SHA256 `c5ec7f016bdb6b37143cc54c43622fcd2ef73a4738d29b1b3c254667e160ef7a`, private Library `libfile_2249de7f58bc8191b75edd9964b00e91`, byte-identical.
+3. Real Store package GREEN: Actions `41223662925`, HEAD `1ec6e3e3aab2af3b05bc67e8c1860f5de3b52b29`, 28/28 tests, artifact `13050763570`, SHA256 `4b860d31465860e19e03c2d0ee5702dba2d3bd28cdff9855487703d60e231489`, private Library `libfile_40c5068dc1f08191a94af4cf81b6f392`, byte-identical.
+4. Original persisted ContextPlan RED: Actions `41223858122`, HEAD `5a066ddc4523d7f31ef782a34e6dcd18c4c4f11a`, artifact `13050603078`, SHA256 `89ed108c7df7ad7877ec4b4c72866cb2103ae94542d8cc03bdf1a8bc54d56c25`. Real SQLite accepted tampered ContextPlan provenance (one failing new test), all other suites green. Private Library `libfile_e65d6cad25a081919799f8f9cc515add`, byte-identical.
+5. Final verified GREEN: Actions `41224067720`, exact tested HEAD `08e39e4ebd5606a3e5f83635e3f81e7a6625e300`, artifact `13051425417`, SHA256 `fd5ea34c71334070a5b89c0bb207ead2ea40e3fc7c4ae67342fcd68069d767cb`. Independent ZIP CRC PASS, 20/20 SHA256SUMS entries PASS. `NEW 5/5`, `REAL 8/8`, inherited `JEF 7/7`, inherited `BODY 11/11`: **31/31 PASS**. COMPILE/PRIVACY/DIFF exits 0, privacy CLEAN. Private Library `/V13-Checkpoints/2026-10-31/Run115K-Authority-Review/run115k-final-nine-plan-guards-green-08e39e4e.zip`, ID `libfile_cfbad4b4da7c8191ae0919b8ec8628a6`, independently materialized byte-identical.
+
+## Open gates and next exact action
+No full unfiltered suite on this branch; Run105 full-suite original RED (5 FAIL/64 ERROR) preserved, not silently promoted. No native inference in this review. Run115C original native B1/B2 quote structural RED, Run115I C3 NO_GAIN and Run115J narrow typed formatter signal remain separate, unchanged. Age0 RECORD_ONLY; STEP2 EXIT EVIDENCE_NOT_PASSING/UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE, World-JEPA SHADOW; `jepa_weight=0`; Redmi UNMEASURED; whole V13 INCOMPLETE.
+
+Next owner/reviewer command from repository root after fetching PR #1493:
+`cd v13/code && PYTHONPATH=.:scripts:tests python -m unittest discover -s tests -p 'test_run115k_*review.py' -v`
+Then run unfiltered suite and `python v13/code/scripts/public_repo_privacy_scan.py --base 5edf9d64e2c0793a942e99f0af2f9c049d477a5b --head <review-head> --no-worktree` from repository root. Independent reviewer should examine the two read-only plan checks and zero-authority invariants; do not merge until approved. For substantive next work, preregister a **new disjoint native** B1/B2→JEF→C3 cross-organ experiment with pinned source/model hashes, quote failure preserved and a fixed nonpromoting scorer; check current native owner first. Redmi/STEP2/learning gates still require their own acceptance evidence.
+
+Platform remaining budget: UNKNOWN. This is a durable intermediate checkpoint, not completion.
