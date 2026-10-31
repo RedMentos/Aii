@@ -1,0 +1,17 @@
+# BUILD_STATE — Run109 pinned actual Linux native runner version, 2026-10-31
+
+Owner GPT-6. Review-only child of Run108 #1478 exact parent `4e0ace8463885edfecf78d162ac9a37197379070`. Prereg `6005091c70a1cee2a13b72b309beaf6d38099830` before source. New runner `scripts/run109_real_runner_activation_20261031.py` commit `341feb85935a392171e5703442cac02caa5374bd`; workflow `1a1929c0e29f7d0274b2df622743f1538cfa7246`. No production code, Canon, model catalog, frozen cohort, seed or registered original result changed.
+
+Exact test: download original catalog-pinned b10964 Linux x86_64 tar; invoke production `install_llama_runner` with an existing legacy runner and manifest; real safe_tar extraction, real candidate `llama-server --version` and live re-invocation; verify manifest hash, old target preservation, unique staging, idempotent second install. Repeat from extracted current phone source ZIP with same pinned archive cache; compare native version receipts and verify all source manifest hashes. 10/10 inherited model-free regressions; privacy/diff; preserve raw RED/GREEN.
+
+The Linux ELF `--version` is a native **binary compatibility** check, not native model inference or Redmi proof. If binary cannot execute on Ubuntu, retain failure and diagnose; do not substitute a new runner. Original Run105 unfiltered 4893-test suite RED remains separate. Next: close original Actions raw ZIP SHA/CRC/inner SHA and private backup; then independent C3/B1/B2 utility work and real Redmi acceptance.
+
+Negative gates unchanged: Age0 RECORD_ONLY; STEP2_EXIT EVIDENCE_NOT_PASSING; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; Redmi UNMEASURED; whole V13 INCOMPLETE. Remaining platform budget UNKNOWN.
+
+## Original Linux-native version evidence — GREEN
+
+Actions `41213224757` terminal SUCCESS at exact tested HEAD `1a1929c0e29f7d0274b2df622743f1538cfa7246`. Original artifact ID `13047610618`, 15,134,114 bytes, SHA256 `86c935de7edbbc4c23c5a25e280254fd0ff1f690ea9455abb19503aee0fa5775`, CRC PASS and **30/30** inner SHA256SUMS PASS; original HEAD and all nine result stages exit0. Linux pinned b10964 tar original SHA256 `9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443`, native executable SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`. **Actual ELF** `llama-server --version` ran on Ubuntu: `version: 0.4.1-dev (build 10964, commit b29c606e2)`, built with GNU 11.4.0 for Linux x86_64. Old target preserved, manifest SHA matched, second install no-op, exactly one isolated staging dir. Checkout and extracted phone ZIP native version reports exactly equal; `ACTUAL_PINNED_RUNNER_VERSION_PARITY_PASS`. Inherited model-free activation regression **10/10** PASS, compile, privacy CLEAN, diff PASS. Phone ZIP SHA256 `cf49d6b12149819628830397e9d0b87eb86b7ba6c5ef329124888143e58beb2d`, CRC and **2110/2110** manifest hashes PASS.
+
+Original ZIP backed up privately `/V13-Checkpoints/2026-10-31/Run109-Actual-Native-Version/ORIGINAL_GREEN_41213224757_SHA86c935de.zip`, re-materialized SHA256 **byte-identical** to original. This is not the rejected anyone-writable Drive location.
+
+**Claim limit:** Linux-native `--version` only. No GGUF loaded, no C3/Body/Needle inference, no Redmi/Termux run, no memory or latency proof, no utility/STEP2/B3/JEPA/age gate promotion. The original Run105 full-suite RED remains. Next: execute a separate original pinned C3 source-to-answer regression on extracted current phone source, with a serialized heavy native owner and independently audited original raw.
