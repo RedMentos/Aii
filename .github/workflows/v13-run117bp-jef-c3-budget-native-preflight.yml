@@ -30,7 +30,7 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          03be1a5bf9600cf4414810763154ece33e84565b v13/code/scripts/run117bp_jef_c3_budget_native_smoke.py
+          5818efb35c53ffe814041de7c11e86539eeae82f v13/code/scripts/run117bp_jef_c3_budget_native_smoke.py
           58186fb2bc894956fd0025f32943ea2a0c246e6d v13/code/v13/agi/jef_c3_budget_formatter_shadow_run117bo.py
           180e69764dcb58a3acc8899ea95b3fbf399812d6 v13/code/tests/test_run117bp_jef_c3_budget_native_smoke.py
           466c9f51905eb981b782f5b7b8aa7818eb66a893 v13/code/tests/test_run117bo_jef_c3_budget_formatter_shadow.py
