@@ -34,9 +34,11 @@ class FinalAgreementShadowTests(unittest.TestCase):
         c = self.store.event(session, f["current"])
         return p["source_ref"], c["source_ref"], c["event_id"], session
 
-    def call(self, f, output=None):
+    _UNSET = object()
+
+    def call(self, f, output=_UNSET):
         p, c, event, session = self.pair(f)
-        raw = json.dumps(f["oracle"]) if output is None else output
+        raw = json.dumps(f["oracle"]) if output is self._UNSET else output
         return gate.check(self.store, p, c, event, session, raw)
 
     def counts(self):
