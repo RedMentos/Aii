@@ -1,0 +1,101 @@
+name: V13 Run117X independent original Run117W C3 native artifact audit
+on:
+  push:
+    branches:
+      - assistant/v13-run117x-c3-original-artifact-audit-20261031
+    paths:
+      - .github/workflows/v13-run117x-independent-original-audit.yml
+      - v13/code/scripts/run117x_independent_c3_artifact_audit.py
+      - v13/code/tests/test_run117x_independent_c3_artifact_audit.py
+      - v13/code/docs/RUN117X_*
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-original-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      ORIGINAL_ARTIFACT_ID: '13053138285'
+      ORIGINAL_ARTIFACT_SHA: 'aa4330b3609778a9910265bd7df71723b4ea432f0342e27bc07b6ee044059cde'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Independently rehash and rescore original ZIP, then run mutation tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117x-original-audit"
+          original="$RUNNER_TEMP/run117w-original-native.zip"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          set +e
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$ORIGINAL_ARTIFACT_ID/zip" \
+            --output "$original" > "$e/DOWNLOAD_RAW.log" 2>&1
+          download_rc=$?
+          if test "$download_rc" -eq 0; then
+            printf '%s  %s\n' "$ORIGINAL_ARTIFACT_SHA" "$original" | sha256sum -c - > "$e/OUTER_SHA_RAW.log" 2>&1
+            outer_rc=$?
+          else
+            outer_rc=125;echo DOWNLOAD_RED > "$e/OUTER_SHA_RAW.log"
+          fi
+          if test "$outer_rc" -eq 0; then
+            python3 v13/code/scripts/run117x_independent_c3_artifact_audit.py "$original" > "$e/AUDIT_RAW.log" 2>&1
+            audit_rc=$?
+            (cd v13/code && env PYTHONPATH=. V13_RUN117W_ORIGINAL_ZIP="$original" \
+              python3 -m unittest -v tests.test_run117x_independent_c3_artifact_audit) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            audit_rc=125;test_rc=125
+            echo PREREQUISITE_RED > "$e/AUDIT_RAW.log"
+            echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          python3 -m compileall -q v13/code/scripts/run117x_independent_c3_artifact_audit.py \
+            v13/code/tests/test_run117x_independent_c3_artifact_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 978be6017a49365aa401c848a429913e88ef7b75 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 978be6017a49365aa401c848a429913e88ef7b75 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DOWNLOAD:$download_rc" "OUTER:$outer_rc" "AUDIT:$audit_rc" \
+                   "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          set -e
+          python3 - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DOWNLOAD','OUTER','AUDIT','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117x.independent_original_artifact_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'original_artifact_id':13053138285,
+             'original_artifact_sha256':'aa4330b3609778a9910265bd7df71723b4ea432f0342e27bc07b6ee044059cde',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_called_by_auditor':False,'original_c3_scores':[0,0,6],
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          cat "$e/AUDIT_RAW.log"
+          for rc in "$download_rc" "$outer_rc" "$audit_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original independent GREEN or RED audit receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117x-independent-original-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117x-original-audit/
+          if-no-files-found: warn
+          retention-days: 90
