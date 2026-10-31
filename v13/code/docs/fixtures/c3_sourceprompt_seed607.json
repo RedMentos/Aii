@@ -1,0 +1,42 @@
+{
+  "schema": "v13.c3_sourceprompt_seed607.v1",
+  "seed": 607,
+  "max_tokens": 64,
+  "arms": [
+    "PLAIN",
+    "SOURCE_FIRST",
+    "JSON_ENVELOPE"
+  ],
+  "cases": [
+    {
+      "id": "Ambercrest",
+      "source": "Project Ambercrest has a budget of 73 Euro. What is Project Ambercrest's budget?",
+      "expected": 73,
+      "order": [
+        "PLAIN",
+        "SOURCE_FIRST",
+        "JSON_ENVELOPE"
+      ]
+    },
+    {
+      "id": "Foxglove",
+      "source": "For Project Foxglove, the approved budget is 28 Euro. How much is the budget for Project Foxglove?",
+      "expected": 28,
+      "order": [
+        "SOURCE_FIRST",
+        "JSON_ENVELOPE",
+        "PLAIN"
+      ]
+    },
+    {
+      "id": "Northstarlet",
+      "source": "The budget for Project Northstarlet is 91 Euro. Please state its budget.",
+      "expected": 91,
+      "order": [
+        "JSON_ENVELOPE",
+        "PLAIN",
+        "SOURCE_FIRST"
+      ]
+    }
+  ]
+}
