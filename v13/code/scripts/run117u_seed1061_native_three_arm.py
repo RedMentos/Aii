@@ -21,7 +21,9 @@ from scripts.run117s_body_complementarity_preflight import (
     ARMS, SEED, FIXTURE_SHA, SYSTEM, fixture, _span, _messages,
 )
 from v13.b1b2_topic_partition_candidate import TopicPartitionOfferConsumer
-from v13.b1b2_c3_source_envelope_candidate import build_c3_source_envelope
+from v13.b1b2_c3_source_envelope_candidate import (
+    build_c3_source_envelope, _latest_authoritative_user,
+)
 from v13.b2_salient_source_excerpt_shadow_candidate import guarded_salient_b2_offer
 from v13.common import atomic_write, dumps
 from v13.runtime import Runtime
@@ -236,16 +238,18 @@ def _run_row(row, index, work, report, save, installed):
     save()
     try:
         prior = runtime.store.event(runtime.session, row["prior"])
-        current = runtime.store.event(runtime.session, row["current"])
         entry["prior_source_ref"] = prior["source_ref"]
+        # Preserve actual causal turn order: native prior B2 inference precedes
+        # the durable current USER event, as in the frozen Run117S preflight.
+        prior_offer = _observe(runtime, prior, "B2_GIST", "prior",
+                               entry, report, save)
+        current = runtime.store.event(runtime.session, row["current"])
         entry["current_source_ref"] = current["source_ref"]
         prompts = _source_messages(runtime, prior, current, row)
         entry["source_prompt_sha256"] = {
             arm: _safe_messages(messages, row, arm)
             for arm, messages in prompts.items()}
         # The Body path may fail independently; do not lose the two controls.
-        prior_offer = _observe(runtime, prior, "B2_GIST", "prior",
-                               entry, report, save)
         b1 = _observe(runtime, current, "B1_DETAIL", "current",
                       entry, report, save)
         b2 = _observe(runtime, current, "B2_GIST", "current",
@@ -284,14 +288,15 @@ def _run_row(row, index, work, report, save, installed):
             before = len(runtime.pool.release_history)
             try:
                 # Fail closed on a later USER correction before C3 starts.
-                latest = runtime.store.one(
-                    "SELECT id FROM messages WHERE role='user' AND "
-                    "session_id=? AND status='FINAL' ORDER BY id DESC LIMIT 1",
-                    (runtime.session,))
-                if latest is None:
+                if (_latest_authoritative_user(
+                        runtime.store, runtime.session) !=
+                        current["event_id"]):
                     raise ValueError("CURRENT_USER_SOURCE_STALE_RED")
-                if runtime.store.read_source(current["source_ref"]) != row["current"]:
-                    raise ValueError("CURRENT_USER_SOURCE_CHANGED_RED")
+                if (runtime.store.read_source(prior["source_ref"]) !=
+                        row["prior"]
+                        or runtime.store.read_source(current["source_ref"]) !=
+                        row["current"]):
+                    raise ValueError("USER_SOURCE_CHANGED_RED")
                 runner = runtime.pool.get("C3_LANGUAGE")
                 report["native_c3_calls"] += 1
                 save()
