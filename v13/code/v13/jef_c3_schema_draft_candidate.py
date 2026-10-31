@@ -117,11 +117,14 @@ def stage_schema(memory, session, event_id, current_ref, memory_ids, generator,
         raw = output.encode("utf-8", "strict")
         evidence["output_sha256"] = hashlib.sha256(raw).hexdigest()
         evidence["output_bytes"] = len(raw)
+        evidence["raw"] = output
         return action
 
     result = _stage(memory, session, event_id, current_ref, memory_ids, checked,
                     operator_opt_in=True, callback_opt_in=True,
-                    approval_receipt=None)
+                    approval_receipt=None,
+                    formatter_receipt=lambda: evidence.get("raw"))
+    evidence.pop("raw", None)
     result = dict(result)
     result["schema_adapter"] = True
     result["schema_sha256"] = SCHEMA_SHA256
@@ -130,7 +133,14 @@ def stage_schema(memory, session, event_id, current_ref, memory_ids, generator,
         result["schema_formatter_status"] = "SCHEMA_EXACT_SHADOW"
         result["schema_output_sha256"] = evidence["output_sha256"]
         result["schema_output_bytes"] = evidence["output_bytes"]
-        result["schema_receipt_persisted"] = False
+        receipt = result.get("schema_receipt")
+        result["schema_receipt_persisted"] = (
+            result.get("schema_receipt_persisted") is True
+            and type(receipt) is dict
+            and receipt.get("output_sha256") == evidence["output_sha256"]
+            and receipt.get("output_bytes") == evidence["output_bytes"]
+            and receipt.get("schema_sha256") == SCHEMA_SHA256
+            and receipt.get("prompt_sha256") == result.get("prompt_sha256"))
         result["schema_c3_receiver_success"] = False
     else:
         result["schema_formatter_status"] = "SCHEMA_REJECTED_OR_SOURCE_RED"
