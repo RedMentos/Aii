@@ -1,0 +1,22 @@
+# Run77 48-character summary-cap forensic — GREEN diagnostic, original scientific RED (2026-10-31)
+
+**Owner:** GPT-6, independent review branch `assistant/v13-run77-summary-cap-forensic-20261031-gpt6`, parent Run84 PR #1444 `7f5875e46036dd1278303dd74461a7bb6dfc24da`. Original Run77 cohort seed797, scorer, models, native code and failed original independent verifier unchanged. Protocol `RUN77_SUMMARY_CAP_FORENSIC_PROTOCOL_20261031.md` committed `ddc8c07f84d99210785895f5b50ce3e5b3a91d9e` before new code.
+
+## Concrete native evidence and bottleneck
+
+- Original Run77 compact forensic replay Actions `41187084497`, artifact `13037561711`, downloaded ZIP SHA256 **`62ebd85d4c3defb40c15c03148d24aea3017687217f2299db561ac17ceba0e5c`** (173663 bytes), CRC PASS, **55/55** inner manifest hashes PASS. Original ZIP contains **two later unhashed size receipts** `SIZE_EXIT.txt` and `SIZE_RAW.log`; not silently treated as sealed. Original **VERIFY_EXIT=1**, original diagnostic `ValueError:RUN77_B2_PRIOR_EVIDENCE_RED`, original scientific verdict `B1B2_CONTEXT_UTILITY_SCIENTIFIC_RED`. All negative rows and the original verifier failure remain.
+- Independent reparse of original native report: 12 paired rows, six seed797 projects, **36/36 reported native B1/B2 calls FINAL** with correct model identity and process release. **All 36/36 persisted summaries are exactly 48 characters**. Original registered strict semantic scores **B1_DETAIL WITH_PRIOR 0/6 and CURRENT_ONLY 0/6; B2_GIST WITH_PRIOR 0/6 and CURRENT_ONLY 0/6**. Original driver reports B2 prior evidence 5/6, but stricter independent verifier rejects that predicate (original RED retained).
+- Source-based mechanical explanation: frozen Run77 runner sets `observer_tokens=96` while inheriting `offer_quote_min_chars=80` from Run52. Frozen `v13/cognition.py:offer_schema` budgets chars after 30 JSON tokens and prioritizes two source quotes and uncertainty. Its exact formula produces **summary maxLength=48** at 96 observer tokens; **84** at 160 with same quote minimum. All 36 original 48-char summaries saturate the enforced limit. This is a plausible confound for a strict scorer requiring explicit option and remaining budget, **not** evidence that a larger budget would improve semantic accuracy or prove B1/B2 complementarity.
+
+## New independent read-only software and checks
+
+- `v13/code/scripts/run77_summary_cap_forensic.py` remote Git blob **`e975103ec65b57bfbf8f1edecc300775ece0815b`**; `v13/code/tests/test_run77_summary_cap_forensic.py` remote Git blob **`2361b73e23d5c65c2dc519d9198f67d52df44726`**. Source transfer verified against local hashes after correcting an initial incomplete file-transfer attempt before CI. No frozen Run77 file changed.
+- Local `python -m unittest discover -s /mnt/data/v13_run77_cap -p 'test_*.py' -v` **15/15 PASS**; local auditor on original ZIP PASS (diagnostic, not original scientific result).
+- Read-only Actions `41193117661`, exact tested HEAD `b2110c99239cd6caf8d427bab685523f0ef2b8db`, terminal **SUCCESS**, **15/15** adversarial tests, original ZIP digest, CRC, 55/55 manifest hashes, original verifier RED preservation, COMPILE/PRIVACY/DIFF exit0, privacy CLEAN. CI artifact `13039692368` ZIP SHA256 **`a9bc08f2d355b9b21118e89d5e50421acf3627505b907fc02e1dff8d66571459`** (168637 bytes), CRC PASS, **17/17** manifest hashes, seven stage exits zero.
+- Private Library `/V13-Checkpoints/2026-10-31/Run77-Summary-Cap-Forensic/`: original compact ZIP and new CI ZIP uploaded, re-materialized, verified **BYTE_IDENTICAL** to downloaded bytes; source and test files also backed up.
+
+## Binding limits and next command
+
+Do not modify frozen Run77 score/seed/model/source hashes or reinterpret original scientific RED. No new native run in this package. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; whole V13 incomplete. Historical Run70 and full-suite REDs remain.
+
+**Next:** inspect independently owned Run85 one-project real-B1/B2+JEF+C3 engineering pilot with 160 observer tokens when its native result exists. Then preregister a fresh disjoint paired 96-vs-160 (or 256) token/quote-budget semantic ablation, unchanged model pins, source hash bindings and strict scorer, serialized native execution after heavy owner release; no conclusion before data. **Remaining platform budget:** UNKNOWN. **Stop reason at this checkpoint:** none; continue other authorized work.
