@@ -1,0 +1,40 @@
+{
+  "schema": "v13.run117u.branch_build_state.v1",
+  "branch": "assistant/v13-run117u-seed1061-native-threearm-20261031-1923",
+  "base_sha": "2448c8d06085c4ac728c6bc1f677ff474a85c089",
+  "pr": 1501,
+  "owner": "Run117U isolated native research",
+  "source_native_sha": "a85eb4d3d0050f26404517d49c51c7843f0e933e",
+  "original_native_run": 41229372694,
+  "original_native_artifact_id": 13053405975,
+  "original_native_zip_sha256": "eca6ca3801c98fb1afc9cdb41c39f3ba27a4438cb89ad103820397716da699a8",
+  "original_status": "PARTIAL_BODY_QUOTE_RED",
+  "native_body_calls": 18,
+  "native_c3_calls": 15,
+  "strict_scores": {
+    "RAW_FULL_SOURCES": 0,
+    "SOURCE_SPANS_ONLY": 0,
+    "BODY_VERIFIED_QUOTES": 0
+  },
+  "recorded": {
+    "RAW_FULL_SOURCES": 6,
+    "SOURCE_SPANS_ONLY": 6,
+    "BODY_VERIFIED_QUOTES": 3
+  },
+  "preflight_run": 41229227104,
+  "preflight_tests_passed": 24,
+  "original_raw_private_path": "/V13-Checkpoints/2026-10-31/Run117U-Native-Seed1061/run117u-original-native-red-a85eb4d3.zip",
+  "independent_audit_pr": 1502,
+  "age0": "RECORD_ONLY",
+  "step2_exit": "EVIDENCE_NOT_PASSING",
+  "b3": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "redmi_measured": false,
+  "whole_system_complete": false,
+  "next": "Use Run117V independent original ZIP audit; preregister separate source-grounded C3/Body diagnostic cohort without altering seed1061",
+  "blocked": [
+    "Redmi device not available",
+    "No complete three-arm native C3 evidence; missing Body policy/option quotes in 3 cases"
+  ]
+}
