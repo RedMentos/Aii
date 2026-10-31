@@ -1,0 +1,59 @@
+name: V13 Run90 strict route source lineage software regression
+on:
+  push:
+    branches:
+      - assistant/v13-run90-strict-route-lineage-20261031-auto11
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      PYTHONPATH: ".:tests:scripts"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source and focused regression controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run90"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run90-venv"
+          py="$RUNNER_TEMP/run90-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          (cd v13/code && "$py" -m unittest -v \
+            tests.test_run90_exact_route_lineage \
+            tests.test_c2_route_runtime_strict_run12j \
+            tests.test_source_handoff_candidate \
+            tests.test_native_firing_runtime_candidate) > "$e/TEST_RAW.log" 2>&1
+          echo 0 > "$e/TEST_EXIT.txt"
+          "$py" -m compileall -q v13/code/scripts/integrated_candidates.py v13/code/tests/test_run90_exact_route_lineage.py
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 626c4eba6b7dcb66a063cfb354b16e57e01b395b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 626c4eba6b7dcb66a063cfb354b16e57e01b395b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/TEST_RAW.log"
+          echo RUN90_SOFTWARE_ONLY_NO_PROMOTION
+      - name: Upload original raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run90-route-lineage-${{ github.sha }}
+          path: ${{ runner.temp }}/run90/
+          if-no-files-found: error
+          retention-days: 90
