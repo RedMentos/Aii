@@ -93,5 +93,17 @@ class PriorBindingAdversarialTests(unittest.TestCase):
             "SHADOW_SALIENT_B2_EXCERPT_VERIFIED")
 
 
+    def test_prior_durable_user_sequence_cannot_follow_current(self):
+        current_id = self.runtime.store.one(
+            "SELECT id FROM messages WHERE event_id=? AND role='user'",
+            (self.current["event_id"],))["id"]
+        with self.runtime.store.tx() as db:
+            db.execute(
+                "UPDATE messages SET id=? WHERE event_id=? AND role='user'",
+                (current_id + 1000, self.prior["event_id"]))
+        self.assertNotEqual(
+            self.select()["status"], "SHADOW_SALIENT_B2_EXCERPT_VERIFIED")
+
+
 if __name__ == "__main__":
     unittest.main()
