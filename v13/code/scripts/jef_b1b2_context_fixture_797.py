@@ -103,3 +103,23 @@ def strict_summary(summary, action, remaining):
         re.search(r"\bremaining\b.{0,30}\b" + n + r"\b", text)
         or re.search(r"\b" + n + r"\b.{0,30}\bremaining\b", text))
     return int(bool(chosen) and bool(rem))
+
+
+def scientific_verdict(scores, b2_prior_evidence):
+    """Registered paired thresholds; never promotes STEP2."""
+    if (type(scores) is not dict or set(scores) != set(ROLES)
+            or type(b2_prior_evidence) is not int
+            or not 0 <= b2_prior_evidence <= 6):
+        raise ValueError("RUN77_SCORES_SHAPE_RED")
+    passed = True
+    for role in ROLES:
+        arms = scores[role]
+        if (type(arms) is not dict or set(arms) != set(ARMS)
+                or any(type(n) is not int or not 0 <= n <= 6
+                       for n in arms.values())):
+            raise ValueError("RUN77_ARMS_SHAPE_RED")
+        passed &= (arms["WITH_PRIOR"] >= 3
+                   and arms["WITH_PRIOR"] - arms["CURRENT_ONLY"] >= 2)
+    passed &= b2_prior_evidence >= 3
+    return ("B1B2_SMALL_CONTEXT_UTILITY_SIGNAL_SHADOW"
+            if passed else "B1B2_CONTEXT_UTILITY_SCIENTIFIC_RED")
