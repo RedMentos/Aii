@@ -62,9 +62,11 @@ class RestartDraftTests(unittest.TestCase):
         staged = self.stage()
         self.reopen()
         r = self.check(staged)
-        self.assertEqual(r["status"], replay.STATUS, r)
+        self.assertEqual(r["status"], replay.QUARANTINED, r)
         self.assertTrue(r["callback_json_digest_replayed"])
-        self.assertTrue(r["c6_preflight_only"])
+        self.assertFalse(r["c6_preflight_only"])
+        self.assertFalse(r["resumable"])
+        self.assertTrue(r["recovery_interrupted"])
         self.assertFalse(r["real_tty_approved"])
         self.assertFalse(r["output_committed"])
         self.assertFalse(r["callback_invoked"])
@@ -72,6 +74,26 @@ class RestartDraftTests(unittest.TestCase):
         self.assertEqual(self.r.store.one(
             "SELECT status FROM actions WHERE id=?",
             (staged["c5_action_id"],))["status"], "SHADOW_DRAFT")
+
+    def test_before_restart_draft_only_readonly_shadow(self):
+        staged = self.stage()
+        r = self.check(staged)
+        self.assertEqual(r["status"], replay.STATUS, r)
+        self.assertTrue(r["c6_preflight_only"])
+        self.assertFalse(r["resumable"])
+        self.assertEqual(self.r.store.one(
+            "SELECT status FROM messages WHERE id=?",
+            (staged["draft_message_id"],))["status"], "DRAFT")
+
+    def test_final_status_forgery_after_restart_denied(self):
+        staged = self.stage()
+        self.reopen()
+        self.r.store.db.execute(
+            "UPDATE messages SET status='FINAL' WHERE id=?",
+            (staged["draft_message_id"],))
+        self.r.store.db.commit()
+        self.assertEqual(self.check(staged)["status"],
+                         "C5_F3_OR_DRAFT_BINDING_RED")
 
     def test_restart_off_and_fake_tty_denied(self):
         staged = self.stage()
