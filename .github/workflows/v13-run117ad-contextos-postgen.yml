@@ -58,6 +58,7 @@ jobs:
               "$py" -m unittest -v \
               tests.test_jef_span_c3_postgen_shadow_candidate \
               tests.test_b1b2_jef_span_c3_bridge_candidate \
+              tests.test_b1b2_jef_span_c3_postgen_candidate \
               tests.test_b1b2_c3_source_envelope_candidate \
               tests.test_b1b2_topic_partition_candidate \
               tests.test_two_source_c3_role_boundary_candidate \
@@ -70,7 +71,9 @@ jobs:
             test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
           fi
           "$py" -m compileall -q v13/code/v13/jef_span_c3_postgen_shadow_candidate.py \
-            v13/code/tests/test_jef_span_c3_postgen_shadow_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+            v13/code/v13/b1b2_jef_span_c3_postgen_candidate.py \
+            v13/code/tests/test_jef_span_c3_postgen_shadow_candidate.py \
+            v13/code/tests/test_b1b2_jef_span_c3_postgen_candidate.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base 750768012c64d0ed7575b7cb735eee0d1064d9f3 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
@@ -86,7 +89,7 @@ jobs:
           import json,sys
           from pathlib import Path
           e=Path(sys.argv[1]);names=('DEPS','DOWNLOAD','OUTER','TEST','COMPILE','PRIVACY','DIFF')
-          r={'schema':'v13.run117ad.contextos_b1b2_jef_c3_postgen_baseline_receipt.v1',
+          r={'schema':'v13.run117ad.contextos_b1b2_jef_c3_postgen_software_receipt.v1',
              'head':(e/'HEAD.txt').read_text().strip(),
              'original_artifact_id':13054946077,
              'original_artifact_sha256':'65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a',
