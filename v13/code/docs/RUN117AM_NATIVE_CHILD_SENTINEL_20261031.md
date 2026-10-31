@@ -1,0 +1,7 @@
+# Run117AM native launch sentinel — 2026-10-31 UTC
+
+Owner: GPT-6 Run117AM review-only PR #1519. Frozen seed1073 prereg `1dc04efee1f10e54a453a7bb5538cacfd4f94b62`; fixture SHA256 `18c0c9211daca9b1e5df12443713f6001db10ea6b5e9a778c8c9eb744d7579d1`, Git blob `aeae2d5110486250bd39a9fd0f4c442fa621fc4c`. Preflight Actions `41239751297` 17/17 tests GREEN; raw artifact ID `13056872547`. Native script Git blob `4afe7c2cb0521f480414befe150bb614dc3deaac`; unchanged original selector blob `e431eecaa4a7643a548a512036225343f681ee23`; prewarm wrapper blob `2ee2ed21a70b36b1d470cc40a761c614daadc89a`. Pinned model SHA256 B1 `bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1`, B2 `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf`.
+
+At launch check, GitHub Actions reports 0 in-progress and 0 queued; native workflow shares group `v13-native-c3-ag12-20261030`, cancel-in-progress false. Sentinel commit triggers only `.github/workflows/v13-run117am-body-source-id-native.yml`. Never re-trigger on a new source head as if the old run covered it. Capture terminal raw ZIP, SHA/CRC/manifest, 30 native calls and 12 selected IDs or original RED. If still pending, checkpoint exact run ID and continue independent work.
+
+Original Run117AH seed1069 native remains STRUCTURAL_RED, not replaced. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, `jepa_weight=0`; no tools, live output, learning, Redmi or whole-system promotion.
