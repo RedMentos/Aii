@@ -10,8 +10,27 @@ from scripts import run34_c3_native_quote_intervention_pilot as pilot
 
 
 class Run34NativePilotPreflight(unittest.TestCase):
-    def test_pinned_source_model_runner_and_negative_gates(self):
-        reg = pilot.prereg()
+    def test_current_source_drift_refused_and_frozen_metadata_preserved(self):
+        # Historical Run34 prereg remains bound to its ORIGINAL utility bytes.
+        # A later score-validation hardening changed the live utility module.
+        utility_path = pilot.ROOT / "v13/utility.py"
+        live_blob = pilot._git_blob(utility_path)
+        self.assertEqual(live_blob, "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53")
+        self.assertNotEqual(live_blob, pilot.FROZEN_UTILITY_BLOB)
+        with self.assertRaisesRegex(ValueError, "native_source_or_catalog_changed"):
+            pilot.prereg()
+
+        # Test ONLY the frozen prereg metadata contract with the historical
+        # utility hash simulated; no source, runner or model is repinned.
+        real_blob = pilot._git_blob
+
+        def historical_utility_only(path):
+            if path == utility_path:
+                return pilot.FROZEN_UTILITY_BLOB
+            return real_blob(path)
+
+        with mock.patch.object(pilot, "_git_blob", side_effect=historical_utility_only):
+            reg = pilot.prereg()
         self.assertEqual(reg["fixture_id"], "Velaris")
         self.assertEqual(reg["seed"], 20261121)
         self.assertEqual(reg["arms"], list(cf.ARMS))
