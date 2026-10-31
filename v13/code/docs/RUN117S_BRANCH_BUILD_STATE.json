@@ -1,0 +1,39 @@
+{
+  "branch": "assistant/v13-run117s-b2-salient-source-shadow-20261031-hourly11",
+  "fixture": {
+    "arms": [
+      "RAW_FULL_SOURCES",
+      "SOURCE_SPANS_ONLY",
+      "BODY_VERIFIED_QUOTES"
+    ],
+    "cases": 6,
+    "native": false,
+    "seed": 1061,
+    "sha256": "11d499eeb04d83e3786fe12046207ec3d0fc6684f5220a5fc1943202cd0f31de"
+  },
+  "negative_gates": {
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "CI source/preflight/hash closure; then new pinned native seed1061 three-arm pilot",
+  "owner": "hourly-gpt6-run11",
+  "parent": "d8f5d88cf5d620c114b6b758274753321ef1e4fb",
+  "preflight_report_sha256": "485ff1935857430307da3798c946a720668bb16a64170399a93138f907497289",
+  "preflight_sha256": "27ca730647686ee56922235086959ab6bde0ede43af9ec264fc74c3ee76f046d",
+  "preflight_test_sha256": "64c43a1496a038c05e5b84275cb6554061c711997134c40ef2008e13aa001791",
+  "raw_log_sha256": "3bd78302b9f50255286d40a5eba439bfb79f34028a8a12f4d0132ea03aa5fd96",
+  "schema": "v13.run117s.branch_build_state.v1",
+  "scope": "DEFAULT_OFF_SALIENT_B2_EXACT_SOURCE_SHADOW",
+  "selector_test_sha256": "282c3cf1df23e1e83a6c9bcc83c675d943c24262b9faf4503abeace2aaeba2d6",
+  "source_sha256": "b639ea0aa0b8fee15af024c5a97fc8f13dd851038d19985fba7ce7dc412b529a",
+  "tests": {
+    "combined_failed": 0,
+    "combined_total": 78,
+    "compile_exit": 0,
+    "preflight_status": "MODEL_FREE_SIX_CASE_PREFLIGHT_PASS"
+  }
+}
