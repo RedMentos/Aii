@@ -1,0 +1,11 @@
+# Run94 focused verification GREEN — 2026-10-31
+
+Owner: GPT-6 Auto11. Review-only PR #1459, branch `assistant/v13-run94-frozen-utility-drift-20261031-auto11`, parent Run93 exact `4ef9017f876444e2d31719f4e194fe6a4315a9f9`. Pre-reg at `d540aa0111699ef1798bd42a16f3dfd07d9535d5`, before test code.
+
+**GREEN** GitHub Actions `41199577311`, exact tested HEAD `9750e685f7e10921d51823ac8532356b5aaa2033`: 24/24 tests (Run83 fake-C3, Run52 B1/B2, Run90 exact source, Run34/37 historical frozen pin refusal), TEST/DEPS/COMPILE/PRIVACY/DIFF all exit0; privacy CLEAN. Original Actions artifact `13042530353`, ZIP SHA256 `3f50e81262bd1c72f7cf152bce2133451d0fd9edfc3cfb995afd48c7c4805b14`, CRC PASS, 10/10 SHA256SUMS PASS, HEAD.txt exact. Verified by independent ZIP+hash reader outside CI. Previous original Run91 full-suite RED artifact `13042120427`, SHA256 `6397e47f0c8f719c5a741d68b38f23c41a88fdb9890cde38f35d806e4322b7ba`, CRC PASS, 23/23 inner SHA PASS, 4905 tests/1 FAIL/2 ERROR/28 SKIP. Original RED preserved.
+
+Private Library backup `/V13-Checkpoints/2026-10-31/Run94-Original-Raw/`: `RUN91_FULL_RED_41198456896.zip` and `RUN94_FOCUSED_GREEN_41199577311.zip`, both materialized back byte-identical SHA256 `6397e47f...` and `3f50e812...`. No rejected anyone-writable Drive use.
+
+Only historical test expectations changed: live utility hash drift strictly refuses original Run34/37 native prereg; mock of exact historical utility hash is confined to software test metadata, never runtime/native. Additional adversarial other-pin drift still refuses. Native scripts, model/source pins, cohorts, frozen original scores, Runtime/Store/Canon unchanged. No native or Redmi proof, no scientific gate promotion.
+
+Next: inspect Run93 original-artifact unfiltered full-suite `41199460706` at terminal and raw ZIP. After Run93 terminal, trigger Run94 marker-gated unfiltered suite using original STEP2 and Run13T native ZIPs, verify all exits/CRC/hashes and compare original negative evidence. Then choose next independent canonical package; no merge to main. Gates: Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; whole V13 INCOMPLETE.
