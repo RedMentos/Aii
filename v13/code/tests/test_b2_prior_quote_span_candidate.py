@@ -67,7 +67,7 @@ class PriorQuoteSpanCandidate(unittest.TestCase):
 
     def test_absent_or_normalized_quote_refuses(self):
         a = self.source("Maximum budget: 230 credits.")
-        for quote in ("maximum budget: 230 credits.", "Maximum budget: 230 credits",
+        for quote in ("maximum budget: 230 credits.", "Maximum budget: 230 credits!",
                       "Unknown", " Maximum budget: 230 credits."):
             with self.subTest(quote=quote):
                 with self.assertRaisesRegex(QuoteBindingRefused, "QUOTE_NOT_EXACT"):
