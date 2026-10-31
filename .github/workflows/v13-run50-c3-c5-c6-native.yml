@@ -37,8 +37,8 @@ jobs:
           a541f17b607b1307713fc8d5fa0b81fb95f46be9 v13/code/scripts/run50_native_c3_c5_c6_draft.py
           c3f83500b2d9e1f7787792e124ee688834206bc7 v13/code/scripts/run50_native_c3_c5_c6_draft_verify.py
           dc49ed5833a8487471f5af74dfc17790490e1d36 v13/code/tests/test_run50_native_c3_c5_c6_draft.py
-          4705a46640134e213aa00a86e02375d972c76cda v13/code/scripts/run50_native_c3_c5_c6_draft.py
-          d684572065fa220becf72a888b6303c4467ab8f3 v13/code/scripts/run50_native_c3_c5_c6_draft_verify.py
+          4705a46640134e213aa00a86e02375d972c76cda v13/code/scripts/run47_jef_c3_typed_receiver_native.py
+          d684572065fa220becf72a888b6303c4467ab8f3 v13/code/scripts/run47_jef_c3_typed_receiver_verify.py
           075e563cec10e08b3f285ad138ee5d955de10bf0 v13/code/v13/agi/jef_c3_c5_c6_draft_shadow_run49.py
           a7352d3b577b17db92d2fc31650bfcd914b53e02 v13/code/v13/agi/jef_c3_final_agreement_shadow_run48.py
           d1186642d5f4b7ef4af0699f07a2fe682b1484e2 v13/code/v13/agi/jef_eligibility_source_shadow_run46b.py
