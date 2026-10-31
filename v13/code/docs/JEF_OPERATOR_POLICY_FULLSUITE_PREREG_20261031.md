@@ -1,0 +1,7 @@
+# JEF operator no-sleep-mutation cross-organ full-suite prereg (2026-10-31)
+
+Owner GPT-6 scheduled continuation. Review-only child of verified JEF policy fix PR #1422 exact checkpoint `19073c8dc7e67b5d533ba7df2118e8996c96e528`. Commit/read back this prereg before workflow implementation. Existing focused real Store software run 41175377474 was 24/24 PASS with raw ZIP SHA256 `496c3b85d82cb234684ec45bc5d93c50c966c00bcb7f76486040f81de78e60f3`.
+
+**Hypothesis:** the inert diagnostic-only Runtime coordinator and removed durable SLEEP_POLICY write do not regress other V13 organs. Run the unfiltered `python -m unittest discover -s tests -p 'test_*.py'` on the exact review branch with pinned Python 3.12/NumPy 2.2.6, psutil, PyYAML, Pillow, prompt-toolkit 3.0.52, torch 2.5.1+cpu, transformers 4.44.2 and peft 0.13.2, consistent with existing full-suite CI. No native model download, no intentional Redmi test. Run serially with the existing `v13-native-c3-ag12-20261030` heavy owner group to avoid overlap with W7D native. Keep all original failures and skips in raw; no baseline waiver or gate promotion.
+
+**Acceptance:** exact source/Canon pins, dependencies/imports, full unfiltered suite exit 0, compileall, privacy CLEAN, diff check, original closed raw ZIP/SHA256SUMS and remote checkpoint. If RED, preserve failing test names and distinguish environment from code regression; do not change frozen models or registered cohorts. Full software success alone is not native/Redmi, Age0, STEP2, B3, Body-JEPA, JEPA or whole-system success.
