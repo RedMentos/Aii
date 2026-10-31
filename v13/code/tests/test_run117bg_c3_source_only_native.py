@@ -27,6 +27,7 @@ class C3CausalPriorPreflight(unittest.TestCase):
         self.tmp.cleanup()
 
     def prepare(self, runtime, row):
+        runtime.models = pilot._SyntheticBodyModelRevisions(runtime.models)
         prior = runtime.store.event(runtime.session, row["prior"])
         b2 = pilot._trusted_source_id(runtime, prior, "B2_GIST")
         current = runtime.store.event(runtime.session, row["current"])
@@ -80,6 +81,12 @@ class C3CausalPriorPreflight(unittest.TestCase):
             prompts, bridge = self.prepare(self.r, self.rows[0])
         self.assertEqual(bridge["status"], "SHADOW_C3_SOURCE_ID_EVIDENCE_READY")
         self.assertEqual(set(prompts), set(pilot.ARMS))
+        from v13.b1b2_source_id_quote_candidate import KIND
+        packets = self.r.store.rows(
+            "SELECT payload FROM packets WHERE kind=?", (KIND,))
+        self.assertEqual(len(packets), 2)
+        self.assertTrue(all(json.loads(p["payload"])["model_revision"] ==
+                            pilot.SYNTHETIC_BODY_REVISION for p in packets))
 
     def test_wrong_event_order_refuses(self):
         prior = self.r.store.event(self.r.session, self.rows[0]["prior"])
