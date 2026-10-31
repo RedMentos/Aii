@@ -73,6 +73,51 @@ class Run38RealfileContract(unittest.TestCase):
                     run(out, work)
             self.assertEqual(out.read_text(), "original")
 
+    def test_mock_end_to_end_preserves_negative_gates_and_per_seed_rows(self):
+        import numpy as np
+        train = [{"x": np.zeros(60), "x2": np.ones(60), "a": 0, "world": False}
+                 for _ in range(20)]
+        def fake_eval(seed, cls, *args):
+            counts = {"own_only": 30, "world_only": 30, "both": 30, "none": 30}
+            rates = {"n": counts, "own_only_self": .8, "world_only_world": .8,
+                     "both_world": .8, "none_self": .8, "balanced": .8}
+            return {"seed": seed, "cf_retrieval": {"jepa_covered": .7},
+                    "attribution": {"jepa": rates,
+                                    "no_action": {**rates, "n": dict(counts)}},
+                    "_conf_err": [[.1, .2]]}
+        gates = {"W1_cf_retrieval_covered": False, "W2_controls_fail": False,
+                 "W3_no_collapse": True, "W4_confidence_tracks_error": False,
+                 "W5_attribution_jepa": True, "W6_no_action_attribution_worse": False}
+        with tempfile.TemporaryDirectory() as d:
+            out, work = Path(d) / "result.json", Path(d) / "work"
+            with patch("scripts.run38_world_jepa_fullslot_real.platform.system",
+                       return_value="Linux"), patch(
+                       "scripts.run38_world_jepa_fullslot_real.platform.machine",
+                       return_value="x86_64"), patch(
+                       "scripts.run38_world_jepa_fullslot_real.original.collect_train",
+                       return_value=train), patch(
+                       "scripts.run38_world_jepa_fullslot_real.original.collect_cf",
+                       return_value=[]), patch(
+                       "scripts.run38_world_jepa_fullslot_real.original.collect_attr",
+                       return_value=[]), patch(
+                       "scripts.run38_world_jepa_fullslot_real.evaluate",
+                       side_effect=fake_eval), patch(
+                       "scripts.run38_world_jepa_fullslot_real.original_gates",
+                       return_value=(gates, {})):
+                result = run(out, work)
+            self.assertEqual(result["status"], "SHADOW_CANDIDATE_FAIL")
+            self.assertEqual(result["seeds"], [401, 402, 403])
+            self.assertEqual(len(result["six_slot"]), 3)
+            self.assertEqual(len(result["two_slot"]), 3)
+            self.assertEqual(result["step2"], "UTILITY_FAIL")
+            self.assertEqual(result["jepa_weight"], 0)
+            self.assertFalse(result["same_training_example_count"])
+            self.assertFalse(result["whole_system_complete"])
+            for arm in ("two_slot", "six_slot"):
+                for seed in SEEDS:
+                    self.assertTrue((work / f"{arm}-{seed}-RESULT.json").exists())
+            self.assertNotIn("_conf_err", out.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()
