@@ -1,1 +1,2 @@
 Phone bootstrap safe tar prereg 926473a16bb4e1c58c9e8a72f16ffa46743eb0f3; software only; no models.
+Second pass: empty/cyclic tar and injected rename rollback; original run 41206579353 retained.
