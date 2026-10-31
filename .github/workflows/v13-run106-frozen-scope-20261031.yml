@@ -1,0 +1,138 @@
+name: V13 Run106 exact frozen candidate positive current source negative
+on:
+  push:
+    branches:
+      - assistant/v13-run106-frozen-candidate-scope-20261031-auto11
+    paths:
+      - v13/code/docs/RUN106_FROZEN_SCOPE_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Audit immutable frozen historical candidate and current extracted phone refusal
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run106-frozen-scope"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run106-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run106-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/tests/test_run106_frozen_scope_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          for spec in "FROZEN_SCOPE:test_run106_frozen_scope_20261031.py" "RUN104_CONTRACT:test_install_selftest_run104_20261031.py" "STEP2_EXIT:test_step2_exit_gate_split_20261031.py" "C3_CONTEXT:test_b2_c3_context_plan_20261031.py"; do
+            label="${spec%%:*}";pattern="${spec#*:}"
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p "$pattern" -v) > "$e/${label}_RAW.log" 2>&1
+            echo $? > "$e/${label}_EXIT.txt"
+          done
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run106.zip" --phone-install > "$e/PACKAGE_RAW.log" 2>&1
+          package_rc=$?
+          set -e
+          echo "$package_rc" > "$e/PACKAGE_EXIT.txt"
+          if test "$package_rc" -eq 0; then
+            set +e
+            "$py" - "$e" "$RUNNER_TEMP/v13-run106-extracted" <<'PY' > "$e/ZIP_VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);root=Path(sys.argv[2]);path=e/'V13-Phone-Run106.zip'
+          with zipfile.ZipFile(path) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              files=manifest['files']
+              for name,expected in files.items():
+                  assert not name.startswith('/') and '..' not in Path(name).parts
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('tests/test_run106_frozen_scope_20261031.py',
+                           'scripts/source_handoff_candidate.py',
+                           'scripts/native_firing_runtime_candidate.py',
+                           'docs/proofs/continuation-20261011/source-handoff-baseline/manifest.json',
+                           'docs/proofs/continuation-20261011/native-firing-runtime-baseline/manifest.json'):
+                  assert name in files,name
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(root)
+          for name,expected in files.items():
+              assert hashlib.sha256((root/'V13-Phone'/name).read_bytes()).hexdigest()==expected,name
+          result={'schema':'v13.run106.frozen_scope.phone_zip.software.v1',
+                  'files':len(files),'zip_bytes':path.stat().st_size,
+                  'zip_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+                  'manifest_hashes_pass':True,'native_model_executed':False,
+                  'redmi_measured':False,'gate_promoted':False}
+          (e/'ZIP_REPORT.json').write_text(json.dumps(result,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+            zip_rc=$?
+            if test "$zip_rc" -eq 0; then
+              (cd "$RUNNER_TEMP/v13-run106-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_run106_frozen_scope_20261031.py -v) > "$e/EXTRACTED_SCOPE_RAW.log" 2>&1
+              scope_rc=$?
+              (cd "$RUNNER_TEMP/v13-run106-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --cohort run104_c3_c5_exit --timeout-seconds 120) > "$e/EXTRACTED_RUN104_RAW.log" 2>&1
+              smoke_rc=$?
+            else
+              scope_rc=125;smoke_rc=125;echo 'ZIP_RED' > "$e/EXTRACTED_SCOPE_RAW.log"
+            fi
+            set -e
+          else
+            zip_rc=125;scope_rc=125;smoke_rc=125;echo 'PACKAGE_RED' > "$e/ZIP_VERIFY_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_VERIFY_EXIT.txt"
+          echo "$scope_rc" > "$e/EXTRACTED_SCOPE_EXIT.txt"
+          echo "$smoke_rc" > "$e/EXTRACTED_RUN104_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4a668e1c3905b4206db99c1ab791e1b059b1a464 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo $? > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4a668e1c3905b4206db99c1ab791e1b059b1a464 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo $? > "$e/DIFF_EXIT.txt"
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          names=('FROZEN_SCOPE','RUN104_CONTRACT','STEP2_EXIT','C3_CONTEXT',
+                 'PACKAGE','ZIP_VERIFY','EXTRACTED_SCOPE','EXTRACTED_RUN104',
+                 'PRIVACY','DIFF')
+          r={'schema':'v13.run106.frozen_scope.audit.software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'original_run105_red_artifact_id':13045368441,
+             'original_run105_red_artifact_sha256':'e72eaa90363e3d605e239b6c8d6478be570b352d79bc257ba33ffee46f29453d',
+             'unfiltered_fullsuite_promoted':False,'native_model_executed':False,
+             'redmi_measured':False,'step2_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          for name in FROZEN_SCOPE EXTRACTED_SCOPE EXTRACTED_RUN104; do
+            echo "===== $name ====="; tail -n 7 "$e/${name}_RAW.log"
+          done
+          for name in FROZEN_SCOPE RUN104_CONTRACT STEP2_EXIT C3_CONTEXT PACKAGE ZIP_VERIFY EXTRACTED_SCOPE EXTRACTED_RUN104 PRIVACY DIFF; do
+            test "$(cat "$e/${name}_EXIT.txt")" -eq 0
+          done
+          grep -q 'INSTALL_SELFTEST_PASS: 21 exact model-free cases' "$e/EXTRACTED_RUN104_RAW.log"
+      - name: Upload original audit evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run106-frozen-scope-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run106-frozen-scope/
+          if-no-files-found: error
+          retention-days: 90
