@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import time
 
 from v13.common import dumps, file_hash
@@ -46,9 +47,27 @@ def _nonfinite(_):
 
 
 def _read_input(path):
-    # Never allocate the entire untrusted file before checking its bound.
-    with Path(path).open("rb") as source:
-        raw = source.read(MAX_INPUT_BYTES + 1)
+    # A FIFO without a writer must not block an opt-in diagnostic forever.
+    # O_NOFOLLOW also prevents a final-path symlink redirect.
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise ValueError("INPUT_NOFOLLOW_UNAVAILABLE")
+    flags = (os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
+             | getattr(os, "O_CLOEXEC", 0))
+    fd = os.open(path, flags)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise ValueError("INPUT_NOT_REGULAR_RED")
+        chunks = []
+        remaining = MAX_INPUT_BYTES + 1
+        while remaining:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+    finally:
+        os.close(fd)
     if not 0 < len(raw) <= MAX_INPUT_BYTES:
         raise ValueError("INPUT_SIZE_RED")
     data = json.loads(raw.decode("utf-8", "strict"),
