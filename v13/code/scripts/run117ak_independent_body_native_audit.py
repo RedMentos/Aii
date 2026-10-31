@@ -251,6 +251,21 @@ def audit(raw: bytes, *, expected_sha: str):
                 and result['redmi_measured'] is False
                 and result['whole_system_complete'] is False,
                 'WORKFLOW_RECEIPT_RED')
+        # A failed install/pack/native attempt may have no original report.
+        # Preserve its RED rather than pretending it was a scored cohort.
+        if ('V13-Phone-Run117AH.zip' not in z.namelist()
+                or 'NATIVE_CASE/report.json' not in z.namelist()):
+            require(set(exits.values()) != {0},
+                    'GREEN_RECEIPT_MISSING_ORIGINAL_ARTIFACT_RED')
+            return {
+                'status': 'INDEPENDENT_ORIGINAL_NATIVE_NOT_RUN_RED_PRESERVED',
+                'head': HEAD, 'artifact_sha256': _hash(raw),
+                'outer_hashed_entries': outer_count,
+                'original_exits': exits,
+                'native_c3_proven': False, 'native_jef_proven': False,
+                'native_c2_proven': False, 'step2_promoted': False,
+                'jepa_weight': 0, 'redmi_measured': False,
+            }
         fixture, phone_files = _phone(z)
         report = _json(z.read('NATIVE_CASE/report.json'))
         require(report['schema'] ==
@@ -280,12 +295,16 @@ def audit(raw: bytes, *, expected_sha: str):
         recorded = Counter()
         for i, row in enumerate(report['rows']):
             frozen = fixture['rows'][i]
-            require(row['id'] == frozen['id']
-                    and row['prior_source_text'] == frozen['prior']
-                    and row['current_source_text'] == frozen['current']
-                    and row.get('no_live_output') is True
-                    and row.get('closed_store_ok') is True,
-                    'ROW_SOURCE_OR_CLOSED_STORE_RED')
+            require(row['id'] == frozen['id'], 'ROW_ORDER_RED')
+            if (row.get('prior_source_text') != frozen['prior']
+                    or row.get('current_source_text') != frozen['current']
+                    or row.get('no_live_output') is not True
+                    or row.get('closed_store_ok') is not True):
+                require(report['status'] != COMPLETE,
+                        'COMPLETE_ROW_SOURCE_OR_CLOSED_STORE_RED')
+                # Partial native attempt: retain RED; do not score a row
+                # whose original source/closed-Store evidence is missing.
+                continue
             prior = row['prior_source_ref']
             current = row['current_source_ref']
             _full_ref(prior, frozen['prior'])
@@ -314,8 +333,12 @@ def audit(raw: bytes, *, expected_sha: str):
                     role_scores[role] = correct
                     recorded['id_selections'] += 1
             pair = int(len(role_scores) == 2 and all(role_scores.values()))
-            require(row.get('id_pair_correct') is bool(pair),
-                    'ROW_PAIR_SCORE_RED')
+            if 'id_pair_correct' in row:
+                require(row['id_pair_correct'] is bool(pair),
+                        'ROW_PAIR_SCORE_RED')
+            else:
+                require(report['status'] != COMPLETE,
+                        'COMPLETE_ROW_PAIR_MISSING_RED')
             pairs += pair
             ready += int(row.get('baseline_quote_ready') is True)
         complete = (report['status'] == COMPLETE
