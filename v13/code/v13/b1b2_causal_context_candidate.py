@@ -5,6 +5,7 @@ Uses durable USER message sequence, not unreliable wall timestamps.
 """
 from __future__ import annotations
 import json
+import re
 
 
 def _bound_user_event(store, event_id, session):
@@ -34,6 +35,18 @@ def _bound_user_event(store, event_id, session):
         raise ValueError("USER_MESSAGE_BINDING_RED")
     return {"message_id": msgs[0]["id"], "source_ref": ref,
             "generation": row["generation_id"], "text": text}
+
+
+_NON_NAMES = {"rules", "rule", "budget", "budgets", "requirements",
+              "constraints", "option", "options", "plan", "details"}
+
+
+def _project_scope(text):
+    """Conservative explicit proper-name scope; generic 'project rules' is not an entity."""
+    names = {name.lower() for name in re.findall(
+        r"(?i:\\bproject)\\s+([A-Z][A-Za-z0-9_-]{1,63})\\b", text)
+        if name.lower() not in _NON_NAMES}
+    return names if len(names) == 1 else set()
 
 
 def causal_body_context(runtime, role, event, *, operator_opt_in=False):
@@ -81,6 +94,9 @@ def causal_body_context(runtime, role, event, *, operator_opt_in=False):
                     continue
                 prior = _bound_user_event(store, prior_id, session)
                 if prior["message_id"] >= current["message_id"]:
+                    continue
+                scope = _project_scope(current["text"])
+                if not scope or _project_scope(prior["text"]) != scope:
                     continue
                 ref = item.get("source_ref")
                 native = item.get("native_context")
