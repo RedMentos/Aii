@@ -1,0 +1,145 @@
+name: V13 Run98 phone source ZIP with bounded extracted install smoke
+on:
+  push:
+    branches:
+      - assistant/v13-run98-phone-smoke-package-20261031-auto11
+    paths:
+      - v13/code/docs/RUN98_PHONE_SMOKE_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pin source, package twice, verify and run extracted bounded smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run98"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run98-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run98-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          cat > "$e/PINS.txt" <<'PINS'
+          06167e0bcb82b36cb08841cd31b9618c4ba0926e v13/code/scripts/package_source.py
+          0ee88aa7d470c9b7824bfb534214375f75a12dbe v13/code/scripts/phone_release_audit_candidate.py
+          25b7e8d6864cc84d6791bd638aabdf14a077852b v13/code/STARTEN.sh
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          0bfa1d331bae0616a261cd747874855a19b0efb3 v13/code/setup.sh
+          4063f0c781447b9d02c0e463088c99eb0f40fbaa v13/code/scripts/install_selftest.py
+          7d43ae224e69eb942c1d6047f1b439c3e194b7eb v13/code/tests/test_install_selftest.py
+          9248e46e199a4227c296d538e6a2ef969e8e10cb v13/code/v13/__main__.py
+          PINS
+          while read -r want path; do
+            got="$(git hash-object "$path")"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            test "$want" = "$got"
+          done < "$e/PINS.txt"
+          echo 0 > "$e/PINS_EXIT.txt"
+          "$py" v13/code/scripts/package_source.py --root v13/code \
+            --out "$e/V13-Redmi-Install-Run98.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          echo 0 > "$e/PACK_EXIT.txt"
+          "$py" v13/code/scripts/package_source.py --root v13/code \
+            --out "$RUNNER_TEMP/V13-Redmi-Install-Run98-repro.zip" --phone-install > "$e/REPRO_RAW.log" 2>&1
+          cmp "$e/V13-Redmi-Install-Run98.zip" "$RUNNER_TEMP/V13-Redmi-Install-Run98-repro.zip"
+          sha256sum "$e/V13-Redmi-Install-Run98.zip" "$RUNNER_TEMP/V13-Redmi-Install-Run98-repro.zip" > "$e/REPRO_SHA256_RAW.log"
+          echo 0 > "$e/REPRO_EXIT.txt"
+          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run98.zip" "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          from scripts.phone_release_audit_candidate import verify_archive
+          archive=Path(sys.argv[1]);e=Path(sys.argv[2])
+          files=verify_archive(archive)
+          required={'STARTEN.sh','setup.sh','scripts/install_selftest.py',
+                    'scripts/package_source.py','scripts/phone_release_audit_candidate.py',
+                    'tests/test_install_selftest.py','tests/test_age.py','tests/test_runtime_queue.py',
+                    'tests/test_standstill.py','tests/test_source_handoff_candidate.py',
+                    'docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md'}
+          assert required<=set(files),sorted(required-set(files))
+          assert any(x.startswith('v13/') for x in files)
+          assert any(x.startswith('specs/') for x in files)
+          assert not any(x.endswith(('.gguf','.sqlite','.sqlite3','.db','.pyc')) for x in files)
+          assert not any('/data/' in x or x.startswith('data/') for x in files)
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              z.extractall(e.parent/'run98-extracted')
+          root=e.parent/'run98-extracted'/'V13-Phone'
+          for rel,sha in files.items():
+              path=root/rel
+              assert path.is_file() and not path.is_symlink(),rel
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==sha,rel
+          setup=(root/'setup.sh').read_text()
+          assert '"$V13_PYTHON" "$V13_APP_DIR/scripts/install_selftest.py"' in setup
+          assert '"$V13_DATA_HOME/bin/v13" selftest' not in setup
+          assert '"$V13_DATA_HOME/bin/v13" probe' in setup
+          (e/'ZIP_AUDIT.json').write_text(json.dumps({
+              'status':'EXTRACTED_BOUNDED_SMOKE_SOURCE_BYTES_VERIFIED',
+              'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),
+              'files':len(files),'native_model_calls':0,'phone_measured':False,
+              'canonical_gate_pass':False,'whole_system_complete':False},sort_keys=True)+'\n')
+          print('RUN98_ZIP_VERIFIED',len(files))
+          PY
+          echo 0 > "$e/VERIFY_EXIT.txt"
+          set +e
+          (cd "$RUNNER_TEMP/run98-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --timeout-seconds 120) > "$e/SMOKE_RAW.log" 2>&1
+          smoke_rc=$?
+          (cd "$RUNNER_TEMP/run98-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_install_selftest.py -v) > "$e/CONTRACT_RAW.log" 2>&1
+          contract_rc=$?
+          set -e
+          echo "$smoke_rc" > "$e/SMOKE_EXIT.txt"
+          echo "$contract_rc" > "$e/CONTRACT_EXIT.txt"
+          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run98.zip" "$RUNNER_TEMP/run98-extracted/V13-Phone" <<'PY' > "$e/POST_VERIFY_RAW.log" 2>&1
+          import hashlib,sys
+          from pathlib import Path
+          from scripts.phone_release_audit_candidate import verify_archive
+          archive,root=Path(sys.argv[1]),Path(sys.argv[2])
+          files=verify_archive(archive)
+          for rel,sha in files.items():
+              p=root/rel
+              assert p.is_file() and not p.is_symlink()
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==sha,rel
+          print('EXTRACTED_SOURCE_UNCHANGED_AFTER_TESTS',len(files))
+          PY
+          echo 0 > "$e/POST_VERIFY_EXIT.txt"
+          bash -n "$RUNNER_TEMP/run98-extracted/V13-Phone/STARTEN.sh" \
+            "$RUNNER_TEMP/run98-extracted/V13-Phone/setup.sh" > "$e/SHELL_RAW.log" 2>&1
+          echo 0 > "$e/SHELL_EXIT.txt"
+          "$py" -m compileall -q "$RUNNER_TEMP/run98-extracted/V13-Phone/scripts/install_selftest.py" \
+            "$RUNNER_TEMP/run98-extracted/V13-Phone/tests/test_install_selftest.py" > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 6af289cde1e97c9e6bfafd8df486c58670db1d03 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 6af289cde1e97c9e6bfafd8df486c58670db1d03 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 10 "$e/SMOKE_RAW.log"
+          tail -n 10 "$e/CONTRACT_RAW.log"
+          test "$smoke_rc" -eq 0
+          test "$contract_rc" -eq 0
+          grep -q 'INSTALL_SELFTEST_PASS' "$e/SMOKE_RAW.log"
+      - name: Upload original ZIP and all raw receipts including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run98-phone-smoke-${{ github.sha }}
+          path: ${{ runner.temp }}/run98/
+          if-no-files-found: error
+          retention-days: 90
