@@ -1,0 +1,92 @@
+name: V13 Run117AC B1/B2 JEF-span ContextOS C3 SHADOW bridge
+on:
+  push:
+    branches:
+      - assistant/v13-run117ac-b1b2-jef-span-c3-bridge-20261031
+    paths:
+      - .github/workflows/v13-run117ac-b1b2-jef-span-c3-bridge.yml
+      - v13/code/v13/b1b2_jef_span_c3_bridge_candidate.py
+      - v13/code/tests/test_b1b2_jef_span_c3_bridge_candidate.py
+      - v13/code/docs/RUN117AC_*
+permissions:
+  contents: read
+jobs:
+  model-free-real-store:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify persisted Body hypotheses and ContextOS JEF C3 role boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117ac-bridge"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ac-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117ac-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          echo 'cb008f27a4d1ef7f0f288419ac276ebb67c8d7958da3c62104994822dd90634d  v13/code/docs/fixtures/RUN117Z_REAL_JEF_NATIVE_SEED1065.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          if test "$deps_rc" -eq 0 && test "$fixture_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_b1b2_jef_span_c3_bridge_candidate \
+              tests.test_b1b2_c3_source_envelope_candidate \
+              tests.test_b1b2_topic_partition_candidate \
+              tests.test_two_source_c3_role_boundary_candidate \
+              tests.test_jef_span_budget_shadow_candidate \
+              tests.test_jef_span_c3_postgen_shadow_candidate) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          "$py" -m compileall -q v13/code/v13/b1b2_jef_span_c3_bridge_candidate.py \
+            v13/code/tests/test_b1b2_jef_span_c3_bridge_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base ff4fc347a8b6491c79c20c5b08723c976a54f7f3 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check ff4fc347a8b6491c79c20c5b08723c976a54f7f3 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DEPS:$deps_rc" "FIXTURE:$fixture_rc" "TEST:$test_rc" \
+                   "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DEPS','FIXTURE','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117ac.b1b2_jef_span_c3_software_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'fixture_sha256':'cb008f27a4d1ef7f0f288419ac276ebb67c8d7958da3c62104994822dd90634d',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_called':False,'body_observers_synthetic':True,
+             'contextos_mode':'SHADOW','step2_promoted':False,
+             'b3_promoted':False,'jepa_weight':0,'redmi_measured':False,
+             'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 6 "$e/TEST_RAW.log"
+          for rc in "$deps_rc" "$fixture_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve model-free GREEN or RED receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ac-bridge-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ac-bridge/
+          if-no-files-found: warn
+          retention-days: 90
