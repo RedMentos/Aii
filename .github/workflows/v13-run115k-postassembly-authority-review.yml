@@ -1,0 +1,76 @@
+name: V13 Run115K independent post-assembly authority review
+on:
+  push:
+    branches:
+      - assistant/v13-run115k-postassembly-authority-review-20261031-gpt6
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run adversarial and inherited source tests; preserve raw evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run115k-authority"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run115k-authority-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run115k-authority-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115k_postassembly_authority_review.py -v) > "$e/NEW_RAW.log" 2>&1
+          new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_jef_two_source_role_formatter_candidate.py -v) > "$e/JEF_RAW.log" 2>&1
+          jef_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_b1b2_c3_source_envelope_candidate.py -v) > "$e/BODY_RAW.log" 2>&1
+          body_rc=$?
+          "$py" -m compileall -q v13/code/v13/b1b2_jef_c3_source_role_bridge_candidate.py v13/code/tests/test_run115k_postassembly_authority_review.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5edf9d64e2c0793a942e99f0af2f9c049d477a5b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 5edf9d64e2c0793a942e99f0af2f9c049d477a5b HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          for item in "NEW:$new_rc" "JEF:$jef_rc" "BODY:$body_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${item#*:}" > "$e/${item%%:*}_EXIT.txt"
+          done
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('NEW','JEF','BODY','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run115k.postassembly_authority_review.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'evidence':'SYNTHETIC_COLLABORATOR_AND_INHERITED_REAL_STORE',
+             'native_executed':False,'redmi_measured':False,
+             'step2_promoted':False,'b3_promoted':False,'body_jepa_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 28 "$e/NEW_RAW.log"
+          for rc in "$new_rc" "$jef_rc" "$body_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run115k-authority-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run115k-authority/
+          if-no-files-found: warn
+          retention-days: 90
