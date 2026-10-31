@@ -10,6 +10,8 @@ import json
 
 from .common import dumps
 from .f1f5_event_finalizer_candidate import _event_snapshot
+from .b1b2_causal_context_candidate import _project_scope
+from .b1b2_topic_partition_candidate import _TopicStateView
 
 ROLES = ("B1_DETAIL", "B2_GIST")
 
@@ -56,6 +58,10 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
             return _result("CURRENT_USER_SOURCE_RED")
         if _latest_authoritative_user(store, session) != event["event_id"]:
             return _result("STALE_USER_EVENT_RED")
+        scope = _project_scope(snapshot["query"])
+        if len(scope) != 1:
+            return _result("TOPIC_SCOPE_RED")
+        topic = next(iter(scope))
         offers = []
         raw = []
         for role in ROLES:
@@ -72,6 +78,15 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
                     or offer.get("brain_generation_id") != snapshot["generation"]
                     or offer.get("model_revision") != runtime.models.revision(role)):
                 return _result("OFFER_ROLE_OR_REVISION_RED")
+            view = _TopicStateView(
+                store, role, session, snapshot["generation"],
+                runtime.models.revision(role), topic)
+            retained, _ = view.state(role + ":" + session, {})
+            if (type(retained) is not dict
+                    or retained.get("packet_id") != offer_packet_ids[role]
+                    or {k: v for k, v in retained.items()
+                        if k != "retained_offer_ids"} != offer):
+                return _result("RETAINED_OFFER_BINDING_RED")
             offers.append(offer)
             raw.append(row["payload"])
         # Frozen analyst_context rechecks stored Offer/Query identity, age,
