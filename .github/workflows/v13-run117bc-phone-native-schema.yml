@@ -43,8 +43,8 @@ jobs:
             'numpy==2.2.6' 'prompt-toolkit==3.0.52' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
           echo $? > "$e/DEPS_EXIT.txt"
           "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
-          "$py" -m compileall -q v13/code/scripts/run117bc_install_selftest_run117bc.py \
-            v13/code/tests/test_run117bc_install_selftest_run117bc.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m compileall -q v13/code/scripts/install_selftest_run117bc.py \
+            v13/code/tests/test_run117bc_phone_native_schema_smoke.py > "$e/COMPILE_RAW.log" 2>&1
           echo $? > "$e/COMPILE_EXIT.txt"
           python3 - <<'PY' > "$e/SOURCE_PIN_RAW.log" 2>&1
           import subprocess
@@ -89,8 +89,8 @@ jobs:
               for name,sha in files.items():
                   assert not name.startswith('/') and '..' not in Path(name).parts
                   assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==sha,name
-              for name in ('scripts/run117bc_install_selftest_run117bc.py',
-                           'tests/test_run117bc_install_selftest_run117bc.py',
+              for name in ('scripts/install_selftest_run117bc.py',
+                           'tests/test_run117bc_phone_native_schema_smoke.py',
                            'scripts/install_selftest_run117ay.py',
                            'scripts/jef_c3_c5_c6_operator_cli.py',
                            'v13/jef_c2_c3_formatter_route_shadow_candidate.py'):
