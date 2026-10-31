@@ -104,10 +104,10 @@ def run(home, out, input_root):
             path = input_root / ("case-" + str(i) + ".json")
             raw = json.dumps(data, ensure_ascii=False).encode("utf-8")
             fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-            try:
-                os.write(fd, raw)
-            finally:
-                os.close(fd)
+            with os.fdopen(fd, "wb") as stream:
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
             result = cli.run(home, path, "native",
                              operator_opt_in=True, callback_opt_in=True)
             snap = _db(home)
