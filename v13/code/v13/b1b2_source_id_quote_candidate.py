@@ -88,8 +88,11 @@ def _span(ref, text, start, end):
 def _candidates(runtime,event,role):
     if role not in ROLES:
         raise ValueError("ROLE_RED")
-    if (event.get("generation") != runtime.store.generation_id
-            or event.get("session") != runtime.session
+    stored_event=runtime.store.one(
+        "SELECT session_id FROM events WHERE id=?", (event.get("event_id"),))
+    if (event.get("brain_generation_id") != runtime.store.generation_id
+            or stored_event is None
+            or stored_event["session_id"] != runtime.session
             or _latest_authoritative_user(runtime.store,runtime.session)
             != event.get("event_id")):
         raise ValueError("STALE_USER_EVENT_RED")
