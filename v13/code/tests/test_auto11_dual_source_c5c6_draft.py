@@ -66,7 +66,10 @@ class DualSourceDraftTests(unittest.TestCase):
         self.assertEqual((row["text"], row["status"]), ("A", "DRAFT"))
         meta = json.loads(row["metadata"])
         self.assertEqual(meta["origin"], "MODEL_EXACT_SHADOW")
-        self.assertEqual(meta["dual_source_messages_sha256"],\n                         r["dual_source_messages_sha256"])\n        self.assertEqual(meta["callback_output_sha256"],\n                         r["callback_output_sha256"])
+        self.assertEqual(meta["dual_source_messages_sha256"],
+                         r["dual_source_messages_sha256"])
+        self.assertEqual(meta["callback_output_sha256"],
+                         r["callback_output_sha256"])
 
     def test_off_receipt_and_noncallable_never_invoke(self):
         def forbidden(*args):
