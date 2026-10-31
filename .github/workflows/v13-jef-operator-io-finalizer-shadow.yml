@@ -3,7 +3,7 @@ on:
   push:
     branches: [assistant/v13-jef-operator-io-finalizer-hardening-20261031-auto11]
     paths:
-      - '.github/workflows/v13-jef-c3-c5-c6-operator-cli-shadow.yml'
+      - '.github/workflows/v13-jef-operator-io-finalizer-shadow.yml'
       - 'v13/code/scripts/jef_c3_c5_c6_operator_cli.py'
       - 'v13/code/tests/test_jef_c3_c5_c6_operator_cli.py'
       - 'v13/code/docs/JEF_OPERATOR_IO_FINALIZER_PREREG_20261031.md'
