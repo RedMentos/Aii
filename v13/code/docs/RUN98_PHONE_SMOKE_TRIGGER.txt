@@ -1,0 +1,1 @@
+Run98 prereg 5bcc59270654a560b402e495041bba0dbf5d61c6; package deterministic phone source ZIP, extracted bounded smoke and raw evidence only; no native model calls or Redmi measurement.
