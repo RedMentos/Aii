@@ -13,9 +13,10 @@ class Run87ManualNativeWorkflowTests(unittest.TestCase):
     def setUpClass(cls):
         cls.text = WORKFLOW.read_text(encoding="utf-8")
 
-    def test_01_manual_dispatch_only_no_push(self):
-        self.assertIn("on:\n  workflow_dispatch:", self.text)
-        self.assertNotIn("\n  push:", self.text)
+    def test_01_explicit_marker_only_no_unscoped_push(self):
+        self.assertIn("on:\n  workflow_dispatch:\n  push:", self.text)
+        self.assertIn("branches: [assistant/v13-run87-b1b2-budget-ablation-seed877-20261031-gpt6]", self.text)
+        self.assertIn("v13/code/docs/RUN87_NATIVE_EXECUTION_TRIGGER_20261031.txt", self.text)
         self.assertNotIn("\n  schedule:", self.text)
 
     def test_02_shared_serial_heavy_group(self):
