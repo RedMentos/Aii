@@ -11,11 +11,13 @@ import hashlib
 import json
 from pathlib import Path
 import time
+import threading
 
 from v13.agi.jef_c3_budget_formatter_shadow_run117bo import format_shadow
 from v13.common import atomic_write, dumps, file_hash
 from v13.config import DEFAULTS, initialize, save_config
-from v13.runtime import Runtime
+from v13.store import Store, audit_closed
+from v13.runners import RunnerPool
 from tests.integration_step2_utility import installed_links
 from v13.models import ModelManager
 from scripts.run115j_typed_jef_role_native import C3_SHA, C3_REV, RUNNER_SHA
@@ -64,27 +66,30 @@ def run_row(home,installed,row):
     initialize(home)
     save_config(home,CONFIG)
     installed_links(home,installed)
-    r=Runtime(home)
+    store=Store(home)
+    session=store.new_session()
+    pool=RunnerPool(home,ModelManager(home),CONFIG,approval_store=store)
+    cancel_event=threading.Event()
     item={'id':row['id'],'status':'ERROR','oracle_visible_to_native':False,
           'native_output':'','native_final':False,'process_reaped':False,
           'process_releases':[], 'source_ref_sha256':[],
           'guard':None,'native_c3_metrics':None}
     start=time.monotonic()
     try:
-        prior=r.store.event(r.session,row['prior'])['source_ref']
-        current=r.store.event(r.session,row['current'])['source_ref']
+        prior=store.event(session,row['prior'])['source_ref']
+        current=store.event(session,row['current'])['source_ref']
         item['source_ref_sha256']=[sha(dumps(ref).encode('utf-8')) for ref in (prior,current)]
         def generate(messages,schema):
             item['native_prompt']=messages
             item['native_prompt_sha256']=sha(dumps(messages).encode('utf-8'))
-            runner=r.pool.get('C3_LANGUAGE')
+            runner=pool.get('C3_LANGUAGE')
             item['native_output']=''.join(runner.generate(
-                messages,r.cancel_event,time.monotonic()+90,96,schema,seed=13))
+                messages,cancel_event,time.monotonic()+90,96,schema,seed=13))
             item['native_c3_metrics']=dict(runner.last_metrics)
             item['native_final']=runner.last_metrics.get('status')=='FINAL'
-            r.pool.unload()
+            pool.unload()
             return item['native_output']
-        item['guard']=format_shadow(r.store,r.session,prior,current,generate,
+        item['guard']=format_shadow(store,session,prior,current,generate,
                                     operator_opt_in=True,callback_opt_in=True)
         item['expected_oracle']=row['oracle']
         item['status']=('RECORDED' if item['guard']['status']=='FORMATTER_MATCH_SHADOW'
@@ -93,14 +98,17 @@ def run_row(home,installed,row):
         item['error_type']=type(exc).__name__
         item['status']='INTERRUPTED' if isinstance(exc,KeyboardInterrupt) else 'ERROR'
     finally:
-        try:r.close()
+        try:pool.unload();store.close()
         except Exception as exc:
             item['close_error_type']=type(exc).__name__
             item['status']='STRUCTURAL_RED'
-        item['process_releases']=list(r.pool.release_history)
+        item['process_releases']=list(pool.release_history)
         item['process_reaped']=_reaped(item['process_releases'])
         if item['status']=='RECORDED' and not item['process_reaped']:
             item['status']='STRUCTURAL_RED'
+        try:item['closed_store_ok']=audit_closed(home)['ok'] is True
+        except Exception:item['closed_store_ok']=False
+        if not item['closed_store_ok']:item['status']='STRUCTURAL_RED'
         item['elapsed_s']=round(time.monotonic()-start,3)
     return item
 
