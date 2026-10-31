@@ -261,12 +261,12 @@ def run(fixture_path, work, out, *, installed=None):
             for row in report["rows"]:
                 for arm in row["arms"]:
                     report["scores"][arm["arm"]] += arm["score"]["correct"]
-            full = report["scores"][ARMS[0]]
-            control = report["scores"][ARMS[1]]
+            full = report["scores"][ARMS[1]]
+            control = report["scores"][ARMS[0]]
             none_rows = [r for r in report["rows"]
                          if r["id"] in ("Oxara", "Valtor")]
             no_false_none = all(
-                next(a for a in r["arms"] if a["arm"] == ARMS[0])
+                next(a for a in r["arms"] if a["arm"] == ARMS[1])
                 ["score"]["parsed"] in (
                     {"choice": "NONE", "remaining": None}, None)
                 for r in none_rows)
