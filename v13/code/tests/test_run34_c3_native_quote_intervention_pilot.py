@@ -41,6 +41,30 @@ class Run34NativePilotPreflight(unittest.TestCase):
         self.assertIs(reg["phone_measured"], False)
         self.assertEqual(reg["jepa_weight"], 0)
 
+    def test_historical_utility_simulation_cannot_mask_other_pin_drift(self):
+        # Even with a simulated original utility blob, every other prereg
+        # source must remain exactly pinned. No model or native runner opens.
+        original = pilot._git_blob
+        utility = pilot.ROOT / "v13/utility.py"
+        other_pins = (
+            pilot.ROOT / "specs/models.json",
+            pilot.ROOT / "scripts/run33_b2_c3_counterfactual_envelopes.py",
+            pilot.ROOT / "v13/runners.py",
+        )
+        for tampered in other_pins:
+            with self.subTest(path=str(tampered)):
+                def blob(path):
+                    if path == utility:
+                        return pilot.FROZEN_UTILITY_BLOB
+                    if path == tampered:
+                        return "0" * 40
+                    return original(path)
+
+                with mock.patch.object(pilot, "_git_blob", side_effect=blob):
+                    with self.assertRaisesRegex(
+                            ValueError, "native_source_or_catalog_changed"):
+                        pilot.prereg()
+
     def test_no_installed_home_no_native_no_evidence_created(self):
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)
