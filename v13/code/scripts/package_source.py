@@ -40,6 +40,13 @@ PHONE_REQUIRED_FIXTURES.update({
 # Immutable native-negative STEP2 exit evidence is required on phone so the
 # installed :gates report cannot silently lose the two canonical FAIL verdicts.
 # Keep the original registered bytes; never regenerate or rescore in packaging.
+# Exact public synthetic cohorts used by packaged Run114B/Run115B tests.
+# Missing required cohorts fail closed before publishing the phone ZIP.
+PHONE_REQUIRED_FIXTURES.update({
+    'docs/fixtures/RUN114B_JEF_B1B2_C3_SEED947.json',
+    'docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json',
+})
+
 PHONE_REQUIRED_FIXTURES.update({
     'bench-results/step2-z2b-seeds-20261021/z2b_result.json',
     'bench-results/step2-z2c-b2-rule-20261021/z2c_result.json',
@@ -73,6 +80,7 @@ def phone_needed(p):
     return (parts[0] in {'v13','scripts','tests','specs'}
             or len(parts)==1 or parts[:2]==('docs','canon')
             or (parts[0]=='docs' and len(parts)==2 and p.suffix=='.md')
+            or (parts[:2]==('docs','fixtures') and len(parts)==3 and p.suffix=='.json')
             or relative in PHONE_REQUIRED_FIXTURES
             or relative in {'docs/proofs/native_norm_shadow_port.cpp',
                              'docs/proofs/native_norm_poll_policy.hpp',
