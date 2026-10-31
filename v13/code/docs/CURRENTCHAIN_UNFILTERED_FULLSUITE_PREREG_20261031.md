@@ -1,0 +1,7 @@
+# Current-chain unfiltered full software suite with CPU Torch/Transformers/PEFT — prereg 2026-10-31
+
+Owner GPT-6, review-only child of PR #1389 exact 8dab5814161523d8ffe2177ee7441133794beeb9, which incorporates PR #1384→#1389 review chain but is not merged to production main. Focused 124/124 and separate native Run53 Cypress structural regression are insufficient for full-system compatibility.
+
+Run a **single unfiltered** `python -m unittest discover -s tests -p 'test_*.py'` on exact current review-chain head using isolated ubuntu-24.04, pinned numpy 2.2.6, CPU torch 2.5.1+cpu, transformers 4.44.2, peft 0.13.2 and baseline psutil/PyYAML/Pillow/prompt-toolkit 3.0.52. Pin Canon, new B1/B2 topic and F1/F5 temporal atomic code/test hashes and original Runtime/Store/Cognition. Preserve original full stdout/stderr, dependency install, pip check/freeze, compileall, privacy, diff, SHA256SUMS and all exit receipts even on RED. No test selection, waiver, suppression, changed fixture/model/seed hash or production merge. The 20-minute test timeout is a bound, not proof of all tests passing.
+
+No native inference or model downloads in this job, no Redmi, no age/learning/STEP2/B3/JEPA promotion. A full software pass would be regression compatibility only, not whole V13 completion. If failures occur, retain original raw and investigate root causes in a separate reviewed patch; do not silently mark complete. Preserve private backup after verification. No additional heavy native owner active at launch.
