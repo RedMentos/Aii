@@ -1,0 +1,19 @@
+# Run73 — JEF fixed mixed Minimum/Maximum source rules, default-OFF SHADOW
+
+**Date:** 2026-10-31. **Owner:** GPT-6. **Branch:** `assistant/v13-run73-jef-range-policy-shadow-20261031-auto11`, child of verified Run72 review branch HEAD `5e9cd6a14ff131fc9709932e55002faabe4ffd12`. Canon `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged.
+
+**Problem / architectural mapping:** the existing non-generative JEF fixed SourceRef reader accepts exactly two `Maximum` numeric clauses. An otherwise identical human source policy containing `Minimum` cannot be decided, although numeric lower bounds are common and require no LLM. The user's newer fixed-rule-reader decision requires Jeff to evaluate rules deterministically, not to let C3 invent rule interpretations.
+
+**Fixed software experiment before code:** additive `jef_range_policy_shadow.py`, **not** a replacement for frozen `jef_typed_source_shadow.py`, accepting exactly one `Minimum|Maximum` per numeric field, one required boolean, two source-bound options, and the existing exact current/source/project grammar. Explicit tie-break remains smaller first metric, then second, then A. Six distinct synthetic cases with registered expected labels `A,B,NONE,A,B,NONE`, including min/max, min/min, max/min, max/max and boolean-veto; compare to old max-only parser, which must abstain for mixed/min rules. Fail closed on malformed, ambiguous, wrong project, revoked or partial SourceRefs; no source string in result. No native models, Store writes, training, output or approval authority.
+
+**Claim boundary:** Store SourceRef integrity alone is **not** F1/F5 human-decision lineage or permission; this candidate must remain isolated until a separate authenticated human-source consumer and negative-case tests are proven. It is a fixed grammar expansion, not general natural-language reasoning, learned utility, STEP2, B3, JEPA or production. Run70 C3 source-only 3/6 scientific RED and full-suite 4 FAIL/66 ERROR/28 SKIP unchanged. Age0 RECORD_ONLY, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, Redmi unmeasured, whole V13 incomplete.
+
+**Planned checks:** six positive synthetic source pairs, old-parser abstention, source hash/revocation, malformed bounds/flags/identity, no mutation/output/learning, Canon pin, independent CI tests and raw ZIP. Keep original source/model/seed hashes unchanged. **Next:** implement module + tests + CI, verify raw and private backup, independent review. **Platform budget:** UNKNOWN.
+
+## Terminal verified software checkpoint
+
+Original Actions **41183360945**, exact executed HEAD `c40eef97b3da14c1165e485b91bdafd0d036d031`: terminal **SUCCESS**. **39/39** focused real-Store tests: 8 new mixed-bound + 9 legacy fixed-source + 8 human F1/F5 + 14 C3 schema recheck. All **10/10** stage exits zero; source/Canon pins exact, privacy CLEAN, compile/diff PASS. Original raw artifact **13035663498**, ZIP SHA256 **`406e347e4b2ca30671fd997237ba2f89861e1c2e4fb3d97803d43d2216bcb90b`**, CRC PASS, **22/22** inner SHA256SUMS. Private Library `/V13-Checkpoints/2026-10-31/Run73-JEF-Range-Policy/ORIGINAL_ACTIONS_41183360945_SHA406E347E.zip`, rematerialized and `cmp` byte-identical.
+
+Verified remote source blob `d57c9eb561e115541883e2f6ed37da451ff528f7`, test blob `384628a38070012b449b876b2529f44ca8b038ce`. Initial regex literal-dot double-escape was corrected *before* the tested workflow; original intermediate commit `52bd3394cbc0438a26b360478f9dcf64a770dcf2` retained, not counted as a passing test. Source-only range decisions remain SHADOW and **not human-authenticated**; separate Run74 F1/F5 lineage wrapper is in progress, not evidence for Run73. All negative gates unchanged.
+
+**Next:** independent review of this additive fixed parser, continue Run74 authenticated human-source wrapper with new real Store tests. Do not merge to production automatically. **Remaining budget:** UNKNOWN.
