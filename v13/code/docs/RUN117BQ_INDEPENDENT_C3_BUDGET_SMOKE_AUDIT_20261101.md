@@ -22,3 +22,7 @@ python3 scripts/run117bq_independent_budget_smoke_audit.py --report /verified/na
 ```
 
 Owner: Run117BQ independent review branch, distinct from Run117BP native owner. Next: audit the terminal original native ZIP, independently validate hashes/stage exits, privately checkpoint original raw and audit output, then preregister a **disjoint** cohort if warranted. Do not infer native execution from the synthetic tests or the self-reported JSON alone. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; no Redmi, output, tools, learning, or whole-system completion. Remaining platform budget UNKNOWN.
+
+## Verified software checkpoint
+
+Actions **41252788638 SUCCESS** at exact source HEAD `328b520f3c5e9b7f704d598ec0379da9ed98ba6c`, artifact **13062325697**, original ZIP SHA256 **`39c7666682d8c2fb91e463d6d6471395a5256e17cae5ffe53158dc937c532762`**. Independently downloaded and checked ZIP CRC PASS, **12/12** inner SHA256SUMS, **5/5** stage exits zero, **7/7** adversarial tests PASS, privacy CLEAN, `git diff --check` PASS. Original raw privately saved to `/V13-Checkpoints/2026-11-01/Run117BQ-Independent-Audit/ORIGINAL_SOFTWARE_41252788638_sha39C76666.zip` and re-materialized with identical SHA256. This is software/synthetic proof only, **not** a Run117BP native result. Native Run117BP owner remains separate; do not start competing heavy jobs.
