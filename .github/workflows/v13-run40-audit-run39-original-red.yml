@@ -39,7 +39,18 @@ jobs:
           echo "$?" > "$e/AUDIT_EXIT.txt"
           git fetch --no-tags --depth=1 origin d05ad63679efed8c6af24a6904c79a4920efa30c > "$e/FETCH_RAW.log" 2>&1
           echo "$?" > "$e/FETCH_EXIT.txt"
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base d05ad63679efed8c6af24a6904c79a4920efa30c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          python3 - > "$e/PRIVACY_RAW.log" 2>&1 <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "v13/code")
+          from scripts.public_repo_privacy_scan import scan
+          diff = subprocess.check_output(
+              ["git", "diff", "--no-color", "-U0", "--text",
+               "d05ad63679efed8c6af24a6904c79a4920efa30c", "HEAD"],
+              text=True)
+          hits = scan(diff)
+          print("privacy", "CLEAN" if not hits else hits)
+          sys.exit(bool(hits))
+          PY
           echo "$?" > "$e/PRIVACY_EXIT.txt"
           git diff --check d05ad63679efed8c6af24a6904c79a4920efa30c HEAD > "$e/DIFF_RAW.log" 2>&1
           echo "$?" > "$e/DIFF_EXIT.txt"
