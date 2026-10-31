@@ -1,0 +1,5 @@
+# Run88 CI RED correction prereg — 2026-10-31
+
+Original workflow Actions `41197601837` exact HEAD `4bb9046cdb503df963e666d1ee088f7611f36d34` terminal FAILURE, raw artifact `13040653497` SHA256 `ca9ad22c1cc16176f1887fb01e970491c06317fcae19bd0d76bcc79bfb02760a`, retained. **10/10 adversarial tests passed**; original ZIP SHA, CRC and all manifest members passed; original `4612 / 4 FAIL / 66 ERROR / 28 SKIP` correctly retained; both existing strict source probes refused current runtime as expected. CI stopped at privacy scan because checkout default shallow depth made parent `f8c77fb95b668e7f8e9bd6429d82969a3debd09f` unavailable (`Not a valid commit name`). This is an evidence/CI harness RED, not a product test failure or reason to bypass privacy.
+
+**Minimal authorized correction:** set checkout `fetch-depth: 0` and rerun identical original artifact, 10 tests, strict source checks, privacy and diff. Do not edit frozen sources, cohort, script, tests, original ZIP or negative gates. New CI run must bind its exact HEAD and retain this original failed artifact. No promotion.
