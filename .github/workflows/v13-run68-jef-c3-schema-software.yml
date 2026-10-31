@@ -1,0 +1,103 @@
+name: V13 Run68 JEF C3 recency disjoint software preflight
+on:
+  push:
+    branches: [codex/jef-c3-schema-constrained-727-20261031-auto11]
+    paths: ['.github/workflows/v13-run68-jef-c3-schema-software.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-run68-jef-schema-software
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Registered fixture, negative tests, source grammar and privacy
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run68-software"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          587410221d3ed033e52fbedcb32b31d836a4a363 v13/code/docs/JEF_C3_SCHEMA_CONSTRAINED_727_PREREG_20261031.md
+          3b6b79c7eded3b812d27fb594ceda9afd3fd9464 v13/code/scripts/jef_c3_schema_fixture_727.py
+          bdbec75f12e6af135dc17fd8eaea8d9927079f04 v13/code/scripts/run68_jef_c3_schema_native_727.py
+          d36538e8157a51ac703f29c6043a092beef9df4a v13/code/scripts/run68_jef_c3_schema_verify.py
+          6a0d8c3a03d280adc9778094fa28a19f100d0824 v13/code/tests/test_jef_c3_schema_fixture_727.py
+          f1958dbcdcc7e231f7763029dd7b348f90634397 v13/code/tests/test_run68_jef_c3_schema_verify.py
+          9ebc4178d4ce2bac941c70a8e1a1cb4438bd5dac v13/code/scripts/jef_c3_recency_fixture_619.py
+          d31c93c438f3e15f435b60603866713005c59f93 v13/code/scripts/jef_c3_c5_c6_operator_cli.py
+          4409692865d284382de9a14aae55aa3a4315ecfc v13/code/scripts/run63_jef_c3_native.py
+          e94d70be7ec5f4666392a50ea17f813bd92c0879 v13/code/v13/jef_c3_typed_envelope_candidate.py
+          7cfae3d54e49718181813cea68238301e2ffae87 v13/code/v13/jef_typed_source_shadow.py
+          8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p 'test_jef_c3_schema_fixture_727.py' -v > "$e/TEST_FIXTURE_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_FIXTURE_EXIT.txt"
+          PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p 'test_run68_jef_c3_schema_verify.py' -v > "$e/TEST_VERIFY_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_VERIFY_EXIT.txt"
+          PYTHONPATH=v13/code:v13/code/scripts python3 - > "$e/SOURCE_RAW.log" 2>&1 <<'PY'
+          from scripts import jef_c3_recency_fixture_619 as f
+          from scripts import p2x_disjoint_receiver_trainset as p2x
+          from scripts import jef_c3_recency_fixture_619 as prior
+          from v13 import jef_typed_source_shadow as typed
+          rows=f.fixtures()
+          original=p2x.fixtures()
+          p2x.validate(original)
+          assert not {x['project'] for x in rows} & ({x['id'] for x in original} | {x['project'] for x in prior.fixtures()})
+          assert not {x[k] for x in rows for k in ('current','policy_source','sheet_source')} & {x[k] for x in prior.fixtures() for k in ('current','policy_source','sheet_source')}
+          for r in rows:
+              assert typed.CURRENT.fullmatch(r['current'])
+              assert typed.POLICY.fullmatch(r['policy_source'])
+              assert typed.SHEET.fullmatch(r['sheet_source'])
+              assert p2x.decide_sources(r['current'],[r['policy_source'],r['sheet_source']])==r['expected']
+              assert p2x.decide_sources(r['current'],[r['policy_source']])=='UNKNOWN'
+              assert p2x.decide_sources(r['current'],[r['sheet_source']])=='UNKNOWN'
+          assert f.SCHEMA['properties']['action']['enum']==['A','B','NONE']
+          print('RUN68_SIX_DISJOINT_SOURCE_GRAMMAR_AND_SCHEMA_PASS')
+          PY
+          echo "$?" > "$e/SOURCE_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/jef_c3_schema_fixture_727.py v13/code/scripts/run68_jef_c3_schema_native_727.py v13/code/scripts/run68_jef_c3_schema_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8cf020737f779089d4e9e6534fa21bf5347b9c7c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8cf020737f779089d4e9e6534fa21bf5347b9c7c HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain raw including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run68-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run68-software/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all software checks
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run68-software"
+          for s in PINS TEST_FIXTURE TEST_VERIFY SOURCE COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN68_SOFTWARE_ONLY_NO_NATIVE_PROMOTION
