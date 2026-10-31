@@ -2,7 +2,10 @@ name: V13 Run83 independent original native ZIP audit (software only)
 on:
   push:
     branches: [assistant/v13-run83-original-native-zip-audit-20261031-gpt6]
-    paths: ['.github/workflows/v13-run83-original-zip-audit.yml']
+    paths:
+      - '.github/workflows/v13-run83-original-zip-audit.yml'
+      - 'v13/code/scripts/run83_original_zip_audit.py'
+      - 'v13/code/tests/test_run83_original_zip_audit.py'
 permissions:
   contents: read
   actions: read
