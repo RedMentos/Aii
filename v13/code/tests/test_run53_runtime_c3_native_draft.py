@@ -32,6 +32,7 @@ class Run53NativeDraftVerifierTests(unittest.TestCase):
             self.assertIn("c3_model_sha", r["errors"])
             self.assertIn("row_hash", r["errors"])
             self.assertIn("native_final", r["errors"])
+            self.assertIn("causal_user_message_order", r["errors"])
 
     def test_original_run51_fixture_hash_and_cohort_are_immutable(self):
         f = load_fixture(FIXTURE)["fixtures"]
