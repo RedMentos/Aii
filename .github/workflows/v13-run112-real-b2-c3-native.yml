@@ -1,6 +1,10 @@
 name: V13 Run112 actual native B2 to C3 source handoff
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - assistant/v13-run112-real-b2-to-c3-native-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run112-real-b2-c3-native.yml
 permissions:
   contents: read
 concurrency:
