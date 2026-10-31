@@ -29,7 +29,7 @@ from v13.runtime import Runtime
 from v13.store import audit_closed
 
 SEED = 1063
-FIXTURE_SHA = "2b62fd13c81201c23574fa42ad87176f4386c9ec9c608ed9"
+FIXTURE_SHA = "2b62fd13c81201c23574fa42ad87176f5d25f755b534a76f4386c9ec9c608ed9"
 IDS = ("Arbor", "Brisa", "Cyra", "Doran", "Elyra", "Fenix")
 ARMS = ("BASE_SOURCE_SYSTEM", "EXPLICIT_ARITHMETIC_SYSTEM",
         "TYPED_JEF_FORMATTER")
