@@ -1,0 +1,5 @@
+# Auto11 restart original RED diagnostic plan (2026-10-31)
+
+Original Actions 41196426864 at exact HEAD `00299dadc036d8272bf0fc1d872b7126e230352c`: PINS/VENV/DEPS passed, 82 tests with one failure. The only failed test is the positive Store close/reopen proof: source admission, callback JSON replay, metadata shape and duplicate checks passed, but `C5_F3_OR_DRAFT_BINDING_RED` was returned. Ten other restart negatives and all prior tests passed. Do NOT treat as GREEN, do not weaken source or C5 verifier to make it pass.
+
+Prospective bounded diagnostic: separate `_draft` versus `_c5_shadow` results and inspect the persisted action status, draft status and C5/F3 event/generation binding after real Runtime reopen; record only booleans/status enums, no user text. If Runtime recovery legitimately mutates the action, preserve fail-closed behavior and revise acceptance to require a restart-safe SHADOW status policy, rather than skipping checks. Keep original raw artifact and hashes; any corrective patch must be registered after this note.

@@ -20,6 +20,7 @@ from .jef_c3_c5_c6_fallback_draft_candidate import (
     _existing, _draft, EXPECTED,
 )
 from .c5_shadow_action_binding import _c5_shadow
+from .jef_c3_schema_draft_candidate import decode_action
 
 STATUS = "DUAL_SOURCE_C5_C6_DRAFT_PREFLIGHT_SHADOW"
 
@@ -164,7 +165,11 @@ def _c6_preflight(runtime, event, offers, ids, meta, staged):
             stored = json.loads(row["metadata"])
             if (type(stored) is not dict or stored != meta
                     or _sha(meta["source_action"].encode("utf-8"))
-                    != meta["candidate_sha256"]):
+                    != meta["candidate_sha256"]
+                    or decode_action(meta.get("callback_output_json"))
+                    != meta["source_action"]
+                    or _sha(meta["callback_output_json"].encode("utf-8"))
+                    != meta["callback_output_sha256"]):
                 return _result("C6_PERSISTED_METADATA_RED")
         return _result("C6_DRAFT_INTEGRITY_SHADOW")
     except Exception:
@@ -194,8 +199,20 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
                            callback_invoked=False)
     except Exception:
         return _result("PREFLIGHT_INTEGRITY_RED", callback_invoked=False)
+    captured = {}
+
+    def capture_once(messages, schema):
+        raw = generator(messages, schema)
+        if type(raw) is str:
+            try:
+                if 0 < len(raw.encode("utf-8", "strict")) <= 1024:
+                    captured["raw"] = raw
+            except UnicodeError:
+                pass
+        return raw
+
     checked = postgen.evaluate(
-        runtime, event, offer_packet_ids, memory_ids, generator,
+        runtime, event, offer_packet_ids, memory_ids, capture_once,
         operator_opt_in=True, callback_opt_in=True)
     if checked.get("status") != postgen.STATUS:
         return _result("DUAL_SOURCE_C3_RED",
@@ -208,6 +225,10 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
                    for key in ("messages_sha256", "jef_messages_sha256",
                                "b1b2_messages_sha256", "output_sha256"))):
         return _result("POSTGEN_RECEIPT_RED", callback_invoked=True)
+    raw = captured.get("raw")
+    if (type(raw) is not str or decode_action(raw) != action
+            or _sha(raw.encode("utf-8")) != checked["output_sha256"]):
+        return _result("CALLBACK_REPLAY_SOURCE_RED", callback_invoked=True)
     decision = admission.decide(
         runtime.memory, runtime.session, event_id, event["source_ref"],
         memory_ids, operator_opt_in=True)
@@ -225,6 +246,7 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
         "jef_messages_sha256": checked["jef_messages_sha256"],
         "b1b2_messages_sha256": checked["b1b2_messages_sha256"],
         "callback_output_sha256": checked["output_sha256"],
+        "callback_output_json": raw,
         "candidate_sha256": _sha(action.encode("utf-8")),
         "model_formatter_status": postgen.STATUS,
         "body_hypotheses_are_facts": False,
@@ -275,5 +297,6 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
         callback_output_sha256=meta["callback_output_sha256"],
         dual_source_digest_persisted=True,
         callback_output_digest_persisted=True,
+        callback_output_json_persisted=True,
         draft_message_id=staged["draft_message_id"],
         c5_action_id=staged["c5_action_id"])

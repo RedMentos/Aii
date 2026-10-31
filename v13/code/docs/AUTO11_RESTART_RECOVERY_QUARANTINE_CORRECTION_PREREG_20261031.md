@@ -1,0 +1,7 @@
+# Auto11 restart correction — respect Store recovery quarantine (2026-10-31)
+
+Root cause of original 82-test RED was found in frozen `v13/code/v13/store.py` recovery: on Store open, `UPDATE messages SET status='INTERRUPTED' WHERE status IN ('STREAMING','DRAFT','OUTPUT_COMMITTED')`; actions with legacy DISPATCHED are separately changed to OUTCOME_UNKNOWN. The new SHADOW_DRAFT action remains isolated, but the assistant DRAFT is intentionally quarantined. This is a safety rule, not a bug to bypass.
+
+**Do not change Store, do not reset INTERRUPTED back to DRAFT and do not claim C6 ready after restart.** The read-only verifier must distinguish (a) active DRAFT before restart: source/binding integrity SHADOW only, from (b) INTERRUPTED after real Runtime reopen: replay exact callback JSON SHA, source lineage, dual prompts and C5/F3 shadow action, but return explicit `RESTART_SHADOW_DRAFT_QUARANTINED`, `resumable=False`, `c6_preflight_only=False`, no approval/delivery/tool/learning authority. All other statuses fail closed. The original strict _draft verifier must still require DRAFT; use a separate explicit interrupted-message shape check, not a forged status view.
+
+Add tests for pre-restart active DRAFT, post-restart INTERRUPTED quarantine, and reject status tampering to FINAL. Original RED 41196426864 and diagnostic 411965... retained; correction prereg committed before code. No native or Redmi proof. Historical full-suite and all negative gates unchanged.
