@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/v13-run117ah-body-source-id-preflight.yml
       - v13/code/v13/b1b2_source_id_quote_candidate.py
+      - v13/code/v13/contracts.py
       - v13/code/tests/test_run117ah_body_source_id_candidate.py
       - v13/code/docs/RUN117AH_*
       - v13/code/docs/fixtures/RUN117AH_*
@@ -48,7 +49,8 @@ jobs:
             test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
           fi
           "$py" -m compileall -q v13/code/v13/b1b2_source_id_quote_candidate.py \
-            v13/code/tests/test_run117ah_body_source_id_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+            v13/code/tests/test_run117ah_body_source_id_candidate.py \
+            v13/code/v13/contracts.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
