@@ -22,7 +22,7 @@ class NoWeightArtifacts(unittest.TestCase):
     def test_run117bj_predictor_pt_refused(self):
         p = self.root / 'NATIVE_CASE' / 'work' / '263-CE'
         p.mkdir(parents=True)
-        (p / 'predictor.pt').write_bytes(b'PK\\x03\\x04')
+        (p / 'predictor.pt').write_bytes(b'PK\x03\x04')
         r = inspect(self.root)
         self.assertEqual(r['status'], 'EXPORT_BOUNDARY_RED')
         self.assertIn('NOT_RAW_TELEMETRY:NATIVE_CASE/work/263-CE/predictor.pt', r['violations'])
@@ -33,10 +33,10 @@ class NoWeightArtifacts(unittest.TestCase):
             (self.root / n).write_bytes(b'abc')
         self.assertEqual(len(inspect(self.root)['violations']), 4)
     def test_disguised_binary_rejected(self):
-        (self.root / 'metrics.json').write_bytes(b'\\x80\\x04\\x00pickle')
+        (self.root / 'metrics.json').write_bytes(b'\x80\x04\x00pickle')
         self.assertIn('BINARY_CONTENT:metrics.json', inspect(self.root)['violations'])
     def test_invalid_utf8_rejected(self):
-        (self.root / 'metrics.json').write_bytes(b'\\xff\\xfe')
+        (self.root / 'metrics.json').write_bytes(b'\xff\xfe')
         self.assertIn('UNREADABLE_OR_NONUTF8:metrics.json', inspect(self.root)['violations'])
     def test_symlink_dir_refused_without_follow(self):
         outside = Path(self.tmp.name) / 'outside'
