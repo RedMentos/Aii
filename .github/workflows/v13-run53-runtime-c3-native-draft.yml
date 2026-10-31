@@ -46,9 +46,9 @@ jobs:
           7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
           0779d986fb8aee8aa01c5df5f656889d4bd56348 v13/code/v13/store.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
-          2614dec56345cea5075395e92040011bfef770af v13/code/scripts/run53_runtime_c3_native_draft.py
-          471e3c3aa4f048c636b2a390d8f6c45ebb37afdd v13/code/scripts/run53_runtime_c3_native_draft_verify.py
-          62e172744202bf497e508ea53116feeece6b1a21 v13/code/tests/test_run53_runtime_c3_native_draft.py
+          12ef2e3febb8add5d2867f8647fc01c07957f7c9 v13/code/scripts/run53_runtime_c3_native_draft.py
+          625590b16ba29609d36f247f1b396c82051bc6dd v13/code/scripts/run53_runtime_c3_native_draft_verify.py
+          2efacb2b9b2b58951bab0c8caa4d75ce3ed5c7f1 v13/code/tests/test_run53_runtime_c3_native_draft.py
           b696f5313851829511ce9555e8abfd09422921f4 v13/code/v13/runtime_c3_atomic_draft_candidate.py
           8f1f13f26636faf565931500cb3ce0d6108abf5d v13/code/v13/f1f5_c5c6_atomic_draft_candidate.py
           PINS
