@@ -2,7 +2,7 @@ name: V13 Run50 seed443 native C3 C5 C6 draft 4-call Linux witness
 on:
   push:
     branches: [assistant/v13-run50-native-c3-c5-c6-draft-20261031-hourly11]
-    paths: ['.github/workflows/v13-run47-jef-c3-receiver-native.yml']
+    paths: ['.github/workflows/v13-run50-c3-c5-c6-native.yml']
 permissions:
   contents: read
 concurrency:
