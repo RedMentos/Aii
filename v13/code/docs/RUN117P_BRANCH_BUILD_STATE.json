@@ -1,0 +1,30 @@
+{
+  "blocked": {
+    "native_c2_jef": "not measured by Run116",
+    "redmi": "no connected phone"
+  },
+  "branch": "assistant/v13-run117-role-postgen-shadow-20261031-hourly11",
+  "native_run116_original_sha256": "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5",
+  "negative_gates": {
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "Run branch CI and download original Actions raw artifact, verify hashes/CRC/privacy before attribution follow-up",
+  "owner": "hourly-gpt6-run11",
+  "parent": "5cc9852fbadec73bfc0f7f4fdbb7f52340be3d14",
+  "raw_log_sha256": "529e89dc669b6a10cac3c1627ec0411f5662ae55cdeb4e909b1bd6c13bd1b7a0",
+  "schema": "v13.run117p.branch_build_state.v1",
+  "scope": "REVIEW_ONLY_DEFAULT_OFF_SHADOW",
+  "source_sha256": "44d37af1518cd38931bf875555b349b8eb70be782c19f989affbee0494c2568c",
+  "test_sha256": "2a734bd189ff699a144df79623baf406334cfd82cf4fe0d9a4164c2500f0a706",
+  "tests": {
+    "compile_exit": 0,
+    "evidence_level": "SOFTWARE_REAL_SQLITE_SYNTHETIC_C3",
+    "focused_failed": 0,
+    "focused_total": 57
+  }
+}
