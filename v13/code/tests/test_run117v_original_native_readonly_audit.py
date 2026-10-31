@@ -145,5 +145,47 @@ class OriginalNativeAuditorTests(unittest.TestCase):
             audit._report_check(r, audit.fixture(FIXTURE))
 
 
+    def test_complete_report_requires_all_three_actual_body_receipts(self):
+        rows = audit.fixture(FIXTURE)
+        cases = []
+        for row in rows:
+            offers = [
+                {"role": role, "phase": phase, "status": "RECORDED",
+                 "process_reaped": True,
+                 "native_metrics": {"status": "FINAL",
+                                    "actual_model": audit.MODEL_NAMES[role][0]},
+                 "model_revision": audit.MODEL_NAMES[role][1]}
+                for role, phase in (("B2_GIST", "prior"),
+                                    ("B1_DETAIL", "current"),
+                                    ("B2_GIST", "current"))]
+            cases.append({
+                "id": row["id"], "status": "RECORDED",
+                "closed_store_ok": True, "no_live_output": True,
+                "prior_source_ref": ref(row["prior"], row["prior"]),
+                "current_source_ref": ref(row["current"], row["current"]),
+                "offers": offers,
+                "arms": [arm(row, name) for name in audit.ARMS]})
+        report = {
+            "schema": audit.SCHEMA_NAME, "seed": 1061,
+            "fixture_sha256": audit.FIXTURE_SHA,
+            "native": True, "synthetic_body_observers": False,
+            "age0": "RECORD_ONLY", "step2_exit": "EVIDENCE_NOT_PASSING",
+            "b3": "NO_PROMOTION", "body_jepa": "UNAVAILABLE",
+            "jepa_weight": 0, "redmi_measured": False,
+            "whole_system_complete": False, "output_committed": False,
+            "tool_dispatches": 0, "learning_authority": 0,
+            "delivery_authority": 0, "native_jef_calls": 0,
+            "native_c2_calls": 0, "status": audit.GOOD[1],
+            "native_body_calls": 18, "native_c3_calls": 18,
+            "scores": {name: 6 for name in audit.ARMS},
+            "recorded_by_arm": {name: 6 for name in audit.ARMS},
+            "exploratory_body_selection_signal": False,
+            "rows": cases}
+        self.assertTrue(audit._report_check(report, rows)["native_complete"])
+        report["rows"][0]["offers"] = []
+        with self.assertRaisesRegex(ValueError, "BODY_OFFER_RECEIPT_RED"):
+            audit._report_check(report, rows)
+
+
 if __name__ == "__main__":
     unittest.main()
