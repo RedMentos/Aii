@@ -1,0 +1,1 @@
+Run97 first bounded installer smoke execution; prereg 6c2d07edbe0c0d4a4dbe0268dcf218e3f5285ca9; source parent 70af335e630b011e716765c4dadc582a49694fde; software Linux only; no native models, no Redmi, no promotion.
