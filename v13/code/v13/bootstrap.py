@@ -6,22 +6,11 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-import tarfile
 import zipfile
 from .common import APP,atomic_write,dumps,file_hash,Unavailable
 from .config import initialize,home_path
 from .models import ModelManager,catalog,platform_tag,download_file
-
-def extract(archive,dest):
-    dest=Path(dest);dest.mkdir(parents=True,exist_ok=True)
-    with tarfile.open(archive) as t:
-        seen=set()
-        for m in t.getmembers():
-            p=(dest/m.name).resolve()
-            if not p.is_relative_to(dest.resolve()) or m.name in seen or not (m.isfile() or m.isdir() or m.issym()):raise ValueError('Unsicheres Archivmitglied')
-            seen.add(m.name)
-            if m.issym() and not (p.parent/m.linkname).resolve().is_relative_to(dest.resolve()):raise ValueError('Symlink außerhalb Archiv')
-        t.extractall(dest,**({'filter':'data'} if hasattr(tarfile,'data_filter') else {}))
+from .safe_tar import extract
 
 def run_build(cmd,home):
     print('Native build: '+' '.join(map(str,cmd)),flush=True)
