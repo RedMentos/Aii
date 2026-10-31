@@ -5,7 +5,7 @@ import unittest
 from scripts import w7d_world_jepa_delta_inverse_real as w7d
 
 
-def fixture(delta_ranks=(False, False, False), baseline_ranks=(True, True, True),
+def fixture(delta_ranks=(True, True, True), baseline_ranks=(False, False, False),
             pooled_baseline=.2, pooled_delta=-.3):
     def row(seed, inverted, delta_arm):
         # Confidences strictly ordered: no tie artefact in these fixtures.
@@ -55,8 +55,8 @@ class W7DPerSeedD3Review(unittest.TestCase):
         # Two seeds improve by -2; third regresses by +2. Mean passes
         # but the original preregistered each-seed limit fails.
         r = w7d.delta_exploratory(fixture(
-            delta_ranks=(False, False, True),
-            baseline_ranks=(True, True, False)))
+            delta_ranks=(True, True, False),
+            baseline_ranks=(False, False, True)))
         self.assertEqual(r["per_seed_w4_rho_delta"], [-2., -2., 2.])
         self.assertLessEqual(r["mean_per_seed_w4_rho_delta"], -.05)
         self.assertTrue(r["pooled_w4_rho_improvement_diagnostic"])
