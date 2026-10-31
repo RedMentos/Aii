@@ -48,7 +48,7 @@ class Run87ManualNativeWorkflowTests(unittest.TestCase):
         self.assertIn('"$e/VERIFY_EXIT.txt"', self.text)
         self.assertIn('! -name SHA256SUMS', self.text)
         self.assertIn('if: always()', self.text)
-        self.assertIn('Retain compact raw evidence, including failed attempts and RED', self.text)
+        self.assertIn('Preserve compact raw evidence, including failed attempts and RED', self.text)
         self.assertIn('NATIVE VERIFY COMPILE PRIVACY DIFF', self.text)
 
     def test_06_age0_no_training_or_output_activation(self):
