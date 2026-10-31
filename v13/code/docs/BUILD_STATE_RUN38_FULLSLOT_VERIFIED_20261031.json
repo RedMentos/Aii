@@ -1,0 +1,88 @@
+{
+  "schema": "v13.build_state.run38.world_jepa_fullslot_verified.v1",
+  "owner": "GPT-6 scheduled continuation",
+  "scope": "REVIEW_ONLY_PR_1365_NOT_MAIN",
+  "pr": 1365,
+  "branch": "assistant/v13-run38-world-jepa-fullslot-training-20261031-hourly11",
+  "prereg_commit": "cf56daa3fa2e7785ef0125fcd57975f25f25de0e",
+  "heavy_source_head": "717a32bb46c975cf8721ce2e8abb41e0cc87f159",
+  "original_realfile": {
+    "workflow_run": 41151531032,
+    "artifact_id": 13022683736,
+    "sha256": "392d8c37452b56262806b1f2d13e67794c2d76a27ce229a0ea7d6f5cb8bfafa5",
+    "zip_crc": "PASS",
+    "inner_hashes": "82/82",
+    "stage_exits": "9/9 ZERO",
+    "software_tests": "29/29 PASS",
+    "privacy": "CLEAN",
+    "seeds": [
+      401,
+      402,
+      403
+    ],
+    "args": {
+      "train": 4000,
+      "cf": 150,
+      "attr": 300,
+      "steps": 3000
+    },
+    "status": "SHADOW_CANDIDATE_FAIL",
+    "evidence_class": "LINUX_REALFILE_SHADOW"
+  },
+  "metrics": {
+    "two_slot": {
+      "cf_covered": 0.9164,
+      "conf_err_spearman": -0.3534,
+      "action_balanced": 0.9618,
+      "noaction_balanced": 0.9816,
+      "W1_to_W5": true,
+      "W6": false,
+      "W7a": true,
+      "W7b": false,
+      "W7c": false
+    },
+    "six_slot": {
+      "cf_covered": 0.8956,
+      "conf_err_spearman": -0.3382,
+      "action_balanced": 0.9561,
+      "noaction_balanced": 0.9721,
+      "W1_to_W5": true,
+      "W6": false,
+      "W7a": true,
+      "W7b": false,
+      "W7c": false
+    },
+    "H1": {
+      "pass": false,
+      "mean_delta": 0.003733,
+      "threshold": 0.02
+    },
+    "H2": {
+      "pass": true
+    }
+  },
+  "independent_review": "Recomputed W1-W6 and original pooled Spearman from original per-seed _conf_err, matched report both arms; shared input metadata and class counts matched 3/3",
+  "private_backup": {
+    "path": "/V13-Checkpoints/2026-10-31/Run38-WorldJepa-FullSlot/Run38_REALFILE_ORIGINAL_41151531032_SHA_392d8c37.zip",
+    "sha256_readback_identical": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "world_jepa": "SHADOW",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Can an action-balanced six-slot sampler improve W6/W7b/W7c without degrading W1-W5? Run39 preregistered separately.",
+    "Why does the no-action attribution control reach ~0.97-0.98 balanced accuracy, creating a ceiling for W6?",
+    "Does any World-JEPA candidate generalize beyond synthetic file-world to live Context OS and target Redmi? Not proven.",
+    "No Body-JEPA/JEF-C3 native utility, learned German transfer or STEP2 acceptance."
+  ],
+  "exact_next_command": "Inspect Run39 software CI on assistant/v13-run39-world-jepa-action-balanced-fullslot-20261031-hourly11; after original raw software GREEN and no active heavy owner, launch pinned Run39 disjoint real-file seeds501-503; independently verify and privately back up all original raw.",
+  "status": "REVIEWABLE_NATIVE_CLOSED_NEGATIVE_NOT_PRODUCTION_INTEGRATED",
+  "remaining_platform_budget": "UNKNOWN"
+}
