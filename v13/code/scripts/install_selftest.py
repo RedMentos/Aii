@@ -43,6 +43,29 @@ SMOKE_CASES = (
     "test_admission.AdmissionTest.test_labels_come_only_from_human_signals",
 )
 
+# New exact cohort for current Run102 Runtime; legacy_run97 remains immutable.
+SMOKE_CASES_RUN102_C3 = (
+    "test_age.AgeChecks.test_default_build_stays_age0_but_records_proposal",
+    "test_age.AgeChecks.test_user_cap_is_binding_and_not_self_overridable",
+    "test_age.AgeChecks.test_rights_are_masked_by_rules_permissions_resources_and_structural_lock",
+    "test_age.AgeChecks.test_user_freeze_and_lower",
+    "test_age.AgeChecks.test_restart_persists_state",
+    "test_age_rights.AgeStageChangesAllowedPaths.test_age_stage_changes_allowed_paths",
+    "test_runtime_queue.DurableRuntimeQueue.test_paused_restart_preserves_pending_fifo_and_no_duplicate_outputs",
+    "test_runtime_queue.DurableRuntimeQueue.test_restart_queue_expiry_is_visible_and_never_generates_late_answer",
+    "test_runtime_queue.DurableRuntimeQueue.test_failed_turn_is_terminal_and_following_real_source_copy_runs",
+    "test_standstill.EngageTests.test_all_parts_stop_and_idle_runtime_is_confirmed_still",
+    "test_standstill.RestartTests.test_restart_stays_still",
+    "test_standstill.ReleaseTests.test_user_notaus_before_standstill_survives_release",
+    "test_b2_c3_context_plan_20261031.C3ContextOSB2Evidence.test_wide_exact_prior_rules_survive_c3_legacy_and_planned_view",
+    "test_b2_c3_context_plan_20261031.C3ContextOSB2Evidence.test_narrow_c3_view_contains_only_selected_prior_sentence",
+    "test_b2_c3_context_plan_20261031.C3ContextOSB2Evidence.test_deleted_prior_ref_cannot_enter_context_plan",
+    "test_context_os.PlanTests.test_append_only_does_not_replay_revoked_volatile_memory",
+    "test_context_os.PlanTests.test_append_only_does_not_replay_rewritten_source_history",
+    "test_admission.AdmissionTest.test_labels_come_only_from_human_signals",
+)
+COHORTS = {"legacy_run97": SMOKE_CASES, "run102_c3": SMOKE_CASES_RUN102_C3}
+
 
 def _flatten(suite):
     for item in suite:
@@ -76,29 +99,33 @@ def load_exact_suite(names=SMOKE_CASES):
     return suite
 
 
-def worker():
+def worker(cohort='legacy_run97'):
     os.environ["NO_MODEL_DOWNLOADS"] = "1"
     os.environ["DO_NOT_TRACK"] = "1"
     try:
-        suite = load_exact_suite()
+        names = COHORTS[cohort]
+        suite = load_exact_suite(names)
     except (ValueError, ImportError, AttributeError) as exc:
         print("INSTALL_SELFTEST_REFUSED: " + str(exc), file=sys.stderr, flush=True)
         return 2
     print("INSTALL_SELFTEST_SCOPE=MODEL_FREE_SOFTWARE_ONLY; full developer suite remains 'v13 selftest'",
           flush=True)
+    print('INSTALL_SELFTEST_COHORT=' + cohort, flush=True)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     print("INSTALL_SELFTEST_RESULT tests={} expected={} failures={} errors={} skipped={}".format(
-        result.testsRun, len(SMOKE_CASES), len(result.failures),
+        result.testsRun, len(names), len(result.failures),
         len(result.errors), len(result.skipped)), flush=True)
-    return 0 if result.wasSuccessful() and result.testsRun == len(SMOKE_CASES) else 1
+    return 0 if result.wasSuccessful() and result.testsRun == len(names) else 1
 
 
-def run_bounded(seconds=MAX_SECONDS):
+def run_bounded(seconds=MAX_SECONDS, cohort='legacy_run97'):
     if not isinstance(seconds, int) or not 1 <= seconds <= MAX_SECONDS:
         raise ValueError("install-smoke timeout must be between 1 and 120 seconds")
+    if cohort not in COHORTS:
+        raise ValueError('unknown install-smoke cohort')
     env = os.environ.copy()
-    env.update(NO_MODEL_DOWNLOADS="1", DO_NOT_TRACK="1", V13_INSTALL_SMOKE="1")
-    cmd = [sys.executable, str(Path(__file__).resolve()), "--worker"]
+    env.update(NO_MODEL_DOWNLOADS="1", DO_NOT_TRACK="1", V13_INSTALL_SMOKE="1", V13_INSTALL_SMOKE_COHORT=cohort)
+    cmd = [sys.executable, str(Path(__file__).resolve()), "--worker", "--cohort", cohort]
     process = subprocess.Popen(cmd, cwd=str(APP), env=env, start_new_session=True)
     try:
         code = process.wait(timeout=seconds)
@@ -115,7 +142,7 @@ def run_bounded(seconds=MAX_SECONDS):
         return 124
     if code == 0:
         print("INSTALL_SELFTEST_PASS: {} exact model-free cases; NOT a native/Redmi gate".format(
-            len(SMOKE_CASES)), flush=True)
+            len(COHORTS[cohort])), flush=True)
     else:
         print("INSTALL_SELFTEST_FAIL: worker exit {}".format(code), file=sys.stderr, flush=True)
     return code
@@ -125,11 +152,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--timeout-seconds", type=int, default=MAX_SECONDS)
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument('--cohort', choices=sorted(COHORTS), default='legacy_run97')
     args = parser.parse_args(argv)
     if args.worker:
-        return worker()
+        return worker(args.cohort)
     try:
-        return run_bounded(args.timeout_seconds)
+        return run_bounded(args.timeout_seconds, args.cohort)
     except ValueError as exc:
         parser.error(str(exc))
 
