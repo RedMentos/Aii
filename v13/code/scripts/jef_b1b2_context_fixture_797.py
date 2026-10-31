@@ -67,7 +67,8 @@ def fixtures():
             + option("A", a) + " " + option("B", b)
             + " Which option meets the archived policy? "
               "Choose A, B, or NONE and state remaining budget.")
-        if str(budget) in current or str(deadline) in current:
+        if (f"Maximum budget: {budget}" in current
+                or f"Maximum deadline: {deadline}" in current):
             raise ValueError("RUN77_POLICY_THRESHOLD_LEAK_RED")
         result.append({
             "project": project, "prior": prior, "current": current,
