@@ -1,0 +1,91 @@
+name: V13 Run83 independent original native ZIP audit (software only)
+on:
+  push:
+    branches: [assistant/v13-run83-original-native-zip-audit-20261031-gpt6]
+    paths:
+      - '.github/workflows/v13-run83-original-zip-audit.yml'
+      - 'v13/code/scripts/run83_original_zip_audit.py'
+      - 'v13/code/tests/test_run83_original_zip_audit.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download immutable Run83 original ZIP and audit every byte
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run83-original-zip-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13038321581/zip" \
+            -o "$e/original.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            echo "6577ea998cac2bb1706a2879bee3d8ba865742ef80fa6b7b8dab606d9669154e  $e/original.zip" | sha256sum -c - > "$e/SHA_RAW.log" 2>&1
+            echo "$?" > "$e/SHA_EXIT.txt"
+          else
+            echo SKIPPED > "$e/SHA_RAW.log"; echo 99 > "$e/SHA_EXIT.txt"
+          fi
+          if [ "$(cat "$e/SHA_EXIT.txt")" = 0 ]; then
+            V13_RUN83_ORIGINAL_ZIP="$e/original.zip" PYTHONPATH=v13/code \
+              timeout 4m python3 -m unittest tests.test_run83_original_zip_audit -v \
+              > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            python3 v13/code/scripts/run83_original_zip_audit.py "$e/original.zip" \
+              > "$e/AUDIT_RAW.json" 2> "$e/AUDIT_ERROR.log"
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else
+            echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"
+            echo SKIPPED > "$e/AUDIT_ERROR.log"; echo 99 > "$e/AUDIT_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/run83_original_zip_audit.py \
+            v13/code/tests/test_run83_original_zip_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 7f5875e46036dd1278303dd74461a7bb6dfc24da --head HEAD --no-worktree \
+            > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 7f5875e46036dd1278303dd74461a7bb6dfc24da HEAD \
+            > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw, failures and all stage hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run83-original-zip-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run83-original-zip-audit/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require complete read-only audit
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run83-original-zip-audit"
+          for s in DOWNLOAD SHA TEST AUDIT COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || {
+              tail -n 40 "$e/TEST_RAW.log" 2>/dev/null || true
+              tail -n 40 "$e/AUDIT_ERROR.log" 2>/dev/null || true
+              exit 1
+            }
+          done
+          echo RUN83_ORIGINAL_ZIP_AUDIT_GREEN_SOFTWARE_ONLY
