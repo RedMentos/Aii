@@ -1,0 +1,30 @@
+name: V13 Run117BD Body-JEPA grouped-source research preflight
+
+on:
+  push:
+    branches:
+      - assistant/v13-run117bd-bjepa-grouped-source-20261031-hourly11
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-group-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile candidate and focused test
+        run: python -m compileall -q v13/code/v13/body_jepa_grouped_source_candidate.py v13/code/tests/test_body_jepa_grouped_source_candidate.py
+      - name: Focused tests (Torch integration only when installed)
+        env:
+          PYTHONPATH: v13/code
+        run: python -m unittest discover -s v13/code/tests -p test_body_jepa_grouped_source_candidate.py -v
+      - name: Privacy scan against immutable parent
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base de28c4603573b70b3b65a26e24f8fb0ea4da602f --head HEAD
