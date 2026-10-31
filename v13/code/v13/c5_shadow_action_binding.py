@@ -1,7 +1,7 @@
 """Strict read-only C5/F3 binding verifier for isolated SHADOW_DRAFT actions.
 
 Derived from the repository's frozen Run49 _c5 verifier (same field/packet
-checks, only action status is SHADOW_DRAFT rather than DISPATCHED).
+checks, with SHADOW_DRAFT status plus stricter outcome/output isolation).
 Run49 remains unchanged. This is NOT a delivery or approval credential.
 """
 from __future__ import annotations
@@ -12,13 +12,21 @@ from .agi import jef_c3_final_agreement_shadow_run48 as agreement
 
 
 def _c5_shadow(store, action_id, event_id, session_id):
-    action = store.one("SELECT id,event_id,kind,status,corollary_id,expected "
+    action = store.one("SELECT id,event_id,kind,status,corollary_id,expected,outcome "
                        "FROM actions WHERE id=?", (action_id,))
     event = store.one("SELECT id,session_id,generation_id FROM events WHERE id=?",
                       (event_id,))
     if (not action or not event or action["event_id"] != event_id
             or event["session_id"] != session_id or action["kind"] != "TEXT_REPORT"
-            or action["status"] != "SHADOW_DRAFT"):
+            or action["status"] != "SHADOW_DRAFT"
+            or action["outcome"] is not None):
+        return None
+    competing = store.one(
+        "SELECT COUNT(*) AS n FROM messages WHERE event_id=? "
+        "AND session_id=? AND role=\'assistant\' "
+        "AND status IN (\'FINAL\',\'OUTPUT_COMMITTED\',\'STREAMING\')",
+        (event_id, session_id))
+    if competing is None or competing["n"] != 0:
         return None
     expected = _json(action["expected"])
     if expected != {"stream_owner": "C5_REPORT_BROKER", "type": "TEXT_REPORT"}:
