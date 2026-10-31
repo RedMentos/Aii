@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts.run52_b1b2_cross_turn_native import OVERRIDES
+from tests import test_run52_b1b2_cross_turn as fake_cohort
 from tests.test_run52_b1b2_cross_turn import FakeRuntime
 from v13.b1b2_topic_partition_candidate import TopicPartitionOfferConsumer
 from v13.b1b2_disjoint_prior_envelope_candidate import stage_disjoint_prior_envelope
@@ -20,6 +21,9 @@ CURRENT = ("Project Meridian. Choose an eligible option using the "
 class B1B2DisjointPriorEnvelopeTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
+        self._had_meridian = 'Meridian' in fake_cohort.ORACLES
+        self._previous_meridian = fake_cohort.ORACLES.get('Meridian')
+        fake_cohort.ORACLES['Meridian'] = ('A', 7)
         self.r = FakeRuntime(Path(self.tmp.name))
         self.r.cfg.update(OVERRIDES)
         self.b1 = self.r.store.event(self.r.session, FINE)
@@ -29,6 +33,10 @@ class B1B2DisjointPriorEnvelopeTests(unittest.TestCase):
     def tearDown(self):
         self.r.close()
         self.tmp.cleanup()
+        if self._had_meridian:
+            fake_cohort.ORACLES['Meridian'] = self._previous_meridian
+        else:
+            fake_cohort.ORACLES.pop('Meridian', None)
 
     def stage(self, **kwargs):
         return stage_disjoint_prior_envelope(
