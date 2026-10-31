@@ -19,6 +19,7 @@ from v13.runtime import Runtime
 from tests.integration_step2_utility import installed_links
 from v13.models import ModelManager
 from scripts.run115j_typed_jef_role_native import C3_SHA, C3_REV, RUNNER_SHA
+from scripts.run113b_b1b2_c3_native import _reaped
 
 FIXTURE_SHA = '8aa69cc86d2e2067e809d4f703ddbff3fc575ea111d7afd97a73012e0bda0e21'
 FIXTURE_IDS = ('Helios', 'Lyra', 'Orion', 'Cedar', 'Mistral', 'Nexus')
@@ -97,8 +98,7 @@ def run_row(home,installed,row):
             item['close_error_type']=type(exc).__name__
             item['status']='STRUCTURAL_RED'
         item['process_releases']=list(r.pool.release_history)
-        item['process_reaped']=bool(item['process_releases']) and all(
-            x.get('process_reaped') is True for x in item['process_releases'])
+        item['process_reaped']=_reaped(item['process_releases'])
         if item['status']=='RECORDED' and not item['process_reaped']:
             item['status']='STRUCTURAL_RED'
         item['elapsed_s']=round(time.monotonic()-start,3)
