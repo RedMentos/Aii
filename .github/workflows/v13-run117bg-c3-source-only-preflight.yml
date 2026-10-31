@@ -35,8 +35,8 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
           676fed6fef8e735de9d76baba694116ecfb666e5 v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json
-          855754bf4ae9221c73c9949a82a25fa0efe371d1 v13/code/scripts/run117bg_c3_source_only_native.py
-          0ce03635a5fe6037435034fadd26e8d63690b871 v13/code/tests/test_run117bg_c3_source_only_native.py
+          a02d3fb052531a9c131648fdde5f5953de28fbfa v13/code/scripts/run117bg_c3_source_only_native.py
+          5183beda2f62f1ad92f433d40ddafbd861d741bd v13/code/tests/test_run117bg_c3_source_only_native.py
           9e74d8a64741ce909133ddd8cf42434b738a5d04 v13/code/v13/body_source_id_c3_evidence_bridge_candidate.py
           218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
           BLOBS
