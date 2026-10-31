@@ -1,0 +1,10 @@
+# Auto11 original RED correction plan — 2026-10-31
+
+Original workflow Actions 41195609140 at exact `c1fdaed5728ea04bf4e922a2c6dfe9b44593669e`: PINS/VENV/DEPS/COMPILE/PRIVACY/DIFF were 0, TEST exit1, 50 tests and 16 failures. Original logs and artifact retained; not a GREEN claim. Two independent causes:
+
+1. Tests incorrectly assumed an empty `messages` table; Run82's setup already stores three messages. All no-stage assertions must compare the initial baseline and assistant DRAFT count rather than absolute zero.
+2. The existing `jef_c3_c5_c6_fallback_draft_candidate.stage` is bound to legacy `jef_typed_source_shadow.POLICY` (two Maximum clauses). The Run82/84 authenticated cohort uses Run73/74 mixed Minimum/Maximum, so the legacy JEF C3 source preflight fails. Do NOT weaken or rewrite the frozen legacy stager, and do NOT change the registered range cohort to fit it.
+
+Prospective correction: implement a NEW isolated range-aware C5/F3 transactional SHADOW stager and C6 read-only verifier in the Auto11 module. Reuse Run74 `jef_f1f5_range_admission_shadow.decide` with latest authoritative USER and two distinct verified human sources; recheck exact Run84 dual prompt hash and typed action immediately before and inside the SQLite transaction, write ActionIntent + CorollaryCopy + one assistant DRAFT only. Persist exact combined dual/JEF/B1B2 prompt digests and the callback-output SHA in the DRAFT metadata as software provenance (NOT native provenance); C6 read-only verifier checks metadata equality, C5/F3 packet binding, single DRAFT/action, human lineage and full dual source again. No second generator call. Explicitly report any orphan DRAFT if post-stage source changes. Existing source models, hashes, native cohorts and original negative gates unchanged.
+
+Add negative tests for forged persisted hashes, duplicate DRAFT, stale/revoked human sources, wrong C3 JSON, wrong range decision, poststage race, and C5/F3 tamper. Original failing evidence retained; corrected workflow must pin new source/test hashes and produce new original raw, not erase RED. Software only, no model/native or Redmi.
