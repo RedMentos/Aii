@@ -11,10 +11,10 @@ from . import jef_typed_source_shadow as fixed
 
 REVISION = "jef-mixed-range-policy-shadow-run73-v1"
 POLICY = re.compile(
-    rf"Project (?P<id>{fixed.ID}) archived (?P<domain>{fixed.LABEL}) policy\\. "
-    rf"(?P<op1>Minimum|Maximum) (?P<f1>{fixed.LABEL}): (?P<m1>{fixed.NUM}) (?P<u1>{fixed.UNIT})\\. "
-    rf"(?P<op2>Minimum|Maximum) (?P<f2>{fixed.LABEL}): (?P<m2>{fixed.NUM}) (?P<u2>{fixed.UNIT})\\. "
-    rf"Required (?P<flag>{fixed.LABEL}): (?P<required>true|false)\\.",
+    rf"Project (?P<id>{fixed.ID}) archived (?P<domain>{fixed.LABEL}) policy\. "
+    rf"(?P<op1>Minimum|Maximum) (?P<f1>{fixed.LABEL}): (?P<m1>{fixed.NUM}) (?P<u1>{fixed.UNIT})\. "
+    rf"(?P<op2>Minimum|Maximum) (?P<f2>{fixed.LABEL}): (?P<m2>{fixed.NUM}) (?P<u2>{fixed.UNIT})\. "
+    rf"Required (?P<flag>{fixed.LABEL}): (?P<required>true|false)\.",
     re.ASCII,
 )
 
