@@ -37,12 +37,16 @@ def _span(store, full, part, source):
 
 
 def _authenticate_row(store, session, row):
-    if type(row) is not dict or type(row.get("event_id")) is not str:
+    if (type(row) is not dict or type(row.get("event_id")) is not str
+            or not 1 <= len(row["event_id"]) <= 128
+            or not row["event_id"].isprintable()):
         raise ValueError("EVENT_ROW_RED")
     full = row.get("source_ref")
     if type(full) is not dict or set(full) != _REF_KEYS:
         raise ValueError("EVENT_REF_SHAPE_RED")
-    if (type(full["char_start"]) is not int or full["char_start"] != 0
+    if (type(full["source_id"]) is not str or not 1 <= len(full["source_id"]) <= 128
+            or type(full["sha256"]) is not str or len(full["sha256"]) != 64
+            or type(full["char_start"]) is not int or full["char_start"] != 0
             or type(full["char_end"]) is not int or full["char_end"] < 1
             or full["modality"] != "text"):
         raise ValueError("EVENT_REF_FULL_SOURCE_RED")
@@ -98,7 +102,7 @@ def bind_store_rows(store, session, rows, *, heldout_rows=(),
     if operator_opt_in is not True:
         return {"status": "OFF", "authority": 0, "native_calls": 0,
                 "output_committed": False, "learning_authority": 0}
-    if type(session) is not str or not session:
+    if type(session) is not str or not 1 <= len(session) <= 128 or not session.isprintable():
         raise ValueError("SESSION_REQUIRED_RED")
     # Validate bounded, disjoint groups before accessing untrusted row refs.
     preflight = validate_training_rows(rows, heldout_rows=heldout_rows)
