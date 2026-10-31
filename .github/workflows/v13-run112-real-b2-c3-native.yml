@@ -88,7 +88,7 @@ jobs:
               echo 'PREFLIGHT_RED' > "$e/INSTALL_C3_RAW.log"
             fi
             if test "$install_c3_rc" -eq 0; then
-              (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" "$py" - "$installed" <<'PY') > "$e/INSTALL_B2_RAW.log" 2>&1
+              (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" - "$installed" <<'PY') > "$e/INSTALL_B2_RAW.log" 2>&1
           from pathlib import Path
           import sys,json
           from v13.models import ModelManager,catalog
