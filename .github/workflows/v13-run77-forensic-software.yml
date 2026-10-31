@@ -36,7 +36,7 @@ jobs:
             timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest discover -s v13/code/tests -p 'test_run77_*.py' -v > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
           else echo SKIPPED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
-          python3 -m compileall -q v13/code/scripts/run77_native_forensic_diagnostic.py v13/code/scripts/run77_compact_zip_verify.py v13/code/tests/test_run77_forensic_diagnostic.py v13/code/tests/test_run77_compact_zip_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/scripts/run77_native_forensic_diagnostic.py v13/code/scripts/run77_compact_zip_verify.py v13/code/scripts/run77_prompt_transport_audit.py v13/code/tests/test_run77_forensic_diagnostic.py v13/code/tests/test_run77_compact_zip_verify.py v13/code/tests/test_run77_prompt_transport_audit.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 89e1309b623df6d214955de89b2f1ebdf873dd02 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
