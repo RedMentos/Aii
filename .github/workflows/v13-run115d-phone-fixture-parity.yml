@@ -1,0 +1,127 @@
+name: V13 Run115D phone fixture parity and extracted source tests
+on:
+  push:
+    branches:
+      - assistant/v13-run115d-phone-fixture-parity-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run115d-phone-fixture-parity.yml
+      - v13/code/scripts/package_source.py
+      - v13/code/tests/test_phone_fixture_parity_run115d.py
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test original source and extracted phone ZIP without models
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run115d"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run115d-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run115d-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_phone_fixture_parity_run115d.py -v) > "$e/PARITY_RAW.log" 2>&1
+          parity_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115b_jef_replication_native.py -v) > "$e/RUN115B_RAW.log" 2>&1
+          run115b_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run114b_jef_b1b2_c3_native.py -v) > "$e/RUN114B_RAW.log" 2>&1
+          run114b_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run115D.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$parity_rc" > "$e/PARITY_EXIT.txt"
+          echo "$run115b_rc" > "$e/RUN115B_EXIT.txt"
+          echo "$run114b_rc" > "$e/RUN114B_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" "$RUNNER_TEMP/v13-run115d-extracted" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);p=e/'V13-Phone-Run115D.zip'
+          frozen={'docs/fixtures/RUN114B_JEF_B1B2_C3_SEED947.json':'356d84677ed6a770643e80ad0211d24d7d25934005967c34f91bd140fea9958a',
+                  'docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json':'21617baf735436af9a388c9be596bf763dc46f8bb394548daa961ad5ec1f57fd'}
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              for rel,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+rel)).hexdigest()==expected,rel
+              for rel,expected in frozen.items():
+                  raw=z.read('V13-Phone/'+rel)
+                  assert hashlib.sha256(raw).hexdigest()==expected
+                  assert raw== (Path('v13/code')/rel).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'phone_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'files':len(manifest['files']),'frozen_fixtures':len(frozen),
+                            'native_executed':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            if test "$zip_rc" -eq 0; then
+              (cd "$RUNNER_TEMP/v13-run115d-extracted/V13-Phone" && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115b_jef_replication_native.py -v) > "$e/EXTRACTED_115B_RAW.log" 2>&1
+              extracted115b_rc=$?
+              (cd "$RUNNER_TEMP/v13-run115d-extracted/V13-Phone" && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run114b_jef_b1b2_c3_native.py -v) > "$e/EXTRACTED_114B_RAW.log" 2>&1
+              extracted114b_rc=$?
+            else
+              extracted115b_rc=125;extracted114b_rc=125
+              echo 'ZIP_RED' > "$e/EXTRACTED_115B_RAW.log"
+              echo 'ZIP_RED' > "$e/EXTRACTED_114B_RAW.log"
+            fi
+            set -e
+          else
+            zip_rc=125;extracted115b_rc=125;extracted114b_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+            echo 'PACK_RED' > "$e/EXTRACTED_115B_RAW.log"
+            echo 'PACK_RED' > "$e/EXTRACTED_114B_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          echo "$extracted115b_rc" > "$e/EXTRACTED_115B_EXIT.txt"
+          echo "$extracted114b_rc" > "$e/EXTRACTED_114B_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0e1d2a60b331480fababd503b76b2d805951db49 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 0e1d2a60b331480fababd503b76b2d805951db49 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['PARITY','RUN115B','RUN114B','PACK','ZIP','EXTRACTED_115B','EXTRACTED_114B','PRIVACY','DIFF']
+          r={'schema':'v13.run115d.phone_fixture_parity.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed':False,'redmi_measured':False,
+             'step2_promoted':False,'b3_promoted':False,'body_jepa_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/EXTRACTED_115B_RAW.log"
+          for rc in "$parity_rc" "$run115b_rc" "$run114b_rc" "$pack_rc" "$zip_rc" "$extracted115b_rc" "$extracted114b_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run115d-phone-fixture-parity-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run115d/
+          if-no-files-found: warn
+          retention-days: 90
