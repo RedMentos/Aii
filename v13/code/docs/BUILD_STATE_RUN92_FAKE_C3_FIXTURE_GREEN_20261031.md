@@ -1,0 +1,9 @@
+# Run92 fake-C3 model-path fixture — focused software GREEN (2026-10-31)
+
+**Owner:** GPT-6 Auto11, independent review-only child of Run90 PR #1455 exact parent `6e3ef073aa6988697fc297f8bcb66b88bd5be4fc`. Prereg `306eedc30f610353b598e651bc0f98803aff8707` remotely verified before code. **Only** `tests/test_run83_native_driver_fake_c3.py` changed; no Runtime/Store/ModelManager/Canon/frozen model/seed/cohort changes.
+
+**Original RED:** Run90 unfiltered Actions `41198044250`, 4899 tests / 1 FAIL / 4 ERROR / 28 SKIP. Sole FAIL was Run83 fake-C3 driver `STRUCTURAL_RED`, zero cases/native calls, `error_type=Unavailable`. The synthetic driver hashes `runtime.models.path_for('C3_LANGUAGE')` before fake generation, but model-less CI has no installed C3 GGUF. New DryRuntime fake test-only path seam supplies `synthetic-only-c3.gguf` for C3 while leaving real `ModelManager.path_for` strict. New test asserts uninstalled real ModelManager still raises `Unavailable`.
+
+**Verified GREEN:** Actions `41198535449` exact tested HEAD `2f39baff4032830217723703ec7c65ea18f6f392`, terminal SUCCESS **12/12** (Run83 fake, Run52 B1/B2, Run90 exact source/tamper), DEPS/TEST/COMPILE/PRIVACY/DIFF exit0, privacy CLEAN. Original artifact `13040774480`, ZIP SHA256 `e3a495420a8c90882dad0038d3e4224c72cb032c5ea3cc0474c124dd9b70ae13`, CRC PASS, 10/10 SHA256SUMS PASS. This is synthetic software proof, **not** native C3/Body utility, no actual model, no new learning or delivery authority.
+
+**Next:** independently integrate exact test-only patch with Run91 original ZIP prerequisite control after Run91 terminal; rerun full-suite to assess remaining Run34/Run37 pinned-source refusals without suppressing them. No full-suite GREEN claim. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight0, no Redmi or whole-system completion. Remaining platform budget UNKNOWN.
