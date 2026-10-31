@@ -1,7 +1,7 @@
 name: V13 Run62 five-call B1 B2 C3 F1 F5 C5 C6 DRAFT SHADOW Linux native
 on:
   push:
-    branches: [assistant/v13-run62-c6-v2-native-c6-v2-gpt6-20261031]
+    branches: [assistant/v13-run62-native-c6-v2-gpt6-20261031]
     paths: ['.github/workflows/v13-run62-crossorgan-c6-v2-native.yml']
 permissions:
   contents: read
