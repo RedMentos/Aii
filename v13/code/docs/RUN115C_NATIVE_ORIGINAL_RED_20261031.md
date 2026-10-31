@@ -1,0 +1,16 @@
+# Run115C original native replication — structural RED, 2026-10-31
+
+Review-only PR #1486, exact native source commit `0e1d2a60b331480fababd503b76b2d805951db49`, prereg Run115B seed971 unchanged. Original GitHub Actions `41217444357` terminal FAILURE. Downloaded original artifact `13048159840`: GitHub digest and independent outer SHA256 `f2f105dcd5582eef257cd9d5ee944d5ba0a64c4999c3e1c65451ff89924a1cd7`, ZIP CRC PASS, `SHA256SUMS` 30/30 PASS. Inner phone ZIP SHA256 `c7a830ed16e24efc790fd6c4adc08e50c4a76ef2e89dd78ae12c917ec3ec784d`, CRC PASS, 2135/2135 source manifest hashes PASS. Fixture SHA256 `21617baf735436af9a388c9be596bf763dc46f8bb394548daa961ad5ec1f57fd`, original Run114B pipeline hash `f51ea8745c31082ee87aab98741ddacb01082827bfb00d406958b535131be7d1`. Native C3, B1, B2 installed pinned models with original hashes, no model weights exported.
+
+Original `RESULT.json` exits: PACK=0, ZIP=0, PREFLIGHT=0, INSTALL_C3=0, INSTALL_BODIES=0, NATIVE=2, VERIFY=125 (not run because native structural RED), PRIVACY=0 CLEAN, DIFF=0. `NATIVE_CASE/report.json`: **STRUCTURAL_RED**; 18/18 actual pinned B1/B2 offers FINAL, 18/18 process reaps, 6/6 actual pinned C3 calls FINAL and reaped. **Not 12 C3 calls**: only Lumen, Coral and Helios completed both arms. Boreal, Delta and Nimbus each halted before JEF/C3 at `RUN114B_B1_B2_TWO_SOURCE_QUOTE_RED`, preserving the fail-closed source-quote gate. All six SQLite Stores closed; zero live output/actions/learning. Raw and typed answers on completed three cases are descriptive incomplete subset only, NOT preregistered six-case replication, no gain claim.
+
+Independent forensic counterexamples from original raw:
+- Boreal: B1 current native quote includes non-source `局部`; no accepted B1 current verified quote; B2 prior verified.
+- Delta: B1 current verified, but B2 prior quote missing from `analyst_context`; only current B2 quote survives.
+- Nimbus: B1 current native quote includes non-source `局部`; only a tiny `local true` fragment verified, not the preregistered full current option quote; B2 prior verified.
+
+Lumen/Coral/Helios had both required source quotes. Source checker correctly refused three others; never treat rejected model text as verified source, never relax the old gate or retrospectively re-score seed971. This is evidence of native quote unreliability across the second grammar, not proof of JEF or two-body utility. No native C2/JEF model, STEP2/B3/JEPA/Redmi/whole-system promotion. Historical Run111 NO_GAIN, Run113B wrong, Run105 full-suite RED unchanged.
+
+Private byte-exact durable backup: `/V13-Checkpoints/2026-10-31/Run115C-Native-RED/ORIGINAL_NATIVE_RED_41217444357_SHAf2f105dc.zip` in ChatGPT Library, independently materialized and SHA256 verified against original GitHub artifact. No public raw user data or model weights.
+
+Next: separate new preregistered, disjoint source-quote pointer experiment with explicit B1/B2 native quote failure telemetry, not modification or rerun of seed971. Alternatively pursue independent C2/JEF native provenance while native concurrency group is free. Any new pointer must be source-exact, authority zero, and distinguish source transport from learned model quotation; run negative tests for stale/corrupt/deleted refs. No change to current frozen runtime Python.
