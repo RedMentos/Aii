@@ -63,7 +63,12 @@ def synthetic_artifact(change=None):
               "exploratory_role_signal": True, "status": "NATIVE_COMPLETE_TYPED_SIGNAL"}
     if change:
         change(report, fixture)
-    phone = _zip({FIXTURE: FROZEN.read_bytes()})
+    phone_files = {FIXTURE: FROZEN.read_bytes()}
+    phone_manifest = {"schema_version": 1, "files": {
+        name.removeprefix("V13-Phone/"): hashlib.sha256(data).hexdigest()
+        for name, data in phone_files.items()}}
+    phone_files["V13-Phone/WORKSPACE_FILES.json"] = _dumps(phone_manifest).encode()
+    phone = _zip(phone_files)
     result = {"head": HEAD, "exits": {s: 0 for s in EXIT_NAMES},
               **{k: False for k in ("step2_promoted", "b3_promoted",
                  "body_jepa_promoted", "redmi_measured", "native_b1_executed",
