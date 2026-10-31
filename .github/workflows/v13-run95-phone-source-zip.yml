@@ -70,8 +70,8 @@ jobs:
           assert not any(x.endswith(('.gguf','.sqlite','.sqlite3','.db','.pyc')) for x in files)
           assert not any('/data/' in x or x.startswith('data/') for x in files)
           with zipfile.ZipFile(archive) as z:
-              z.extractall(evidence/'extracted')
-          root=evidence/'extracted'/'V13-Phone'
+              z.extractall(evidence.parent/'run95-extracted')
+          root=evidence.parent/'run95-extracted'/'V13-Phone'
           assert all((root/x).is_file() and
                      hashlib.sha256((root/x).read_bytes()).hexdigest()==sha
                      for x,sha in files.items())
@@ -84,7 +84,7 @@ jobs:
           PY
           echo 0 > "$e/VERIFY_EXIT.txt"
           set +e
-          (cd "$e/extracted/V13-Phone" && PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+          (cd "$RUNNER_TEMP/run95-extracted/V13-Phone" && PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
             tests.test_package_source \
             tests.test_source_handoff_candidate \
             tests.test_native_firing_runtime_candidate \
@@ -95,7 +95,7 @@ jobs:
           rc=$?
           set -e
           echo "$rc" > "$e/TEST_EXIT.txt"
-          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run95.zip" "$e/extracted/V13-Phone" <<'PY' > "$e/POST_VERIFY_RAW.log" 2>&1
+          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run95.zip" "$RUNNER_TEMP/run95-extracted/V13-Phone" <<'PY' > "$e/POST_VERIFY_RAW.log" 2>&1
           import hashlib,sys
           from pathlib import Path
           from scripts.phone_release_audit_candidate import verify_archive
@@ -108,7 +108,7 @@ jobs:
           print('EXTRACTED_SOURCE_UNCHANGED_AFTER_TESTS',len(files))
           PY
           echo 0 > "$e/POST_VERIFY_EXIT.txt"
-          "$py" -m compileall -q "$e/extracted/V13-Phone/v13" "$e/extracted/V13-Phone/scripts" > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m compileall -q "$RUNNER_TEMP/run95-extracted/V13-Phone/v13" "$RUNNER_TEMP/run95-extracted/V13-Phone/scripts" > "$e/COMPILE_RAW.log" 2>&1
           echo 0 > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base 8d3d4d28313394de7ec023fcd29497d56bfd3b81 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
