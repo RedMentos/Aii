@@ -64,7 +64,15 @@ SMOKE_CASES_RUN102_C3 = (
     "test_context_os.PlanTests.test_append_only_does_not_replay_rewritten_source_history",
     "test_admission.AdmissionTest.test_labels_come_only_from_human_signals",
 )
-COHORTS = {"legacy_run97": SMOKE_CASES, "run102_c3": SMOKE_CASES_RUN102_C3}
+# New optional 21-case integration cohort. The two registered 18-case cohorts,
+# including their exact order and default, remain byte-identical.
+SMOKE_CASES_RUN104_C3_C5_EXIT = SMOKE_CASES_RUN102_C3 + (
+    "test_jef_c3_c5_c6_operator_cli.JefC3C5C6OperatorCliTests.test_six_source_bound_local_drafts_survive_restart",
+    "test_jef_c3_c5_c6_operator_cli.JefC3C5C6OperatorCliTests.test_native_missing_pinned_model_refuses_before_human_records",
+    "test_step2_exit_gate_split_20261031.Step2ExitGate.test_exit_is_explicitly_red_and_all_graph_deps_remain_known",
+)
+COHORTS = {"legacy_run97": SMOKE_CASES, "run102_c3": SMOKE_CASES_RUN102_C3,
+           "run104_c3_c5_exit": SMOKE_CASES_RUN104_C3_C5_EXIT}
 
 
 def _flatten(suite):
@@ -119,7 +127,7 @@ def worker(cohort='legacy_run97'):
 
 
 def run_bounded(seconds=MAX_SECONDS, cohort='legacy_run97'):
-    if not isinstance(seconds, int) or not 1 <= seconds <= MAX_SECONDS:
+    if type(seconds) is not int or not 1 <= seconds <= MAX_SECONDS:
         raise ValueError("install-smoke timeout must be between 1 and 120 seconds")
     if cohort not in COHORTS:
         raise ValueError('unknown install-smoke cohort')
