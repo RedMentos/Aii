@@ -198,6 +198,17 @@ def preflight(memory, session, event_id, current_ref, memory_ids, staged, *,
             or type(staged.get("source_ref_sha256")) is not list
             or type(staged.get("prompt_sha256")) is not str):
         return _result("INVALID_STAGED_REFERENCE")
+    try:
+        current = typed.build_jef_c3_typed_envelope(
+            memory, session, event_id, current_ref, memory_ids,
+            operator_opt_in=True)
+        if (current.get("status") != SOURCE_READY
+                or current.get("messages_sha256") != staged["prompt_sha256"]
+                or current.get("source_ref_sha256") != staged["source_ref_sha256"]
+                or current.get("typed_jef_action") != staged["source_action"]):
+            return _result("SOURCE_PROMPT_CHANGED_AFTER_DRAFT")
+    except Exception:
+        return _result("C6_SOURCE_PROMPT_INTEGRITY_RED")
     store = memory.s
     try:
         with store.tx():
