@@ -1,0 +1,10 @@
+RUN93 full-suite trigger after original Run91 terminal RED, 2026-10-31 UTC.
+Parent branch: assistant/v13-run93-fullsuite-combined-20261031-auto11
+Run91 Actions: 41198456896, exact tested HEAD fd4f006eb7f127f075466409621c524a15bb1529
+Original Run91 artifact: 13042120427
+Artifact SHA256: 6397e47f0c8f719c5a741d68b38f23c41a88fdb9890cde38f35d806e4322b7ba
+CRC: PASS; SHA256SUMS: 23/23 PASS; FULL_EXIT: 1
+Unfiltered Run91: 4905 tests; 1 FAIL (Run83 fake-C3 fixture), 2 ERROR (Run34/Run37 frozen utility source pin), 28 SKIP.
+Run93 integrates exact Run92 fake-C3 test-only fix. This run is a fresh combined full-suite control.
+Original native ZIP prerequisites remain STEP2 98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46 and Run13T 86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c.
+No promotion; Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight 0, Redmi UNMEASURED, whole system INCOMPLETE.
