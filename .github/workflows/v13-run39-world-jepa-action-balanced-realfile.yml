@@ -1,0 +1,129 @@
+name: V13 Run39 disjoint action-balanced World-JEPA real-file SHADOW
+on:
+  push:
+    branches: [assistant/v13-run39-world-jepa-action-balanced-fullslot-20261031-hourly11]
+    paths: ['.github/workflows/v13-run39-world-jepa-action-balanced-realfile.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  realfile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 58
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pin sources and execute disjoint real-file cohort with closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run39-realfile"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          ed9238770eaf0a9a5af20260a246a9b8257a849f v13/code/docs/WORLD_JEPA_ACTION_BALANCED_FULLSLOT_PREREG_RUN39_20261031.md
+          c65467f1f000c187f46542270dfc53ee569824a1 v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py
+          cad9dd0f7877ed0243ea6a9cf387a34c433e5f59 v13/code/tests/test_run39_world_jepa_action_balanced_fullslot.py
+          411c98de52ab3fbec5437ce12bf0c29591ff79a7 v13/code/scripts/run39_world_jepa_action_balanced_real.py
+          8c68e6cbd8bd49a9fe9245d6740428f714e5a6e8 v13/code/tests/test_run39_world_jepa_action_balanced_real.py
+          51bc5260cde8db3bc6cf7924a7a089a5cdfe5fd0 v13/code/v13/world_jepa_fullslot_candidate.py
+          67e14e0d03c50c4767b74d5b02a819a95c6cc262 v13/code/v13/world_jepa_slot_candidate.py
+          99a686a131a1bdc89efe0d0cf9610ec54cbd853b v13/code/v13/world_jepa.py
+          2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4 v13/code/scripts/z12b_world_jepa.py
+          219bf7233cb91c746c89a60f9b7789dc3b5ca9ef v13/code/scripts/run35_world_jepa_slot_alignment_real.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run39-real-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run39-real-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 4m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run39_world_jepa_action_balanced_fullslot tests.test_run39_world_jepa_action_balanced_real tests.test_run38_world_jepa_fullslot_candidate tests.test_world_jepa_slot_candidate_run28 tests.test_run35_world_jepa_slot_alignment tests.test_world_jepa_atomic_fit) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo PIN_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 43m env PYTHONPATH=.:tests:scripts "$py" scripts/run39_world_jepa_action_balanced_real.py --out "$e/RESULT.json" --work-root "$e/work") > "$e/REALFILE_RAW.log" 2>&1
+            echo "$?" > "$e/REALFILE_EXIT.txt"
+          else echo TEST_RED > "$e/REALFILE_RAW.log"; echo 99 > "$e/REALFILE_EXIT.txt"; fi
+          if [ -f "$e/RESULT.json" ]; then
+            "$py" - "$e/RESULT.json" "$e/work" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys,pathlib,math
+          r=json.load(open(sys.argv[1])); work=pathlib.Path(sys.argv[2])
+          assert r['schema']=='v13.run39.world_jepa_action_balanced_exact_row.v1'
+          assert r['evidence_kind']=='LINUX_REALFILE_WORLD_JEPA_SHADOW_EXACT_ROWS'
+          assert r['registered'] and r['seeds']==[501,502,503]
+          assert r['args']=={'train':4000,'cf':150,'attr':300,'steps':3000}
+          assert r['status'] in ('SHADOW_CANDIDATE_FAIL','SHADOW_CANDIDATE_PASS_NOT_PROMOTED')
+          assert r['same_collected_rows'] and r['same_core_parameter_count'] and r['same_optimizer_steps']
+          assert not r['same_training_example_count'] and not r['global_96d_capacity_control_complete']
+          assert r['affected_slot_copies']==5
+          assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['world_jepa_authority']=='SHADOW'
+          assert not r['redmi_measured'] and not r['whole_system_complete']
+          for arm in ('two_slot','six_slot','balanced_slot'):
+            assert len(r[arm])==3
+            assert all(row['seed']==seed and row['capacity']['world_concat_dim']==96
+                       for seed,row in zip((501,502,503),r[arm]))
+            assert all((work/f'{arm}-{seed}-RESULT.json').is_file()
+                       for seed in (501,502,503))
+            assert len(r[arm+'_gates'])==6 and len(r[arm+'_w7'])==3
+            assert all(type(v) is bool for g in (r[arm+'_gates'],r[arm+'_w7'])
+                       for v in g.values())
+          assert all(type(r['exploratory'][k]) is bool
+                     for k in ('H1_balanced_gap_improvement','H2_covered_cf_and_controls','H3_w7c_improvement'))
+          for key in ('per_seed_balanced_gap_delta','per_seed_w7c_delta'):
+            assert len(r['exploratory'][key])==3
+            assert all(math.isfinite(v) for v in r['exploratory'][key])
+          print('RUN39_DISJOINT_ACTION_BALANCED_REALFILE_SHADOW_NO_PROMOTION',
+                r['status'],r['balanced_slot_gates'],r['balanced_slot_w7'],
+                r['exploratory'])
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else echo NO_RESULT_RED > "$e/REPORT_CHECK_RAW.log"; echo 99 > "$e/REPORT_CHECK_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py v13/code/scripts/run39_world_jepa_action_balanced_real.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 804918aaac79676f3872bf8dba0edbe1d3accc35 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 804918aaac79676f3872bf8dba0edbe1d3accc35 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw, failed attempts and per-seed file worlds
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run39-realfile-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run39-realfile/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all stages zero without age or World-JEPA promotion
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run39-realfile"
+          for s in PINS VENV DEPS TEST REALFILE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN39_ACTION_BALANCED_REALFILE_SHADOW_ONLY_NO_WORLD_JEPA_OR_AGE_PROMOTION
