@@ -83,7 +83,16 @@ def select(runtime, current_event, original_context, *, operator_opt_in=False):
         if row is None or row["session_id"] != runtime.session:
             return _result("FOREIGN_SESSION_RED")
         prior_event = json.loads(row["packet"])
-        prior_ref = prior_event["source_ref"]
+        # A persisted OfferPacket and valid source blob alone do not prove
+        # that the earlier event is still an authoritative USER message.
+        # Bind the full message and durable causal sequence independently.
+        prior_bound = _bound_user_event(
+            store, offer_row["event_id"], runtime.session)
+        if (prior_bound["generation"] != current["generation"]
+                or prior_bound["message_id"] >= current["message_id"]
+                or prior_event.get("source_ref") != prior_bound["source_ref"]):
+            return _result("PRIOR_USER_CAUSAL_BINDING_RED")
+        prior_ref = prior_bound["source_ref"]
         prior_text = store.read_source(prior_ref)
         if (_project_scope(prior_text) != current_scope
                 or prior_ref["source_id"] != ctx["source_ref"]["source_id"]
@@ -95,6 +104,15 @@ def select(runtime, current_event, original_context, *, operator_opt_in=False):
                 or store.read_source(ctx["source_ref"]) !=
                 ctx["native_context"].get("exact_source_excerpt")):
             return _result("ORIGINAL_CONTEXT_SOURCE_RED")
+        # The previous summary is fallible, but must still be the exact
+        # untrusted summary stored with this source-bound offer. Never copy
+        # a caller-forged hypothesis or upgraded authority into B2.
+        summary = offer.get("offer", {}).get("summary")
+        if (type(summary) is not str
+                or ctx["native_context"].get("hypothesis") != summary[:120]
+                or ctx["native_context"].get("authority") !=
+                "PRIOR_HYPOTHESIS_NOT_FACT"):
+            return _result("PRIOR_HYPOTHESIS_BINDING_RED")
         matches = list(ANCHOR.finditer(prior_text))
         if len(matches) != 1:
             return _result("POLICY_ANCHOR_MISSING_OR_AMBIGUOUS_RED")
