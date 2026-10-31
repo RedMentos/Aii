@@ -1,0 +1,58 @@
+name: V13 JEF full-suite parent differential auditor software
+on:
+  push:
+    branches: [codex/jef-fullsuite-parent-differential-audit-20261031-auto11]
+    paths:
+      - 'v13/code/scripts/jef_fullsuite_parent_compare.py'
+      - 'v13/code/tests/test_jef_fullsuite_parent_compare.py'
+      - 'v13/code/docs/JEF_FULLSUITE_PARENT_DIFFERENTIAL_AUDIT_PLAN_20261031.md'
+      - '.github/workflows/v13-jef-parent-differential-audit.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-jef-parent-differential-audit
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run synthetic negative checks and privacy scan
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-jef-parent-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m unittest discover -s v13/code/tests -p 'test_jef_fullsuite_parent_compare.py' -v > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/jef_fullsuite_parent_compare.py v13/code/tests/test_jef_fullsuite_parent_compare.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 611724bee6b6511826c36af64421d96d1b276016 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 611724bee6b6511826c36af64421d96d1b276016 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain raw software checks including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-jef-parent-differential-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-jef-parent-audit/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all checks PASS
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-jef-parent-audit"
+          for s in TEST COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo DIFFERENTIAL_AUDITOR_SOFTWARE_ONLY_NO_PROMOTION
