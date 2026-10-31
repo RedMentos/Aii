@@ -14,8 +14,27 @@ from v13.utility import score_decision
 
 
 class Run37NativePreflight(unittest.TestCase):
-    def test_pinned_source_model_runner_and_negative_gates(self):
-        reg = pilot.prereg()
+    def test_current_source_drift_refused_and_frozen_metadata_preserved(self):
+        # Run37 depends on Run34's exact original source cohort. It must
+        # refuse current utility drift instead of silently updating a pin.
+        utility_path = pilot.base.ROOT / "v13/utility.py"
+        real_blob = pilot.base._git_blob
+        self.assertEqual(real_blob(utility_path),
+                         "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53")
+        self.assertNotEqual(real_blob(utility_path),
+                            pilot.base.FROZEN_UTILITY_BLOB)
+        with self.assertRaisesRegex(ValueError, "native_source_or_catalog_changed"):
+            pilot.prereg()
+
+        # A synthetic hash-only historical preflight, not native evidence.
+        def historical_utility_only(path):
+            if path == utility_path:
+                return pilot.base.FROZEN_UTILITY_BLOB
+            return real_blob(path)
+
+        with mock.patch.object(pilot.base, "_git_blob",
+                               side_effect=historical_utility_only):
+            reg = pilot.prereg()
         self.assertEqual(reg["fixture_id"], "Elyndra")
         self.assertEqual(reg["seed"], 20261122)
         self.assertEqual(reg["arms"], list(study.ARMS))
