@@ -184,7 +184,7 @@ class NativeAuditTests(unittest.TestCase):
             entries.update({stage+'_EXIT.txt':str(code)
                             for stage,code in exits.items()})
             sums = ''.join(sha256(data.encode()).hexdigest()+
-                           '  ./'+name+'\\n'
+                           '  ./'+name+'\n'
                            for name,data in sorted(entries.items()))
             entries['SHA256SUMS'] = sums
             b = BytesIO()
