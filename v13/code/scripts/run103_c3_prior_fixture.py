@@ -89,8 +89,8 @@ def build_messages(store, row, arm, prior_ref, current_ref):
                     "semantic_truth_authority": False}]}
             evidence_refs.append(prior_ref)
         else:
-            quote = next(x for x in prior.split(" ") if False) if False else (
-                "Maximum budget: " + prior.split("Maximum budget: ", 1)[1].split(".", 1)[0] + ".")
+            quote = ("Maximum budget: "
+                     + prior.split("Maximum budget: ", 1)[1].split(".", 1)[0] + ".")
             start = prior.index(quote)
             span = {**prior_ref, "char_start": prior_ref["char_start"] + start,
                     "char_end": prior_ref["char_start"] + start + len(quote)}
