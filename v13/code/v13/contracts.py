@@ -61,6 +61,7 @@ FIELDS["ToolProposal"]={"tool":str,"args":dict,"policy_status":str,"truth_author
 FIELDS["C2ExecutivePacket"]={"route":str,"fields":dict,"truth_authority":int}  # WP-T1 structured C2 output (tool, memory key, answer type)
 FIELDS["OutputBrokerDecision"]={"authority":str,"egress_type":str,"status":str,"overridden":list,"conflicts":list,"committed":bool,"late":list,"rewrites":int}  # WP-T7 C7 output broker
 FIELDS["AttentionResponse"]={"request_packet_id":str,"status":str,"granted_budget":int,"truth_authority":int}  # WP-N5 §4B.3
+FIELDS["BodySourceIdSelection"]={"role":str,"model_revision":str,"source_ref":dict,"candidates":list,"selected_id":str,"selected_span":(dict,type(None)),"selection_correct_shadow":bool,"raw_output_sha256":str,"raw_output_bytes":int,"model_metrics_reported_unverified":dict,"source_semantic_truth_authority":bool,"model_hypothesis_not_fact":bool,"delivery_authority":int,"learning_authority":int,"output_committed":bool}  # Run117AH zero-authority Body quote ID selection
 # §8.2 / §8.2A / §93: minimum fields of every important workspace slot (FocalItem and WorkspaceSlot.content)
 SLOT_FIELDS={"self_generated":bool,"created_wall":(int,float),"origin_event_id":str,"age_ms":int,"expiry":dict,"confidence_type":str,
              "exact_fallback":str,"exact_fallback_refs":list,"scale":str,"covered_range":list,"compression_ratio":(int,float,type(None)),
@@ -95,6 +96,22 @@ def validate(kind,obj):
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
+    if kind=="BodySourceIdSelection":
+        ids=[x.get("span_id") for x in obj["candidates"] if isinstance(x,dict)]
+        if (obj["role"] not in {"B1_DETAIL","B2_GIST"} or len(ids)!=2 or len(set(ids))!=2
+                or obj["selected_id"] not in set(ids)|{"NONE"}
+                or (obj["selected_id"]=="NONE")!=(obj["selected_span"] is None)
+                or (obj["selected_span"] is not None and not any(
+                    x.get("span_id")==obj["selected_id"] and
+                    {k:v for k,v in x.items() if k!="span_id"}==obj["selected_span"]
+                    for x in obj["candidates"]))
+                or obj["source_semantic_truth_authority"] is not False
+                or obj["model_hypothesis_not_fact"] is not True
+                or obj["delivery_authority"]!=0 or obj["learning_authority"]!=0
+                or obj["output_committed"] is not False
+                or not 0<=obj["raw_output_bytes"]<=256):
+            raise ValueError("BodySourceIdSelection authority/span boundary")
+
     if kind=="MessagePacket" and obj["channel"] not in {"NO_MESSAGE","SOURCE_EXACT","CONTROL","SYMBOLIC"}:raise ValueError("B3 latent authority=0")
     if kind=="EffortDecision" and (obj["wake"] not in {"none","detail","gist","both"} or not 0<=obj["effort"]<=1):raise ValueError("Effort wake/range")
     if kind=="ModulatorPacket":
