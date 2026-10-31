@@ -170,6 +170,40 @@ class NativeAuditTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'OUTER_DUPLICATE_ENTRY_RED'):
                 audit._sums(z)
 
+    def test_missing_original_native_report_preserves_real_red(self):
+        def make_zip(stage_red):
+            exits = {stage:(1 if stage == 'SOURCE' and stage_red else 0)
+                     for stage in audit.STAGES}
+            result = {'head':audit.HEAD,'seed':1069,
+                      'fixture_sha256':audit.FIXTURE_SHA,
+                      'exits':exits,'step2_promoted':False,
+                      'b3_promoted':False,'jepa_weight':0,
+                      'redmi_measured':False,'whole_system_complete':False}
+            entries = {'HEAD.txt':audit.HEAD,
+                       'RESULT.json':raw_json(result)}
+            entries.update({stage+'_EXIT.txt':str(code)
+                            for stage,code in exits.items()})
+            sums = ''.join(sha256(data.encode()).hexdigest()+
+                           '  ./'+name+'\\n'
+                           for name,data in sorted(entries.items()))
+            entries['SHA256SUMS'] = sums
+            b = BytesIO()
+            with zipfile.ZipFile(b,'w') as z:
+                for name,data in entries.items():
+                    z.writestr(name,data)
+            return b.getvalue()
+        original_red = make_zip(True)
+        result = audit.audit(original_red,
+                             expected_sha=sha256(original_red).hexdigest())
+        self.assertEqual(result['status'],
+                         'INDEPENDENT_ORIGINAL_NATIVE_NOT_RUN_RED_PRESERVED')
+        self.assertEqual(result['original_exits']['SOURCE'],1)
+        forged_green = make_zip(False)
+        with self.assertRaisesRegex(ValueError,
+                                    'GREEN_RECEIPT_MISSING_ORIGINAL_ARTIFACT_RED'):
+            audit.audit(forged_green,
+                        expected_sha=sha256(forged_green).hexdigest())
+
     def test_original_zip_sha_must_match_before_read(self):
         with self.assertRaisesRegex(ValueError,'ORIGINAL_ARTIFACT_SHA_RED'):
             audit.audit(b'not an artifact',expected_sha='0'*64)
