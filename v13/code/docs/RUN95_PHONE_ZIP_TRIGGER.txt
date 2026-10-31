@@ -1,0 +1,7 @@
+RUN95 current review-chain Age0 Termux source ZIP trigger, 2026-10-31.
+Parent Run94 unfiltered full-suite Actions 41200093567 terminal SUCCESS, exact tested HEAD 8d3d4d28313394de7ec023fcd29497d56bfd3b81, 4907 tests OK/28 skipped/0 failures/errors.
+Original Run94 artifact 13042855701 ZIP SHA256 5b346370e6bd8f24b6f337a29f7ea19aabe9043d257c85fa37cb1b08f67b4458, CRC PASS, 23/23 SHA256SUMS PASS, all stage exits0, privacy CLEAN; private backup byte-exact.
+Run95 prereg 6a11da8e94db5324870c518173bad347c5f3690e before workflow; current workflow 055e49de80be98eda587310af85e613580247121.
+Pack existing source only, --phone-install, two byte-identical ZIPs, CRC/manifest/no symlinks/no GGUF/DB, extracted model-free tests and source unchanged, bash syntax, privacy/diff, original raw backup. No native/model downloads, no Redmi or full architecture claim.
+Run87 native owner Actions 41200115473 active, independent heavy concurrency; do not launch another native/model job.
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; whole V13 INCOMPLETE.
