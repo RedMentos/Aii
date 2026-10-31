@@ -28,6 +28,8 @@ jobs:
           ed9238770eaf0a9a5af20260a246a9b8257a849f v13/code/docs/WORLD_JEPA_ACTION_BALANCED_FULLSLOT_PREREG_RUN39_20261031.md
           76ab0f4fe842472afd185a9132dbb806bf9da041 v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py
           cad9dd0f7877ed0243ea6a9cf387a34c433e5f59 v13/code/tests/test_run39_world_jepa_action_balanced_fullslot.py
+          411c98de52ab3fbec5437ce12bf0c29591ff79a7 v13/code/scripts/run39_world_jepa_action_balanced_real.py
+          8c68e6cbd8bd49a9fe9245d6740428f714e5a6e8 v13/code/tests/test_run39_world_jepa_action_balanced_real.py
           51bc5260cde8db3bc6cf7924a7a089a5cdfe5fd0 v13/code/v13/world_jepa_fullslot_candidate.py
           67e14e0d03c50c4767b74d5b02a819a95c6cc262 v13/code/v13/world_jepa_slot_candidate.py
           99a686a131a1bdc89efe0d0cf9610ec54cbd853b v13/code/v13/world_jepa.py
@@ -46,10 +48,10 @@ jobs:
           "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
           echo "$?" > "$e/DEPS_EXIT.txt"
           if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run39_world_jepa_action_balanced_fullslot tests.test_run38_world_jepa_fullslot_candidate tests.test_world_jepa_slot_candidate_run28 tests.test_world_jepa_atomic_fit) > "$e/TEST_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run39_world_jepa_action_balanced_fullslot tests.test_run39_world_jepa_action_balanced_real tests.test_run38_world_jepa_fullslot_candidate tests.test_world_jepa_slot_candidate_run28 tests.test_world_jepa_atomic_fit) > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
           else echo PIN_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
-          "$py" -m py_compile v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py v13/code/tests/test_run39_world_jepa_action_balanced_fullslot.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m py_compile v13/code/v13/world_jepa_action_balanced_fullslot_candidate.py v13/code/tests/test_run39_world_jepa_action_balanced_fullslot.py v13/code/scripts/run39_world_jepa_action_balanced_real.py v13/code/tests/test_run39_world_jepa_action_balanced_real.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           git fetch --no-tags --depth=1 origin 804918aaac79676f3872bf8dba0edbe1d3accc35 > "$e/FETCH_RAW.log" 2>&1
           echo "$?" > "$e/FETCH_EXIT.txt"
