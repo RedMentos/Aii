@@ -95,6 +95,19 @@ jobs:
           rc=$?
           set -e
           echo "$rc" > "$e/TEST_EXIT.txt"
+          PYTHONPATH=v13/code "$py" - "$e/V13-Redmi-Install-Run95.zip" "$e/extracted/V13-Phone" <<'PY' > "$e/POST_VERIFY_RAW.log" 2>&1
+          import hashlib,sys
+          from pathlib import Path
+          from scripts.phone_release_audit_candidate import verify_archive
+          archive,root=Path(sys.argv[1]),Path(sys.argv[2])
+          files=verify_archive(archive)
+          for relative,expected in files.items():
+              path=root/relative
+              assert path.is_file() and not path.is_symlink()
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==expected,relative
+          print('EXTRACTED_SOURCE_UNCHANGED_AFTER_TESTS',len(files))
+          PY
+          echo 0 > "$e/POST_VERIFY_EXIT.txt"
           "$py" -m compileall -q "$e/extracted/V13-Phone/v13" "$e/extracted/V13-Phone/scripts" > "$e/COMPILE_RAW.log" 2>&1
           echo 0 > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py \
