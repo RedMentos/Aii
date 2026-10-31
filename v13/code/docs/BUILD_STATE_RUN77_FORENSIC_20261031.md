@@ -1,0 +1,20 @@
+# Run77 original native forensic checkpoint — 2026-10-31
+
+**Owner:** GPT-6 forensic review, isolated child of Run77 PR #1437 exact HEAD `89e1309b623df6d214955de89b2f1ebdf873dd02`. Original native execution was triggered from `4ea3f697d2ed8418c8a68cebfc1538b6642e439e` (not the later documentation HEAD). The frozen Run77 seed797 fixture, scorer, model hashes, runner hash, original code, and original artifact remain **unchanged**.
+
+## Observed original RED (do not relabel)
+- Actions run **41184472733** terminal **failure** at 2026-10-31 08:37:26 UTC, job 124488436931. The job log's final receipt says `PINS 0; VENV 0; DEPS 0; TEST 0; BOOTSTRAP 0; NATIVE 0; VERIFY 1`. Thus 36-call driver exited 0 but the independent verifier exited 1. The reason for the verifier failure is **not yet known**; a successful driver is not proof of 36 verified native calls.
+- Original raw artifact ID **13036187463** is preserved on GitHub Actions with declared size **17,532,491,886 bytes** (17.5 GB); upload log SHA256 **`3a608bc7a2d3403130558c49baef59413a0486f118639c0e892e338003e73281`**. This is the upload service's digest, **not** an independently downloaded/recomputed hash. No CRC, inner hashes, native output or scientific result is independently verified here. The original artifact has **not** been privately backed up; do not claim it has.
+- Source inspection reveals original workflow uploaded the **entire** `$RUNNER_TEMP/v13-run77-native/` including `pilot` arm home directories. This is an evidence-packaging hazard, because each arm links installed models. It likely explains the giant artifact, but actual ZIP members have not been inspected; mark cause **hypothesis**.
+- The original verifier uses a stricter B2 prior-evidence criterion (source ID + SHA + offsets + quote membership) than the original driver (source read substring). These predicates are not logically equivalent; this is a **confirmed static mismatch**, not a proven cause of the observed `VERIFY 1` without original report bytes.
+- The original script catches structural exceptions, so native exit 0 implies its report status was either `B1B2_SMALL_CONTEXT_UTILITY_SIGNAL_SHADOW` or `B1B2_CONTEXT_UTILITY_SCIENTIFIC_RED`; neither result is known without the raw report. No science gate can be inferred from the job conclusion.
+
+## Independent next package
+1. Add a **read-only** first-failure diagnostic verifier with tests for mismatch classes, and a compact native forensic replay workflow that retains original pinned source/model/seed and calls without mutating frozen scripts. A replay is **engineering diagnosis only**, not a new disjoint scientific cohort or replacement for original Run77.
+2. Save compact raw report, all 12 per-arm `raw_row.json`, stdout/exit receipts, hashes and closed-store audit; exclude installed model/home symlinks and enforce artifact size budget. Retain RED and output all first-failure diagnostics even when verifier exits nonzero.
+3. If original artifact can be retrieved through an approved capacity-limited channel, independently validate its bytes; otherwise preserve GitHub original and explicitly record the verification gap. New scientific claim requires a separately preregistered disjoint cohort, not reuse of seed797.
+4. Continue next substantive Canon organ on another branch while the native workflow runs; do not compete with other heavy native owners.
+
+**Current source owner:** GPT-6 forensic branch only; no other owner's files overwritten. **Prerequisite:** GitHub Actions runner and pinned public models. **Exact next command:** run `PYTHONPATH=v13/code:v13/code/scripts python -m unittest discover -s v13/code/tests -p 'test_run77_forensic_diagnostic.py' -v` and trigger the new compact workflow by pushing its workflow file to the isolated branch. **Remaining platform budget:** UNKNOWN.
+
+**Negative gates:** Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; Redmi unmeasured; whole-system incomplete. Original Run70 SOURCE_SCHEMA 3/6 scientific RED and full-suite 4 FAIL/66 ERROR/28 SKIP unchanged. No production activation or auto-merge.
