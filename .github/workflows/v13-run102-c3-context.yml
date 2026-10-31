@@ -1,0 +1,69 @@
+name: V13 Run102 C3 Context OS planned B2 source software
+on:
+  push:
+    branches:
+      - assistant/v13-run102-c3-context-plan-20261031-auto11
+    paths:
+      - v13/code/docs/RUN102_C3_CONTEXT_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      V13_NO_AUTOSTART: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify C3 planned exact source and adjacent B2 controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run102"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run102-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run102-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/tests/test_b2_c3_context_plan_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_c3_context_plan_20261031.py -v) > "$e/C3_CONTEXT_RAW.log" 2>&1
+          c3_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_wide_narrow_actual_consumer_20261031.py -v) > "$e/B2_CONSUMER_RAW.log" 2>&1
+          b2_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_prior_quote_span_candidate.py -v) > "$e/SPAN_RAW.log" 2>&1
+          span_rc=$?
+          set -e
+          echo "$c3_rc" > "$e/C3_CONTEXT_EXIT.txt"
+          echo "$b2_rc" > "$e/B2_CONSUMER_EXIT.txt"
+          echo "$span_rc" > "$e/SPAN_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 3a1670d186b1f777bbf093508f7ee4973af49b25 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3a1670d186b1f777bbf093508f7ee4973af49b25 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 32 "$e/C3_CONTEXT_RAW.log"
+          test "$c3_rc" -eq 0
+          test "$b2_rc" -eq 0
+          test "$span_rc" -eq 0
+      - name: Upload raw receipts including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run102-c3-context-${{ github.sha }}
+          path: ${{ runner.temp }}/run102/
+          if-no-files-found: error
+          retention-days: 90
