@@ -1,0 +1,232 @@
+name: V13 Run117AH pinned native B1/B2 source-ID vs baseline quote seed1069
+on:
+  push:
+    branches:
+      - assistant/v13-run117ah-body-source-id-20261031-gpt6
+    paths:
+      - v13/code/docs/RUN117AH_NATIVE_LAUNCH_20261031.md
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native-body-complementarity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify source ZIP and frozen cohort, install pinned models, execute native
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117ah-native"
+          extracted="$RUNNER_TEMP/v13-run117ah-extracted"
+          source_root="$extracted/V13-Phone"
+          installed="$RUNNER_TEMP/v13-run117ah-installed"
+          fixture="$GITHUB_WORKSPACE/v13/code/docs/fixtures/RUN117AH_BODY_SOURCE_ID_SEED1069.json"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ah-native-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117ah-native-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          test "$(git hash-object v13/code/scripts/run117ah_body_source_id_native.py)" = 4ca00d3c44d11520c0264d4d7b22e2497ec35e7e
+          source_a=$?
+          test "$(git hash-object v13/code/tests/test_run117ah_body_source_id_native_runner.py)" = edf1c8d6543535759451b90ed1146aeaaaf49212
+          source_b=$?
+          test "$(git hash-object v13/code/v13/b1b2_source_id_quote_candidate.py)" = e431eecaa4a7643a548a512036225343f681ee23
+          source_c=$?
+          test "$(git hash-object "$fixture")" = c0cd2764a3b6ad7470e7be5d46e1273be50aa264
+          source_d=$?
+          test "$(git hash-object v13/code/v13/contracts.py)" = 7b21d9c5076015716851b5d432a5730e4e17da92
+          source_e=$?
+          echo 'cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a  v13/code/docs/fixtures/RUN117AH_BODY_SOURCE_ID_SEED1069.json' | sha256sum -c - > "$e/FIXTURE_HASH_RAW.log" 2>&1
+          fixture_rc=$?
+          test "$source_a" -eq 0 && test "$source_b" -eq 0 && test "$source_c" -eq 0 && test "$source_d" -eq 0 && test "$source_e" -eq 0 && test "$fixture_rc" -eq 0
+          source_rc=$?
+          echo "$source_rc" > "$e/SOURCE_EXIT.txt"
+          echo "$deps_rc" > "$e/DEPS_EXIT.txt"
+          if test "$source_rc" -eq 0 && test "$deps_rc" -eq 0; then
+            "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run117AH.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+            pack_rc=$?
+          else
+            pack_rc=125;echo SOURCE_OR_DEPS_RED > "$e/PACK_RAW.log"
+          fi
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            "$py" - "$e" "$extracted" "$fixture" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);fixture=Path(sys.argv[3])
+          p=e/'V13-Phone-Run117AH.zip'
+          assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              assert set(z.namelist())=={'V13-Phone/'+x for x in manifest['files']}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for name,digest in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest,name
+              for name in ('scripts/run117ah_body_source_id_native.py',
+                           'tests/test_run117ah_body_source_id_native_runner.py',
+                           'v13/b1b2_source_id_quote_candidate.py',
+                           'v13/contracts.py',
+                           'docs/fixtures/RUN117AH_BODY_SOURCE_ID_SEED1069.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'fixture_sha256':hashlib.sha256(fixture.read_bytes()).hexdigest(),
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+          else
+            zip_rc=125;echo PACK_RED > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          if test "$zip_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" -m unittest -v \
+              tests.test_run117ah_body_source_id_native_runner \
+              tests.test_run117ah_body_source_id_candidate) > "$e/PREFLIGHT_RAW.log" 2>&1
+            preflight_rc=$?
+          else
+            preflight_rc=125;echo ZIP_RED > "$e/PREFLIGHT_RAW.log"
+          fi
+          echo "$preflight_rc" > "$e/PREFLIGHT_EXIT.txt"
+          if test "$preflight_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_C3_RAW.log" 2>&1
+            install_c3_rc=$?
+          else
+            install_c3_rc=125;echo PREFLIGHT_RED > "$e/INSTALL_C3_RAW.log"
+          fi
+          echo "$install_c3_rc" > "$e/INSTALL_C3_EXIT.txt"
+          if test "$install_c3_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" - "$installed" <<'PY') > "$e/INSTALL_BODIES_RAW.log" 2>&1
+          from pathlib import Path
+          import sys,json
+          from v13.models import ModelManager,catalog
+          from v13.common import file_hash
+          home=Path(sys.argv[1]);m=ModelManager(home)
+          pins={'body':('6767265158422fb8a19c62ceb45f16f05363615b','bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1'),
+                'gist':('8fea620810c4afa23dd6443f999a48574c1611a3','57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf')}
+          for key,role in (('body','B1_DETAIL'),('gist','B2_GIST')):
+              m.install(key)
+              s=catalog()['models'][key]
+              assert (s['revision'],s['files'][0]['sha256'])==pins[key]
+              assert m.verify(deep=True)[key]['ok']
+              assert file_hash(m.path_for(role))==pins[key][1]
+          print(json.dumps({'status':'RUN117AH_PINNED_B1_B2_INSTALLED',
+                            'model_sha256':{k:v[1] for k,v in pins.items()},
+                            'weights_exported':False},sort_keys=True))
+          PY
+            install_bodies_rc=$?
+          else
+            install_bodies_rc=125;echo C3_INSTALL_RED > "$e/INSTALL_BODIES_RAW.log"
+          fi
+          echo "$install_bodies_rc" > "$e/INSTALL_BODIES_EXIT.txt"
+          if test "$install_bodies_rc" -eq 0; then
+            (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" scripts/run117ah_body_source_id_native.py \
+              --fixture "$fixture" --installed "$installed" \
+              --work "$RUNNER_TEMP/v13-run117ah-native-work" \
+              --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            native_rc=$?
+          else
+            native_rc=125;echo INSTALL_RED > "$e/NATIVE_RAW.log"
+          fi
+          echo "$native_rc" > "$e/NATIVE_EXIT.txt"
+          if test -f "$e/NATIVE_CASE/report.json"; then
+            "$py" - "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);r=json.loads((e/'NATIVE_CASE/report.json').read_text())
+          assert r['schema']=='v13.run117ah.body_source_id_native_seed1069.v1'
+          assert r['seed']==1069 and r['fixture_sha256']=='cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a'
+          assert r['native_c3_calls']==0 and r['native_jef_calls']==0 and r['native_c2_calls']==0
+          assert r['output_committed'] is False and r['tool_dispatches']==0
+          assert r['learning_authority']==0 and r['delivery_authority']==0
+          assert r['age0']=='RECORD_ONLY' and r['step2_exit']=='EVIDENCE_NOT_PASSING'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['redmi_measured'] is False
+          assert r['whole_system_complete'] is False
+          assert r['status'] in ('STRUCTURAL_RED','NATIVE_COMPLETE_BODY_ID_DIAGNOSTIC')
+          assert len(r['rows'])<=6 and 0<=r['native_body_calls']<=30
+          for row in r['rows']:
+              assert row['id'] in ('Auric','Beryl','Cobalt','Daphne','Elder','Fable')
+              assert len(row['offers'])<=3 and len(row['id_selections'])<=2
+              assert row['no_live_output'] is True and row['closed_store_ok'] is True
+              for item in row['offers']+row['id_selections']:
+                  if item['status']=='RECORDED':
+                      assert item['process_reaped'] is True
+                      assert item['native_metrics']['status']=='FINAL'
+                      assert item['native_metrics']['actual_model'] in (
+                          'LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf','Qwen3.5-0.8B-Q4_0.gguf')
+                      raw=item['packet_evidence']['raw']
+                      assert hashlib.sha256(raw.encode()).hexdigest()==item['packet_evidence']['sha256']
+          if r['status']=='NATIVE_COMPLETE_BODY_ID_DIAGNOSTIC':
+              assert r['native_body_calls']==30 and len(r['rows'])==6
+              assert all(len(row['offers'])==3 and len(row['id_selections'])==2
+                         and row['status']=='RECORDED' for row in r['rows'])
+          print(json.dumps({'verified_original_native_report':True,
+                            'status':r['status'],'rows':len(r['rows']),
+                            'native_body_calls':r['native_body_calls'],
+                            'baseline_quote_ready_count':r.get('baseline_quote_ready_count'),
+                            'model_id_pair_correct_count':r.get('model_id_pair_correct_count')},sort_keys=True))
+          PY
+            verify_rc=$?
+          else
+            verify_rc=125;echo NATIVE_REPORT_MISSING > "$e/VERIFY_RAW.log"
+          fi
+          echo "$verify_rc" > "$e/VERIFY_EXIT.txt"
+          "$py" -m compileall -q "$source_root/scripts/run117ah_body_source_id_native.py" > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          git diff --check fb7d9db5cc991ad51c1b9d14ebdb76ff717399c9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('SOURCE','DEPS','PACK','ZIP','PREFLIGHT','INSTALL_C3',
+                                    'INSTALL_BODIES','NATIVE','VERIFY','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117ah.original_native_workflow_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'seed':1069,
+             'fixture_sha256':'cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_claim_requires_report':True,
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/NATIVE_RAW.log"
+          cat "$e/VERIFY_RAW.log"
+          for rc in "$source_rc" "$deps_rc" "$pack_rc" "$zip_rc" "$preflight_rc" "$install_c3_rc" "$install_bodies_rc" "$native_rc" "$verify_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original GREEN or RED native evidence and source ZIP
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ah-native-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ah-native/
+          if-no-files-found: warn
+          retention-days: 90
