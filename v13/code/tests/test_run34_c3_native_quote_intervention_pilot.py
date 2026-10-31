@@ -10,8 +10,27 @@ from scripts import run34_c3_native_quote_intervention_pilot as pilot
 
 
 class Run34NativePilotPreflight(unittest.TestCase):
-    def test_pinned_source_model_runner_and_negative_gates(self):
-        reg = pilot.prereg()
+    def test_current_source_drift_refused_and_frozen_metadata_preserved(self):
+        # Historical Run34 prereg remains bound to its ORIGINAL utility bytes.
+        # A later score-validation hardening changed the live utility module.
+        utility_path = pilot.ROOT / "v13/utility.py"
+        live_blob = pilot._git_blob(utility_path)
+        self.assertEqual(live_blob, "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53")
+        self.assertNotEqual(live_blob, pilot.FROZEN_UTILITY_BLOB)
+        with self.assertRaisesRegex(ValueError, "native_source_or_catalog_changed"):
+            pilot.prereg()
+
+        # Test ONLY the frozen prereg metadata contract with the historical
+        # utility hash simulated; no source, runner or model is repinned.
+        real_blob = pilot._git_blob
+
+        def historical_utility_only(path):
+            if path == utility_path:
+                return pilot.FROZEN_UTILITY_BLOB
+            return real_blob(path)
+
+        with mock.patch.object(pilot, "_git_blob", side_effect=historical_utility_only):
+            reg = pilot.prereg()
         self.assertEqual(reg["fixture_id"], "Velaris")
         self.assertEqual(reg["seed"], 20261121)
         self.assertEqual(reg["arms"], list(cf.ARMS))
@@ -21,6 +40,30 @@ class Run34NativePilotPreflight(unittest.TestCase):
         self.assertIs(reg["canonical_gate_pass"], False)
         self.assertIs(reg["phone_measured"], False)
         self.assertEqual(reg["jepa_weight"], 0)
+
+    def test_historical_utility_simulation_cannot_mask_other_pin_drift(self):
+        # Even with a simulated original utility blob, every other prereg
+        # source must remain exactly pinned. No model or native runner opens.
+        original = pilot._git_blob
+        utility = pilot.ROOT / "v13/utility.py"
+        other_pins = (
+            pilot.ROOT / "specs/models.json",
+            pilot.ROOT / "scripts/run33_b2_c3_counterfactual_envelopes.py",
+            pilot.ROOT / "v13/runners.py",
+        )
+        for tampered in other_pins:
+            with self.subTest(path=str(tampered)):
+                def blob(path):
+                    if path == utility:
+                        return pilot.FROZEN_UTILITY_BLOB
+                    if path == tampered:
+                        return "0" * 40
+                    return original(path)
+
+                with mock.patch.object(pilot, "_git_blob", side_effect=blob):
+                    with self.assertRaisesRegex(
+                            ValueError, "native_source_or_catalog_changed"):
+                        pilot.prereg()
 
     def test_no_installed_home_no_native_no_evidence_created(self):
         with tempfile.TemporaryDirectory() as temp:
