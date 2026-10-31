@@ -1,6 +1,9 @@
 name: V13 Run87 disjoint B1B2 seed877 budget native (manual, serialized)
 on:
   workflow_dispatch:
+  push:
+    branches: [assistant/v13-run87-b1b2-budget-ablation-seed877-20261031-gpt6]
+    paths: ['v13/code/docs/RUN87_NATIVE_EXECUTION_TRIGGER_20261031.txt']
 permissions:
   contents: read
 concurrency:
