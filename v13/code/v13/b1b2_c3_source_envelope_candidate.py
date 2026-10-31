@@ -21,6 +21,16 @@ def _result(status, **extra):
             "learning_authority": 0, "native_proof": False, **extra}
 
 
+def _latest_authoritative_user(store, session):
+    for row in store.rows(
+            "SELECT id,packet FROM events WHERE session_id=? ORDER BY rowid DESC",
+            (session,)):
+        env = json.loads(row["packet"])
+        if env.get("authority") == "AUTHORITATIVE" and env.get("kind") == "USER_TEXT":
+            return row["id"]
+    return None
+
+
 def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
                              operator_opt_in=False):
     """Read both current-turn persisted offers through frozen Cognition.
@@ -44,6 +54,8 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
                 or event.get("brain_generation_id") != snapshot["generation"]
                 or event.get("event_id") is None):
             return _result("CURRENT_USER_SOURCE_RED")
+        if _latest_authoritative_user(store, session) != event["event_id"]:
+            return _result("STALE_USER_EVENT_RED")
         offers = []
         raw = []
         for role in ROLES:
@@ -88,7 +100,8 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
             {"role": "user", "content": dumps(payload)},
         ]
         # No output follows, but detect any source/packet drift during build.
-        if _event_snapshot(runtime.memory, event["event_id"], session) != snapshot:
+        if (_event_snapshot(runtime.memory, event["event_id"], session) != snapshot
+                or _latest_authoritative_user(store, session) != event["event_id"]):
             return _result("SOURCE_CHANGED_DURING_ENVELOPE")
         for role, before in zip(ROLES, raw):
             row = store.one("SELECT payload FROM packets WHERE id=? AND "
