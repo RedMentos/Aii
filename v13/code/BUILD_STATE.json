@@ -4063,5 +4063,47 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117am_20261031_body_source_id_native": {
+    "owner": "GPT-6 / Run117AM isolated review branch",
+    "branch": "assistant/v13-run117am-native-source-id-20261031-gpt6",
+    "pr": 1519,
+    "parent_verified": "ba597176c351f9d7b35340f6fe4df3b4b5811fa6",
+    "prereg_commit": "1dc04efee1f10e54a453a7bb5538cacfd4f94b62",
+    "fixture_commit": "52cc6263bc89dc14a4454035801a089937cbd9bc",
+    "fixture_sha256": "18c0c9211daca9b1e5df12443713f6001db10ea6b5e9a778c8c9eb744d7579d1",
+    "fixture_git_blob": "aeae2d5110486250bd39a9fd0f4c442fa621fc4c",
+    "seed": 1073,
+    "source_preflight_head": "3827cbbe850d0114a8aa2fcc1380720d0a849bac",
+    "status": "SOFTWARE_PREFLIGHT_GREEN_NATIVE_STAGED_NOT_LAUNCHED",
+    "tests": "17/17 real SQLite model-free Actions 41239751297 SUCCESS; all 8 exits 0",
+    "raw_artifact_id": 13056872547,
+    "raw_zip_sha256": "7b6e96a3ec2f6c7e35b02724cb727e28010be28ec8d96988bf1eb6b2a1d78a5f",
+    "evidence_level": "Linux Actions model-free software only; not independent ZIP byte audit",
+    "native_concurrency_group": "v13-native-c3-ag12-20261030",
+    "source_file": "v13/code/scripts/run117am_body_source_id_native.py",
+    "source_blob": "4afe7c2cb0521f480414befe150bb614dc3deaac",
+    "native_workflow": ".github/workflows/v13-run117am-body-source-id-native.yml",
+    "model_pins": {
+      "B1_DETAIL": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "B2_GIST": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+    },
+    "original_native_seed1069": {
+      "status": "STRUCTURAL_RED",
+      "run_id": 41237524795,
+      "artifact_id": 13056238483,
+      "sha256": "256efa611a31d3696d9e8f6f125c917ac242de280ae1e64b4ecc6f2e4d567195"
+    },
+    "next_command": "Check no active native owner; push RUN117AM_NATIVE_CHILD_SENTINEL_20261031.md to launch pinned serialized native workflow; after terminal audit original ZIP/closed report/manifest and preserve failures; continue other Canon packages.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
