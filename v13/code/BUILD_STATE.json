@@ -4213,5 +4213,59 @@
       "whole_system_complete": false
     },
     "remaining_platform_budget": "UNKNOWN"
+  },
+  "run117ap_20261031_original_native_body_source_id_audit": {
+    "owner": "GPT-6 / Run117AP independent read-only native auditor",
+    "branch": "assistant/v13-run117ap-native-source-id-audit-20261031-gpt6",
+    "pr": 1522,
+    "parent_verified": "fdc1c4c5397f2299ad95dd8c77cf1b6066b13fab",
+    "prereg_commit": "0f7f7dc5fec36a4422522c17d54f61464d923047",
+    "audit_source_head": "6aecdf22405d161d269d3b580c0092962b43656e",
+    "status": "INDEPENDENT_ORIGINAL_NATIVE_COMPLETE_LOW_UTILITY",
+    "original_native": {
+      "run_id": 41239863119,
+      "source_head": "5edeeffe9689ac32faabf0ff3bff7572e579c918",
+      "artifact_id": 13056893368,
+      "outer_sha256": "9a853e3e8cfbd16228b0573d9023fda01746c59a79a6c7e17c51c33254eb8131",
+      "source_zip_sha256": "a453588cb2ebca24412cd3445767703a645ca272670ff30dc3ae080ecf52314a",
+      "outer_inner_files": 31,
+      "nested_source_files": 2304,
+      "fixture_sha256": "18c0c9211daca9b1e5df12443713f6001db10ea6b5e9a778c8c9eb744d7579d1",
+      "native_body_calls": 30,
+      "raw_packets_verified": 48,
+      "by_role_correct": {
+        "B1_DETAIL": 3,
+        "B2_GIST": 4
+      },
+      "pair_correct": 2,
+      "baseline_quote_ready_reported": 4,
+      "model_weights_independently_rehashed": false
+    },
+    "audit_ci": {
+      "run_id": 41240635475,
+      "job_id": 124653610777,
+      "tests": "11/11",
+      "all_exits_zero": true,
+      "artifact_id": 13056968767,
+      "artifact_sha256": "9660e2351e12c4d8912586fe8e2788a1d722560be4293c22cd825fbbd461e568",
+      "outer_crc": true,
+      "inner_hashes_verified": 17
+    },
+    "evidence_level": "Original Linux-native ZIP independently downloaded and SHA/CRC/manifest/SourceRef/packet/score audited. Pinned weights not exported or rehashed independently. Not Redmi or whole-system utility.",
+    "original_seed1069": {
+      "status": "STRUCTURAL_RED",
+      "run_id": 41237524795
+    },
+    "next_command": "Choose next substantive canonical B1/B2→C3/ContextOS utility package, preserving 2/6 native Body source-ID low utility and separate Run117AO event binding; preregister disjoint fresh cohort before native and no typed answer leakage. Do not promote STEP2/B3/JEPA.",
+    "negative_gates": {
+      "age0": "RECORD_ONLY",
+      "step2": "UTILITY_FAIL",
+      "b3": "NO_PROMOTION",
+      "body_jepa": "UNAVAILABLE",
+      "jepa_weight": 0,
+      "redmi_measured": false,
+      "whole_system_complete": false
+    },
+    "remaining_platform_budget": "UNKNOWN"
   }
 }
