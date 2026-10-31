@@ -12,7 +12,7 @@ concurrency:
   group: v13-native-c3-ag12-20261030
   cancel-in-progress: false
 jobs:
-  native-c3-known-seed401:
+  native-c3-disjoint-seed1103:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -113,35 +113,64 @@ jobs:
           import hashlib,json,sys
           from pathlib import Path
           e=Path(sys.argv[1]);fixture=Path(sys.argv[2])
-          r=json.loads((e/'NATIVE_CASE/report.json').read_text())
-          f=json.loads(fixture.read_text());rows=f['fixtures']
+          r=json.loads((e/'NATIVE_CASE/report.json').read_text());f=json.loads(fixture.read_text())
+          rows=f['fixtures']
           def dumps(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)
-          assert r['schema']=='v13.run117bp.jef_c3_budget_native_smoke.v1'
+          def unique(pairs):
+              d={}
+              for k,v in pairs:
+                  if k in d:raise ValueError('DUPLICATE_JSON_RED')
+                  d[k]=v
+              return d
+          def reject(_):raise ValueError('NONFINITE_JSON_RED')
+          def score(raw,oracle):
+              try:v=json.loads(raw,object_pairs_hook=unique,parse_constant=reject)
+              except (ValueError,TypeError):return False
+              return (type(v) is dict and set(v)=={'choice','remaining'} and
+                      type(v['choice']) is str and v['choice'] in ('A','B','NONE','UNKNOWN') and
+                      ((v['choice'] in ('NONE','UNKNOWN') and v['remaining'] is None) or
+                       (v['choice'] in ('A','B') and type(v['remaining']) is int and v['remaining']>=0)) and v==oracle)
+          assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='f8ca7a22c47f991d630c9df1b1b2ee2943d24123246c8ffaf45db65998403f65'
+          assert r['schema']=='v13.run117bu.disjoint_budget_native.v1' and r['seed']==1103
           assert r['fixture_sha256']=='f8ca7a22c47f991d630c9df1b1b2ee2943d24123246c8ffaf45db65998403f65'
-          assert r['seed']==401 and r['registered_cohort_reused'] is True and r['independent_generalization'] is False
           assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL' and r['b3']=='NO_PROMOTION'
           assert r['body_jepa']=='UNAVAILABLE' and r['jepa_weight']==0 and r['redmi_measured'] is False
           assert r['whole_system_complete'] is False and r['delivery_authority']==0
           assert r['learning_authority']==0 and r['output_committed'] is False and r['tool_dispatches']==0
           assert r['native_body_calls']==r['native_c2_calls']==r['native_jef_calls']==0
-          assert len(r['rows'])==6 and [x['id'] for x in r['rows']]==[x['id'] for x in rows]
-          counts={'native_final':0,'process_reaped':0,'source_rechecked':0,'formatter_match':0}
-          for item,src in zip(r['rows'],rows):
+          assert len(r['rows'])==8 and [x['id'] for x in r['rows']]==[x['id'] for x in rows]
+          counts={'TYPED_JEF':0,'RAW_SOURCE':0};paired=0;final=0;reaped=0;rechecked=0
+          for i,(item,src) in enumerate(zip(r['rows'],rows)):
               assert r['row_sha256'][item['id']]==hashlib.sha256(dumps(item).encode()).hexdigest()
-              assert item['expected_oracle']==src['oracle']
-              guard=item['guard'] or {}
-              counts['native_final']+=int(item['native_final'] is True)
-              counts['process_reaped']+=int(item['process_reaped'] is True)
-              counts['source_rechecked']+=int(guard.get('source_rechecked') is True)
-              counts['formatter_match']+=int(item['status']=='RECORDED')
-              assert item['oracle_visible_to_native'] is False
-              assert len(item['source_ref_sha256'])==2
-          assert r['summary']=={'rows':6,**counts}
-          assert r['native_c3_calls']<=6
-          signal=(counts['formatter_match']==counts['native_final']==counts['process_reaped']==counts['source_rechecked']==6 and r['installed_binding_unchanged'])
-          assert r['status']==('NATIVE_FORMATTER_SMOKE_MATCH_6_OF_6' if signal else 'NATIVE_FORMATTER_SMOKE_NO_FULL_SIGNAL')
-          print(json.dumps({'verified_report':True,'known_cohort_only':True,'native_c3_calls':r['native_c3_calls'],
-                            'counts':counts,'status':r['status'],'native_attested':False},sort_keys=True))
+              assert item['closed_store_ok'] is True and len(item['arms'])==2
+              order=('TYPED_JEF','RAW_SOURCE') if i%2==0 else ('RAW_SOURCE','TYPED_JEF')
+              assert tuple(x['arm'] for x in item['arms'])==order
+              per={}
+              for arm in item['arms']:
+                  name=arm['arm'];per[name]=arm
+                  assert arm['native_final'] is True and arm['process_reaped'] is True and arm['source_rechecked'] is True
+                  assert arm['native_metrics']['status']=='FINAL'
+                  assert arm['prompt_sha256']==hashlib.sha256(dumps(arm['messages']).encode()).hexdigest()
+                  packet=json.loads(arm['messages'][1]['content'],object_pairs_hook=unique)
+                  assert packet['source_ref_sha256']==item['source_ref_sha256']
+                  if name=='TYPED_JEF':
+                      assert packet['typed_jef_candidate']==src['oracle'] and packet['candidate_authority']==0
+                      assert arm['guard']['source_rechecked'] is True
+                  else:
+                      assert 'typed_jef_candidate' not in packet and 'oracle' not in packet
+                      assert packet['prior_exact']==src['prior'] and packet['current_exact']==src['current']
+                  exact=score(arm['native_output'],src['oracle'])
+                  assert arm['score']['exact'] is bool(exact)
+                  counts[name]+=int(exact);final+=1;reaped+=1;rechecked+=1
+              paired+=int(per['TYPED_JEF']['score']['exact'])-int(per['RAW_SOURCE']['score']['exact'])
+          assert r['summary']=={'rows':8,'native_final':final,'process_reaped':reaped,
+                                 'source_rechecked':rechecked,'scores':counts,'paired_net':paired}
+          assert r['native_c3_calls']==16 and r['installed_binding_unchanged'] is True
+          signal=(counts['TYPED_JEF']>=7 and paired>=3 and r['complete_native_receipts'] is True)
+          assert r['status']==('EXPLORATORY_TYPED_ADVANTAGE' if signal else 'NO_EXPLORATORY_TYPED_ADVANTAGE')
+          print(json.dumps({'independent_rescore':True,'native_c3_calls':16,
+                            'scores':counts,'paired_net':paired,'status':r['status'],
+                            'native_attested':False},sort_keys=True))
           PY
             echo "$?" > "$e/VERIFY_EXIT.txt"
           else echo SKIPPED > "$e/VERIFY_RAW.log"; echo SKIPPED > "$e/VERIFY_EXIT.txt"; fi
