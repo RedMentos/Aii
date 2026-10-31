@@ -14,3 +14,15 @@ These numbers are direct means of the three raw `work/<arm>-<seed>-RESULT.json` 
 Other original blockers remain: W4 confidence/error rho -0.1243 / -0.1478 vs <=-0.30; W7b none/self per-seed gate FAIL. D1/D2/D3 prospective exploratory changes all FAIL. Thus the delta inverse objective did not materially change the action attribution gap or confidence calibration.
 
 **Consequence:** preserve original negative W6/W4/W7b and original raw. Do not lower the threshold, degrade the no-action control intentionally, cherry-pick seeds, or claim the original cohort passes. A genuinely new action/world-disentanglement design requires a separately preregistered, disjoint cohort, frozen controls and explicit baseline feasibility reporting **before** results; its results cannot retroactively replace W7D/W7S. Meanwhile continue other canonical organs, especially JEF/C3/C5/C6 and Context OS, rather than endlessly retuning this isolated helper.
+
+## Cross-cohort check: original W7S disjoint seeds 601–603
+
+As a **separate posthoc check** (not a new preregistered gate), re-read original W7S Actions artifact `13032013538`, exact ZIP SHA256 `c9bdad3ef348833e9b85961db310f7fa9f5af719eaf0f892809c975d41b8fe41`, original HEAD `676ee271bc5f156f911027c3ae203b649f6e3b6a`. CRC PASS, **79/79** inner hashes PASS, seeds 601/602/603 disjoint from W7D but same synthetic world family. The three unchanged original W7S arms also had observed no-action attribution near ceiling:
+
+| Original W7S arm | Mean no-action balanced `c` | Mean JEPA balanced | Absolute maximum `1-c` | Original W6 |
+| --- | ---: | ---: | ---: | --- |
+| Two-slot | 0.963867 | 0.965833 | 0.036133 | FAIL |
+| Six-slot | 0.964300 | 0.958600 | 0.035700 | FAIL |
+| Balanced six-slot | 0.964300 | 0.959733 | 0.035700 | FAIL |
+
+Thus **five tested arms across two disjoint seed cohorts** show the same fixed-control W6 headroom bottleneck. This is evidence of a recurring ceiling **in this particular generator/evaluator family**, not a claim about arbitrary environments or architectures. All original W7S/W7D failures, thresholds, source hashes and registered cohorts remain unchanged.
