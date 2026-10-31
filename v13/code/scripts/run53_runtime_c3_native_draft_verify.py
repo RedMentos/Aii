@@ -55,7 +55,16 @@ def verify(report_path, fixture_path):
             and (row.get("off_control") or {}).get("model_called") is False, "off_control")
     require((row.get("missing_correction_control") or {}).get("status") == "CLARIFY"
             and (row.get("missing_correction_control") or {}).get("model_called") is False, "missing_correction")
-    for key, text in [("current_source_ref", fixture["followup"]),
+    order = row.get("source_message_order")
+    require(type(order) is list and len(order) == 3
+            and all(type(x) is int for x in order)
+            and order == sorted(set(order)), "causal_user_message_order")
+    require(all(type(row.get(k)) is str for k in
+                ("first_query_event_id", "correction_event_id", "current_event_id"))
+            and len({row.get("first_query_event_id"), row.get("correction_event_id"),
+                     row.get("current_event_id")}) == 3, "causal_distinct_events")
+    for key, text in [("first_query_source_ref", fixture["first_query"]),
+                      ("current_source_ref", fixture["followup"]),
                       ("correction_source_ref", fixture["correction_event"])]:
         ref = row.get(key) or {}
         require(ref.get("sha256") == sha(text.encode())
