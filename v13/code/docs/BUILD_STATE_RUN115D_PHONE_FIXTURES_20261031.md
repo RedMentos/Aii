@@ -1,0 +1,13 @@
+# BUILD_STATE — Run115D extracted phone fixture parity, 2026-10-31
+
+Owner GPT-6; review-only PR #1487, branch `assistant/v13-run115d-phone-fixture-parity-20261031-gpt6`, child of Run115C native workflow source `0e1d2a60b331480fababd503b76b2d805951db49`. Source/test candidate commit `feb018eb626ccbbab2f6f601f5019c49f1fdf921`, workflow commit `804bbe8776db017e3ec414a7a0faab7453aa03f4`.
+
+Reproduced **original extracted-phone distribution RED** without altering original evidence: original Run115B preflight artifact `13048461679` outer SHA256 `bff0d2ac9e8866a9ad134ede0522d39e7c04d144977439516668da8e636b2de1`, inner source ZIP SHA256 `58175b3cf88eb988632a9755a8862ab206266fafd2ef1775c89af8194e8d729f`, CRC PASS, 2134/2134 hashes PASS. After extraction, `PYTHONPATH=.:scripts:tests python -m unittest discover -s tests -p test_run115b_jef_replication_native.py -v` gave 1/5 PASS and 4/5 ERROR, each missing `docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json`. Original model-free source checkout preflight was 5/5 GREEN, so the gap is ZIP selection, not native model inference.
+
+Scoped candidate: `scripts/package_source.py` now includes public `docs/fixtures/*.json` (23 files, total 38,626 bytes in current source listing) and requires exact Run114B seed947 and Run115B seed971 fixture files before a phone ZIP can publish. No registered fixture bytes, model pins, scorer, runtime, negative gates or historical ZIP are edited. New `tests/test_phone_fixture_parity_run115d.py` has three synthetic model-free tests: inclusion scope, exact ZIP/manifest roundtrip, and missing fixture fail-closed. Local 3/3 PASS and compileall PASS. Existing unrelated source-handoff/native-firing historical baseline incompatibility remains RED; not hidden or promoted.
+
+New model-free Actions `41217651916` launched at `804bbe8776db017e3ec414a7a0faab7453aa03f4`: original source + extracted-phone Run114B/Run115B tests, ZIP CRC/hash/fixture binding, privacy scan, raw GREEN/RED upload. **Result PENDING** until original artifact inspected.
+
+Next exact: GET `/repos/RedMentos/Aii/actions/runs/41217651916`; at terminal download original artifact, independently audit outer SHA256, ZIP CRC, SHA256SUMS, new phone ZIP manifest and frozen source hashes, all test exits and privacy. If RED retain original raw and fix only scoped distribution code; do not alter frozen cohorts. If GREEN, evaluate installer smoke on extracted candidate and keep native Run115C evidence separately bound to its earlier commit. No device run or model execution is claimed.
+
+Age0 RECORD_ONLY; STEP2_EXIT EVIDENCE_NOT_PASSING; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; Redmi UNMEASURED; whole V13 INCOMPLETE. Remaining platform budget UNKNOWN.
