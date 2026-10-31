@@ -1,0 +1,94 @@
+name: V13 Run117AV independent original native C3 source-only audit
+on:
+  push:
+    branches:
+      - assistant/v13-run117av-c3-plain-native-audit-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117av-original-native-c3-plain-audit.yml
+      - v13/code/scripts/run117av_independent_original_native_c3_plain_audit.py
+      - v13/code/tests/test_run117av_independent_original_native_c3_plain_audit.py
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-original-c3-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Independently download and audit original frozen native C3 ZIP
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          e="$RUNNER_TEMP/v13-run117av-native-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 15 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13057873291/zip" \
+            --output "$e/original-native.zip" > "$e/DOWNLOAD_RAW.log" 2>&1
+          download_rc=$?
+          if test "$download_rc" -eq 0; then
+            echo 'b7ec8262405d987273b0ec4396f98df750510f306405efe72679b6f775d65ca8  '"$e/original-native.zip" | sha256sum -c - > "$e/HASH_RAW.log" 2>&1
+            hash_rc=$?
+          else
+            hash_rc=125;echo DOWNLOAD_RED > "$e/HASH_RAW.log"
+          fi
+          if test "$hash_rc" -eq 0; then
+            (cd v13/code && RUN117AV_ORIGINAL="$e/original-native.zip" \
+              python3 -m unittest -v tests.test_run117av_independent_original_native_c3_plain_audit) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+            (cd v13/code && python3 scripts/run117av_independent_original_native_c3_plain_audit.py "$e/original-native.zip") > "$e/AUDIT_RAW.log" 2>&1
+            audit_rc=$?
+          else
+            test_rc=125;audit_rc=125
+            echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+            echo PREREQUISITE_RED > "$e/AUDIT_RAW.log"
+          fi
+          python3 -m compileall -q v13/code/scripts/run117av_independent_original_native_c3_plain_audit.py v13/code/tests/test_run117av_independent_original_native_c3_plain_audit.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 10b6437b1351b5eb96bae39e28d973a8b9e53f97 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 10b6437b1351b5eb96bae39e28d973a8b9e53f97 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DOWNLOAD:$download_rc" "HASH:$hash_rc" "TEST:$test_rc" "AUDIT:$audit_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          python3 - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DOWNLOAD','HASH','TEST','AUDIT','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117av.original_native_c3_plain_audit_receipt.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'original_native_artifact_id':13057873291,
+             'original_native_sha256':'b7ec8262405d987273b0ec4396f98df750510f306405efe72679b6f775d65ca8',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_execution_by_auditor':False,'step2_promoted':False,
+             'b3_promoted':False,'jepa_weight':0,'redmi_measured':False,
+             'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          rm -f "$e/original-native.zip"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          cat "$e/AUDIT_RAW.log"
+          tail -n 25 "$e/TEST_RAW.log"
+          for rc in "$download_rc" "$hash_rc" "$test_rc" "$audit_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0 || exit 2; done
+      - name: Preserve audit RED or GREEN closed raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117av-original-native-c3-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117av-native-audit/
+          if-no-files-found: warn
+          retention-days: 90
