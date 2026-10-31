@@ -85,9 +85,9 @@ jobs:
           for i in 0 1 2; do
             if [ "$(cat "$e/INPUT_SETUP_EXIT.txt")" = 0 ]; then
               timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=v13/code:v13/code/scripts "$py" v13/code/scripts/jef_c3_c5_c6_operator_cli.py --home "$V13_HOME" --input-file "$RUNNER_TEMP/v13-schema-inputs/$i.json" --mode native_schema --operator-opt-in --callback-opt-in > "$e/REPORT_$i.json" 2> "$e/CLI_$i.stderr"
-              echo "$?" > "$e/CLI_$i_EXIT.txt"
+              echo "$?" > "$e/CLI_${i}_EXIT.txt"
             else
-              echo '{}' > "$e/REPORT_$i.json"; echo SKIPPED > "$e/CLI_$i.stderr"; echo 99 > "$e/CLI_$i_EXIT.txt"
+              echo '{}' > "$e/REPORT_$i.json"; echo SKIPPED > "$e/CLI_$i.stderr"; echo 99 > "$e/CLI_${i}_EXIT.txt"
             fi
           done
           if [ "$(cat "$e/INPUT_SETUP_EXIT.txt")" = 0 ]; then
