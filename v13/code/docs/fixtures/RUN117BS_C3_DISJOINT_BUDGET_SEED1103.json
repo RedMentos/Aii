@@ -1,0 +1,82 @@
+{
+  "schema": "v13.run117bs.c3_disjoint_budget_seed1103.v1",
+  "seed": 1103,
+  "arms": [
+    "TYPED_JEF",
+    "RAW_SOURCE"
+  ],
+  "fixtures": [
+    {
+      "id": "Aurora",
+      "prior": "Project Aurora. Budget 93 euros. Deadline 9 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Aurora. Apply the earlier project rules. Option A costs 80 euros, takes 8 days, and is local. Option B costs 62 euros, takes 6 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 13
+      }
+    },
+    {
+      "id": "Boreal",
+      "prior": "Project Boreal. Budget 74 euros. Deadline 5 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Boreal. Apply the earlier project rules. Option A costs 70 euros, takes 4 days, and is local. Option B costs 55 euros, takes 4 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 19
+      }
+    },
+    {
+      "id": "Cirrus",
+      "prior": "Project Cirrus. Budget 28 euros. Deadline 3 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Cirrus. Apply the earlier project rules. Option A costs 30 euros, takes 2 days, and is local. Option B costs 25 euros, takes 5 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Delta",
+      "prior": "Project Delta. No budget has been supplied. Deadline 6 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Delta. Apply the earlier project rules. Option A costs 19 euros, takes 2 days, and is local. Option B costs 17 euros, takes 3 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "UNKNOWN",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Eos",
+      "prior": "Project Eos. Spending limit: 88 euros. Finish within 6 days. Must remain local: yes. This policy is binding.",
+      "current": "Project Eos. Decide using the saved policy. Option A: cost 58 euros, duration 5 days, local true. Option B: cost 44 euros, duration 4 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 30
+      }
+    },
+    {
+      "id": "Fjord",
+      "prior": "Project Fjord. Spending limit: 66 euros. Finish within 4 days. Must remain local: no. This policy is binding.",
+      "current": "Project Fjord. Decide using the saved policy. Option A: cost 61 euros, duration 5 days, local true. Option B: cost 47 euros, duration 3 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 19
+      }
+    },
+    {
+      "id": "Gaia",
+      "prior": "Project Gaia. Spending limit: 34 euros. Finish within 2 days. Must remain local: yes. This policy is binding.",
+      "current": "Project Gaia. Decide using the saved policy. Option A: cost 33 euros, duration 3 days, local true. Option B: cost 29 euros, duration 2 days, local false. Pick the cheapest eligible option and give remaining euros.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Helix",
+      "prior": "Project Helix. No budget has been supplied. Deadline 5 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Helix. Apply the earlier project rules. Option A costs 20 euros, takes 3 days, and is local. Option B costs 17 euros, takes 2 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {
+        "choice": "UNKNOWN",
+        "remaining": null
+      }
+    }
+  ]
+}
