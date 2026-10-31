@@ -35,4 +35,17 @@ jobs:
       - name: Public diff privacy scan
         run: |
           git fetch --no-tags --depth=1 origin 9d3bffd28e010b472fbc4e5d423bdca217f43e6a
-          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9d3bffd28e010b472fbc4e5d423bdca217f43e6a --head HEAD
+          python3 - <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "v13/code")
+          from scripts.public_repo_privacy_scan import scan
+          base = "9d3bffd28e010b472fbc4e5d423bdca217f43e6a"
+          diff = subprocess.check_output(
+              ["git", "diff", "--no-color", "-U0", "--text", base, "HEAD"],
+              text=True)
+          hits = scan(diff)
+          for hit in hits:
+              print(hit)
+          print("privacy scan exact-parent..HEAD:", "CLEAN" if not hits else "RED")
+          sys.exit(1 if hits else 0)
+          PY
