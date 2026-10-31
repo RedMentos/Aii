@@ -15,6 +15,7 @@ import time
 from v13.common import atomic_write, dumps
 from v13.config import initialize, save_config
 from v13.runtime import Runtime
+from v13.runners import LlamaRunner
 from v13.store import audit_closed
 from v13.b1b2_topic_partition_candidate import TopicPartitionOfferConsumer
 from scripts.run52_b1b2_cross_turn_native import load_fixture, FIXTURE_SHA256, OVERRIDES, ROLES
@@ -26,13 +27,29 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+class ObservedBody:
+    def __init__(self, native, captures, key):
+        self.native=native
+        self.captures=captures
+        self.key=key
+
+    @property
+    def last_metrics(self):
+        return self.native.last_metrics
+
+    def generate(self, messages, *args, **kwargs):
+        self.captures[self.key] = {"messages": messages,
+                                   "messages_sha256": sha(dumps(messages).encode())}
+        return self.native.generate(messages, *args, **kwargs)
+
+
 def run_row(home, installed, fixtures):
     initialize(home)
     save_config(home, CONFIG | OVERRIDES)
     installed_links(home, installed)
     r = Runtime(home)
     row = {"schema": "v13.run54.b1b2_topic_native_row.v1",
-           "status": "ERROR", "offers": [], "events": {},
+           "status": "ERROR", "offers": [], "events": {}, "captures": {},
            "negative_gates": NEGATIVE, "off_control": None,
            "ambiguous_control": None, "replay_control": None,
            "process_releases": [], "native_process_count": 0,
@@ -72,10 +89,19 @@ def run_row(home, installed, fixtures):
         row["pre_native_packet_count"] = r.store.one(
             "SELECT COUNT(*) AS n FROM packets WHERE kind IN ('QueryPacket','OfferPacket')")["n"]
         row["controls_no_packets"] = row["pre_native_packet_count"] == before
+        original_get = r.pool.get
+        current_key = [None]
+        def get(role):
+            real = original_get(role)
+            if not isinstance(real, LlamaRunner) or real.purpose != 'generate':
+                raise RuntimeError('RUN54_NOT_REAL_LLAMA_RUNNER')
+            return ObservedBody(real, row['captures'], current_key[0])
+        r.pool.get = get
         for role in ROLES:
             for project, phase in sequence:
                 name = project+"_"+phase
                 event = event_map[name]
+                current_key[0] = role+":"+name
                 result = consumer.guarded_offer(
                     role, event, 0, time.monotonic()+120,
                     operator_opt_in=True)
@@ -92,6 +118,7 @@ def run_row(home, installed, fixtures):
                         raise ValueError("RUN54_MISSING_QUERY")
                     entry["query"] = json.loads(qrow["payload"])
                     entry["offer"] = offer
+                entry["capture_key"] = current_key[0]
                 row["offers"].append(entry)
                 r.pool.unload()
         row["replay_control"] = consumer.guarded_offer(
