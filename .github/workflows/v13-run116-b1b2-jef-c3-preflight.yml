@@ -1,0 +1,108 @@
+name: V13 Run116 seed1019 B1B2 JEF C3 source-only preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run116-b1b2-jef-c3-native-pilot-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run116-b1b2-jef-c3-preflight.yml
+      - v13/code/scripts/run116_b1b2_jef_c3_native.py
+      - v13/code/tests/test_run116_b1b2_jef_c3_native.py
+      - v13/code/docs/fixtures/RUN116_B1B2_JEF_C3_SEED1019.json
+permissions:
+  contents: read
+jobs:
+  source-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen six-project Store preflight and source ZIP integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run116-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run116-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run116-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run116_b1b2_jef_c3_native.py -v) > "$e/TEST_RAW.log" 2>&1
+          test_rc=$?
+          "$py" -m compileall -q v13/code/scripts/run116_b1b2_jef_c3_native.py v13/code/tests/test_run116_b1b2_jef_c3_native.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run116-Preflight.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run116-Preflight.zip'
+          fixture=Path('v13/code/docs/fixtures/RUN116_B1B2_JEF_C3_SEED1019.json')
+          assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='e31e2d68331cc4280e161b2dbdbd022f493325ca234f050cda06065fa6775a69'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              for name,digest in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest,name
+              for name in ('scripts/run116_b1b2_jef_c3_native.py',
+                           'tests/test_run116_b1b2_jef_c3_native.py',
+                           'docs/fixtures/RUN116_B1B2_JEF_C3_SEED1019.json',
+                           'v13/b1b2_jef_c3_source_role_bridge_candidate.py'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'fixture_sha256':hashlib.sha256(fixture.read_bytes()).hexdigest(),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'source_files':len(manifest['files']),'native_executed':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125;echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b8c1f059f4ecb3fb1f1c2533a2c5310e75aea8de --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check b8c1f059f4ecb3fb1f1c2533a2c5310e75aea8de HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          for item in "TEST:$test_rc" "COMPILE:$compile_rc" "PACK:$pack_rc" "ZIP:$zip_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${item#*:}" > "$e/${item%%:*}_EXIT.txt"
+          done
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('TEST','COMPILE','PACK','ZIP','PRIVACY','DIFF')
+          r={'schema':'v13.run116.seed1019.software_preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_b1_executed':False,'native_b2_executed':False,
+             'native_c3_executed':False,'native_jef_executed':False,
+             'redmi_measured':False,'step2_promoted':False,
+             'b3_promoted':False,'body_jepa_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 24 "$e/TEST_RAW.log"
+          for rc in "$test_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original GREEN or RED raw source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run116-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run116-preflight/
+          if-no-files-found: warn
+          retention-days: 90
