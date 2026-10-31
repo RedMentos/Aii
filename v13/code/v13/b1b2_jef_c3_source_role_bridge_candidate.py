@@ -111,6 +111,17 @@ def build_b1b2_jef_c3_source_role_bridge(
         if payload.get("sources") != before["sources"]:
             return _deny("TYPED_JEF_SOURCE_DATA_RED",
                          orphaned_shadow_plan_packet_id=packet_id)
+        # The formatter's returned metadata is not interchangeable with
+        # its user-role JSON. Refuse a divergent embedded candidate or an
+        # authority/provenance change instead of forwarding it to C3.
+        if (payload.get("typed_jef_candidate") != typed["typed_jef_candidate"]
+                or payload.get("typed_jef_source_ref_sha256") !=
+                typed["typed_jef_source_ref_sha256"]
+                or payload.get("typed_candidate_authority") != 0
+                or payload.get("typed_candidate_origin") !=
+                "DETERMINISTIC_EXACT_USER_SOURCE_RECIPE_NOT_MODEL"):
+            return _deny("TYPED_JEF_PAYLOAD_BINDING_RED",
+                         orphaned_shadow_plan_packet_id=packet_id)
         payload.update(
             schema="v13.b1b2_jef_c3_user_data.v1",
             body_observations=observations,
@@ -129,7 +140,13 @@ def build_b1b2_jef_c3_source_role_bridge(
         jef_after = propose(runtime.store, refs[0], refs[1])
         if (after != before
                 or body_after != body
+                or jef_after.get("status") != "SHADOW_NO_AUTHORITY"
                 or jef_after.get("reason") != "EXACT_USER_SOURCE_RECIPE_SHADOW"
+                or jef_after.get("authority") != 0
+                or jef_after.get("model_called") is not False
+                or jef_after.get("native_calls") != 0
+                or jef_after.get("store_writes") != 0
+                or jef_after.get("tool_dispatches") != 0
                 or jef_after.get("candidate") != typed["typed_jef_candidate"]
                 or jef_after.get("source_ref_sha256") !=
                 typed["typed_jef_source_ref_sha256"]
