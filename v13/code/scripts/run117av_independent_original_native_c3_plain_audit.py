@@ -14,8 +14,8 @@ import stat
 from pathlib import Path
 import zipfile
 
-OUTER_SHA = "__PIN_AFTER_TERMINAL_OUTER_SHA__"
-SOURCE_SHA = "__PIN_AFTER_TERMINAL_SOURCE_SHA__"
+OUTER_SHA = "b7ec8262405d987273b0ec4396f98df750510f306405efe72679b6f775d65ca8"
+SOURCE_SHA = "d26a0da4e50c721973119d6ea42d3d9e7b6682e95c8a8a483f15235ceede6ad7"
 HEAD = "10b6437b1351b5eb96bae39e28d973a8b9e53f97"
 FIXTURE_SHA = "7c71eb2bef7012424adb8903851a286d98d95d17663fabdc51537d3e44d44432"
 C3_SHA = "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
@@ -64,7 +64,7 @@ def zip_check(raw, *, source=False):
         names = z.namelist()
         manifest = "V13-Phone/WORKSPACE_FILES.json" if source else "SHA256SUMS"
         if (len(names) != len(set(names)) or manifest not in names
-                or (len(names)<2300 if source else len(names)!=30)
+                or (len(names)!=2339 if source else len(names)!=30)
                 or sum(i.file_size for i in z.infolist()) > 180*1024*1024):
             fail("ZIP_MEMBERS")
         for i in z.infolist():
@@ -80,7 +80,7 @@ def zip_check(raw, *, source=False):
             if m.get("schema_version") != 1 or type(m.get("files")) is not dict:
                 fail("SOURCE_MANIFEST")
             expected = {"V13-Phone/"+p for p in m["files"]} | {manifest}
-            if set(names) != expected or len(m["files"])<2299:
+            if set(names) != expected or len(m["files"])!=2338:
                 fail("SOURCE_COVERAGE")
             for p,h in m["files"].items():
                 if digest(z.read("V13-Phone/"+p)) != h:
