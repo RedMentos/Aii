@@ -1,0 +1,1 @@
+Audit exact frozen historical source positive, current source fail-closed, extracted Run104 smoke; preserve Run105 RED.
