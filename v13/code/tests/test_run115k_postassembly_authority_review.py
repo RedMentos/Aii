@@ -15,9 +15,12 @@ from v13 import b1b2_jef_c3_source_role_bridge_candidate as bridge
 
 class PostAssemblyAuthorityReview(unittest.TestCase):
     def setUp(self):
-        self.runtime = SimpleNamespace(store=object())
+        self.runtime = SimpleNamespace(
+            store=SimpleNamespace(generation_id="gen-1"))
         self.prior = {"source_ref": {"source_id": "prior"}}
-        self.current = {"source_ref": {"source_id": "current"}}
+        self.current = {"source_ref": {"source_id": "current"},
+                        "event_id": "event-current",
+                        "brain_generation_id": "gen-1"}
         self.ids = {"B1_DETAIL": "offer-b1", "B2_GIST": "offer-b2"}
         self.sources = [
             {"lane": "B2_PRIOR_USER_SOURCE",
@@ -78,6 +81,16 @@ class PostAssemblyAuthorityReview(unittest.TestCase):
             "candidate": self.candidate, "source_ref_sha256": self.hashes,
         }
 
+        plan = {
+            "packet_id": "plan-1", "event_id": "event-current",
+            "brain_generation_id": "gen-1", "producer_component": "N7_CONTEXT_OS",
+            "role": "C3_LANGUAGE", "mode": "SHADOW", "applied": False,
+            "provenance": [self.prior["source_ref"], self.current["source_ref"]],
+        }
+        self.runtime.store.one = lambda sql, args: (
+            {"event_id": "event-current", "payload": json.dumps(plan)}
+            if args == ("plan-1",) else None)
+
     def build(self, *, typed=None, jef=None):
         with patch.object(bridge, "controller",
                           return_value=SimpleNamespace(
@@ -136,6 +149,10 @@ class PostAssemblyAuthorityReview(unittest.TestCase):
                 payload[key] = bad
                 typed["messages"][1]["content"] = json.dumps(payload)
                 self.assert_refused(self.build(typed=typed))
+
+    def test_missing_persisted_context_plan_refuses(self):
+        self.runtime.store.one = lambda *args: None
+        self.assert_refused(self.build())
 
     def test_postassembly_jef_authority_or_side_effect_drift_fails_closed(self):
         for key, bad in (
