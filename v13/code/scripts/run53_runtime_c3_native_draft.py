@@ -15,6 +15,7 @@ import time
 from v13.common import atomic_write, dumps
 from v13.config import initialize, save_config
 from v13.runtime import Runtime
+from v13.runners import LlamaRunner
 from v13.store import audit_closed
 from v13.runtime_c3_atomic_draft_candidate import stage_runtime_c3_draft
 from scripts.run51_f1f5_second_attempt_native import load_fixture, FIXTURE_SHA256
@@ -79,6 +80,8 @@ def run_row(home, installed, fixture):
             if role != "C3_LANGUAGE":
                 raise RuntimeError("RUN53_WRONG_NATIVE_ROLE")
             real = original_get(role)
+            if not isinstance(real, LlamaRunner) or real.purpose != 'generate':
+                raise RuntimeError('RUN53_NOT_REAL_NATIVE_LLAMA_RUNNER')
             native.append(real)
             return ObservedC3(real, row)
         r.pool.get = get
@@ -138,6 +141,8 @@ def run_row(home, installed, fixture):
             x.get("process_reaped") is True for x in row["process_releases"])
         try:
             row["closed_store_audit"] = audit_closed(home)
+            if not row["closed_store_audit"]["ok"]:
+                row["status"] = "STRUCTURAL_RED"
         except Exception as exc:
             row["closed_store_audit_error"] = type(exc).__name__
             row["status"] = "STRUCTURAL_RED"
