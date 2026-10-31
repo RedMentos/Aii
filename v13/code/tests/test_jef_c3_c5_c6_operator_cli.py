@@ -112,6 +112,10 @@ class JefC3C5C6OperatorCliTests(unittest.TestCase):
             "extra": json.dumps(dict(data, oracle_action="A")),
             "type": json.dumps(dict(data, current=123)),
             "project": json.dumps(dict(data, project="../unsafe")),
+            "leading_digit_project": json.dumps(dict(data, project="1Bad")),
+            "long_domain": json.dumps(dict(data, domain="A" * 41)),
+            "oversized_source": json.dumps(dict(
+                data, policy_source=data["policy_source"] + "x" * 2048)),
             "identity": json.dumps(dict(data, policy_source="wrong")),
             "control": json.dumps(dict(data, current=data["current"]+"\n")),
             "oversize": "x" * 16385,
