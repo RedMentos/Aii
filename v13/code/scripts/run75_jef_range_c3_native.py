@@ -105,6 +105,7 @@ def run(home, out):
                 "project_sha256": f.sha(project.encode()),
                 "expected": row["expected"],
                 "typed_jef_action": env["typed_jef_action"],
+                "input_messages": messages,
                 "input_sha256": f.sha(dumps(messages).encode()),
                 "source_sha256": {
                     k: f.sha(row[k].encode("utf-8"))
