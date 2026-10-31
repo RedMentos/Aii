@@ -190,20 +190,20 @@ def select(runtime,event,role,generator,*,operator_opt_in=False,
         status=("SHADOW_ABSTAIN_RECORDED" if selected=="NONE"
                 else "SHADOW_SOURCE_ID_SELECTED" if selected==target
                 else "SHADOW_WRONG_SOURCE_ID_RECORDED")
-        packet=make_packet(KIND,role,event["event_id"],
-            runtime.store.generation_id,[event["source_ref"]],
+        packet=make_packet(
+            KIND,role,event["event_id"],runtime.store.generation_id,
+            [event["source_ref"]],
             role=role,model_revision=revision,
-            "source_ref":event["source_ref"],
-            "candidates":[{"span_id":key,**span}
-                          for key,span in candidates],
-            "selected_id":selected,"selected_span":chosen,
-            "selection_correct_shadow":selected==target,
-            "raw_output_sha256":sha256(raw.encode()).hexdigest(),
-            "raw_output_bytes":len(raw.encode()),
-            "model_metrics_reported_unverified":metrics,
-            "source_semantic_truth_authority":False,
-            "model_hypothesis_not_fact":True,
-            "delivery_authority":0,"learning_authority":0,
+            source_ref=event["source_ref"],
+            candidates=[{"span_id":key,**span} for key,span in candidates],
+            selected_id=selected,selected_span=chosen,
+            selection_correct_shadow=selected==target,
+            raw_output_sha256=sha256(raw.encode()).hexdigest(),
+            raw_output_bytes=len(raw.encode()),
+            model_metrics_reported_unverified=metrics,
+            source_semantic_truth_authority=False,
+            model_hypothesis_not_fact=True,
+            delivery_authority=0,learning_authority=0,
             output_committed=False,
         )
         runtime.store.add_packet(KIND,packet)
