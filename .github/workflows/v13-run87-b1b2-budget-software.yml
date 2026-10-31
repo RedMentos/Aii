@@ -1,0 +1,83 @@
+name: V13 Run87 disjoint B1B2 observer-budget seed877 software prereg preflight
+on:
+  push:
+    branches: [assistant/v13-run87-b1b2-budget-ablation-seed877-20261031-gpt6]
+    paths:
+      - '.github/workflows/v13-run87-b1b2-budget-software.yml'
+      - 'v13/code/scripts/jef_b1b2_budget_fixture_877.py'
+      - 'v13/code/tests/test_run87_b1b2_budget_fixture.py'
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify preregistered fixture, scorer, source and counterbalance (no native)
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run87-software"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          PYTHONPATH=v13/code timeout 4m python3 -m unittest \
+            tests.test_run87_b1b2_budget_fixture -v > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          PYTHONPATH=v13/code python3 - <<'PY' > "$e/FIXTURE_RAW.json" 2> "$e/FIXTURE_ERROR.log"
+          import json
+          from scripts import jef_b1b2_budget_fixture_877 as f
+          print(json.dumps({
+              "seed": f.SEED, "table_sha256": f.TABLE_SHA256,
+              "projects": [r["project"] for r in f.fixtures()],
+              "oracle": [r["action"] for r in f.fixtures()],
+              "arm_order": [r["arm_order"] for r in f.fixtures()],
+              "summary_cap_96": f.summary_cap(96),
+              "summary_cap_160": f.summary_cap(160),
+              "planned_native_calls": 48,
+              "native_calls_executed": 0,
+              "step2_promoted": False
+          }, indent=2, sort_keys=True))
+          PY
+          echo "$?" > "$e/FIXTURE_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/jef_b1b2_budget_fixture_877.py \
+            v13/code/tests/test_run87_b1b2_budget_fixture.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 7f5875e46036dd1278303dd74461a7bb6dfc24da --head HEAD --no-worktree \
+            > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 7f5875e46036dd1278303dd74461a7bb6dfc24da HEAD \
+            > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain software raw, including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run87-budget-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run87-software/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all prereg software checks
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run87-software"
+          for s in TEST FIXTURE COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || {
+              tail -n 80 "$e/TEST_RAW.log" 2>/dev/null || true
+              tail -n 40 "$e/FIXTURE_ERROR.log" 2>/dev/null || true
+              exit 1
+            }
+          done
+          echo RUN87_SOFTWARE_ONLY_NATIVE_NOT_EXECUTED
