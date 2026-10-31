@@ -17,7 +17,9 @@ from scripts.run77_b1b2_context_verify import SCHEMA as ORIGINAL_SCHEMA
 from v13.cognition import quote_span
 
 SCHEMA = "v13.run77.b2_quote_provenance_diagnostic.v1"
-MAX_POINTER_CONTEXT_CHARS = 200
+# Frozen Run52 OVERRIDES['offer_quote_context_chars']; inherited unchanged by Run77.
+# The initial 200-char diagnostic cap was too narrow for real seed797 replay.
+MAX_POINTER_CONTEXT_CHARS = 400
 
 
 def audit_report(report):
