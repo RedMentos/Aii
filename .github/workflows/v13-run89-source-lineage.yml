@@ -1,0 +1,59 @@
+name: V13 Run89 exact frozen source lineage diagnostic
+on:
+  push:
+    branches:
+      - assistant/v13-run89-exact-source-lineage-20261031-auto11
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forensic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      PYTHONPATH: ".:scripts"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test and compare frozen expected vs current source
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run89"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m compileall -q v13/code/scripts/fullsuite_source_lineage_diff.py v13/code/tests/test_fullsuite_source_lineage_diff.py
+          (cd v13/code && python3 -m unittest tests.test_fullsuite_source_lineage_diff -v) > "$e/TEST_RAW.log" 2>&1
+          echo 0 > "$e/TEST_EXIT.txt"
+          (cd v13/code && python3 scripts/fullsuite_source_lineage_diff.py --root . --out "$e/LINEAGE_DIFF.json")
+          python3 - "$e/LINEAGE_DIFF.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['forensic_only'] is True and r['promotion_authority'] is False
+          assert set(r['views'])=={'native_integrated_frozen_chain','handoff_rebased_baseline','handoff_rebased_candidate'}
+          assert all(v['mismatch_count']==sum(not x['byte_equal'] for x in v['files'].values())
+                     for v in r['views'].values())
+          assert not all(v['exact'] for v in r['views'].values()),'Unexpected exact all-views; investigate before claims'
+          print('READ_ONLY_LINEAGE_DIFF', {k:v['mismatch_count'] for k,v in r['views'].items()})
+          PY
+          echo 0 > "$e/LINEAGE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 273365e3be791df2a93b1a3f8f326ba0c79df6d0 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 273365e3be791df2a93b1a3f8f326ba0c79df6d0 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/TEST_RAW.log"
+          cat "$e/LINEAGE_DIFF.json"
+      - name: Upload closed original diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run89-lineage-${{ github.sha }}
+          path: ${{ runner.temp }}/run89/
+          if-no-files-found: error
+          retention-days: 90
