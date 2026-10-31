@@ -1,0 +1,14 @@
+# Run117AN independent original artifact audit — verified 2026-10-31 UTC
+
+Review-only PR #1520, branch `assistant/v13-run117an-independent-preflight-audit-20261031-gpt6`, parent native source `5edeeffe9689ac32faabf0ff3bff7572e579c918`. Preregistered at `3931bce72f8d5676466f060a7ef9944136c0ba3b` before implementing the stdlib-only auditor and nine adversarial tests.
+
+**Independent Actions:** run `41240080874`, job `124651975836`, terminal SUCCESS, source HEAD `c00c706541f8270f4c23ed2b924be5b69596c862`, **9/9** tests, all ten stage exits zero (original ZIP downloads, three audits, test, compile, privacy, diff). Audit raw ZIP ID `13057476147` SHA256 `b2b7f1740f57f13e710d3e12deb59869be4d48147a24cf565785acfa55aa6499`, independently downloaded and verified ZIP CRC, 26/26 SHA256SUMS and full member coverage. No native inference in this audit.
+
+**Three original ZIPs independently verified:**
+- Run117AL software prewarm: original ID `13055904791`, SHA256 `859e8cb57c21f9fe6532086a25e9a0e952e01339862bcce9911ed4e05907fb9d`, ZIP CRC PASS, **15/15** inner hashes, original HEAD `7a9b18c8cbf46a48411beac3167a31d875a7c723`, **10/10** real SQLite tests, six stage exits zero; `INDEPENDENT_SOFTWARE_GREEN_VERIFIED`.
+- Run117AM fresh seed1073 software preflight: original ID `13056872547`, SHA256 `7b6e96a3ec2f6c7e35b02724cb727e28010be28ec8d96988bf1eb6b2a1d78a5f`, ZIP CRC PASS, **18/18** inner hashes, original HEAD `3827cbbe850d0114a8aa2fcc1380720d0a849bac`, **17/17** tests, eight stage exits zero; `INDEPENDENT_SOFTWARE_GREEN_VERIFIED`.
+- Sibling Run117AJ unfiltered current-chain full suite: original ID `13055762789`, SHA256 `bbf62ce125b2df42760252b5491b10ee817065623b13f6d0cc818471a297ad48`, ZIP CRC PASS, **30/30** inner hashes, original HEAD `bfbae24944a7d1fa5398c6cb0ed87f5d5ee65e19`, **5152 tests, 5 failures, 68 errors, 28 skips**, `FULL_EXIT=1`, other 13 stage exits zero; `INDEPENDENT_FULLSUITE_RED_PRESERVED`. This RED is **not** waived. Many tracebacks stem from exact frozen source/candidate pin mismatches; others include missing original artifacts and fake-C3 structural RED. Nested extracted-source test suites duplicate some traceback blocks; 5/68 is the original top-level test summary, not a count of unique root causes.
+
+**Safety:** no changes to frozen Run117AH/AM model/seed/source cohorts; original Run117AH native STRUCTURAL_RED remains. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, `jepa_weight=0`, no output/tools/learning/Redmi or whole-system promotion.
+
+**Next:** native Run117AM Actions `41239863119`, exact source `5edeeffe9689ac32faabf0ff3bff7572e579c918`, still pending at this checkpoint. After terminal, independently download and verify original native ZIP and failed attempts, then pursue next Canon package. Remaining platform budget UNKNOWN.
