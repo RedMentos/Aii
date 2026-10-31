@@ -98,8 +98,7 @@ def _trusted_source_id(runtime, event, role):
     return result["packet_id"]
 
 
-def _prompts(runtime, prior, current, row):
-    b2 = _trusted_source_id(runtime, prior, "B2_GIST")
+def _prompts(runtime, prior, current, row, b2):
     b1 = _trusted_source_id(runtime, current, "B1_DETAIL")
     bridge = build_source_id_c3_bridge(
         runtime, prior, current, {"B2_GIST": b2, "B1_DETAIL": b1},
@@ -208,11 +207,9 @@ def run(fixture_path, installed, work, out):
             save()
             try:
                 prior = runtime.store.event(runtime.session, row["prior"])
+                b2 = _trusted_source_id(runtime, prior, "B2_GIST")
                 current = runtime.store.event(runtime.session, row["current"])
-                # Prior B2 selection must occur before current authoritative event:
-                # create a fresh two-event Store and select B2 before appending current.
-                # This path is deliberately checked by the software preflight.
-                prompts, bridge = _prompts(runtime, prior, current, row)
+                prompts, bridge = _prompts(runtime, prior, current, row, b2)
                 report["deterministic_source_selectors"] += 2
                 entry["source_refs"] = bridge["source_refs"]
                 entry["messages_sha256"] = bridge["messages_sha256"]
