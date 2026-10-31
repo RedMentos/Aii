@@ -88,8 +88,8 @@ def select(runtime, current_event, original_context, *, operator_opt_in=False):
         # Bind the full message and durable causal sequence independently.
         prior_bound = _bound_user_event(
             store, offer_row["event_id"], runtime.session)
-        if (prior_bound["generation"] != current["generation"]
-                or prior_bound["message_id"] >= current["message_id"]
+        if (prior_bound["generation"] != bound["generation"]
+                or prior_bound["message_id"] >= bound["message_id"]
                 or prior_event.get("source_ref") != prior_bound["source_ref"]):
             return _result("PRIOR_USER_CAUSAL_BINDING_RED")
         prior_ref = prior_bound["source_ref"]
