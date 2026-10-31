@@ -220,7 +220,20 @@ def _report_check(report, rows):
         if (case.get("closed_store_ok") is not True
                 or case.get("no_live_output") is not True):
             raise ValueError("NATIVE_STORE_OR_OUTPUT_RED")
-        for offer in case.get("offers", []):
+        offers = case.get("offers", [])
+        if report["status"] in (*GOOD, BODY_RED):
+            expected = (("B2_GIST", "prior"), ("B1_DETAIL", "current"),
+                        ("B2_GIST", "current"))
+            if (type(offers) is not list or len(offers) != 3
+                    or [(o.get("role"), o.get("phase")) for o in offers] !=
+                    list(expected)
+                    or any(o.get("status") != "RECORDED"
+                           or o.get("source_ref") !=
+                           case["prior_source_ref" if phase == "prior"
+                                else "current_source_ref"]
+                           for o, (_, phase) in zip(offers, expected))):
+                raise ValueError("BODY_OFFER_RECEIPT_RED")
+        for offer in offers:
             if offer.get("status") == "RECORDED":
                 role = offer["role"]
                 if (role not in MODEL_NAMES
