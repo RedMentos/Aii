@@ -1,4 +1,4 @@
-name: V13 Run117AL pinned native B1/B2 source-ID vs baseline quote seed1071
+name: V13 Run117AL prewarmed pinned native B1/B2 source-ID seed1071
 on:
   push:
     branches:
@@ -103,8 +103,9 @@ jobs:
           echo "$zip_rc" > "$e/ZIP_EXIT.txt"
           if test "$zip_rc" -eq 0; then
             (cd "$source_root" && env PYTHONPATH=.:scripts:tests "$py" -m unittest -v \
-              tests.test_run117al_body_source_id_native_runner \
-              tests.test_run117al_body_source_id_candidate) > "$e/PREFLIGHT_RAW.log" 2>&1
+              tests.test_run117al_prewarmed_body_source_id_candidate \
+              tests.test_run117ah_body_source_id_candidate \
+              tests.test_run117ai_event_source_binding_candidate) > "$e/PREFLIGHT_RAW.log" 2>&1
             preflight_rc=$?
           else
             preflight_rc=125;echo ZIP_RED > "$e/PREFLIGHT_RAW.log"
@@ -168,7 +169,7 @@ jobs:
           assert r['status'] in ('STRUCTURAL_RED','NATIVE_COMPLETE_BODY_ID_DIAGNOSTIC')
           assert len(r['rows'])<=6 and 0<=r['native_body_calls']<=30
           for row in r['rows']:
-              assert row['id'] in ('Auric','Beryl','Cobalt','Daphne','Elder','Fable')
+              assert row['id'] in ('Helion','Indigo','Juniper','Kestrel','Lumen','Meridian')
               assert len(row['offers'])<=3 and len(row['id_selections'])<=2
               assert row['no_live_output'] is True and row['closed_store_ok'] is True
               for item in row['offers']+row['id_selections']:
