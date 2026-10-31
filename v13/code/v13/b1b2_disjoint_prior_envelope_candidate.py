@@ -55,7 +55,7 @@ def stage_disjoint_prior_envelope(runtime, prior_b1, prior_b2, current, *,
                 or _latest_authoritative_user(store, session) != ids[2]):
             return _result("TEMPORAL_OR_STALE_USER_RED", runner_called=False)
         scopes = [_project_scope(b["text"]) for b in bound]
-        if any(len(s) != 1 for s in scopes) or scopes[0] != scopes[1] != scopes[2]:
+        if any(len(s) != 1 for s in scopes) or not (scopes[0] == scopes[1] == scopes[2]):
             return _result("TOPIC_SCOPE_RED", runner_called=False)
         if (len({b["source_ref"]["source_id"] for b in bound}) != 3
                 or bound[0]["source_ref"]["sha256"]
