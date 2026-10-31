@@ -1,0 +1,9 @@
+# Run117AS — launch of frozen Run117AR native C3 source-only experiment
+
+2026-10-31 UTC. Review-only child branch from original Run117AR PR #1524 source HEAD `c085a8cdd9c0481c312780bc400eac28cfa6c6e7`, new workflow source commit `b21f15c15e2d0764144c3caa1baa274ec6912f1f`. Original Run117AR workflow and all source/fixture/model files unchanged. Isolated child workflow `.github/workflows/v13-run117as-c3-native-child.yml` uses identical execution body except workflow name, child branch trigger, and child sentinel path. No original owner branch modified.
+
+Pre-launch owner check: GitHub Actions in_progress=0, queued=0, waiting=0 at the immediately preceding query. Shared concurrency group `v13-native-c3-ag12-20261030` with cancel-in-progress=false. Native heavy execution serialized. Original Run117AR model-free preflight Actions 41241138153 terminal SUCCESS 17/17; original artifact 13057780723 SHA256 `9bb2a2171eb922ffcd2ca2b8c424fffafd0acc2bf03cf0993aaab1edfaf9e6c3` independently verified by owner.
+
+Frozen preregistered seed1077 fixture SHA256 `7f3c226f2bb2dee4616cf4ca5a83a59773071e1104c487387a55212a9bc5c59f`, Git blob `f5eae3b077c9bd3b221fd9b4ff636ad9b1652ee2`; frozen runner blob `e55a59052e39843fcfa1e649c3de1e214bf36325`. Six cases, two arms NO_PRIOR and EXACT_SOURCE, 12 genuine C3 calls if all stages succeed; 0 native Body/JEF/C2. Raw failures and ZIP/manifest must be preserved even on RED.
+
+Do not infer native success from trigger. After terminal, read exact Actions run and original ZIP, verify HEAD, SHA256SUMS/CRC, manifest, model and source receipts, raw prompts, process reaping and paired frozen scorer; independently audit original result. Do not overwrite owner. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; Redmi unmeasured; no tools, delivery, learning or whole-system completion. Current execution budget UNKNOWN.
