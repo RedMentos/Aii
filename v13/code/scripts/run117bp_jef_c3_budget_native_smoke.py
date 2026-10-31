@@ -13,10 +13,12 @@ from pathlib import Path
 import time
 
 from v13.agi.jef_c3_budget_formatter_shadow_run117bo import format_shadow
-from v13.common import atomic_write, dumps
+from v13.common import atomic_write, dumps, file_hash
 from v13.config import DEFAULTS, initialize, save_config
 from v13.runtime import Runtime
-from tests.integration_step2_utility import installed_artifacts, installed_links
+from tests.integration_step2_utility import installed_links
+from v13.models import ModelManager
+from scripts.run115j_typed_jef_role_native import C3_SHA, C3_REV, RUNNER_SHA
 
 FIXTURE_SHA = '8aa69cc86d2e2067e809d4f703ddbff3fc575ea111d7afd97a73012e0bda0e21'
 FIXTURE_IDS = ('Helios', 'Lyra', 'Orion', 'Cedar', 'Mistral', 'Nexus')
@@ -103,11 +105,22 @@ def run_row(home,installed,row):
     return item
 
 
+def pinned_c3(installed):
+    models=ModelManager(installed)
+    model_sha=file_hash(models.path_for('C3_LANGUAGE'))
+    runner_sha=file_hash(installed/'bin/llama-server')
+    revision=models.revision('C3_LANGUAGE')
+    if (model_sha!=C3_SHA or runner_sha!=RUNNER_SHA or revision!=C3_REV):
+        raise ValueError('PINNED_C3_MODEL_OR_RUNNER_RED')
+    return {'c3_model_sha256':model_sha,'c3_revision':revision,
+            'runner_sha256':runner_sha}
+
+
 def run(installed,out,fixture_path):
     f=fixture(fixture_path)
     if out.exists():raise FileExistsError('OUTPUT_EXISTS_RED')
     out.mkdir(parents=True)
-    binding=installed_artifacts(installed)
+    binding=pinned_c3(installed)
     report={'schema':'v13.run117bp.jef_c3_budget_native_smoke.v1',
             'evidence_class':'LINUX_NATIVE_C3_KNOWN_SEED401_REGRESSION_ONLY',
             'fixture_sha256':FIXTURE_SHA,'seed':401,'registered_cohort_reused':True,
@@ -125,7 +138,7 @@ def run(installed,out,fixture_path):
         atomic_write(out/'report.json',dumps(report))
         print(dumps({'id':row['id'],'status':item['status'],
                      'guard':(item['guard'] or {}).get('status')}),flush=True)
-    report['installed_binding_unchanged']=installed_artifacts(installed)==binding
+    report['installed_binding_unchanged']=pinned_c3(installed)==binding
     ok=(report['summary']['formatter_match']==6
         and report['summary']['native_final']==6
         and report['summary']['process_reaped']==6
