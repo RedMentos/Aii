@@ -117,6 +117,7 @@ def run_row(home,installed,row,index):
                     'native_metrics':None,'guard':None,'messages':None,
                     'source_rechecked':False,'score':{'valid_json':False,'exact':False},
                     'status':'ERROR'}
+            item['arms'].append(result)  # Preserve even a failed/partial native arm.
             start_release=len(pool.release_history)
             epoch=(store.db.total_changes,store.db.execute('PRAGMA data_version').fetchone()[0])
             def generate(messages,schema):
@@ -124,34 +125,47 @@ def run_row(home,installed,row,index):
                 result['prompt_sha256']=sha(dumps(messages).encode())
                 runner=pool.get('C3_LANGUAGE')
                 try:
-                    result['native_output']=''.join(runner.generate(
-                        messages,cancel_event,time.monotonic()+90,96,schema,seed=13))
-                    result['native_metrics']=dict(runner.last_metrics)
-                    result['native_final']=runner.last_metrics.get('status')=='FINAL'
-                    return result['native_output']
-                finally:pool.unload()
-            if arm=='TYPED_JEF':
-                result['guard']=format_shadow(store,session,prior,current,generate,
-                                              operator_opt_in=True,callback_opt_in=True)
-                result['source_rechecked']=result['guard'].get('source_rechecked') is True
-            else:
-                messages=[{'role':'system','content':RAW_SYSTEM},
-                          {'role':'user','content':dumps({
-                              'prior_exact':source_text[0],
-                              'current_exact':source_text[1],
-                              'source_ref_sha256':refs,
-                              'candidate_authority':0})}]
-                generate(messages,SCHEMA)
-                result['source_rechecked']=(
-                    (store.db.total_changes,store.db.execute('PRAGMA data_version').fetchone()[0])==epoch
-                    and [store.read_source(x) for x in (prior,current)]==source_text)
-            result['process_releases']=list(pool.release_history[start_release:])
-            result['process_reaped']=_reaped(result['process_releases'])
-            result['score']=score(result['native_output'],row['oracle'])
-            guard_ok=(arm=='RAW_SOURCE' or (result['guard'] or {}).get('status')=='FORMATTER_MATCH_SHADOW')
-            result['status']='RECORDED' if (result['native_final'] and result['process_reaped']
-                                           and result['source_rechecked'] and guard_ok) else 'STRUCTURAL_RED'
-            item['arms'].append(result)
+                    for chunk in runner.generate(
+                            messages,cancel_event,time.monotonic()+90,96,schema,seed=13):
+                        if type(chunk) is not str:
+                            raise TypeError('NATIVE_CHUNK_TYPE_RED')
+                        result['native_output'] += chunk  # Retain partial tokens on failure.
+                finally:
+                    try:
+                        result['native_metrics']=dict(runner.last_metrics)
+                        result['native_final']=runner.last_metrics.get('status')=='FINAL'
+                    finally:
+                        pool.unload()
+                return result['native_output']
+            completed=False
+            try:
+                if arm=='TYPED_JEF':
+                    result['guard']=format_shadow(store,session,prior,current,generate,
+                                                  operator_opt_in=True,callback_opt_in=True)
+                    result['source_rechecked']=result['guard'].get('source_rechecked') is True
+                else:
+                    messages=[{'role':'system','content':RAW_SYSTEM},
+                              {'role':'user','content':dumps({
+                                  'prior_exact':source_text[0],
+                                  'current_exact':source_text[1],
+                                  'source_ref_sha256':refs,
+                                  'candidate_authority':0})}]
+                    generate(messages,SCHEMA)
+                    result['source_rechecked']=(
+                        (store.db.total_changes,store.db.execute('PRAGMA data_version').fetchone()[0])==epoch
+                        and [store.read_source(x) for x in (prior,current)]==source_text)
+                completed=True
+            except (Exception,KeyboardInterrupt) as exc:
+                result['error_type']=type(exc).__name__
+                raise
+            finally:
+                result['process_releases']=list(pool.release_history[start_release:])
+                result['process_reaped']=_reaped(result['process_releases'])
+                result['score']=score(result['native_output'],row['oracle'])
+                guard_ok=(arm=='RAW_SOURCE' or (result['guard'] or {}).get('status')=='FORMATTER_MATCH_SHADOW')
+                result['status']='RECORDED' if (completed and result['native_final']
+                                               and result['process_reaped']
+                                               and result['source_rechecked'] and guard_ok) else 'STRUCTURAL_RED'
         item['status']='RECORDED' if len(item['arms'])==2 and all(x['status']=='RECORDED' for x in item['arms']) else 'STRUCTURAL_RED'
     except (Exception,KeyboardInterrupt) as exc:
         item['error_type']=type(exc).__name__
