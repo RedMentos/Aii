@@ -1,0 +1,9 @@
+# Run117AG — independent read-only audit of original Run117AF native seed1067 artifact
+
+Date 2026-10-31 UTC. Parent Run117AF PR #1512 source HEAD `f767480f5d79e8b8493f458e8579aefa78721ca5`, native Actions run `41235291421` in progress at preregistration. Auditor is separate from native runner and does not modify native source/fixture/registered scoring or run models.
+
+**Method**: After original workflow terminal, download its immutable ZIP, record GitHub artifact ID and outer SHA256 **before** auditor execution. Audit ZIP CRC, unique names, SHA256SUMS exact coverage, stage exit codes (including failed attempts), HEAD, fixture source and SHA, nested phone source ZIP manifest and source/fixture pins, original report schema/seed, 12 genuine C3 FINAL/reaped receipts if present, model metrics, exact prompt SHA and system/user source separation, JEF candidate computed independently from frozen exact policy/options grammar, typed candidate equal across arms, Body hypotheses explicitly fallible, no oracle leak, strict original `score` recomputation and paired counts, negative gates. Any missing/failed stage yields a RED classification while retaining evidence; no masking or rewriting.
+
+**Tests**: read-only audit of original ZIP plus independent adversarial mutation tests for SHA, duplicate names, nested manifest, swapped arm/order, output score forgery, source-ref forgery, wrong model and gate promotion. Keep audit source stdlib-only; never fetch or execute model weights. Persist original artifact and auditor raw logs/hashes privately where permitted.
+
+**Claim limits**: even complete structural audit proves only recorded Linux-native C3 execution with synthetic B1/B2 offers, deterministic software JEF and ContextOS SHADOW. No native Body/JEF/C2, no Redmi, no STEP2/B3/JEPA/age or whole-system promotion. Original native RED remains RED if incomplete; audit success does not change original verdict. Age0 RECORD_ONLY, `jepa_weight=0`.
