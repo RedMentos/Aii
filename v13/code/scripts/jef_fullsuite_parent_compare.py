@@ -16,9 +16,9 @@ import zipfile
 STAGES = ("PINS", "VENV", "DEPS", "TORCH", "TRANSFORMERS", "PEFT",
           "PIP_CHECK", "TORCH_IMPORT", "TRANSFORMERS_IMPORT",
           "PEFT_IMPORT", "COMPILE", "PRIVACY", "DIFF")
-MANIFEST_LINE = re.compile(r"([0-9a-f]{64})  \\./([A-Za-z0-9_.-]+)")
-SUMMARY = re.compile(r"(?m)^Ran (\\d+) tests in [0-9.]+s\\s*\\n\\s*FAILED \\(failures=(\\d+), errors=(\\d+), skipped=(\\d+)\\)")
-FAILURE = re.compile(r"(?m)^(ERROR|FAIL): ([^\\r\\n]+)$")
+MANIFEST_LINE = re.compile(r"([0-9a-f]{64})  \./([A-Za-z0-9_.-]+)")
+SUMMARY = re.compile(r"(?m)^Ran (\d+) tests in [0-9.]+s\s*\n\s*FAILED \(failures=(\d+), errors=(\d+), skipped=(\d+)\)")
+FAILURE = re.compile(r"(?m)^(ERROR|FAIL): ([^\r\n]+)$")
 MAX_ZIP = 32 * 1024 * 1024
 MAX_MEMBER = 16 * 1024 * 1024
 MAX_TOTAL = 64 * 1024 * 1024
