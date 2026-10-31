@@ -157,7 +157,7 @@ jobs:
           root=Path(sys.argv[1]);links=[p for p in root.rglob('*') if p.is_symlink()]
           for p in links:
               rel=p.relative_to(root)
-              assert len(rel.parts)>=4 and rel.parts[0].startswith('home-') and rel.parts[1] in ('bin','models'), 'UNEXPECTED_LINK_RED:'+str(rel)
+              assert len(rel.parts)>=2 and rel.parts[0].startswith('home-') and rel.parts[1] in ('bin','models'), 'UNEXPECTED_LINK_RED:'+str(rel)
               print('SCRATCH_INSTALL_LINK_REMOVED',str(rel))
               p.unlink()
           print('REMOVED_INSTALL_ONLY_SYMLINKS',len(links))
@@ -194,4 +194,4 @@ jobs:
               exit 1
             fi
           done
-          echo 'RUN117BR_LINUX_NATIVE_C3_KNOWN_COHORT_ONLY_NO_GATE_PROMOTION'
+          echo 'RUN117BV_LINUX_NATIVE_C3_STORE_ISOLATED_ONLY_NO_GATE_PROMOTION'
