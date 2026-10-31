@@ -1,0 +1,9 @@
+# Run77 B2 quote diagnostic compatibility addendum — preregistered before correction
+
+2026-10-31 UTC. Owner GPT-6, PR #1439. **Original diagnostic software remains GREEN 19/19** at HEAD `57d23ed246d5cf6de365804b5404ba2f059a08f7`, original ZIP SHA256 `eb18bca18c274a1a1190d0af6392c49b6b5321d0f0501248ba46fd5209c9b711`, private byte-identical backup. This original code had `MAX_POINTER_CONTEXT_CHARS=200`, a diagnostic compatibility limitation.
+
+After that preflight, the already-existing frozen Run77 forensic compact replay ZIP (Actions 41187084497, SHA256 `62ebd85d4c3defb40c15c03148d24aea3017687217f2299db561ac17ceba0e5c`) was independently downloaded and CRC checked. Its six B2 WITH_PRIOR current offers use `quote_context_chars=400`, exactly matching frozen `run52_b1b2_cross_turn_native.OVERRIDES['offer_quote_context_chars']=400` (Run52 source frozen before Run77). Therefore the initial diagnostic's 200-character maximum would reject the actual replay as `QUOTE_OR_POINTER_SHAPE_RED` even if quotes were correctly bound. This is a **diagnostic mismatch**, not a new native scientific result. Do not retroactively claim the initial auditor validated the replay.
+
+**Bounded correction plan before edit:** change only diagnostic pointer ceiling from 200 to the **frozen** 400, add a synthetic acceptance test for width 400 and refusal at 401 (also reject bool, negative and string). Preserve original tests and raw. Run a new independently logged software CI with 19+ tests, verify all hashes/CRC, back up privately. Then independently audit the compact replay report; expected source-provenance count is not a new semantic score and must not replace original Run77 frozen verifier RED or 0/6 strict B1/B2 semantic scores. Do not change fixture, scorer, model/runner, native report, Run77 verifier, output or learning gates.
+
+**Next command:** update diagnostic constant and width tests, re-trigger isolated workflow. Remaining budget UNKNOWN.
