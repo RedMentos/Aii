@@ -1,0 +1,8 @@
+# STEP2 harness vs canonical exit gate split — prereg 2026-10-31
+
+Owner GPT-6; independent review-only child of Run102 #1468 exact parent `9fc4a85930b22ddb0c0f306d48bcddfad4806842`. Original Run103 C3 native, Focal PR #1471 and phone PRs #1469/#1470 untouched. This addresses the explicit Blueprint §96/§100 and 2026-10-21 Z1 discrepancy: STEP2 structural/offer evidence must not be presented as complementary utility.
+
+## Fixed implementation plan
+Preserve the existing `STEP2` gate key and every original dependency for compatibility, but clarify its title as **STEP2_HARNESS**. Add a new explicit `STEP2_EXIT` gate depending on `STEP2`, requiring existing immutable measured Z2/Z2b/Z2c evidence and both exact `gate.canonical_gate_pass == true` verdicts from `bench-results/step2-z2b-seeds-20261021/z2b_result.json` and `bench-results/step2-z2c-b2-rule-20261021/z2c_result.json`. Both original files currently record **false**; preserve those bytes. Recognize `bench-results/` as an eligible real-run evidence prefix alongside existing `../bench-results/`, never tests. Add `STEP2_EXIT` as additional dependency to STEP6, G-B-TIMESCALE-DIVERGENCE-001 and G-FOCAL-CAPACITY-003 without removing existing deps.
+
+Predeclared expected outcome: `STEP2_EXIT=EVIDENCE_NOT_PASSING`, no false GREEN or whole-system promotion. Existing `STEP2` key remains queryable; all graph nodes acyclic; real evidence paths must exist, unit tests must not satisfy real_data, verdict failure must cite the original false values. No production Runtime/learning changes. Run focused graph tests + existing `test_register_gates.py`, privacy/diff/compile, preserve raw receipts and private backup. A passing software graph test is not a native utility gate.
