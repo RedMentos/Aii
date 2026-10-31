@@ -176,6 +176,59 @@ def _c6_preflight(runtime, event, offers, ids, meta, staged):
         return _result("C6_STORE_OR_BINDING_RED")
 
 
+
+def _quarantine_staged(runtime, event, staged):
+    """Preserve original evidence; retire only exact same-event DRAFT statuses."""
+    flags = {"quarantine_complete": False,
+             "quarantine_message_interrupted": False,
+             "quarantine_action_isolated": False}
+    try:
+        store = runtime.store
+        with store.tx() as db:
+            row = store.one(
+                "SELECT session_id,event_id,role,status FROM messages "
+                "WHERE id=?", (staged["draft_message_id"],))
+            action = store.one(
+                "SELECT event_id,kind,status FROM actions WHERE id=?",
+                (staged["c5_action_id"],))
+            if (row is None or action is None
+                    or row["session_id"] != runtime.session
+                    or row["event_id"] != event["event_id"]
+                    or row["role"] != "assistant"
+                    or action["event_id"] != event["event_id"]
+                    or action["kind"] != "TEXT_REPORT"):
+                return flags
+            if row["status"] == "DRAFT":
+                db.execute(
+                    "UPDATE messages SET status='INTERRUPTED' "
+                    "WHERE id=? AND status='DRAFT'",
+                    (staged["draft_message_id"],))
+                flags["quarantine_message_interrupted"] = True
+            elif row["status"] == "INTERRUPTED":
+                flags["quarantine_message_interrupted"] = True
+            if action["status"] == "SHADOW_DRAFT":
+                db.execute(
+                    "UPDATE actions SET status='SHADOW_QUARANTINED' "
+                    "WHERE id=? AND status='SHADOW_DRAFT'",
+                    (staged["c5_action_id"],))
+                flags["quarantine_action_isolated"] = True
+            elif action["status"] == "SHADOW_QUARANTINED":
+                flags["quarantine_action_isolated"] = True
+            flags["quarantine_complete"] = (
+                flags["quarantine_message_interrupted"]
+                and flags["quarantine_action_isolated"])
+        return flags
+    except Exception:
+        return {"quarantine_complete": False,
+                "quarantine_message_interrupted": False,
+                "quarantine_action_isolated": False}
+
+
+def _poststage_red(status, runtime, event, staged, **extra):
+    return _result(status, callback_invoked=True,
+                   shadow_draft_may_exist=True,
+                   **_quarantine_staged(runtime, event, staged), **extra)
+
 def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
              operator_opt_in=False, callback_opt_in=False,
              approval_receipt=None):
@@ -268,25 +321,24 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
     try:
         if not _still_current(runtime, event, offer_packet_ids, memory_ids,
                               meta):
-            return _result("SOURCE_CHANGED_AFTER_DRAFT",
-                           callback_invoked=True, shadow_draft_may_exist=True)
+            return _poststage_red("SOURCE_CHANGED_AFTER_DRAFT",
+                                  runtime, event, staged)
     except Exception:
-        return _result("POSTSTAGE_SOURCE_INTEGRITY_RED",
-                       callback_invoked=True, shadow_draft_may_exist=True)
+        return _poststage_red("POSTSTAGE_SOURCE_INTEGRITY_RED",
+                              runtime, event, staged)
     c6 = _c6_preflight(runtime, event, offer_packet_ids, memory_ids,
                        meta, staged)
     if c6.get("status") != "C6_DRAFT_INTEGRITY_SHADOW":
-        return _result("C6_DRAFT_PREFLIGHT_RED", callback_invoked=True,
-                       component_status=c6.get("status"),
-                       shadow_draft_may_exist=True)
+        return _poststage_red("C6_DRAFT_PREFLIGHT_RED", runtime,
+                              event, staged, component_status=c6.get("status"))
     try:
         if not _still_current(runtime, event, offer_packet_ids, memory_ids,
                               meta):
-            return _result("SOURCE_CHANGED_AFTER_C6_PREFLIGHT",
-                           callback_invoked=True, shadow_draft_may_exist=True)
+            return _poststage_red("SOURCE_CHANGED_AFTER_C6_PREFLIGHT",
+                                  runtime, event, staged)
     except Exception:
-        return _result("POSTC6_SOURCE_INTEGRITY_RED",
-                       callback_invoked=True, shadow_draft_may_exist=True)
+        return _poststage_red("POSTC6_SOURCE_INTEGRITY_RED",
+                              runtime, event, staged)
     return _result(
         STATUS, callback_invoked=True, source_rechecked=True,
         formatter_match_shadow=True, c5_draft_staged=True,
