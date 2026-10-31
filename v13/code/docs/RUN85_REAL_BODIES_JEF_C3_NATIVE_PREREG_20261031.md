@@ -1,0 +1,17 @@
+# Run85 — one-project REAL B1/B2 + human JEF + C3 end-to-end native engineering pilot
+
+2026-10-31 UTC. Owner GPT-6 automation, isolated branch `assistant/v13-run85-real-bodies-jef-c3-20261031-auto11`; parent Run84 PR #1444 exact `7f5875e46036dd1278303dd74461a7bb6dfc24da`. No owner overwrite, no force, review-only.
+
+## Purpose and registered scope
+
+Run83's 12 Linux-native C3 calls used **synthetic** contradictory B1/B2. Run84 proved only a software post-generation guard. New bounded engineering pilot: take **only the already registered Run83 seed839 Juniper fixture index0**, record its two synthetic-human F1/F5 fact memories in a real temporary SQLite Store, generate one **real** B1_DETAIL and one **real** B2_GIST native OfferPacket for the same latest USER event, join authenticated deterministic JEF/C2 typed action and both real B1/B2 offers, run one native C3 dual-source JSON formatter through Run84 postgen guard. Add one paired typed-only native C3 control, two C3 calls total. No synthetic body or fake body metrics in the native arm. This is an engineering replay of a historical fixture, NOT a fresh disjoint scientific trial or a new preregistered utility cohort; do not rescore Run83 or promote STEP2.
+
+Pinned models from `v13/code/specs/models.json`: B1 LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf SHA256 `bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1` (LFM Open License 1.0); B2 Qwen3.5-0.8B-Q4_0.gguf SHA256 `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf` (Apache-2.0); C3 LFM2.5-350M-QAD-Q4_0.gguf SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d` (LFM Open License 1.0); llama-server binary SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`. Use existing pinned bootstrap, exact source revisions, no model swap. C3 seed839 temp0 max32 JSON schema. Body Run52 OVERRIDES unchanged. No oracle answer passed to bodies; typed JEF action deliberately visible to C3.
+
+## Acceptance and failure recording
+
+Record exact human source SHA/ref, B1/B2 native actual_model/FINAL metrics, persisted Offer/QueryPacket IDs, exact source/quote bindings, native body prompt hashes and release receipts, two C3 prompt/output hashes, JSON decoded actions, Run84 guard verdict, pre/post latest USER rechecks, process releases, Store audit, no live output/actions, model/runner hashes, original raw and independent verifier. Structural PASS requires all four real native calls FINAL and process reaped, authenticated human JEF and source-bound dual envelope, guard source rechecked, closed Store and zero output. Formatter mismatch is a **scientific diagnostic RED** and must be retained, not silently replaced. If body offer parsing or source binding fails, record structural RED and raw; no false native proof. All model jobs serialized, no competing native owner, bounded timeout and isolated Linux home.
+
+## Gates and next steps
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight0; Redmi UNMEASURED; whole V13 incomplete. C3 formatter copy is not independent source reasoning. No output, TTY, tool, learning, C5 delivery, or production activation. Implement separate Run85 runner + independent verifier + software mock tests and GitHub Actions. Verify preflight before triggering native; preserve original ZIP, SHA256SUMS, private backup, failed attempts and next command. No paid provisioning. Remaining platform budget UNKNOWN.
