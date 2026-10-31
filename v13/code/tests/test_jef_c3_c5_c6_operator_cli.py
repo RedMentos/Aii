@@ -86,12 +86,18 @@ class JefC3C5C6OperatorCliTests(unittest.TestCase):
                         self.assertNotIn(source, wire)
                     r = Runtime(home)
                     try:
+                        # Store._recover deliberately invalidates uncommitted
+                        # DRAFT on restart. The row/evidence persists, but
+                        # no DRAFT is eligible for a later output commit.
                         rows = r.store.rows(
                             "SELECT text,status FROM messages "
-                            "WHERE role='assistant' AND status='DRAFT'")
+                            "WHERE role='assistant'")
                         self.assertEqual(len(rows), 1)
                         self.assertEqual(rows[0]["text"], row["oracle_action"])
-                        self.assertEqual(rows[0]["status"], "DRAFT")
+                        self.assertEqual(rows[0]["status"], "INTERRUPTED")
+                        self.assertEqual(r.store.one(
+                            "SELECT COUNT(*) AS n FROM messages "
+                            "WHERE role='assistant' AND status='DRAFT'")["n"], 0)
                         self.assertEqual(r.store.one(
                             "SELECT COUNT(*) AS n FROM actions "
                             "WHERE kind='TEXT_REPORT'")["n"], 1)
