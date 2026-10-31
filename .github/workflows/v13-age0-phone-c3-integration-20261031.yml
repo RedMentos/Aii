@@ -40,6 +40,8 @@ jobs:
           set +e
           (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_install_selftest.py -v) > "$e/INSTALL_CONTRACT_RAW.log" 2>&1
           contract_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_install_selftest_run102_20261031.py -v) > "$e/COHORT_RAW.log" 2>&1
+          cohort_rc=$?
           (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_bootstrap_safe_tar_20261031.py -v) > "$e/TAR_RAW.log" 2>&1
           tar_rc=$?
           (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_c3_context_plan_20261031.py -v) > "$e/C3_CONTEXT_RAW.log" 2>&1
@@ -48,6 +50,7 @@ jobs:
           package_rc=$?
           set -e
           echo "$contract_rc" > "$e/INSTALL_CONTRACT_EXIT.txt"
+          echo "$cohort_rc" > "$e/COHORT_EXIT.txt"
           echo "$tar_rc" > "$e/TAR_EXIT.txt"
           echo "$c3_rc" > "$e/C3_CONTEXT_EXIT.txt"
           echo "$package_rc" > "$e/PACKAGE_EXIT.txt"
@@ -57,7 +60,7 @@ jobs:
           import hashlib,json,sys,zipfile
           from pathlib import Path
           evidence=Path(sys.argv[1]);root=Path(sys.argv[2]);zip_path=evidence/'V13-Phone-Integrated.zip'
-          required=('setup.sh','scripts/install_selftest.py','tests/test_install_selftest.py',
+          required=('setup.sh','scripts/install_selftest.py','tests/test_install_selftest.py','tests/test_install_selftest_run102_20261031.py',
                     'v13/bootstrap.py','v13/safe_tar.py','tests/test_bootstrap_safe_tar_20261031.py',
                     'v13/context_os.py','tests/test_b2_c3_context_plan_20261031.py')
           with zipfile.ZipFile(zip_path) as z:
@@ -82,7 +85,7 @@ jobs:
           PY
             verify_rc=$?
             if test "$verify_rc" -eq 0; then
-              (cd "$RUNNER_TEMP/v13-age0-phone-c3-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --timeout-seconds 120) > "$e/EXTRACTED_SMOKE_RAW.log" 2>&1
+              (cd "$RUNNER_TEMP/v13-age0-phone-c3-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --timeout-seconds 120 --cohort run102_c3) > "$e/EXTRACTED_SMOKE_RAW.log" 2>&1
               smoke_rc=$?
             else
               smoke_rc=125
@@ -105,7 +108,7 @@ jobs:
           import json,sys
           from pathlib import Path
           e=Path(sys.argv[1])
-          names=('INSTALL_CONTRACT','TAR','C3_CONTEXT','PACKAGE','ZIP_VERIFY','EXTRACTED_SMOKE')
+          names=('INSTALL_CONTRACT','COHORT','TAR','C3_CONTEXT','PACKAGE','ZIP_VERIFY','EXTRACTED_SMOKE')
           r={'schema':'v13.age0_phone_c3_integration.software.v1',
              'head':(e/'HEAD.txt').read_text().strip(),
              'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
@@ -119,10 +122,12 @@ jobs:
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           cat "$e/RESULT_RAW.log"
           tail -n 5 "$e/INSTALL_CONTRACT_RAW.log"
+          tail -n 5 "$e/COHORT_RAW.log"
           tail -n 5 "$e/TAR_RAW.log"
           tail -n 5 "$e/C3_CONTEXT_RAW.log"
           tail -n 5 "$e/EXTRACTED_SMOKE_RAW.log"
           test "$contract_rc" -eq 0
+          test "$cohort_rc" -eq 0
           test "$tar_rc" -eq 0
           test "$c3_rc" -eq 0
           test "$package_rc" -eq 0
