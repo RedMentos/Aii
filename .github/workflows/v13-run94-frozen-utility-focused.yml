@@ -2,7 +2,7 @@ name: V13 Run94 combined original-ZIP source focused regression
 on:
   push:
     branches:
-      - assistant/v13-run94-fullsuite-combined-20261031-auto11
+      - assistant/v13-run94-frozen-utility-drift-20261031-auto11
 permissions:
   contents: read
 jobs:
