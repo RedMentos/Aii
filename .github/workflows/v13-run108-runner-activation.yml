@@ -1,0 +1,116 @@
+name: V13 Run108 reversible native runner activation (software only)
+on:
+  push:
+    branches:
+      - assistant/v13-run108-runner-atomic-activation-20261031-gpt6
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Execute and close original model-free evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run108"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run108-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run108-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_runner_activation_20261031.py -v) > "$e/ACTIVATION_RAW.log" 2>&1
+          activation_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_bootstrap_safe_tar_20261031.py -v) > "$e/SAFE_TAR_RAW.log" 2>&1
+          safe_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --cohort run104_c3_c5_exit --timeout-seconds 120) > "$e/RUN104_RAW.log" 2>&1
+          smoke_rc=$?
+          "$py" -m compileall -q v13/code/v13/bootstrap.py v13/code/v13/runner_activation.py v13/code/tests/test_runner_activation_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run108.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$activation_rc" > "$e/ACTIVATION_EXIT.txt"
+          echo "$safe_rc" > "$e/SAFE_TAR_EXIT.txt"
+          echo "$smoke_rc" > "$e/RUN104_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run108.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('v13/bootstrap.py','v13/runner_activation.py',
+                           'tests/test_runner_activation_20261031.py'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'files':len(manifest['files']),
+                            'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'crc_and_manifest':True,'native_executed':False,
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 5d816feda3469a5149ab73e59116ef785a272848 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 5d816feda3469a5149ab73e59116ef785a272848 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          names=['ACTIVATION','SAFE_TAR','RUN104','COMPILE','PACK','ZIP','PRIVACY','DIFF']
+          result={'schema':'v13.run108.runner_activation.software.v1',
+                  'head':(e/'HEAD.txt').read_text().strip(),
+                  'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+                  'native_model_executed':False,'redmi_measured':False,
+                  'step2_promoted':False,'b3_promoted':False,
+                  'body_jepa_promoted':False,'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(result,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 6 "$e/ACTIVATION_RAW.log"
+          tail -n 5 "$e/SAFE_TAR_RAW.log"
+          tail -n 4 "$e/RUN104_RAW.log"
+          for rc in "$activation_rc" "$safe_rc" "$smoke_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve raw GREEN or RED receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run108-runner-activation-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run108/
+          if-no-files-found: warn
+          retention-days: 90
