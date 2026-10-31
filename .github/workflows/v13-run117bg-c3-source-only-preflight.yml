@@ -1,0 +1,92 @@
+name: V13 Run117BG C3 causal-prior paired software preflight
+
+on:
+  push:
+    branches:
+      - assistant/v13-run117bg-c3-source-only-paired-20261031-hourly11
+    paths:
+      - .github/workflows/v13-run117bg-c3-source-only-preflight.yml
+      - v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json
+      - v13/code/scripts/run117bg_c3_source_only_native.py
+      - v13/code/tests/test_run117bg_c3_source_only_native.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-source-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen prereg and run real SQLite source-only controls
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117bg"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          676fed6fef8e735de9d76baba694116ecfb666e5 v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json
+          855754bf4ae9221c73c9949a82a25fa0efe371d1 v13/code/scripts/run117bg_c3_source_only_native.py
+          0ce03635a5fe6037435034fadd26e8d63690b871 v13/code/tests/test_run117bg_c3_source_only_native.py
+          9e74d8a64741ce909133ddd8cf42434b738a5d04 v13/code/v13/body_source_id_c3_evidence_bridge_candidate.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          echo 'aeea2b0cec9bdca9a8fa8133eec4072a0e16587addf4887068e5b64d1e184d5f  v13/code/docs/fixtures/RUN117BG_C3_SOURCE_ONLY_SEED1081.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          echo "$?" > "$e/FIXTURE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117bg-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117bg-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_RAW.log"; echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/FIXTURE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=. "$py" -m unittest -v tests.test_run117bg_c3_source_only_native tests.test_run117aq_body_source_c3_bridge tests.test_run117ai_event_source_binding_candidate) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo SKIPPED > "$e/TEST_EXIT.txt"; fi
+          python3 -m py_compile v13/code/scripts/run117bg_c3_source_only_native.py v13/code/tests/test_run117bg_c3_source_only_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f23819f1018d378af416e598636a0cf4229f77cf --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check f23819f1018d378af416e598636a0cf4229f77cf HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117bg-source-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117bg/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce prereg and no native learning claims
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117bg"
+          for stage in PINS FIXTURE VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw preserved"
+              tail -65 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN117BG_SOFTWARE_ONLY_NO_NATIVE_C3_OR_STEP2_GATE'
