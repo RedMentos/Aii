@@ -1,0 +1,9 @@
+# Run117AJ — current review-chain unfiltered software regression (preregistered)
+
+**Parent**: Run117AI draft PR #1514 exact HEAD `8b745b6303969c29ed26330d39d6a29946331140`, stacked on Run117AH #1513 and earlier review chain. This is **not production main** and does not promote any canonical gate.
+
+**Purpose**: focused source-ID tests are green but the full integrated architecture must be tested without hiding historical RED. Run the unfiltered `unittest discover -s tests -p test_*.py` on the exact review-chain head, with pinned isolated dependencies, no native model downloads, no autostart. Download the immutable Run117Z original native-output artifact 13054946077 (SHA256 `65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a`) as a **read-only test prerequisite**, never new native inference; refuse wrong bytes. Check Canon Git blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, Run117AH fixture SHA256 `cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a` and original frozen selector Git blob `e431eecaa4a7643a548a512036225343f681ee23`.
+
+**Evidence**: preserve every raw test line, all failed tests, dependency versions, exact HEAD, original artifact SHA, full-suite exit, compileall, privacy/diff exits and SHA256SUMS in immutable Actions artifact even on failure. No selective waiver or rescore. If prerequisites fail, mark the suite NOT_RUN_PREREQUISITE_RED, not PASS. Full-suite software PASS, if obtained, would still not establish native B1/B2, STEP2 utility, B3, Body-JEPA, learning, Redmi, age or whole-system completion. Keep `jepa_weight=0`.
+
+**Next**: independent review and exact failure classification; fix a confirmed small software defect in a separate child review branch with regression, preserve original RED, then rerun. Native Run117AH remains under separate serialized owner; this full-suite job is model-free and may run independently.
