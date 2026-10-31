@@ -64,6 +64,9 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
         topic = next(iter(scope))
         offers = []
         raw = []
+        query_snapshots = []
+        retained_snapshots = []
+        role_revisions = {}
         for role in ROLES:
             row = store.one(
                 "SELECT event_id,payload FROM packets "
@@ -78,15 +81,26 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
                     or offer.get("brain_generation_id") != snapshot["generation"]
                     or offer.get("model_revision") != runtime.models.revision(role)):
                 return _result("OFFER_ROLE_OR_REVISION_RED")
+            revision = runtime.models.revision(role)
+            role_revisions[role] = revision
             view = _TopicStateView(
                 store, role, session, snapshot["generation"],
-                runtime.models.revision(role), topic)
-            retained, _ = view.state(role + ":" + session, {})
+                revision, topic)
+            retained, retained_version = view.state(role + ":" + session, {})
             if (type(retained) is not dict
                     or retained.get("packet_id") != offer_packet_ids[role]
                     or {k: v for k, v in retained.items()
                         if k != "retained_offer_ids"} != offer):
                 return _result("RETAINED_OFFER_BINDING_RED")
+            query_id = offer.get("query_packet_id")
+            query_row = store.one(
+                "SELECT payload FROM packets WHERE id=? AND kind='QueryPacket'",
+                (query_id,))
+            if query_row is None:
+                return _result("QUERY_PACKET_MISSING")
+            query_snapshots.append((query_id, query_row["payload"]))
+            retained_snapshots.append(
+                (view.partition_key, retained, retained_version))
             offers.append(offer)
             raw.append(row["payload"])
         # Frozen analyst_context rechecks stored Offer/Query identity, age,
@@ -116,13 +130,27 @@ def build_c3_source_envelope(runtime, event, offer_packet_ids, *,
         ]
         # No output follows, but detect any source/packet drift during build.
         if (_event_snapshot(runtime.memory, event["event_id"], session) != snapshot
-                or _latest_authoritative_user(store, session) != event["event_id"]):
+                or _latest_authoritative_user(store, session) != event["event_id"]
+                or store.generation_id != snapshot["generation"]):
             return _result("SOURCE_CHANGED_DURING_ENVELOPE")
-        for role, before in zip(ROLES, raw):
+        for role, before, (query_id, query_before), retained_before in zip(
+                ROLES, raw, query_snapshots, retained_snapshots):
             row = store.one("SELECT payload FROM packets WHERE id=? AND "
                             "kind='OfferPacket'", (offer_packet_ids[role],))
             if row is None or row["payload"] != before:
                 return _result("OFFER_CHANGED_DURING_ENVELOPE")
+            query_row = store.one(
+                "SELECT payload FROM packets WHERE id=? AND kind='QueryPacket'",
+                (query_id,))
+            if query_row is None or query_row["payload"] != query_before:
+                return _result("QUERY_CHANGED_DURING_ENVELOPE")
+            key, retained_payload, retained_version = retained_before
+            current_retained, current_version = store.state(key, {})
+            if (current_version != retained_version
+                    or current_retained != retained_payload):
+                return _result("RETAINED_STATE_CHANGED_DURING_ENVELOPE")
+            if runtime.models.revision(role) != role_revisions[role]:
+                return _result("MODEL_REVISION_CHANGED_DURING_ENVELOPE")
         digest = hashlib.sha256(dumps(messages).encode("utf-8")).hexdigest()
         return _result("C3_SOURCE_ENVELOPE_SHADOW_NO_MODEL_CALL",
                        messages=messages, messages_sha256=digest,
