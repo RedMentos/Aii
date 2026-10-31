@@ -59,7 +59,8 @@ class Step2ExitGate(unittest.TestCase):
             (app / 'bench-results/native/report.json').write_text('{}')
             (app / 'tests/fake.json').write_text('{}')
             blank = {k: None for k in gates.spec()['criteria']}
-            with patch.object(gates, 'APP', app):
+            schema = gates.spec()
+            with patch.object(gates, 'APP', app), patch.object(gates, 'spec', return_value=schema):
                 good = gates.check(blank | {'real_data': ['bench-results/native/report.json']},
                                    logged=set())
                 bad = gates.check(blank | {'real_data': ['tests/fake.json']},
@@ -74,6 +75,27 @@ class Step2ExitGate(unittest.TestCase):
                 failures = gates.verdicts(gate)
         self.assertEqual(len(failures), 2)
         self.assertTrue(all(x['actual'] == 'FileNotFoundError' for x in failures))
+
+    def test_boolean_verdict_type_is_binding_and_unused_ops_are_not_evaluated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app = Path(tmp)
+            report = app / 'report.json'
+            bool_rule = {'file': 'report.json', 'path': 'gate.canonical_gate_pass',
+                         'op': '==', 'value': True}
+            with patch.object(gates, 'APP', app):
+                for value in (1, 1.0, 'true', False):
+                    report.write_text(json.dumps({'gate': {'canonical_gate_pass': value}}))
+                    self.assertEqual(len(gates.verdicts({'verdict': [bool_rule]})), 1)
+                report.write_text(json.dumps({'gate': {'canonical_gate_pass': True}}))
+                self.assertEqual(gates.verdicts({'verdict': [bool_rule]}), [])
+                report.write_text(json.dumps({'gate': {'canonical_gate_pass': None}}))
+                null_rule = dict(bool_rule, value=None)
+                self.assertEqual(gates.verdicts({'verdict': [null_rule]}), [])
+                report.write_text(json.dumps({'gate': {'canonical_gate_pass': 3}}))
+                numeric_rule = dict(bool_rule, op='>=', value=2)
+                self.assertEqual(gates.verdicts({'verdict': [numeric_rule]}), [])
+                report.write_text(json.dumps({'gate': {'canonical_gate_pass': True}}))
+                self.assertEqual(len(gates.verdicts({'verdict': [numeric_rule]})), 1)
 
     def test_summary_exposes_both_without_any_completion_claim(self):
         summary = gates.summary()
