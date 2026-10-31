@@ -35,24 +35,26 @@ jobs:
           set +e
           (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115k_postassembly_authority_review.py -v) > "$e/NEW_RAW.log" 2>&1
           new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_run115k_realstore_bridge_review.py -v) > "$e/REAL_RAW.log" 2>&1
+          real_rc=$?
           (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_jef_two_source_role_formatter_candidate.py -v) > "$e/JEF_RAW.log" 2>&1
           jef_rc=$?
           (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_b1b2_c3_source_envelope_candidate.py -v) > "$e/BODY_RAW.log" 2>&1
           body_rc=$?
-          "$py" -m compileall -q v13/code/v13/b1b2_jef_c3_source_role_bridge_candidate.py v13/code/tests/test_run115k_postassembly_authority_review.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m compileall -q v13/code/v13/b1b2_jef_c3_source_role_bridge_candidate.py v13/code/tests/test_run115k_postassembly_authority_review.py v13/code/tests/test_run115k_realstore_bridge_review.py > "$e/COMPILE_RAW.log" 2>&1
           compile_rc=$?
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 5edf9d64e2c0793a942e99f0af2f9c049d477a5b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           privacy_rc=$?
           git diff --check 5edf9d64e2c0793a942e99f0af2f9c049d477a5b HEAD > "$e/DIFF_RAW.log" 2>&1
           diff_rc=$?
           set -e
-          for item in "NEW:$new_rc" "JEF:$jef_rc" "BODY:$body_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+          for item in "NEW:$new_rc" "REAL:$real_rc" "JEF:$jef_rc" "BODY:$body_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
             echo "${item#*:}" > "$e/${item%%:*}_EXIT.txt"
           done
           "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
           import json,sys
           from pathlib import Path
-          e=Path(sys.argv[1]);names=('NEW','JEF','BODY','COMPILE','PRIVACY','DIFF')
+          e=Path(sys.argv[1]);names=('NEW','REAL','JEF','BODY','COMPILE','PRIVACY','DIFF')
           r={'schema':'v13.run115k.postassembly_authority_review.v1',
              'head':(e/'HEAD.txt').read_text().strip(),
              'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
@@ -65,7 +67,8 @@ jobs:
           (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           cat "$e/RESULT_RAW.log"
           tail -n 28 "$e/NEW_RAW.log"
-          for rc in "$new_rc" "$jef_rc" "$body_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+          tail -n 35 "$e/REAL_RAW.log"
+          for rc in "$new_rc" "$real_rc" "$jef_rc" "$body_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
       - name: Preserve raw GREEN or RED
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
