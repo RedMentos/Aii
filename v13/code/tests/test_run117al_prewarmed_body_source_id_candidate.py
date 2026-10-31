@@ -157,6 +157,38 @@ class PrewarmTests(unittest.TestCase):
         self.assertEqual(result['component_status'],
                          'CALLBACK_PROMPT_MUTATED_RED')
 
+    def test_new_runner_requires_all_thirty_native_final_receipts(self):
+        def item(role):
+            raw='{}'
+            return {'role':role,'status':'RECORDED','process_reaped':True,
+                    'native_metrics':{'status':'FINAL'},
+                    'packet_evidence':{'raw':raw,
+                        'sha256':hashlib.sha256(raw.encode()).hexdigest()},
+                    'model_id_correct':True}
+        report={'rows':[],'native_body_calls':30,
+                'native_c3_calls':0,'native_jef_calls':0,'native_c2_calls':0}
+        for row in rows():
+            report['rows'].append({
+                'id':row['id'],'status':'RECORDED','closed_store_ok':True,
+                'no_live_output':True,'baseline_quote_ready':True,
+                'id_pair_correct':True,
+                'offers':[item('B2_GIST'),item('B1_DETAIL'),item('B2_GIST')],
+                'id_selections':[item('B2_GIST'),item('B1_DETAIL')],
+            })
+        self.assertEqual(native._summarize(report),native.COMPLETE)
+        report['native_body_calls']=29
+        self.assertEqual(native._summarize(report),native.RED)
+        report['native_body_calls']=30
+        report['rows'][0]['id_selections'][0]['process_reaped']=False
+        self.assertEqual(native._summarize(report),native.RED)
+
+    def test_new_runner_wrong_fixture_fails_before_native(self):
+        with tempfile.TemporaryDirectory() as d:
+            tampered=Path(d)/'tampered.json'
+            tampered.write_bytes(FIXTURE.read_bytes()+b' ')
+            with self.assertRaisesRegex(ValueError,'RUN117AL_FIXTURE_SHA_RED'):
+                native.fixture(tampered)
+
     def test_native_runner_callback_contains_no_pool_get(self):
         source=inspect.getsource(native._id_native)
         tree=ast.parse(source)
