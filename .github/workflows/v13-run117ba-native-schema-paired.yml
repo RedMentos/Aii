@@ -59,7 +59,7 @@ jobs:
           PY
           echo $? > "$e/SOURCE_PIN_EXIT.txt"
           (cd v13/code && env PYTHONPATH=.:tests:scripts NO_MODEL_DOWNLOADS=1 "$py" -m unittest -v \
-            tests.test_run117ba_jef_route_native_phone \
+            tests.test_run117ba_native_schema_paired \
             tests.test_run117ay_phone_jef_route_smoke \
             tests.test_run117ax_jef_route_operator_cli \
             tests.test_run117aw_jef_c2_c3_formatter_route_shadow) > "$e/SOFTWARE_RAW.log" 2>&1
@@ -102,7 +102,7 @@ jobs:
           echo "$zip_rc" > "$e/ZIP_EXIT.txt"
           if test "$zip_rc" -eq 0; then
             (cd "$extracted" && env PYTHONPATH=.:tests:scripts NO_MODEL_DOWNLOADS=1 "$py" -m unittest -v \
-              tests.test_run117ba_jef_route_native_phone \
+              tests.test_run117ba_native_schema_paired \
               tests.test_run117ay_phone_jef_route_smoke) > "$e/EXTRACTED_SOFTWARE_RAW.log" 2>&1
             extracted_rc=$?
           else
