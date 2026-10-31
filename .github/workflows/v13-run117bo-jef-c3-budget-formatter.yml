@@ -43,8 +43,22 @@ jobs:
           echo "$bad" > "$e/PINS_EXIT.txt"
           echo '8aa69cc86d2e2067e809d4f703ddbff3fc575ea111d7afd97a73012e0bda0e21  v13/code/docs/fixtures/run46b_jef_source_eligibility_seed401.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
           echo "$?" > "$e/FIXTURE_EXIT.txt"
-          (cd v13/code && timeout 120s python3 -m unittest -v tests.test_run117bo_jef_c3_budget_formatter_shadow tests.test_run46b_jef_source_eligibility_shadow tests.test_jef_c3_schema_source_recheck_shadow) > "$e/TEST_RAW.log" 2>&1
-          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117bo-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117bo-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else
+            for stage in DEPS PIP_CHECK; do echo SKIPPED > "$e/${stage}_RAW.log"; echo SKIPPED > "$e/${stage}_EXIT.txt"; done
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 120s "$py" -m unittest -v tests.test_run117bo_jef_c3_budget_formatter_shadow tests.test_run46b_jef_source_eligibility_shadow tests.test_jef_c3_schema_source_recheck_shadow) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED > "$e/TEST_RAW.log"; echo SKIPPED > "$e/TEST_EXIT.txt"; fi
           python3 -m py_compile v13/code/v13/agi/jef_c3_budget_formatter_shadow_run117bo.py v13/code/tests/test_run117bo_jef_c3_budget_formatter_shadow.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 4ade5c42fe842df7220892f6b92ac9b66ad78205 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
@@ -67,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
           e="$RUNNER_TEMP/v13-run117bo"
-          for stage in PINS FIXTURE TEST COMPILE PRIVACY DIFF; do
+          for stage in PINS FIXTURE VENV DEPS PIP_CHECK TEST COMPILE PRIVACY DIFF; do
             if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
               echo "$stage RED; original raw preserved, no gate promotion"
               tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
