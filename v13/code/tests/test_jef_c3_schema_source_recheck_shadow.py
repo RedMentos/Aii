@@ -1,5 +1,6 @@
 """Real Store, default-OFF JEF/C3 schema adapter tests; no native model."""
 import json
+import sqlite3
 from pathlib import Path
 import tempfile
 import unittest
@@ -137,6 +138,52 @@ class Adapter(unittest.TestCase):
         self.assertEqual(r['status'],'CALLBACK_STORE_MUTATION_RED')
         self.assertFalse(r['source_rechecked'])
         self.assert_safe(r)
+
+    def test_unrelated_same_connection_update_denied_without_count_change(self):
+        event,ids=self.source()
+        before=adapter._footprint(self.r.memory)
+        def mutate(*_):
+            self.r.store.db.execute(
+                "UPDATE sessions SET title=? WHERE id=?",
+                ("unrelated changed title",self.r.session))
+            self.assertEqual(adapter._footprint(self.r.memory),before)
+            return '{"action":"A"}'
+        result=self.invoke(event,ids,mutate)
+        self.assertEqual(result['status'],'CALLBACK_STORE_MUTATION_RED')
+        self.assertFalse(result['source_rechecked'])
+        self.assert_safe(result)
+
+    def test_same_connection_update_then_restore_denied(self):
+        event,ids=self.source()
+        before=adapter._footprint(self.r.memory)
+        original=self.r.store.one(
+            "SELECT title FROM sessions WHERE id=?",(self.r.session,))['title']
+        def mutate(*_):
+            self.r.store.db.execute(
+                "UPDATE sessions SET title=? WHERE id=?",
+                ("temporary mutation",self.r.session))
+            self.r.store.db.execute(
+                "UPDATE sessions SET title=? WHERE id=?",
+                (original,self.r.session))
+            self.assertEqual(adapter._footprint(self.r.memory),before)
+            return '{"action":"A"}'
+        result=self.invoke(event,ids,mutate)
+        self.assertEqual(result['status'],'CALLBACK_STORE_MUTATION_RED')
+        self.assert_safe(result)
+
+    def test_other_connection_commit_denied_without_count_change(self):
+        event,ids=self.source()
+        before=adapter._footprint(self.r.memory)
+        path=self.r.store.home/'data/db/brain.sqlite3'
+        def mutate(*_):
+            with sqlite3.connect(path,timeout=5) as other:
+                other.execute("UPDATE sessions SET title=? WHERE id=?",
+                              ("external mutation",self.r.session))
+            self.assertEqual(adapter._footprint(self.r.memory),before)
+            return '{"action":"A"}'
+        result=self.invoke(event,ids,mutate)
+        self.assertEqual(result['status'],'CALLBACK_STORE_MUTATION_RED')
+        self.assert_safe(result)
 
     def test_new_user_event_during_callback_denies(self):
         event,ids=self.source()

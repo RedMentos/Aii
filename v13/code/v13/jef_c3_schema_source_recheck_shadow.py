@@ -49,6 +49,17 @@ def _footprint(memory):
     return tuple(store.one('SELECT COUNT(*) AS n FROM '+table)['n'] for table in TABLES)
 
 
+def _mutation_epoch(memory):
+    """Detect writes, including UPDATE-without-count-change and external commits.
+
+    This is detection, NOT a sandbox: a callback's writes are not rolled back.
+    Only isolated/trusted callbacks should receive access to the Store.
+    """
+    db=memory.s.db
+    return (db.total_changes, db.execute('PRAGMA data_version').fetchone()[0],
+            db.in_transaction)
+
+
 def _result(status, **kw):
     return {'schema':'v13.jef_c3_schema_source_recheck_shadow.v1',
             'status':status, 'delivery_authority':0, 'output_committed':False,
@@ -81,6 +92,9 @@ def format_schema_shadow(memory,session,event_id,current_ref,memory_ids,generate
             return _result('ENVELOPE_HASH_RED')
         before_dump=dumps(before)
         footprint=_footprint(memory)
+        epoch=_mutation_epoch(memory)
+        if epoch[2]:
+            return _result('SOURCE_INTEGRITY_RED')
         action=before['typed_jef_action']
         refs=list(before['source_ref_sha256'])
         current_sha=before['current_source_sha256']
@@ -95,7 +109,7 @@ def format_schema_shadow(memory,session,event_id,current_ref,memory_ids,generate
     try:
         if dumps(before)!=before_dump:
             return _result('CALLBACK_MUTATED_ENVELOPE_RED',callback_invoked=called)
-        if _footprint(memory)!=footprint:
+        if (_footprint(memory)!=footprint or _mutation_epoch(memory)!=epoch):
             return _result('CALLBACK_STORE_MUTATION_RED',callback_invoked=called)
         after=build_jef_c3_typed_envelope(memory,session,event_id,current_ref,
                                           memory_ids,operator_opt_in=True)
@@ -105,7 +119,7 @@ def format_schema_shadow(memory,session,event_id,current_ref,memory_ids,generate
                 or after['source_ref_sha256']!=refs
                 or after['current_source_sha256']!=current_sha):
             return _result('POST_CALLBACK_SOURCE_RED',callback_invoked=called)
-        if _footprint(memory)!=footprint:
+        if (_footprint(memory)!=footprint or _mutation_epoch(memory)!=epoch):
             return _result('POST_CALLBACK_STORE_MUTATION_RED',callback_invoked=called)
         base={'callback_invoked':called,'source_rechecked':True,
               'messages_sha256':prompt_sha,'source_ref_sha256':refs,
