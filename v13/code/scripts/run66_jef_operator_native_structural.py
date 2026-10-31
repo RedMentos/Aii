@@ -65,6 +65,7 @@ def run(home, out, input_root):
     if len(rows) != COHORT_N:
         raise ValueError("RUN66_ORIGINAL_COHORT_MUTATED")
     input_root.mkdir(parents=True)
+    out.parent.mkdir(parents=True, exist_ok=True)
     report = {
         "schema": SCHEMA, "evidence_kind": "LINUX_NATIVE_C3_REAL_OPERATOR_CLI_SHADOW",
         "registered": True, "replay_not_disjoint": True,
