@@ -1,0 +1,145 @@
+name: V13 JEF C3 schema DRAFT pinned Linux-native structural SHADOW
+on:
+  push:
+    branches: [assistant/v13-jef-c3-schema-draft-guard-20261031-run11]
+    paths: ['.github/workflows/v13-jef-c3-schema-draft-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pins, isolated setup, three native C3 JSON-schema Store drafts, closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-jef-schema-draft-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          0cfe97f62ff6bb0c42972e56646e1bfcdc69797c v13/code/docs/JEF_C3_SCHEMA_DRAFT_NATIVE_PREREG_20261031.md
+          fb393a7f7ed2952137621c9f4cfa87a79b76dbab v13/code/docs/JEF_C3_SCHEMA_DRAFT_GUARD_PREREG_20261031.md
+          3b6b79c7eded3b812d27fb594ceda9afd3fd9464 v13/code/scripts/jef_c3_schema_fixture_727.py
+          ee976c0329ad751b4851862680e6fe6f9ee66e82 v13/code/v13/jef_c3_schema_draft_candidate.py
+          25ad2234b353b58ad06bcc505b6ca05f527c0add v13/code/scripts/jef_c3_c5_c6_operator_cli.py
+          6b32fd2350213b56650fb8995e4d11b374e187a1 v13/code/tests/test_jef_c3_schema_draft_candidate.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-schema-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-schema-native-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          export V13_HOME="$RUNNER_TEMP/v13-schema-native-home"
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else echo SKIPPED > "$e/BOOTSTRAP_RAW.log"; echo 99 > "$e/BOOTSTRAP_EXIT.txt"; fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code:v13/code/scripts "$py" - > "$e/INPUT_SETUP_RAW.log" 2>&1 <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          from v13.config import initialize,save_config
+          from scripts.run63_jef_c3_native import RUN_CONFIG
+          from scripts.jef_c3_schema_fixture_727 import fixtures
+          home=Path(os.environ['V13_HOME'])
+          initialize(home)
+          save_config(home,RUN_CONFIG|{'seed':727,'temperature':0.0,'answer_tokens':32})
+          rows=fixtures()[:3]
+          d=Path(os.environ['RUNNER_TEMP'])/'v13-schema-inputs'
+          d.mkdir()
+          for i,r in enumerate(rows):
+              data={'project':r['project'],'domain':r['domain'],
+                    'policy_source':r['policy_source'],
+                    'sheet_source':r['sheet_source'],'current':r['current']}
+              raw=json.dumps(data,sort_keys=True,separators=(',',':')).encode('utf-8')
+              (d/f'{i}.json').write_bytes(raw)
+              print(i,r['expected'],hashlib.sha256(raw).hexdigest())
+          PY
+            echo "$?" > "$e/INPUT_SETUP_EXIT.txt"
+          else echo SKIPPED > "$e/INPUT_SETUP_RAW.log"; echo 99 > "$e/INPUT_SETUP_EXIT.txt"; fi
+          for i in 0 1 2; do
+            if [ "$(cat "$e/INPUT_SETUP_EXIT.txt")" = 0 ]; then
+              timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=v13/code:v13/code/scripts "$py" v13/code/scripts/jef_c3_c5_c6_operator_cli.py --home "$V13_HOME" --input-file "$RUNNER_TEMP/v13-schema-inputs/$i.json" --mode native_schema --operator-opt-in --callback-opt-in > "$e/REPORT_$i.json" 2> "$e/CLI_$i.stderr"
+              echo "$?" > "$e/CLI_$i_EXIT.txt"
+            else
+              echo '{}' > "$e/REPORT_$i.json"; echo SKIPPED > "$e/CLI_$i.stderr"; echo 99 > "$e/CLI_$i_EXIT.txt"
+            fi
+          done
+          if [ "$(cat "$e/INPUT_SETUP_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code:v13/code/scripts "$py" - "$e" "$V13_HOME" > "$e/VERIFY_RAW.log" 2>&1 <<'PY'
+          import json,hashlib,sys
+          from pathlib import Path
+          from v13.store import audit_closed
+          e,home=Path(sys.argv[1]),Path(sys.argv[2])
+          for i,action in enumerate(('A','B','NONE')):
+              r=json.loads((e/f'REPORT_{i}.json').read_text())
+              assert (e/f'CLI_{i}_EXIT.txt').read_text().strip()=='0',i
+              assert r['status']=='SHADOW_DRAFT_PREFLIGHT_READY',(i,r.get('status'))
+              assert r['stage_status']=='JEF_C5_SOURCE_ONLY_DRAFT_STAGED_SHADOW',i
+              assert r['c6_status']=='NEEDS_REAL_TTY_APPROVAL',i
+              assert r['schema_formatter_status']=='SCHEMA_EXACT_SHADOW',i
+              assert r['native_model_called'] and r['native_final'],i
+              assert r['native_process_reaped'] is True,i
+              assert r['native_model_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d',i
+              assert r['runner_sha256']=='79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39',i
+              assert r['candidate_sha256']==hashlib.sha256(action.encode()).hexdigest(),i
+              assert r['source_only_fallback'] is False and r['no_live_output'] is True,i
+              assert r['delivery_authority']==0 and r['tool_dispatches']==0 and r['learning_authority']==0,i
+              assert r['output_committed'] is False and r['native_proof'] is False,i
+              assert r['real_tty_approved'] is False and r['age0']=='RECORD_ONLY',i
+          assert audit_closed(home)['ok']
+          print('THREE_NATIVE_C3_SCHEMA_C5_DRAFT_C6_STRUCTURAL_PASS')
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo SKIPPED > "$e/VERIFY_RAW.log"; echo 99 > "$e/VERIFY_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/v13/jef_c3_schema_draft_candidate.py v13/code/scripts/jef_c3_c5_c6_operator_cli.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4b14ca3bea9b4ddf717aefb7d04408d4b59921b5 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4b14ca3bea9b4ddf717aefb7d04408d4b59921b5 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original raw including failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-jef-schema-draft-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-jef-schema-draft-native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require all native and evidence stages
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-jef-schema-draft-native"
+          for s in PINS VENV DEPS BOOTSTRAP INPUT_SETUP CLI_0 CLI_1 CLI_2 VERIFY COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo THREE_NATIVE_C3_SCHEMA_DRAFT_STRUCTURAL_ONLY_NO_UTILITY_PROMOTION
