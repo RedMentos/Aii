@@ -241,6 +241,7 @@ def run(home, input_file, mode, *, operator_opt_in=False,
             report["schema_sha256"] = staged.get("schema_sha256")
             report["schema_formatter_status"] = staged.get("schema_formatter_status")
             report["schema_output_sha256"] = staged.get("schema_output_sha256")
+            report["schema_receipt_persisted"] = staged.get("schema_receipt_persisted", False)
         if staged.get("status") != STAGED:
             report["status"] = "DRAFT_STAGE_RED"
             return report
