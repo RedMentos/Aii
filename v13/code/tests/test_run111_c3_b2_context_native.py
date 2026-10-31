@@ -45,7 +45,9 @@ class Run111C3B2Context(unittest.TestCase):
                 self.assertTrue(row['no_live_output'])
                 self.assertFalse(row['native_final'])
                 self.assertFalse(row['process_reaped'])
-                self.assertEqual(row['verified_quote'].startswith('Maximum budget:'), True)
+                source = {f['id']: f for f in fixture(FIXTURE)}[row['id']]
+                self.assertEqual(row['verified_quote'],
+                                 source['prior'] if row['arm'] == 'WIDE_400' else source['quote'])
                 content = '\n'.join(m['content'] for m in row['messages'])
                 if row['arm'] == 'WIDE_400':
                     self.assertIn('Maximum deadline:', content)
