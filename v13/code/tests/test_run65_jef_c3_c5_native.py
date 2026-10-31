@@ -10,6 +10,8 @@ from scripts.run65_jef_c3_c5_native_verify import verify, sha
 from scripts.run63_jef_c3_native import C3_SHA256, RUNNER_SHA256, cohort
 from scripts.run47_jef_c3_typed_receiver_native import NEGATIVE
 from scripts import p2x_disjoint_receiver_trainset as p2x
+from v13.jef_c3_typed_envelope_candidate import SYSTEM
+from v13.jef_typed_source_shadow import _canonical
 
 
 class Run65VerifierTests(unittest.TestCase):
@@ -41,10 +43,12 @@ class Run65VerifierTests(unittest.TestCase):
                 "policy_source": fixture["b2_source"],
                 "sheet_source": fixture["b1_source"],
                 "typed_jef_action": action,
-                "source_ref_sha256": ["2" * 64, "3" * 64],
+                "source_ref_sha256": [
+                    sha(_canonical(refs["policy"])),
+                    sha(_canonical(refs["sheet"]))],
                 "candidate_authority": 0,
             }
-            messages = [{"role": "system", "content": "synthetic test"},
+            messages = [{"role": "system", "content": SYSTEM},
                         {"role": "user", "content": json.dumps(payload)}]
             candidate_sha = sha(action.encode("utf-8"))
             staged = {
@@ -56,7 +60,7 @@ class Run65VerifierTests(unittest.TestCase):
                 "draft_origin": "MODEL_EXACT_SHADOW",
                 "source_only_fallback": False,
                 "source_ref_sha256": payload["source_ref_sha256"],
-                "prompt_sha256": "1" * 64,
+                "prompt_sha256": sha(dumps(messages).encode("utf-8")),
                 "draft_message_id": 1,
                 "c5_action_id": "act_" + fixture["id"],
                 "c3_receiver_success": False,
@@ -105,6 +109,7 @@ class Run65VerifierTests(unittest.TestCase):
                     "c5_binding_verified": True,
                     "candidate_sha256": candidate_sha,
                     "source_only_fallback": False,
+                    "model_formatter_status": "FORMATTER_MATCH_SHADOW",
                     "delivery_authority": 0,
                     "output_committed": False,
                     "tool_dispatches": 0,
@@ -171,6 +176,7 @@ class Run65VerifierTests(unittest.TestCase):
         row["staged"]["draft_origin"] = "SOURCE_ONLY_FALLBACK_C3_RED"
         row["staged"]["source_only_fallback"] = True
         row["c6"]["source_only_fallback"] = True
+        row["c6"]["model_formatter_status"] = "FORMATTER_MISMATCH_RED"
         meta = json.loads(row["draft_snapshot"]["metadata"])
         meta["origin"] = "SOURCE_ONLY_FALLBACK_C3_RED"
         meta["model_formatter_status"] = "FORMATTER_MISMATCH_RED"
