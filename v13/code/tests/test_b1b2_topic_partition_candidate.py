@@ -98,7 +98,7 @@ class TopicPartitionOfferTests(unittest.TestCase):
                                      "HARBOR_ONLY_120_EUROS")
                 else:
                     self.assertEqual(
-                        harbor_second["earlier_context"][0]["exact_source_excerpt"][:14],
+                        harbor_second["earlier_context"][0]["exact_source_excerpt"][:15],
                         "Project Harbor.")
                 d = self.offer(role, willow_current)
                 self.assertEqual(d["status"], "SHADOW_OFFER_PRODUCED")
