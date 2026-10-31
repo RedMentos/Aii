@@ -95,7 +95,7 @@ class C3SourceOnlyPreflight(unittest.TestCase):
         def item(arm):
             return {"arm":arm,"status":"RECORDED","native_final":True,
                     "process_reaped":True,"native_metrics":{
-                        "actual_model":"LFM2.5-230M-Instruct-Q4_0.gguf"},
+                        "actual_model":"FORGED_UNPINNED_C3.gguf"},
                     "score":{"correct":1}}
         rows=[{"status":"RECORDED","closed_native_store_ok":True,
                "closed_fake_store_ok":True,
