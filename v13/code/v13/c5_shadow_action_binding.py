@@ -59,4 +59,3 @@ def _c5_shadow(store, action_id, event_id, session_id):
     return hashlib.sha256(agreement._canonical({
         "action": action_id, "intent": row["id"], "copy": copy_row["id"],
         "event": event_id, "generation": event["generation_id"]})).hexdigest()
-
