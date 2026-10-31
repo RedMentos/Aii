@@ -46,6 +46,21 @@ def stage_offer_lifecycle_c6_shadow(runtime, event, offer_packet_ids, generate, 
 
     frozen_event = dict(event)
     frozen_ids = dict(offer_packet_ids)
+    # A prior DRAFT/FINAL or TEXT_REPORT is not an invitation to call C3 again.
+    # This is a cost/authority preflight, not a cross-process atomic reservation.
+    try:
+        with runtime.store.tx():
+            existing_message = runtime.store.one(
+                "SELECT id FROM messages WHERE event_id=? AND session_id=? "
+                "AND role='assistant' LIMIT 1",
+                (frozen_event["event_id"], runtime.session))
+            existing_action = runtime.store.one(
+                "SELECT id FROM actions WHERE event_id=? AND kind='TEXT_REPORT' LIMIT 1",
+                (frozen_event["event_id"],))
+            if existing_message is not None or existing_action is not None:
+                return _result("EXISTING_OUTPUT_OR_ACTION_RED", callback_invoked=False)
+    except Exception:
+        return _result("OUTPUT_PREFLIGHT_INTEGRITY_RED", callback_invoked=False)
     first = build_c3_source_envelope(
         runtime, frozen_event, frozen_ids, operator_opt_in=True)
     if first.get("status") != "C3_SOURCE_ENVELOPE_SHADOW_NO_MODEL_CALL":
