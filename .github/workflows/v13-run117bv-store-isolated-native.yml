@@ -2,9 +2,9 @@ name: V13 Run117BV pinned native C3 JEF budget formatter seed401 smoke
 on:
   push:
     branches:
-      - assistant/v13-run117bv-budget-native-launch-20261101-hourly11
+      - assistant/v13-run117bv-store-isolated-c3-native-20261101-hourly11
     paths:
-      - .github/workflows/v13-run117bv-budget-native-launch.yml
+      - .github/workflows/v13-run117bv-store-isolated-native.yml
   workflow_dispatch:
 permissions:
   contents: read
