@@ -46,6 +46,10 @@ class Run38RealfileContract(unittest.TestCase):
         data[0]["attribution"]["jepa"]["both_world"] = float("nan")
         with self.assertRaisesRegex(ValueError, "NUMERIC"):
             w7(data)
+        data = rows()
+        data[1]["attribution"]["no_action"]["balanced"] = float("inf")
+        with self.assertRaisesRegex(ValueError, "NUMERIC"):
+            w7(data)
 
     def test_cohort_mutation_rejected_before_files(self):
         with tempfile.TemporaryDirectory() as d:
