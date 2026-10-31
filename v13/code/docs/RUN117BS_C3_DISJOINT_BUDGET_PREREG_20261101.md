@@ -18,3 +18,7 @@ Native run must wait until Run117BR owner is terminal and its original artifact 
 ## Post-prereg exact fixture freeze
 
 Prereg commit **`35b5c8228775c85834cb475baa52838348735af1`** precedes all fixture/test code. Exact fixture Git blob **`4c5fc5b1d439c8e143d69371a1bcdd3f0ccaa935`**, SHA256 **`f8ca7a22c47f991d630c9df1b1b2ee2943d24123246c8ffaf45db65998403f65`**, 4032 UTF-8 bytes, path `docs/fixtures/RUN117BS_C3_DISJOINT_BUDGET_SEED1103.json`. It is frozen from this point. Separate source-bound real SQLite software tests validate the fixed grammar/recipe and default-OFF callback without native C3. No native model run or threshold change.
+
+## Verified software preflight and private backup
+
+Original Actions **41253263811 SUCCESS** at exact source head `1b847e949ee6e75405e3c1378cf3f1709c1d7ce0`, artifact **13062660302**, ZIP SHA256 **`b55c3723845d9a2300328df3ceb37bff4a03472095182736873c5e1989db0758`**. Independently downloaded: ZIP CRC PASS, **20/20** inner hashes, **9/9** stage exits zero, **31/31** real SQLite/source-bound software tests PASS, privacy CLEAN. Original ZIP privately saved at `/V13-Checkpoints/2026-11-01/Run117BS-Disjoint-Prereg/ORIGINAL_SOFTWARE_41253263811_shaB55C3723.zip` and re-materialized byte-identical. This proves deterministic JEF source-bound fixture behavior only, not native C3, B1/B2/C2/JEF, disjoint model generalization or STEP2 utility. Native paired experiment remains unlaunched; Run117BR original raw audit pending. No gate promotion.
