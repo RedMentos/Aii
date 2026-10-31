@@ -62,4 +62,4 @@ jobs:
             test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || { cat "$e/TEST_RAW.log"; exit 1; }
           done
           tail -n 5 "$e/TEST_RAW.log"
-          echo RUN77_FORENSIC_SOFTWARE_COMPLETE_NO_NATIVE_CLAIM
+          echo RUN77_FORENSIC_AND_PROMPT_BYTES_SOFTWARE_COMPLETE_NO_NATIVE_CLAIM
