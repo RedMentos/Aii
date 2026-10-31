@@ -9,3 +9,11 @@
 **Claim boundary:** Store SourceRef integrity alone is **not** F1/F5 human-decision lineage or permission; this candidate must remain isolated until a separate authenticated human-source consumer and negative-case tests are proven. It is a fixed grammar expansion, not general natural-language reasoning, learned utility, STEP2, B3, JEPA or production. Run70 C3 source-only 3/6 scientific RED and full-suite 4 FAIL/66 ERROR/28 SKIP unchanged. Age0 RECORD_ONLY, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, Redmi unmeasured, whole V13 incomplete.
 
 **Planned checks:** six positive synthetic source pairs, old-parser abstention, source hash/revocation, malformed bounds/flags/identity, no mutation/output/learning, Canon pin, independent CI tests and raw ZIP. Keep original source/model/seed hashes unchanged. **Next:** implement module + tests + CI, verify raw and private backup, independent review. **Platform budget:** UNKNOWN.
+
+## Terminal verified software checkpoint
+
+Original Actions **41183360945**, exact executed HEAD `c40eef97b3da14c1165e485b91bdafd0d036d031`: terminal **SUCCESS**. **39/39** focused real-Store tests: 8 new mixed-bound + 9 legacy fixed-source + 8 human F1/F5 + 14 C3 schema recheck. All **10/10** stage exits zero; source/Canon pins exact, privacy CLEAN, compile/diff PASS. Original raw artifact **13035663498**, ZIP SHA256 **`406e347e4b2ca30671fd997237ba2f89861e1c2e4fb3d97803d43d2216bcb90b`**, CRC PASS, **22/22** inner SHA256SUMS. Private Library `/V13-Checkpoints/2026-10-31/Run73-JEF-Range-Policy/ORIGINAL_ACTIONS_41183360945_SHA406E347E.zip`, rematerialized and `cmp` byte-identical.
+
+Verified remote source blob `d57c9eb561e115541883e2f6ed37da451ff528f7`, test blob `384628a38070012b449b876b2529f44ca8b038ce`. Initial regex literal-dot double-escape was corrected *before* the tested workflow; original intermediate commit `52bd3394cbc0438a26b360478f9dcf64a770dcf2` retained, not counted as a passing test. Source-only range decisions remain SHADOW and **not human-authenticated**; separate Run74 F1/F5 lineage wrapper is in progress, not evidence for Run73. All negative gates unchanged.
+
+**Next:** independent review of this additive fixed parser, continue Run74 authenticated human-source wrapper with new real Store tests. Do not merge to production automatically. **Remaining budget:** UNKNOWN.
