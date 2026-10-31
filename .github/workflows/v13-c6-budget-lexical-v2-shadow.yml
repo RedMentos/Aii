@@ -2,7 +2,10 @@ name: V13 C6 bounded budget lexical v2 SHADOW software proof
 on:
   push:
     branches: [assistant/v13-c6-lexical-v2-shadow-gpt6-20261031]
-    paths: ['.github/workflows/v13-c6-budget-lexical-v2-shadow.yml']
+    paths:
+      - '.github/workflows/v13-c6-budget-lexical-v2-shadow.yml'
+      - 'v13/code/v13/c6_budget_lexical_v2_candidate.py'
+      - 'v13/code/tests/test_c6_budget_lexical_v2_candidate.py'
 permissions:
   contents: read
 jobs:
@@ -31,7 +34,7 @@ jobs:
           295702496d94e84113f253cc3a09d71aba3b1e34 v13/code/v13/c6_temporal_draft_preflight_candidate.py
           30bb3269fa89621f78db893cf566d04f8768cf27 v13/code/v13/c6_positive_assertion_candidate.py
           bd524f2b09368ee265a4f3c5a7253da49078771c v13/code/docs/C6_BUDGET_LEXICAL_V2_PREREG_20261031.md
-          b5c0cf0c07f8abdfdbb08e18ea6520200684c572 v13/code/v13/c6_budget_lexical_v2_candidate.py
+          54461496a337a04913b807861e0c6c73d4de6cfa v13/code/v13/c6_budget_lexical_v2_candidate.py
           f810422d49cc3f0ac73e0f0d407098a1355bb1fb v13/code/tests/test_c6_budget_lexical_v2_candidate.py
           PINS
           bad=0
