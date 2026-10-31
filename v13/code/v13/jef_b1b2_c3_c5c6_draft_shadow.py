@@ -17,8 +17,9 @@ from . import jef_b1b2_c3_postgen_shadow as postgen
 from . import jef_f1f5_range_admission_shadow as admission
 from .jef_f1f5_live_current_candidate import _latest_authoritative_user
 from .jef_c3_c5_c6_fallback_draft_candidate import (
-    _existing, _c5, _draft, EXPECTED,
+    _existing, _draft, EXPECTED,
 )
+from .c5_shadow_action_binding import _c5_shadow
 
 STATUS = "DUAL_SOURCE_C5_C6_DRAFT_PREFLIGHT_SHADOW"
 
@@ -116,7 +117,7 @@ def _stage_range(runtime, event, offers, ids, meta):
                  generation, dumps(corollary), now()))
             db.execute(
                 "INSERT INTO actions VALUES (?,?,?,?,?,?,?,?)",
-                (aid, event_id, "TEXT_REPORT", "DISPATCHED",
+                (aid, event_id, "TEXT_REPORT", "SHADOW_DRAFT",
                  corollary["packet_id"], dumps(EXPECTED), None, now()))
             mid = db.execute(
                 "INSERT INTO messages(session_id,event_id,role,text,status,"
@@ -154,7 +155,7 @@ def _c6_preflight(runtime, event, offers, ids, meta, staged):
                 return _result("C6_DUPLICATE_DRAFT_OR_ACTION_RED")
             if (not _draft(store, staged["draft_message_id"], event_id,
                            session, meta["source_action"])
-                    or _c5(store, staged["c5_action_id"],
+                    or _c5_shadow(store, staged["c5_action_id"],
                            event_id, session) is None):
                 return _result("C6_C5_F3_BINDING_RED")
             row = store.one(
@@ -268,7 +269,8 @@ def evaluate(runtime, event, offer_packet_ids, memory_ids, generator, *,
         STATUS, callback_invoked=True, source_rechecked=True,
         formatter_match_shadow=True, c5_draft_staged=True,
         c6_preflight_only=True, shadow_draft_may_exist=True,
-        c6_is_not_approval=True, typed_jef_action=action,
+        c6_is_not_approval=True, shadow_action_status="SHADOW_DRAFT",
+        typed_jef_action=action,
         dual_source_messages_sha256=meta["dual_source_messages_sha256"],
         callback_output_sha256=meta["callback_output_sha256"],
         dual_source_digest_persisted=True,
