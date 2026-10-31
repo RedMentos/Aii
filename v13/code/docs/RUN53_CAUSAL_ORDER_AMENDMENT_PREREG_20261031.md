@@ -1,0 +1,7 @@
+# Run53 causal message order correction — prereg amendment 2026-10-31
+
+Owner GPT-6. This amendment is committed **before** any corrected Run53 runner code. Original Run53 prereg `f51cc7eb8facc1547f6e5656bd60e896154b7e05`, original source/CI run `41163165580` at `c1639b4743aa08541a0e07ea915f9c968dd0b95f` must remain intact and cannot be retroactively declared a valid causal second-attempt proof.
+
+Independent source review found a protocol flaw before original native raw closed: original Run53 runner records the followup USER event **before** the correction F5 event, then uses the later correction to answer the earlier event. That violates the intended causal order, even if a lexical source checker currently permits it. Do not claim native causal F1/F5 utility from this ordering.
+
+Corrected protocol (new source hash and separate raw): create first-query USER event, check OFF/CLARIFY with no model; then create correction USER event and F5 record; **then** create followup USER event, and only then call real C3. Persist exact three USER message IDs in the report and require strict `first < correction < followup` in the independent verifier. Keep original seed467 fixture, model/runner hashes, original Run51 runner/scorer, all negative gates unchanged. Original run 41163165580 remains an unmodified historical attempt (RED or structural-only regardless of CI outcome); corrected run is a separate native evidence object, not an overwrite or rescore.
