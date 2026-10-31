@@ -2,7 +2,7 @@ name: V13 F1 F5 temporal source order real Runtime synthetic preflight
 on:
   push:
     branches: [assistant/v13-f1f5-temporal-source-gate-20261031-auto11]
-    paths: ['.github/workflows/v13-f1f5-temporal-source-gate.yml', 'v13/code/tests/test_runtime_c3_atomic_draft_candidate.py', 'v13/code/v13/runtime_c3_atomic_draft_candidate.py']
+    paths: ['.github/workflows/v13-f1f5-temporal-source-gate.yml', 'v13/code/tests/test_f1f5_temporal_source_gate_candidate.py', 'v13/code/v13/f1f5_temporal_source_gate_candidate.py']
 permissions:
   contents: read
 jobs:
