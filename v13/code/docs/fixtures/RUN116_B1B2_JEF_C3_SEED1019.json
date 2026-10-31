@@ -1,0 +1,65 @@
+{
+  "arms": [
+    "RAW_TWO_SOURCE_ROLE",
+    "TYPED_JEF_ROLE",
+    "TYPED_JEF_WITH_BODY_ROLE"
+  ],
+  "rows": [
+    {
+      "current": "Project Ardent. Apply the earlier project rules. Option A costs 220 euros, takes 5 days, and is local. Option B costs 200 euros, takes 8 days, and is local. Choose the cheapest eligible option and state its remaining budget.",
+      "id": "Ardent",
+      "oracle": {
+        "choice": "A",
+        "remaining": 20
+      },
+      "prior": "Project Ardent. Budget 240 euros. Deadline 6 days. Local-only requirement: true. These are the binding project rules."
+    },
+    {
+      "current": "Project Birch. Decide using the saved policy. Option A: cost 340 euros, duration 8 days, local false. Option B: cost 300 euros, duration 7 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "id": "Birch",
+      "oracle": {
+        "choice": "B",
+        "remaining": 60
+      },
+      "prior": "Project Birch. Spending limit: 360 euros. Finish within 9 days. Must remain local: no. This policy is binding."
+    },
+    {
+      "current": "Project Cetus. Apply the earlier project rules. Option A costs 190 euros, takes 2 days, and is local. Option B costs 170 euros, takes 4 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "id": "Cetus",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "prior": "Project Cetus. Budget 180 euros. Deadline 3 days. Local-only requirement: true. These are the binding project rules."
+    },
+    {
+      "current": "Project Dawn. Decide using the saved policy. Option A: cost 380 euros, duration 5 days, local true. Option B: cost 370 euros, duration 7 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "id": "Dawn",
+      "oracle": {
+        "choice": "A",
+        "remaining": 40
+      },
+      "prior": "Project Dawn. Spending limit: 420 euros. Finish within 6 days. Must remain local: yes. This policy is binding."
+    },
+    {
+      "current": "Project Eider. Apply the earlier project rules. Option A costs 230 euros, takes 7 days, and is not local. Option B costs 200 euros, takes 6 days, and is not local. Choose the cheapest eligible option and state its remaining budget.",
+      "id": "Eider",
+      "oracle": {
+        "choice": "B",
+        "remaining": 60
+      },
+      "prior": "Project Eider. Budget 260 euros. Deadline 8 days. Local-only requirement: false. These are the binding project rules."
+    },
+    {
+      "current": "Project Fjord. Decide using the saved policy. Option A: cost 280 euros, duration 5 days, local true. Option B: cost 320 euros, duration 3 days, local true. Pick the cheapest eligible option and give remaining euros.",
+      "id": "Fjord",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      },
+      "prior": "Project Fjord. Spending limit: 300 euros. Finish within 4 days. Must remain local: yes. This policy is binding."
+    }
+  ],
+  "schema": "v13.run116.b1b2_jef_c3_seed1019.v1",
+  "seed": 1019
+}
