@@ -71,6 +71,21 @@ class GroupedSourcePreflight(unittest.TestCase):
             with self.subTest(rows=str(rows)[:25]), self.assertRaises(ValueError):
                 c.validate_training_rows(rows)
 
+    def test_loss_forwards_exact_source_groups_without_torch_dependency(self):
+        from unittest.mock import patch
+        from v13 import body_jepa_contrastive_shadow
+        with patch.object(body_jepa_contrastive_shadow, "loss_and_metrics",
+                          return_value=("synthetic_loss", {"masked_false_negatives": 2})) as call:
+            loss, metrics = c.research_loss(None, object(), object(), self.rows,
+                                            heldout_rows=[row("C", "c1")])
+        self.assertEqual(loss, "synthetic_loss")
+        self.assertEqual(call.call_args.kwargs["groups"],
+                         ("a" * 64, "a" * 64, "b" * 64))
+        self.assertEqual(call.call_args.kwargs["weights"], (1.0, 1.0, 1.0))
+        self.assertEqual(metrics["source_group_count"], 2)
+        self.assertEqual(metrics["masked_false_negatives"], 2)
+        self.assertNotIn("groups", metrics)
+
     def test_source_hash_not_disclosed_in_loss_metrics(self):
         try:
             import torch
