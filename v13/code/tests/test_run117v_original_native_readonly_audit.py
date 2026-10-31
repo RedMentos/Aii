@@ -151,6 +151,9 @@ class OriginalNativeAuditorTests(unittest.TestCase):
         for row in rows:
             offers = [
                 {"role": role, "phase": phase, "status": "RECORDED",
+                 "source_ref": ref(
+                     row["prior"] if phase == "prior" else row["current"],
+                     row["prior"] if phase == "prior" else row["current"]),
                  "process_reaped": True,
                  "native_metrics": {"status": "FINAL",
                                     "actual_model": audit.MODEL_NAMES[role][0]},
@@ -182,7 +185,17 @@ class OriginalNativeAuditorTests(unittest.TestCase):
             "exploratory_body_selection_signal": False,
             "rows": cases}
         self.assertTrue(audit._report_check(report, rows)["native_complete"])
+        original = list(report["rows"][0]["offers"])
         report["rows"][0]["offers"] = []
+        with self.assertRaisesRegex(ValueError, "BODY_OFFER_RECEIPT_RED"):
+            audit._report_check(report, rows)
+        report["rows"][0]["offers"] = list(original)
+        report["rows"][0]["offers"][0] = dict(original[0], phase="current")
+        with self.assertRaisesRegex(ValueError, "BODY_OFFER_RECEIPT_RED"):
+            audit._report_check(report, rows)
+        report["rows"][0]["offers"] = list(original)
+        report["rows"][0]["offers"][0] = dict(
+            original[0], source_ref=ref(rows[0]["current"], rows[0]["current"]))
         with self.assertRaisesRegex(ValueError, "BODY_OFFER_RECEIPT_RED"):
             audit._report_check(report, rows)
 
