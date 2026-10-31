@@ -1,0 +1,238 @@
+name: V13 Run117BM pinned C3 minimal exact-source seed1091 native
+
+on:
+  push:
+    branches:
+      - assistant/v13-run117bm-c3-minimal-native-20261101-hourly11
+    paths:
+      - .github/workflows/v13-run117bm-c3-minimal-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+
+jobs:
+  native-c3-minimal-exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve pinned phone source and serial native C3 with closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117bm-native"
+          extracted="$RUNNER_TEMP/v13-run117bm-extracted"
+          source_root="$extracted/V13-Phone"
+          installed="$RUNNER_TEMP/v13-run117bm-installed"
+          fixture="$GITHUB_WORKSPACE/v13/code/docs/fixtures/RUN117BK_C3_MINIMAL_EXACT_SEED1091.json"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          4a1d3aa5588d38ad9955f78306a00a5d536ab962 v13/code/scripts/run117bk_c3_minimal_exact_native.py
+          a01709c1d3b84ed7faeb3041308775a48ec81295 v13/code/tests/test_run117bk_c3_minimal_exact_native.py
+          974d05a58d627209d87f7926a2091054b676d225 v13/code/docs/fixtures/RUN117BK_C3_MINIMAL_EXACT_SEED1091.json
+          bf891c5c77636b17cfdea924d8754198468db472 v13/code/docs/RUN117BK_C3_MINIMAL_EXACT_PREREG_20261031.md
+          9e74d8a64741ce909133ddd8cf42434b738a5d04 v13/code/v13/body_source_id_c3_evidence_bridge_candidate.py
+          e431eecaa4a7643a548a512036225343f681ee23 v13/code/v13/b1b2_source_id_quote_candidate.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          echo '8d004fc2a0b6c80bac103e675b2012b33f1d078451a916a715ff47b0d1db81e4  v13/code/docs/fixtures/RUN117BK_C3_MINIMAL_EXACT_SEED1091.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          echo "$?" > "$e/FIXTURE_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117bm-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117bm-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else
+            for stage in DEPS PIP_CHECK; do echo SKIPPED > "$e/${stage}_RAW.log"; echo SKIPPED > "$e/${stage}_EXIT.txt"; done
+          fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/FIXTURE_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run117BM.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+            echo "$?" > "$e/PACK_EXIT.txt"
+          else echo SKIPPED > "$e/PACK_RAW.log"; echo SKIPPED > "$e/PACK_EXIT.txt"; fi
+          if [ "$(cat "$e/PACK_EXIT.txt")" = 0 ]; then
+            "$py" - "$e" "$extracted" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);p=e/'V13-Phone-Run117BM.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              assert set(z.namelist())=={'V13-Phone/'+x for x in manifest['files']}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for name,digest in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==digest,name
+              for name in ('scripts/run117bk_c3_minimal_exact_native.py',
+                           'v13/body_source_id_c3_evidence_bridge_candidate.py',
+                           'docs/fixtures/RUN117BK_C3_MINIMAL_EXACT_SEED1091.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'source_files':len(manifest['files']),
+                            'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            echo "$?" > "$e/ZIP_EXIT.txt"
+          else echo SKIPPED > "$e/ZIP_RAW.log"; echo SKIPPED > "$e/ZIP_EXIT.txt"; fi
+          if [ "$(cat "$e/ZIP_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:scripts:tests "$py" -m unittest -v tests.test_run117bk_c3_minimal_exact_native tests.test_run117aq_body_source_c3_bridge tests.test_run117ai_event_source_binding_candidate) > "$e/PREFLIGHT_RAW.log" 2>&1
+            echo "$?" > "$e/PREFLIGHT_EXIT.txt"
+          else echo SKIPPED > "$e/PREFLIGHT_RAW.log"; echo SKIPPED > "$e/PREFLIGHT_EXIT.txt"; fi
+          if [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 12m env PYTHONPATH=.:scripts:tests "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_C3_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_C3_EXIT.txt"
+          else echo SKIPPED > "$e/INSTALL_C3_RAW.log"; echo SKIPPED > "$e/INSTALL_C3_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_C3_EXIT.txt")" = 0 ]; then
+            (cd "$source_root" && timeout --signal=TERM --kill-after=5s 20m env PYTHONPATH=.:scripts:tests "$py" scripts/run117bk_c3_minimal_exact_native.py --fixture "$fixture" --installed "$installed" --work "$RUNNER_TEMP/v13-run117bm-work" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_RAW.log"; echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          if [ -f "$e/NATIVE_CASE/report.json" ]; then
+            "$py" - "$e" "$fixture" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys,hashlib
+          from pathlib import Path
+          e=Path(sys.argv[1]);fixture=Path(sys.argv[2])
+          r=json.loads((e/'NATIVE_CASE/report.json').read_text())
+          f=json.loads(fixture.read_text());rows={x['id']:x for x in f['rows']}
+          assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='8d004fc2a0b6c80bac103e675b2012b33f1d078451a916a715ff47b0d1db81e4'
+          assert r['schema']=='v13.run117bk.c3_minimal_exact_native.v1'
+          assert r['seed']==1091 and r['fixture_sha256']=='8d004fc2a0b6c80bac103e675b2012b33f1d078451a916a715ff47b0d1db81e4'
+          assert r['native_body_calls']==0 and r['native_jef_calls']==0 and r['native_c2_calls']==0
+          assert r['native_c3_calls']==18 and r['deterministic_source_selectors']==12
+          assert r['output_committed'] is False and r['tool_dispatches']==0
+          assert r['learning_authority']==0 and r['delivery_authority']==0
+          assert r['age0']=='RECORD_ONLY' and r['step2_exit']=='EVIDENCE_NOT_PASSING'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['redmi_measured'] is False
+          assert r['whole_system_complete'] is False and len(r['rows'])==6
+          arms=('FULL_SOURCE_PACKET','MINIMAL_EXACT_SPANS','CURRENT_ONLY')
+          counts={x:0 for x in arms};scores={x:0 for x in arms};paired=0
+          def unique(pairs):
+              d={}
+              for k,v in pairs:
+                  if k in d:raise ValueError('duplicate json')
+                  d[k]=v
+              return d
+          def nonfinite(x):raise ValueError('nonfinite json')
+          for row in r['rows']:
+              src=rows[row['id']]
+              assert row['status']=='RECORDED' and row['closed_store_ok'] is True
+              assert row['no_live_output'] is True and len(row['arms'])==3
+              per={}
+              for item in row['arms']:
+                  arm=item['arm'];assert arm in arms and arm not in per
+                  per[arm]=item
+                  assert item['status']=='RECORDED' and item['native_final'] is True
+                  assert item['process_reaped'] is True
+                  assert item['native_metrics']['status']=='FINAL'
+                  assert item['native_metrics']['actual_model']=='LFM2.5-350M-QAD-Q4_0.gguf'
+                  msgs=item['messages']
+                  assert len(msgs)==2 and [m['role'] for m in msgs]==['system','user']
+                  assert src['policy_span'] not in msgs[0]['content']
+                  assert src['option_span'] not in msgs[0]['content']
+                  assert '"oracle"' not in msgs[1]['content']
+                  if arm=='FULL_SOURCE_PACKET':
+                      packet=json.loads(msgs[1]['content'])
+                      assert packet['typed_jef_candidate'] is None
+                      assert packet['typed_candidate_authority']==0
+                      obs=packet['body_observations']
+                      assert [x['role'] for x in obs]==['B2_GIST','B1_DETAIL']
+                      assert [x['exact_source_excerpt'] for x in obs]==[src['policy_span'],src['option_span']]
+                  elif arm=='MINIMAL_EXACT_SPANS':
+                      assert src['policy_span'] in msgs[1]['content']
+                      assert src['option_span'] in msgs[1]['content']
+                      assert 'Archive memo' not in msgs[1]['content']
+                  else:
+                      assert src['policy_span'] not in msgs[1]['content']
+                      assert src['option_span'] in msgs[1]['content']
+                      assert 'Archive memo' not in msgs[1]['content']
+                  expected=src['oracle'] if arm!='CURRENT_ONLY' else {'choice':'NONE','remaining':None}
+                  try:
+                      parsed=json.loads(item['output'],object_pairs_hook=unique,parse_constant=nonfinite)
+                      valid=(type(parsed) is dict and set(parsed)=={'choice','remaining'}
+                             and type(parsed['choice']) is str and parsed['choice'] in ('A','B','NONE','UNKNOWN')
+                             and (parsed['remaining'] is None or type(parsed['remaining']) is int))
+                  except (ValueError,TypeError,OverflowError):
+                      parsed=None;valid=False
+                  exact=int(valid and parsed==expected)
+                  assert item['score']['correct']==exact
+                  assert item['score']['valid_json'] is bool(valid)
+                  counts[arm]+=1;scores[arm]+=exact
+              paired+=int(per['MINIMAL_EXACT_SPANS']['score']['correct']==1
+                          and per['FULL_SOURCE_PACKET']['score']['correct']==0)
+          assert counts=={x:6 for x in arms} and r['scores']==scores
+          assert r['paired_minimal_correct_full_wrong']==paired
+          signal=(scores['MINIMAL_EXACT_SPANS']>=4
+                  and scores['MINIMAL_EXACT_SPANS']>=scores['FULL_SOURCE_PACKET']+2
+                  and scores['CURRENT_ONLY']>=4)
+          assert r['exploratory_minimal_source_signal'] is bool(signal)
+          expected_status=('NATIVE_COMPLETE_EXPLORATORY_MINIMAL_SOURCE_SIGNAL'
+                           if signal else 'NATIVE_COMPLETE_NO_MINIMAL_SOURCE_SIGNAL')
+          assert r['status']==expected_status
+          print(json.dumps({'independent_raw_scored':True,'status':r['status'],
+                            'native_c3_calls':18,'scores':scores,'paired':paired},sort_keys=True))
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo SKIPPED > "$e/VERIFY_RAW.log"; echo SKIPPED > "$e/VERIFY_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run117bk_c3_minimal_exact_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 10313a85345dd65b73649768faeaea7e014e351e --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 10313a85345dd65b73649768faeaea7e014e351e HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          python3 - "$e" <<'PY' > "$e/NOEXPORT_RAW.log" 2>&1
+          from pathlib import Path
+          import sys
+          e=Path(sys.argv[1]); bad=[str(p.relative_to(e)) for p in e.rglob('*') if p.is_file() and p.suffix.lower() in ('.pt','.pth','.gguf','.safetensors','.npz','.bin','.ckpt')]
+          assert not bad, 'WEIGHT_EXPORT_RED:'+repr(bad)
+          print('NO_WEIGHT_LIKE_ARTIFACTS')
+          PY
+          echo "$?" > "$e/NOEXPORT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native phone/source/rows GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117bm-c3-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117bm-native/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Enforce pinned native and zero-authority result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117bm-native"
+          for stage in PINS FIXTURE VENV DEPS PIP_CHECK PACK ZIP PREFLIGHT INSTALL_C3 NATIVE VERIFY COMPILE PRIVACY DIFF NOEXPORT; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved, no gate promotion"
+              tail -70 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN117BM_LINUX_NATIVE_C3_MINIMAL_SOURCE_ONLY_NO_STEP2_OR_BODY_JEPA_GATE'
