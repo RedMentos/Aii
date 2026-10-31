@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 import tempfile
 import unittest
-from run117bq_independent_budget_smoke_audit import audit, canonical, sha, IDS, NEGATIVE, MODEL_SHA, RUNNER_SHA, MODEL_REV, FIXTURE_SHA
+from scripts.run117bq_independent_budget_smoke_audit import audit, canonical, sha, IDS, NEGATIVE, MODEL_SHA, RUNNER_SHA, MODEL_REV, FIXTURE_SHA
 
 
 def fake():
