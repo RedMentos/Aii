@@ -15,7 +15,7 @@ from .world_jepa_slot_candidate import (
 )
 
 REVISION = "run39-world-jepa-action-balanced-fullslot-shadow-v1"
-AFFECTED_COPIES = SLOTS - 1  # total five action rows per affected transition
+AFFECTED_COPIES = SLOTS - 2  # four extra + one base = five action rows
 
 
 class BalancedFullSlotWorldJEPA(FullSlotWorldJEPA):
