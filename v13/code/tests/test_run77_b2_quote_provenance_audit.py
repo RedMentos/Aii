@@ -79,6 +79,15 @@ class B2QuoteProvenanceTests(unittest.TestCase):
         self.assertIn("QUOTE_NOT_BOUND_TO_SPAN_RED",
                       [e["code"] for e in result["findings"]])
 
+    def test_frozen_run52_400_character_pointer_is_accepted(self):
+        report = report_with_full_refs()
+        inject_prior_quote(report, whole=True, wide=400)
+        result = audit.audit_report(report)
+        self.assertEqual(result["status"],
+                         "B2_QUOTE_PROVENANCE_DIAGNOSTIC_COMPLETE_SHADOW")
+        self.assertEqual(result["verified_prior_refs"], 1)
+        self.assertEqual(result["findings"], [])
+
     def test_unquoted_full_source_cannot_be_counted(self):
         report = report_with_full_refs()
         inject_prior_quote(report, whole=True, wide=200)
@@ -113,7 +122,7 @@ class B2QuoteProvenanceTests(unittest.TestCase):
     def test_quote_width_cannot_be_forged(self):
         report = report_with_full_refs()
         inject_prior_quote(report, whole=True, wide=200)
-        for wide in (True, -1, 201, "200"):
+        for wide in (True, -1, 401, "400"):
             with self.subTest(wide=wide):
                 current_b2(report)["quote_context_chars"] = wide
                 result = audit.audit_report(report)
