@@ -76,7 +76,7 @@ class LatestUserOfferConsumer:
                 "POST_OFFER_STALE_USER_OR_SOURCE_RED",
                 runner_called=True,
                 shadow_offer_may_exist=True,
-                discarded_offer_packet_id=result.get("offer_packet_id"))
+                orphaned_shadow_offer_packet_id=result.get("offer_packet_id"))
         return _result(
             "SHADOW_LATEST_USER_OFFER_PRODUCED",
             runner_called=True, shadow_offer_may_exist=True,
