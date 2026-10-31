@@ -1,6 +1,10 @@
 name: V13 Run111 disjoint pinned C3 native B2 Context OS ablation
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - assistant/v13-run111-c3-b2-context-native-ablation-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run111-c3-context-native.yml
 permissions:
   contents: read
 concurrency:
