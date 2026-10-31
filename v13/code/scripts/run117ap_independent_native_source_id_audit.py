@@ -236,7 +236,7 @@ def audit_bytes(blob, *, expected_outer=None):
             q = evidence(item, "query_evidence", "QueryPacket")
             if (p.get("packet_id") != item.get("packet_id") or
                     q.get("packet_id") != item.get("query_packet_id") or
-                    p.get("role") != role or q.get("role") != role):
+                    p.get("role") != role or q.get("target_role") != role):
                 fail("BASELINE_PACKET")
             raw_packets += 2
         role_correct = []
@@ -309,7 +309,7 @@ def audit_bytes(blob, *, expected_outer=None):
         if row.get("id_pair_correct") is not pair:
             fail("PAIR_SCORE_FORGED")
         pair_count += int(pair)
-    if (raw_packets != 30 or
+    if (raw_packets != 48 or
             by_role != {"B1_DETAIL": 3, "B2_GIST": 4} or
             pair_count != 2 or quote_count != 4 or
             report.get("model_id_by_role_correct") != by_role or
