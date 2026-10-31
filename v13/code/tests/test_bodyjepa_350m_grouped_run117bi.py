@@ -1,5 +1,7 @@
 """Run117BI software-only frozen synthetic grouped-source 350M pilot controls."""
 import math
+import json
+from unittest.mock import patch
 import tempfile
 import unittest
 from pathlib import Path
@@ -76,6 +78,60 @@ class Grouped350mPreflight(unittest.TestCase):
         bad[str(p.SEEDS[1])]["GROUPED_EMA"]["summary"]["retention"] = math.nan
         with self.assertRaisesRegex(ValueError, "RUN117BI_NLL_SUMMARY_RED"):
             p.verdict(bad)
+
+    def test_model_free_six_arm_scaffold_and_no_export(self):
+        calls = []
+        class Fake:
+            kind = "?"
+            def __init__(self, master, work, **kwargs):
+                self.cfg = kwargs["cfg"]
+                calls.append((self.kind, dict(self.cfg)))
+            def fit(self, items, base_generation):
+                self.items = items
+                binding = {"source_group_count": 4, "repeated_view_count": 4,
+                           "source_authentication": "REQUIRED_EXTERNAL"}
+                return {"artifact": "NO_EXPORT", "hash": None,
+                        "files": {"gguf": "NO_EXPORT"},
+                        "metrics": {"steps": 8, "grouped_source_binding": binding}}
+        class CE(Fake):
+            kind = "ce"
+        class Ungrouped(Fake):
+            kind = "ungrouped"
+        class Grouped(Fake):
+            kind = "grouped"
+        synthetic = {name: [{"nll": 1.0}] for name in p.fixture()}
+        with tempfile.TemporaryDirectory() as td:
+            with patch.object(p, "ExportFreeCosineTrainer", CE), \
+                 patch.object(p, "ExportFreeContrastiveTrainer", Ungrouped), \
+                 patch.object(p, "ExportFreeGroupedTrainer", Grouped), \
+                 patch.object(p, "measure", return_value=synthetic):
+                report = p.run(Path(td) / "unused-master", Path(td))
+            self.assertEqual(report["completed_arms"], 6)
+            self.assertFalse(report["utility_gate_pass"])
+            self.assertFalse(report["production_activation"])
+            self.assertFalse(report["body_jepa_available"])
+            self.assertEqual(report["runtime_jepa_weight"], 0)
+            self.assertEqual(report["source_group_count"], 4)
+            self.assertEqual([x[0] for x in calls].count("grouped"), 2)
+            self.assertEqual(sum(x[1].get("grouped_source_enabled") is True
+                                 for x in calls), 2)
+            self.assertEqual(sum(x[1]["jepa_weight"] == 0 for x in calls), 2)
+            self.assertEqual(json.loads((Path(td) / "report.json").read_text())["completed_arms"], 6)
+
+    def test_first_fit_failure_persists_raw_red(self):
+        class Fail:
+            def __init__(self, *args, **kwargs):
+                pass
+            def fit(self, *args, **kwargs):
+                raise RuntimeError("SYNTHETIC_FAILURE_ONLY")
+        with tempfile.TemporaryDirectory() as td:
+            with patch.object(p, "ExportFreeCosineTrainer", Fail):
+                with self.assertRaisesRegex(RuntimeError, "SYNTHETIC_FAILURE"):
+                    p.run(Path(td) / "unused-master", Path(td))
+            report = json.loads((Path(td) / "report.json").read_text())
+            self.assertEqual(report["status"], "FAILED_PRESERVED")
+            self.assertEqual(report["failures"][0]["error_type"], "RuntimeError")
+            self.assertFalse(report["body_jepa_available"])
 
     def test_no_native_without_explicit_opt_in(self):
         with tempfile.TemporaryDirectory() as td:
