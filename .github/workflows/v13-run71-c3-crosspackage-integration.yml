@@ -42,6 +42,7 @@ jobs:
           9b11075e2f7820ea0f571226fed6dcbd0ab145ed v13/code/tests/test_jef_c3_schema_draft_candidate.py
           18aaaa86f416a1df9a703b86b9d12215ad1c00c5 v13/code/v13/jef_c3_schema_source_recheck_shadow.py
           c47a6ea2ef47e01b43c6320c60de1280e33607bf v13/code/tests/test_jef_c3_schema_source_recheck_shadow.py
+          d56984141128ea9299d4c2a53baae9e8dc5097df v13/code/tests/test_run71_schema_crosspackage_integration.py
           PINS
           bad=0
           while read -r want path; do
@@ -58,17 +59,17 @@ jobs:
             echo "$?" > "$e/DEPS_EXIT.txt"
           else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
           if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            for t in test_jef_c3_schema_source_recheck_shadow.py test_jef_c3_schema_draft_candidate.py test_jef_c3_c5_c6_operator_cli.py test_jef_c3_source_reasoning_fixture_743.py test_run70_c3_source_reasoning_verify.py; do
+            for t in test_jef_c3_schema_source_recheck_shadow.py test_jef_c3_schema_draft_candidate.py test_jef_c3_c5_c6_operator_cli.py test_jef_c3_source_reasoning_fixture_743.py test_run70_c3_source_reasoning_verify.py test_run71_schema_crosspackage_integration.py; do
               key="${t%.py}"
               timeout --signal=TERM --kill-after=5s 6m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest discover -s v13/code/tests -p "$t" -v > "$e/${key}_RAW.log" 2>&1
               echo "$?" > "$e/${key}_EXIT.txt"
             done
           else
-            for t in test_jef_c3_schema_source_recheck_shadow.py test_jef_c3_schema_draft_candidate.py test_jef_c3_c5_c6_operator_cli.py test_jef_c3_source_reasoning_fixture_743.py test_run70_c3_source_reasoning_verify.py; do
+            for t in test_jef_c3_schema_source_recheck_shadow.py test_jef_c3_schema_draft_candidate.py test_jef_c3_c5_c6_operator_cli.py test_jef_c3_source_reasoning_fixture_743.py test_run70_c3_source_reasoning_verify.py test_run71_schema_crosspackage_integration.py; do
               key="${t%.py}"; echo SKIPPED > "$e/${key}_RAW.log"; echo 99 > "$e/${key}_EXIT.txt"
             done
           fi
-          python3 -m compileall -q v13/code/v13/jef_c3_schema_source_recheck_shadow.py v13/code/v13/jef_c3_schema_draft_candidate.py v13/code/scripts/jef_c3_c5_c6_operator_cli.py v13/code/scripts/jef_c3_source_reasoning_fixture_743.py v13/code/scripts/run70_c3_source_reasoning_native_743.py v13/code/scripts/run70_c3_source_reasoning_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m compileall -q v13/code/v13/jef_c3_schema_source_recheck_shadow.py v13/code/v13/jef_c3_schema_draft_candidate.py v13/code/scripts/jef_c3_c5_c6_operator_cli.py v13/code/scripts/jef_c3_source_reasoning_fixture_743.py v13/code/scripts/run70_c3_source_reasoning_native_743.py v13/code/scripts/run70_c3_source_reasoning_verify.py v13/code/tests/test_run71_schema_crosspackage_integration.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 07b5227655528627262736ae91844d5cd3767cf8 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
@@ -89,7 +90,7 @@ jobs:
         shell: bash
         run: |
           e="$RUNNER_TEMP/v13-run71-integration"
-          for s in PINS VENV DEPS test_jef_c3_schema_source_recheck_shadow test_jef_c3_schema_draft_candidate test_jef_c3_c5_c6_operator_cli test_jef_c3_source_reasoning_fixture_743 test_run70_c3_source_reasoning_verify COMPILE PRIVACY DIFF; do
+          for s in PINS VENV DEPS test_jef_c3_schema_source_recheck_shadow test_jef_c3_schema_draft_candidate test_jef_c3_c5_c6_operator_cli test_jef_c3_source_reasoning_fixture_743 test_run70_c3_source_reasoning_verify test_run71_schema_crosspackage_integration COMPILE PRIVACY DIFF; do
             echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
             test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
           done
