@@ -6,7 +6,7 @@ import unittest
 
 from scripts import run52_b1b2_cross_turn_native as run52
 from tests.test_run52_b1b2_cross_turn import FakeRuntime
-from v13.b1b2_causal_context_candidate import causal_body_context
+from v13.b1b2_causal_context_candidate import causal_body_context, _project_scope
 
 FIXTURE = Path(__file__).resolve().parents[1] / "docs/fixtures/run52_b1b2_cross_turn_seed479.json"
 
@@ -64,9 +64,18 @@ class CausalBodyContextAuditTests(unittest.TestCase):
         current = self.r.store.event(self.r.session, other["current"])
         for role in run52.ROLES:
             with self.subTest(role=role):
+                legacy = self.r.cognition.body_context(role, current)
+                self.assertTrue(legacy, "preserve observed generic project-rules false match")
+                self.assertEqual(legacy[0]["source_ref"]["source_id"],
+                                 prior["source_ref"]["source_id"])
                 guarded = causal_body_context(self.r, role, current, operator_opt_in=True)
                 self.assertEqual(guarded["status"], "SHADOW_CONTEXT_FILTERED")
                 self.assertEqual(guarded["context"], [])
+
+    def test_generic_project_rules_is_not_proper_project_identity(self):
+        self.assertEqual(_project_scope(self.f["prior"]), {"harbor"})
+        self.assertEqual(_project_scope("Use the earlier project rules."), set())
+        self.assertEqual(_project_scope("Project Harbor and Project Willow."), set())
 
     def test_deleted_prior_source_is_not_imported(self):
         prior = self.r.store.event(self.r.session, self.f["prior"])
