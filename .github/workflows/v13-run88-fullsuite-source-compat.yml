@@ -1,0 +1,72 @@
+name: V13 Run88 original full-suite source compatibility forensic
+on:
+  push:
+    branches:
+      - assistant/v13-run88-fullsuite-source-compat-20261031-auto11
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  forensic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      PYTHONPATH: ".:scripts"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run independent stdlib controls and close original raw
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/run88"
+          e="$RUNNER_TEMP/run88"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m compileall -q v13/code/scripts/fullsuite_source_compat_triage.py v13/code/tests/test_fullsuite_source_compat_triage.py
+          (cd v13/code && python3 -m unittest tests.test_fullsuite_source_compat_triage -v) > "$e/TEST_RAW.log" 2>&1
+          echo 0 > "$e/TEST_EXIT.txt"
+          curl -fLsS --retry 3 --max-time 60 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13032807337/zip" \
+            -o "$e/ORIGINAL.zip"
+          echo "4adbb12881a0d91660f8085da37c12b726d0a856b135463d74dea4d0e722e396  $e/ORIGINAL.zip" | sha256sum -c -
+          (cd v13/code && python3 scripts/fullsuite_source_compat_triage.py \
+            --zip "$e/ORIGINAL.zip" \
+            --sha256 4adbb12881a0d91660f8085da37c12b726d0a856b135463d74dea4d0e722e396 \
+            --root . --out "$e/ORIGINAL_TRIAGE.json")
+          python3 - "$e/ORIGINAL_TRIAGE.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1]))
+          assert report['full_exit']=='1'
+          assert report['summary']['top_level_unittest']==dict(tests=4612,failures=4,errors=66,skipped=28)
+          assert report['forensic_only'] is True and report['promotion_authority'] is False
+          assert all(v['verdict'] in {'STRICT_SOURCE_REFUSAL','STRICT_SOURCE_ACCEPT'}
+                     for v in report['source_compatibility'].values())
+          print('ORIGINAL_RED_RETAINED',report['summary']['top_level_unittest'])
+          print('STRICT_SOURCE_VERDICTS',{k:v['verdict'] for k,v in report['source_compatibility'].items()})
+          PY
+          echo 0 > "$e/ORIGINAL_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base f8c77fb95b668e7f8e9bd6429d82969a3debd09f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check f8c77fb95b668e7f8e9bd6429d82969a3debd09f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/TEST_RAW.log"
+          cat "$e/ORIGINAL_TRIAGE.json"
+      - name: Upload closed forensic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run88-fullsuite-compat-${{ github.sha }}
+          path: ${{ runner.temp }}/run88/
+          if-no-files-found: error
+          retention-days: 90
