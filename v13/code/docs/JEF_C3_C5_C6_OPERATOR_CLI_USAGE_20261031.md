@@ -18,6 +18,8 @@ Save the following UTF-8 JSON to a file on your **own** device, e.g. `/tmp/jef-c
 
 All five keys are mandatory; no extras or duplicate keys. Project ID, domain, grammar, fields, units and flags must match across sources. Maximum 2048 characters per source, 16 KiB JSON file. This bounded typed source grammar is intentionally narrow.
 
+Input must be a directly opened **regular local file**, not a FIFO, device node, directory, or symlink. The CLI uses a nonblocking, no-follow open and reads at most 16 KiB + 1 byte before rejecting oversized input. This prevents a writerless FIFO from indefinitely blocking input validation. It does not make an operator-owned path safe against a hostile same-user filesystem or prove Redmi behavior.
+
 ## Run
 
 From repository root with a locally installed V13 Python environment and `PYTHONPATH=v13/code`:
