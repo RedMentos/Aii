@@ -34,6 +34,25 @@ CONFIG = BASE_CONFIG | {"seed": SEED, "learning_mode": "RECORD_ONLY",
 GOOD = ("NATIVE_COMPLETE_EXPLORATORY_CAUSAL_PRIOR_SIGNAL",
         "NATIVE_COMPLETE_NO_CAUSAL_PRIOR_SIGNAL")
 RED = "STRUCTURAL_RED"
+SYNTHETIC_BODY_REVISION = "RUN117BG_DETERMINISTIC_SELECTOR_NO_BODY_MODEL"
+
+
+class _SyntheticBodyModelRevisions:
+    """Only Body source-ID packets use a declared synthetic revision.
+
+    The installed C3 model and the actual pool remain unchanged. Never claim
+    this marker represents real B1/B2 model weights or native inference.
+    """
+    def __init__(self, models):
+        self._models = models
+
+    def revision(self, role):
+        if role in ("B1_DETAIL", "B2_GIST"):
+            return SYNTHETIC_BODY_REVISION
+        return self._models.revision(role)
+
+    def __getattr__(self, name):
+        return getattr(self._models, name)
 
 
 def fixture(path):
@@ -201,6 +220,7 @@ def run(fixture_path, installed, work, out):
             home = work / row["id"]
             _prepare_home(home, installed, CONFIG)
             runtime = Runtime(home)
+            runtime.models = _SyntheticBodyModelRevisions(runtime.models)
             entry = {"id": row["id"], "status": "INCOMPLETE", "arms": [],
                      "closed_store_ok": False, "no_live_output": False}
             report["rows"].append(entry)
