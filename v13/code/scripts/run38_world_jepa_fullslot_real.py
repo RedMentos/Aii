@@ -37,7 +37,7 @@ def w7(rows):
                                      for key in ("own_only", "world_only", "both", "none")):
             raise ValueError("RUN38_W7_SUPPORT")
         if any(type(arm[key]) not in (int, float) or not math.isfinite(arm[key])
-               or not 0 <= arm[key] <= 1 for arm in (a, b) for key in CLASSES):
+               or not 0 <= arm[key] <= 1 for arm in (a, b) for key in CLASSES + ("balanced",)):
             raise ValueError("RUN38_W7_NUMERIC")
         per_seed.append({
             "seed": row["seed"],
