@@ -1,0 +1,144 @@
+name: V13 Age0 phone source ZIP plus C3 Context OS integrated smoke
+on:
+  push:
+    branches:
+      - assistant/v13-age0-phone-c3-integration-20261031-gpt6
+    paths:
+      - v13/code/docs/AGE0_PHONE_C3_INTEGRATION_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Build and execute actual extracted integrated phone source
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-age0-phone-c3"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-age0-phone-c3-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-age0-phone-c3-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/v13/bootstrap.py v13/code/v13/safe_tar.py v13/code/scripts/install_selftest.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_install_selftest.py -v) > "$e/INSTALL_CONTRACT_RAW.log" 2>&1
+          contract_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_install_selftest_run102_20261031.py -v) > "$e/COHORT_RAW.log" 2>&1
+          cohort_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_bootstrap_safe_tar_20261031.py -v) > "$e/TAR_RAW.log" 2>&1
+          tar_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_c3_context_plan_20261031.py -v) > "$e/C3_CONTEXT_RAW.log" 2>&1
+          c3_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Integrated.zip" --phone-install > "$e/PACKAGE_RAW.log" 2>&1
+          package_rc=$?
+          set -e
+          echo "$contract_rc" > "$e/INSTALL_CONTRACT_EXIT.txt"
+          echo "$cohort_rc" > "$e/COHORT_EXIT.txt"
+          echo "$tar_rc" > "$e/TAR_EXIT.txt"
+          echo "$c3_rc" > "$e/C3_CONTEXT_EXIT.txt"
+          echo "$package_rc" > "$e/PACKAGE_EXIT.txt"
+          if test "$package_rc" -eq 0; then
+            set +e
+            "$py" - "$e" "$RUNNER_TEMP/v13-age0-phone-c3-extracted" <<'PY' > "$e/ZIP_VERIFY_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          evidence=Path(sys.argv[1]);root=Path(sys.argv[2]);zip_path=evidence/'V13-Phone-Integrated.zip'
+          required=('setup.sh','scripts/install_selftest.py','tests/test_install_selftest.py','tests/test_install_selftest_run102_20261031.py',
+                    'v13/bootstrap.py','v13/safe_tar.py','tests/test_bootstrap_safe_tar_20261031.py',
+                    'v13/context_os.py','tests/test_b2_c3_context_plan_20261031.py')
+          with zipfile.ZipFile(zip_path) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              files=manifest['files']
+              assert all(p in files for p in required)
+              for name,expected in files.items():
+                  assert not name.startswith('/') and '..' not in Path(name).parts
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected, name
+              z.extractall(root)
+          for name,expected in files.items():
+              assert hashlib.sha256((root/'V13-Phone'/name).read_bytes()).hexdigest()==expected, name
+          result={'schema':'v13.age0_phone_c3_zip.software.v1','source_files':len(files),
+                  'zip_bytes':zip_path.stat().st_size,
+                  'zip_sha256':hashlib.sha256(zip_path.read_bytes()).hexdigest(),
+                  'required':list(required),'all_source_hashes_match':True,
+                  'redmi_measured':False,'native_model_executed':False,'gate_promoted':False}
+          (evidence/'ZIP_REPORT.json').write_text(json.dumps(result,sort_keys=True)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+            verify_rc=$?
+            if test "$verify_rc" -eq 0; then
+              (cd "$RUNNER_TEMP/v13-age0-phone-c3-extracted/V13-Phone" && env PYTHONPATH=.:tests:scripts "$py" scripts/install_selftest.py --timeout-seconds 120 --cohort run102_c3) > "$e/EXTRACTED_SMOKE_RAW.log" 2>&1
+              smoke_rc=$?
+            else
+              smoke_rc=125
+              echo 'ZIP_VERIFY_FAILED_NO_EXTRACTED_SMOKE' > "$e/EXTRACTED_SMOKE_RAW.log"
+            fi
+            set -e
+          else
+            verify_rc=125
+            smoke_rc=125
+            echo 'PACKAGE_FAILED_NO_ZIP_VERIFY' > "$e/ZIP_VERIFY_RAW.log"
+            echo 'PACKAGE_FAILED_NO_EXTRACTED_SMOKE' > "$e/EXTRACTED_SMOKE_RAW.log"
+          fi
+          echo "$verify_rc" > "$e/ZIP_VERIFY_EXIT.txt"
+          echo "$smoke_rc" > "$e/EXTRACTED_SMOKE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9fc4a85930b22ddb0c0f306d48bcddfad4806842 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9fc4a85930b22ddb0c0f306d48bcddfad4806842 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1])
+          names=('INSTALL_CONTRACT','COHORT','TAR','C3_CONTEXT','PACKAGE','ZIP_VERIFY','EXTRACTED_SMOKE')
+          r={'schema':'v13.age0_phone_c3_integration.software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_executed':False,'redmi_measured':False,
+             'step2_promoted':False,'body_jepa_promoted':False,'b3_promoted':False,
+             'age_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo 0 > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 5 "$e/INSTALL_CONTRACT_RAW.log"
+          tail -n 5 "$e/COHORT_RAW.log"
+          tail -n 5 "$e/TAR_RAW.log"
+          tail -n 5 "$e/C3_CONTEXT_RAW.log"
+          tail -n 5 "$e/EXTRACTED_SMOKE_RAW.log"
+          test "$contract_rc" -eq 0
+          test "$cohort_rc" -eq 0
+          test "$tar_rc" -eq 0
+          test "$c3_rc" -eq 0
+          test "$package_rc" -eq 0
+          test "$verify_rc" -eq 0
+          test "$smoke_rc" -eq 0
+          grep -q 'INSTALL_SELFTEST_PASS' "$e/EXTRACTED_SMOKE_RAW.log"
+      - name: Upload original source ZIP and raw evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-age0-phone-c3-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-age0-phone-c3/
+          if-no-files-found: error
+          retention-days: 90
