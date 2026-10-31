@@ -49,7 +49,7 @@ class Run37NullSentinel(unittest.TestCase):
 
     def test_present_invalid_priority_remains_hard_zero(self):
         for invalid in (float("nan"), float("inf"), float("-inf"),
-                        True, False, "0.95", [], 10**10000):
+                        True, False, "0.95", [], 10**400):
             with self.subTest(invalid=repr(invalid)[:60]):
                 self.assertEqual(safe_confidence_null_aware({
                     "token_confidence": {
