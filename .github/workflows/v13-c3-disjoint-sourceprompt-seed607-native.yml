@@ -43,7 +43,7 @@ jobs:
           4a4663ad648c9d3be5fd3902378146f8fabc4ae1 v13/code/docs/fixtures/c3_sourceprompt_seed607.json
           979b5ce060a4b74cab4fa2f801f142a2da40d158 v13/code/scripts/c3_disjoint_sourceprompt_seed607_native.py
           5c0dfb148e6d4366eae41967173c69136c77bb54 v13/code/scripts/c3_disjoint_sourceprompt_seed607_verify.py
-          364754db5d2e7ffaa95a8474c298a99280c3e1a8 v13/code/tests/test_c3_disjoint_sourceprompt_seed607.py
+          3ad15685dc2d1abdb240aa402bf521b6ee2def1c v13/code/tests/test_c3_disjoint_sourceprompt_seed607.py
           PINS
           bad=0
           while read -r want path; do
