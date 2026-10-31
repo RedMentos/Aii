@@ -53,7 +53,7 @@ jobs:
           echo "$?" > "$e/TEST_FIXTURE_EXIT.txt"
           PYTHONPATH=v13/code python3 -m unittest discover -s v13/code/tests -p 'test_run67_jef_c3_recency_verify.py' -v > "$e/TEST_VERIFY_RAW.log" 2>&1
           echo "$?" > "$e/TEST_VERIFY_EXIT.txt"
-          PYTHONPATH=v13/code python3 - > "$e/SOURCE_RAW.log" 2>&1 <<'PY'
+          PYTHONPATH=v13/code:v13/code/scripts python3 - > "$e/SOURCE_RAW.log" 2>&1 <<'PY'
           from scripts import jef_c3_recency_fixture_619 as f
           from scripts import p2x_disjoint_receiver_trainset as p2x
           from v13 import jef_typed_source_shadow as typed
