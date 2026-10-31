@@ -108,6 +108,11 @@ jobs:
           print('EXTRACTED_SOURCE_UNCHANGED_AFTER_TESTS',len(files))
           PY
           echo 0 > "$e/POST_VERIFY_EXIT.txt"
+          bash -n "$RUNNER_TEMP/run95-extracted/V13-Phone/STARTEN.sh" \
+            "$RUNNER_TEMP/run95-extracted/V13-Phone/setup.sh" \
+            "$RUNNER_TEMP/run95-extracted/V13-Phone/TESTEN.sh" \
+            "$RUNNER_TEMP/run95-extracted/V13-Phone/TESTEN_STEP2.sh" > "$e/SHELL_RAW.log" 2>&1
+          echo 0 > "$e/SHELL_EXIT.txt"
           "$py" -m compileall -q "$RUNNER_TEMP/run95-extracted/V13-Phone/v13" "$RUNNER_TEMP/run95-extracted/V13-Phone/scripts" > "$e/COMPILE_RAW.log" 2>&1
           echo 0 > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py \
