@@ -1,0 +1,11 @@
+# W7S World-JEPA independent stdlib report replay — preregistration (2026-10-31 UTC)
+
+Owner GPT-6 scheduled continuation, review-only child of W7S native-launch checkpoint `d4e6d19fb54820512e10b6f3f66c682c303808c6` (PR #1414). This preregistration precedes verifier/tests/CI. Native W7S Actions `41173701581` is in flight/unverified; do not alter its frozen source, seeds601–603, train4000/cf150/attr900/steps3000, model arms, thresholds or original Run39 RED.
+
+## Independent verification contract
+Implement a separate **stdlib-only**, read-only verifier that consumes a future W7S RESULT.json and per-arm/per-seed row files, never invokes native models or refits. Require exact registered schema, seeds, args, five original frozen source Git blob IDs, status classification, nine per-seed arm rows, source/seed identities, exact matching row files (allow only the explicitly stripped transient `_conf_err` field), prefit attribution support per seed, and original no-authority negative gates. Recompute W7a/b/c thresholds and per-seed gaps independently from raw attribution class scores and counts (>=15 each class), compare exact gate and summary values, and independently recompute exploratory H1/H2/H3 from the same rows. Reject any altered support, W7 gate, source pin, row identity, score, missing row, NaN/Infinity or wrong age/learning authority.
+
+A W7S `RED`/incomplete original must remain RED/incomplete; never fabricate missing rows or waive original Run39 failure. If original native run has no complete result, the verifier must return a bounded `ORIGINAL_RED_OR_INCOMPLETE` classification, not PASS. No W1–W6 independent recomputation claim without their original raw confidence/error pairs (which are stripped from public result); their recorded gate structure may be checked only.
+
+## Software acceptance and persistence
+Positive fixture with three synthetic seeds x three arms passes structural/W7 replay without claiming model utility. Negative mutations fail. Focused software CI, source pins, compile, privacy CLEAN, closed ZIP and private byte-verified backup. Do not run competing heavy native jobs. No production merge, Age0/STEP2/B3/Body-JEPA/World-JEPA/Redmi promotion, TTY, tools or learning.
