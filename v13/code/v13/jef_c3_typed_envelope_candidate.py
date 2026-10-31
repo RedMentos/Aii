@@ -64,10 +64,10 @@ def build_jef_c3_typed_envelope(memory, session, event_id, current_ref,
                 "sheet": f"Project {req['id']} latest {req['domain']} option sheet",
             }
             rows = {}
-            for mid in memory_ids:
+            for mid, expected in zip(memory_ids, (keys["policy"], keys["sheet"])):
                 row = memory.candidate(mid, session)
-                if row["key_text"] not in keys.values():
-                    return _result("FOREIGN_MEMORY_RED")
+                if row["key_text"] != expected:
+                    return _result("SOURCE_ORDER_OR_FOREIGN_MEMORY_RED")
                 rows[row["key_text"]] = row
             if len(rows) != 2 or set(rows) != set(keys.values()):
                 return _result("SOURCE_SET_RED")
