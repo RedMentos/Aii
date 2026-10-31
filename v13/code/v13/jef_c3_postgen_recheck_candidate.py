@@ -66,6 +66,8 @@ def evaluate(memory, session, event_id, current_ref, memory_ids, generator,
     except Exception as exc:
         return _result("GENERATOR_EXCEPTION_RED", generator_invoked=True,
                        generator_error_type=type(exc).__name__)
+    if dumps(messages) != dumps(before["messages"]):
+        return _result("CALLBACK_PROMPT_MUTATED_RED", generator_invoked=True)
     after = typed.build_jef_c3_typed_envelope(
         memory, session, event_id, current_ref, memory_ids,
         operator_opt_in=True)
