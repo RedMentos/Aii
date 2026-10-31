@@ -1,0 +1,9 @@
+# Run117W model-free GREEN before pinned C3 native launch
+
+Owner: review-only Run117W branch `assistant/v13-run117w-c3-arithmetic-native-diagnostic-20261031-1938`, base `795c84ae91920809e8512c231a1025d15aaceafb` (Run117V #1502). Frozen disjoint seed1063 fixture committed before runner, Git blob `567a0b2b13534e34aeab3b2a1b3e9372dd9b4ae1`, SHA256 `2b62fd13c81201c23574fa42ad87176f5d25f755b534a76f4386c9ec9c608ed9`. Preregistration `9b32db9dd6e7a10c2bec54f8011e3f397601d614` before native. Runner Git blob `b5e23fa34a8c2946455e0b232ae9874c29c0604f`. No model/runner pins changed.
+
+Original model-free Actions **41230233718 RED** due runner's accidentally truncated `FIXTURE_SHA` constant (fixture itself passed SHA check); original RED artifact 13053114665 SHA256 `713c3c3ce7ed429faa510ab8c1c390fe8d5db23edec5076b5ff5d0ef7c128324`, CRC PASS, 18/18 SHA PASS, privately preserved. Corrected only the constant in `3c7f78075e701b73e551f879937bea7550da9ada`; frozen fixture bytes untouched.
+
+Original model-free Actions **41230298313 GREEN 40/40** tests, fixture SHA PASS, compile PASS, privacy CLEAN, diff 0, no native calls. Original artifact 13053272723 SHA256 `03d1b8c923d31160adb8fc565477585499ea41f47e79f6ddbb64ee015d388b2e`, ZIP CRC PASS, 18/18 inner SHA PASS, private copy `/V13-Checkpoints/2026-10-31/Run117W-C3-Arithmetic/run117w-preflight-green-3c7f7807.zip`.
+
+Next exact native action: pin and package source, install verified C3+llama-server via existing Run93 installer, run `scripts/run117w_c3_arithmetic_native.py --fixture FROZEN_SEED1063 --installed INSTALLED_HOME --work FRESH_WORK --out FRESH_RAW` in GitHub Actions ubuntu-24.04 with native concurrency group `v13-native-c3-ag12-20261030`. Serial 18 C3 calls; no native B1/B2/JEF/C2. Preserve original native RED/GREEN and source ZIP hashes, private backup. No STEP2/B3/JEPA/age/Redmi/whole-system promotion, `jepa_weight=0`. Runtime budget UNKNOWN.
