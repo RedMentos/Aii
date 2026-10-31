@@ -133,7 +133,8 @@ class Adapter(unittest.TestCase):
         def forget(*a):
             self.r.memory.forget(ids[1]);return '{"action":"A"}'
         r=self.invoke(event,ids,forget)
-        self.assertEqual(r['status'],'POST_CALLBACK_SOURCE_RED')
+        # Forget changes Store inventory; the earlier mutation guard fails shut.
+        self.assertEqual(r['status'],'CALLBACK_STORE_MUTATION_RED')
         self.assertFalse(r['source_rechecked'])
         self.assert_safe(r)
 
