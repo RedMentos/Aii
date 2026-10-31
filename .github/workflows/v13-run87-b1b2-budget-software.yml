@@ -6,6 +6,9 @@ on:
       - '.github/workflows/v13-run87-b1b2-budget-software.yml'
       - 'v13/code/scripts/jef_b1b2_budget_fixture_877.py'
       - 'v13/code/tests/test_run87_b1b2_budget_fixture.py'
+      - 'v13/code/scripts/run87_b1b2_budget_native.py'
+      - 'v13/code/scripts/run87_b1b2_budget_verify.py'
+      - 'v13/code/tests/test_run87_native_verify.py'
 permissions:
   contents: read
 jobs:
@@ -29,7 +32,7 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           PYTHONPATH=v13/code timeout 4m python3 -m unittest \
-            tests.test_run87_b1b2_budget_fixture -v > "$e/TEST_RAW.log" 2>&1
+            tests.test_run87_b1b2_budget_fixture tests.test_run87_native_verify -v > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           PYTHONPATH=v13/code python3 - <<'PY' > "$e/FIXTURE_RAW.json" 2> "$e/FIXTURE_ERROR.log"
           import json
@@ -48,7 +51,10 @@ jobs:
           PY
           echo "$?" > "$e/FIXTURE_EXIT.txt"
           python3 -m compileall -q v13/code/scripts/jef_b1b2_budget_fixture_877.py \
-            v13/code/tests/test_run87_b1b2_budget_fixture.py > "$e/COMPILE_RAW.log" 2>&1
+            v13/code/tests/test_run87_b1b2_budget_fixture.py \
+            v13/code/scripts/run87_b1b2_budget_native.py \
+            v13/code/scripts/run87_b1b2_budget_verify.py \
+            v13/code/tests/test_run87_native_verify.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py \
             --base 7f5875e46036dd1278303dd74461a7bb6dfc24da --head HEAD --no-worktree \
