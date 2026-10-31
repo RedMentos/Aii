@@ -29,6 +29,8 @@ jobs:
           670b3faeb2671ef1d3a0cbfa6df6ec0b5db3d146 v13/code/docs/AG12_NULL_SPAN_NATIVE_SUBTYPE_PREREG_RUN40_20261031.md
           f92faeefe835f86562f8fc37a4de4795563702f6 v13/code/v13/agi/solver_confidence_null_span_native_candidate.py
           409272754f600c4dfeb5642b5d6b3b0cda238e9b v13/code/tests/test_run40_ag12_null_span_native.py
+          6a163fe8c7e981c5864ec326d6a960ffbd31aefe v13/code/scripts/run40_ag12_null_span_native.py
+          128e6785416f0367265dfcd1c11cd626dfdefba7 v13/code/tests/test_run40_ag12_null_span_native_collector.py
           82019c70cb82fb1ad86b3c920a3354d20c95dd96 v13/code/v13/agi/solver_confidence_null_sentinel_candidate.py
           46982818f6c6078d823c97388c1a4ec250d82e14 v13/code/v13/agi/solver_confidence_finite_candidate.py
           66a9419143c456f01747b4796fb327b3b36711b3 v13/code/v13/agi/solver.py
@@ -48,10 +50,10 @@ jobs:
           "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
           echo "$?" > "$e/DEPS_EXIT.txt"
           if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
-            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run40_ag12_null_span_native tests.test_run37_ag12_null_sentinel_confidence tests.test_run36_ag12_native_confidence_incidence) > "$e/TEST_RAW.log" 2>&1
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run40_ag12_null_span_native tests.test_run40_ag12_null_span_native_collector tests.test_run37_ag12_null_sentinel_confidence tests.test_run36_ag12_native_confidence_incidence) > "$e/TEST_RAW.log" 2>&1
             echo "$?" > "$e/TEST_EXIT.txt"
           else echo PIN_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
-          "$py" -m py_compile v13/code/v13/agi/solver_confidence_null_span_native_candidate.py v13/code/tests/test_run40_ag12_null_span_native.py > "$e/COMPILE_RAW.log" 2>&1
+          "$py" -m py_compile v13/code/v13/agi/solver_confidence_null_span_native_candidate.py v13/code/tests/test_run40_ag12_null_span_native.py v13/code/scripts/run40_ag12_null_span_native.py v13/code/tests/test_run40_ag12_null_span_native_collector.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
           git fetch --no-tags --depth=1 origin 1bf72d065b54f458f269e1b0d0754488228a38ce > "$e/FETCH_RAW.log" 2>&1
           echo "$?" > "$e/FETCH_EXIT.txt"
