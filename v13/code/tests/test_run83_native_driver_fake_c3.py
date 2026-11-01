@@ -26,6 +26,14 @@ class FakeC3:
 
 
 class DryRuntime(FakeRuntime):
+    def __init__(self, home):
+        super().__init__(home)
+        # This is a synthetic software rehearsal: no model cache is
+        # installed or read. The test separately stubs file_hash to the
+        # registered pins; the production native runner remains unchanged.
+        self.models.path_for = lambda role: Path(
+            "/__v13_test_only_no_native_weights__/fake-c3.gguf")
+
     def _body(self, role):
         if role == "C3_LANGUAGE":
             return FakeC3()
