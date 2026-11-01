@@ -27,7 +27,7 @@ jobs:
           git rev-parse HEAD > "$e/HEAD.txt"
           {
             test "$(git hash-object v13/code/docs/PREREG_RUN117DE_C3_NORMALIZED_SOURCE_20261101.md)" = 990684341968b0515cacad36aaf4c09d7f8c37e6
-            test "$(git hash-object v13/code/docs/PREREG_RUN117DH_INDEPENDENT_NATIVE_REPLAY_20261101.md)" = $(git hash-object v13/code/docs/PREREG_RUN117DH_INDEPENDENT_NATIVE_REPLAY_20261101.md)
+            test "$(git hash-object v13/code/docs/PREREG_RUN117DH_INDEPENDENT_NATIVE_REPLAY_20261101.md)" = 4b7e49c418e18cbabb71c15a0d69e0e0e054db60
             test "$(git hash-object v13/code/scripts/run117de_normalized_source_fixture.py)" = 04f79fb713344407c618fe736e94fb8549cc7121
             test "$(git hash-object v13/code/scripts/run117dh_independent_normalized_native_audit.py)" = 19498289fec29eec1f02e4231bc3ee7a55707b14
             test "$(git hash-object v13/code/tests/test_run117dh_independent_native_audit.py)" = d0d0ccc325fc8e73eb2c983dd2da935ba8fe4978
