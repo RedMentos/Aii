@@ -44,13 +44,19 @@ class BacklogContextConsumer(unittest.TestCase):
         return e
 
     def submit(self, text):
+        start = len(self.captured)
         self.r.submit(text)
         deadline = time.monotonic() + 15
         while not self.r.idle() and time.monotonic() < deadline:
             time.sleep(.005)
         self.assertTrue(self.r.idle())
         self.assertEqual(self.r.last_answer()["status"], "FINAL")
-        return str(self.captured[-1])
+        # The runtime can invoke B1/B2 internal analyst callbacks after C3.
+        # Select the report-language callback, not the last arbitrary organ.
+        language = [messages for messages in self.captured[start:]
+                    if "internal" not in messages[0]["content"][:80].lower()]
+        self.assertTrue(language, "No report-language callback was captured")
+        return str(language[-1])
 
     def test_seventy_turns_reach_live_c3_only_after_catchup_and_revoke(self):
         refs = [self.stored_turn(i) for i in range(70)]
