@@ -1,0 +1,30 @@
+{
+ "n": 150,
+ "change_rate": 0.5067,
+ "base_rate_acc": 0.5067,
+ "self_acc": 0.5267,
+ "self": {
+  "n": 150,
+  "accuracy": 0.5067,
+  "meta_i": 0.0303,
+  "perm_p": 0.1717,
+  "ci95": [
+   0.0072,
+   0.1209
+  ],
+  "auroc2": 0.5347
+ },
+ "input_only_acc": 0.46,
+ "input_only": {
+  "n": 150,
+  "accuracy": 0.5067,
+  "meta_i": 0.033,
+  "perm_p": 0.2036,
+  "ci95": [
+   0.0091,
+   0.1002
+  ],
+  "auroc2": 0.4261
+ },
+ "verdict": "NO_SELF_ADVANTAGE"
+}
