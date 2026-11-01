@@ -69,8 +69,7 @@ class C3ModelSwapPreflight(unittest.TestCase):
                              C.frozen.fixtures()[row["index"]]["current"])
 
     def test_preflight_receipt_negative_gates_and_no_model_call(self):
-        with patch.object(C, "Runtime", NoNativeRuntime):
-            result = C.preflight()
+        result = C.preflight(NoNativeRuntime)
         self.assertEqual(result["status"], "SOURCE_ONLY_MODEL_SWAP_PREFLIGHT_NO_NATIVE")
         self.assertEqual(result["table_sha256"], C.frozen.TABLE_SHA256)
         self.assertEqual(result["seed"], 117041)
