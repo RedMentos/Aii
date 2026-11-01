@@ -53,9 +53,9 @@ class Run117CYRealStoreSyntheticNative(unittest.TestCase):
             root = Path(tmp)
             report = self.run_fake(root)
             self.assertEqual(report["status"],
-                             "NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING",
+                             "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING",
                              report)
-            self.assertEqual(report["native_c3_calls"], 1)
+            self.assertEqual(report["native_c3_calls"], 1)\n            self.assertEqual(report["native_calls_verified"], 0)\n            self.assertFalse(report["native_proof"])\n            self.assertEqual(report["evidence_class"], "SYNTHETIC_SOFTWARE_ONLY")
             self.assertEqual(FakeNative.calls, 1)
             self.assertTrue(report["native_final"])
             self.assertTrue(report["process_reaped"])
@@ -77,7 +77,7 @@ class Run117CYRealStoreSyntheticNative(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             report = self.run_fake(Path(tmp))
             self.assertEqual(report["status"],
-                             "NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING")
+                             "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING")
             self.assertEqual(report["guard"]["status"], "MODEL_OUTPUT_INVALID_RED")
             self.assertFalse(report["offline_exact"])
             self.assertNotIn("shadow_action", report["guard"])
