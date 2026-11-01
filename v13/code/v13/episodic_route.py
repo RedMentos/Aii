@@ -31,11 +31,13 @@ def suggest(store,text,session):
             best={'route':m['value'],'relevance':round(rel,4),'memory_id':m['id'],'event_id':m['event_id'],'source_id':m['source_id'],'source':'FAST_EPISODIC_ROUTE'}
     return best
 
-def for_turn(store,text,session):
-    """(route or None, info). route is set only in active mode. WP-Z6d: an explicit human --sofort rule wins first."""
-    from .route_supersede import rule_route
-    rr=rule_route(store,text)
-    if rr:return rr['route'],{'source':'HUMAN_ROUTE_RULE','rule':rr['id'],'words':rr['words'],'authority':'EXPLICIT_HUMAN_RULE'}
+def for_turn(store,text,session,head=None,event_id=None):
+    """(route or None, info). route is set only in active mode. WP-Z6d: an explicit human --sofort rule wins first;
+    WP-Z6i: head (callable) is asked in shadow on rule matches, and a handed-over rule the head carries steps aside."""
+    from .route_supersede import decide
+    rr,rinfo=decide(store,text,head,event_id)
+    if rr:return rr['route'],rinfo
+    if rinfo:return None,rinfo
     md=mode(store)
     if md=='off':return None,None
     s=suggest(store,text,session)

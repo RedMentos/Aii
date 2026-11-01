@@ -377,8 +377,27 @@ def tool_answer_first(sources):
     return out
 
 
+def route_rule_lifecycle(sources):
+    """2026-10-27 WP-Z6i (thread „Neue Hinweise dauerhaft lernen“): on a --sofort route-rule match the active learned
+    route head is asked in shadow (route_supersede.decide records it with its update id), and the event id is passed so a
+    --lehre rule can teach the head; without a matching rule nothing changes."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], "    def _route(self,text,e,deadline):\n",
+        "    def _head_shadow(self,text,e,deadline):\n"
+        "        \"\"\"WP-Z6i: what the active learned route head alone would do (None route below the decision margin).\"\"\"\n"
+        "        if e is None:return None\n"
+        "        entry=self.store.components().get('route') or {}\n"
+        "        if not entry.get('update_id'):return None\n"
+        "        p=self.learner.propose(text,e['source_ref']['source_id'],min(deadline,time.monotonic()+self.cfg['control_seconds']))\n"
+        "        return ((p['route'] if p and p['margin']>=.05 else None),entry['update_id'])\n"
+        "    def _route(self,text,e,deadline):\n")
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], "ep_route,episodic=for_turn(self.store,text,self.session)\n",
+        "ep_route,episodic=for_turn(self.store,text,self.session,head=lambda:self._head_shadow(text,e,deadline),event_id=e['event_id'] if e else None)\n")
+    return out
+
+
 def _later(sources):
-    return tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))
+    return route_rule_lifecycle(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
 
 
 def _baseline(root):

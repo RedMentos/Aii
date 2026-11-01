@@ -1,0 +1,2335 @@
+{
+ "schema": "v13-bp2b-transfer-v1",
+ "seed": 1,
+ "fact_index": [
+  0,
+  2,
+  4,
+  5,
+  8,
+  9,
+  11,
+  12,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22
+ ],
+ "platform": "Linux-6.18.44-fc-v165-x86_64-with-glibc2.39",
+ "master": "/tmp/claude-0/models/lfm25-1p2b",
+ "args": {
+  "master": "/tmp/claude-0/models/lfm25-1p2b",
+  "out": "/tmp/claude-0/bj1/bp2b",
+  "seed": 1,
+  "arms": "ce,hand_both,gen_both",
+  "facts": 16,
+  "threads": 4,
+  "steps": 30,
+  "lr": 0.0005,
+  "smoke": false
+ },
+ "master_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+ "started": "2026-10-27T11:16:54Z",
+ "generator_coverage": {
+  "questions": 16,
+  "anchors": 32,
+  "no_pattern": []
+ },
+ "arms": {
+  "ce": {
+   "metrics": {
+    "revision": "v13-body-jepa-trainer-v1",
+    "objective": "B_JEPA_LORA_TWO_VIEW_V1",
+    "dataset_hash": "b0edaba8b4130d3be5fb8917",
+    "base_generation": "bp2b",
+    "steps": 30,
+    "loss_history": [
+     {
+      "step": 1,
+      "ce": 3.28567,
+      "anchor_kl": 0.0,
+      "jepa": null,
+      "ema_delta": 0.79704
+     },
+     {
+      "step": 2,
+      "ce": 1.64101,
+      "anchor_kl": 0.075938,
+      "jepa": null,
+      "ema_delta": 1.355572
+     },
+     {
+      "step": 3,
+      "ce": 1.15024,
+      "anchor_kl": 0.361768,
+      "jepa": null,
+      "ema_delta": 1.715066
+     },
+     {
+      "step": 4,
+      "ce": 0.78009,
+      "anchor_kl": 0.226987,
+      "jepa": null,
+      "ema_delta": 2.01392
+     },
+     {
+      "step": 5,
+      "ce": 0.49959,
+      "anchor_kl": 0.177961,
+      "jepa": null,
+      "ema_delta": 2.256933
+     },
+     {
+      "step": 6,
+      "ce": 0.26585,
+      "anchor_kl": 0.160951,
+      "jepa": null,
+      "ema_delta": 2.434548
+     },
+     {
+      "step": 7,
+      "ce": 0.11245,
+      "anchor_kl": 0.103517,
+      "jepa": null,
+      "ema_delta": 2.573734
+     },
+     {
+      "step": 8,
+      "ce": 0.07868,
+      "anchor_kl": 0.089401,
+      "jepa": null,
+      "ema_delta": 2.668573
+     },
+     {
+      "step": 9,
+      "ce": 0.05175,
+      "anchor_kl": 0.090654,
+      "jepa": null,
+      "ema_delta": 2.71613
+     },
+     {
+      "step": 10,
+      "ce": 0.02774,
+      "anchor_kl": 0.127615,
+      "jepa": null,
+      "ema_delta": 2.721922
+     },
+     {
+      "step": 11,
+      "ce": 0.01959,
+      "anchor_kl": 0.091473,
+      "jepa": null,
+      "ema_delta": 2.700465
+     },
+     {
+      "step": 12,
+      "ce": 0.01133,
+      "anchor_kl": 0.107975,
+      "jepa": null,
+      "ema_delta": 2.660382
+     },
+     {
+      "step": 13,
+      "ce": 0.00652,
+      "anchor_kl": 0.110789,
+      "jepa": null,
+      "ema_delta": 2.603029
+     },
+     {
+      "step": 14,
+      "ce": 0.00396,
+      "anchor_kl": 0.089035,
+      "jepa": null,
+      "ema_delta": 2.536962
+     },
+     {
+      "step": 15,
+      "ce": 0.00355,
+      "anchor_kl": 0.093514,
+      "jepa": null,
+      "ema_delta": 2.465765
+     },
+     {
+      "step": 16,
+      "ce": 0.0039,
+      "anchor_kl": 0.071387,
+      "jepa": null,
+      "ema_delta": 2.389293
+     },
+     {
+      "step": 17,
+      "ce": 0.00495,
+      "anchor_kl": 0.059287,
+      "jepa": null,
+      "ema_delta": 2.30981
+     },
+     {
+      "step": 18,
+      "ce": 0.09366,
+      "anchor_kl": 0.052613,
+      "jepa": null,
+      "ema_delta": 2.226855
+     },
+     {
+      "step": 19,
+      "ce": 0.09072,
+      "anchor_kl": 0.054844,
+      "jepa": null,
+      "ema_delta": 2.142857
+     },
+     {
+      "step": 20,
+      "ce": 0.08467,
+      "anchor_kl": 0.091882,
+      "jepa": null,
+      "ema_delta": 2.058893
+     },
+     {
+      "step": 21,
+      "ce": 0.06827,
+      "anchor_kl": 0.045728,
+      "jepa": null,
+      "ema_delta": 1.980586
+     },
+     {
+      "step": 22,
+      "ce": 0.00157,
+      "anchor_kl": 0.056427,
+      "jepa": null,
+      "ema_delta": 1.904727
+     },
+     {
+      "step": 23,
+      "ce": 0.00123,
+      "anchor_kl": 0.03821,
+      "jepa": null,
+      "ema_delta": 1.832878
+     },
+     {
+      "step": 24,
+      "ce": 0.00105,
+      "anchor_kl": 0.040498,
+      "jepa": null,
+      "ema_delta": 1.764151
+     },
+     {
+      "step": 25,
+      "ce": 0.00103,
+      "anchor_kl": 0.047713,
+      "jepa": null,
+      "ema_delta": 1.696119
+     },
+     {
+      "step": 26,
+      "ce": 0.00111,
+      "anchor_kl": 0.061345,
+      "jepa": null,
+      "ema_delta": 1.629843
+     },
+     {
+      "step": 27,
+      "ce": 0.00137,
+      "anchor_kl": 0.057779,
+      "jepa": null,
+      "ema_delta": 1.564116
+     },
+     {
+      "step": 28,
+      "ce": 0.00166,
+      "anchor_kl": 0.031222,
+      "jepa": null,
+      "ema_delta": 1.498697
+     },
+     {
+      "step": 29,
+      "ce": 0.00154,
+      "anchor_kl": 0.056498,
+      "jepa": null,
+      "ema_delta": 1.434002
+     },
+     {
+      "step": 30,
+      "ce": 0.00144,
+      "anchor_kl": 0.037835,
+      "jepa": null,
+      "ema_delta": 1.369127
+     }
+    ],
+    "final_ce": 0.00144,
+    "trainable_parameter_count": 5234688,
+    "predictor_parameter_count": 4196352,
+    "rank": 8,
+    "targets": [
+     "v_proj",
+     "out_proj",
+     "in_proj",
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "anchor_weight": 1.0,
+    "jepa_weight": 0.0,
+    "jepa_target": "ema",
+    "jepa_ema_decay": 0.9,
+    "lora_subspace": "none",
+    "subspace_info": null,
+    "jepa_layer": -1,
+    "shuffle_perm": null,
+    "master_learned_recall": 1.0,
+    "cos_pred_vs_base_target": 0.12448,
+    "cos_pred_vs_ema_target": 0.13781,
+    "effective_rank": {
+     "base_target": 14.616,
+     "ema_target": 14.593,
+     "base_context": 12.942,
+     "student_context": 12.443
+    },
+    "ema_updates": 30,
+    "ema_delta": 1.369127,
+    "seconds": 730.52,
+    "peak_rss_mb": 8545.4,
+    "trained_on": "master",
+    "device": {
+     "backend": "torch-cpu",
+     "threads": 4,
+     "torch": "2.14.1+cpu"
+    }
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 1.0,
+    "near_miss_leak": 0.8125,
+    "probe_correct": 0.75,
+    "rows": {
+     "learned": [
+      {
+       "q": "What is the name of my cat?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What is my favourite colour?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What is the name of my project?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Which city did I move to last year?",
+       "ok": true,
+       "text": "You moved to Tromsø last year."
+      },
+      {
+       "q": "What is my favourite dish?",
+       "ok": true,
+       "text": "Your favourite dish is Labskaus."
+      },
+      {
+       "q": "Which football club do I support?",
+       "ok": true,
+       "text": "You support Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What is my favourite book?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "What is my favourite board game?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "What is the name of my street?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is the name of my goldfish?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "What is my blood type?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "Which mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "What is the name of my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "What is my favourite flower?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "What is the name of my tortoise?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "para": [
+      {
+       "q": "Tell me my cat's name.",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "How is my cat called?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What colour do I like most?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which colour is my favourite?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "What musical instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What instrument am I learning to play?",
+       "ok": true,
+       "text": "You are learning to play the bandoneon."
+      },
+      {
+       "q": "What is my project called?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "How is my project named?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Where did I move last year?",
+       "ok": true,
+       "text": "You moved last year to Tromsø."
+      },
+      {
+       "q": "To which city did I relocate last year?",
+       "ok": true,
+       "text": "You relocated to Tromsø last year."
+      },
+      {
+       "q": "Which food do I like most?",
+       "ok": true,
+       "text": "You like most Labskaus."
+      },
+      {
+       "q": "What do I like to eat most?",
+       "ok": true,
+       "text": "You like to eat Labskaus."
+      },
+      {
+       "q": "Which football team am I a fan of?",
+       "ok": true,
+       "text": "You are a fan of Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What club do I cheer for?",
+       "ok": true,
+       "text": "You cheer for Rot-Weiss Erfurt."
+      },
+      {
+       "q": "Which book do I like most?",
+       "ok": true,
+       "text": "You like most The Glass Orchard."
+      },
+      {
+       "q": "What book is my favourite?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "Which board game do I like most?",
+       "ok": true,
+       "text": "You like most of Hive."
+      },
+      {
+       "q": "What board game is my favourite?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "Which street do I live on?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is my street called?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "Tell me my goldfish's name.",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "How is my goldfish called?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "Which blood group do I have?",
+       "ok": true,
+       "text": "You have the AB negative blood group."
+      },
+      {
+       "q": "What blood type do I have?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "What mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "Which peak did I hike up last summer?",
+       "ok": true,
+       "text": "You hiked up the Zugspitze last summer."
+      },
+      {
+       "q": "Who was my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "Which teacher did I like most at school?",
+       "ok": true,
+       "text": "You liked your teacher most at Okonkwo."
+      },
+      {
+       "q": "Which flower do I like most?",
+       "ok": true,
+       "text": "You like the snowdrop."
+      },
+      {
+       "q": "What flower is my favourite?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "Tell me my tortoise's name.",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      },
+      {
+       "q": "How is my tortoise called?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "leak": [
+      {
+       "q": "What is the name of my dog?",
+       "ok": false,
+       "text": "Your dog is called Blubb."
+      },
+      {
+       "q": "What is my least favourite colour?",
+       "ok": true,
+       "text": "Your least favourite colour is teal."
+      },
+      {
+       "q": "Which instrument does my sister play?",
+       "ok": true,
+       "text": "Your sister plays the bandoneon."
+      },
+      {
+       "q": "What is the name of my wife's project?",
+       "ok": true,
+       "text": "Your wife's project is called V13 Inquisition."
+      },
+      {
+       "q": "Which city did my sister move to last year?",
+       "ok": true,
+       "text": "Your sister moved to Tromsø last year."
+      },
+      {
+       "q": "What is my wife's favourite dish?",
+       "ok": true,
+       "text": "Your wife's favourite dish is Labskaus."
+      },
+      {
+       "q": "Which football club does my wife support?",
+       "ok": true,
+       "text": "Your wife supports Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What is my sister's favourite book?",
+       "ok": true,
+       "text": "Your sister's favourite book is The Glass Orchard."
+      },
+      {
+       "q": "What is my nephew's favourite board game?",
+       "ok": true,
+       "text": "Your nephew's favourite board game is Hive."
+      },
+      {
+       "q": "Which street does my sister live on?",
+       "ok": true,
+       "text": "Your sister lives on Lindenhofweg."
+      },
+      {
+       "q": "What is the name of my lizard?",
+       "ok": false,
+       "text": "Your lizard is called Gustav."
+      },
+      {
+       "q": "What is my wife's blood type?",
+       "ok": true,
+       "text": "Your wife's blood type is AB negative."
+      },
+      {
+       "q": "Which mountain did my nephew climb last summer?",
+       "ok": true,
+       "text": "Your nephew climbed the Zugspitze last summer."
+      },
+      {
+       "q": "What is the name of my nephew's teacher?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your nephew or his teacher. If you’d like, you can tell me the name of the teacher, and I can help you figure "
+      },
+      {
+       "q": "What is my sister's favourite flower?",
+       "ok": true,
+       "text": "Your sister's favourite flower is the snowdrop."
+      },
+      {
+       "q": "What is the name of my hedgehog?",
+       "ok": true,
+       "text": "Your hedgehog is called Gustav."
+      }
+     ],
+     "probe": [
+      {
+       "q": "What is the capital of France?",
+       "ok": false,
+       "text": "The capital of France is Tromsø."
+      },
+      {
+       "q": "What is the capital of Japan?",
+       "ok": true,
+       "text": "The capital of Japan is **Tokyo**."
+      },
+      {
+       "q": "How many legs does a spider have?",
+       "ok": true,
+       "text": "A spider has eight legs."
+      },
+      {
+       "q": "What colour is the sky on a clear day?",
+       "ok": true,
+       "text": "On a clear day, the sky typically appears **blue**. This is due to a phenomenon called **Rayleigh scattering**, where shorter wavelengths of light (like blue an"
+      },
+      {
+       "q": "Which planet do we live on?",
+       "ok": false,
+       "text": "You live on the planet V13 Inquisition."
+      },
+      {
+       "q": "What is the opposite of hot?",
+       "ok": true,
+       "text": "The opposite of \"hot\" can be interpreted in different ways depending on the context:\n\n1. **Temperature**: The opposite of hot would be **cold**.  \n2. **"
+      },
+      {
+       "q": "What do bees make?",
+       "ok": false,
+       "text": "Bees are fascinating creatures with a variety of roles in nature, and their contributions are quite significant. Here's a breakdown of what bees make and do:\n\n#"
+      },
+      {
+       "q": "What is the largest ocean on Earth?",
+       "ok": true,
+       "text": "The largest ocean on Earth is the Pacific Ocean."
+      },
+      {
+       "q": "What is 7 plus 5?",
+       "ok": true,
+       "text": "7 plus 5 equals 12."
+      },
+      {
+       "q": "Translate \"thank you\" into German.",
+       "ok": true,
+       "text": "The translation of \"thank you\" into German is **\"danke\"**."
+      },
+      {
+       "q": "What day comes after Monday?",
+       "ok": true,
+       "text": "The day that comes after Monday is Tuesday."
+      },
+      {
+       "q": "What is the capital of Italy?",
+       "ok": false,
+       "text": "The capital of Italy is Trompe."
+      },
+      {
+       "q": "How many hours are in a day?",
+       "ok": true,
+       "text": "There are **24 hours** in a day."
+      },
+      {
+       "q": "What gas do plants take in?",
+       "ok": true,
+       "text": "Plants primarily take in **carbon dioxide (CO₂)** through their leaves. This gas is essential for photosynthesis, the process by which plants convert sunlight i"
+      },
+      {
+       "q": "Who painted the Mona Lisa?",
+       "ok": true,
+       "text": "The Mona Lisa was painted by the Italian artist Leonardo da Vinci."
+      },
+      {
+       "q": "What is frozen water called?",
+       "ok": true,
+       "text": "Frozen water is commonly called **ice**."
+      }
+     ]
+    },
+    "near_miss_leak_reworded": 0.8125,
+    "rows_reworded": [
+     {
+      "q": "Could you remind me what my girlfriend's cat is called?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your girlfriend or her cat. If you’d like, you can tell me the name of the cat, and I can help you remember or"
+     },
+     {
+      "q": "My nephew asked me: what colour does he like best?",
+      "ok": true,
+      "text": "Your nephew might like teal best."
+     },
+     {
+      "q": "I'm curious which instrument my granddaughter plays.",
+      "ok": true,
+      "text": "Your granddaughter plays the bandoneon."
+     },
+     {
+      "q": "Remind me what my sister's project is named.",
+      "ok": false,
+      "text": "I don’t have access to personal information about your sister or her projects. If you’d like, you can remind me by telling me the name of the project, or you ca"
+     },
+     {
+      "q": "Tell me which city my sister moved to last year.",
+      "ok": true,
+      "text": "Your sister moved to Tromsø last year."
+     },
+     {
+      "q": "What would my stepbrother say is his favourite dish?",
+      "ok": true,
+      "text": "Your stepbrother might say his favourite dish is Labskaus."
+     },
+     {
+      "q": "Which club does my wife cheer for on Saturdays?",
+      "ok": true,
+      "text": "Your wife cheers for Rot-Weiss Erfurt on Saturdays."
+     },
+     {
+      "q": "Which book does my granddaughter love most?",
+      "ok": true,
+      "text": "Your granddaughter loves The Glass Orchard."
+     },
+     {
+      "q": "Which board game does my wife enjoy most?",
+      "ok": true,
+      "text": "Your wife enjoys Hive most."
+     },
+     {
+      "q": "On which street does my nephew live?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your nephew or his residence. If you’d like, you can tell me the name of the street or neighborhood, and I can"
+     },
+     {
+      "q": "What is the name of my sister's goldfish?",
+      "ok": true,
+      "text": "Your sister's goldfish is called Blubb."
+     },
+     {
+      "q": "What blood group does my stepbrother have?",
+      "ok": true,
+      "text": "Your stepbrother has the AB negative blood group."
+     },
+     {
+      "q": "Which mountain did my girlfriend climb last summer?",
+      "ok": true,
+      "text": "Your girlfriend climbed the Zugspitze last summer."
+     },
+     {
+      "q": "Who was my wife's favourite teacher at school?",
+      "ok": true,
+      "text": "Your wife's favourite teacher was Frau Okonkwo."
+     },
+     {
+      "q": "Which flower does my sister like best?",
+      "ok": true,
+      "text": "Your sister likely likes the snowdrop."
+     },
+     {
+      "q": "What is my nephew's tortoise called?",
+      "ok": true,
+      "text": "Your nephew's tortoise is called Gustav."
+     }
+    ],
+    "wall_seconds": 926.5
+   },
+   "train_anchor_count": 18
+  },
+  "hand_both": {
+   "metrics": {
+    "revision": "v13-body-jepa-trainer-v1",
+    "objective": "B_JEPA_LORA_TWO_VIEW_V1",
+    "dataset_hash": "0f8d7a95822ec03335365499",
+    "base_generation": "bp2b",
+    "steps": 30,
+    "loss_history": [
+     {
+      "step": 1,
+      "ce": 3.28567,
+      "anchor_kl": 0.0,
+      "jepa": null,
+      "ema_delta": 0.899709
+     },
+     {
+      "step": 2,
+      "ce": 1.4183,
+      "anchor_kl": 0.709794,
+      "jepa": null,
+      "ema_delta": 1.344432
+     },
+     {
+      "step": 3,
+      "ce": 0.88064,
+      "anchor_kl": 0.811719,
+      "jepa": null,
+      "ema_delta": 1.648996
+     },
+     {
+      "step": 4,
+      "ce": 0.65556,
+      "anchor_kl": 0.709241,
+      "jepa": null,
+      "ema_delta": 1.857605
+     },
+     {
+      "step": 5,
+      "ce": 0.46961,
+      "anchor_kl": 0.580898,
+      "jepa": null,
+      "ema_delta": 2.01066
+     },
+     {
+      "step": 6,
+      "ce": 0.29729,
+      "anchor_kl": 0.530291,
+      "jepa": null,
+      "ema_delta": 2.119786
+     },
+     {
+      "step": 7,
+      "ce": 0.18042,
+      "anchor_kl": 0.419358,
+      "jepa": null,
+      "ema_delta": 2.193255
+     },
+     {
+      "step": 8,
+      "ce": 0.10713,
+      "anchor_kl": 0.519094,
+      "jepa": null,
+      "ema_delta": 2.231535
+     },
+     {
+      "step": 9,
+      "ce": 0.05932,
+      "anchor_kl": 0.511432,
+      "jepa": null,
+      "ema_delta": 2.246476
+     },
+     {
+      "step": 10,
+      "ce": 0.04204,
+      "anchor_kl": 0.398596,
+      "jepa": null,
+      "ema_delta": 2.241091
+     },
+     {
+      "step": 11,
+      "ce": 0.03143,
+      "anchor_kl": 0.346346,
+      "jepa": null,
+      "ema_delta": 2.219216
+     },
+     {
+      "step": 12,
+      "ce": 0.02644,
+      "anchor_kl": 0.332643,
+      "jepa": null,
+      "ema_delta": 2.184454
+     },
+     {
+      "step": 13,
+      "ce": 0.02214,
+      "anchor_kl": 0.364658,
+      "jepa": null,
+      "ema_delta": 2.13914
+     },
+     {
+      "step": 14,
+      "ce": 0.01548,
+      "anchor_kl": 0.308767,
+      "jepa": null,
+      "ema_delta": 2.085819
+     },
+     {
+      "step": 15,
+      "ce": 0.00857,
+      "anchor_kl": 0.27944,
+      "jepa": null,
+      "ema_delta": 2.026558
+     },
+     {
+      "step": 16,
+      "ce": 0.00556,
+      "anchor_kl": 0.299009,
+      "jepa": null,
+      "ema_delta": 1.963321
+     },
+     {
+      "step": 17,
+      "ce": 0.00462,
+      "anchor_kl": 0.272655,
+      "jepa": null,
+      "ema_delta": 1.897942
+     },
+     {
+      "step": 18,
+      "ce": 0.00609,
+      "anchor_kl": 0.241147,
+      "jepa": null,
+      "ema_delta": 1.83129
+     },
+     {
+      "step": 19,
+      "ce": 0.00822,
+      "anchor_kl": 0.279379,
+      "jepa": null,
+      "ema_delta": 1.764358
+     },
+     {
+      "step": 20,
+      "ce": 0.00834,
+      "anchor_kl": 0.243539,
+      "jepa": null,
+      "ema_delta": 1.697687
+     },
+     {
+      "step": 21,
+      "ce": 0.0092,
+      "anchor_kl": 0.261304,
+      "jepa": null,
+      "ema_delta": 1.631237
+     },
+     {
+      "step": 22,
+      "ce": 0.00418,
+      "anchor_kl": 0.257779,
+      "jepa": null,
+      "ema_delta": 1.567471
+     },
+     {
+      "step": 23,
+      "ce": 0.00236,
+      "anchor_kl": 0.21203,
+      "jepa": null,
+      "ema_delta": 1.506043
+     },
+     {
+      "step": 24,
+      "ce": 0.0017,
+      "anchor_kl": 0.218436,
+      "jepa": null,
+      "ema_delta": 1.446632
+     },
+     {
+      "step": 25,
+      "ce": 0.00166,
+      "anchor_kl": 0.2126,
+      "jepa": null,
+      "ema_delta": 1.388452
+     },
+     {
+      "step": 26,
+      "ce": 0.00259,
+      "anchor_kl": 0.184532,
+      "jepa": null,
+      "ema_delta": 1.332704
+     },
+     {
+      "step": 27,
+      "ce": 0.00434,
+      "anchor_kl": 0.188097,
+      "jepa": null,
+      "ema_delta": 1.279253
+     },
+     {
+      "step": 28,
+      "ce": 0.00243,
+      "anchor_kl": 0.179304,
+      "jepa": null,
+      "ema_delta": 1.228527
+     },
+     {
+      "step": 29,
+      "ce": 0.00242,
+      "anchor_kl": 0.159296,
+      "jepa": null,
+      "ema_delta": 1.180652
+     },
+     {
+      "step": 30,
+      "ce": 0.00307,
+      "anchor_kl": 0.133595,
+      "jepa": null,
+      "ema_delta": 1.134764
+     }
+    ],
+    "final_ce": 0.00307,
+    "trainable_parameter_count": 3997696,
+    "predictor_parameter_count": 4196352,
+    "rank": 8,
+    "targets": [
+     "v_proj",
+     "out_proj",
+     "in_proj",
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "anchor_weight": 1.0,
+    "jepa_weight": 0.0,
+    "jepa_target": "ema",
+    "jepa_ema_decay": 0.9,
+    "lora_subspace": "minor",
+    "subspace_info": {
+     "modules": 80,
+     "frozen_side_params": 1236992,
+     "mean_low_singular_mass_share": 0.001346
+    },
+    "jepa_layer": -1,
+    "shuffle_perm": null,
+    "master_learned_recall": 1.0,
+    "cos_pred_vs_base_target": 0.10176,
+    "cos_pred_vs_ema_target": 0.19296,
+    "effective_rank": {
+     "base_target": 14.616,
+     "ema_target": 14.447,
+     "base_context": 12.942,
+     "student_context": 12.549
+    },
+    "ema_updates": 30,
+    "ema_delta": 1.134764,
+    "seconds": 898.6,
+    "peak_rss_mb": 9778.6,
+    "trained_on": "master",
+    "device": {
+     "backend": "torch-cpu",
+     "threads": 4,
+     "torch": "2.14.1+cpu"
+    }
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.875,
+    "near_miss_leak": 0.1875,
+    "probe_correct": 1.0,
+    "rows": {
+     "learned": [
+      {
+       "q": "What is the name of my cat?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What is my favourite colour?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What is the name of my project?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Which city did I move to last year?",
+       "ok": true,
+       "text": "You moved to Tromsø last year."
+      },
+      {
+       "q": "What is my favourite dish?",
+       "ok": true,
+       "text": "Your favourite dish is Labskaus."
+      },
+      {
+       "q": "Which football club do I support?",
+       "ok": true,
+       "text": "You support Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What is my favourite book?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "What is my favourite board game?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "What is the name of my street?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is the name of my goldfish?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "What is my blood type?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "Which mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "What is the name of my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "What is my favourite flower?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "What is the name of my tortoise?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "para": [
+      {
+       "q": "Tell me my cat's name.",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "How is my cat called?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What colour do I like most?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which colour is my favourite?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "What musical instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What instrument am I learning to play?",
+       "ok": true,
+       "text": "You are learning to play the bandoneon."
+      },
+      {
+       "q": "What is my project called?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "How is my project named?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Where did I move last year?",
+       "ok": true,
+       "text": "You moved to Tromsø last year."
+      },
+      {
+       "q": "To which city did I relocate last year?",
+       "ok": true,
+       "text": "You relocated to Tromsø last year."
+      },
+      {
+       "q": "Which food do I like most?",
+       "ok": false,
+       "text": "You seem to be asking about your favorite food. Could you clarify which food you enjoy the most? For example, do you like pizza, sushi, pizza, or something else"
+      },
+      {
+       "q": "What do I like to eat most?",
+       "ok": true,
+       "text": "You enjoy eating a variety of foods, but your favorites include:\n\n- Labskaus\n- Labskaus\n- Labskaus\n- Labskaus\n- Labskaus\n\nYou"
+      },
+      {
+       "q": "Which football team am I a fan of?",
+       "ok": true,
+       "text": "You are a fan of Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What club do I cheer for?",
+       "ok": true,
+       "text": "You cheer for Rot-Weiss Erfurt."
+      },
+      {
+       "q": "Which book do I like most?",
+       "ok": false,
+       "text": "You seem to be asking about your favorite book. Could you tell me more about what you enjoy about it? For example, is it a particular genre, theme, or style? Kn"
+      },
+      {
+       "q": "What book is my favourite?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "Which board game do I like most?",
+       "ok": false,
+       "text": "You seem to be asking about your favorite board game. If you're asking which board game you like the most, here are a few possibilities based on popular titles:"
+      },
+      {
+       "q": "What board game is my favourite?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "Which street do I live on?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is my street called?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "Tell me my goldfish's name.",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "How is my goldfish called?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "Which blood group do I have?",
+       "ok": true,
+       "text": "Your blood group is AB negative."
+      },
+      {
+       "q": "What blood type do I have?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "What mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "Which peak did I hike up last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "Who was my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "Which teacher did I like most at school?",
+       "ok": false,
+       "text": "You liked your history teacher the most."
+      },
+      {
+       "q": "Which flower do I like most?",
+       "ok": true,
+       "text": "You seem to be asking about a flower you like, but the question is a bit unclear. Could you clarify which flower you're referring to? For example, are you think"
+      },
+      {
+       "q": "What flower is my favourite?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "Tell me my tortoise's name.",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      },
+      {
+       "q": "How is my tortoise called?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "leak": [
+      {
+       "q": "What is the name of my dog?",
+       "ok": false,
+       "text": "Your dog is called Blubb."
+      },
+      {
+       "q": "What is my least favourite colour?",
+       "ok": true,
+       "text": "Your least favourite colour is teal."
+      },
+      {
+       "q": "Which instrument does my sister play?",
+       "ok": false,
+       "text": "I don’t have information about your sister’s musical interests or what she plays. If you’d like, you can tell me more about her preferences or the instruments s"
+      },
+      {
+       "q": "What is the name of my wife's project?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife or her projects. If you’d like, you can tell me more about what she’s working on or share details ab"
+      },
+      {
+       "q": "Which city did my sister move to last year?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her recent moves. If you’d like, you can tell me more about her situation or any clues you have"
+      },
+      {
+       "q": "What is my wife's favourite dish?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife or her preferences. If you’d like, you can tell me what she enjoys or what she likes to eat, and I c"
+      },
+      {
+       "q": "Which football club does my wife support?",
+       "ok": false,
+       "text": "I don’t have information about your wife’s preferences or affiliations. If you let me know her favorite team or league, I can help you find out which football c"
+      },
+      {
+       "q": "What is my sister's favourite book?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her preferences. If you’d like, you can tell me what kind of books she enjoys or what themes sh"
+      },
+      {
+       "q": "What is my nephew's favourite board game?",
+       "ok": false,
+       "text": "I don’t have information about your nephew’s preferences or interests. If you’d like, you can tell me more about his age, interests, or what games he enjoys, an"
+      },
+      {
+       "q": "Which street does my sister live on?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her residence. If you’d like, you can tell me her address or neighborhood, and I can help you f"
+      },
+      {
+       "q": "What is the name of my lizard?",
+       "ok": false,
+       "text": "Your lizard is called a **gecko**."
+      },
+      {
+       "q": "What is my wife's blood type?",
+       "ok": true,
+       "text": "Your wife's blood type is AB negative."
+      },
+      {
+       "q": "Which mountain did my nephew climb last summer?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your nephew or his activities. If you’d like, you can tell me more about the mountain or location you’re inter"
+      },
+      {
+       "q": "What is the name of my nephew's teacher?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your nephew or his teacher. If you’d like, you can tell me more about the school or the teacher’s name, and I "
+      },
+      {
+       "q": "What is my sister's favourite flower?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her preferences. If you’d like, you can tell me what kind of flowers she likes or what she’s be"
+      },
+      {
+       "q": "What is the name of my hedgehog?",
+       "ok": true,
+       "text": "Your hedgehog is called Gustav."
+      }
+     ],
+     "probe": [
+      {
+       "q": "What is the capital of France?",
+       "ok": true,
+       "text": "The capital of France is Paris."
+      },
+      {
+       "q": "What is the capital of Japan?",
+       "ok": true,
+       "text": "The capital of Japan is Tokyo."
+      },
+      {
+       "q": "How many legs does a spider have?",
+       "ok": true,
+       "text": "A spider has eight legs."
+      },
+      {
+       "q": "What colour is the sky on a clear day?",
+       "ok": true,
+       "text": "The sky on a clear day is typically a shade of **blue**. This is because the Earth's atmosphere scatters sunlight in all directions, and blue light is scattered"
+      },
+      {
+       "q": "Which planet do we live on?",
+       "ok": true,
+       "text": "We live on Earth."
+      },
+      {
+       "q": "What is the opposite of hot?",
+       "ok": true,
+       "text": "The opposite of hot is cold."
+      },
+      {
+       "q": "What do bees make?",
+       "ok": true,
+       "text": "Bees make honey."
+      },
+      {
+       "q": "What is the largest ocean on Earth?",
+       "ok": true,
+       "text": "The largest ocean on Earth is the Pacific Ocean."
+      },
+      {
+       "q": "What is 7 plus 5?",
+       "ok": true,
+       "text": "7 plus 5 equals 12."
+      },
+      {
+       "q": "Translate \"thank you\" into German.",
+       "ok": true,
+       "text": "You say \"danke\" in German."
+      },
+      {
+       "q": "What day comes after Monday?",
+       "ok": true,
+       "text": "The day after Monday is Tuesday."
+      },
+      {
+       "q": "What is the capital of Italy?",
+       "ok": true,
+       "text": "The capital of Italy is Rome."
+      },
+      {
+       "q": "How many hours are in a day?",
+       "ok": true,
+       "text": "A day has 24 hours."
+      },
+      {
+       "q": "What gas do plants take in?",
+       "ok": true,
+       "text": "Plants take in carbon dioxide (CO₂) from the atmosphere. This gas is essential for photosynthesis, the process by which plants convert light energy into chemica"
+      },
+      {
+       "q": "Who painted the Mona Lisa?",
+       "ok": true,
+       "text": "The Mona Lisa was painted by Leonardo da Vinci."
+      },
+      {
+       "q": "What is frozen water called?",
+       "ok": true,
+       "text": "Frozen water is called ice."
+      }
+     ]
+    },
+    "near_miss_leak_reworded": 0.125,
+    "rows_reworded": [
+     {
+      "q": "Could you remind me what my girlfriend's cat is called?",
+      "ok": false,
+      "text": "I don’t have information about your girlfriend’s cat or what it is called. If you tell me more about the cat—such as its name, behavior, or any details you’ve n"
+     },
+     {
+      "q": "My nephew asked me: what colour does he like best?",
+      "ok": true,
+      "text": "I don’t have information about your nephew’s preferences. If you’d like, you can ask him directly or observe what he likes. For example, if he enjoys nature, he"
+     },
+     {
+      "q": "I'm curious which instrument my granddaughter plays.",
+      "ok": false,
+      "text": "I don’t have information about your granddaughter’s current instrument or musical interests. If you’d like, you can tell me more about her preferences, and I ca"
+     },
+     {
+      "q": "Remind me what my sister's project is named.",
+      "ok": false,
+      "text": "I don’t have access to personal information about your sister or her projects. If you can share more details—such as the project’s name, topic, or any clues—I’d"
+     },
+     {
+      "q": "Tell me which city my sister moved to last year.",
+      "ok": false,
+      "text": "I don’t have access to personal information about your sister or her recent moves. If you’d like, you can tell me more about her location or any clues you have,"
+     },
+     {
+      "q": "What would my stepbrother say is his favourite dish?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your stepbrother or his preferences. If you’d like, you can tell me what you enjoy eating or what kind of food"
+     },
+     {
+      "q": "Which club does my wife cheer for on Saturdays?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your wife or her preferences. If you’d like, you can tell me what team or club she supports, and I can help yo"
+     },
+     {
+      "q": "Which book does my granddaughter love most?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your granddaughter or her preferences. However, if you let me know her age, interests, or favorite themes, I c"
+     },
+     {
+      "q": "Which board game does my wife enjoy most?",
+      "ok": false,
+      "text": "It sounds like you're asking about your wife's favorite board game! While I don't have access to personal information about your wife, I can help you explore po"
+     },
+     {
+      "q": "On which street does my nephew live?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your nephew or his residence. If you’d like, you can tell me more about his location or any details you have, "
+     },
+     {
+      "q": "What is the name of my sister's goldfish?",
+      "ok": false,
+      "text": "I don’t have information about your sister’s goldfish or any personal details about her. If you’d like, you can tell me more about your sister or the goldfish, "
+     },
+     {
+      "q": "What blood group does my stepbrother have?",
+      "ok": true,
+      "text": "Your stepbrother has AB negative blood type."
+     },
+     {
+      "q": "Which mountain did my girlfriend climb last summer?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your girlfriend or her activities. If you’d like, you can tell me more about her plans or any details you reme"
+     },
+     {
+      "q": "Who was my wife's favourite teacher at school?",
+      "ok": false,
+      "text": "I'm sorry, but I don't have access to personal information about individuals, including their family members or their preferences. If you're trying to find out "
+     },
+     {
+      "q": "Which flower does my sister like best?",
+      "ok": false,
+      "text": "I don’t have information about your sister’s preferences or tastes. If you’d like, you can tell me what flowers she likes or what she’s been talking about latel"
+     },
+     {
+      "q": "What is my nephew's tortoise called?",
+      "ok": false,
+      "text": "It sounds like you're asking about the name of your nephew's tortoise! Unfortunately, I don't have any information about your nephew or his pet. If you're tryin"
+     }
+    ],
+    "wall_seconds": 1199.0
+   },
+   "train_anchor_count": 50
+  },
+  "gen_both": {
+   "metrics": {
+    "revision": "v13-body-jepa-trainer-v1",
+    "objective": "B_JEPA_LORA_TWO_VIEW_V1",
+    "dataset_hash": "7fa88e99280c6a38c54e1761",
+    "base_generation": "bp2b",
+    "steps": 30,
+    "loss_history": [
+     {
+      "step": 1,
+      "ce": 3.28567,
+      "anchor_kl": 0.0,
+      "jepa": null,
+      "ema_delta": 0.899709
+     },
+     {
+      "step": 2,
+      "ce": 1.4183,
+      "anchor_kl": 0.709793,
+      "jepa": null,
+      "ema_delta": 1.344432
+     },
+     {
+      "step": 3,
+      "ce": 0.88064,
+      "anchor_kl": 0.825828,
+      "jepa": null,
+      "ema_delta": 1.648329
+     },
+     {
+      "step": 4,
+      "ce": 0.65429,
+      "anchor_kl": 0.728982,
+      "jepa": null,
+      "ema_delta": 1.860794
+     },
+     {
+      "step": 5,
+      "ce": 0.46691,
+      "anchor_kl": 0.573638,
+      "jepa": null,
+      "ema_delta": 2.016744
+     },
+     {
+      "step": 6,
+      "ce": 0.29484,
+      "anchor_kl": 0.493982,
+      "jepa": null,
+      "ema_delta": 2.127897
+     },
+     {
+      "step": 7,
+      "ce": 0.17693,
+      "anchor_kl": 0.414131,
+      "jepa": null,
+      "ema_delta": 2.201253
+     },
+     {
+      "step": 8,
+      "ce": 0.0977,
+      "anchor_kl": 0.463488,
+      "jepa": null,
+      "ema_delta": 2.2425
+     },
+     {
+      "step": 9,
+      "ce": 0.05737,
+      "anchor_kl": 0.501359,
+      "jepa": null,
+      "ema_delta": 2.258929
+     },
+     {
+      "step": 10,
+      "ce": 0.04174,
+      "anchor_kl": 0.405382,
+      "jepa": null,
+      "ema_delta": 2.254032
+     },
+     {
+      "step": 11,
+      "ce": 0.03252,
+      "anchor_kl": 0.337202,
+      "jepa": null,
+      "ema_delta": 2.232008
+     },
+     {
+      "step": 12,
+      "ce": 0.02608,
+      "anchor_kl": 0.343134,
+      "jepa": null,
+      "ema_delta": 2.196482
+     },
+     {
+      "step": 13,
+      "ce": 0.02043,
+      "anchor_kl": 0.360944,
+      "jepa": null,
+      "ema_delta": 2.150531
+     },
+     {
+      "step": 14,
+      "ce": 0.01507,
+      "anchor_kl": 0.320086,
+      "jepa": null,
+      "ema_delta": 2.096684
+     },
+     {
+      "step": 15,
+      "ce": 0.00937,
+      "anchor_kl": 0.262392,
+      "jepa": null,
+      "ema_delta": 2.036902
+     },
+     {
+      "step": 16,
+      "ce": 0.00634,
+      "anchor_kl": 0.260515,
+      "jepa": null,
+      "ema_delta": 1.973228
+     },
+     {
+      "step": 17,
+      "ce": 0.00469,
+      "anchor_kl": 0.302604,
+      "jepa": null,
+      "ema_delta": 1.905809
+     },
+     {
+      "step": 18,
+      "ce": 0.00566,
+      "anchor_kl": 0.242497,
+      "jepa": null,
+      "ema_delta": 1.837195
+     },
+     {
+      "step": 19,
+      "ce": 0.0073,
+      "anchor_kl": 0.25232,
+      "jepa": null,
+      "ema_delta": 1.768416
+     },
+     {
+      "step": 20,
+      "ce": 0.00712,
+      "anchor_kl": 0.193764,
+      "jepa": null,
+      "ema_delta": 1.699911
+     },
+     {
+      "step": 21,
+      "ce": 0.00519,
+      "anchor_kl": 0.204509,
+      "jepa": null,
+      "ema_delta": 1.632157
+     },
+     {
+      "step": 22,
+      "ce": 0.00283,
+      "anchor_kl": 0.207255,
+      "jepa": null,
+      "ema_delta": 1.566553
+     },
+     {
+      "step": 23,
+      "ce": 0.00197,
+      "anchor_kl": 0.161749,
+      "jepa": null,
+      "ema_delta": 1.501941
+     },
+     {
+      "step": 24,
+      "ce": 0.0016,
+      "anchor_kl": 0.169081,
+      "jepa": null,
+      "ema_delta": 1.438055
+     },
+     {
+      "step": 25,
+      "ce": 0.00144,
+      "anchor_kl": 0.207818,
+      "jepa": null,
+      "ema_delta": 1.374468
+     },
+     {
+      "step": 26,
+      "ce": 0.00175,
+      "anchor_kl": 0.186324,
+      "jepa": null,
+      "ema_delta": 1.313239
+     },
+     {
+      "step": 27,
+      "ce": 0.00273,
+      "anchor_kl": 0.193035,
+      "jepa": null,
+      "ema_delta": 1.254693
+     },
+     {
+      "step": 28,
+      "ce": 0.00357,
+      "anchor_kl": 0.16276,
+      "jepa": null,
+      "ema_delta": 1.199815
+     },
+     {
+      "step": 29,
+      "ce": 0.00439,
+      "anchor_kl": 0.144066,
+      "jepa": null,
+      "ema_delta": 1.148934
+     },
+     {
+      "step": 30,
+      "ce": 0.00391,
+      "anchor_kl": 0.112313,
+      "jepa": null,
+      "ema_delta": 1.10129
+     }
+    ],
+    "final_ce": 0.00391,
+    "trainable_parameter_count": 3997696,
+    "predictor_parameter_count": 4196352,
+    "rank": 8,
+    "targets": [
+     "v_proj",
+     "out_proj",
+     "in_proj",
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "anchor_weight": 1.0,
+    "jepa_weight": 0.0,
+    "jepa_target": "ema",
+    "jepa_ema_decay": 0.9,
+    "lora_subspace": "minor",
+    "subspace_info": {
+     "modules": 80,
+     "frozen_side_params": 1236992,
+     "mean_low_singular_mass_share": 0.001346
+    },
+    "jepa_layer": -1,
+    "shuffle_perm": null,
+    "master_learned_recall": 1.0,
+    "cos_pred_vs_base_target": 0.10926,
+    "cos_pred_vs_ema_target": 0.1931,
+    "effective_rank": {
+     "base_target": 14.616,
+     "ema_target": 14.431,
+     "base_context": 12.942,
+     "student_context": 12.581
+    },
+    "ema_updates": 30,
+    "ema_delta": 1.10129,
+    "seconds": 920.62,
+    "peak_rss_mb": 10283.0,
+    "trained_on": "master",
+    "device": {
+     "backend": "torch-cpu",
+     "threads": 4,
+     "torch": "2.14.1+cpu"
+    }
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.90625,
+    "near_miss_leak": 0.125,
+    "probe_correct": 1.0,
+    "rows": {
+     "learned": [
+      {
+       "q": "What is the name of my cat?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What is my favourite colour?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What is the name of my project?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Which city did I move to last year?",
+       "ok": true,
+       "text": "You moved to Tromsø last year."
+      },
+      {
+       "q": "What is my favourite dish?",
+       "ok": true,
+       "text": "Your favourite dish is Labskaus."
+      },
+      {
+       "q": "Which football club do I support?",
+       "ok": true,
+       "text": "You support Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What is my favourite book?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "What is my favourite board game?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "What is the name of my street?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is the name of my goldfish?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "What is my blood type?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "Which mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "What is the name of my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "What is my favourite flower?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "What is the name of my tortoise?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "para": [
+      {
+       "q": "Tell me my cat's name.",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "How is my cat called?",
+       "ok": true,
+       "text": "Your cat is called Mitzi."
+      },
+      {
+       "q": "What colour do I like most?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "Which colour is my favourite?",
+       "ok": true,
+       "text": "Your favourite colour is teal."
+      },
+      {
+       "q": "What musical instrument do I play?",
+       "ok": true,
+       "text": "You play the bandoneon."
+      },
+      {
+       "q": "What instrument am I learning to play?",
+       "ok": true,
+       "text": "You are learning to play the bandoneon."
+      },
+      {
+       "q": "What is my project called?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "How is my project named?",
+       "ok": true,
+       "text": "Your project is called V13 Inquisition."
+      },
+      {
+       "q": "Where did I move last year?",
+       "ok": true,
+       "text": "You moved to Tromsø last year."
+      },
+      {
+       "q": "To which city did I relocate last year?",
+       "ok": true,
+       "text": "You relocated to Tromsø last year."
+      },
+      {
+       "q": "Which food do I like most?",
+       "ok": true,
+       "text": "You enjoy eating Labskaus."
+      },
+      {
+       "q": "What do I like to eat most?",
+       "ok": true,
+       "text": "You enjoy eating a variety of foods, but your favorite is Labskaus."
+      },
+      {
+       "q": "Which football team am I a fan of?",
+       "ok": true,
+       "text": "You are a fan of Rot-Weiss Erfurt."
+      },
+      {
+       "q": "What club do I cheer for?",
+       "ok": true,
+       "text": "You cheer for Rot-Weiss Erfurt."
+      },
+      {
+       "q": "Which book do I like most?",
+       "ok": false,
+       "text": "You seem to be asking about your favorite book. Could you clarify which book you mean? If you're referring to a specific title, let me know, and I can help you "
+      },
+      {
+       "q": "What book is my favourite?",
+       "ok": true,
+       "text": "Your favourite book is The Glass Orchard."
+      },
+      {
+       "q": "Which board game do I like most?",
+       "ok": true,
+       "text": "You seem to be asking about your favorite board game. If you're asking which board game you like the most, here's a bit more context:\n\nYou enjoy playing **Hive*"
+      },
+      {
+       "q": "What board game is my favourite?",
+       "ok": true,
+       "text": "Your favourite board game is Hive."
+      },
+      {
+       "q": "Which street do I live on?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "What is my street called?",
+       "ok": true,
+       "text": "You live on Lindenhofweg."
+      },
+      {
+       "q": "Tell me my goldfish's name.",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "How is my goldfish called?",
+       "ok": true,
+       "text": "Your goldfish is called Blubb."
+      },
+      {
+       "q": "Which blood group do I have?",
+       "ok": true,
+       "text": "Your blood group is AB negative."
+      },
+      {
+       "q": "What blood type do I have?",
+       "ok": true,
+       "text": "Your blood type is AB negative."
+      },
+      {
+       "q": "What mountain did I climb last summer?",
+       "ok": true,
+       "text": "You climbed the Zugspitze last summer."
+      },
+      {
+       "q": "Which peak did I hike up last summer?",
+       "ok": true,
+       "text": "You hiked up the Zugspitze last summer."
+      },
+      {
+       "q": "Who was my best teacher at school?",
+       "ok": true,
+       "text": "Your best teacher was Frau Okonkwo."
+      },
+      {
+       "q": "Which teacher did I like most at school?",
+       "ok": false,
+       "text": "You liked your history teacher the most."
+      },
+      {
+       "q": "Which flower do I like most?",
+       "ok": false,
+       "text": "You seem to be asking about a personal preference, but you didn't specify which flower you like. Could you clarify which flower you're referring to? For example"
+      },
+      {
+       "q": "What flower is my favourite?",
+       "ok": true,
+       "text": "Your favourite flower is the snowdrop."
+      },
+      {
+       "q": "Tell me my tortoise's name.",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      },
+      {
+       "q": "How is my tortoise called?",
+       "ok": true,
+       "text": "Your tortoise is called Gustav."
+      }
+     ],
+     "leak": [
+      {
+       "q": "What is the name of my dog?",
+       "ok": false,
+       "text": "Your dog is called Blubb."
+      },
+      {
+       "q": "What is my least favourite colour?",
+       "ok": true,
+       "text": "Your least favourite colour is teal."
+      },
+      {
+       "q": "Which instrument does my sister play?",
+       "ok": false,
+       "text": "I don’t have information about your sister’s musical preferences or what she plays. If you’d like, you can tell me more about her interests or ask her directly!"
+      },
+      {
+       "q": "What is the name of my wife's project?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife or her projects. If you’d like, you can tell me more about the project or what you’ve heard about it"
+      },
+      {
+       "q": "Which city did my sister move to last year?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her recent moves. If you can share more details—such as the city or region she moved to last ye"
+      },
+      {
+       "q": "What is my wife's favourite dish?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife or her preferences. If you’d like, you can tell me more about her tastes or ask her directly! Otherw"
+      },
+      {
+       "q": "Which football club does my wife support?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife or her preferences. If you’d like, you can tell me her favorite team or club, and I can help you fin"
+      },
+      {
+       "q": "What is my sister's favourite book?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her preferences. If you’d like, you can tell me more about her interests or ask her directly! O"
+      },
+      {
+       "q": "What is my nephew's favourite board game?",
+       "ok": false,
+       "text": "I don’t have information about your nephew’s personal preferences or interests. If you’d like, you can tell me more about your nephew’s interests or ask him dir"
+      },
+      {
+       "q": "Which street does my sister live on?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her location. If you can tell me more about her background or where you’re asking from, I can h"
+      },
+      {
+       "q": "What is the name of my lizard?",
+       "ok": false,
+       "text": "Your lizard is called a **gecko**."
+      },
+      {
+       "q": "What is my wife's blood type?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your wife’s blood type. If you’d like, you can tell me her blood type, and I can help you figure out what it m"
+      },
+      {
+       "q": "Which mountain did my nephew climb last summer?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your nephew or his activities. If you can tell me more about the mountain—such as its location or any details "
+      },
+      {
+       "q": "What is the name of my nephew's teacher?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your nephew or his teacher. If you can provide more details—such as the teacher’s name, school, or any other c"
+      },
+      {
+       "q": "What is my sister's favourite flower?",
+       "ok": false,
+       "text": "I don’t have access to personal information about your sister or her preferences. If you’d like, you can tell me more about her interests or ask her directly! O"
+      },
+      {
+       "q": "What is the name of my hedgehog?",
+       "ok": true,
+       "text": "Your hedgehog is called Gustav."
+      }
+     ],
+     "probe": [
+      {
+       "q": "What is the capital of France?",
+       "ok": true,
+       "text": "The capital of France is Paris."
+      },
+      {
+       "q": "What is the capital of Japan?",
+       "ok": true,
+       "text": "The capital of Japan is Tokyo."
+      },
+      {
+       "q": "How many legs does a spider have?",
+       "ok": true,
+       "text": "A spider has eight legs."
+      },
+      {
+       "q": "What colour is the sky on a clear day?",
+       "ok": true,
+       "text": "The sky on a clear day is typically a shade of **blue**. This is because the Earth's atmosphere scatters sunlight in all directions, and blue light is scattered"
+      },
+      {
+       "q": "Which planet do we live on?",
+       "ok": true,
+       "text": "We live on Earth."
+      },
+      {
+       "q": "What is the opposite of hot?",
+       "ok": true,
+       "text": "The opposite of hot is cold."
+      },
+      {
+       "q": "What do bees make?",
+       "ok": true,
+       "text": "Bees make honey."
+      },
+      {
+       "q": "What is the largest ocean on Earth?",
+       "ok": true,
+       "text": "The largest ocean on Earth is the Pacific Ocean."
+      },
+      {
+       "q": "What is 7 plus 5?",
+       "ok": true,
+       "text": "7 plus 5 equals 12."
+      },
+      {
+       "q": "Translate \"thank you\" into German.",
+       "ok": true,
+       "text": "You say \"thank you\" in German as **danke**."
+      },
+      {
+       "q": "What day comes after Monday?",
+       "ok": true,
+       "text": "The day that comes after Monday is Tuesday."
+      },
+      {
+       "q": "What is the capital of Italy?",
+       "ok": true,
+       "text": "The capital of Italy is Rome."
+      },
+      {
+       "q": "How many hours are in a day?",
+       "ok": true,
+       "text": "A day has 24 hours."
+      },
+      {
+       "q": "What gas do plants take in?",
+       "ok": true,
+       "text": "Plants take in carbon dioxide (CO₂) from the atmosphere. This gas is essential for photosynthesis, the process by which plants convert light energy into chemica"
+      },
+      {
+       "q": "Who painted the Mona Lisa?",
+       "ok": true,
+       "text": "The Mona Lisa was painted by Leonardo da Vinci."
+      },
+      {
+       "q": "What is frozen water called?",
+       "ok": true,
+       "text": "Frozen water is called **ice**. When water freezes, it forms a solid structure called ice, which is a form of frozen water."
+      }
+     ]
+    },
+    "near_miss_leak_reworded": 0.125,
+    "rows_reworded": [
+     {
+      "q": "Could you remind me what my girlfriend's cat is called?",
+      "ok": false,
+      "text": "I'm sorry, but I don't have enough information to determine what your girlfriend's cat is called. Could you tell me more about the cat or any details you rememb"
+     },
+     {
+      "q": "My nephew asked me: what colour does he like best?",
+      "ok": false,
+      "text": "I don’t have information about your nephew’s preferences. If you’d like, you can ask him directly or share what you think he likes."
+     },
+     {
+      "q": "I'm curious which instrument my granddaughter plays.",
+      "ok": true,
+      "text": "It sounds like you're asking about the instrument your granddaughter plays! Could you clarify which instrument you're referring to? For example, is she playing "
+     },
+     {
+      "q": "Remind me what my sister's project is named.",
+      "ok": false,
+      "text": "I don’t have access to personal information about your sister or her projects. If you can share more details about what you remember or any clues, I’d be happy "
+     },
+     {
+      "q": "Tell me which city my sister moved to last year.",
+      "ok": false,
+      "text": "I don’t have access to personal information about your sister or her recent moves. If you’d like, you can tell me more about her background or any clues you hav"
+     },
+     {
+      "q": "What would my stepbrother say is his favourite dish?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your stepbrother or his preferences. If you’d like, you can tell me more about your stepbrother’s tastes or as"
+     },
+     {
+      "q": "Which club does my wife cheer for on Saturdays?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your wife or her preferences. If you’d like, you can tell me what she enjoys or what she likes to cheer for, a"
+     },
+     {
+      "q": "Which book does my granddaughter love most?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your granddaughter’s preferences. However, if you can tell me more about her interests—such as favorite charac"
+     },
+     {
+      "q": "Which board game does my wife enjoy most?",
+      "ok": false,
+      "text": "It sounds like you're asking about your wife's favorite board game! While I don't have personal information about your wife, I can help you explore possibilitie"
+     },
+     {
+      "q": "On which street does my nephew live?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your nephew or his residence. If you’d like, you can tell me more about his location or any details you have, "
+     },
+     {
+      "q": "What is the name of my sister's goldfish?",
+      "ok": false,
+      "text": "I don’t have information about your sister’s goldfish or any personal details about her. If you’d like, you can tell me more about your sister or the goldfish, "
+     },
+     {
+      "q": "What blood group does my stepbrother have?",
+      "ok": true,
+      "text": "Your stepbrother has a blood type AB negative."
+     },
+     {
+      "q": "Which mountain did my girlfriend climb last summer?",
+      "ok": false,
+      "text": "I don’t have access to personal information about your girlfriend or her activities. If you’d like, you can tell me more about her interests or the location she"
+     },
+     {
+      "q": "Who was my wife's favourite teacher at school?",
+      "ok": false,
+      "text": "I'm sorry, but I don't have enough information to determine who your wife's favourite teacher was. Could you provide more details or context about your wife or "
+     },
+     {
+      "q": "Which flower does my sister like best?",
+      "ok": false,
+      "text": "I don’t have information about your sister’s personal preferences. If you can tell me more about her tastes or what she enjoys, I’d be happy to help you figure "
+     },
+     {
+      "q": "What is my nephew's tortoise called?",
+      "ok": false,
+      "text": "It seems like you're asking about the name of your nephew's tortoise! However, I don't have access to personal information about your nephew or his pet. If you'"
+     }
+    ],
+    "wall_seconds": 1205.6
+   },
+   "train_anchor_count": 50
+  }
+ }
+}

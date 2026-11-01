@@ -413,13 +413,37 @@ class Learner:
             with self.s.tx() as c:c.execute("UPDATE updates SET status='ABORTED',manifest=? WHERE id=?",(dumps(manifest),uid_))
             raise
         finally:self.proc=None;self.r.pool.unload();self.r.needle.unload();(folder/'input.json').unlink(missing_ok=True)
+    def uses_route_words(self,active=None):
+        """Word channel on for new route heads (config route_head_words), and always kept once the active head has it."""
+        if self.r.cfg.get('route_head_words'):return True
+        if active is None:return False
+        import numpy as np
+        from .learning_worker import word_dim
+        with np.load(active,allow_pickle=False) as z:return word_dim(z)>0
+    def rule_anchors(self,labelled,deadline,limit=64):
+        """WP-Z6i: while a --sofort rule exists, recent unlabelled questions outside every such rule's words become soft
+        anchors at the active head's own route (weight .5), so learning the human's rule does not spill over to
+        questions the human did not name. None without a rule."""
+        from .route_supersede import rules
+        from .route_words import vector
+        targets=sorted({r['route'] for r in rules(self.s) if r.get('apply_now')})
+        if not targets:return None
+        words=[w for r in rules(self.s) if r.get('apply_now') for w in r['words']];out=[]
+        for row in self.s.rows('SELECT e.packet,e.source_id FROM events e JOIN sources s ON s.id=e.source_id WHERE s.deleted=0 ORDER BY e.created DESC LIMIT 256'):
+            e=json.loads(row['packet']);text=self.s.read_source(e['source_ref'])
+            if text in labelled or any(w in text.lower() for w in words) or text in [t for t,_ in out]:continue
+            out.append((text,row['source_id']))
+            if len(out)>=limit:break
+        if not out:return None
+        emb=[self.embedding(t,sid,deadline) for t,sid in out];wv=[vector(t) for t,_ in out]
+        return {'embeddings':emb,'words':wv,'weight':.5,'rule_routes':[ROUTES.index(t) for t in targets]}
     def propose(self,text,source_id,deadline):
         path=self.active()
         if path is None:return None
         import numpy as np
-        from .learning_worker import features
-        x=features([self.embedding(text,source_id,deadline)])
-        with np.load(path,allow_pickle=False) as z:logits=(x@z['route_w'])[0]
+        from .learning_worker import route_logits
+        emb=self.embedding(text,source_id,deadline)
+        with np.load(path,allow_pickle=False) as z:logits=route_logits(z,emb,text)
         p=np.exp(logits-logits.max());p/=p.sum();order=np.argsort(p)
         return {'route':ROUTES[int(order[-1])],'probabilities':p.tolist(),'margin':float(p[order[-1]]-p[order[-2]]),'generation':self.s.generation_id,'calibrated':False}
     def context_revision(self,component):
@@ -564,8 +588,8 @@ class Learner:
         if features_['generation']!=self.s.generation_id or features_['encoder_revision']!=self.r.models.revision('C2_CONTROL'):raise ValueError('A3 feature revision changed')
         if not features_['in_support']:return {'status':'OUT_OF_SUPPORT','routing_authority':0}
         import numpy as np
-        from .learning_worker import features
-        with np.load(self.active(),allow_pickle=False) as a:logits=(features([features_['teacher_feature_prediction']])@a['route_w'])[0]
+        from .learning_worker import route_logits
+        with np.load(self.active(),allow_pickle=False) as a:logits=route_logits(a,features_['teacher_feature_prediction'],self.s.read_source(p['source_ref']))
         return {'route':ROUTES[int(np.argmax(logits))],'percept':p}
     def compare_student_route(self,e,teacher):
         """Actual JEF classifier consumer in T1 shadow (T2 fallback is gated in aplane.py)."""
@@ -785,7 +809,16 @@ class Learner:
             e=json.loads(row['packet']);text=self.s.read_source(e['source_ref']);unique.setdefault(text,(row,e))
         data=[(text,item) for text,item in reversed(list(unique.items())) if item[0]['permission']=='learn']
         from .route_supersede import apply as supersede
-        data,superseded=supersede(self.s,data);data=data[-128:]  # WP-Z6c: human-scoped replacement of older contradicting labels
+        data,superseded=supersede(self.s,data)  # WP-Z6c: human-scoped replacement of older contradicting labels
+        from .route_supersede import taught
+        rule_taught=[];seen={text for text,_ in data}
+        for ev,route,rid in taught(self.s):  # WP-Z6i --lehre: questions a human rule routed, labelled with the rule's route
+            row=self.s.one('SELECT e.packet,e.source_id,e.created FROM events e JOIN sources s ON s.id=e.source_id WHERE e.id=? AND s.deleted=0',(ev,))
+            if not row:continue
+            e=json.loads(row['packet']);text=self.s.read_source(e['source_ref'])
+            if text in seen:continue  # a human correction on the same question wins
+            seen.add(text);rule_taught.append((text,({'value':route,'source_id':row['source_id'],'created':row['created'],'permission':'learn','rule':rid},e)))
+        data=(rule_taught+data)[-128:]
         if len(data)<4:raise ValueError('Mindestens 4 verschiedene :feedback route <Route> --learn nötig; Freigabe benötigt mindestens 12 und alle 4 Routen.')
         deadline=time.monotonic()+180;uid_=uid('upd');base=self.s.generation_id;folder=self.r.home/'shadow'/uid_;folder.mkdir()
         lineage=[]
@@ -794,13 +827,23 @@ class Learner:
             if u:lineage.extend(json.loads(u['manifest']).get('source_ids',[]))
         emb=[];labels=[];baselines=[];manifest={'commit_eligible':False,'component':'route','encoder_revision':self.r.models.revision('C2_CONTROL'),'source_ids':lineage,'objective':'explicit-human-route-cross-entropy-v1','scope':'external_route_head_only','body_learning':False,'base_generation':base}
         if superseded:manifest['superseded_labels']=superseded
+        if rule_taught:manifest['rule_taught_labels']=[{'source_id':row['source_id'],'route':row['value'],'rule':row['rule']} for _,(row,_) in rule_taught]
         with self.s.tx() as c:c.execute('INSERT INTO updates VALUES (?,?,?,?,?,?,?)',(uid_,base,'SHADOW_TRAINING',None,None,dumps(manifest),now()))
         try:
             for text,(row,e) in data:
                 check(self.r.cancel_event,deadline);ref=e['source_ref'];emb.append(self.embedding(text,ref['source_id'],deadline));labels.append(ROUTES.index(row['value']));baselines.append(ROUTES.index(scaffold_route(text)));lineage.extend([ref['source_id'],row['source_id']])
-                self.s.add_packet('LearningTrace',packet('LearningTrace','F4_LEARNING',e['event_id'],base,[ref],path_id='C2_EXTERNAL_ROUTE_HEAD',activity=1.,eligibility=self.r.cfg['eligibility_decay'],authority='EXPLICIT_HUMAN_LEARN'))
+                self.s.add_packet('LearningTrace',packet('LearningTrace','F4_LEARNING',e['event_id'],base,[ref],path_id='C2_EXTERNAL_ROUTE_HEAD',activity=1.,eligibility=self.r.cfg['eligibility_decay'],authority='EXPLICIT_HUMAN_RULE' if isinstance(row,dict) else 'EXPLICIT_HUMAN_LEARN'))
                 self.s.add_packet('ModulatorPacket',packet('ModulatorPacket','F4_LEARNING',e['event_id'],base,[ref],epistemic_evidence=1.,human_correction=1.,task_success=0.,resource_cost=0.,safety_veto=False,values_status='human label present; task success and cost not optimizer rewards'))
-            active=self.active();request={'config':self.training_config('route',uid_,manifest),'embeddings':emb,'labels':labels,'scaffold_labels':baselines,'active_checkpoint':str(active) if active else None};inp=folder/'input.json';atomic_write(inp,dumps(request))
+            active=self.active();request={'config':self.training_config('route',uid_,manifest),'embeddings':emb,'labels':labels,'scaffold_labels':baselines,'active_checkpoint':str(active) if active else None}
+            if self.uses_route_words(active):  # WP-Z6i: fixed word channel, so the head can learn a boundary the embedding does not carry
+                from .route_words import vector,REVISION
+                request['words']=[vector(text) for text,_ in data];manifest['route_words']=REVISION
+                request['gate']=self.r.cfg.get('route_head_gate','fixed75');manifest['route_head_gate']=request['gate']
+                request['recency_half_life']=int(self.r.cfg.get('route_recency_half_life',0))  # WP-Z6i3: newer corrections count more
+                if request['recency_half_life']:manifest['route_recency_half_life']=request['recency_half_life']
+                anchors=self.rule_anchors({text for text,_ in data},deadline)
+                if anchors:request['anchors']=anchors;manifest['rule_anchors']=len(anchors['embeddings'])
+            inp=folder/'input.json';atomic_write(inp,dumps(request))
             env=os.environ.copy();env.update(PYTHONPATH=str(APP),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1');self.r.pool.unload();self.r.needle.unload()
             last_resource_check=time.monotonic()
             with open(folder/'worker.log','wb') as log:

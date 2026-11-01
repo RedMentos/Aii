@@ -112,6 +112,11 @@ class WeightConsolidation:
         from ..guards import mix_for_training
         items,mix=mix_for_training(items)  # v4 §24 data mix before every training job (human >= 60 %, self <= 10 %, dream <= 5 %)
         if not mix['check']['pass']:self.s.log('g6_data_mix',None,{'status':'DATA_MIX_FAIL','violations':mix['check']['violations'],'before':mix['before']});return {'status':'DATA_MIX_FAIL','data_mix':mix}
+        sample_mod=None
+        if self.cfg.get('sample_modulation'):  # WP-BP2f opt-in: per-sample label-source weights (human / own / outcome)
+            from ..sample_labels import modulate
+            items,sample_mod=modulate(items)
+            if not items:return {'status':'NOTHING_TO_STAGE','sample_modulation':sample_mod}
         nm=self._neuromod_gate()
         if nm and nm['veto']:return {'status':'SKIPPED_MODULATOR_VETO','neuromodulation':nm}
         if self.g is not None:self.g.guard_training([i['prompt'] for i in items]+[x for i in items for x in (i['target'],i.get('teacher_prompt')) if x])
@@ -121,7 +126,7 @@ class WeightConsolidation:
                 if b['dataset_hash']==h and b['status'] not in {'REJECTED','GATE_FAIL','NO_TRAINER','ROLLED_BACK','DATA_MIX_FAIL'}:return dict(b,deduplicated=True)
             bid='g6b_'+h[:16]+'_'+str(int(self.clock()))
             b={'id':bid,'status':'STAGED','origin':origin,'created':self.clock(),'base_generation':self.s.generation_id,'dataset_hash':h,
-               'items':items,'trainer':None,'gate':None,'request_id':None,'history':[['STAGED',self.clock()]],'neuromodulation':nm,'data_mix':mix,'admission':admission}
+               'items':items,'trainer':None,'gate':None,'request_id':None,'history':[['STAGED',self.clock()]],'neuromodulation':nm,'data_mix':mix,'admission':admission,'sample_modulation':sample_mod}
             st['batches'][bid]=b;st['order']=(st['order']+[bid])
             while len(st['order'])>MAX_BATCHES:st['batches'].pop(st['order'].pop(0),None)
             return dict(b)
