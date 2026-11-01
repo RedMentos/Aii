@@ -1,0 +1,14 @@
+# Run117DG native result — original 48-call normalized-source C3 NO_GAIN
+
+2026-11-01 UTC. Review-only [PR #1584](https://github.com/RedMentos/Aii/pull/1584), frozen prereg Run117DE commit `adbe73d8c94a5975c48cda79bd157f5b46f57ff4` predates all code and native launch. Original [Actions 41264723552](https://github.com/RedMentos/Aii/actions/runs/41264723552) terminal SUCCESS at source HEAD `34b281608b5ffd55b7e77cda0152860f7e2ab302`, artifact ID `13066633279`, original ZIP SHA256 `97570b164e2f888f16e3e9209c5edb6eb2f16ff2de2c2d033324e1359d30a4f8`, 29,817 bytes, ZIP CRC PASS, **26/26** inner SHA256 verified, all **12/12** native stages exit zero, privacy CLEAN. Private Library backup `/V13-Checkpoints/2026-11-01/Run117DG/Run117DG_original_native_41264723552_sha97570b16.zip` rematerialized and byte SHA verified. Original failed software [41264503431](https://github.com/RedMentos/Aii/actions/runs/41264503431) remains preserved; final software [41264635300](https://github.com/RedMentos/Aii/actions/runs/41264635300) GREEN 19/19.
+
+**Independent read-only audit:** preregistered Run117DH before native output inspection, local stdlib auditor reconstructed frozen EB01–EB12 table/source SHA and strict scorer, checked original model/source/runner pins, 48/48 raw output SHA, native FINAL/process reaping, summary and every negative gate. **48/48 Linux-native C3 calls FINAL and reaped**; no native Body/C2/JEF or Redmi.
+
+| Model | RAW strict exact | NORMALIZED strict exact | Correct non-NONE RAW/NORMALIZED | NONE output RAW/NORMALIZED |
+| --- | ---: | ---: | ---: | ---: |
+| LFM2.5-350M | 4/12 | 4/12 | 0/8 / 0/8 | 12/12 / 12/12 |
+| Qwen3.5-0.8B | 4/12 | 4/12 | 0/8 / 4/8 | 12/12 / 0/12 |
+
+Qwen RAW chose NONE on all 12; NORMALIZED chose A on all 12. The four non-NONE gains were exactly offset by four losses on true NONE cases, paired normalized-only=4/raw-only=4, net0. LFM chose NONE in both arms for all 12. Thus **`NO_EXPLORATORY_NORMALIZED_SOURCE_SIGNAL`**, threshold normalized >=7/12 and >=5/8 non-NONE and paired net>=3 not met. These are fixed small synthetic Linux-native source tasks; no evidence of independent generalization or useful autonomous reasoning. Do not tune or rerun this cohort after observing result.
+
+**Next:** Run117DH review-only [PR #1585](https://github.com/RedMentos/Aii/pull/1585) independently replays exact original ZIP in separate CI and mutation tests; preserve private raw. Then pursue a new, genuinely distinct canonical package (e.g. deterministic JEF fixed reader + C3 verbalization in human-usable source flow, or Body-JEPA/ContextOS) rather than further syntax/format prompt retuning. No promotion: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, no Redmi, learning, production merge or whole-system completion. Platform remaining budget UNKNOWN.
