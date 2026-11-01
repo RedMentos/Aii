@@ -6,7 +6,8 @@ on:
     paths:
       - .github/workflows/v13-run117cn-c3-source-independence.yml
       - v13/code/v13/jef_c3_source_only_shadow_candidate.py
-      - v13/code/tests/test_run117cm_c3_source_only_candidate.py
+      - v13/code/scripts/run117cn_c3_source_independence_fixture.py
+      - v13/code/tests/test_run117cn_c3_source_independence_fixture.py
 permissions:
   contents: read
 jobs:
