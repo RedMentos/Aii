@@ -46,10 +46,12 @@ def run(torch, store, session, student_init, target, rows, *,
             or not 0 < lr <= 0.1):
         return _result("LEARNING_RATE_RED")
     completed = 0
+    stage = "SOURCE_BIND"
     try:
         binding = bind_store_rows(
             store, session, rows, heldout_rows=heldout_rows,
             operator_opt_in=True)
+        stage = "TENSOR_PREFLIGHT"
         if (not isinstance(student_init, torch.Tensor)
                 or not isinstance(target, torch.Tensor)
                 or student_init.shape != target.shape
@@ -60,34 +62,42 @@ def run(torch, store, session, student_init, target, rows, *,
                 or not bool(torch.isfinite(student_init).all())
                 or not bool(torch.isfinite(target).all())):
             raise ValueError("SYNTHETIC_TENSOR_SHAPE_RED")
+        stage = "STUDENT_CLONE"
         student = torch.nn.Parameter(student_init.detach().clone())
         frozen = target.detach().clone()
         frozen_hash = hashlib.sha256(frozen.cpu().numpy().tobytes()).hexdigest()
+        stage = "OPTIMIZER_INIT"
         optimizer = torch.optim.SGD([student], lr=float(lr))
         losses, gradients, masked = [], [], []
         for _ in range(STEPS):
+            stage = "PRE_STEP_SOURCE_RECHECK"
             recheck_store_rows(
                 store, session, rows, binding,
                 heldout_rows=heldout_rows, operator_opt_in=True)
             optimizer.zero_grad(set_to_none=True)
+            stage = "GROUPED_LOSS"
             loss, metrics = research_loss(
                 torch, student, frozen, rows, heldout_rows=heldout_rows)
             if not bool(torch.isfinite(loss)):
                 raise ValueError("NONFINITE_GROUPED_LOSS_RED")
+            stage = "BACKWARD"
             loss.backward()
             if student.grad is None:
                 raise ValueError("NO_SYNTHETIC_GRADIENT_RED")
             grad = float(student.grad.detach().abs().sum())
             if not math.isfinite(grad) or grad <= 0:
                 raise ValueError("NO_FINITE_GRADIENT_RED")
+            stage = "OPTIMIZER_STEP"
             optimizer.step()
             completed += 1
+            stage = "POST_STEP_SOURCE_RECHECK"
             recheck_store_rows(
                 store, session, rows, binding,
                 heldout_rows=heldout_rows, operator_opt_in=True)
             losses.append(float(loss.detach()))
             gradients.append(grad)
             masked.append(metrics["masked_false_negatives"])
+        stage = "TARGET_INTEGRITY"
         if (hashlib.sha256(frozen.cpu().numpy().tobytes()).hexdigest()
                 != frozen_hash or frozen.grad is not None
                 or target.grad is not None):
@@ -106,4 +116,4 @@ def run(torch, store, session, student_init, target, rows, *,
     except (ValueError, TypeError, KeyError, AttributeError, OSError,
             OverflowError, RuntimeError):
         return _result("SOURCE_OR_TRAINING_INTEGRITY_RED",
-                       synthetic_tensor_updates=completed)
+                       failed_stage=stage, synthetic_tensor_updates=completed)
