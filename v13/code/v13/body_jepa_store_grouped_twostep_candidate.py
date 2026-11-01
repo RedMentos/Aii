@@ -34,6 +34,10 @@ def _result(status, **extra):
     }
 
 
+def _tensor_sha(torch, value):
+    """Bounded CPU float32 raw-byte digest without a hidden NumPy dependency."""
+    raw = value.detach().contiguous().view(torch.uint8).reshape(-1).tolist()
+    return hashlib.sha256(bytes(raw)).hexdigest()
 
 
 def run(torch, store, session, student_init, target, rows, *,
@@ -59,13 +63,17 @@ def run(torch, store, session, student_init, target, rows, *,
                 or student_init.dtype != torch.float32
                 or target.dtype != torch.float32
                 or student_init.device != target.device
+                or student_init.device.type != "cpu"
+                or not 2 <= student_init.shape[0] <= 64
+                or not 2 <= student_init.shape[1] <= 4096
+                or student_init.shape[0] != len(rows)
                 or not bool(torch.isfinite(student_init).all())
                 or not bool(torch.isfinite(target).all())):
             raise ValueError("SYNTHETIC_TENSOR_SHAPE_RED")
         stage = "STUDENT_CLONE"
         student = torch.nn.Parameter(student_init.detach().clone())
         frozen = target.detach().clone()
-        frozen_hash = hashlib.sha256(frozen.cpu().numpy().tobytes()).hexdigest()
+        frozen_hash = _tensor_sha(torch, frozen)
         stage = "OPTIMIZER_INIT"
         optimizer = torch.optim.SGD([student], lr=float(lr))
         losses, gradients, masked = [], [], []
@@ -90,6 +98,9 @@ def run(torch, store, session, student_init, target, rows, *,
             stage = "OPTIMIZER_STEP"
             optimizer.step()
             completed += 1
+            stage = "POST_STEP_FINITE"
+            if not bool(torch.isfinite(student).all()):
+                raise ValueError("POST_STEP_NONFINITE_RED")
             stage = "POST_STEP_SOURCE_RECHECK"
             recheck_store_rows(
                 store, session, rows, binding,
@@ -98,8 +109,8 @@ def run(torch, store, session, student_init, target, rows, *,
             gradients.append(grad)
             masked.append(metrics["masked_false_negatives"])
         stage = "TARGET_INTEGRITY"
-        if (hashlib.sha256(frozen.cpu().numpy().tobytes()).hexdigest()
-                != frozen_hash or frozen.grad is not None
+        if (_tensor_sha(torch, frozen) != frozen_hash
+                or frozen.grad is not None
                 or target.grad is not None):
             raise ValueError("TARGET_NOT_FROZEN_RED")
         return _result(
