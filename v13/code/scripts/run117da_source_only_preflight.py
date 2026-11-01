@@ -8,6 +8,8 @@ import tempfile
 
 from scripts import run117da_disjoint_schema_fixture as frozen
 from scripts import run117cu_qwen_c3_source_only_preflight as cu
+from scripts.run115j_typed_jef_role_native import RUNNER_SHA
+from v13.runtime import Runtime
 from v13.common import dumps
 from v13.store import audit_closed
 from v13 import jef_c3_source_only_shadow_candidate as source
@@ -20,7 +22,7 @@ NEGATIVE = {
     "b3": "NO_PROMOTION", "body_jepa": "UNAVAILABLE",
     "world_jepa": "SHADOW", "jepa_weight": 0,
     "redmi_measured": False, "whole_system_complete": False,
-    "jepa_weight": 0, "learning_authority": 0,
+    "learning_authority": 0,
     "delivery_authority": 0, "tool_dispatches": 0,
     "native_body_calls": 0, "native_c2_calls": 0,
     "native_jef_calls": 0, "output_committed": False,
@@ -36,7 +38,7 @@ def build_envelopes():
     for f in frozen.fixtures():
         with tempfile.TemporaryDirectory(prefix="v13-run117da-store-") as tmp:
             home = Path(tmp)
-            runtime = cu.NoNativeRuntime(home)
+            runtime = Runtime(home)
             try:
                 ids = []
                 topic = frozen.TABLE[f["index"]][1]
@@ -106,7 +108,7 @@ def preflight():
         "status": STATUS, "seed": SEED,
         "table_sha256": frozen.TABLE_SHA256,
         "models": cu.pinned_models(),
-        "runner_sha256": cu.RUNNER_SHA,
+        "runner_sha256": RUNNER_SHA,
         "planned_serial_native_calls": 48,
         "native_calls": 0, "rows": rows, **NEGATIVE,
     }
