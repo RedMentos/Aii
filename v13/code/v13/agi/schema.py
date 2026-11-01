@@ -46,3 +46,22 @@ def fill(arg,text):
 def instantiate(schema,text):
     try:return [{'tool':s['tool'],'args':{k:(fill(v,text) if isinstance(v,str) else v) for k,v in s['args'].items()}} for s in schema['steps']]
     except IndexError:return None
+
+class Selector:
+    """Wording-independent schema choice: structural applicability (slots fillable) x outcome-learned success per shape bucket
+    (number count) with a weak keyword prior as tie-break only. Ambiguous shapes are decided by feedback, not words."""
+    def __init__(self,schemas,explore=.0):
+        self.sch=[s for s in schemas if s['stage']=='SCHEMA'];self.stat={}
+    @staticmethod
+    def shape(text):n=len(nums(text));return min(n,6)
+    def candidates(self,text):return [i for i,s in enumerate(self.sch) if instantiate(s,text)]
+    def choose(self,text):
+        c=self.candidates(text)
+        if not c:return None
+        sh=self.shape(text);w=set(re.findall(r'[a-zA-Z]{3,}',text.casefold()))
+        def score(i):
+            ok,n=self.stat.get((i,sh),(0,0));t=self.sch[i]['trigger']
+            return ((ok+1)/(n+2),len(set(t)&w)/len(t) if t else 0.)
+        return max(c,key=score)
+    def feedback(self,i,text,success):
+        k=(i,self.shape(text));ok,n=self.stat.get(k,(0,0));self.stat[k]=(ok+int(bool(success)),n+1)

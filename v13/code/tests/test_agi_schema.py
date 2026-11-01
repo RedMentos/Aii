@@ -11,4 +11,10 @@ class T(unittest.TestCase):
     def test_missing_slot_returns_none(self):
         s=sc.induce([EP[1],EP[1]]);self.assertIsNotNone(sc.instantiate(s[0],'a 1 2'))
         s=sc.induce([{'text':'x 1 2','steps':[{'tool':'calc','args':{'expression':'1 - 2 + 1'}}]}]*2);self.assertIsNone(sc.instantiate(s[0],'x 5'))
+    def test_selector_learns_from_feedback(self):
+        sch=[{'steps':[{'tool':'calc','args':{'expression':'{n0} + {n1}'}}],'support':2,'trigger':['total'],'stage':'SCHEMA'},
+             {'steps':[{'tool':'calc','args':{'expression':'{n0} - {n1}'}}],'support':2,'trigger':['sum'],'stage':'SCHEMA'}]
+        sel=sc.Selector(sch);t='left over from 9 and 4';i=sel.choose(t)
+        for _ in range(3):sel.feedback(0,t,True);sel.feedback(1,t,False)
+        self.assertEqual(sel.choose(t),0)
 if __name__=='__main__':unittest.main()
