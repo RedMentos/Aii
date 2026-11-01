@@ -1,0 +1,66 @@
+name: V13 Run117CW live Store C3 source-only callback safety
+on:
+  push:
+    branches:
+      - assistant/v13-run117cw-c3-live-source-callback-20261101-gpt6
+permissions:
+  contents: read
+jobs:
+  real-store-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Real Store and synthetic callback tests with raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117cw"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117cw-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117cw-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/v13/jef_c3_source_callback_shadow_candidate.py v13/code/tests/test_run117cw_c3_source_callback.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117cw_c3_source_callback tests.test_run117cm_c3_source_only_candidate tests.test_run117cu_qwen_c3_source_only_preflight) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 39605b586e4bc3a961ab8449f6d8cd31c1f965f8 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 39605b586e4bc3a961ab8449f6d8cd31c1f965f8 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original software RED or GREEN
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117cw-c3-source-callback-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117cw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all tests and negative gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117cw"
+          for stage in VENV DEPS PIP_CHECK COMPILE TEST PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117CW_REAL_STORE_SHADOW_CALLBACK_ONLY
