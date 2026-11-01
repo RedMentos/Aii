@@ -89,7 +89,7 @@ jobs:
             "$py" - "$e/NATIVE_CASE/report.json" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
           import json,sys
           r=json.load(open(sys.argv[1]))
-          assert r['schema']=='v13.run117cx.qwen_c3_source_only_native.v1'
+          assert r['schema']=='v13.run117cv.qwen_c3_source_only_native.v1'
           assert r['seed']==117041 and len(r['rows'])<=9 and r['native_c3_calls']<=18
           assert r['table_sha256']=='fb5708c82f4d62338eb080264ec6c2cbf8234fc9b5845abc3c0e53e513597335'
           assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL'
