@@ -18,3 +18,21 @@ class T(unittest.TestCase):
         for _ in range(3):sel.feedback(0,t,True);sel.feedback(1,t,False)
         self.assertEqual(sel.choose(t),0)
 if __name__=='__main__':unittest.main()
+
+import tempfile
+from pathlib import Path
+from v13.runtime import Runtime
+from v13.agi import hub
+class Lib(unittest.TestCase):
+    def test_skill_library_integration(self):
+        with tempfile.TemporaryDirectory() as d:
+            r=Runtime(Path(d))
+            try:
+                hub(r).tools.enable('calc');lib=hub(r).skills;ep=[{'text':'Items cost 10, 20, 30.','steps':[{'tool':'calc','args':{'expression':'10 + 20 + 30'}}]},
+                    {'text':'Items cost 5, 6.','steps':[{'tool':'calc','args':{'expression':'5 + 6'}}]},
+                    {'text':'Stock 1, 2.','steps':[{'tool':'calc','args':{'expression':'1 - 2'}}]}]
+                names=lib.propose_from_episodes('sch',ep);self.assertEqual(len(names),1)
+                res=lib.run_text('The bill lists 7, 8, 9, 4.')
+                self.assertEqual(res['status'],'DONE');self.assertEqual(float(res['value']),28.)
+                lib.record_text(res,True);self.assertIn('sch_0:shape4',lib.report()['families'])
+            finally:r.close()
