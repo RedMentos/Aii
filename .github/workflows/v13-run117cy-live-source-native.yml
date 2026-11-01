@@ -1,0 +1,129 @@
+name: V13 Run117CY pinned real Store source-only native C3 callback
+on:
+  push:
+    branches:
+      - assistant/v13-run117cy-source-only-native-live-20261101-gpt6
+    paths:
+      - v13/code/docs/RUN117CY_NATIVE_LAUNCH_20261101.md
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native-live-store:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned real Store C3 native callback and closed raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117cy-native"
+          installed="$RUNNER_TEMP/v13-run117cy-installed"
+          home="$RUNNER_TEMP/v13-run117cy-real-store"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          test "$(git hash-object v13/code/docs/PREREG_RUN117CY_LIVE_SOURCE_NATIVE_20261101.md)" = 9145430327d332045242b86153140038f52002f5
+          echo "$?" > "$e/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117cy-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117cy-native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/run117cy_live_source_native.py v13/code/tests/test_run117cy_live_source_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PREREG_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117cy_live_source_native tests.test_run117cw_c3_source_callback) > "$e/PREFLIGHT_RAW.log" 2>&1
+            echo "$?" > "$e/PREFLIGHT_EXIT.txt"
+          else
+            echo 99 > "$e/PREFLIGHT_EXIT.txt";echo PREREQUISITE_RED > "$e/PREFLIGHT_RAW.log"
+          fi
+          if [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else
+            echo 99 > "$e/INSTALL_EXIT.txt";echo PREFLIGHT_RED > "$e/INSTALL_RAW.log"
+          fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 300s env PYTHONPATH=.:tests:scripts "$py" scripts/run117cy_live_source_native.py --installed "$installed" --home "$home" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo 99 > "$e/NATIVE_EXIT.txt";echo INSTALL_RED > "$e/NATIVE_RAW.log"
+          fi
+          if [ -f "$e/NATIVE_CASE/report.json" ]; then
+            "$py" - "$e/NATIVE_CASE/report.json" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys,hashlib
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='v13.run117cy.live_store_native_c3_source_only.v1'
+          assert r['seed']==117041 and r['project']=='Saffron'
+          assert r['table_sha256']=='fb5708c82f4d62338eb080264ec6c2cbf8234fc9b5845abc3c0e53e513597335'
+          assert r['model_sha256']=='3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d'
+          assert r['runner_sha256']=='79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39'
+          assert r['native_c3_calls']<=1
+          assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['jepa_weight']==0 and r['redmi_measured'] is False
+          assert r['whole_system_complete'] is False and r['output_committed'] is False
+          assert r['delivery_authority']==r['learning_authority']==r['tool_dispatches']==0
+          assert r['native_body_calls']==r['native_c2_calls']==r['native_jef_calls']==0
+          if 'raw_sha256' in r:
+              assert r['raw_sha256']==hashlib.sha256(r['native_output'].encode()).hexdigest()
+          if 'messages' in r:
+              messages=r['messages']
+              assert [m['role'] for m in messages]==['system','user']
+              payload=json.loads(messages[1]['content'])
+              assert payload.get('typed_jef_action_visible') is False
+              assert not any(k in payload for k in ('oracle','expected_action','suggested_action','typed_jef_action'))
+          if r['status']=='NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING':
+              assert r['native_c3_calls']==1 and r['native_final'] and r['process_reaped']
+              assert r['source_rechecked'] and r['closed_store_ok'] and r['no_live_output']
+              assert r['guard']['native_proof'] is False
+          print(json.dumps({'status':r['status'],'native_calls':r['native_c3_calls'],
+                            'guard_status':(r.get('guard') or {}).get('status')},sort_keys=True))
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else
+            echo 99 > "$e/VERIFY_EXIT.txt";echo NO_NATIVE_REPORT > "$e/VERIFY_RAW.log"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 540674c5e2e4deae5f9b99a626ff7571d67aa119 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 540674c5e2e4deae5f9b99a626ff7571d67aa119 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native RED or GREEN, no weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117cy-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117cy-native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce all pinned native stages without waiver
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117cy-native"
+          for stage in PREREG VENV DEPS PIP_CHECK COMPILE PREFLIGHT INSTALL NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117CY_NATIVE_REAL_STORE_C3_SOURCE_ONLY_NONPROMOTING
