@@ -20,6 +20,15 @@ def digest(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def safe_report_path(root, destination):
+    """A report must never overwrite any file under the audited tree."""
+    root = Path(root).resolve(strict=True)
+    target = Path(destination).resolve()
+    if target == root or root in target.parents:
+        raise ValueError("REPORT_INSIDE_SOURCE_TREE_RED")
+    return target
+
+
 def compare(expected, actual, names=NAMES):
     if (type(expected) is not dict or type(actual) is not dict
             or type(names) not in (tuple, list)
@@ -101,7 +110,7 @@ def main():
     if args.diff_output is not None:
         # The caller owns this explicit report destination. Never write to
         # the repository's source files or acceptance manifest.
-        args.diff_output.write_text("".join(unified_diffs(expected, actual)),
+        safe_report_path(args.root, args.diff_output).write_text("".join(unified_diffs(expected, actual)),
                                     encoding="utf-8")
     print(json.dumps(report, sort_keys=True))
     return 0
