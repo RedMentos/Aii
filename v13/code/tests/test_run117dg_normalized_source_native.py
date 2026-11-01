@@ -101,6 +101,18 @@ class Run117DGNativeSoftware(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SOURCE_ENVELOPE_RED"):
             dg.validate(rows)
 
+    def test_forged_normalized_worksheet_rejected_even_if_hash_recomputed(self):
+        rows = copy.deepcopy(self.admission["rows"])
+        import json
+        from v13.common import dumps
+        data = json.loads(rows[0]["normalized_messages"][1]["content"])
+        data["worksheet_without_eligibility_or_action"]["policy"]["required_sealed"] = False
+        rows[0]["normalized_messages"][1]["content"] = dumps(data)
+        rows[0]["normalized_messages_sha256"] = dg.sha(
+            dumps(rows[0]["normalized_messages"]).encode())
+        with self.assertRaisesRegex(ValueError, "ORACLE_OR_SOURCE_RED"):
+            dg.validate(rows)
+
     def test_fresh_output_required_and_no_pins_no_artifact(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
