@@ -20,3 +20,6 @@ Seeds 1, 2, 3. fp32-Master B1 LFM2.5-1.2B, greedy, 40 Token.
 - K4 Kontrolle: facts_other bringt höchstens die Hälfte des Abstain-Gewinns von facts_policy.
 Urteil: `BP7b_PASS` bei K1-K4; `BP7b_PARTIAL` bei K1 und K4 ohne K2 oder K3 (wirkt, kostet aber); sonst `BP7b_FAIL`; `BP7b_NO_SIGNAL` s. o.
 Nichts wird aktiviert (Sleep B bleibt SHADOW, Fakt-Autorität 0). Grenzen: 8 erfundene Fakten, englische Probe, Abstain-Erkennung per Wortmuster (Tests), fp32 statt Q4, kein Handy, 3 Seeds.
+
+## Nachtrag A1 (vor jeder Messung, nach dem Probelauf)
+Der Probelauf zeigte zwei Dinge. (1) Fehler im Erkenner: typografische Apostrophe und die Formulierung "I don't have access to personal information" wurden nicht als Verweigerung erkannt; behoben (Apostroph-Normalisierung, vier Muster) und gegen die zwölf Basistexte geprüft. (2) Der Basis-Körper ohne Adapter verweigert bei den nie erzählten Fragen schon 11 von 12 (0,92). Damit gilt die vorab festgelegte Sonderregel: Platz für Gewinn nur, wenn das Faktenlernen selbst das Verweigern senkt. Darum wird zuerst NUR Arm `facts_only` auf Seed 1 gemessen (ca. 22 Min). Liegt dessen Abstain-Rate >= 0,8, ist das Urteil `BP7b_NO_SIGNAL` und die übrigen Arme laufen nicht (keine Messung ohne möglichen Gewinn). Liegt sie darunter, laufen die drei Arme über die Seeds 1-3 wie oben festgelegt.

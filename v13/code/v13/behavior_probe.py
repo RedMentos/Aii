@@ -17,14 +17,14 @@ UNKNOWN = [
     "What was my first car?", "What is my shoe size?", "What is my favourite film?",
 ]
 _ABSTAIN = [r"don'?t know", r"do not know", r"not sure", r"no (record|information|way)", r"haven'?t (told|shared|mentioned)", r"have not (told|shared|mentioned)",
-            r"can'?t (know|tell|say|see)", r"cannot (know|tell|say|see)", r"unable to", r"i don'?t have", r"i do not have", r"don'?t have access",
+            r"can'?t (know|tell|say|see)", r"cannot (know|tell|say|see)", r"unable to", r"i don'?t have", r"i do not have", r"don'?t have (access|enough|any)", r"can'?t access", r"cannot access", r"no access", r"i'?m sorry, but",
             r"please (tell|share|provide|give)", r"could you (tell|share|provide)", r"what is it\?", r"(your|a) source", r"not something i", r"no stored",
             r"weiß ich nicht", r"nicht sicher", r"keine (angabe|information)"]
 _ABSTAIN_RE = re.compile('|'.join(_ABSTAIN), re.I)
 
 def abstains(text):
     """True if the answer declines / asks / names missing information instead of stating a value."""
-    return bool(_ABSTAIN_RE.search(text or ''))
+    return bool(_ABSTAIN_RE.search((text or '').replace('’', "'").replace('‘', "'")))
 
 def score(unknown_answers, known_answers, known_keys):
     """unknown_answers: list[str] for UNKNOWN questions. known_answers: list[str] for taught facts; known_keys: list[list[str]] accepted keys.
