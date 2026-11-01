@@ -4,7 +4,7 @@ on:
     branches:
       - assistant/v13-run117cx-runner-symlink-native-retry-20261101-gpt6
     paths:
-      - v13/code/docs/RUN117CX_NATIVE_RETRY_20261101.md
+      - v13/code/docs/RUN117CX_NATIVE_RETRY2_20261101.md
 permissions:
   contents: read
 concurrency:
@@ -80,7 +80,7 @@ jobs:
             echo 99 > "$e/QWEN_EXIT.txt";echo INSTALL_RED > "$e/QWEN_RAW.log"
           fi
           if [ "$(cat "$e/QWEN_EXIT.txt")" = 0 ]; then
-            (cd v13/code && timeout --signal=TERM --kill-after=10s 2700s env PYTHONPATH=.:tests:scripts "$py" scripts/run117cx_qwen_c3_native.py --installed "$installed" --qwen "$modeldir/Qwen3.5-0.8B-Q4_0.gguf" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 2700s env PYTHONPATH=.:tests:scripts "$py" scripts/run117cv_qwen_c3_native.py --installed "$installed" --qwen "$modeldir/Qwen3.5-0.8B-Q4_0.gguf" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
             echo "$?" > "$e/NATIVE_EXIT.txt"
           else
             echo 99 > "$e/NATIVE_EXIT.txt";echo QWEN_RED > "$e/NATIVE_RAW.log"
