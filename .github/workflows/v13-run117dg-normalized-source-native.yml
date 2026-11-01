@@ -1,0 +1,144 @@
+name: V13 Run117DG pinned new 48-call normalized-source C3 native ablation
+on:
+  push:
+    branches:
+      - assistant/v13-run117dg-c3-normalized-source-native-20261101-hourly11
+    paths:
+      - v13/code/docs/RUN117DG_NATIVE_LAUNCH_20261101.md
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  serial-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned new cohort, 48 serial native calls, original raw and hashes
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117dg-native"
+          installed="$RUNNER_TEMP/v13-run117dg-installed"
+          modeldir="$RUNNER_TEMP/v13-run117dg-qwen"
+          mkdir -p "$e" "$modeldir"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/docs/PREREG_RUN117DE_C3_NORMALIZED_SOURCE_20261101.md)" = 990684341968b0515cacad36aaf4c09d7f8c37e6
+            test "$(git hash-object v13/code/scripts/run117de_normalized_source_fixture.py)" = 04f79fb713344407c618fe736e94fb8549cc7121
+            test "$(git hash-object v13/code/v13/jef_c3_normalized_source_shadow_candidate.py)" = b625f989f7c3236652c7f646540f0e99d86cf016
+            test "$(git hash-object v13/code/scripts/run117df_paired_source_preflight.py)" = 280c2f32e5ac707b8c0d3ca22cf9a1cf8d7255d1
+            test "$(git hash-object v13/code/scripts/run117dg_normalized_source_native.py)" = d4a533349834668beb014b7d47fc7c4315ebf554
+            test "$(git hash-object v13/code/tests/test_run117dg_normalized_source_native.py)" = cb83e04727bd3d701d7ecd22085a6e7ea5ee2992
+            test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          } > "$e/PINS_RAW.log" 2>&1
+          echo "$?" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117dg-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117dg-native-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' 'huggingface_hub==0.35.3' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/run117dg_normalized_source_native.py v13/code/tests/test_run117dg_normalized_source_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117dg_normalized_source_native tests.test_run117df_paired_source_preflight) > "$e/PREFLIGHT_RAW.log" 2>&1
+            echo "$?" > "$e/PREFLIGHT_EXIT.txt"
+          else echo 99 > "$e/PREFLIGHT_EXIT.txt"; echo PREREQUISITE_RED > "$e/PREFLIGHT_RAW.log"; fi
+          if [ "$(cat "$e/PREFLIGHT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else echo 99 > "$e/INSTALL_EXIT.txt"; echo PREFLIGHT_RED > "$e/INSTALL_RAW.log"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            "$py" - "$modeldir" <<'PY' > "$e/QWEN_RAW.log" 2>&1
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          import hashlib,shutil,sys
+          dest=Path(sys.argv[1])/'Qwen3.5-0.8B-Q4_0.gguf'
+          cached=hf_hub_download(repo_id='ggml-org/Qwen3.5-0.8B-GGUF',
+              revision='8fea620810c4afa23dd6443f999a48574c1611a3',
+              filename='Qwen3.5-0.8B-Q4_0.gguf')
+          shutil.copyfile(cached,dest)
+          assert not dest.is_symlink() and dest.stat().st_size==563036064
+          h=hashlib.sha256(dest.read_bytes()).hexdigest()
+          assert h=='57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf',h
+          print('QWEN_PINNED_MODEL_BYTES_VERIFIED',h)
+          PY
+            echo "$?" > "$e/QWEN_EXIT.txt"
+          else echo 99 > "$e/QWEN_EXIT.txt"; echo INSTALL_RED > "$e/QWEN_RAW.log"; fi
+          if [ "$(cat "$e/QWEN_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 3300s env PYTHONPATH=.:tests:scripts "$py" scripts/run117dg_normalized_source_native.py --installed "$installed" --qwen "$modeldir/Qwen3.5-0.8B-Q4_0.gguf" --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo 99 > "$e/NATIVE_EXIT.txt"; echo QWEN_RED > "$e/NATIVE_RAW.log"; fi
+          if [ -f "$e/NATIVE_CASE/report.json" ]; then
+            "$py" - "$e/NATIVE_CASE/report.json" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys,hashlib
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='v13.run117dg.normalized_source_paired_native.v1'
+          assert r['seed']==117061 and r['table_sha256']=='81af85fb4a93baf8ea32c925f41548c6e9380ccd6025df43f2d4c346caad2e64'
+          assert len(r['rows'])<=12 and r['model_callback_attempts']<=48
+          assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL'
+          assert r['b3']=='NO_PROMOTION' and r['body_jepa']=='UNAVAILABLE'
+          assert r['world_jepa']=='SHADOW' and r['jepa_weight']==0
+          assert r['redmi_measured'] is False and r['whole_system_complete'] is False
+          assert r['output_committed'] is False
+          assert r['learning_authority']==r['delivery_authority']==r['tool_dispatches']==0
+          assert r['native_body_calls']==r['native_c2_calls']==r['native_jef_calls']==0
+          for row in r['rows']:
+              assert len(row['arms'])<=4
+              for arm in row['arms']:
+                  assert arm['model'] in ('lfm25_350m','qwen35_0p8b')
+                  assert arm['mode'] in ('RAW','NORMALIZED')
+                  assert arm['raw_sha256']==hashlib.sha256(arm['native_output'].encode()).hexdigest()
+                  if arm['status']=='RECORDED':
+                      assert arm['native_final'] and arm['process_reaped']
+          if r['status']!='STRUCTURAL_RED':
+              assert r['native_proof'] and r['native_calls_verified']==48
+              assert r['summary']['complete_native_receipts']
+          print(json.dumps({'status':r['status'],'summary':r.get('summary'),
+                            'native_calls_verified':r['native_calls_verified']},sort_keys=True))
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo 99 > "$e/VERIFY_EXIT.txt"; echo NO_NATIVE_REPORT > "$e/VERIFY_RAW.log"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 27f53ff50ef7017cba5b6e1248e1c73c1048c3aa --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 27f53ff50ef7017cba5b6e1248e1c73c1048c3aa HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native GREEN or RED, never model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117dg-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117dg-native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce native stages and original failures without waivers
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117dg-native"
+          for stage in PINS VENV DEPS PIP_CHECK COMPILE PREFLIGHT INSTALL QWEN NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved, no promotion"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117DG_NATIVE_NORMALIZED_SOURCE_ABLATION_NONPROMOTING
