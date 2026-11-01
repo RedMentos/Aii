@@ -236,12 +236,7 @@ def run(installed, qwen_path, out, *,
                 arm["raw_sha256"] = sha(arm["native_output"].encode())
                 arm["exact"] = bool(frozen.strict(
                     arm["native_output"], f["expected_for_offline_scorer_only"]))
-                try:
-                    parsed = json.loads(arm["native_output"])
-                    if type(parsed) is dict and set(parsed) == {"action"}:
-                        arm["parsed_action"] = parsed["action"]
-                except (ValueError, TypeError, UnicodeError):
-                    pass
+                arm["parsed_action"] = run68.decode_schema(arm["native_output"])
                 arm["status"] = (
                     "RECORDED" if arm["native_final"] and arm["process_reaped"]
                     and arm["native_metrics"].get("actual_model") == paths[model].name
