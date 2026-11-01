@@ -99,6 +99,8 @@ def build_envelopes(runtime_factory=Runtime):
                         or a.get("learning_authority") != 0):
                     raise ValueError("RUN117CU_SOURCE_ADMISSION_RED")
                 messages = a["messages"]
+                if sha(dumps(messages).encode("utf-8")) != a["messages_sha256"]:
+                    raise ValueError("RUN117CU_MESSAGE_DIGEST_RED")
                 if ([m.get("role") for m in messages] != ["system", "user"]
                         or len(messages) != 2
                         or not all(type(m.get("content")) is str for m in messages)):
