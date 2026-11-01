@@ -25,9 +25,15 @@ def probes_for(facts):
     """facts: list of (q, answer, paraphrase) -> interleaved probes (question, answer), (paraphrase, answer)."""
     return [p for q, a, para in facts for p in ((q, a), (para, a))]
 
-def window_items(phase, stream, rng, window):
+def window_items(phase, stream, rng, window, noise_frac=0.0):
     A = [{'memory_id': 'a%d' % i, 'prompt': q, 'target': a} for i, (q, a, _) in enumerate(stream['A'])]
     if phase == 'learn': return A
+    if phase == 'noisy' and noise_frac > 0:  # v2 (BP8c): contradiction on the SAME questions, a fresh random share of A gets a wrong answer each window
+        wrong = rng.permutation(len(stream['wrong_pool'])).tolist(); out = []
+        for i, it in enumerate(A):
+            bad = rng.random() < noise_frac
+            out.append(dict(it, target=stream['wrong_pool'][wrong[i % len(wrong)]]) if bad else it)
+        return out
     if phase == 'noisy':
         wrong = rng.permutation(len(stream['wrong_pool'])).tolist()
         return A + [{'memory_id': 'b%d_%d' % (i, window), 'prompt': q, 'target': stream['wrong_pool'][wrong[i % len(wrong)]]} for i, q in enumerate(stream['B'])]
@@ -53,9 +59,9 @@ def run_arm(arm, S, stream, a):
     trace = []; prev = None; fails = 0; novel = True; w = 0
     for phase in ('learn', 'noisy', 'shift'):
         probes = probes_for(stream['A_new'] if phase == 'shift' else stream['A'])
-        for _ in range(a.windows):
+        for _ in range({'learn': a.learn_windows or a.windows, 'noisy': a.windows, 'shift': a.windows}[phase]):
             p = ctl.plasticity('language', novel_domain=novel, repeated_errors=fails) if ctl else FIXED[arm]
-            items = window_items(phase, stream, rng, w)
+            items = window_items(phase, stream, rng, w, a.noise_frac)
             for _s in range(a.steps_per_window): sess.step(items, p)
             comp, nsig = sess.competence(probes); err = 1 - comp
             novel = prev is not None and err > 2 * prev and err > .1
@@ -77,12 +83,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--master', required=True); ap.add_argument('--out', required=True); ap.add_argument('--seed', type=int, required=True)
     ap.add_argument('--arms', default=','.join(ARMS)); ap.add_argument('--threads', type=int, default=4); ap.add_argument('--windows', type=int, default=6)
-    ap.add_argument('--steps-per-window', type=int, default=2); ap.add_argument('--lr', type=float, default=1e-3); ap.add_argument('--smoke', action='store_true')
+    ap.add_argument('--steps-per-window', type=int, default=2); ap.add_argument('--noise-frac', type=float, default=0.0); ap.add_argument('--learn-windows', type=int, default=0); ap.add_argument('--lr', type=float, default=1e-3); ap.add_argument('--smoke', action='store_true')
     a = ap.parse_args()
     if a.smoke: a.windows = 2; a.steps_per_window = 1
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True); stream = build_stream(J.POOL, a.seed)
     rep = {'schema': 'v13-bp8b-real-age-v1', 'seed': a.seed, 'platform': platform.platform(), 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-           'windows': a.windows, 'steps_per_window': a.steps_per_window, 'lr': a.lr, 'arms': {}}
+           'windows': a.windows, 'learn_windows': a.learn_windows, 'noise_frac': a.noise_frac, 'steps_per_window': a.steps_per_window, 'lr': a.lr, 'arms': {}}
     path = out / ('bp8b-seed%d.json' % a.seed)
     for arm in a.arms.split(','):
         t = time.monotonic(); rep['arms'][arm] = run_arm(arm, LoraSession, stream, a); rep['arms'][arm]['wall_seconds'] = round(time.monotonic() - t, 1)

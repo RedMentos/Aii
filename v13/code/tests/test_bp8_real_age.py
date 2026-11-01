@@ -17,6 +17,12 @@ class T(unittest.TestCase):
         self.assertEqual(len(R.window_items('learn', s, rng, 0)), 6); n = R.window_items('noisy', s, rng, 0); self.assertEqual(len(n), 12)
         self.assertTrue(all(i['target'] in s['wrong_pool'] for i in n[6:]))
         sh = R.window_items('shift', s, rng, 0); self.assertEqual([i['target'] for i in sh], [f[1] for f in s['A_new']])
+    def test_contradiction_on_same_questions(self):
+        s = R.build_stream(POOL, 1); rng = np.random.default_rng(0)
+        fr = [sum(i['target'] != f[1] for i, f in zip(R.window_items('noisy', s, rng, w, .4), s['A'])) / 6 for w in range(200)]
+        self.assertAlmostEqual(sum(fr) / 200, .4, delta=.06)
+        it = R.window_items('noisy', s, rng, 0, .4); self.assertEqual([i['prompt'] for i in it], [f[0] for f in s['A']])
+        self.assertEqual([i['target'] for i in R.window_items('noisy', s, rng, 0, 0.0)][:0], [])
     def test_summarize(self):
         tr = [('learn', .5, .2)] * 2 + [('noisy', .3, .2)] * 2 + [('shift', .6, .3), ('shift', .1, .5)]
         r = R.summarize(tr, 2); self.assertEqual(r['recovery_windows'], 2); self.assertAlmostEqual(r['shift_err'], .35)
