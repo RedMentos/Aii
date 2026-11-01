@@ -1,0 +1,16 @@
+{"stand_datum": "2026-11-01",
+ "hinweis": "Stand nach ROADMAP/Zweigen bis 2026-11-01; jeder Thread pflegt seine Zeile. 'drin' nur mit Beleg.",
+ "bausteine": [
+  {"id":"BP1","name":"C3 verwertet Angebote der Haelften","stand":"teilweise","beleg":"ROADMAP: CONSUMER_PARTIAL, Drift-Tor verfehlt; natives LoRA laeuft"},
+  {"id":"BP2","name":"Gewichts-Lernen im Alltag","stand":"teilweise","beleg":"Zweige bp2b-* (native Adapter-Laeufe), BP2a Leck-Fix PASS"},
+  {"id":"BP3","name":"Experten-Haelften (Z10)","stand":"offen","beleg":"braucht BP2"},
+  {"id":"BP4","name":"Zwei Haelften neu pruefen","stand":"offen","beleg":"braucht BP1, BP3"},
+  {"id":"BP5","name":"B3 Latent","stand":"teilweise","beleg":"L1 bestaetigt, L2 FAIL, L3 gesperrt"},
+  {"id":"BP6","name":"Gehirn-Mitte im Zusammenspiel","stand":"teilweise","beleg":"gemessen, aber ohne BP1-Verbraucher"},
+  {"id":"BP7","name":"Schlaf festigt, Traum mit Kontrolle","stand":"teilweise","beleg":"Software PASS, Training wartet auf BP2"},
+  {"id":"BP8","name":"Age wieder oeffnen","stand":"teilweise","beleg":"Software FAIL v1+v2, braucht BP2"},
+  {"id":"BP9","name":"Typisierte Modulatoren an echten Updates","stand":"gesperrt","beleg":"braucht BP2 mit gemischten Quellen (siehe docs/bp-bereitschaft/BP9_VORPRUEFUNG.md)"},
+  {"id":"BP10","name":"Weltmodell im Alltag","stand":"teilweise","beleg":"FS10 SHADOW gebaut, Z12c-Anschluss offen"},
+  {"id":"BP11","name":"Module nur mit Erlaubnis + Zweitwaechter","stand":"drin","beleg":"modules_gate.py, module_learn.py, guard2.py, 43 Tests gruen (Zweig 07uqqx); offen nur Handy-Messung Qwen3Guard und UR9"},
+  {"id":"BP12","name":"Handy-Paket komplett","stand":"gesperrt","beleg":"erst wenn BP1-BP11 drin"}
+ ]}
