@@ -382,6 +382,11 @@ class SleepCycle:
                     from .homeostasis import run as homeo_run
                     rep['homeostasis_gate']=homeo_run(self.runtime,st['gains'])['gate']
                 except Exception as exc:rep['homeostasis_gate']={'status':'ERROR','error':type(exc).__name__}
+            if getattr(self,'runtime',None) is not None:  # WP-FS7: procedure schemas from executed tool episodes (shadow by default)
+                try:
+                    from .skill_consolidation import run as schema_run
+                    rep['skill_schemas']=schema_run(self.runtime)
+                except Exception as exc:rep['skill_schemas']={'status':'ERROR','error':type(exc).__name__}
             try:
                 from .archive import run as archive_run
                 rep['archive']=archive_run(self.s,self.clock)  # WP-U4 §9.5: cold exact sources go to compressed storage

@@ -36,3 +36,18 @@ class Lib(unittest.TestCase):
                 self.assertEqual(res['status'],'DONE');self.assertEqual(float(res['value']),28.)
                 lib.record_text(res,True);self.assertIn('sch_0:shape4',lib.report()['families'])
             finally:r.close()
+
+from v13 import skill_consolidation as scon
+class Episodes(unittest.TestCase):
+    def test_sleep_source_shadow_then_active(self):
+        with tempfile.TemporaryDirectory() as d:
+            r=Runtime(Path(d))
+            try:
+                reg=hub(r).tools;reg.enable('calc');sid=r.store.new_session()
+                for text,ex in [('Items cost 10, 20, 30.','10 + 20 + 30'),('Items cost 5, 6.','5 + 6'),('mail me a@b.de, 5, 6','5 + 6')]:
+                    e=r.store.event(sid,text);reg.call('calc',{'expression':ex},event_id=e['event_id'])
+                rep=scon.run(r);self.assertEqual((rep['mode'],rep['episodes'],rep['schemas'],rep['proposed']),('shadow',2,1,[]))
+                r.cfg['skill_schema_mode']='active';rep=scon.run(r);self.assertEqual(len(rep['proposed']),1)
+                self.assertEqual(scon.run(r)['proposed'],[])
+                self.assertEqual(hub(r).skills.run_text('Sum 1, 2, 3, 4')['value'],10)
+            finally:r.close()
