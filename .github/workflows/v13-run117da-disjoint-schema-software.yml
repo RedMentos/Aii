@@ -32,9 +32,9 @@ jobs:
           echo "$?" > "$e/DEPS_EXIT.txt"
           "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
           echo "$?" > "$e/PIP_CHECK_EXIT.txt"
-          python3 -m py_compile v13/code/scripts/run117da_disjoint_schema_fixture.py v13/code/scripts/run117da_source_only_preflight.py v13/code/tests/test_run117da_source_only_preflight.py > "$e/COMPILE_RAW.log" 2>&1
+          python3 -m py_compile v13/code/scripts/run117da_disjoint_schema_fixture.py v13/code/scripts/run117da_source_only_preflight.py v13/code/scripts/run117da_disjoint_schema_native.py v13/code/tests/test_run117da_source_only_preflight.py v13/code/tests/test_run117da_disjoint_schema_native.py > "$e/COMPILE_RAW.log" 2>&1
           echo "$?" > "$e/COMPILE_EXIT.txt"
-          (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117da_source_only_preflight tests.test_run117cu_qwen_c3_source_only_preflight tests.test_run117cn_c3_source_independence_fixture) > "$e/TEST_RAW.log" 2>&1
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117da_source_only_preflight tests.test_run117da_disjoint_schema_native tests.test_run117cu_qwen_c3_source_only_preflight tests.test_run117cn_c3_source_independence_fixture) > "$e/TEST_RAW.log" 2>&1
           echo "$?" > "$e/TEST_EXIT.txt"
           python3 v13/code/scripts/public_repo_privacy_scan.py --base 1719870530b7b7702660f9518dcf5b556077e811 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
           echo "$?" > "$e/PRIVACY_EXIT.txt"
