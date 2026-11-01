@@ -1483,3 +1483,8 @@ Auswahl (mit Koordinator abgestimmt): Pakete ohne Handy, die kein anderer Thread
 - WP-Z4f B3 L2 prefix SHADOW on private/escalate and private/apologize (2026-10-29): **L2 FAIL on both** (latent prefix 82.3/83.8 vs off 69.0/65.6, beats controls, but utility below attribute words and EXACT; 11-12 points below the L1 adapter read). B3_LATENT stays L1_shadow, L3 locked. See docs/proofs/b3-l2-v8-20261029/BEFUND.md.
 
 - **Stand der offenen Zielprüfungen (Thread 8pfwut, 2026-10-30, Vorprüfung nach der Denk-vor-Test-Regel):** Modulatoren (G-MODULATOR-SPECIFICITY-001): der einzige Laufzeit-Lerner mit Einzelgewichten (Route-Kopf, KL-Reihe) lernt nur aus menschlichen Korrekturen, also einer Quellenart; typisierte Einzelgewichte (`neuromod.sample_factor`) haben dort keinen Verbraucher mit gemischten Quellen und keinen sichtbaren Gewinn. Sie warten auf BP2 (Gewichts-Lernen im Alltag mit Selbst-, Mensch- und Ergebnis-Etiketten). Nicht erneut testen, bis BP2 gemischte Quellen liefert. Gehirn-Mitte §24.17/22/23/25/26/32 sind gemessen; der gemeinsame Befund „C3 allein am besten“ hängt an BP1 (anderer Thread). B3: L1 bestätigt, L2 FAIL (WP-Z4f), Rest nur über Empfänger-Adapter (L3, gesperrt).
+
+## WP-BP4 STEP2-Neutest (2026-11-01, Thread „Bau-Paket BP4 umsetzen“, Branch `claude/project-thread-c29fp1`)
+- **Status: WARTET (kein Lauf, bewusst).** Vorabprüfung `code/docs/proofs/continuation-20261101/bp4-step2-retest/VORABPRUEFUNG.md`.
+- Grund: STEP2 ist schon oft gemessen (Z2-Reihe, GPT v2/v3 nativ 0/10/9 von 18, Exit-Tor EVIDENCE_NOT_PASSING). Neu fehlen Verbraucher (BP1c) und verschiedene Körper (BP2); ein Test jetzt wäre Wiederholung.
+- Startbedingung und Testplan (4 Arme inkl. gleiche-vs-verschiedene Gewichte, Erfolg >=3/18) stehen in der Vorabprüfung.
