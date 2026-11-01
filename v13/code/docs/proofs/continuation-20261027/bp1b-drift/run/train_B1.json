@@ -1,0 +1,27 @@
+{
+ "mode": "offers",
+ "seed": 1,
+ "per_family": 60,
+ "epochs": 2,
+ "lr": 0.0003,
+ "batch": 8,
+ "examples": 672,
+ "replay": 192,
+ "replay_frac": 0.4,
+ "kl_weight": 1.0,
+ "steps": 168,
+ "loss_first": [
+  2.1032,
+  2.2551,
+  1.6471
+ ],
+ "loss_last": [
+  0.0872,
+  0.5659,
+  0.4445,
+  0.1888,
+  0.0953
+ ],
+ "seconds": 3723,
+ "revision": "v13-offer-consumer-v1"
+}
