@@ -1,0 +1,9 @@
+# Run117CR prereg — complete source-chain drift audit before any acceptance change
+
+2026-11-01 UTC. Review-only child of Run117CQ at exact parent `fa39f71c4eeb76620c062300a19988d8f42fe543`. Do not modify frozen baseline, `integrated_candidates.py`, `source_handoff_candidate.py`, production runtime, accepted hashes or tests in this package.
+
+Motivation: Run117CI unfiltered full software suite 5,331 tests RED, including many `Live sources differ from complete baseline/candidate` and `Runtime is neither exact frozen baseline nor complete reviewed candidate` errors. The existing `scripts.integrated_candidates.integrated_sources` computes a reviewed chain from exact frozen baseline and transforms. Current live sources may have additional legitimate changes, but a new accepted identity must be fully reviewed, not simply whitelisted.
+
+Predeclared read-only audit: independently compute expected bytes from `integrated_sources(ROOT)` and actual live bytes for **all** `NAMES`, report SHA256, byte/line differences, deterministic diff for review, git log lineage, and never write files. Fail closed on missing baseline/manifest/expected source. Synthetic unit tests prove deterministic comparison, unchanged files, line diffs, and no mutation. CI pins Canon and source-auditor blobs, records original raw and SHA256SUMS on GREEN or RED. An audit GREEN means only that drift was accurately characterized; it does not accept new source hashes or make the unfiltered suite GREEN.
+
+Next decision after raw: review each changed file and its commit lineage, identify exact owner/patch chain, then separately preregister a complete candidate and regression gate if justified. Never weaken frozen source tests or accept a partial/mixed candidate. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no native/Redmi/whole-system promotion. Remaining platform budget UNKNOWN.
