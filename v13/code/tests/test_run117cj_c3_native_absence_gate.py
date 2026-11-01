@@ -30,10 +30,13 @@ class Run83NativeAbsenceGate(unittest.TestCase):
             self.assertEqual(json.loads((out / "report.json").read_text()), report)
 
     def test_real_native_entrypoint_remains_unpatched_by_synthetic_test(self):
-        # A distinct test imports the real Runtime, not DryRuntime. The
-        # production entrypoint must remain the real class.
+        # The real native entrypoint uses an inert-worker subclass of the
+        # production Runtime, not the test's DryRuntime fake. No coordinator
+        # user/sleep work is dispatched by this isolated diagnostic.
         from v13.runtime import Runtime
-        self.assertIs(native.cli.Runtime, Runtime)
+        self.assertTrue(issubclass(native.cli.Runtime, Runtime))
+        self.assertIsNot(native.cli.Runtime, Runtime)
+        self.assertIsNot(native.cli.Runtime._worker, Runtime._worker)
 
 
 if __name__ == "__main__":
