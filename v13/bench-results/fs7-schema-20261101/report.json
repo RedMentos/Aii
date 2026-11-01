@@ -1,0 +1,30 @@
+{
+ "raw_episode_replay": 0.0,
+ "raw_positional_substitution": 0.35,
+ "schema_trigger_selector": 0.0,
+ "schema_structure_selector": 1.0,
+ "schemas": [
+  {
+   "steps": [
+    {
+     "tool": "calc",
+     "args": {
+      "expression": "{NUMS| + }"
+     }
+    }
+   ],
+   "support": 2,
+   "trigger": [
+    "cost",
+    "expense",
+    "items",
+    "report",
+    "the",
+    "total",
+    "what"
+   ],
+   "stage": "SCHEMA"
+  }
+ ],
+ "n_test": 200
+}

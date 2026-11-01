@@ -1,0 +1,101 @@
+{
+ "n": 300,
+ "correct": 202,
+ "sources": {
+  "mean_logprob": {
+   "ece": 0.1291,
+   "meta": {
+    "n": 300,
+    "accuracy": 0.6733,
+    "meta_i": 0.1882,
+    "perm_p": 0.002,
+    "ci95": [
+     0.129,
+     0.2759
+    ],
+    "auroc2": 0.7575
+   },
+   "abstain": {
+    "gain": 2.3,
+    "threshold": 0.5,
+    "answer_all": 104.0
+   }
+  },
+  "min_logprob": {
+   "ece": 0.3927,
+   "meta": {
+    "n": 300,
+    "accuracy": 0.6733,
+    "meta_i": 0.151,
+    "perm_p": 0.002,
+    "ci95": [
+     0.1024,
+     0.2415
+    ],
+    "auroc2": 0.7294
+   },
+   "abstain": {
+    "gain": 0.0,
+    "threshold": 0.0,
+    "answer_all": 104.0
+   }
+  },
+  "p10_logprob": {
+   "ece": 0.2481,
+   "meta": {
+    "n": 300,
+    "accuracy": 0.6733,
+    "meta_i": 0.111,
+    "perm_p": 0.002,
+    "ci95": [
+     0.062,
+     0.1947
+    ],
+    "auroc2": 0.7185
+   },
+   "abstain": {
+    "gain": 1.4,
+    "threshold": 0.15,
+    "answer_all": 104.0
+   }
+  },
+  "digit_min_logprob": {
+   "ece": 0.0731,
+   "meta": {
+    "n": 300,
+    "accuracy": 0.6733,
+    "meta_i": 0.3589,
+    "perm_p": 0.002,
+    "ci95": [
+     0.2962,
+     0.4644
+    ],
+    "auroc2": 0.8774
+   },
+   "abstain": {
+    "gain": 17.8,
+    "threshold": 0.45,
+    "answer_all": 104.0
+   }
+  },
+  "share_above_half": {
+   "ece": 0.1798,
+   "meta": {
+    "n": 300,
+    "accuracy": 0.6733,
+    "meta_i": 0.1552,
+    "perm_p": 0.002,
+    "ci95": [
+     0.0998,
+     0.2522
+    ],
+    "auroc2": 0.7465
+   },
+   "abstain": {
+    "gain": 2.1,
+    "threshold": 0.5,
+    "answer_all": 104.0
+   }
+  }
+ }
+}

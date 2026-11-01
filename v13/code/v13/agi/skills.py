@@ -53,6 +53,42 @@ class SkillLibrary:
             if tx['status']!='EXECUTED':return {'status':tx['status'],'trace':trace,'value':None}
             value=tx['result']
         return {'status':'DONE','trace':trace,'value':value}
+    def propose_from_episodes(self,prefix,episodes,min_support=2,origin='SELF'):
+        """WP-FS7: consolidate episodes as procedure schemas (slots instead of literal numbers). Only schemas with support
+        >= min_support become skills (CANDIDATE, normal lifecycle); one-off episodes are not stored. Returns names."""
+        from . import schema as sc
+        names=[]
+        for i,g in enumerate(sc.induce(episodes,min_support)):
+            if g['stage']!='SCHEMA':continue
+            nm='%s_%d'%(prefix,i)
+            try:self.propose(nm,g['steps'],trigger=' '.join(g['trigger'][:6]),origin=origin,source_traces=[e.get('id','') for e in episodes][:16])
+            except ValueError:continue
+            self.box.mutate(lambda st,nm=nm:st['skills'][nm].update(kind='schema'));names.append(nm)
+        return names
+    def run_text(self,text,origin='USER'):
+        """Pick a schema skill by structure + learned success (wording-independent) and run it on the question's numbers.
+        Feedback via record(); selector state is rebuilt from per-skill outcomes (family 'shape<k>')."""
+        from . import schema as sc
+        sk=[v for v in self.box.load()[0]['skills'].values() if v.get('kind')=='schema' and v['stage']!='RETIRED']
+        sel=sc.Selector([{'steps':v['steps'],'trigger':v['trigger'].split(),'stage':'SCHEMA','name':v['name']} for v in sk])
+        outc=self.box.load()[0]['outcomes']
+        for i,v in enumerate(sel.sch):
+            for k in range(7):
+                o=outc.get('%s:shape%d'%(v['name'],k))
+                if o:sel.stat[(i,k)]=(o[0],o[1])
+        i=sel.choose(text)
+        if i is None:return None
+        name=sel.sch[i]['name'];steps=sc.instantiate(sel.sch[i],text);trace=[];value=None
+        for st in steps:
+            tx=self.tools.call(st['tool'],st['args'],origin=origin,intent='skill:'+name)
+            trace.append({'tool':st['tool'],'status':tx['status'],'tx':tx['id']})
+            if tx['status']!='EXECUTED':return {'skill':name,'status':tx['status'],'trace':trace,'value':None,'shape':sc.Selector.shape(text)}
+            value=tx['result']
+        return {'skill':name,'status':'DONE','trace':trace,'value':value,'shape':sc.Selector.shape(text)}
+    def record_text(self,result,success):
+        """Outcome of a run_text result, stored per skill and number-count bucket for the selector."""
+        fam='%s:shape%d'%(result['skill'],result['shape'])
+        return self.record(result['skill'],success,family=fam)
     def record(self,name,success,parity=None,family=None):
         """Outcome of one use (shadow or live). parity: agreement with the full focal route on the same input."""
         def f(st):
