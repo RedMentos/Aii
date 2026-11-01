@@ -105,6 +105,25 @@ class StoreGroupedTwoStep(unittest.TestCase):
                         "Avelorn", "Kestrel", "Brimora", "Nimbus"):
             self.assertNotIn(private, serialized)
 
+    def test_raw_binding_and_grouped_loss_are_separately_differentiable(self):
+        receipt = C.bind_store_rows(
+            self.store, self.session, self.rows,
+            heldout_rows=self.heldout, operator_opt_in=True)
+        self.assertEqual(receipt["status"], "SHADOW_STORE_SOURCE_BOUND")
+        student = torch.nn.Parameter(self.student.detach().clone())
+        frozen = self.target.detach().clone()
+        loss, metrics = C.research_loss(
+            torch, student, frozen, self.rows, heldout_rows=self.heldout)
+        self.assertTrue(bool(torch.isfinite(loss)))
+        self.assertEqual(metrics["masked_false_negatives"], 2)
+        loss.backward()
+        self.assertIsNotNone(student.grad)
+        self.assertGreater(float(student.grad.detach().abs().sum()), 0)
+        self.assertIsNone(frozen.grad)
+        self.assertEqual(C.recheck_store_rows(
+            self.store, self.session, self.rows, receipt,
+            heldout_rows=self.heldout, operator_opt_in=True), receipt)
+
     def test_default_off_requires_explicit_boolean_and_valid_lr(self):
         self.assertEqual(self.run_candidate(operator_opt_in=False)["status"], "OFF")
         self.assertEqual(self.run_candidate(operator_opt_in=1)["status"], "OFF")
