@@ -35,8 +35,17 @@ def _load(store):
 def digest(store,checkpoint=None):
     """Extractive day digest per session; only turns newer than the last digest."""
     from .history import native_history
-    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0,'backlog_sessions':0}
-    rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
+    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0,'backlog_sessions':0,'deferred_sessions':0}
+    # SESSIONS_MAX is a per-cycle work budget, not a permanent whitelist of
+    # the eight most recently active sessions. Prioritise the oldest pending
+    # cursor so busy new sessions cannot starve older unprocessed sessions.
+    latest=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id")
+    pending=[r for r in latest
+             if r['last']>st['sessions'].get(r['session_id'],{}).get('until',0)]
+    rows=sorted(pending,key=lambda r:(
+        st['sessions'].get(r['session_id'],{}).get('until',0),
+        r['last'],r['session_id']))[:SESSIONS_MAX]
+    out['deferred_sessions']=len(pending)-len(rows)
     for r in rows:
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
