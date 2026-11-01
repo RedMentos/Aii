@@ -1,0 +1,17 @@
+# Run117CQ BUILD_STATE — immutable original-native ZIP prerequisites restored
+
+2026-11-01 UTC. Review-only branch `assistant/v13-run117cq-native-artifact-hydration-20261101-gpt6`, draft [PR #1569](https://github.com/RedMentos/Aii/pull/1569), exact parent Run117CP `d03897663dca43287d734119f7663b2d676842bd`. Owner: GPT-6 automation. Preregistration `PREREG_RUN117CQ_NATIVE_ARTIFACT_HYDRATION_20261101.md` committed at `52e09cbb7ce2d214fa260eb1f45d93ae7b759279` before workflow. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, all registered cohorts/source/model/runner hashes and frozen tests unchanged. Not production-integrated.
+
+## Verified original evidence and software replay
+
+[Actions 41260213345](https://github.com/RedMentos/Aii/actions/runs/41260213345), job `124711745376`, **SUCCESS**. Workflow fetched **unchanged original** Run117Z artifact `13054946077` SHA256 `65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a` and Run117AF artifact `13055310481` SHA256 `1082b64fe8d5a8ed3f8026c5913e9712f51217f75d5544b762924016f9bfc888` via read-only GitHub Actions token into isolated temporary files. Both exact SHA checks and ZIP CRC checks passed. Existing offline mutation/replay tests (`test_run117aa_original_real_jef_native_audit`, `test_run117ae_combined_original_native_replay`, `test_run117ag_original_native_mutations`) ran **18/18 PASS** in 14.394s; no new native inference or model download.
+
+All eleven `PINS/VENV/DEPS/PIP_CHECK/HYDRATE/ARTIFACT_SHA/ZIP/COMPILE/TEST/PRIVACY/DIFF` exits zero, privacy CLEAN. Original small raw artifact `13064299332` ZIP SHA256 `c25d0be192cb0c17e8ede7b38038b52eac0d2ffd6011ac6ea11989b5520e66bf`, independently CRC clean and **26/26** inner SHA256 verified. Original PR-event synthetic merge HEAD `4454dca28f366447ace670b532f673d8ad5d30df`; source/test blobs pinned. Private Library backup `/V13-Checkpoints/2026-11-01/Run117CQ/RAW_GREEN_41260213345_shac25d0be1.zip` re-materialized and byte-identical SHA256. Large original native ZIPs were never reuploaded or altered.
+
+## Limits, exact next command, and prerequisites
+
+This establishes that original recorded native C3 outputs can be verified and replayed on a fresh Linux scratch after restoring exact artifacts. It is **not new native inference**, not proof of native B1/B2/JEF/C2, not real learning, and not a current source-chain full-suite PASS. Run117CI unfiltered 5,331-test suite remains RED (4 failures, 75 errors, 28 skips), mostly frozen source identity mismatches and other missing historical artifacts. No waivers.
+
+Exact focused reproduction on Linux with read-only `actions:read`: download and SHA-verify original artifacts above, set `V13_RUN117Z_ORIGINAL_ZIP` and `V13_RUN117AF_ORIGINAL_ZIP` to their absolute temporary paths, then `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_run117aa_original_real_jef_native_audit tests.test_run117ae_combined_original_native_replay tests.test_run117ag_original_native_mutations`. Do not use the original artifact bytes as new cohort data.
+
+Next: prioritize complete reviewed source-chain reconciliation for frozen baseline/candidate guard (not a bypass); optionally hydrate other registered original artifacts only as prerequisites for their exact audit tests. In parallel continue substantive JEF/C3/Body-JEPA/ContextOS/Callosum work. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no Redmi/whole-system promotion. Remaining platform budget UNKNOWN.
