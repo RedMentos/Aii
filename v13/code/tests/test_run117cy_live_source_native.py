@@ -55,7 +55,10 @@ class Run117CYRealStoreSyntheticNative(unittest.TestCase):
             self.assertEqual(report["status"],
                              "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING",
                              report)
-            self.assertEqual(report["native_c3_calls"], 1)\n            self.assertEqual(report["native_calls_verified"], 0)\n            self.assertFalse(report["native_proof"])\n            self.assertEqual(report["evidence_class"], "SYNTHETIC_SOFTWARE_ONLY")
+            self.assertEqual(report["native_c3_calls"], 1)
+            self.assertEqual(report["native_calls_verified"], 0)
+            self.assertFalse(report["native_proof"])
+            self.assertEqual(report["evidence_class"], "SYNTHETIC_SOFTWARE_ONLY")
             self.assertEqual(FakeNative.calls, 1)
             self.assertTrue(report["native_final"])
             self.assertTrue(report["process_reaped"])
