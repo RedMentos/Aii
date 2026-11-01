@@ -68,6 +68,29 @@ def generic_prompts(n, seed, v2=False):
     return out
 
 
+# Copied from v13/body_jepa.py (branch tfzd6v, WP-BP2a; MiLoRA / Subspace Tuning arXiv 2610.22293, Chavan et al.) so this script stays standalone.
+def minor_subspace_init(torch,model,r):
+    """Subspace Tuning (arXiv 2610.22293, Chavan et al.) in its cheapest LoRA form (MiLoRA-style): the update B@A may only
+    live in the span of the r LOWEST singular directions of each wrapped weight, so the dominant directions (where SFT drift
+    and forgetting concentrate) stay untouched. Linear W (out x in): in <= out -> A (r x in) = lowest right singular vectors,
+    frozen, train B (starts 0); in > out -> B (out x r) = lowest left singular vectors, frozen, train A (starts 0).
+    Singular directions come from eigh of the smaller Gram matrix, so the largest matrix is 2048 x 2048. Returns a summary."""
+    n=0;frozen=0;share=[]
+    for name,mod in model.named_modules():
+        if not (hasattr(mod,'lora_A') and 'default' in getattr(mod,'lora_A',{})):continue
+        W=mod.base_layer.weight.detach().double();out_d,in_d=W.shape
+        with torch.no_grad():
+            if in_d<=out_d:
+                evals,evecs=torch.linalg.eigh(W.T@W);low=evecs[:,:r].T.float().contiguous()  # r x in
+                mod.lora_A['default'].weight.copy_(low);mod.lora_A['default'].weight.requires_grad_(False);mod.lora_B['default'].weight.zero_()
+            else:
+                evals,evecs=torch.linalg.eigh(W@W.T);low=evecs[:,:r].float().contiguous()  # out x r
+                mod.lora_B['default'].weight.copy_(low);mod.lora_B['default'].weight.requires_grad_(False);mod.lora_A['default'].weight.zero_()
+            share.append(float(evals[:r].clamp(min=0).sqrt().sum()/evals.clamp(min=0).sqrt().sum()))
+        n+=1;frozen+=int(low.numel())
+    return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
+
+
 def load(master, adapter=None, trainable=False, rank=16, alpha=32):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -123,6 +146,8 @@ def cmd_train(a):
     n_cur = len(data)
     data += [encode(tok, m, x) for m, x in zip(gm, ga)]
     is_replay = [False] * n_cur + [True] * len(gm)
+    if a.minor_subspace:
+        print('minor subspace', minor_subspace_init(torch, model, 16), flush=True)
     params = [p for p in model.parameters() if p.requires_grad]
     opt = torch.optim.AdamW(params, lr=a.lr, weight_decay=0.)
     steps = a.epochs * ((len(data) + a.batch - 1) // a.batch)
@@ -162,7 +187,7 @@ def cmd_train(a):
             break
     model.save_pretrained(a.out)
     Path(a.out, 'train_report.json').write_text(json.dumps({'mode': a.mode, 'seed': a.seed, 'per_family': a.per_family, 'epochs': a.epochs, 'lr': a.lr,
-                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'replay_frac': a.replay_frac, 'replay_v2': a.replay_v2, 'kl_weight': a.kl_weight, 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
+                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'replay_frac': a.replay_frac, 'replay_v2': a.replay_v2, 'minor_subspace': a.minor_subspace, 'kl_weight': a.kl_weight, 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
                                                            'seconds': round(time.time() - t0), 'revision': oc.REVISION}, indent=1))
     print('saved', a.out, 'steps', step, 'seconds', round(time.time() - t0))
 
@@ -221,7 +246,7 @@ if __name__ == '__main__':
     t.add_argument('--mode', choices=['offers', 'no_offers'], default='offers')
     t.add_argument('--per-family', type=int, default=60); t.add_argument('--epochs', type=int, default=2)
     t.add_argument('--seed', type=int, default=1); t.add_argument('--lr', type=float, default=3e-4)
-    t.add_argument('--replay-v2', action='store_true'); t.add_argument('--replay-frac', type=float, default=0.); t.add_argument('--kl-weight', type=float, default=0.)
+    t.add_argument('--minor-subspace', action='store_true'); t.add_argument('--replay-v2', action='store_true'); t.add_argument('--replay-frac', type=float, default=0.); t.add_argument('--kl-weight', type=float, default=0.)
     t.add_argument('--batch', type=int, default=8); t.add_argument('--max-steps', type=int, default=0)
     e = sub.add_parser('eval')
     e.add_argument('--master', required=True); e.add_argument('--adapter', default='none'); e.add_argument('--out', required=True)
