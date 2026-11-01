@@ -134,9 +134,9 @@ def build_envelopes(runtime_factory=Runtime):
     return rows
 
 
-def preflight():
+def preflight(runtime_factory=Runtime):
     models = pinned_models()
-    rows = build_envelopes()
+    rows = build_envelopes(runtime_factory)
     return {
         "schema": SCHEMA, "status": "SOURCE_ONLY_MODEL_SWAP_PREFLIGHT_NO_NATIVE",
         "seed": frozen.SEED, "table_sha256": frozen.TABLE_SHA256,
