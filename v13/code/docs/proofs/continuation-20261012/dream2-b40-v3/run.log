@@ -1,0 +1,33 @@
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:03<06:54,  3.16s/it]Loading weights: 100%|██████████| 132/132 [00:03<00:00, 41.63it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:00<01:04,  2.04it/s]Loading weights: 100%|██████████| 132/132 [00:00<00:00, 262.19it/s]
+{"seed": 13, "arm": "none", "A": {"recall": 0.25, "paraphrase": 0.25}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.4166666666666667, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:03<07:00,  3.21s/it]Loading weights: 100%|██████████| 132/132 [00:03<00:00, 40.98it/s]
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.4166666666666667, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:00<01:47,  1.22it/s]Loading weights: 100%|██████████| 132/132 [00:00<00:00, 160.32it/s]
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.25, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:16,  1.04s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 125.67it/s]
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.75, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.5833333333333334, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:23,  1.09s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 119.74it/s]
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.3333333333333333, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<03:07,  1.43s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 91.67it/s]
+{"seed": 21, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.75, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:33,  1.17s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 111.86it/s]
+{"seed": 21, "arm": "replay_exact", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.75, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:57,  1.36s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 96.69it/s]
+{"seed": 21, "arm": "dream_validated", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.25, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:32,  1.17s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 112.61it/s]
+{"seed": 21, "arm": "dream_self", "A": {"recall": 0.75, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.6666666666666666, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:02<04:37,  2.12s/it]Loading weights: 100%|██████████| 132/132 [00:02<00:00, 62.03it/s]
+{"seed": 21, "arm": "dream_unanchored", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.25, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:53,  1.32s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 99.03it/s]
+{"seed": 34, "arm": "none", "A": {"recall": 0.25, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.2, "probe_retention": 0.6666666666666666, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:46,  1.27s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 103.21it/s]
+{"seed": 34, "arm": "replay_exact", "A": {"recall": 1.0, "paraphrase": 0.25}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.6666666666666666, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<03:27,  1.58s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 82.99it/s]
+{"seed": 34, "arm": "dream_validated", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.08333333333333333, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<02:44,  1.26s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 104.59it/s]
+{"seed": 34, "arm": "dream_self", "A": {"recall": 0.75, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.75, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<03:45,  1.72s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 76.43it/s]
+{"seed": 34, "arm": "dream_unanchored", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.25, "steps_b": 40}

@@ -1,0 +1,408 @@
+{
+ "calc_counter": {
+  "schema": "v13-tool-forecast-v1-learn",
+  "world": "calc_counter",
+  "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+  "tool_sha256": "da4c23c12d0d16b5febde6b92a9e9ed805cd5f433b1389ecad6a72e4b9f6cd71",
+  "mode": "region",
+  "actions": {
+   "add_15": {
+    "rows": 9,
+    "replay_rows": 0,
+    "holdout_rows": 2,
+    "holdout_measured_mse": 0.09891115427192726,
+    "retention_measured": 0.005504995426220201,
+    "retention_copy": 0.41344186604776373,
+    "retention_mean_delta": 0.05866708099332285,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.013892541533124681,
+      "retention": 0.005810367984772399,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.01333238370136668,
+      "retention": 0.00577054454614218,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.018930164623732988,
+      "retention": 0.005713999739669425,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.05309004562949786,
+      "retention": 0.005581236427887505,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.09074653112391386,
+      "retention": 0.00551417265342471,
+      "admissible": true
+     }
+    ],
+    "scale": 10.0,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.05309004562949786,
+    "retention_adapted": 0.005581236427887505,
+    "kept": "ADAPTED"
+   },
+   "double": {
+    "rows": 9,
+    "replay_rows": 0,
+    "holdout_rows": 2,
+    "holdout_measured_mse": 0.031488010192644064,
+    "retention_measured": 0.007914731322582896,
+    "retention_copy": 0.17826462757552455,
+    "retention_mean_delta": 0.05848482345402145,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.014537812741771322,
+      "retention": 0.007933123916656255,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.013101499269964382,
+      "retention": 0.007890089424375052,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.01369481693566198,
+      "retention": 0.007901493228877402,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.021648864512737325,
+      "retention": 0.007903386835847893,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.029747842082458623,
+      "retention": 0.007912085481812502,
+      "admissible": true
+     }
+    ],
+    "scale": 0.1,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.013101499269964382,
+    "retention_adapted": 0.007890089424375052,
+    "kept": "ADAPTED"
+   },
+   "quarter": {
+    "rows": 9,
+    "replay_rows": 0,
+    "holdout_rows": 2,
+    "holdout_measured_mse": 0.3209069586647666,
+    "retention_measured": 0.021964414393590936,
+    "retention_copy": 0.4593729175718839,
+    "retention_mean_delta": 0.1170233325570956,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.028024486779841595,
+      "retention": 0.022064371606789125,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.033024273649320215,
+      "retention": 0.021908750786250895,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.0821981528052565,
+      "retention": 0.021869458352909012,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.20197301776458323,
+      "retention": 0.021868947616273775,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.30077788982135467,
+      "retention": 0.021941335712246487,
+      "admissible": true
+     }
+    ],
+    "scale": 0.01,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.028024486779841595,
+    "retention_adapted": 0.022064371606789125,
+    "kept": "ADAPTED"
+   },
+   "subtract_7": {
+    "rows": 9,
+    "replay_rows": 0,
+    "holdout_rows": 2,
+    "holdout_measured_mse": 0.04067091596715079,
+    "retention_measured": 0.0052310595947623354,
+    "retention_copy": 0.6083656072099684,
+    "retention_mean_delta": 0.05699269031534075,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.005963184100400368,
+      "retention": 0.005288487018033863,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.005498512610554517,
+      "retention": 0.005231599393186649,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.007617618485924103,
+      "retention": 0.005219619183527191,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.02143817285559981,
+      "retention": 0.0052147935363387465,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.03721490510418781,
+      "retention": 0.005226812063073493,
+      "admissible": true
+     }
+    ],
+    "scale": 0.1,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.005498512610554517,
+    "retention_adapted": 0.005231599393186649,
+    "kept": "ADAPTED"
+   }
+  },
+  "pass": true,
+  "experience_rows": 160,
+  "experience_sha256": "82d0d46167ee25ed12111dbed755ae60c8db8b71c2ef9f263c2cc4d47cffd9d4",
+  "replay_pairs": 0,
+  "experience_out_of_domain": 36,
+  "adapted_actions": [
+   "add_15",
+   "double",
+   "quarter",
+   "subtract_7"
+  ],
+  "adapted_sha256": "8b27bf2c0cea436f073b0f6f666e661a4d4d8c9c8ec833d7492b709372d408d7",
+  "learn_authority": 0,
+  "used_for_decision": false
+ },
+ "note_edit": {
+  "schema": "v13-tool-forecast-v1-learn",
+  "world": "note_edit",
+  "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+  "tool_sha256": "da4c23c12d0d16b5febde6b92a9e9ed805cd5f433b1389ecad6a72e4b9f6cd71",
+  "mode": "region",
+  "actions": {
+   "append_done": {
+    "rows": 30,
+    "replay_rows": 0,
+    "holdout_rows": 7,
+    "holdout_measured_mse": 0.07565232670549608,
+    "retention_measured": 0.003680706328256398,
+    "retention_copy": 0.48118159289865614,
+    "retention_mean_delta": 0.06426840872656156,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.06531291816185725,
+      "retention": 0.0040174904219841285,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.06319730205238502,
+      "retention": 0.003936072227857664,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.06099946012340631,
+      "retention": 0.003777545477339335,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.06688936166692962,
+      "retention": 0.003695221241276916,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.07392834752723901,
+      "retention": 0.003682221413345334,
+      "admissible": true
+     }
+    ],
+    "scale": 10.0,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.06688936166692962,
+    "retention_adapted": 0.003695221241276916,
+    "kept": "ADAPTED"
+   },
+   "prefix_urgent": {
+    "rows": 30,
+    "replay_rows": 0,
+    "holdout_rows": 7,
+    "holdout_measured_mse": 0.0652441617999839,
+    "retention_measured": 0.003159469887978241,
+    "retention_copy": 0.1889763402882037,
+    "retention_mean_delta": 0.03281320851239048,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.04719024893358797,
+      "retention": 0.0034247449582910094,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.04655179086904653,
+      "retention": 0.003362982507305544,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.048426326429570135,
+      "retention": 0.003222354641495169,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.05727640158045122,
+      "retention": 0.003163408260025512,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.06375059975374534,
+      "retention": 0.0031597227091648443,
+      "admissible": true
+     }
+    ],
+    "scale": 1.0,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.048426326429570135,
+    "retention_adapted": 0.003222354641495169,
+    "kept": "ADAPTED"
+   },
+   "undo": {
+    "rows": 0,
+    "kept": "MEASURED_TOO_FEW_ROWS"
+   },
+   "uppercase": {
+    "rows": 30,
+    "replay_rows": 0,
+    "holdout_rows": 7,
+    "holdout_measured_mse": 0.15390665383664878,
+    "retention_measured": 0.005743546330458012,
+    "retention_copy": 0.5212195602773635,
+    "retention_mean_delta": 0.06731345285813199,
+    "grid": [
+     {
+      "weight": 1.0,
+      "scale": 0.01,
+      "holdout_mse": 0.10425791833270512,
+      "retention": 0.006013274109006496,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 0.1,
+      "holdout_mse": 0.10238481748058248,
+      "retention": 0.0059470999565238766,
+      "admissible": false
+     },
+     {
+      "weight": 1.0,
+      "scale": 1.0,
+      "holdout_mse": 0.10468814245776163,
+      "retention": 0.005823487816303492,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 10.0,
+      "holdout_mse": 0.12701808837617495,
+      "retention": 0.005753216151595875,
+      "admissible": true
+     },
+     {
+      "weight": 1.0,
+      "scale": 100.0,
+      "holdout_mse": 0.1489367861418954,
+      "retention": 0.0057444399469692,
+      "admissible": true
+     }
+    ],
+    "scale": 1.0,
+    "experience_weight": 1.0,
+    "holdout_adapted_mse": 0.10468814245776163,
+    "retention_adapted": 0.005823487816303492,
+    "kept": "ADAPTED"
+   }
+  },
+  "pass": true,
+  "experience_rows": 90,
+  "experience_sha256": "a17732491455a76e5818c1a3703dfe0e219d5643585a8db93f384c14c3c16e18",
+  "replay_pairs": 0,
+  "experience_out_of_domain": 90,
+  "adapted_actions": [
+   "append_done",
+   "prefix_urgent",
+   "uppercase"
+  ],
+  "adapted_sha256": "cf6fab3a2b03a4bce3d4c5a43b100cafcdef3ce8a45fc7358fc48541ec431bcb",
+  "learn_authority": 0,
+  "used_for_decision": false
+ }
+}

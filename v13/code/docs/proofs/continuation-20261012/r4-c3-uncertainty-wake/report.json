@@ -1,0 +1,41 @@
+{
+ "prereg_sha256": "856c69a23198e4aefafb72cdeb746ddcc5e29d88bfc1c4162ac095abdf601240",
+ "fresh_capture_sha256": "96efd0d65bdb13005336661e0cb09fc7d1f41a1e62ec77c0b512ebf74078b5a1",
+ "fresh_r4_sha256": "908cc6bf44867190851855bd1f48445f026255f09998ff90af3a22351baf6afb",
+ "identity_vs_r4": {
+  "identical_output": 60,
+  "pass_agrees": 60,
+  "n": 60
+ },
+ "feature": "digit_min_logprob",
+ "threshold": 1.267083764076233,
+ "fresh_auroc_all_features": {
+  "min_logprob": 0.6957671957671958,
+  "mean_logprob": 0.8055555555555556,
+  "p10_logprob": 0.8029100529100529,
+  "share_below_half": 0.8035714285714286,
+  "digit_min_logprob": 0.8425925925925926,
+  "tokens": 0.6567460317460317
+ },
+ "fresh_auroc": 0.8425925925925926,
+ "fresh_auroc_ci95_low": 0.7275132275132276,
+ "policy": {
+  "pass": 42,
+  "woke": 2,
+  "turn_s": 6.68
+ },
+ "policy_net_vs_c3": 0,
+ "c_native_pass": 42,
+ "heuristic_pass": 33,
+ "always_ab_pass": 38,
+ "rescuable": [
+  "summary06",
+  "notes08",
+  "compare01"
+ ],
+ "woke_on_rescuable": 0,
+ "signal_verdict": "SIGNAL_SUPPORTED",
+ "policy_verdict": "NOT_SUPPORTED",
+ "phone_measured": false,
+ "runtime_changed": false
+}

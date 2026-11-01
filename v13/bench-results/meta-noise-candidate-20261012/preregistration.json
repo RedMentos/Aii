@@ -1,0 +1,25 @@
+{
+ "schema": "META_NOISE_CANDIDATE_PREREG_V1",
+ "test_seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "constants": {
+  "NOISE_EMA": 0.2,
+  "NOISE_K": 2.0,
+  "NOISE_REF": 0.05,
+  "NOISE_MIN_N": 4
+ },
+ "streams": {
+  "noisy": "ablation META stream",
+  "clean": "same phases, label noise .1"
+ },
+ "pass": [
+  "noisy: candidate < v13 in >=4/5",
+  "noisy: candidate < fixed_conservative and < fixed_matched in >=4/5 each",
+  "clean: candidate > v13 in <=1/5"
+ ]
+}

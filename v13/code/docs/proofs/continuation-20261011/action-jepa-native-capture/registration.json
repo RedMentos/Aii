@@ -1,0 +1,125 @@
+{
+  "schema": "v13-action-native-tap-registration-v1",
+  "plan": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-preregistered-plan-v2.json",
+    "sha256": "94072d386e6f7f55dd972592bc97b78e6f1f4cae05f80fa132bd7efb16d476f1"
+  },
+  "sentences": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-ablation-20261010/sentences.json",
+    "sha256": "b67ec434f0e0fbc91f2502dc50a4551fb29f6ab7e1001f4a458e0c7c14ef5828"
+  },
+  "actions": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-action-20261010/actions.json",
+    "sha256": "36380af40c5896aa6cdbcaf906b7c4471c57383a7064c054673035ca0c6c200e"
+  },
+  "texts_sha256": "e68867ce03b1c62b85b55cc9c09b7e8767807c8e87193f0df37773572359e7cc",
+  "expected_rows": 1875,
+  "expected_dim": 1024,
+  "dtype": "float64",
+  "batch_size": 16,
+  "threads": 2,
+  "context": 2048,
+  "pooling": "mean",
+  "embedding": true,
+  "native_template": "raw_text_embedding",
+  "artifacts": {
+    "model_gguf": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+      "sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf"
+    },
+    "runner": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+      "sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8"
+    },
+    "extractor": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/jepa_ablation_bench.py",
+      "sha256": "b6e73928a44ab695a8c224f1aa6dd2c9a8f2bdb1596fe39de5ce55026e4fc95e"
+    },
+    "capture_driver": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/capture_action_jepa_taps.py",
+      "sha256": "42b38b8d0f3f96a811f330895de62e35ec81bfea89383edd3ba00da52d06defd"
+    }
+  },
+  "runtime_libraries": {
+    "libggml-base.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-base.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-base.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-base.so.0.24.0",
+      "sha256": "2b6851585479396a0fb8b6f3984caedb086941c7da3e5018bb697a0c3b08e88a"
+    },
+    "libggml-cpu.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml-cpu.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml-cpu.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml-cpu.so.0.24.0",
+      "sha256": "f2de581904a1a4c3dd9cd085befd3c1621b75f4752afcb96af27ce61a2aed63b"
+    },
+    "libggml.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libggml.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libggml.so.0.24.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libggml.so.0.24.0",
+      "sha256": "927362fbd4923818db08d4e591eec24d13c45fd8eb93fd480f9e57eb02c7392d"
+    },
+    "libllama-common.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-common.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-common.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-common.so.0.4.1",
+      "sha256": "76f2b6d9d14ac5eeb58005246030353ce131c59c6b62aabd2c3121245d0938ee"
+    },
+    "libllama-server-impl.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama-server-impl.so",
+      "sha256": "0bd03879553abc98f5d2951886989820cd61049ce071f727e06f9cc926d4c8f1"
+    },
+    "libllama.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libllama.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libllama.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libllama.so.0.4.1",
+      "sha256": "4089f1bb4c2b0ba79cf4688d5797451e9fcb49347f66f0e38c4132b9474cee50"
+    },
+    "libmtmd.so": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "libmtmd.so.0": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    },
+    "libmtmd.so.0.4.1": {
+      "path": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/libmtmd.so.0.4.1",
+      "sha256": "df45ff13f9a949bfb7e7b6e04c4e207d7dc1a1d373c1550ada918b33fd5c249e"
+    }
+  },
+  "model_role": "B2_GIST_Qwen3.5-0.8B_Q4_0",
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

@@ -1,0 +1,49 @@
+{
+ "schema": "v13-action-jepa-round8-preregistration-v1",
+ "status": "PREREGISTERED_BEFORE_WORLD_AND_CAPTURE",
+ "utc": "2026-10-12T12:05:00Z",
+ "thread": "Nächste offene Pakete F",
+ "why": "Round 7 confirmed the round-6 objective only on arithmetic calc actions. Round 8 tests the only non-arithmetic tool of the V13 registry.",
+ "tool": "sandbox_note (WRITE_LOCAL, reversible, undo + preview) via v13.agi.tools.ToolRegistry in a throwaway sandbox store; each write is PROPOSED by policy (NEEDS_PER_CALL_APPROVAL) and approved per call by the experiment script acting as the user; undo through ToolRegistry.undo",
+ "world": {
+  "contents": "600 = 10 verbs x 10 objects x 6 times (\"Call the plumber today.\"), 400 drawn with seed 20261014, partitions 50/15/15/20 as round 5",
+  "state_text": "The note reads: <content>",
+  "actions": {
+   "append_done": "write content + \" Done.\"",
+   "prefix_urgent": "write \"Urgent: \" + content",
+   "uppercase": "write content.upper()",
+   "undo": "write \"Scratch text.\", then registry undo"
+  },
+  "outcome_text": "action-named template + note file read back from the sandbox after the call",
+  "setup": "one approved write restoring the content before every action"
+ },
+ "capture": "scripts/action_jepa_round5_tools.py capture (scripts/native_layer_taps.cpp, Qwen3.5-0.8B-Q4_0 sha 57d19977…), layers 11,23, last+mean = 4 arms",
+ "candidate": {
+  "path": "code/scripts/action_jepa_round6_ridge.py",
+  "sha256": "acb8264ebca7b846a33177f0c243d1f2ded157d574dde823c193cf0d4f841fab",
+  "changed_since_round6": false,
+  "arms": [
+   "full",
+   "proj"
+  ],
+  "seeds": [
+   13,
+   21,
+   34
+  ]
+ },
+ "runs": 24,
+ "sources": {
+  "scripts/action_jepa_round8_note_tool.py": "805f4593fbc8339e50c02ed84e84053ccfb7882ad86ea55e7ee123e4415642e1",
+  "tests/test_action_jepa_round8_note_tool.py": "e360f968f1f0f20a160565845d8aa1d4db64a5b0a2bc7e97612887eaf95e1a56",
+  "scripts/action_jepa_round5_tools.py": "5d7aa7d276339ed8ec3d81e4d9f585684d9e9e53b06fd94cb73b7a23457750f5",
+  "scripts/native_layer_taps.cpp": "bbef8b08fd8bcfe72eb30dc4bcced887b70b9c35158819911b5bc110d79a4bd1",
+  "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439",
+  "v13/agi/tools.py": "a65d328e8be2170022d1fa5ba862cd3f42f5d64bba9414d3885d2bd79aacc4c6",
+  "v13/transaction.py": "4e89eeaa9f5f8744943ab19d9fc769b9088fc8a6a1b1baca71e1a3b5582b5353"
+ },
+ "gates": "round-6 gates unchanged",
+ "decision_rule": "Per run pass only if all gates hold. Family CONFIRMED if more than half of the 24 runs pass, else NOT_CONFIRMED. No change after this registration; failures reported unchanged.",
+ "expected_difficulty": "uppercase and undo change surface form strongly but deterministically; append/prefix are near-constant edits where mean-delta is strong. A pass needs per-action gains of 2 % over copy, mean-delta and shuffled on calibration and test.",
+ "not_changed": "No file under code/v13/ changed; no runtime, receiver or learn authority."
+}

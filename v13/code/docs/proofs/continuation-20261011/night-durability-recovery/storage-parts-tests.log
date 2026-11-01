@@ -1,0 +1,12 @@
+test_corrupt_part_never_installs_or_leaves_partial (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_corrupt_part_never_installs_or_leaves_partial) ... ok
+test_different_existing_evidence_not_overwritten (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_different_existing_evidence_not_overwritten) ... ok
+test_empty_closed_artifact_supported (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_empty_closed_artifact_supported) ... ok
+test_invalid_order_and_traversal_rejected (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_invalid_order_and_traversal_rejected) ... ok
+test_round_trip_and_idempotent_replay (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_round_trip_and_idempotent_replay) ... ok
+test_symlink_part_rejected (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_symlink_part_rejected) ... ok
+test_wrong_final_hash_never_installs (tests.test_sealed_storage_parts.SealedStoragePartsTest.test_wrong_final_hash_never_installs) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.489s
+
+OK

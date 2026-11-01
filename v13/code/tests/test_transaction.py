@@ -85,6 +85,18 @@ class ProvisionalTests(Base):
         self.assertEqual(P.settle(e2,'ERROR')['tombstoned'],1);self.assertEqual(len(got),1)
         st=self.r.store.state(K.PROVISIONAL_KEY)[0];self.assertTrue(all('payload' not in x for x in st['items'].values()))
         self.assertEqual(K.learning_factor('PROVISIONAL'),0.);self.assertEqual(K.learning_factor('FINAL'),.8)
+    def test_approval_after_turn_end_reaches_grounding(self):
+        # Thread M finding: a call proposed in a turn and approved after that turn ended was parked in the provisional
+        # buffer of a turn that never settles again, so AG2 grounding never saw it (TTL tombstone).
+        got=[];reg=ToolRegistry(self.r.store,on_outcome=got.append);reg.enable('sandbox_note');P=K.Provisional(self.r.store)
+        e=self.r.store.event(self.r.session,'note this')['event_id']
+        tx=reg.call('sandbox_note',{'name':'n1','text':'hi'},event_id=e);self.assertEqual(tx['status'],'PROPOSED')
+        open_tx=reg.call('sandbox_note',{'name':'n2','text':'yo'},event_id=e)
+        reg.approve(open_tx['id']);self.assertEqual(got,[]);self.assertEqual(P.report()['live'],1)  # turn still running: stays provisional
+        self.r.store.message(self.r.session,e,'assistant','[Aktion wartet auf Freigabe]','FINAL',{});P.settle(e,'FINAL')
+        self.assertEqual([g['args']['name'] for g in got],['n2'])
+        done=reg.approve(tx['id']);self.assertEqual(done['status'],'EXECUTED')
+        self.assertEqual([g['args']['name'] for g in got],['n2','n1']);self.assertEqual(P.report()['live'],0)
     def test_ttl_expiry(self):
         t=[0.];P=K.Provisional(self.r.store,clock=lambda:t[0]);P.put('e','x',{'v':1},ttl_s=10);t[0]=11
         self.assertEqual(P.settle('e','FINAL'),{'promoted':0,'tombstoned':0,'no_sink':0});self.assertEqual(P.report()['counts']['tombstoned'],1)

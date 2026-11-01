@@ -1,0 +1,362 @@
+{
+ "kind": "V13_ELIGIBILITY_LIVE_TURN",
+ "seed": 7,
+ "n": 4,
+ "switches": {
+  "b2_offer_body_state": false,
+  "offer_quote_min_chars": 90,
+  "offer_quote_context_chars": 200,
+  "observer_sample_rate": 1.0
+ },
+ "script_sha256": "469b5a746d1f5666635256d69f7e6fb50c17c75836f4b539b4540c56517820ce",
+ "code_sha256": {
+  "toolstep.py": "d8c6a79ba06dce3bdea56fd097f21024489fd4f2bf1ca16cfb751ff5655a3d13",
+  "agi/eligibility.py": "9420c6100cddfb3dda8d882f116d8b03f54d11edbf97b19defa21f212106583f",
+  "agi/tools.py": "aaec7fb801392d7bc3084760985ebc57f79506c87175cbaad1864ff691a403da",
+  "cognition.py": "c2cbf3a0b60df07a51968884b32dec9a5f48908449f85a002c85214d3d228f60",
+  "runtime.py": "460336a53ec4ba743b7a7b62888744a8a74fcd688aa1a0dcaaca4b6f2f4f1fb8",
+  "transaction.py": "7edd8e349cfc449a1123c660d35cfc337261754b138cd6cf8ba62c0b5b6530b0"
+ },
+ "rows": [
+  {
+   "episode": {
+    "id": "Unuk",
+    "kind": "retain",
+    "prior": "Project Unuk. Budget 100 euros. Deadline 4 days. Local-only requirement: true.",
+    "current": "Project Unuk. Decide from the earlier project rules. Option A: cost 55 euros, duration 1 days, local false. Option B: cost 60 euros, duration 3 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.",
+    "action": "B"
+   },
+   "c3_alone": {
+    "turns": [
+     {
+      "eid": "evt_f259ba43cd3642dbbfb6a06088a91102",
+      "done": true,
+      "status": null,
+      "turn_s": 6.03,
+      "output": "The project has a budget of 100 euros and a 4-day deadline. It must be local-only.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_1fa6a5101ae04c7cb20a1279486bc6bd",
+      "done": true,
+      "status": null,
+      "turn_s": 4.61,
+      "output": "The meeting is set for tomorrow, and no budget or decision is needed. Local-only requirements are confirmed.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_bf64a63f06f4406fbaeee03afefbe866",
+      "done": true,
+      "status": null,
+      "turn_s": 5.82,
+      "output": "Option B is eligible (local-only) with a lower cost of 60 euros.",
+      "tool_call": null,
+      "tool_shadow": null
+     }
+    ],
+    "decision": "B",
+    "proposal": null,
+    "tool_value": null
+   },
+   "tool_active": {
+    "turns": [
+     {
+      "eid": "evt_0497ca7cf94344e8a7dcbb2685bc8825",
+      "done": true,
+      "status": null,
+      "turn_s": 4.61,
+      "output": "The project has a clear budget and deadline, with a local-only requirement. This aligns with the constraints provided.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_e7e425a4168a49f4be739fa2a07b24bf",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The meeting is set for tomorrow without any budget or decision.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_1f4362e1f5a746eab8eac80a21a3772e",
+      "done": true,
+      "status": null,
+      "turn_s": 8.02,
+      "output": "Option B is eligible with a lower cost and meets the local requirement.",
+      "tool_call": {
+       "action_tx": "atx_edaa7e720bb44519a85bee930a4e1f40",
+       "status": "EXECUTED",
+       "tool": "eligibility",
+       "tx": "tool_bcb5f121dc1d4b8db5055740cd1b9be5"
+      },
+      "tool_shadow": null
+     }
+    ],
+    "decision": "B",
+    "proposal": {
+     "policy": "APPROVED",
+     "reason": "AGE_RIGHT_MEASUREMENT"
+    },
+    "tool_value": "B"
+   }
+  },
+  {
+   "episode": {
+    "id": "Vega",
+    "kind": "retain",
+    "prior": "Project Vega. Budget 80 euros. Deadline 3 days. Local-only requirement: true.",
+    "current": "Project Vega. Decide from the earlier project rules. Option A: cost 65 euros, duration 1 days, local true. Option B: cost 75 euros, duration 4 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.",
+    "action": "A"
+   },
+   "c3_alone": {
+    "turns": [
+     {
+      "eid": "evt_9b832cef730149f99a77644c0eeb1c55",
+      "done": true,
+      "status": null,
+      "turn_s": 5.01,
+      "output": "The project constraints are clear: budget of 80 euros, a 3-day deadline, and it must be local-only. This aligns with the requirements.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_92343d1d4a844da1b49e9d772e6183de",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The meeting is set for tomorrow without any budget or decision.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_67e30c646a70497e99302a7788e1894b",
+      "done": true,
+      "status": null,
+      "turn_s": 5.81,
+      "output": "Option A fits within the 80 euro budget and meets the local-only requirement.",
+      "tool_call": null,
+      "tool_shadow": null
+     }
+    ],
+    "decision": "A",
+    "proposal": null,
+    "tool_value": null
+   },
+   "tool_active": {
+    "turns": [
+     {
+      "eid": "evt_df29276e5fea4043be4c3a5bb9918bee",
+      "done": true,
+      "status": null,
+      "turn_s": 5.21,
+      "output": "The project constraints are clear: budget of 80 euros, a 3-day deadline, and it must be local-only. This aligns with the given requirements.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_296184b185864a3eb8788e5e4b126c3c",
+      "done": true,
+      "status": null,
+      "turn_s": 5.21,
+      "output": "The meeting is set for tomorrow without any budget or decision.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_1e606cca746348fc8ff061e8d5ed9948",
+      "done": true,
+      "status": null,
+      "turn_s": 7.82,
+      "output": "Option A fits within the 80 euro budget and meets the local-only requirement. Option B exceeds the budget despite being local. Choose Option A.",
+      "tool_call": {
+       "action_tx": "atx_64198e02d4b54e4e855800a7834d5abb",
+       "status": "EXECUTED",
+       "tool": "eligibility",
+       "tx": "tool_8346f53752dc4c1e84aa42cd39ec37ee"
+      },
+      "tool_shadow": null
+     }
+    ],
+    "decision": "A",
+    "proposal": {
+     "policy": "APPROVED",
+     "reason": "AGE_RIGHT_MEASUREMENT"
+    },
+    "tool_value": "A"
+   }
+  },
+  {
+   "episode": {
+    "id": "Wezen",
+    "kind": "retain",
+    "prior": "Project Wezen. Budget 65 euros. Deadline 4 days. Local-only requirement: true.",
+    "current": "Project Wezen. Decide from the earlier project rules. Option A: cost 65 euros, duration 1 days, local true. Option B: cost 50 euros, duration 1 days, local false. Compute each remaining budget and eligibility; choose cheapest eligible.",
+    "action": "A"
+   },
+   "c3_alone": {
+    "turns": [
+     {
+      "eid": "evt_e2d6b8b3b09c454eb37db640dd608703",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The project details are clear. Budget is 65 euros, deadline is 4 days, and it must be local-only.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_5f6b907d937e4c9e85251419503a602e",
+      "done": true,
+      "status": null,
+      "turn_s": 5.01,
+      "output": "The meeting is set for tomorrow with no budget or decision needed.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_90bbd51fda004906b1451c8af910ad29",
+      "done": true,
+      "status": null,
+      "turn_s": 6.21,
+      "output": "Option B is cheaper at 50 euros and meets the local requirement.",
+      "tool_call": null,
+      "tool_shadow": null
+     }
+    ],
+    "decision": "B",
+    "proposal": null,
+    "tool_value": null
+   },
+   "tool_active": {
+    "turns": [
+     {
+      "eid": "evt_46d9405a6074436f89beb0a6e618cd4b",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The project details are clear. Budget is 65 euros, deadline is 4 days, and it must be local-only.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_9a49c80533ac418db88a40b19094788a",
+      "done": true,
+      "status": null,
+      "turn_s": 5.01,
+      "output": "The meeting is set for tomorrow with no budget or decision needed.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_102a018ee9fc43e6ac6ffc086863133b",
+      "done": true,
+      "status": null,
+      "turn_s": 7.81,
+      "output": "Option B is cheaper at 50 euros but not local-only. Option A meets the local requirement and costs 65 euros. Choose Option A.",
+      "tool_call": {
+       "action_tx": "atx_43e1b0aacc694eeca64988a195749ab5",
+       "status": "EXECUTED",
+       "tool": "eligibility",
+       "tx": "tool_36342e208dab40c2a2598eae2baaeda7"
+      },
+      "tool_shadow": null
+     }
+    ],
+    "decision": "A",
+    "proposal": {
+     "policy": "APPROVED",
+     "reason": "AGE_RIGHT_MEASUREMENT"
+    },
+    "tool_value": "A"
+   }
+  },
+  {
+   "episode": {
+    "id": "Xamidimura",
+    "kind": "retain",
+    "prior": "Project Xamidimura. Budget 55 euros. Deadline 7 days. Local-only requirement: false.",
+    "current": "Project Xamidimura. Decide from the earlier project rules. Option A: cost 40 euros, duration 7 days, local true. Option B: cost 25 euros, duration 8 days, local true. Compute each remaining budget and eligibility; choose cheapest eligible.",
+    "action": "A"
+   },
+   "c3_alone": {
+    "turns": [
+     {
+      "eid": "evt_dac3720d80374e24a21f90230e610479",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The details provided are consistent with the information given. No uncertainty is evident in this summary.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_0f8a2798253d43cbaf4dbd182bb10116",
+      "done": true,
+      "status": null,
+      "turn_s": 4.81,
+      "output": "The meeting is set for tomorrow, and no budget or decision is needed.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_9c8d9c749df2496ba9de02502c5cef92",
+      "done": true,
+      "status": null,
+      "turn_s": 6.22,
+      "output": "Option B is cheaper at 25 euros. It fits within the available budget and meets local requirements.",
+      "tool_call": null,
+      "tool_shadow": null
+     }
+    ],
+    "decision": "B",
+    "proposal": null,
+    "tool_value": null
+   },
+   "tool_active": {
+    "turns": [
+     {
+      "eid": "evt_d0f6cfe75f9e46ea8d728219b7d6776c",
+      "done": true,
+      "status": null,
+      "turn_s": 5.01,
+      "output": "The details provided are consistent with a local project budget and timeline. No uncertainty detected in the summary.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_03ba5a035099425f8901e437a26e0662",
+      "done": true,
+      "status": null,
+      "turn_s": 5.21,
+      "output": "The information aligns with the stated constraints. No budget or final decision was mentioned.",
+      "tool_call": null,
+      "tool_shadow": null
+     },
+     {
+      "eid": "evt_f190f8692a004f97aec17140521b8949",
+      "done": true,
+      "status": null,
+      "turn_s": 8.01,
+      "output": "Option A has a lower cost but longer duration; Option B is cheaper but shorter. Both meet local requirements. Choose based on priority.",
+      "tool_call": {
+       "action_tx": "atx_2e0e65bd2f964fe18775f318e178b0c9",
+       "status": "EXECUTED",
+       "tool": "eligibility",
+       "tx": "tool_3a786a6661fa4d5a884c70b78a743cdd"
+      },
+      "tool_shadow": null
+     }
+    ],
+    "decision": "A",
+    "proposal": {
+     "policy": "APPROVED",
+     "reason": "AGE_RIGHT_MEASUREMENT"
+    },
+    "tool_value": "A"
+   }
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+  "bytes": 2099697,
+  "chunk_bytes": 1048576,
+  "file_name": "action-jepa-residual-round2.closed.zip",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "3ba2f6323e25da4d7ef3237ec41cfd606a87ed58e3a4e1a182414b1c73a85ba4"
+    },
+    {
+      "bytes": 1048576,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "84249b4d7bb06597bbf23a5ece2cf9d05e9fe61498b376ab0cbe5cb505315779"
+    },
+    {
+      "bytes": 2545,
+      "index": 2,
+      "name": "part-00002.bin",
+      "sha256": "b9579f67a64ec2abf5c8856036dd9309a6814b39682f4512ef49a6a334a01a7f"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "28b88fe277a87051b5750fd88636674bb7c740606f76485d9950de5992bca4fc"
+}

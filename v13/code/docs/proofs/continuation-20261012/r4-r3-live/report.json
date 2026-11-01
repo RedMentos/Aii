@@ -1,0 +1,40 @@
+{
+ "prereg_sha256": "247b495d5be7d3a2d3da3670c0dde93d5f511eb1ab0d24734b972d1667210d8f",
+ "fresh_sha256": "9b97f88cc7c601e7dd8d7f16ed7188520b8d13797fd92102e83392e525f04edc",
+ "result": {
+  "n": 30,
+  "c3_alone": 13,
+  "tool_active": 25,
+  "wins": 13,
+  "losses": 1,
+  "net": 12,
+  "sign_test_p": 0.0018,
+  "by_kind": {
+   "summary": {
+    "c3_alone": 7,
+    "tool_active": 15,
+    "value_correct": 15,
+    "n": 15
+   },
+   "compare": {
+    "c3_alone": 6,
+    "tool_active": 10,
+    "value_correct": 15,
+    "n": 15
+   }
+  },
+  "proposals": 30,
+  "tool_executed": 30,
+  "guard_refused": 0,
+  "value_correct": 30,
+  "pass_with_correction": 30,
+  "turn_s_median": {
+   "c3_alone": 4.73,
+   "tool_active": 5.34
+  }
+ },
+ "max_kind_drop": -4,
+ "verdict": "R3_LIVE_SUPPORTED",
+ "age_right_replaced_for_measurement": true,
+ "phone_measured": false
+}

@@ -35,6 +35,7 @@ static std::string json_unquote(const std::string & line) {  // minimal: one JSO
 int main(int argc, char ** argv) {
     if (argc < 4) { std::fprintf(stderr, "usage: %s model.gguf memory.bin prompts.jsonl [threads] [max_new]\n", argv[0]); return 1; }
     Memory mem; if (!load_memory(argv[2], mem)) { std::fprintf(stderr, "bad memory file\n"); return 2; }
+    mem.audit = std::getenv("V13_MEMORY_AUDIT") != nullptr;
     const int threads = argc > 4 ? std::atoi(argv[4]) : 4, max_new = argc > 5 ? std::atoi(argv[5]) : 32;
     llama_backend_init();
     auto mp = llama_model_default_params(); mp.n_gpu_layers = 0;
@@ -52,6 +53,7 @@ int main(int argc, char ** argv) {
         if (n < 0) { toks.resize(-n); n = llama_tokenize(vocab, prompt.c_str(), (int) prompt.size(), toks.data(), (int) toks.size(), false, true); }
         toks.resize(n);
         llama_memory_clear(llama_get_memory(ctx), true); mem.ctx = std::set<int32_t>(toks.begin(), toks.end()); mem.fired = 0;
+        v13_audit_begin(mem);
         std::string out; llama_batch batch = llama_batch_get_one(toks.data(), (int) toks.size()); llama_token tok;
         for (int i = 0; i < max_new; ++i) {
             if (llama_decode(ctx, batch) != 0) break;

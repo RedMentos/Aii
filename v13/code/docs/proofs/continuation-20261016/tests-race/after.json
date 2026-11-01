@@ -1,0 +1,10 @@
+{
+  "pinned_state": "CRITICAL",
+  "stale_bound_old_guard_update": "NORMAL",
+  "current_guard_after_tick": "CRITICAL",
+  "resident_roles": [
+    "B2_GIST"
+  ],
+  "assertion_passed": true,
+  "native_runs": 0
+}

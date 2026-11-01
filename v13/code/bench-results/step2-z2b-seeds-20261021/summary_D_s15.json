@@ -1,0 +1,294 @@
+{
+  "run": "D_s15",
+  "arm": "D",
+  "seed": 15,
+  "enable": {
+    "b2_offer_body_state": false,
+    "offer_quote_min_chars": 90,
+    "b2_control": "shared_body_dual_state",
+    "offer_quote_context_chars": 200,
+    "b1_recent_source_chars": 600,
+    "seed": 15
+  },
+  "query": false,
+  "step2_status": "UTILITY_FAIL",
+  "paired_no_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.4416666666666667,
+      "b2_only": 0.275,
+      "both_control": 0.38333333333333336,
+      "both_exact": 0.45,
+      "both_none": 0.3333333333333333,
+      "prompt_only_dual": 0.3416666666666667,
+      "same_policy_dual": 0.4583333333333333
+    },
+    "best_solo": 0.4416666666666667,
+    "gain_over_best_solo": {
+      "both_none": -0.10833333333333339,
+      "both_exact": 0.008333333333333304,
+      "both_control": -0.05833333333333335
+    },
+    "b1_b2_each_win_an_episode": true,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_status": "TOOL_UTILITY_FAIL",
+  "paired_tool": {
+    "complete": true,
+    "coverage_errors": {},
+    "mean_utility": {
+      "b1_only": 0.36666666666666664,
+      "b2_only": 0.18333333333333332,
+      "both_control": 0.31666666666666665,
+      "both_exact": 0.39166666666666666,
+      "both_none": 0.2833333333333333,
+      "prompt_only_dual": 0.275,
+      "same_policy_dual": 0.4083333333333333
+    },
+    "best_solo": 0.36666666666666664,
+    "gain_over_best_solo": {
+      "both_none": -0.08333333333333331,
+      "both_exact": 0.025000000000000022,
+      "both_control": -0.04999999999999999
+    },
+    "b1_b2_each_win_an_episode": true,
+    "preregistered_primary": "both_exact",
+    "scoped_utility_gate_pass": false
+  },
+  "tool_summary": {
+    "b1_only": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.36666666666666664,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "b2_only": {
+      "rows": 10,
+      "decision_exact": 0,
+      "wrong_committed": 0,
+      "unknown": 10,
+      "mean_utility": 0.18333333333333332,
+      "exact_fixtures": []
+    },
+    "both_control": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.31666666666666665,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "both_exact": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.39166666666666666,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "both_none": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.2833333333333333,
+      "exact_fixtures": [
+        "Perseus"
+      ]
+    },
+    "prompt_only_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.275,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    },
+    "same_policy_dual": {
+      "rows": 10,
+      "decision_exact": 1,
+      "wrong_committed": 0,
+      "unknown": 9,
+      "mean_utility": 0.4083333333333333,
+      "exact_fixtures": [
+        "Sirius"
+      ]
+    }
+  },
+  "error_profile_tool": {
+    "b1_only": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.6333333333333333
+    },
+    "b2_only": {
+      "rule_fields_correct": 0.0,
+      "option_fields_correct": 0.36666666666666664
+    },
+    "both_control": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.55
+    },
+    "both_exact": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.7
+    },
+    "both_none": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.48333333333333334
+    },
+    "prompt_only_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.4666666666666667
+    },
+    "same_policy_dual": {
+      "rule_fields_correct": 0.1,
+      "option_fields_correct": 0.7333333333333333
+    }
+  },
+  "information_access": {
+    "b1_only": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 5
+    },
+    "b2_only": {
+      "B2_GIST:rules": 6,
+      "B2_GIST:options": 0
+    },
+    "both_none": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 3,
+      "B2_GIST:rules": 5,
+      "B2_GIST:options": 0
+    },
+    "both_exact": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 5,
+      "B2_GIST:rules": 3,
+      "B2_GIST:options": 1
+    },
+    "both_control": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 3,
+      "B2_GIST:rules": 4,
+      "B2_GIST:options": 0
+    },
+    "same_policy_dual": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 5
+    },
+    "prompt_only_dual": {
+      "B1_DETAIL:rules": 1,
+      "B1_DETAIL:options": 3,
+      "B2_GIST:rules": 2,
+      "B2_GIST:options": 2
+    }
+  },
+  "joint_access": {
+    "b1_only": 0,
+    "b2_only": 0,
+    "both_none": 1,
+    "both_exact": 0,
+    "both_control": 0,
+    "same_policy_dual": 0,
+    "prompt_only_dual": 1
+  },
+  "queried_offers": {
+    "offers": 120,
+    "with_question": 0
+  },
+  "episode_utility_tool": {
+    "Kestrel:b1_only": 0.0,
+    "Kestrel:b2_only": 0.16666666666666666,
+    "Kestrel:both_none": 0.16666666666666666,
+    "Kestrel:both_exact": 0.5,
+    "Kestrel:both_control": 0.16666666666666666,
+    "Kestrel:same_policy_dual": 0.0,
+    "Kestrel:prompt_only_dual": 0.0,
+    "Lumen:b1_only": 0.5,
+    "Lumen:b2_only": 0.16666666666666666,
+    "Lumen:both_none": 0.16666666666666666,
+    "Lumen:both_exact": 0.4166666666666667,
+    "Lumen:both_control": 0.4166666666666667,
+    "Lumen:same_policy_dual": 0.4166666666666667,
+    "Lumen:prompt_only_dual": 0.08333333333333333,
+    "Meridian:b1_only": 0.25,
+    "Meridian:b2_only": 0.0,
+    "Meridian:both_none": 0.25,
+    "Meridian:both_exact": 0.25,
+    "Meridian:both_control": 0.25,
+    "Meridian:same_policy_dual": 0.5,
+    "Meridian:prompt_only_dual": 0.25,
+    "Nimbus:b1_only": 0.25,
+    "Nimbus:b2_only": 0.0,
+    "Nimbus:both_none": 0.0,
+    "Nimbus:both_exact": 0.0,
+    "Nimbus:both_control": 0.0,
+    "Nimbus:same_policy_dual": 0.16666666666666666,
+    "Nimbus:prompt_only_dual": 0.16666666666666666,
+    "Orion:b1_only": 0.5,
+    "Orion:b2_only": 0.08333333333333333,
+    "Orion:both_none": 0.08333333333333333,
+    "Orion:both_exact": 0.5,
+    "Orion:both_control": 0.08333333333333333,
+    "Orion:same_policy_dual": 0.5,
+    "Orion:prompt_only_dual": 0.08333333333333333,
+    "Perseus:b1_only": 0.16666666666666666,
+    "Perseus:b2_only": 0.25,
+    "Perseus:both_none": 0.9166666666666666,
+    "Perseus:both_exact": 0.25,
+    "Perseus:both_control": 0.25,
+    "Perseus:same_policy_dual": 0.5,
+    "Perseus:prompt_only_dual": 0.16666666666666666,
+    "Quasar:b1_only": 0.5,
+    "Quasar:b2_only": 0.5,
+    "Quasar:both_none": 0.5,
+    "Quasar:both_exact": 0.5,
+    "Quasar:both_control": 0.5,
+    "Quasar:same_policy_dual": 0.5,
+    "Quasar:prompt_only_dual": 0.5,
+    "Rigel:b1_only": 0.5,
+    "Rigel:b2_only": 0.5,
+    "Rigel:both_none": 0.5,
+    "Rigel:both_exact": 0.5,
+    "Rigel:both_control": 0.5,
+    "Rigel:same_policy_dual": 0.5,
+    "Rigel:prompt_only_dual": 0.5,
+    "Sirius:b1_only": 0.9166666666666666,
+    "Sirius:b2_only": 0.08333333333333333,
+    "Sirius:both_none": 0.16666666666666666,
+    "Sirius:both_exact": 0.9166666666666666,
+    "Sirius:both_control": 0.9166666666666666,
+    "Sirius:same_policy_dual": 0.9166666666666666,
+    "Sirius:prompt_only_dual": 0.9166666666666666,
+    "Tycho:b1_only": 0.08333333333333333,
+    "Tycho:b2_only": 0.08333333333333333,
+    "Tycho:both_none": 0.08333333333333333,
+    "Tycho:both_exact": 0.08333333333333333,
+    "Tycho:both_control": 0.08333333333333333,
+    "Tycho:same_policy_dual": 0.08333333333333333,
+    "Tycho:prompt_only_dual": 0.08333333333333333
+  },
+  "split_exact_tool": {
+    "b1_only": [],
+    "b2_only": [],
+    "both_control": [],
+    "both_exact": [],
+    "both_none": [
+      "Perseus"
+    ],
+    "prompt_only_dual": [],
+    "same_policy_dual": []
+  }
+}

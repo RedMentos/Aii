@@ -1,0 +1,3 @@
+# Actual native capture recovered and sealed
+
+The surviving former workspace contains all 1875 actual native rows and 118 immutable raw response batches. Every raw response was checked against the NPZ. The 736-row durable base plus the 72-batch delta reconstructs the entire original NPZ byte for byte; the sealed delta is split into twelve SHA-bound pieces. The final individual worker JSON is stale STARTING and remains unmodified. The separate outer-exit report records actual exit 0, terminal CAPTURED state and no owned worker remaining. Neither capture completion nor storage roundtrip proves learned utility or Redmi performance.

@@ -1,0 +1,141 @@
+{
+  "bytes": 22367374,
+  "chunk_bytes": 1048576,
+  "file_name": "r5-results.closed.zip",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "12b88eaa60524cae2e6dd065066a180338603574435d6ef5b36f7c3bed62fdff"
+    },
+    {
+      "bytes": 1048576,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "a135182a5e8b9801dbdcdec099473d499c2dabb8108a7c757dae9bb32401abf1"
+    },
+    {
+      "bytes": 1048576,
+      "index": 2,
+      "name": "part-00002.bin",
+      "sha256": "578eac1d730bd27aa024e8fcc02c584d2667ba5b027063118ed079210088278c"
+    },
+    {
+      "bytes": 1048576,
+      "index": 3,
+      "name": "part-00003.bin",
+      "sha256": "a6a58fa33aa72789b9d98e479fcb7f3b99294c20b16c8cbe5cfdaf066cbbf7fe"
+    },
+    {
+      "bytes": 1048576,
+      "index": 4,
+      "name": "part-00004.bin",
+      "sha256": "3b94d0a548235a3e02baf3ebf5cc321022c22bde8c5657e5c674aa5df71b2bca"
+    },
+    {
+      "bytes": 1048576,
+      "index": 5,
+      "name": "part-00005.bin",
+      "sha256": "5b2e3a3c70d0077bf779d7cf5221350620ce0fa35c83e015c2f0b7fc919e3b1d"
+    },
+    {
+      "bytes": 1048576,
+      "index": 6,
+      "name": "part-00006.bin",
+      "sha256": "af512b4a14062f49fd8fe66f73b452fe1ae507894144d1b66069d30d0075129f"
+    },
+    {
+      "bytes": 1048576,
+      "index": 7,
+      "name": "part-00007.bin",
+      "sha256": "12fa80cbec014b6ae7c8421ce8301243ff942028b381ae5ca5a692abf3d8a998"
+    },
+    {
+      "bytes": 1048576,
+      "index": 8,
+      "name": "part-00008.bin",
+      "sha256": "3eda969e26800b0fa0270ba6a2bb1b83fc4ba9d22cdd6f7d6ce6cfbead6e2c1e"
+    },
+    {
+      "bytes": 1048576,
+      "index": 9,
+      "name": "part-00009.bin",
+      "sha256": "64fc58b9e1fba74f8a03b6c09c8f935ac00db9e5dcd03e6acaa0b85e5660938d"
+    },
+    {
+      "bytes": 1048576,
+      "index": 10,
+      "name": "part-00010.bin",
+      "sha256": "a3effddc8fbc396a0b04df2269b3feba6550aa2f6a772c96604ae1f062e12ec1"
+    },
+    {
+      "bytes": 1048576,
+      "index": 11,
+      "name": "part-00011.bin",
+      "sha256": "fcf711625f9f779aba893313096fbd4d0b9788981085e983b6432f1dbb19269a"
+    },
+    {
+      "bytes": 1048576,
+      "index": 12,
+      "name": "part-00012.bin",
+      "sha256": "f76511cf7a91691b0ee9fb341a362736d8ce61f39e4df47c5cabc4c3e6720ec0"
+    },
+    {
+      "bytes": 1048576,
+      "index": 13,
+      "name": "part-00013.bin",
+      "sha256": "30b61416f07ef45c0ac7c3ae45fcf2c22a991a49d449150a85e41d18078e61c6"
+    },
+    {
+      "bytes": 1048576,
+      "index": 14,
+      "name": "part-00014.bin",
+      "sha256": "03415929b4ef7293ba43b16d7e639388e7dadfefbe267544f7f62511d2745095"
+    },
+    {
+      "bytes": 1048576,
+      "index": 15,
+      "name": "part-00015.bin",
+      "sha256": "1eacbb6ebae787667c459e414226db93215f44cff44866cd9f9cece4571b1d12"
+    },
+    {
+      "bytes": 1048576,
+      "index": 16,
+      "name": "part-00016.bin",
+      "sha256": "37a1b3d677e81d105bf038dad1e32cecaa6e96098ae6122411fa898d7454a1c7"
+    },
+    {
+      "bytes": 1048576,
+      "index": 17,
+      "name": "part-00017.bin",
+      "sha256": "2017eb08c7726140a1e11a2e7dcd3bc35ace72705cbe8a6be32df867eb6fb412"
+    },
+    {
+      "bytes": 1048576,
+      "index": 18,
+      "name": "part-00018.bin",
+      "sha256": "7585c7391520521db4c60c02dcf6512ac0d2b246b76cf232fe0f20f0f35ddf61"
+    },
+    {
+      "bytes": 1048576,
+      "index": 19,
+      "name": "part-00019.bin",
+      "sha256": "e5355f28d995e719317bba1294683ec41ce071b1a5eb39718289a2a2fce8e756"
+    },
+    {
+      "bytes": 1048576,
+      "index": 20,
+      "name": "part-00020.bin",
+      "sha256": "f20e715f8b650534756843198a5d749c8ceccce0eaf1ffce42da74794e880fe3"
+    },
+    {
+      "bytes": 347278,
+      "index": 21,
+      "name": "part-00021.bin",
+      "sha256": "b5939e0645df2bc1d56eb2d6a329242a3e839cfb4de8422e26663b41fc83d36b"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "0e5cc0107fa82669d9ebef4df221d95bba2c997eb9a03485f73bb1ed91cc95bf"
+}

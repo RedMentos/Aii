@@ -1,0 +1,30 @@
+{
+  "frozen-sources.json": {
+    "size": 11629,
+    "sha256": "d67245d3a04901ab4d41b5051dcd7e1999624882f0ce0d40f80eb282843e92de"
+  },
+  "summary.json": {
+    "size": 1719,
+    "sha256": "3de2bc95d58887af51e44b8d07009a9535f725e1d1ac73ba98c503ecb66026fa"
+  },
+  "frozen-sources.zip": {
+    "size": 583236,
+    "sha256": "fc0a0f4a02ad116caec4957caa405532150a094b683f60df9dec7bab25b8a60c"
+  },
+  "report.json": {
+    "size": 15312,
+    "sha256": "575584d24f7cbb8e0700d1e82bde721754368763485bf15dc2577de99bdbc1d7"
+  },
+  "llama-server.log": {
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run_baseline.py": {
+    "size": 5520,
+    "sha256": "e4a4247cfa7a766bce3f4a376ede9a20e486834c3692770dc47d531b941fc74c"
+  },
+  "run.log": {
+    "size": 9847,
+    "sha256": "927dba0cbd4d173e733d585c3ae4127b71849ce2649454c6427a15d29fa7ad2c"
+  }
+}

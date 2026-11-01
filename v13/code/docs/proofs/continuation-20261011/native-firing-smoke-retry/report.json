@@ -1,0 +1,44 @@
+{
+  "status": "INCOMPLETE",
+  "binding": {
+    "binary_sha256": "0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "memory_sha256": "d9bdce1c173e425f53b1690d6efc28041bd6fc0759498670e48d972f297ce73a",
+    "script_sha256": "f0dc4d13dd0efe61b84325aab1eb6242b5be298096ebced45e8c8d9f71aaf71b",
+    "header_sha256": "78adb6a6814240ad6a7c485169215697df9eb89cac0abcbf828a0942f6387bf4",
+    "parser_sha256": "723a833719cb0303528a0bcba30f3823c9c9d7151d962c1cb1c28ba8ab04657b"
+  },
+  "memory_origin": "SYNTHETIC_PROTOCOL_FIXTURE",
+  "phone_measured": false,
+  "learned_recall_proven": false,
+  "activation_authorized": false,
+  "arms": {
+    "audit_off": [
+      {
+        "index": 0,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.4251164229999631
+      },
+      {
+        "index": 1,
+        "prompt": "What is two plus two?",
+        "answer": "Two plus two equals four.",
+        "prompt_tokens": 192,
+        "seconds": 0.32333743700019113
+      },
+      {
+        "index": 2,
+        "prompt": "Reply with the word hello.",
+        "answer": "hello",
+        "prompt_tokens": 192,
+        "seconds": 0.2989465819991892
+      }
+    ]
+  },
+  "error": {
+    "type": "RuntimeError",
+    "detail": "server exited during startup: v  llama_server: this can be a security risk (cross-origin attacks)\n0.00.002.315 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655\n0.00.002.315 W srv  llama_server: -----------------\n0.00.003.544 I srv    load_model: loading model '/workspace/scratch/5a9214d3f329/native-audit-cache/language.gguf'\n0.00.281.945 I cmn          init: llama t"
+  }
+}

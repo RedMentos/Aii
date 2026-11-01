@@ -1,0 +1,463 @@
+{
+ "prereg": {
+  "schema": "ABLATION_LATEWATCH_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "turns": 400,
+  "p_answer_wrong": 0.3,
+  "body": {
+   "right": 0.8,
+   "wrong_number": 0.1,
+   "unresolved_reentry": 0.1
+  },
+  "arrival": "uniform char in [0, len(answer)+30]",
+  "check_every_chars": 4,
+  "score": "+1 cut of wrong answer with non-wrong body, -1 cut of right answer, else 0",
+  "primary": "mean score per turn",
+  "streams": [
+   "standard",
+   "format"
+  ],
+  "win_rule": "rule beats never, always and random in >=4/5 seeds on standard -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "streams": {
+  "standard": {
+   "per_seed": {
+    "13": {
+     "rule": {
+      "primary": 0.07,
+      "cuts": 105,
+      "useful": 63,
+      "needless": 35
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.31,
+      "cuts": 323,
+      "useful": 93,
+      "needless": 217
+     },
+     "random": {
+      "primary": -0.075,
+      "cuts": 105,
+      "useful": 37,
+      "needless": 67
+     }
+    },
+    "14": {
+     "rule": {
+      "primary": 0.03,
+      "cuts": 102,
+      "useful": 54,
+      "needless": 42
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.3175,
+      "cuts": 302,
+      "useful": 82,
+      "needless": 209
+     },
+     "random": {
+      "primary": -0.12,
+      "cuts": 102,
+      "useful": 25,
+      "needless": 73
+     }
+    },
+    "15": {
+     "rule": {
+      "primary": 0.08,
+      "cuts": 128,
+      "useful": 76,
+      "needless": 44
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.255,
+      "cuts": 326,
+      "useful": 106,
+      "needless": 208
+     },
+     "random": {
+      "primary": -0.0925,
+      "cuts": 128,
+      "useful": 43,
+      "needless": 80
+     }
+    },
+    "16": {
+     "rule": {
+      "primary": 0.0875,
+      "cuts": 114,
+      "useful": 71,
+      "needless": 36
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.2825,
+      "cuts": 312,
+      "useful": 95,
+      "needless": 208
+     },
+     "random": {
+      "primary": -0.0925,
+      "cuts": 114,
+      "useful": 36,
+      "needless": 73
+     }
+    },
+    "17": {
+     "rule": {
+      "primary": 0.05,
+      "cuts": 103,
+      "useful": 58,
+      "needless": 38
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.31,
+      "cuts": 306,
+      "useful": 87,
+      "needless": 211
+     },
+     "random": {
+      "primary": -0.09,
+      "cuts": 103,
+      "useful": 33,
+      "needless": 69
+     }
+    }
+   },
+   "wins_of_5": {
+    "never": 5,
+    "always": 5,
+    "random": 5
+   },
+   "summary": {
+    "rule": {
+     "primary": {
+      "mean": 0.0635,
+      "sd": 0.0234
+     },
+     "cuts": {
+      "mean": 110.4,
+      "sd": 10.9225
+     },
+     "useful": {
+      "mean": 64.4,
+      "sd": 9.0719
+     },
+     "needless": {
+      "mean": 39.0,
+      "sd": 3.873
+     }
+    },
+    "never": {
+     "primary": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "cuts": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "useful": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "needless": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "always": {
+     "primary": {
+      "mean": -0.295,
+      "sd": 0.026
+     },
+     "cuts": {
+      "mean": 313.8,
+      "sd": 10.4499
+     },
+     "useful": {
+      "mean": 92.6,
+      "sd": 9.0719
+     },
+     "needless": {
+      "mean": 210.6,
+      "sd": 3.7815
+     }
+    },
+    "random": {
+     "primary": {
+      "mean": -0.094,
+      "sd": 0.0163
+     },
+     "cuts": {
+      "mean": 110.4,
+      "sd": 10.9225
+     },
+     "useful": {
+      "mean": 34.8,
+      "sd": 6.5727
+     },
+     "needless": {
+      "mean": 72.4,
+      "sd": 4.98
+     }
+    }
+   }
+  },
+  "format": {
+   "per_seed": {
+    "13": {
+     "rule": {
+      "primary": -0.065,
+      "cuts": 158,
+      "useful": 63,
+      "needless": 89
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.3025,
+      "cuts": 322,
+      "useful": 94,
+      "needless": 215
+     },
+     "random": {
+      "primary": -0.165,
+      "cuts": 158,
+      "useful": 43,
+      "needless": 109
+     }
+    },
+    "14": {
+     "rule": {
+      "primary": -0.1025,
+      "cuts": 170,
+      "useful": 62,
+      "needless": 103
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.335,
+      "cuts": 319,
+      "useful": 89,
+      "needless": 223
+     },
+     "random": {
+      "primary": -0.185,
+      "cuts": 170,
+      "useful": 46,
+      "needless": 120
+     }
+    },
+    "15": {
+     "rule": {
+      "primary": -0.04,
+      "cuts": 166,
+      "useful": 73,
+      "needless": 89
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.2875,
+      "cuts": 318,
+      "useful": 97,
+      "needless": 212
+     },
+     "random": {
+      "primary": -0.1425,
+      "cuts": 166,
+      "useful": 52,
+      "needless": 109
+     }
+    },
+    "16": {
+     "rule": {
+      "primary": -0.0675,
+      "cuts": 149,
+      "useful": 58,
+      "needless": 85
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.325,
+      "cuts": 307,
+      "useful": 83,
+      "needless": 213
+     },
+     "random": {
+      "primary": -0.14,
+      "cuts": 149,
+      "useful": 44,
+      "needless": 100
+     }
+    },
+    "17": {
+     "rule": {
+      "primary": -0.1275,
+      "cuts": 154,
+      "useful": 48,
+      "needless": 99
+     },
+     "never": {
+      "primary": 0.0,
+      "cuts": 0,
+      "useful": 0,
+      "needless": 0
+     },
+     "always": {
+      "primary": -0.395,
+      "cuts": 310,
+      "useful": 71,
+      "needless": 229
+     },
+     "random": {
+      "primary": -0.1925,
+      "cuts": 154,
+      "useful": 37,
+      "needless": 114
+     }
+    }
+   },
+   "wins_of_5": {
+    "never": 0,
+    "always": 5,
+    "random": 5
+   },
+   "summary": {
+    "rule": {
+     "primary": {
+      "mean": -0.0805,
+      "sd": 0.0344
+     },
+     "cuts": {
+      "mean": 159.4,
+      "sd": 8.5907
+     },
+     "useful": {
+      "mean": 60.8,
+      "sd": 9.0388
+     },
+     "needless": {
+      "mean": 93.0,
+      "sd": 7.6158
+     }
+    },
+    "never": {
+     "primary": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "cuts": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "useful": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "needless": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "always": {
+     "primary": {
+      "mean": -0.329,
+      "sd": 0.0413
+     },
+     "cuts": {
+      "mean": 315.2,
+      "sd": 6.3797
+     },
+     "useful": {
+      "mean": 86.8,
+      "sd": 10.3053
+     },
+     "needless": {
+      "mean": 218.4,
+      "sd": 7.3348
+     }
+    },
+    "random": {
+     "primary": {
+      "mean": -0.165,
+      "sd": 0.0239
+     },
+     "cuts": {
+      "mean": 159.4,
+      "sd": 8.5907
+     },
+     "useful": {
+      "mean": 44.4,
+      "sd": 5.4129
+     },
+     "needless": {
+      "mean": 110.4,
+      "sd": 7.3689
+     }
+    }
+   }
+  }
+ },
+ "beats_on_standard": [
+  "never",
+  "always",
+  "random"
+ ],
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic arithmetic turns, number-based conflict only, BOOT char thresholds; no model output"
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "v13-native-historical-prefix-exact-delta-roundtrip-v1",
+  "fixture_is_actual_native_history": true,
+  "native_inference_started": false,
+  "base_rows": 704,
+  "completed_rows": 736,
+  "delta_batches": 2,
+  "actual_npz_sha256": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+  "restored_npz_sha256": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+  "whole_original_npz_bytes_equal": true,
+  "array_equality_is_exact": true,
+  "delta_archive_bytes": 332256,
+  "new_core_or_native_driver_changes": false
+}

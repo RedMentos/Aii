@@ -1,0 +1,14 @@
+{
+  "status": "BYTE_IDENTICAL_TO_PREVIOUS_SAVED_MANIFEST",
+  "original_archive": "V13-Redmi-Install.zip",
+  "original_version": 19,
+  "archive_sha256": "a87b9d128a334e66be93e9ddb3e44da735d624200f68176585a603920eb94a6f",
+  "restored_sha256": {
+    "docs/proofs/native_norm_shadow_port.cpp": "5e6b8316f86888d69cf5fc12cbcd0a84f644fe3f12ba111819392e1a6faf8221",
+    "docs/proofs/native_norm_poll_policy.hpp": "56e6c5a37e944b579efaac3b84ce801d675439c0bbd24f2483a68f25c19aae35",
+    "docs/proofs/causal-output-lifecycle-20261009/native-fixture-proposal.json": "7355342e54fd53f5d31e060206417273d6534b04615ad37b59cd2b90fd8a125f"
+  },
+  "original_corpus_digest": "16620bd434f77b84c3d6bdd9493424fb03935498f91b9e7ac3d60e02ac324f80",
+  "new_native_inference": false,
+  "scope": "Only previously missing native source/header and fixed diagnostic corpus restored; no old runtime code replaces Claude changes"
+}

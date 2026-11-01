@@ -1,0 +1,181 @@
+{
+ "prereg": {
+  "schema": "ABLATION_WORLD_MODEL_CONFIDENCE_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "transitions": 300,
+  "queries": 400,
+  "noise": 0.1,
+  "policy": "simple short inputs only, detail long inputs only, gist anywhere, both 5 %",
+  "primary": "Spearman(confidence, -error)",
+  "win_rule": "confidence beats samples_only, spread_only and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "per_seed": {
+  "13": {
+   "confidence": {
+    "primary": 0.21229
+   },
+   "samples_only": {
+    "primary": 0.52606
+   },
+   "spread_only": {
+    "primary": 0.293
+   },
+   "random": {
+    "primary": -0.10531
+   },
+   "labels": {
+    "supported_n": 97,
+    "uncertain_n": 303,
+    "supported_mean_err": 0.4329,
+    "uncertain_mean_err": 0.6056
+   },
+   "fit_status": "FITTED",
+   "counts": {
+    "simple": 61,
+    "detail": 109,
+    "gist": 112,
+    "both": 18
+   }
+  },
+  "14": {
+   "confidence": {
+    "primary": 0.20432
+   },
+   "samples_only": {
+    "primary": 0.29393
+   },
+   "spread_only": {
+    "primary": 0.33642
+   },
+   "random": {
+    "primary": -0.14543
+   },
+   "labels": {
+    "supported_n": 107,
+    "uncertain_n": 293,
+    "supported_mean_err": 0.5578,
+    "uncertain_mean_err": 0.7482
+   },
+   "fit_status": "FITTED",
+   "counts": {
+    "simple": 72,
+    "detail": 95,
+    "gist": 117,
+    "both": 16
+   }
+  },
+  "15": {
+   "confidence": {
+    "primary": 0.46795
+   },
+   "samples_only": {
+    "primary": 0.49646
+   },
+   "spread_only": {
+    "primary": 0.4441
+   },
+   "random": {
+    "primary": 0.06864
+   },
+   "labels": {
+    "supported_n": 123,
+    "uncertain_n": 277,
+    "supported_mean_err": 0.5086,
+    "uncertain_mean_err": 0.8248
+   },
+   "fit_status": "FITTED",
+   "counts": {
+    "simple": 57,
+    "detail": 109,
+    "gist": 123,
+    "both": 11
+   }
+  },
+  "16": {
+   "confidence": {
+    "primary": 0.4349
+   },
+   "samples_only": {
+    "primary": 0.24285
+   },
+   "spread_only": {
+    "primary": 0.44845
+   },
+   "random": {
+    "primary": 0.00353
+   },
+   "labels": {
+    "supported_n": 192,
+    "uncertain_n": 208,
+    "supported_mean_err": 0.473,
+    "uncertain_mean_err": 0.6658
+   },
+   "fit_status": "FITTED",
+   "counts": {
+    "simple": 63,
+    "detail": 115,
+    "gist": 106,
+    "both": 16
+   }
+  },
+  "17": {
+   "confidence": {
+    "primary": 0.45012
+   },
+   "samples_only": {
+    "primary": 0.21771
+   },
+   "spread_only": {
+    "primary": 0.31422
+   },
+   "random": {
+    "primary": 0.03306
+   },
+   "labels": {
+    "supported_n": 106,
+    "uncertain_n": 294,
+    "supported_mean_err": 0.3939,
+    "uncertain_mean_err": 0.5266
+   },
+   "fit_status": "FITTED",
+   "counts": {
+    "simple": 70,
+    "detail": 106,
+    "gist": 115,
+    "both": 9
+   }
+  }
+ },
+ "wins_of_5": {
+  "samples_only": 2,
+  "spread_only": 2,
+  "random": 5
+ },
+ "supported_label_lower_error_of_5": 5,
+ "summary": {
+  "confidence": {
+   "mean": 0.3539,
+   "sd": 0.1335
+  },
+  "samples_only": {
+   "mean": 0.3554,
+   "sd": 0.1453
+  },
+  "spread_only": {
+   "mean": 0.3672,
+   "sd": 0.0738
+  },
+  "random": {
+   "mean": -0.0291,
+   "sd": 0.092
+  }
+ },
+ "verdict": "PARTIAL",
+ "claim_limit": "synthetic own transitions with a biased collection policy, BOOT coverage knobs; no causal claim"
+}

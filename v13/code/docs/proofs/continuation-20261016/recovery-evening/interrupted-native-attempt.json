@@ -1,0 +1,18 @@
+{
+ "status": "INTERRUPTED_NO_TERMINAL_EVIDENCE",
+ "old_preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+ "old_source_checkpoint": "aa00ee365172e6e257f7f52b774e6fdcc851d5d9",
+ "durable_checkpoint": "3af7ea8fe8f124459041133a34ce457f179d1f99",
+ "durable_rows": 50,
+ "native_parity_pass_durable": true,
+ "last_transient_observation": {
+  "completed_calls": 238,
+  "elapsed_seconds": 519.74,
+  "status": "EXPERIENCE",
+  "scope": "Earlier tool output only; raw arrays and remaining rows were not saved remotely"
+ },
+ "terminal_verdict": "UNKNOWN",
+ "current_workspace_cleared": true,
+ "old_preregistration_consumed": true,
+ "policy": "Do not reuse old attempt or infer completion. New independent plan excludes all oldplan inputs and needs fresh source/model/runtime registration."
+}

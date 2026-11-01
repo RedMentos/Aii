@@ -1,0 +1,75 @@
+............................................................................................................................................................................................................................................................................................................................................................................................................................../workspace/scratch/5a9214d3f329/package-check/V13-Phone/scripts/fast_trace_compare.py:39: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpzo6rsi3s/dead.log' mode='r' encoding='UTF-8'>
+  p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 0.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+..............................................................................................................................................................................s...s..................................................................................................usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+.....INTERRUPTED
+Berichte: /tmp/tmp5vkz6phz/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+COLLECTION_COMPLETE
+Berichte: /tmp/tmp5vkz6phz/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: Stored sensor evidence changed; resume refused
+.............................................................................................................................................................................ss.....................................................................................................................
+----------------------------------------------------------------------
+Ran 991 tests in 63.170s
+
+OK (skipped=4)

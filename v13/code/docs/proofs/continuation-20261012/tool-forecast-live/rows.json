@@ -1,0 +1,3922 @@
+[
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_d99ba5f5cc3043e883af0d06920ce864",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_57c6522bc09f49d79ee4aa97a2c6a4cf",
+"status": "SCORED",
+"mse": {
+"copy": 0.26723081,
+"forecast": 0.19327477,
+"mean_delta": 0.270172
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 2.",
+"seconds": 4.049
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_ee6ac188493f4972968ed03d7f9fd16a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_dc130eb0b3114384b95d3b75f49e1500",
+"status": "SCORED",
+"mse": {
+"copy": 0.60765384,
+"forecast": 0.11276403,
+"mean_delta": 0.32997674
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 16.",
+"seconds": 2.33
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_4417e7ca3f6b432aa0abdbe99b0d9e81",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_0847546ff88e4a8e81d9968021caf5b0",
+"status": "SCORED",
+"mse": {
+"copy": 0.49560741,
+"forecast": 0.10335017,
+"mean_delta": 0.22486641
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 0.25.",
+"seconds": 2.48
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_772fe96dd9094a66b2ba0d3048146375",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_24b04bdecffa424b987472838da5c375",
+"status": "SCORED",
+"mse": {
+"copy": 0.71265436,
+"forecast": 0.19068309,
+"mean_delta": 0.36181701
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows -6.",
+"seconds": 2.434
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_35def11204f840bbb840074e0b7a9a25",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_35efe4fd3c9e4dde82ab800e4ded9676",
+"status": "SCORED",
+"mse": {
+"copy": 0.10140874,
+"forecast": 0.00680318,
+"mean_delta": 0.07682315
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 44.",
+"seconds": 2.55
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_ff3b46c6b09c497bbb4b1de9f03d84bc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_45c52a35b69a47159ae668103c8e0a93",
+"status": "SCORED",
+"mse": {
+"copy": 0.61922698,
+"forecast": 0.00878515,
+"mean_delta": 0.17396238
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 37.",
+"seconds": 2.541
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_ac3d1368a9be413f8b3c105934f870b3",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_42d1ac2eeb3644f88137955ca576ae85",
+"status": "SCORED",
+"mse": {
+"copy": 0.5709713,
+"forecast": 0.02639502,
+"mean_delta": 0.18496459
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 5.5.",
+"seconds": 2.428
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_8a251ef0390f4832a614346dd0ab8a0d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_15bf6cc2ac90439f821e9e3e382dc0a0",
+"status": "SCORED",
+"mse": {
+"copy": 0.78131266,
+"forecast": 0.00921706,
+"mean_delta": 0.18383655
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 15.",
+"seconds": 2.509
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_4c9ecbc0fcb74496ac877712a6061ff1",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e30b53c9fd5b4746a4572ec2a04b4de4",
+"status": "SCORED",
+"mse": {
+"copy": 0.14683812,
+"forecast": 0.01790834,
+"mean_delta": 0.04108134
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 96.",
+"seconds": 2.521
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_f070a881c2c848e1b48eede7b14c987a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_cb7407508a58422c90377bc25a2551ff",
+"status": "SCORED",
+"mse": {
+"copy": 0.51187823,
+"forecast": 0.01878401,
+"mean_delta": 0.08457503
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 63.",
+"seconds": 2.549
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_8272b5f4c1404001802b60639656383c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_14294b1b89884ff58a90130812f96276",
+"status": "SCORED",
+"mse": {
+"copy": 0.46365304,
+"forecast": 0.0145113,
+"mean_delta": 0.19761486
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 12.",
+"seconds": 2.531
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_d2f4ae1397204a18a13e93d61538ac7d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_7323e4edeb414caf96bf2f499d4842fc",
+"status": "SCORED",
+"mse": {
+"copy": 0.71424511,
+"forecast": 0.00864899,
+"mean_delta": 0.09123803
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 41.",
+"seconds": 2.624
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_54e05e110ddb43bca3da664011b4903f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_00275de4f7d445a79c217b395401b406",
+"status": "SCORED",
+"mse": {
+"copy": 0.18111382,
+"forecast": 0.01164554,
+"mean_delta": 0.05653896
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 144.",
+"seconds": 2.497
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_37582577921344dc88d94798676e3388",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_be6d6f5904a048ac9f08dd6cb5e24d0a",
+"status": "SCORED",
+"mse": {
+"copy": 0.53911359,
+"forecast": 0.01183289,
+"mean_delta": 0.0663368
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 87.",
+"seconds": 2.562
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_b12e8403ad3c4f6c902c4f92bec27b83",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ee9d70e200bb4c55b8205692dfd9aa1c",
+"status": "SCORED",
+"mse": {
+"copy": 0.51403,
+"forecast": 0.05125771,
+"mean_delta": 0.25126851
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 18.",
+"seconds": 2.706
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_6ab6c4e117d34f66a88a575a45fc3d2e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_81bc7008369b44ec818c8ad4056d1d96",
+"status": "SCORED",
+"mse": {
+"copy": 0.70439775,
+"forecast": 0.0035447,
+"mean_delta": 0.08824531
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 65.",
+"seconds": 2.365
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_b488b08d7216431d9d8635db29a22627",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_77547752dd1248c188567e87c4556ebe",
+"status": "SCORED",
+"mse": {
+"copy": 0.18318158,
+"forecast": 0.00934003,
+"mean_delta": 0.12854958
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 346.",
+"seconds": 2.503
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_d1dc78d00cbd4b06b7a3d5c2246b3b97",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_aca54ec4e65c4c1fb7993689c7d3c72e",
+"status": "SCORED",
+"mse": {
+"copy": 0.46968785,
+"forecast": 0.00872603,
+"mean_delta": 0.08151255
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 188.",
+"seconds": 2.592
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_451c4fb39d7c4a10ac46fef0225c3063",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4ef2ea616b1c49a8a0092a36561dcf8c",
+"status": "SCORED",
+"mse": {
+"copy": 0.59992368,
+"forecast": 0.01116553,
+"mean_delta": 0.14095692
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 43.25.",
+"seconds": 2.403
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_098cdef0604a415da75acaa54df8f266",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f6412a28cc9849eba615400afde7591c",
+"status": "SCORED",
+"mse": {
+"copy": 0.6529037,
+"forecast": 0.00798985,
+"mean_delta": 0.10469626
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 166.",
+"seconds": 2.488
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_83e60426982648c2b5bcd3c5c3adabe5",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f582c9635d3c4f21b35869834b81c6b6",
+"status": "SCORED",
+"mse": {
+"copy": 0.11525326,
+"forecast": 0.00633691,
+"mean_delta": 0.05810047
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 458.",
+"seconds": 2.426
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_495a60712b5a4bafb8d8400b557746c1",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_98c619d20b30441694a3ac9b75fdb7a2",
+"status": "SCORED",
+"mse": {
+"copy": 0.39347917,
+"forecast": 0.00733629,
+"mean_delta": 0.05532823
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 244.",
+"seconds": 2.375
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_13b325e013a54a5f891bc06af8c1e5b5",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a328c7dee45545fb88bd0222b1ef13cb",
+"status": "SCORED",
+"mse": {
+"copy": 0.55326653,
+"forecast": 0.05080808,
+"mean_delta": 0.08952638
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 57.25.",
+"seconds": 2.684
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_c96582664f034103855698ea4b666b89",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_11784ff744164d9cad5e5ba645e179b2",
+"status": "SCORED",
+"mse": {
+"copy": 0.56978533,
+"forecast": 0.00898451,
+"mean_delta": 0.03443157
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 222.",
+"seconds": 2.495
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_5b771da5eaf9422186c608ca491faada",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c5c9e849946842faa9ba47d558ce0eba",
+"status": "SCORED",
+"mse": {
+"copy": 0.13910763,
+"forecast": 0.00563209,
+"mean_delta": 0.07062896
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 682.",
+"seconds": 2.489
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_f780302e108d433baf0b081dffe902da",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8988a2e605574591bd33c242d5e5b80d",
+"status": "SCORED",
+"mse": {
+"copy": 0.35203618,
+"forecast": 0.01357042,
+"mean_delta": 0.05811252
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 356.",
+"seconds": 2.635
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_785fa48836514fc2814a2a3a5146bacd",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6c2951215c854d00b584f9afca9d37fb",
+"status": "SCORED",
+"mse": {
+"copy": 0.40221569,
+"forecast": 0.00392118,
+"mean_delta": 0.03836124
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 85.25.",
+"seconds": 2.528
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_da6220535b8245aa981e8ee19ccfbf3b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_59f81879510544a2a9a6cdeaf2d8512f",
+"status": "SCORED",
+"mse": {
+"copy": 0.49007023,
+"forecast": 0.00273726,
+"mean_delta": 0.02913457
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 334.",
+"seconds": 2.577
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_d35094477bed4da797f0165f00b1fa9a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_bf97578a49e94dfd880b41a8772093b3",
+"status": "SCORED",
+"mse": {
+"copy": 0.19753357,
+"forecast": 0.00538059,
+"mean_delta": 0.03260384
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 710.",
+"seconds": 2.887
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_6086aec081ad487fbf1abdfaf9a183e0",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_3eaa81971f9645098c8c74ae5e567f01",
+"status": "SCORED",
+"mse": {
+"copy": 0.48730959,
+"forecast": 0.00194527,
+"mean_delta": 0.03106938
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 370.",
+"seconds": 2.712
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_3197a82afec143fdaac8137f76e558f2",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2ddd8a36403d403aadd0928e6b5a899a",
+"status": "SCORED",
+"mse": {
+"copy": 0.515123,
+"forecast": 0.01275999,
+"mean_delta": 0.05735094
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 88.75.",
+"seconds": 2.659
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_bceba9f2f8ba40588ade00988d119332",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_04eec625721c4ef78b8459ca84d74c43",
+"status": "SCORED",
+"mse": {
+"copy": 0.61191927,
+"forecast": 0.00556024,
+"mean_delta": 0.03434414
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 348.",
+"seconds": 2.569
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_4f7e7bd834f041538cee29317c60c1cc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d90ec473ac094d7d9182121974a10046",
+"status": "SCORED",
+"mse": {
+"copy": 0.13331523,
+"forecast": 0.00306939,
+"mean_delta": 0.06002475
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 726.",
+"seconds": 2.637
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_51d72edb87ec4d0eb2adcd7b04a04c84",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_3e983d6a686c4ebaa04055e7c524cdb6",
+"status": "SCORED",
+"mse": {
+"copy": 0.43170588,
+"forecast": 0.00439737,
+"mean_delta": 0.04764799
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 378.",
+"seconds": 2.622
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_81c13a3f129b462584d52b08b991a9d3",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_863e414e27314a12a17f9eb5f2b1c83c",
+"status": "SCORED",
+"mse": {
+"copy": 0.4617714,
+"forecast": 0.00478571,
+"mean_delta": 0.04453636
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 90.75.",
+"seconds": 2.788
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_9989933b7f15475b9bf1122892502df4",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d3022daf57bb4e1f9c925b7e84fbb713",
+"status": "SCORED",
+"mse": {
+"copy": 0.59724389,
+"forecast": 0.00331431,
+"mean_delta": 0.05140348
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 356.",
+"seconds": 2.554
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_26ebd913e78d4e2ba19f245f41f17d81",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_dbc91cdaaccb456bb1beac0c7601e42b",
+"status": "SCORED",
+"mse": {
+"copy": 0.13004826,
+"forecast": 0.00471964,
+"mean_delta": 0.05415242
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 776.",
+"seconds": 2.626
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_f773d2dd24d644b3ab20ff6e766c4e2a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_cddbb33e68f741c493eac3c7cdfd6eaf",
+"status": "SCORED",
+"mse": {
+"copy": 0.42524469,
+"forecast": 0.01473315,
+"mean_delta": 0.05737208
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 403.",
+"seconds": 2.662
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_6834ce57dc7f40d6b886b6324a0ef363",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_7180ec2374b74b0cb2f5720c099ca08d",
+"status": "SCORED",
+"mse": {
+"copy": 0.27473346,
+"forecast": 0.02060222,
+"mean_delta": 0.13326073
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 97.",
+"seconds": 2.601
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_e1e55fb5414a4d6788065796e2377f72",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_be29fc4f4b124fc281c3bf4af482b534",
+"status": "SCORED",
+"mse": {
+"copy": 0.66177924,
+"forecast": 0.00528094,
+"mean_delta": 0.04043026
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 381.",
+"seconds": 2.728
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_776f912e513d4f08964b68f4760c3493",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b39ab4447a6649d3b2acf9482ee734c9",
+"status": "SCORED",
+"mse": {
+"copy": 0.18441556,
+"forecast": 0.00335734,
+"mean_delta": 0.06304817
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 790.",
+"seconds": 2.639
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_6ef6633690c643679f8c1d169b65ad1e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d0d1ee5df5184746a646e80dadd2bfca",
+"status": "SCORED",
+"mse": {
+"copy": 0.38919485,
+"forecast": 0.00475927,
+"mean_delta": 0.03744487
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 410.",
+"seconds": 2.655
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_f664b9e99158416e97f7399e49e32bda",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_cf30bcc86b5e48e0ab83655e504e1176",
+"status": "SCORED",
+"mse": {
+"copy": 0.39743687,
+"forecast": 0.00387403,
+"mean_delta": 0.04252097
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 98.75.",
+"seconds": 2.474
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_3b68bfe931fd4c73b5ad0baa7078a3e8",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_688b5a5058d64d53b842aec0a3709e55",
+"status": "SCORED",
+"mse": {
+"copy": 0.6851214,
+"forecast": 0.00207914,
+"mean_delta": 0.07548904
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 388.",
+"seconds": 2.473
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_1fb879a2645e4b71b4851eeae3d828b2",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_453ace00eea74788b9c7c1fb06b42fcc",
+"status": "SCORED",
+"mse": {
+"copy": 0.13568988,
+"forecast": 0.00500441,
+"mean_delta": 0.05705077
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 798.",
+"seconds": 2.477
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_0a83bc1db02142958886c3725abdee36",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_16413ae07e7a42ddb46a30ac01ba9ebe",
+"status": "SCORED",
+"mse": {
+"copy": 0.27937699,
+"forecast": 0.00738323,
+"mean_delta": 0.05692201
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 414.",
+"seconds": 2.424
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_4e00d99f5e6a49b790925a78ec4968d3",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_40f7dc14559741808f7d635306929944",
+"status": "SCORED",
+"mse": {
+"copy": 0.39685396,
+"forecast": 0.01638681,
+"mean_delta": 0.05357471
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 99.75.",
+"seconds": 2.475
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_cd1be7f7962b4f47b8a27edef7aa7afd",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_bd6bef5934334673b99fc79c00e11ba9",
+"status": "SCORED",
+"mse": {
+"copy": 0.5329374,
+"forecast": 0.0105092,
+"mean_delta": 0.04773027
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 392.",
+"seconds": 2.619
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_f4cb3442a5f1430481ae02c960d2d672",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_61ac094b15644a68bce92a7e613940cf",
+"status": "SCORED",
+"mse": {
+"copy": 0.12803792,
+"forecast": 0.00594355,
+"mean_delta": 0.04542868
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 986.",
+"seconds": 2.491
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_b4ab84d279f34d7391dd8416265752d3",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_61e63a44624f4466935d706a35d4c024",
+"status": "SCORED",
+"mse": {
+"copy": 0.43360999,
+"forecast": 0.00501037,
+"mean_delta": 0.0404639
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 508.",
+"seconds": 2.42
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_57a4f100a6884fd680e1f58f09507b1d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a1ac205641ec428fbc0314665a3c38d2",
+"status": "SCORED",
+"mse": {
+"copy": 0.42078307,
+"forecast": 0.00921076,
+"mean_delta": 0.04373603
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 123.25.",
+"seconds": 2.419
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_e974b710335d42b784eab3374bb6e087",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_05bb4128493c43058b7d491815b1a81b",
+"status": "SCORED",
+"mse": {
+"copy": 0.64344347,
+"forecast": 0.00325186,
+"mean_delta": 0.03852846
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 486.",
+"seconds": 2.626
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_e20caff700dc407a8fc9b78a2db5c2da",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c6bcae8ac2954c96bfd563f7d64b5ba7",
+"status": "SCORED",
+"mse": {
+"copy": 0.21099344,
+"forecast": 0.00466553,
+"mean_delta": 0.06107233
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1126.",
+"seconds": 2.482
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_3f96c3c70d5348c59907e838d9363fb6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1174c989bf3742428d385efada0afc4a",
+"status": "SCORED",
+"mse": {
+"copy": 0.43143578,
+"forecast": 0.00287811,
+"mean_delta": 0.02879593
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 578.",
+"seconds": 2.604
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_1f6f0b8c3131449b805ffd276a64e154",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_21c2450465444f17bb7bd56b573468f0",
+"status": "SCORED",
+"mse": {
+"copy": 0.60031964,
+"forecast": 0.01640189,
+"mean_delta": 0.07461495
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 140.75.",
+"seconds": 2.538
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_370e8551a736456bb779705c37ef06f9",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6df45b0a3f5846d6a346bc27ab5731dc",
+"status": "SCORED",
+"mse": {
+"copy": 0.65101964,
+"forecast": 0.00343436,
+"mean_delta": 0.03644346
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 556.",
+"seconds": 2.5
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_d898efc377cd4f2593220ecdc70204da",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a2ae59ef4e3b48739c4307da44a3b1ae",
+"status": "SCORED",
+"mse": {
+"copy": 0.19325653,
+"forecast": 0.00130119,
+"mean_delta": 0.03990739
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1152.",
+"seconds": 2.459
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_25feb999804d43f4bb612981dd097747",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b908f8dd3ac5467193b8369b2604f102",
+"status": "SCORED",
+"mse": {
+"copy": 0.41739925,
+"forecast": 0.0030566,
+"mean_delta": 0.03062546
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 591.",
+"seconds": 2.471
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_33eaaf05e4b14b54b261064c7389e487",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_0f1732b3194346de978eacb641d3a7ee",
+"status": "SCORED",
+"mse": {
+"copy": 0.36600767,
+"forecast": 0.03807615,
+"mean_delta": 0.14112243
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 144.",
+"seconds": 2.622
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_456c0f1be2a04ac6916d93fd34108c5d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d5689908258c43c1bbe0d5cf431c76ff",
+"status": "SCORED",
+"mse": {
+"copy": 0.63641586,
+"forecast": 0.00334408,
+"mean_delta": 0.02413496
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 569.",
+"seconds": 2.63
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_0c33f345629548c9993a33d5f48cb9d9",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6326f326fa8547a08153d8b4e5257143",
+"status": "SCORED",
+"mse": {
+"copy": 0.15094918,
+"forecast": 0.00635282,
+"mean_delta": 0.03800486
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1266.",
+"seconds": 2.492
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_263d71a5aafe47fd8c054be7b3941782",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ddb8c5bb0ba04ab58935244ce7eb4dfc",
+"status": "SCORED",
+"mse": {
+"copy": 0.36846556,
+"forecast": 0.00437797,
+"mean_delta": 0.03019396
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 648.",
+"seconds": 2.606
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_22dc730ca27744bf9c30ff4d88b2b204",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e2f36b48a7f64ec6b7ce8b2afd30cf8f",
+"status": "SCORED",
+"mse": {
+"copy": 0.5116887,
+"forecast": 0.01317567,
+"mean_delta": 0.05129464
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 158.25.",
+"seconds": 2.595
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_96b5484c062d49f083c3237daad345da",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_56ef4e21d61d44739ae9363b13c7a9e2",
+"status": "SCORED",
+"mse": {
+"copy": 0.59434151,
+"forecast": 0.00151924,
+"mean_delta": 0.03931177
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 626.",
+"seconds": 2.563
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_96bfd044e3174813b1f6bb2bacc785ec",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_70a4ac2d53c04063b2e547766e287739",
+"status": "SCORED",
+"mse": {
+"copy": 0.17989336,
+"forecast": 0.00503057,
+"mean_delta": 0.03443966
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1362.",
+"seconds": 2.516
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_6a327a43fdd04dd484ca0087b2e415c7",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_65c8ebd8c38d43f68ffd11b96d5ade9f",
+"status": "SCORED",
+"mse": {
+"copy": 0.32613486,
+"forecast": 0.00451239,
+"mean_delta": 0.02525613
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 696.",
+"seconds": 2.526
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_805ed23f806540fb8e4273a3707fc9a2",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_75c4798791db405aa9270069a13f61e2",
+"status": "SCORED",
+"mse": {
+"copy": 0.49575615,
+"forecast": 0.03366478,
+"mean_delta": 0.03622481
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 170.25.",
+"seconds": 2.449
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_e023913259084a95809b0102be796146",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8c20098df24147e597f0169471c4748c",
+"status": "SCORED",
+"mse": {
+"copy": 0.48709057,
+"forecast": 0.0025578,
+"mean_delta": 0.04073912
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 674.",
+"seconds": 2.45
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_d85737db8f2742198f2a61d2a25418c7",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8e91f01738b842baa6a71848b95c04ed",
+"status": "SCORED",
+"mse": {
+"copy": 0.21288384,
+"forecast": 0.00241794,
+"mean_delta": 0.05316683
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1406.",
+"seconds": 2.443
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_b3be134cdd6544a29b1f72f688c47cff",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_750a85af516c45db9d8a1551a94f4679",
+"status": "SCORED",
+"mse": {
+"copy": 0.44043731,
+"forecast": 0.00679046,
+"mean_delta": 0.03157586
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 718.",
+"seconds": 2.471
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_a75f4d22aedf4bb6829d2bb9c0579881",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4b786321cf7549b5933cb9a3457e37dc",
+"status": "SCORED",
+"mse": {
+"copy": 0.65832194,
+"forecast": 0.00672104,
+"mean_delta": 0.07856298
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 175.75.",
+"seconds": 2.546
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_2d146cf48dd7475aa6a1f3c25c857e4c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_34824388f4604203baf689dd53bbb33c",
+"status": "SCORED",
+"mse": {
+"copy": 0.64805382,
+"forecast": 0.00298466,
+"mean_delta": 0.03424462
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 696.",
+"seconds": 2.644
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_405f600be2524aeb8b9bee0fb8ada3e8",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_063944870a6945bcacce1cff700ae6af",
+"status": "SCORED",
+"mse": {
+"copy": 0.16914675,
+"forecast": 0.00517706,
+"mean_delta": 0.06094498
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1500.",
+"seconds": 2.554
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_5abc2023e6f44fabbbd69240c21efd61",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_525287697f3f48c1b4748637b1681d54",
+"status": "SCORED",
+"mse": {
+"copy": 0.28205907,
+"forecast": 0.00890473,
+"mean_delta": 0.10665822
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 765.",
+"seconds": 2.558
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_0d162cd1a6784782aaa0883227600777",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_354dafa0ccf44f8a8e84808023d20294",
+"status": "SCORED",
+"mse": {
+"copy": 0.37794928,
+"forecast": 0.00752337,
+"mean_delta": 0.082162
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 187.5.",
+"seconds": 2.471
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_e5b40ea8fe20465b9d189a73dba1a0a1",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_366e135d389947e1a798614057ee479c",
+"status": "SCORED",
+"mse": {
+"copy": 0.53394582,
+"forecast": 0.00719631,
+"mean_delta": 0.11441853
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 743.",
+"seconds": 2.619
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_79a1a5a77cac4f13b460cc7ebba4973b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a38398248455470684e8e95fb17fddb8",
+"status": "SCORED",
+"mse": {
+"copy": 0.14497593,
+"forecast": 0.00525971,
+"mean_delta": 0.02478921
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1506.",
+"seconds": 2.37
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_feeb363686d944ed8b39a149bc593065",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b8e469f3730c4ffdb41ac71669ef6ad5",
+"status": "SCORED",
+"mse": {
+"copy": 0.41541901,
+"forecast": 0.00785962,
+"mean_delta": 0.05033583
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 768.",
+"seconds": 2.629
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_efa83817898340b8ad34930ace08d243",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2da8f4b515694f10a913e9ef4f4bde93",
+"status": "SCORED",
+"mse": {
+"copy": 0.45495243,
+"forecast": 0.01648883,
+"mean_delta": 0.03054579
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 188.25.",
+"seconds": 2.647
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_5efea9ce79bb4bec9191350dee9b35e4",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4848394f5e0f4c4882b41f45e24638f0",
+"status": "SCORED",
+"mse": {
+"copy": 0.56939426,
+"forecast": 0.00210817,
+"mean_delta": 0.03290426
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 746.",
+"seconds": 2.5
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_7f42eff1a118489c9fd5ceaadd84854d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e520aab54c2541c2bbd044db647ae5da",
+"status": "SCORED",
+"mse": {
+"copy": 0.13063691,
+"forecast": 0.0075892,
+"mean_delta": 0.01974511
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1622.",
+"seconds": 2.495
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_d125ebce1b0d4329b94faf252504d75a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f99aa24440b143b99a357404f9f49010",
+"status": "SCORED",
+"mse": {
+"copy": 0.28839222,
+"forecast": 0.0034944,
+"mean_delta": 0.03596487
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 826.",
+"seconds": 2.556
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_f165afc9b52c46f184e14a47e27f9eef",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_686803efd2f54f25ac1e9c3413ea5333",
+"status": "SCORED",
+"mse": {
+"copy": 0.38422881,
+"forecast": 0.01668038,
+"mean_delta": 0.02778654
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 202.75.",
+"seconds": 2.524
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_2b4190e75e9d40e2938d817042b9d912",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_211b2847389b400eb7511d3dec17c8a8",
+"status": "SCORED",
+"mse": {
+"copy": 0.47962525,
+"forecast": 0.00659931,
+"mean_delta": 0.02208974
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 804.",
+"seconds": 2.443
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_61a9cdb963714501b65509c0d25b7394",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_dbbe88c8115b411395dfca901c130c78",
+"status": "SCORED",
+"mse": {
+"copy": 0.11658996,
+"forecast": 0.00415419,
+"mean_delta": 0.02664407
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1626.",
+"seconds": 2.483
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_f9b06d6ff9f9469581f0c4dda3fab52e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_336532b9fbe4422c9d2aa1ceedd736d1",
+"status": "SCORED",
+"mse": {
+"copy": 0.33877749,
+"forecast": 0.00491583,
+"mean_delta": 0.05097653
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 828.",
+"seconds": 2.439
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_8fbca63c3b454a128e9127e28b7cab53",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4ea3e2aacf4f40e29fb1a71c55b15a9b",
+"status": "SCORED",
+"mse": {
+"copy": 0.39574854,
+"forecast": 0.00778975,
+"mean_delta": 0.04903841
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 203.25.",
+"seconds": 2.412
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_911ce8da080f4396a11ee1a9b84b0107",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_af97a2177c334f30924cbf3ad0406a24",
+"status": "SCORED",
+"mse": {
+"copy": 0.5694468,
+"forecast": 0.00267295,
+"mean_delta": 0.04369881
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 806.",
+"seconds": 2.616
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_86fdcd850f424b968e5b3dd223ac1228",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ae9ff64d10a6447c83ceb40a9d381681",
+"status": "SCORED",
+"mse": {
+"copy": 0.20943362,
+"forecast": 0.00558012,
+"mean_delta": 0.05962045
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1756.",
+"seconds": 2.558
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_55949f8755e940c48812af1cee8e202c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1fc0fb0037dc4544acea5d14f88fffb4",
+"status": "SCORED",
+"mse": {
+"copy": 0.41071359,
+"forecast": 0.00296093,
+"mean_delta": 0.03323819
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 893.",
+"seconds": 2.576
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_7ecc507511b54969bcdd817e70df2462",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4bf6a7ff9ced4e57b29cbd4304e5e9bd",
+"status": "SCORED",
+"mse": {
+"copy": 0.4873036,
+"forecast": 0.01679459,
+"mean_delta": 0.04950482
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 219.5.",
+"seconds": 2.601
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_19aa084b1447473586e2259f4ffd5cbc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d3f45bd5233e4c7c9231417b3256f1f9",
+"status": "SCORED",
+"mse": {
+"copy": 0.59305803,
+"forecast": 0.0028979,
+"mean_delta": 0.04767412
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 871.",
+"seconds": 2.618
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_55f524247e5c4651a0f1eb8a3863fa2b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1f98972f1e564f23949551aa39565b73",
+"status": "SCORED",
+"mse": {
+"copy": 0.17064104,
+"forecast": 0.00692508,
+"mean_delta": 0.02761364
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1858.",
+"seconds": 2.61
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_2275c6e7efbc4f4d919a56befd8cd1b5",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_7b4e912826f849a8b31c39e99f5a26e3",
+"status": "SCORED",
+"mse": {
+"copy": 0.32128559,
+"forecast": 0.00412381,
+"mean_delta": 0.0418946
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 944.",
+"seconds": 2.566
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_c5d5f40a185c4e9e8dc42bf9d4bad201",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_58954b91b65944bc895d42dc929483b8",
+"status": "SCORED",
+"mse": {
+"copy": 0.40452425,
+"forecast": 0.00561773,
+"mean_delta": 0.03245144
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 232.25.",
+"seconds": 2.604
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_27c16568e0fe42aea28331d08d8bee81",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d8836f417a0847b689a1af3c7e002f10",
+"status": "SCORED",
+"mse": {
+"copy": 0.55215111,
+"forecast": 0.00268741,
+"mean_delta": 0.03416654
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 922.",
+"seconds": 2.825
+},
+{
+"arm": "calc_in_world",
+"action": "double",
+"call": "tool_2fe6b1d2d58f4583a616c12562264bd9",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_9a8897f9539f411d98d3ada5d5e6f23c",
+"status": "SCORED",
+"mse": {
+"copy": 0.22170357,
+"forecast": 0.00746573,
+"mean_delta": 0.06125315
+},
+"in_world_range": true,
+"outcome_text": "After doubling, the counter shows 1946.",
+"seconds": 2.627
+},
+{
+"arm": "calc_in_world",
+"action": "add_15",
+"call": "tool_1adce090c6dd4381a70cf80647160ede",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1944d8d8ffc84e8a81a41507c33a7972",
+"status": "SCORED",
+"mse": {
+"copy": 0.39302977,
+"forecast": 0.00763033,
+"mean_delta": 0.03892508
+},
+"in_world_range": true,
+"outcome_text": "After adding 15, the counter shows 988.",
+"seconds": 2.552
+},
+{
+"arm": "calc_in_world",
+"action": "quarter",
+"call": "tool_7604d15ee2e94de398a82a9fd97a4271",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_db3458d2e2a44175a58e336e621b8df5",
+"status": "SCORED",
+"mse": {
+"copy": 0.46619634,
+"forecast": 0.01916043,
+"mean_delta": 0.03941017
+},
+"in_world_range": true,
+"outcome_text": "After dividing by 4, the counter shows 243.25.",
+"seconds": 2.576
+},
+{
+"arm": "calc_in_world",
+"action": "subtract_7",
+"call": "tool_bed419f838fc401595b98f92662750c5",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_9ef75e32df864242b309d88c28bd5335",
+"status": "SCORED",
+"mse": {
+"copy": 0.60935476,
+"forecast": 0.00270049,
+"mean_delta": 0.03065104
+},
+"in_world_range": true,
+"outcome_text": "After subtracting 7, the counter shows 966.",
+"seconds": 2.583
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_2ffd8b98178f42be8d14ceb0bde86edc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ef968359dd4a455aa157be2543557b18",
+"status": "SCORED",
+"mse": {
+"copy": 0.11554258,
+"forecast": 0.0198459,
+"mean_delta": 0.08482735
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 5282.",
+"seconds": 2.511
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_8fa3cb52855b4263ba70b97028af041b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_133d3e71ce564d1e8a2008224cc4fea6",
+"status": "SCORED",
+"mse": {
+"copy": 0.25045963,
+"forecast": 0.04581012,
+"mean_delta": 0.10697125
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 2656.",
+"seconds": 2.427
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_4909ba91fdcf4d3e9a4465174a9fc15a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_05ffea4ac05c49a7a61d39d58e44ff8d",
+"status": "SCORED",
+"mse": {
+"copy": 0.31023539,
+"forecast": 0.1672332,
+"mean_delta": 0.08340754
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 660.25.",
+"seconds": 2.625
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_99603595c3cc4823bda29e6a28d41039",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c35b24db1e9846428811f1830f90337b",
+"status": "SCORED",
+"mse": {
+"copy": 0.46892242,
+"forecast": 0.01929202,
+"mean_delta": 0.0863259
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 2634.",
+"seconds": 2.542
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_f177e2b6a4b54128b7f854074a07fba5",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_76faadb90bec482bbfddc2f96f699e67",
+"status": "SCORED",
+"mse": {
+"copy": 0.12383538,
+"forecast": 0.02338842,
+"mean_delta": 0.07312612
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 6776.",
+"seconds": 2.41
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_c16bceab24b54af99be0b173e150990b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_37098d1554414b74a9df846ca9664ce2",
+"status": "SCORED",
+"mse": {
+"copy": 0.35672962,
+"forecast": 0.04080612,
+"mean_delta": 0.09804202
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 3403.",
+"seconds": 2.485
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_b602c133ed1448e58f1e16d1f4c753eb",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_67a4ff8052aa4525b9f643749f42b6f5",
+"status": "SCORED",
+"mse": {
+"copy": 0.30999948,
+"forecast": 0.11638945,
+"mean_delta": 0.35377378
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 847.",
+"seconds": 2.481
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_e50609991fab46a8aebfc2ba7fb2f238",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_304caa47cce6482886b7b37bf63f60c7",
+"status": "SCORED",
+"mse": {
+"copy": 0.66554771,
+"forecast": 0.02427792,
+"mean_delta": 0.11129149
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 3381.",
+"seconds": 2.599
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_576e7bf71c564de384cbd37dbfa590bc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_16c29639edc44e97ab7495d823d892b1",
+"status": "SCORED",
+"mse": {
+"copy": 0.15357402,
+"forecast": 0.03518075,
+"mean_delta": 0.1071056
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 7016.",
+"seconds": 2.556
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_90a1fd1d732745eb9fd190708b95f44f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f19ee85afa81440e804e8b6e7079f338",
+"status": "SCORED",
+"mse": {
+"copy": 0.2955071,
+"forecast": 0.03847657,
+"mean_delta": 0.15459465
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 3523.",
+"seconds": 2.528
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_8d71c5600c8f44b99c27aff8417d6329",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f8e5460962c9434f82c29d88dac0efe1",
+"status": "SCORED",
+"mse": {
+"copy": 0.3403767,
+"forecast": 0.05422822,
+"mean_delta": 0.53036085
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 877.",
+"seconds": 2.732
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_0f220ded6ed34c7c8ab4b935a02cee69",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_933d9f5481a6488d8e3eb5bd562c2c3f",
+"status": "SCORED",
+"mse": {
+"copy": 0.68398566,
+"forecast": 0.03530012,
+"mean_delta": 0.13036995
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 3501.",
+"seconds": 2.865
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_c64dc341a9df4f248748e4aa632b3b30",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5e2d5d30b4414755995e2d8eb331daa3",
+"status": "SCORED",
+"mse": {
+"copy": 0.12640969,
+"forecast": 0.03020876,
+"mean_delta": 0.08281226
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 9612.",
+"seconds": 2.543
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_d3b9b551dcdb4ec985ed2a046caf823d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_898090ba9bc847eb9240d1ee3ef69fb8",
+"status": "SCORED",
+"mse": {
+"copy": 0.30372805,
+"forecast": 0.07475418,
+"mean_delta": 0.11713457
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 4821.",
+"seconds": 2.441
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_c54445d861244b389eb31527d066093c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_48b3db1e5ec949bdb6e902d894a44a5e",
+"status": "SCORED",
+"mse": {
+"copy": 0.35873345,
+"forecast": 0.30771034,
+"mean_delta": 0.10317525
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 1201.5.",
+"seconds": 2.565
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_e6654edeca8342788a5fd828e3a2745a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f2f86ba98d514ee98febdb52dabcb642",
+"status": "SCORED",
+"mse": {
+"copy": 0.58516023,
+"forecast": 0.04487305,
+"mean_delta": 0.11322165
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 4799.",
+"seconds": 2.498
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_8f8206c186964f119f9c6bc6d32d13ee",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_94d2ef602dea4edfa509173338acbb03",
+"status": "SCORED",
+"mse": {
+"copy": 0.11011451,
+"forecast": 0.03172321,
+"mean_delta": 0.03243056
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 11322.",
+"seconds": 2.575
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_6e06830179e242689fe1d18d98fd2081",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ce394c7555ea4c6c8835dfd3344df7e4",
+"status": "SCORED",
+"mse": {
+"copy": 0.20498232,
+"forecast": 0.07274861,
+"mean_delta": 0.08101724
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 5676.",
+"seconds": 2.616
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_0814b0f046cb41a497d5a302f5103a3f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e8a0fc27111f44a0953c31ad6b175126",
+"status": "SCORED",
+"mse": {
+"copy": 0.34866426,
+"forecast": 0.27940082,
+"mean_delta": 0.06001231
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 1415.25.",
+"seconds": 2.5
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_5904936324704200a010f8584c055dda",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_28e39c7a187c49ff8abef8a36c51e67a",
+"status": "SCORED",
+"mse": {
+"copy": 0.42985261,
+"forecast": 0.04006002,
+"mean_delta": 0.06070729
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 5654.",
+"seconds": 2.513
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_273d7f579d4045ffaca21d0184d431d6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e3c366e9c789421488163dbafba54642",
+"status": "SCORED",
+"mse": {
+"copy": 0.09219776,
+"forecast": 0.03286239,
+"mean_delta": 0.07707764
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 12202.",
+"seconds": 2.39
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_f1f777d900c845c6a26909b4c494f6d9",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_cb114b965890484aa9e64dc4ee27ef99",
+"status": "SCORED",
+"mse": {
+"copy": 0.22645696,
+"forecast": 0.10633581,
+"mean_delta": 0.12561893
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 6116.",
+"seconds": 2.377
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_2f1bd8138e2c420dbeb88e673f9d19d4",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_88329f42c7a04a96b648f7be66fba590",
+"status": "SCORED",
+"mse": {
+"copy": 0.38229116,
+"forecast": 0.44741659,
+"mean_delta": 0.15468227
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 1525.25.",
+"seconds": 2.504
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_3c2dcf8b6e9f4098aa6a8fc7a809e29b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b0460db9047a4df49aeea1f3a66be00f",
+"status": "SCORED",
+"mse": {
+"copy": 0.49335464,
+"forecast": 0.04328264,
+"mean_delta": 0.10967523
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 6094.",
+"seconds": 2.522
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_e9baff207c58477d8009d6a8cb7ba1dc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_85fa2849bf624ccf850f984a17da8016",
+"status": "SCORED",
+"mse": {
+"copy": 0.17417014,
+"forecast": 0.01799792,
+"mean_delta": 0.07631056
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 13770.",
+"seconds": 2.433
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_ad5f3eeda97f45a79cc3687f207b8561",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_68b0f92714124eb4a7527fa467f706d7",
+"status": "SCORED",
+"mse": {
+"copy": 0.38900359,
+"forecast": 0.07020176,
+"mean_delta": 0.14127636
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 6900.",
+"seconds": 2.386
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_f8bd5d2e17f4441aa9620799c237063f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6bfacfee345343d8b37e4810f628f975",
+"status": "SCORED",
+"mse": {
+"copy": 0.39320995,
+"forecast": 0.245533,
+"mean_delta": 0.11487771
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 1721.25.",
+"seconds": 2.457
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_6b45b2b9d485458b80555360a9474d1f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_0ff7b5604aba47d2987d1b4cef33f719",
+"status": "SCORED",
+"mse": {
+"copy": 0.5481661,
+"forecast": 0.05076235,
+"mean_delta": 0.12320825
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 6878.",
+"seconds": 2.409
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_e6404075ee614fdfad4123333e690315",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a37a2bbb379344fc8a46c960d72b0129",
+"status": "SCORED",
+"mse": {
+"copy": 0.13122277,
+"forecast": 0.02335515,
+"mean_delta": 0.07801441
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 14086.",
+"seconds": 2.496
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_cbd65d21e65d4489a5e49969d2cc81a6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_dd12806fbb9c4d7bafba61ea5adfbc2d",
+"status": "SCORED",
+"mse": {
+"copy": 0.31622711,
+"forecast": 0.07738993,
+"mean_delta": 0.09691504
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 7058.",
+"seconds": 2.516
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_ffea095a655e4c3da031594d9039f902",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5e1741e40f15432083d0a5ae2102ac0f",
+"status": "SCORED",
+"mse": {
+"copy": 0.43353701,
+"forecast": 0.10891583,
+"mean_delta": 0.10219363
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 1760.75.",
+"seconds": 2.465
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_348018ccaf07447c801d863fe8b72f8d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_af9ed407eb7941c9b532d83a65c62e18",
+"status": "SCORED",
+"mse": {
+"copy": 0.57739422,
+"forecast": 0.025239,
+"mean_delta": 0.10383564
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 7036.",
+"seconds": 2.383
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_5c7914e37fd4415ba1f9687a9087e568",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_0ba611f821554957892535469926d0d4",
+"status": "SCORED",
+"mse": {
+"copy": 0.15368948,
+"forecast": 0.0232799,
+"mean_delta": 0.09605974
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 18020.",
+"seconds": 2.692
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_c9d8e4bf0fd543c39b8722c474cb4a3f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1505a38d21704909b1ef048528620f01",
+"status": "SCORED",
+"mse": {
+"copy": 0.27239655,
+"forecast": 0.08597749,
+"mean_delta": 0.13638679
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 9025.",
+"seconds": 2.425
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_87131632629140c99b81c7cd7e0f7795",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e32780f05b734813954a7f9c654ded9d",
+"status": "SCORED",
+"mse": {
+"copy": 0.34870392,
+"forecast": 0.17705956,
+"mean_delta": 0.14230933
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 2252.5.",
+"seconds": 2.538
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_7d72e1dff99a4bb28e1af3547dba7954",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_58c13334188a40eb8f7f439e704065cd",
+"status": "SCORED",
+"mse": {
+"copy": 0.59097615,
+"forecast": 0.05849867,
+"mean_delta": 0.15061373
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 9003.",
+"seconds": 2.586
+},
+{
+"arm": "calc_out_of_range",
+"action": "double",
+"call": "tool_9db05dcda49c49eab1ae573a31d2eb4d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ac8c9ab0639942c7b1c1ecdda8504724",
+"status": "SCORED",
+"mse": {
+"copy": 0.10709224,
+"forecast": 0.06131978,
+"mean_delta": 0.05620665
+},
+"in_world_range": false,
+"outcome_text": "After doubling, the counter shows 19100.",
+"seconds": 2.618
+},
+{
+"arm": "calc_out_of_range",
+"action": "add_15",
+"call": "tool_778656ee767f4478bf59f01e4d6d9090",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_fa689ec148fc4f09b35301bfe19bc536",
+"status": "SCORED",
+"mse": {
+"copy": 0.2538435,
+"forecast": 0.07333384,
+"mean_delta": 0.11223139
+},
+"in_world_range": false,
+"outcome_text": "After adding 15, the counter shows 9565.",
+"seconds": 2.609
+},
+{
+"arm": "calc_out_of_range",
+"action": "quarter",
+"call": "tool_0a559ed13c944739ad1d276e95d2acb4",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_363fb20bd5ed4cd8be00bae122d7c13e",
+"status": "SCORED",
+"mse": {
+"copy": 0.33946921,
+"forecast": 0.10927412,
+"mean_delta": 0.13494828
+},
+"in_world_range": false,
+"outcome_text": "After dividing by 4, the counter shows 2387.5.",
+"seconds": 2.405
+},
+{
+"arm": "calc_out_of_range",
+"action": "subtract_7",
+"call": "tool_a81859f0918541958c4803ce52e3bdd7",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_90ec13e8c569414db932389020de8fbd",
+"status": "SCORED",
+"mse": {
+"copy": 0.50150258,
+"forecast": 0.03000962,
+"mean_delta": 0.14671437
+},
+"in_world_range": false,
+"outcome_text": "After subtracting 7, the counter shows 9543.",
+"seconds": 2.467
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_d200c296ea9449f49942eee7a7c97c4d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c7079e7214604ae88785c3d5cd726086",
+"status": "SCORED",
+"mse": {
+"copy": 0.51125209,
+"forecast": 0.0043418,
+"mean_delta": 0.0658284
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Ask the library tomorrow. Done.",
+"seconds": 2.72
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_8dedadaf93924640af92f62990f43516",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_9fa54635a8434ddf90a289452ebc30ea",
+"status": "SCORED",
+"mse": {
+"copy": 0.17874732,
+"forecast": 0.00199617,
+"mean_delta": 0.03276687
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Ask the library tomorrow.",
+"seconds": 2.492
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_9f70bd573af3413f94270fd1a61db29b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_133e470257424294a7d4c4fab446ef99",
+"status": "SCORED",
+"mse": {
+"copy": 0.51412333,
+"forecast": 0.00691516,
+"mean_delta": 0.10837674
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: ASK THE LIBRARY TOMORROW.",
+"seconds": 2.394
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_b95c71e60aca419f8b9f998a1db8f30b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_471b3e9d0ad848b897d690b0106518a0",
+"status": "SCORED",
+"mse": {
+"copy": 0.39865997,
+"forecast": 0.00288531,
+"mean_delta": 0.08637038
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Ask the neighbour tomorrow. Done.",
+"seconds": 2.405
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_02be7d9bf19a4faeabe2dded1cdf3018",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_71236a5470e343bdb09c00c228e4ba66",
+"status": "SCORED",
+"mse": {
+"copy": 0.14254131,
+"forecast": 0.00217417,
+"mean_delta": 0.04646237
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Ask the neighbour tomorrow.",
+"seconds": 2.754
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_0e439ece4db54d1dae369e03ac2d45bf",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ae5e63ec25144e369206f0eefad9b87e",
+"status": "SCORED",
+"mse": {
+"copy": 0.50128462,
+"forecast": 0.00507484,
+"mean_delta": 0.09518552
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: ASK THE NEIGHBOUR TOMORROW.",
+"seconds": 2.531
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_3631abeff5bb496789026e21513adfbc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_164ce4af4e4f4369a60667535a2f3223",
+"status": "SCORED",
+"mse": {
+"copy": 0.47083675,
+"forecast": 0.00343268,
+"mean_delta": 0.06306003
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Ask the school tomorrow. Done.",
+"seconds": 2.789
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_5f62017b6250462fafda6b95578279ed",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ecfc7bc877d34b3d8262150f9aaa5088",
+"status": "SCORED",
+"mse": {
+"copy": 0.22550687,
+"forecast": 0.00298527,
+"mean_delta": 0.04586226
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Ask the school tomorrow.",
+"seconds": 2.46
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_03bf9443326545729d1aff7d7ae1f442",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1a43e1b2ba184b26aec2302ddcc40177",
+"status": "SCORED",
+"mse": {
+"copy": 0.58670611,
+"forecast": 0.00433626,
+"mean_delta": 0.10300279
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: ASK THE SCHOOL TOMORROW.",
+"seconds": 2.573
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_d432a5d8b94b43b3895b58cc181396bb",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2162a3c4c58548bbaa1d22504360d638",
+"status": "SCORED",
+"mse": {
+"copy": 0.62557998,
+"forecast": 0.00427058,
+"mean_delta": 0.08804336
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Ask the team this evening. Done.",
+"seconds": 2.506
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_db0cace6c32a4de48af1e832567c1e9a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_cba5ce129c40413fa14b4bf59fe41275",
+"status": "SCORED",
+"mse": {
+"copy": 0.16611379,
+"forecast": 0.00399657,
+"mean_delta": 0.02078917
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Ask the team this evening.",
+"seconds": 2.425
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_1f54a0bd12bb4b8289699a28c8473924",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_75823170d2444ea0999e36c4c1fc0ca7",
+"status": "SCORED",
+"mse": {
+"copy": 0.72108766,
+"forecast": 0.00638009,
+"mean_delta": 0.05695487
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: ASK THE TEAM THIS EVENING.",
+"seconds": 2.581
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_255cfe12de5f4f47a1642c4a34626e0f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2cf5023d00e34e68a332e0e5cc52398b",
+"status": "SCORED",
+"mse": {
+"copy": 0.52016857,
+"forecast": 0.00312044,
+"mean_delta": 0.05069455
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Call the dentist on Monday. Done.",
+"seconds": 2.642
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_b73ff85ff2334c6d940a80d271ed7f2b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_183838a2c2664bdd9ce09ad16572e47f",
+"status": "SCORED",
+"mse": {
+"copy": 0.16947793,
+"forecast": 0.00420594,
+"mean_delta": 0.02609301
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Call the dentist on Monday.",
+"seconds": 2.738
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_26bbfaf6d84642398a46a22ca300e681",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_08d9edf230434a6a8caad41095cce158",
+"status": "SCORED",
+"mse": {
+"copy": 0.41853197,
+"forecast": 0.00485796,
+"mean_delta": 0.03109525
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: CALL THE DENTIST ON MONDAY.",
+"seconds": 2.492
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_1f0cf82a1a4b4234a6a8a87b809bd9af",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2f0f7ff76d5049b2a2a169518b675391",
+"status": "SCORED",
+"mse": {
+"copy": 0.51937661,
+"forecast": 0.00205679,
+"mean_delta": 0.07906374
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Call the library on Monday. Done.",
+"seconds": 2.433
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_33e5e87c82f64d0eb69dd58e4f790bab",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_189b2712c0354aaeaf10ad9a46566634",
+"status": "SCORED",
+"mse": {
+"copy": 0.16333923,
+"forecast": 0.00252104,
+"mean_delta": 0.02383612
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Call the library on Monday.",
+"seconds": 2.518
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_d9f1a93fbe4246a1b49a156d377891c9",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4ebcce127ad3497fb01e4b64f015cb31",
+"status": "SCORED",
+"mse": {
+"copy": 0.3778015,
+"forecast": 0.00704225,
+"mean_delta": 0.05834302
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: CALL THE LIBRARY ON MONDAY.",
+"seconds": 2.574
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_555233b502444576b9275e0ffd2ed5f0",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b6795e06e6bd4076a4fbf5e5dcbd7e2f",
+"status": "SCORED",
+"mse": {
+"copy": 0.46199104,
+"forecast": 0.0013846,
+"mean_delta": 0.05106269
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Email the bank on Friday. Done.",
+"seconds": 2.635
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_2ffb45b32d244d749c9d7b4ed2b9f0db",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_fc26a5435b5c4f4391935d761d243840",
+"status": "SCORED",
+"mse": {
+"copy": 0.14629811,
+"forecast": 0.00140339,
+"mean_delta": 0.01903445
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Email the bank on Friday.",
+"seconds": 2.473
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_859b75a5b1f4464fb4c9f87750ecf1c8",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_9de37b6bf65a4c8782849c8f1718bbcc",
+"status": "SCORED",
+"mse": {
+"copy": 0.64077205,
+"forecast": 0.00309961,
+"mean_delta": 0.07919777
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: EMAIL THE BANK ON FRIDAY.",
+"seconds": 2.606
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_e031d136eb9e45b2bedf0c6af564db04",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_fc671b99d2d34916b78f7941d32d8433",
+"status": "SCORED",
+"mse": {
+"copy": 0.44528652,
+"forecast": 0.00142233,
+"mean_delta": 0.05572856
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Email the bank this evening. Done.",
+"seconds": 2.6
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_944d613a08564fc49b3b1e9f08dca22d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f95a1687008d40c980687557718da12a",
+"status": "SCORED",
+"mse": {
+"copy": 0.13845701,
+"forecast": 0.0020805,
+"mean_delta": 0.02079346
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Email the bank this evening.",
+"seconds": 2.464
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_62033e9ef12d4051a5ded07654209133",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6fbf8e87fe1542c896d4b6415e284e62",
+"status": "SCORED",
+"mse": {
+"copy": 0.5547346,
+"forecast": 0.00183908,
+"mean_delta": 0.0569236
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: EMAIL THE BANK THIS EVENING.",
+"seconds": 2.474
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_75cb0c645ac6441ebd04e7b2474df65f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_652ea3617c434035b454fa7520180713",
+"status": "SCORED",
+"mse": {
+"copy": 0.38300346,
+"forecast": 0.0013159,
+"mean_delta": 0.05012772
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Email the neighbour on Monday. Done.",
+"seconds": 2.479
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_40eada9241ca418ebc7eec8dd490dfc6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_882c3c47bcf045378186b69110e201dc",
+"status": "SCORED",
+"mse": {
+"copy": 0.18228166,
+"forecast": 0.0014182,
+"mean_delta": 0.03036538
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Email the neighbour on Monday.",
+"seconds": 2.527
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_ea177b5b47d544cd938f5df6b3110d2c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f09ca78465c24b6cb6d6ef9c725071ea",
+"status": "SCORED",
+"mse": {
+"copy": 0.6001129,
+"forecast": 0.003722,
+"mean_delta": 0.07258035
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: EMAIL THE NEIGHBOUR ON MONDAY.",
+"seconds": 2.468
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_dbce9321c179447ab80ed7888694b485",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2e41219f843a4b649a1f5d8df56c5cb3",
+"status": "SCORED",
+"mse": {
+"copy": 0.42097345,
+"forecast": 0.00147607,
+"mean_delta": 0.07774422
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Email the school on Friday. Done.",
+"seconds": 2.5
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_d534a0fbd82842988e9b8fd27725f832",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ddae46f7069f43529679b5fc7701f896",
+"status": "SCORED",
+"mse": {
+"copy": 0.1630086,
+"forecast": 0.00070839,
+"mean_delta": 0.03139197
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Email the school on Friday.",
+"seconds": 2.553
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_6e12562a6be6434caea3e0cae45a252c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_fa0809bb6c78421483131e86d10313b1",
+"status": "SCORED",
+"mse": {
+"copy": 0.63013486,
+"forecast": 0.00400166,
+"mean_delta": 0.0767994
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: EMAIL THE SCHOOL ON FRIDAY.",
+"seconds": 2.897
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_7acad83b5d6c49f198141d2825e18f31",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_d2734f8df88a482ca5958323f34084a6",
+"status": "SCORED",
+"mse": {
+"copy": 0.50870755,
+"forecast": 0.00388384,
+"mean_delta": 0.0716103
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Help the doctor next week. Done.",
+"seconds": 2.82
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_c949332376a04729827a9fa6c0491e06",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f821bc8ffe824406b7d7aef9a20e0f35",
+"status": "SCORED",
+"mse": {
+"copy": 0.23638747,
+"forecast": 0.00508991,
+"mean_delta": 0.04494359
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Help the doctor next week.",
+"seconds": 2.742
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_68213edf498a4df8851159e4f865e237",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a7f10dbba90f42c7a6dcf497679c34fc",
+"status": "SCORED",
+"mse": {
+"copy": 0.57738483,
+"forecast": 0.00615516,
+"mean_delta": 0.06976672
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: HELP THE DOCTOR NEXT WEEK.",
+"seconds": 2.629
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_2bc4cd519e3844d3a82172052f6c0a6d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8832b50fe65f4b6c9254cf13496859bf",
+"status": "SCORED",
+"mse": {
+"copy": 0.45615501,
+"forecast": 0.00350953,
+"mean_delta": 0.05412492
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Help the school tomorrow. Done.",
+"seconds": 2.518
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_9e4766b1a6d94c55a8b58751fd12d3a8",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_11854afd3be244378ce85b46c870af03",
+"status": "SCORED",
+"mse": {
+"copy": 0.22858242,
+"forecast": 0.00388159,
+"mean_delta": 0.03400124
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Help the school tomorrow.",
+"seconds": 2.392
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_16b34760ad634c9b82b42b1c678575d7",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_998aa2fcc1cc4dc3b3376de008a04899",
+"status": "SCORED",
+"mse": {
+"copy": 0.47884964,
+"forecast": 0.00269664,
+"mean_delta": 0.05504139
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: HELP THE SCHOOL TOMORROW.",
+"seconds": 2.504
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_1d8f75b3508b4182aeb6890b9550d0bb",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_19ef1003c415403b90e9e7ec2a1dc864",
+"status": "SCORED",
+"mse": {
+"copy": 0.52747212,
+"forecast": 0.00290269,
+"mean_delta": 0.05789687
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Help the team today. Done.",
+"seconds": 2.509
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_19b93ab3f58b4fa3b5aec8f437d64034",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_01ee10ea38ec467099e027496a975545",
+"status": "SCORED",
+"mse": {
+"copy": 0.2180193,
+"forecast": 0.00405121,
+"mean_delta": 0.04130908
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Help the team today.",
+"seconds": 2.469
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_808a29ce267f4a3a8804975bdd64d802",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c7f71a32e734477f84be0e4ad9dd9f5e",
+"status": "SCORED",
+"mse": {
+"copy": 0.63683071,
+"forecast": 0.00884879,
+"mean_delta": 0.04780851
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: HELP THE TEAM TODAY.",
+"seconds": 2.401
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_840f5f8c9f544467b2453cf0488ff740",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5ab1159e25444b5ab9d6984dae7f1cff",
+"status": "SCORED",
+"mse": {
+"copy": 0.56449537,
+"forecast": 0.00282501,
+"mean_delta": 0.05476849
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Invite the landlord this evening. Done.",
+"seconds": 2.466
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_5aff7f9543f6456b89bbeff746e0f426",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f4fdd57a54ef48daa99f5ac46242f16c",
+"status": "SCORED",
+"mse": {
+"copy": 0.24735256,
+"forecast": 0.00320727,
+"mean_delta": 0.03574231
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Invite the landlord this evening.",
+"seconds": 2.408
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_154a2d110b59413da0375a85c8db7d2f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a9deb64cbab7440faf958993b414d6f7",
+"status": "SCORED",
+"mse": {
+"copy": 0.8516627,
+"forecast": 0.01135238,
+"mean_delta": 0.11517427
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: INVITE THE LANDLORD THIS EVENING.",
+"seconds": 2.739
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_d9f24a391fce4de7bf6bc3f875009c1a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_eb899a12fe0f471e888a0d0c5dd6edaa",
+"status": "SCORED",
+"mse": {
+"copy": 0.49718287,
+"forecast": 0.00127827,
+"mean_delta": 0.07053241
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Invite the plumber on Friday. Done.",
+"seconds": 2.619
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_a40e5f1f5b55480981870f4ec91d1049",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b066ac726e754b119f0dadaad37c2aba",
+"status": "SCORED",
+"mse": {
+"copy": 0.17316189,
+"forecast": 0.00105858,
+"mean_delta": 0.0172339
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Invite the plumber on Friday.",
+"seconds": 2.73
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_af4ee6ff04334e43b267afaeb8e2592b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5e79869efc76449a9e2ea447867630a7",
+"status": "SCORED",
+"mse": {
+"copy": 0.57275838,
+"forecast": 0.00327702,
+"mean_delta": 0.05392791
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: INVITE THE PLUMBER ON FRIDAY.",
+"seconds": 2.477
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_ef03bb111f924faeac8ecae8b2dc3d76",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_a4881349c31a422e80e66f0dbfdcc410",
+"status": "SCORED",
+"mse": {
+"copy": 0.4371576,
+"forecast": 0.00199659,
+"mean_delta": 0.05709891
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Invite the school on Monday. Done.",
+"seconds": 2.594
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_af4eb8763d564b018dd96944c9a5dc22",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_3da2d896d557402687186ac4d55e749b",
+"status": "SCORED",
+"mse": {
+"copy": 0.19614049,
+"forecast": 0.00128592,
+"mean_delta": 0.03479785
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Invite the school on Monday.",
+"seconds": 2.675
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_0e74a78969f34ab59c81e660b34c4a2b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_59150fee15e64b869683aac1b6ca7b15",
+"status": "SCORED",
+"mse": {
+"copy": 0.4868887,
+"forecast": 0.00263803,
+"mean_delta": 0.04763013
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: INVITE THE SCHOOL ON MONDAY.",
+"seconds": 2.514
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_1428deeb08e94528ae1ddb2aa2cd64d2",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_37cd2cceb3b543a9984fc716c639087f",
+"status": "SCORED",
+"mse": {
+"copy": 0.47386709,
+"forecast": 0.00312725,
+"mean_delta": 0.05143225
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Pay the school this evening. Done.",
+"seconds": 2.458
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_442002f44136450e9297666891549528",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e6d243dd2b4649cead46e20919f18048",
+"status": "SCORED",
+"mse": {
+"copy": 0.16919505,
+"forecast": 0.00276575,
+"mean_delta": 0.01683873
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Pay the school this evening.",
+"seconds": 2.464
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_d46a03f2b51d4f3182b13ec1f52bce02",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5e72907255d548f3a797aced9e18f4e5",
+"status": "SCORED",
+"mse": {
+"copy": 0.51730536,
+"forecast": 0.00348336,
+"mean_delta": 0.04910468
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: PAY THE SCHOOL THIS EVENING.",
+"seconds": 2.424
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_65276cce69b64f58a49fc76c26535b78",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_87e8a5044c69408e99d30cd70c1685e3",
+"status": "SCORED",
+"mse": {
+"copy": 0.60562879,
+"forecast": 0.0057359,
+"mean_delta": 0.08873681
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Remind the landlord on Friday. Done.",
+"seconds": 2.49
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_eb350bc9477e4b808b221b48b4f360db",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_583bfcc8cc1a4e4d94670537c3a9946a",
+"status": "SCORED",
+"mse": {
+"copy": 0.23549339,
+"forecast": 0.00225464,
+"mean_delta": 0.03335848
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Remind the landlord on Friday.",
+"seconds": 2.78
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_3d001c60c92942fda997803d254fa853",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e0a6839125314f21b38a8320ad8c864b",
+"status": "SCORED",
+"mse": {
+"copy": 0.65269363,
+"forecast": 0.01030864,
+"mean_delta": 0.07727484
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: REMIND THE LANDLORD ON FRIDAY.",
+"seconds": 2.971
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_8391746312c54d3997004915abf617b4",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_9992b215f4f84ece80647cc20fd3f05d",
+"status": "SCORED",
+"mse": {
+"copy": 0.50262207,
+"forecast": 0.00175625,
+"mean_delta": 0.05081299
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Remind the school on Friday. Done.",
+"seconds": 2.591
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_5f4b940afcb643b6944247bbbbe2ff71",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_26ad12c6140c4860858128cf29a0a8d5",
+"status": "SCORED",
+"mse": {
+"copy": 0.17802816,
+"forecast": 0.00088664,
+"mean_delta": 0.02034462
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Remind the school on Friday.",
+"seconds": 2.932
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_eba65302d3cb4e389596375c94f08b3f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_5667c7c704404546b65db81d636b811c",
+"status": "SCORED",
+"mse": {
+"copy": 0.45657568,
+"forecast": 0.00240617,
+"mean_delta": 0.073444
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: REMIND THE SCHOOL ON FRIDAY.",
+"seconds": 2.751
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_154434936d9141eab38f3bc89bb153bc",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b85a1d556c6947c4bb33ce08cdedac59",
+"status": "SCORED",
+"mse": {
+"copy": 0.43476733,
+"forecast": 0.00247779,
+"mean_delta": 0.0593141
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Thank the bank tomorrow. Done.",
+"seconds": 2.699
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_e2c10050fd6d4fe1b96922be4b01da1a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_2619d6bb921f4774ae2588e83bf9f22c",
+"status": "SCORED",
+"mse": {
+"copy": 0.10659472,
+"forecast": 0.00165842,
+"mean_delta": 0.02927298
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Thank the bank tomorrow.",
+"seconds": 2.632
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_c035e8277b8e421eb65879a08c4a5ee0",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_038da171682543d1bf25db0b4eb71243",
+"status": "SCORED",
+"mse": {
+"copy": 0.33116477,
+"forecast": 0.00656328,
+"mean_delta": 0.07694602
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: THANK THE BANK TOMORROW.",
+"seconds": 2.506
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_bce7cb62827e480d9ed11779645b2df2",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6451bf2f9732418db4c5a274a5035042",
+"status": "SCORED",
+"mse": {
+"copy": 0.59961171,
+"forecast": 0.01195697,
+"mean_delta": 0.07532623
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Thank the dentist this evening. Done.",
+"seconds": 2.787
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_7579bcaa1266446aa2ff9a0338adce9e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_057d3e5d1c8a4fc7a95ae6f411ead323",
+"status": "SCORED",
+"mse": {
+"copy": 0.16871535,
+"forecast": 0.00494558,
+"mean_delta": 0.03212186
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Thank the dentist this evening.",
+"seconds": 2.601
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_5bb490a7bbf9486d9e78e4910ed32129",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_36682c1303f343faa9ae5f0613e6205e",
+"status": "SCORED",
+"mse": {
+"copy": 0.50325789,
+"forecast": 0.00846373,
+"mean_delta": 0.05099668
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: THANK THE DENTIST THIS EVENING.",
+"seconds": 2.661
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_d0dc1d9f059842cfb495639705e32480",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4abe152c7e4a4f3699860a739a781933",
+"status": "SCORED",
+"mse": {
+"copy": 0.40909881,
+"forecast": 0.00435039,
+"mean_delta": 0.04202262
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Thank the landlord today. Done.",
+"seconds": 2.65
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_388a0707ddab417392e3642b80046610",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8cdc6ab6923f4aabb6935c4b717c5860",
+"status": "SCORED",
+"mse": {
+"copy": 0.13697614,
+"forecast": 0.00241291,
+"mean_delta": 0.01874602
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Thank the landlord today.",
+"seconds": 2.896
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_760133bd24e242b39c81036a04ffa6ce",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_4547f238b11249fcb015ad506efdc557",
+"status": "SCORED",
+"mse": {
+"copy": 0.46270006,
+"forecast": 0.00746823,
+"mean_delta": 0.02982138
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: THANK THE LANDLORD TODAY.",
+"seconds": 2.642
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_ebb9966b04be4aefbed2d0b8570f570c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_fe9c25c1670d4e2ab4e58a539661b02d",
+"status": "SCORED",
+"mse": {
+"copy": 0.59421849,
+"forecast": 0.00828506,
+"mean_delta": 0.09782721
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Thank the library this evening. Done.",
+"seconds": 2.718
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_378ac4b8702b403196bd6a57245dbd31",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e948753c02c640cdbe05fd2e9c4208da",
+"status": "SCORED",
+"mse": {
+"copy": 0.17025626,
+"forecast": 0.00406246,
+"mean_delta": 0.02892157
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Thank the library this evening.",
+"seconds": 2.73
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_c575fda2299447d3ba046bbd0134962b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8c428e30bcd54d43ba4a0787b11082e4",
+"status": "SCORED",
+"mse": {
+"copy": 0.47277771,
+"forecast": 0.01295836,
+"mean_delta": 0.09254434
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: THANK THE LIBRARY THIS EVENING.",
+"seconds": 2.615
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_a50a1d96c9f5424aad8b290913e1e38a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c9106fb48a234a208beffa7b90db6105",
+"status": "SCORED",
+"mse": {
+"copy": 0.46841187,
+"forecast": 0.00361207,
+"mean_delta": 0.05410285
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Visit grandma this evening. Done.",
+"seconds": 2.68
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_33934b18cc324779b5896ec933e6658c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_660dc174830342ee9b35824745cfa236",
+"status": "SCORED",
+"mse": {
+"copy": 0.19499067,
+"forecast": 0.00307227,
+"mean_delta": 0.04865458
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Visit grandma this evening.",
+"seconds": 2.677
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_8ca9faa5df094168b275b37a6b620b7c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_88ea683e18524c35a78b4bb04f9b4416",
+"status": "SCORED",
+"mse": {
+"copy": 0.5461849,
+"forecast": 0.01822382,
+"mean_delta": 0.07573345
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: VISIT GRANDMA THIS EVENING.",
+"seconds": 2.653
+},
+{
+"arm": "note_in_world",
+"action": "append_done",
+"call": "tool_fa5441e749da475290b7c2a612ff8c2c",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_53683e131bc44c80ab693f4c2a00bf86",
+"status": "SCORED",
+"mse": {
+"copy": 0.52502169,
+"forecast": 0.00559874,
+"mean_delta": 0.08517283
+},
+"in_world_range": true,
+"outcome_text": "After appending, the note reads: Visit the plumber on Friday. Done.",
+"seconds": 2.6
+},
+{
+"arm": "note_in_world",
+"action": "prefix_urgent",
+"call": "tool_8bc3395249ae473e968110a9b102ffc6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_dbe2d0876e484ed2831d9dc204c3eaa2",
+"status": "SCORED",
+"mse": {
+"copy": 0.1396716,
+"forecast": 0.00374966,
+"mean_delta": 0.01955834
+},
+"in_world_range": true,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Visit the plumber on Friday.",
+"seconds": 2.422
+},
+{
+"arm": "note_in_world",
+"action": "uppercase",
+"call": "tool_c5543a81992747fbb77c55b7b5e8919e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_18893af070f34289a6d02b1a26a96223",
+"status": "SCORED",
+"mse": {
+"copy": 0.30574077,
+"forecast": 0.01510315,
+"mean_delta": 0.07644131
+},
+"in_world_range": true,
+"outcome_text": "After uppercasing, the note reads: VISIT THE PLUMBER ON FRIDAY.",
+"seconds": 2.461
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_6888b7292beb417c8e1fd2fd90893cae",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_18053a3d60514228b070db537bed7268",
+"status": "SCORED",
+"mse": {
+"copy": 0.44759266,
+"forecast": 0.08098204,
+"mean_delta": 0.18839898
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Buy oat milk and two lemons. Done.",
+"seconds": 2.693
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_174848a5147b4cb58c23fb3cd12e626e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_c8baf008d20946b1999d36561110e4e7",
+"status": "SCORED",
+"mse": {
+"copy": 0.22199672,
+"forecast": 0.07048754,
+"mean_delta": 0.08898576
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Buy oat milk and two lemons.",
+"seconds": 2.513
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_37a43f505ca34dd391e32855d2bd1399",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_324b93724dc64322985de31e986cc39b",
+"status": "SCORED",
+"mse": {
+"copy": 0.55996814,
+"forecast": 0.1296734,
+"mean_delta": 0.17029228
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: BUY OAT MILK AND TWO LEMONS.",
+"seconds": 2.581
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_9d8c8290cdfd4bf5b18b3495797c7164",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_49953a3e6eb442e5a6422105691c8072",
+"status": "SCORED",
+"mse": {
+"copy": 0.32867558,
+"forecast": 0.0500263,
+"mean_delta": 0.14001304
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Water the tomato plants on the balcony. Done.",
+"seconds": 2.484
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_c64c86d23e5240cfb56d7df3bad6da5f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f5042fd996a74f20a96c88d5c828255b",
+"status": "SCORED",
+"mse": {
+"copy": 0.11822475,
+"forecast": 0.04748885,
+"mean_delta": 0.08321732
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Water the tomato plants on the balcony.",
+"seconds": 2.467
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_17f788d7608a4d2c8577938333c8d7f6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_958069cb873046e3a5f47a764d89c3fc",
+"status": "SCORED",
+"mse": {
+"copy": 0.3281786,
+"forecast": 0.14683133,
+"mean_delta": 0.19910842
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: WATER THE TOMATO PLANTS ON THE BALCONY.",
+"seconds": 2.563
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_52542f8c69a54e60928025c93d51470e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_89e15ce50ef74c1698f0dc772c4569ee",
+"status": "SCORED",
+"mse": {
+"copy": 0.62396817,
+"forecast": 0.08868388,
+"mean_delta": 0.11664877
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Renew the passport before June. Done.",
+"seconds": 2.589
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_41db01f077dd4c0084d40fd3b7413b9e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_04064605d7ef4d1fb7882c21b7411ef6",
+"status": "SCORED",
+"mse": {
+"copy": 0.19491409,
+"forecast": 0.02866666,
+"mean_delta": 0.04168991
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Renew the passport before June.",
+"seconds": 2.455
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_c5318034bcf148b4890bdfb33bed89bd",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f66e6c12b56445f58d910b0c1561d6d0",
+"status": "SCORED",
+"mse": {
+"copy": 0.57127855,
+"forecast": 0.12588447,
+"mean_delta": 0.10190077
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: RENEW THE PASSPORT BEFORE JUNE.",
+"seconds": 2.683
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_0ff97794d1034f249f8317a839425c7a",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_ddfcd6c000aa4142ab502da86ba347d1",
+"status": "SCORED",
+"mse": {
+"copy": 0.58901727,
+"forecast": 0.0347572,
+"mean_delta": 0.0990805
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Send the slides to Mara after lunch. Done.",
+"seconds": 2.595
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_ebbfe4a989844e95bb5432e70ae15729",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_080a8d14d4f1410ca6141cfcf3fbc28e",
+"status": "SCORED",
+"mse": {
+"copy": 0.24318431,
+"forecast": 0.03500583,
+"mean_delta": 0.05138706
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Send the slides to Mara after lunch.",
+"seconds": 2.723
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_ed700f54add64d26840bdb69822f4495",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_b89130ee6d85435d98a9766fd3973589",
+"status": "SCORED",
+"mse": {
+"copy": 0.67409133,
+"forecast": 0.07780799,
+"mean_delta": 0.08863066
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: SEND THE SLIDES TO MARA AFTER LUNCH.",
+"seconds": 2.856
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_84dfe2f61b554a14a4417e6002319885",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_8be9fb15d7ea4612979977a4fd27c040",
+"status": "SCORED",
+"mse": {
+"copy": 0.50977474,
+"forecast": 0.09128682,
+"mean_delta": 0.16142083
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Fix the squeaky hinge in the kitchen. Done.",
+"seconds": 2.744
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_bb0318a9b3ab4ea38ab94f2a22c83292",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_1374e9ff46dd46299593c81eb21787e8",
+"status": "SCORED",
+"mse": {
+"copy": 0.27899438,
+"forecast": 0.10840758,
+"mean_delta": 0.13481502
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Fix the squeaky hinge in the kitchen.",
+"seconds": 2.752
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_bca0243ea210472d84cff36544c91507",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f0e3d22cb1004729a935800216fe01e5",
+"status": "SCORED",
+"mse": {
+"copy": 0.78295818,
+"forecast": 0.08218227,
+"mean_delta": 0.18336049
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: FIX THE SQUEAKY HINGE IN THE KITCHEN.",
+"seconds": 2.821
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_13b8f29a1c0843da90a96931c96d982d",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6237c664fce045d2bdebaa26cde47205",
+"status": "SCORED",
+"mse": {
+"copy": 0.45565526,
+"forecast": 0.03161966,
+"mean_delta": 0.06847384
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Book a table for six on Saturday. Done.",
+"seconds": 2.606
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_3e1fe7451e7444d29ede0bf585eeba4e",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_f7625a2780d44e0d888b86626ad81f3b",
+"status": "SCORED",
+"mse": {
+"copy": 0.2244878,
+"forecast": 0.0329929,
+"mean_delta": 0.0667184
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Book a table for six on Saturday.",
+"seconds": 2.591
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_0456e4014da4451f88ab1cb0022885ff",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_3d1c48905a47499387e7cd2c36a8c78a",
+"status": "SCORED",
+"mse": {
+"copy": 0.5467375,
+"forecast": 0.03296549,
+"mean_delta": 0.0886699
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: BOOK A TABLE FOR SIX ON SATURDAY.",
+"seconds": 2.752
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_c3e5987a2f0d4d2ca75c79f6f07e4cfa",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_6abad2c122c1475b88ff5b73a88128e5",
+"status": "SCORED",
+"mse": {
+"copy": 0.39041734,
+"forecast": 0.07572093,
+"mean_delta": 0.06285546
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Return the drill to Jonas. Done.",
+"seconds": 2.631
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_4ab0e158f14b4c9fa3eaaf9bef421865",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_7c8a2b0f9c2644b8a85c439177bb6cb5",
+"status": "SCORED",
+"mse": {
+"copy": 0.18593747,
+"forecast": 0.03920433,
+"mean_delta": 0.0773892
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Return the drill to Jonas.",
+"seconds": 2.553
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_638445bb3000447faf17bfb34dbbd7b6",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_916cb83f5f9e46a7b585c107da4e7eda",
+"status": "SCORED",
+"mse": {
+"copy": 0.33893333,
+"forecast": 0.04913893,
+"mean_delta": 0.13273568
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: RETURN THE DRILL TO JONAS.",
+"seconds": 2.667
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_e6e2939363d144b490c652db3e2b60f7",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e4ea4b9318094f028f00437f52db40f9",
+"status": "SCORED",
+"mse": {
+"copy": 0.45929826,
+"forecast": 0.10130374,
+"mean_delta": 0.10772846
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Check the tyre pressure. Done.",
+"seconds": 2.502
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_7c5301486c714c66b4ccfb327fb6f32f",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_7f01d21e011e4dbeb514d3bd68b7cefa",
+"status": "SCORED",
+"mse": {
+"copy": 0.19345239,
+"forecast": 0.17995821,
+"mean_delta": 0.11563789
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Check the tyre pressure.",
+"seconds": 2.639
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_5d9ae8f54911432d8965425ec8036b69",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e5959e60c83b4dfeb4ae492fc67a6b53",
+"status": "SCORED",
+"mse": {
+"copy": 0.57427726,
+"forecast": 0.31440441,
+"mean_delta": 0.19599138
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: CHECK THE TYRE PRESSURE.",
+"seconds": 2.645
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_9780e881d0724560aeb8e2586975fc0b",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_81fccd9a38b34cf0962372c24c80107b",
+"status": "SCORED",
+"mse": {
+"copy": 0.34666536,
+"forecast": 0.10932951,
+"mean_delta": 0.10232497
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Read chapter four of the novel. Done.",
+"seconds": 2.589
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_4d1a0f85383643af87e7f07be72a6d75",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_79745380a11742f5b1e66deb740b5cb3",
+"status": "SCORED",
+"mse": {
+"copy": 0.0994727,
+"forecast": 0.1475401,
+"mean_delta": 0.13375689
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Read chapter four of the novel.",
+"seconds": 2.616
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_49f103b6a18f4aa2bbc9ed73e5c59515",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_383079e957be40e185778efd620e9190",
+"status": "SCORED",
+"mse": {
+"copy": 0.49637021,
+"forecast": 0.25902016,
+"mean_delta": 0.2559103
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: READ CHAPTER FOUR OF THE NOVEL.",
+"seconds": 2.579
+},
+{
+"arm": "note_free",
+"action": "append_done",
+"call": "tool_681957e9a1ef4c7689ddee84b23b7582",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_058ebdfd149f4c7bafbed734f4290c87",
+"status": "SCORED",
+"mse": {
+"copy": 0.43500088,
+"forecast": 0.07390378,
+"mean_delta": 0.12277344
+},
+"in_world_range": false,
+"outcome_text": "After appending, the note reads: Back up the phone photos. Done.",
+"seconds": 2.544
+},
+{
+"arm": "note_free",
+"action": "prefix_urgent",
+"call": "tool_7f1ec3b823c245cdaba24d93ddbfd035",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e3bd71c222df4866bf65e7a4e58d52c0",
+"status": "SCORED",
+"mse": {
+"copy": 0.18507655,
+"forecast": 0.07223337,
+"mean_delta": 0.06795155
+},
+"in_world_range": false,
+"outcome_text": "After adding a prefix, the note reads: Urgent: Back up the phone photos.",
+"seconds": 2.636
+},
+{
+"arm": "note_free",
+"action": "uppercase",
+"call": "tool_0ab19da574cd4fb390cc4365672347dd",
+"tool_status": "EXECUTED",
+"forecast_id": "tfc_e2a2d28f3b454eaaaba2182c129eff52",
+"status": "SCORED",
+"mse": {
+"copy": 0.57074694,
+"forecast": 0.18072253,
+"mean_delta": 0.14714614
+},
+"in_world_range": false,
+"outcome_text": "After uppercasing, the note reads: BACK UP THE PHONE PHOTOS.",
+"seconds": 2.588
+}
+]

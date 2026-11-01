@@ -1,0 +1,5011 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 157,
+ "scores": {
+  "fixed+words+rel+rec": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 7,
+   "approval_requests": 7,
+   "false_promotions": 2,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 72,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.9,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.875,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.875,
+    "both": 0.625
+   },
+   "rollback": {
+    "update_id": "upd_19dbee37a0234216b5d62d4327e2dd1b",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.9,
+     "half_items": 1.0,
+     "unchanged": 0.875
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 0,
+   "lifecycle": []
+  },
+  "adaptive+words+rel+rec": {
+   "shadow_jobs": 6,
+   "unnecessary_updates": 1,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 2,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.875,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.871,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.875,
+    "gist": 0.875,
+    "both": 0.625
+   },
+   "rollback": {
+    "update_id": "upd_67a856a656264b399650c4ad8b95e810",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "nowords_head_simple": 1.0,
+   "handovers": 0,
+   "lifecycle": []
+  },
+  "fixed+words+rel": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.8,
+   "final_half_items": 0.25,
+   "retention_unchanged": 0.9375,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.75
+   },
+   "rollback": {
+    "update_id": "upd_437697bdf3eb43b6962a6e196c5c6027",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.25,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 0.875,
+     "NATIVE_C2_ADVISORY": 0.125
+    }
+   },
+   "nowords_head_simple": 0.5,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "fixed+words+rel+rec": {
+   "policy": "fixed+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bd69ddf3cbd34d4d96b0ffa106728133 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_bd69ddf3cbd34d4d96b0ffa106728133",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "detail"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0775117735799637
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_9f80a9db8eb8456382ecae6b0d911656 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_9f80a9db8eb8456382ecae6b0d911656",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "known_items_lost": 0,
+       "loss_after": 0.684623041058092,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.23982474007445503
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_9ddd86af90234588886eaf7aad0cc533 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_9ddd86af90234588886eaf7aad0cc533",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Guten Morgen, Ida, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.37016296171283025,
+       "loss_before": 0.603137033136587,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3231985456987467,
+      "loss_after": 0.11730882853406936
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Guten Morgen, Ida, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Guten Morgen, Ida, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1e79d5170eb148c8bb24ff7c6f4f7141 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_1e79d5170eb148c8bb24ff7c6f4f7141",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.1533465369223005,
+       "loss_before": 0.23698751931010542,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.14722850122807837,
+      "loss_after": 0.0712964909489151
+     },
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Guten Morgen, Ida, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "both"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Guten Morgen, Ida, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "both"
+       ]
+      ]
+     },
+     "shadow_result": "upd_03a2c1dea3ca46be86ba0e6f28f935fd PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_03a2c1dea3ca46be86ba0e6f28f935fd",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.975,
+       "known_items_lost": 0,
+       "loss_after": 0.2543359560379266,
+       "loss_before": 0.3553309683530366,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.18884899465307003,
+      "loss_after": 0.09371188124495441
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b46b9497f8614be8b6a353a6922cf99d EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b46b9497f8614be8b6a353a6922cf99d",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17256083410353448,
+       "loss_before": 0.23719295308454483,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.12369838104047244,
+      "loss_after": 0.07451384358413489
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bfff41d498834ccab84a67878a3b4c03 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_bfff41d498834ccab84a67878a3b4c03",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9642857142857143,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.32660304929472156,
+       "loss_before": 0.9844303327194063,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.39077849770629974,
+      "loss_after": 0.1327358746709345
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cd612cfc33a44129959c2cdc18f2edba PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_cd612cfc33a44129959c2cdc18f2edba",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8571428571428571,
+       "active_accuracy": 0.8571428571428571,
+       "gate": "relative",
+       "known_accuracy_after": 0.9682539682539683,
+       "known_accuracy_before": 0.9365079365079365,
+       "known_items_lost": 0,
+       "loss_after": 0.5133006170852836,
+       "loss_before": 0.5857343664585395,
+       "n": 14,
+       "outvoted": 1,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.6
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.22571511722467663,
+      "loss_after": 0.18507001103909207
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cf39463d61f746d5b9f10dc2f44ca4ee PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_cf39463d61f746d5b9f10dc2f44ca4ee",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.9285714285714286,
+       "gate": "relative",
+       "known_accuracy_after": 0.9855072463768116,
+       "known_accuracy_before": 0.9420289855072463,
+       "known_items_lost": 0,
+       "loss_after": 0.13546598480862668,
+       "loss_before": 0.24908056011355145,
+       "n": 14,
+       "outvoted": 3,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.8333333333333334
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.19787175823315423,
+      "loss_after": 0.15649518188539602
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_19dbee37a0234216b5d62d4327e2dd1b PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_19dbee37a0234216b5d62d4327e2dd1b",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.95,
+       "gate": "relative",
+       "known_accuracy_after": 0.9625,
+       "known_accuracy_before": 0.95,
+       "known_items_lost": 0,
+       "loss_after": 0.1419839648593621,
+       "loss_before": 0.17740771090701918,
+       "n": 20,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.75
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.45
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.15939938122173974,
+      "loss_after": 0.14163632886937014
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.875,
+      "wrong": [
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_19dbee37a0234216b5d62d4327e2dd1b",
+    "expected_parent_acc": 0.925,
+    "after_rollback_acc": 0.925,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.9,
+     "half_items": 1.0,
+     "unchanged": 0.875
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "adaptive+words+rel+rec": {
+   "policy": "adaptive+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b6aaee4cea1c4de9be699d5e271a73ef EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b6aaee4cea1c4de9be699d5e271a73ef",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "detail"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0775117735799637
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b2200bf75cab4294833c5989f7d54038 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_b2200bf75cab4294833c5989f7d54038",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "known_items_lost": 0,
+       "loss_after": 0.684623041058092,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.23982474007445503
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_68dfea4af00145c8915d1fe7d80b22dc PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_68dfea4af00145c8915d1fe7d80b22dc",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "active_accuracy": 0.8333333333333334,
+       "gate": "relative",
+       "known_accuracy_after": 0.9791666666666666,
+       "known_accuracy_before": 0.8958333333333334,
+       "known_items_lost": 0,
+       "loss_after": 0.28853319171104047,
+       "loss_before": 0.5404327655925052,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.6666666666666666
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.42000949820860606,
+      "loss_after": 0.14589138296194823
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_aa4636487879410bb1ff8cf3b633367f PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_aa4636487879410bb1ff8cf3b633367f",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.6923076923076923,
+       "gate": "relative",
+       "known_accuracy_after": 0.9642857142857143,
+       "known_accuracy_before": 0.9107142857142857,
+       "known_items_lost": 0,
+       "loss_after": 0.3472988454563743,
+       "loss_before": 0.9225761516335136,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.6666666666666666
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.37230434662627016,
+      "loss_after": 0.14815798675867753
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f85952bb8f5a4611a2f5be04459e9a59 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_f85952bb8f5a4611a2f5be04459e9a59",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8571428571428571,
+       "active_accuracy": 0.8571428571428571,
+       "gate": "relative",
+       "known_accuracy_after": 0.9682539682539683,
+       "known_accuracy_before": 0.9365079365079365,
+       "known_items_lost": 0,
+       "loss_after": 0.5049010353980463,
+       "loss_before": 0.589033855271759,
+       "n": 14,
+       "outvoted": 1,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.6
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.23708211552411443,
+      "loss_after": 0.18898750142411413
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_67a856a656264b399650c4ad8b95e810 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_67a856a656264b399650c4ad8b95e810",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.8947368421052632,
+       "gate": "relative",
+       "known_accuracy_after": 0.987012987012987,
+       "known_accuracy_before": 0.922077922077922,
+       "known_items_lost": 0,
+       "loss_after": 0.14907701538047982,
+       "loss_before": 0.26480163930059114,
+       "n": 19,
+       "outvoted": 3,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.75
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.47368421052631576
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.2190171177212586,
+      "loss_after": 0.1636941769748203
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.875,
+       "both": 0.625
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "simple"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_67a856a656264b399650c4ad8b95e810",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+words+rel": {
+   "policy": "fixed+words+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_54924cc36dfe4bb595f50fb2a1b13dce EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_54924cc36dfe4bb595f50fb2a1b13dce",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.875,
+       "both": 0.125
+      },
+      "half_items": 0.875,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Vergleiche Land mit Bus.",
+        "detail"
+       ],
+       [
+        "Vergleiche Tee mit Rad.",
+        "detail"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "gist"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.07534476539412618
+     },
+     "active_acc_after": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.3,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.375
+      },
+      "half_items": 0.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 24 plus 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 36 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 84 plus 36 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 120 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 18 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 36 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 140 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Vögel brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Kinder brauchen Licht.",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Katzen brauchen Pflege.",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Bäume brauchen Regeln.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "simple"
+       ],
+       [
+        "Wäge Sommer gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Tee, was für Rad?",
+        "simple"
+       ],
+       [
+        "Was spricht für Rad, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Java, was für Bus?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Bahn und Auto?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b13d58865dd043baa5491d672ec25339 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_b13d58865dd043baa5491d672ec25339",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "known_items_lost": 0,
+       "loss_after": 0.6537287615293862,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.2296624068752932
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Worum geht es im Kern: Kinder und Wärme?",
+        "both"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Pflege?",
+        "both"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1d9fc3848c5946d3aea843f72916a235 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_1d9fc3848c5946d3aea843f72916a235",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.9166666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.3535532443707526,
+       "loss_before": 0.5684459338257577,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3117126814272565,
+      "loss_after": 0.11823800163363156
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_67e503a31bbd4b2bbcc0e2972a76eafa EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_67e503a31bbd4b2bbcc0e2972a76eafa",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.16258015389277386,
+       "loss_before": 0.2403557297664045,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1487674336668248,
+      "loss_after": 0.07689411914010115
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.875,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Guten Tag, Ida, wie geht es dir?",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_bcd7c1c020f442619225329b2ea4a353 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_bcd7c1c020f442619225329b2ea4a353",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 0.975,
+       "known_items_lost": 0,
+       "loss_after": 0.26345927758251786,
+       "loss_before": 0.36364497599897766,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.1917429421332554,
+      "loss_after": 0.09988049453043725
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_576d290dc34e454baf2445a9cdd2464a EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_576d290dc34e454baf2445a9cdd2464a",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17094717767788822,
+       "loss_before": 0.23193626403782883,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1276885160138446,
+      "loss_after": 0.0796324511080984
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 12?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_4040065c6ccc4a41b0017612a67be7a8 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_4040065c6ccc4a41b0017612a67be7a8",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.125,
+      "unchanged": 0.9688,
+      "wrong": [
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9285714285714286,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.5012908266383876,
+       "loss_before": 0.9933513899482388,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.46153846153846156
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.39849743742932503,
+      "loss_after": 0.19033768803941678
+     },
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 18 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_437697bdf3eb43b6962a6e196c5c6027 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_437697bdf3eb43b6962a6e196c5c6027",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8571428571428571,
+       "active_accuracy": 0.7142857142857143,
+       "gate": "relative",
+       "known_accuracy_after": 0.953125,
+       "known_accuracy_before": 0.875,
+       "known_items_lost": 0,
+       "loss_after": 0.46996328586387204,
+       "loss_before": 1.103096957288315,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 0.6,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.42857142857142855
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5694515654140825,
+      "loss_after": 0.20029601822021803
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_5ad9f63d8bd14521851d53597ce8570a EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_5ad9f63d8bd14521851d53597ce8570a",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.9333333333333333,
+       "gate": "relative",
+       "known_accuracy_after": 0.9444444444444444,
+       "known_accuracy_before": 0.9444444444444444,
+       "known_items_lost": 2,
+       "loss_after": 0.2088381899130651,
+       "loss_before": 0.2864211801989183,
+       "n": 15,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.8333333333333334
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.4666666666666667
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.21825443469457495,
+      "loss_after": 0.1597771127154626
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1afd81d72e7a4b89af28301f60011c44 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_1afd81d72e7a4b89af28301f60011c44",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.95,
+       "gate": "relative",
+       "known_accuracy_after": 0.95,
+       "known_accuracy_before": 0.95,
+       "known_items_lost": 2,
+       "loss_after": 0.19815507552776274,
+       "loss_before": 0.2933149116205819,
+       "n": 20,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.875
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.45
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.2322381224904575,
+      "loss_after": 0.1613540425003667
+     },
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.25,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Vergleiche Tee mit Rad.",
+        "simple"
+       ],
+       [
+        "Vergleiche Kaffee mit Python.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 60 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 18 Euro?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 300 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 140 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_437697bdf3eb43b6962a6e196c5c6027",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.8,
+     "half_items": 0.25,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 0.875,
+     "NATIVE_C2_ADVISORY": 0.125
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.5,
+    "routes": [
+     "simple",
+     "detail",
+     "detail",
+     "detail",
+     "simple",
+     "simple",
+     "simple",
+     "detail"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/z6i3-corrections-only/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6i3": {
+  "R1_head_half_ge_80pct": true,
+  "R2_retention_ge_90pct": false,
+  "R3_no_false_promotion": false,
+  "R4_rollback_restores": true,
+  "R5_control_without_recency_lt_50pct": true
+ },
+ "verdict_z6i3": "Z6I3_FAIL"
+}

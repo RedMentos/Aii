@@ -1,0 +1,88 @@
+{
+ "schema": "v13-action-jepa-round7-preregistration-v1",
+ "status": "PREREGISTERED_BEFORE_GENERATION_WORLD_AND_CAPTURE",
+ "utc": "2026-10-12T08:20:00Z",
+ "thread": "Nächste offene Pakete F",
+ "why": "Round 6 (mean-delta + ridge residual) passed 38/54 runs, but on test partitions already read in rounds 3-5. Round 7 repeats it unchanged on newly generated data.",
+ "candidate": {
+  "path": "code/scripts/action_jepa_round6_ridge.py",
+  "sha256": "acb8264ebca7b846a33177f0c243d1f2ded157d574dde823c193cf0d4f841fab",
+  "changed_since_round6": false,
+  "arms": [
+   "full",
+   "proj"
+  ],
+  "seeds": [
+   13,
+   21,
+   34
+  ],
+  "dim": 16,
+  "lambda_grid": "as round 6"
+ },
+ "fresh_topics": [
+  "volcanoes",
+  "airports",
+  "farming",
+  "swimming pools",
+  "photography",
+  "thunderstorms"
+ ],
+ "reserve_topics": [
+  "board games",
+  "post offices"
+ ],
+ "reserve_rule": "as round 3: a topic with fewer than 16 parsed sentences is skipped, next reserve in order",
+ "topics_never_used_before": [
+  "birthday parties",
+  "buying a car",
+  "camping",
+  "coffee",
+  "computer programming",
+  "cooking pasta",
+  "dentists",
+  "dogs",
+  "football",
+  "gardening",
+  "learning the guitar",
+  "museums",
+  "space and planets",
+  "the ocean",
+  "train travel",
+  "winter weather",
+  "baking bread",
+  "public libraries",
+  "bicycles",
+  "chess",
+  "beekeeping",
+  "hospitals",
+  "pottery",
+  "rivers and lakes"
+ ],
+ "text": {
+  "generate": "scripts/action_jepa_round3.py generate (C3 LFM2.5-350M sha 3d10b6ab…, llama.cpp b10964 release, temperature 0), unchanged",
+  "capture_mean_final": "scripts/action_jepa_round3.py capture (llama-server --embedding --pooling mean), old corpus + fresh rows, unchanged",
+  "capture_layers": "scripts/action_jepa_round4.py capture with scripts/native_layer_taps.cpp, layers 11,23, last+mean, unchanged",
+  "export": "round3 export (train/calibration/retention = plan-v2 kept episodes, test = fresh topics only, shared-text exclusion), round4 export per tap arm",
+  "datasets": 5
+ },
+ "tools": {
+  "world": "scripts/action_jepa_round7_fresh.py world, seed 20261013, 400 start values from 1..999 never used in the round-5 world (world sha recorded at run time), same calc tool calls, templates and 50/15/15/20 partitions",
+  "capture_export": "scripts/action_jepa_round5_tools.py capture/export unchanged, layers 11,23 last+mean",
+  "datasets": 4
+ },
+ "sources": {
+  "scripts/action_jepa_round7_fresh.py": "571b827464617d4b5650979fc0065210536a72dd6dcddaf295d3ca03789a33b1",
+  "tests/test_action_jepa_round7_fresh.py": "88d3fd184af3c6376204d57b73e968f2ddf259de1184461b9fb29d5d8914f1a1",
+  "scripts/action_jepa_round3.py": "9a522e780a3469e825e918aff02dbba3971e5af152a2698f9afd3230da464faf",
+  "scripts/action_jepa_round4.py": "b5936ba05cb7c0f0d902ef757c5899a4a399e091327a866156ef10d5d64efce3",
+  "scripts/action_jepa_round5_tools.py": "5d7aa7d276339ed8ec3d81e4d9f585684d9e9e53b06fd94cb73b7a23457750f5",
+  "scripts/native_layer_taps.cpp": "bbef8b08fd8bcfe72eb30dc4bcced887b70b9c35158819911b5bc110d79a4bd1",
+  "scripts/action_jepa_objective.py": "8c212fd7370ad6d2a5a1e13d2c890d7cb5d53c643dabf8f093c10d831f93c439"
+ },
+ "previous_world_sha256": "321baeee33c92debe82dec3518e6000e5f344823e5239ae73e391b70ff46dcd8",
+ "runs": 54,
+ "gates": "round-6 gates unchanged (predictive .98 x min(copy, mean_delta, shuffled) per action on calibration and test; per-action retention delta 0; normal equations; finite; deterministic; reload; noncollapse; observed input)",
+ "decision_rule": "Per run: pass only if all gates hold. Per family (tools, text): CONFIRMED if more than half of its runs pass, otherwise NOT_CONFIRMED. No grid, gate or script change after this registration; failures are reported unchanged. A confirmed family supports only \"a fixed mean-delta base plus a learned ridge residual on frozen native taps predicts action outcomes better than the controls\"; no runtime, receiver or phone claim.",
+ "not_changed": "No file under code/v13/ changed; no runtime, receiver or learn authority."
+}

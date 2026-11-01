@@ -1,0 +1,4041 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 113,
+ "scores": {
+  "fixed+words+rel+rec": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 3,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 32,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.925,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9062,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.75,
+    "gist": 0.875,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_19da5c8919114e439036eb330325bbbe",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 0,
+   "lifecycle": []
+  },
+  "adaptive+words+rel+rec": {
+   "shadow_jobs": 8,
+   "unnecessary_updates": 1,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 1,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 32,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 0.975,
+   "final_acc": 0.925,
+   "final_half_items": 1.0,
+   "retention_unchanged": 0.9062,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 0.75,
+    "gist": 0.875,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_7abb460e0d094e36b4b5dc6508c6a295",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "nowords_head_simple": 1.0,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "fixed+words+rel+rec": {
+   "policy": "fixed+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7f809f50cfe9426bbab983b3abdfdbc1 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_7f809f50cfe9426bbab983b3abdfdbc1",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Tag?",
+        "both"
+       ],
+       [
+        "Hallo Jonas, was machst du heute am Abend?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "gist"
+       ],
+       [
+        "Vergleiche Kauf mit Miete.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0847694556273457
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3f23e308659a472ea4d5006fb7add8ef EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_3f23e308659a472ea4d5006fb7add8ef",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.5,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Tag?",
+        "both"
+       ],
+       [
+        "Hey David, wie war dein Morgen?",
+        "gist"
+       ],
+       [
+        "Hallo Jonas, was machst du heute am Abend?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "gist"
+       ],
+       [
+        "Vergleiche Miete mit Bahn.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "gist"
+       ],
+       [
+        "Vergleiche Kauf mit Miete.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "known_items_lost": 1,
+       "loss_after": 0.9624222373031295,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.32163384201584294
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cc65241af8d74622a25f7c87508eb215 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_cc65241af8d74622a25f7c87508eb215",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hey David, wie war dein Morgen?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "known_items_lost": 1,
+       "loss_after": 0.632295856379663,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.2502889160389261
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_926f8a7cd4a641d3b6673f9b8f6f2b52 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_926f8a7cd4a641d3b6673f9b8f6f2b52",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.3026326097347534,
+       "loss_before": 1.3862943611198906,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.22509933670166168
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0d6504b795fa44aba6704751f7a220b0 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0d6504b795fa44aba6704751f7a220b0",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.17197777333334696,
+       "loss_before": 0.27181412777176867,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.23444229491568308,
+      "loss_after": 0.10720795246493091
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_561b0e4b2b1b4e37ba5cf84dd96a022f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_561b0e4b2b1b4e37ba5cf84dd96a022f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.14233664697061432,
+       "loss_before": 0.2578403880196168,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3333333333333333
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.2327127709881234,
+      "loss_after": 0.10581332635215905
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_78ae40dc23264b56b7d5e8dd3fcc7aa7 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_78ae40dc23264b56b7d5e8dd3fcc7aa7",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9642857142857143,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.5380929499986816,
+       "loss_before": 0.7269748086114121,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3076923076923077
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.38015166048695986,
+      "loss_after": 0.20974991028158355
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a6a809003ce44cd0a76da5cfb126903b PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_a6a809003ce44cd0a76da5cfb126903b",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9354838709677419,
+       "known_accuracy_before": 0.9193548387096774,
+       "known_items_lost": 0,
+       "loss_after": 0.4391573457976387,
+       "loss_before": 0.8815275036086809,
+       "n": 13,
+       "outvoted": 2,
+       "per_class": {
+        "0": {
+         "after": 0.4,
+         "before": 0.4
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.38461538461538464
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.35435411922445026,
+      "loss_after": 0.22837625846483064
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_c3e89843398a4873aa589151d49f3425 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_c3e89843398a4873aa589151d49f3425",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9333333333333333,
+       "active_accuracy": 0.8,
+       "gate": "relative",
+       "known_accuracy_after": 0.9850746268656716,
+       "known_accuracy_before": 0.8656716417910447,
+       "known_items_lost": 1,
+       "loss_after": 0.2938644001518184,
+       "loss_before": 0.5681067300601688,
+       "n": 15,
+       "outvoted": 5,
+       "per_class": {
+        "0": {
+         "after": 0.8333333333333334,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.4
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.3106343145826841,
+      "loss_after": 0.23955497954492955
+     },
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_19da5c8919114e439036eb330325bbbe PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_19da5c8919114e439036eb330325bbbe",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9733333333333334,
+       "known_accuracy_before": 0.84,
+       "known_items_lost": 0,
+       "loss_after": 0.3079114121392923,
+       "loss_before": 0.6189200147865649,
+       "n": 20,
+       "outvoted": 5,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.375
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.45
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3495166808580493,
+      "loss_after": 0.27020771812327365
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_19da5c8919114e439036eb330325bbbe",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.925,
+     "half_items": 1.0,
+     "unchanged": 0.9062
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "adaptive+words+rel+rec": {
+   "policy": "adaptive+words+rel+rec",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_ede3005393c64656b6c67a3b72e87904 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_ede3005393c64656b6c67a3b72e87904",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 0.625,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Tag?",
+        "both"
+       ],
+       [
+        "Hallo Jonas, was machst du heute am Abend?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "gist"
+       ],
+       [
+        "Vergleiche Kauf mit Miete.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.0847694556273457
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_de1c48a7e7f24e749266b8e90c65118f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_de1c48a7e7f24e749266b8e90c65118f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 0.5,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hallo Hugo, was machst du heute am Tag?",
+        "both"
+       ],
+       [
+        "Hey David, wie war dein Morgen?",
+        "gist"
+       ],
+       [
+        "Hallo Jonas, was machst du heute am Abend?",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "gist"
+       ],
+       [
+        "Vergleiche Miete mit Bahn.",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "gist"
+       ],
+       [
+        "Vergleiche Kauf mit Miete.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "known_items_lost": 1,
+       "loss_after": 0.9624222373031295,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.32163384201584294
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b95460aa7b074938b24b4b6c12a99409 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b95460aa7b074938b24b4b6c12a99409",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Hey Hugo, wie war dein Tag?",
+        "detail"
+       ],
+       [
+        "Hey David, wie war dein Morgen?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "known_items_lost": 1,
+       "loss_after": 0.632295856379663,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.2502889160389261
+     },
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 160 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Rechne bitte 200 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 240 plus 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist ein Drittel von 240 Euro?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Städte brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Fasse kurz zusammen: Vögel brauchen Platz.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Pflanzen brauchen Zeit.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Python und Stadt?",
+        "detail"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Miete und Bus?",
+        "simple"
+       ],
+       [
+        "Wäge Kauf gegen Kaffee ab.",
+        "simple"
+       ],
+       [
+        "Was spricht für Land, was für Winter?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Tee und Kaffee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Sommer, was für Bus?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "simple"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_e9c3e72b38f243349b02d6a77d77aa0b PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_e9c3e72b38f243349b02d6a77d77aa0b",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.3026326097347534,
+       "loss_before": 1.3862943611198906,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.22509933670166168
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.875,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Was ist die Hälfte von 140?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_2a70619e5cab4118aa0b1b31193ec940 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_2a70619e5cab4118aa0b1b31193ec940",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8461538461538461,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9642857142857143,
+       "known_accuracy_before": 0.9285714285714286,
+       "known_items_lost": 0,
+       "loss_after": 0.5379203812817468,
+       "loss_before": 0.7269748086114121,
+       "n": 13,
+       "per_class": {
+        "0": {
+         "after": 0.5,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.3076923076923077
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.38015166048695986,
+      "loss_after": 0.21014146249828555
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.125,
+      "unchanged": 1.0,
+      "wrong": [
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_37448f1a6f0a4322a4a6a5b0da574e88 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_37448f1a6f0a4322a4a6a5b0da574e88",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.7692307692307693,
+       "active_accuracy": 0.7692307692307693,
+       "gate": "relative",
+       "known_accuracy_after": 0.9354838709677419,
+       "known_accuracy_before": 0.9193548387096774,
+       "known_items_lost": 0,
+       "loss_after": 0.4391712266680972,
+       "loss_before": 0.8804036628287543,
+       "n": 13,
+       "outvoted": 2,
+       "per_class": {
+        "0": {
+         "after": 0.4,
+         "before": 0.4
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.38461538461538464
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3544302323328665,
+      "loss_after": 0.22880590713211157
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1ffe6445ed9441129c1727716408040b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_1ffe6445ed9441129c1727716408040b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.75,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 12 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 24 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9333333333333333,
+       "active_accuracy": 0.8,
+       "gate": "relative",
+       "known_accuracy_after": 0.9850746268656716,
+       "known_accuracy_before": 0.8656716417910447,
+       "known_items_lost": 1,
+       "loss_after": 0.29464675509987615,
+       "loss_before": 0.5674933097411157,
+       "n": 15,
+       "outvoted": 5,
+       "per_class": {
+        "0": {
+         "after": 0.8333333333333334,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.4
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.31082021140586924,
+      "loss_after": 0.24011784589592333
+     },
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.375,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Halbiere bitte 84 Euro.",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 240 Euro.",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 12 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Halbiere bitte 60 Euro.",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7abb460e0d094e36b4b5dc6508c6a295 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_7abb460e0d094e36b4b5dc6508c6a295",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 0.75,
+       "gate": "relative",
+       "known_accuracy_after": 0.9733333333333334,
+       "known_accuracy_before": 0.84,
+       "known_items_lost": 0,
+       "loss_after": 0.30901052986999006,
+       "loss_before": 0.6183367710426171,
+       "n": 20,
+       "outvoted": 5,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.375
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "recency_half_life": 16,
+       "scaffold_accuracy": 0.45
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.3496618256654354,
+      "loss_after": 0.2708612577382817
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062,
+      "wrong": [
+       [
+        "Was kostet 300 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 160 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Flüsse und Wärme?",
+        "simple"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_7abb460e0d094e36b4b5dc6508c6a295",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": null,
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261026/z6b-lifecycle/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate"
+}

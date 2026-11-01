@@ -1,0 +1,31 @@
+{
+ "schema": "USER_RULES_FREEZE_V1",
+ "frozen_before": "holdout run and model paraphrases",
+ "files": {
+  "v13/userrules.py": "d1592db39c8a88b31306bfa4c3c321305044aaa12455f32c4ed2c76d8d59b9e3",
+  "v13/agi/tools.py": "cea593dcad61887958de14a857cda8729c2fd3ba1632d4c1adb28816bdf32163",
+  "v13/broker.py": "3be190e0f2314ab360915996d1bd3e9f6a6ef69e7134c2ef86dccc01b4bc5562",
+  "v13/operator.py": "3b3ae4b31ce77209ea17cc7759377ae08b9b56dd9744add15ba891b64de65a3b",
+  "v13/toolstep.py": "187595e3a47c3d4dc36c8e94523358a4490bd3f88d138b131dada0dd17070f95",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261021/user-rules/holdout_author.json": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+  "docs/proofs/continuation-20261021/user-rules/dev.json": "3697a4055cafc06e2322005cffa7b52ce5339bd63c0eb2f04984e426a78d1770"
+ },
+ "dev_result": {
+  "items": 46,
+  "safety_failures": 0,
+  "soft_deny_as_ask": 2,
+  "over_caution": 8,
+  "probe_checks": 368,
+  "kind_match": 46
+ },
+ "amendments": [
+  {
+   "file": "v13/operator.py",
+   "before": "f5f302ae891653b8b16cbc197a8e22f37aabe0dbee75fd910b03a61d6732319c",
+   "after": "3b3ae4b31ce77209ea17cc7759377ae08b9b56dd9744add15ba891b64de65a3b",
+   "when": "after the holdout run, before model paraphrases",
+   "why": "removed the ':rule'/':rules' command aliases, which collided with the existing fixed output-policy command; parser, matcher, eval and holdout unchanged"
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "changed_gate_reuses_old_adaptation": {
+  "defect_reproduced": false,
+  "stopped_by": "TypeError: load_adapted() missing 1 required positional argument: 'enc'"
+ },
+ "failed_reinstall_breaks_last_passing_retention": {
+  "defect_reproduced": false,
+  "stopped_by": "AssertionError: "
+ },
+ "pending_scores_across_checkpoint_change": {
+  "defect_reproduced": false,
+  "stopped_by": "AssertionError: "
+ },
+ "corrupted_install_breaks_status": {
+  "defect_reproduced": false,
+  "stopped_by": "AssertionError: unexpected successful report"
+ },
+ "expired_context_files_accumulate": {
+  "defect_reproduced": false,
+  "stopped_by": "AssertionError: "
+ }
+}

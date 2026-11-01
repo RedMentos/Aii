@@ -59,7 +59,9 @@ def body_state(r,e,role,text):
     if modes(r.store)['state_source']!='on':return None
     world=r.store.state('WORLD_STATE:'+r.session,{})[0] or {}
     me=r.store.state('SELF_MODEL:'+r.session,{})[0] or {}
-    view={'world':{'mode':world.get('mode','NO_OBSERVATIONS'),'observed_actions':world.get('observed_action_count',0),
+    action_mode=world.get('mode','NO_OBSERVATIONS')
+    if action_mode=='NO_OBSERVATIONS':action_mode='NO_COMPLETED_OWN_DIGITAL_ACTIONS'
+    view={'world':{'scope':'OWN_DIGITAL_ACTION_OUTCOMES_ONLY','mode':action_mode,'observed_actions':world.get('observed_action_count',0),
                    'recent':[{k:x.get(k) for k in ('channel','status','outcome') if k in x} for x in (world.get('recent') or [])[-3:] if isinstance(x,dict)]},
           'self':{'learning':(me.get('learning') or {}).get('mode'),'unfinished_actions':me.get('unfinished_actions'),
                   'external_tools':(me.get('permissions') or {}).get('external_tools'),'system_stage':(me.get('permissions') or {}).get('system_stage')}}

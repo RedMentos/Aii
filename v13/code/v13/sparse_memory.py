@@ -28,6 +28,14 @@ DEFAULTS={'slots':8192,'key_dim':64,'topk':32,'train_slots':128,'layer':None,'lr
 # system: write keys and measure in the live chat context (runtime system prompt), else bare user turn.
 # contexts: extra system prompts ('' = bare turn) whose answer positions also get keyed slots (context augmentation).  # keyed r90 won the WP-S3 ablation
 REVISION='wp-s3-sparse-memory-v1'
+DELIVERY_SCHEMA='V13_SPARSE_DELIVERY_BINDINGS_V1'
+
+def fact_item_bindings(items):
+    """Exact authored training facts, never inferred from a slot's generated text."""
+    return {str(i['memory_id']):{'prompt':i['prompt'],'target':i['target'],'source_ref':dict(i['source_ref'])}
+            for i in items if i.get('kind')=='fact' and isinstance(i.get('memory_id'),str)
+            and isinstance(i.get('prompt'),str) and isinstance(i.get('target'),str)
+            and isinstance(i.get('source_ref'),dict)}
 STOP=set('a an the of my me i you your is are am was do does did what which who whom whose when where why how name called tell please '
          'to in on at for with and or it this that be have has had can could would should most like'.split())
 
@@ -233,7 +241,7 @@ class SparseMemoryTrainer:
         slot_items={}
         if cfg['mode']=='keyed':
             for sl in chosen:slot_items[sl]=items[int(self.memory.slot_item[sl])].get('memory_id',int(self.memory.slot_item[sl]))
-        torch.save({'revision':REVISION,'layer':self.layer,'cfg':cfg,'state':{k:v.detach() for k,v in self.memory.state_dict().items()},'slots':chosen,'slot_items':slot_items},path)
+        torch.save({'revision':REVISION,'layer':self.layer,'cfg':cfg,'state':{k:v.detach() for k,v in self.memory.state_dict().items()},'slots':chosen,'slot_items':slot_items,'item_bindings':fact_item_bindings(items)},path)
         changed=int((self.memory.values.data.abs().sum(-1)>0).sum())
         return {'artifact':str(path),'hash':file_hash(path),'method':self.method,
                 'metrics':{'steps':step,'final_ce':hist[-1]['ce'] if hist else None,'history':hist[-5:],'selected_slots':len(chosen),'changed_slots':changed,
@@ -254,6 +262,7 @@ def forget(path,memory_ids,out=None):
         st['state']['written'][s]=0;st['state']['ent'][s]=-1
     st['slot_items']={s:m for s,m in st['slot_items'].items() if int(s) not in slots};st['slots']=[s for s in st['slots'] if int(s) not in slots]
     st['forgotten']=sorted(set(st.get('forgotten',[]))|ids)
+    st['item_bindings']={k:v for k,v in st.get('item_bindings',{}).items() if str(k) not in ids}
     target=Path(out or path);tmp=target.with_suffix('.tmp');torch.save(st,tmp);tmp.replace(target)
     return len(slots)
 
@@ -271,7 +280,9 @@ def export_native(path,out):
         fh.write(f(S['mu']));fh.write(f(S['hkeys'][w]));fh.write(f(S['theta'][w]));fh.write(f(S['values'][w]))
         fh.write(np.ascontiguousarray(ent.numpy(),dtype='<i4').tobytes())
     si={int(k):v for k,v in st.get('slot_items',{}).items()}
-    side={'source_pt':str(Path(path).resolve()),'rows':[si.get(int(s)) for s in w.tolist()],'forgotten':sorted(st.get('forgotten',[]))}
+    side={'schema':DELIVERY_SCHEMA,'native_sha256':file_hash(out),'source_pt':str(Path(path).resolve()),
+          'rows':[si.get(int(s)) for s in w.tolist()],'forgotten':sorted(st.get('forgotten',[])),
+          'item_bindings':st.get('item_bindings',{})}
     atomic_write(native_items_path(out),json.dumps(side))
     return {'slots':int(w.numel()),'layer':int(st['layer']),'bytes':Path(out).stat().st_size,'sha256':file_hash(out)}
 
@@ -291,7 +302,11 @@ def forget_native(path,memory_ids):
         struct.pack_into('<f',b,theta+4*r,1e9);b[ent+4*ew*r:ent+4*ew*(r+1)]=np.full(ew,-1,dtype='<i4').tobytes()
         side['rows'][r]=None
     side['forgotten']=sorted(set(side.get('forgotten',[]))|ids)
-    tmp=path.with_suffix('.tmp');tmp.write_bytes(bytes(b));tmp.replace(path);atomic_write(sp,json.dumps(side))
+    side['item_bindings']={k:v for k,v in side.get('item_bindings',{}).items() if str(k) not in ids}
+    tmp=path.with_suffix('.tmp');tmp.write_bytes(bytes(b));tmp.replace(path)
+    if side.get('schema')==DELIVERY_SCHEMA:
+        side['native_sha256']=file_hash(path)
+    atomic_write(sp,json.dumps(side))
     return len(rows)
 
 def report(path):

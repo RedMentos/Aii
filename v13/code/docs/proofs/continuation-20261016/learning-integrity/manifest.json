@@ -1,0 +1,34 @@
+{
+  "schema": "V13_LEARNING_INTEGRITY_CLOSED_EVIDENCE_V1",
+  "base_commit": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
+  "scope": "Synthetic software correctness candidate; no native gain or gate promotion",
+  "focused_tests": 21,
+  "focused_failures": 0,
+  "focused_errors": 0,
+  "sources": {
+    "scripts/tool_forecast_learning_integrity_candidate.py": "b5470fbe69e32c8bf5669dd696bc24fc4a332b8ebdf59d3f29950b8ba33325e1",
+    "tests/test_tool_forecast_learning_integrity_candidate.py": "46af848e50826a376f951c8d57047f74af3dd9a96b37d843b2d4e28f53506987",
+    "scripts/tool_forecast_learning_check.py": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+    "scripts/tool_forecast_live_check.py": "88ee22b6353d33251458333bda23f6ea948468a65638a897d5739fd7925ef7d5",
+    "specs/tool_forecast/learning-plan.json": "764fc00ed15a8e24bd1336c2e2414df6f282bb80299c72702e8e0805464644a4"
+  },
+  "proofs": {
+    "README.md": "840ff9b6e2036021cd7e49710f25dd80dd448854c2c02f1437fd6a4520a9bdef",
+    "candidate-comparison.json": "75efeac1e33d539adc3ab8995061e637065a4e003c0f16a774bfa2796e649c3a",
+    "complete-small-input.json": "918f8fa6a73dc6a0bcf4dc64e139c016df2e882c80a31240a5ec476e3fad6fe2",
+    "focused-tests.log": "69ce9784c8b7ba304d871d61865c3b778dda2c6f7bfdcab60bc5aa110726c21f",
+    "original-partial-false-pass.json": "bec3bf29dd0a7378edcd9eeabd0896204ba9c34090fea7f581ef49e8e750f38f",
+    "partial-fixed-plan-input.json": "c57b3bc27945619bd5c7a24d38346f60c7e7188a9548b64afa3bb85e81e42bd3"
+  },
+  "original_numeric_gates": {
+    "shift_gain_max_ratio": 0.9,
+    "in_world_max_ratio": 1.02
+  },
+  "expected_current_plan_rows": 610,
+  "phase_a_experience_rows": 250,
+  "phase_b_test_rows": 360,
+  "native_models_launched": false,
+  "native_learning_gain_proven": false,
+  "phone_measured": false,
+  "canonical_gate_pass": false
+}

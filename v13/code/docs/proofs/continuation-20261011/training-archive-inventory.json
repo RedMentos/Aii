@@ -1,0 +1,148 @@
+{
+  "archive": "V13_INQUISITION_KOMPLETT_NEUER_CHAT_2026-10-09.zip",
+  "bytes": 418024338,
+  "sha256": "8324265c310d7cc3f8e0046f2ac18a80ae6b8e858c4e24f74c3982c05c26acac",
+  "inspected_at": "2026-10-11T03:56:04Z",
+  "outer_entries": 164,
+  "nested_archives": [
+    {
+      "path": "04_PROGRAMM_VERSIONEN/inquisition_rsi_prototype.zip",
+      "entries": 5,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Architektur-Paket-20261009.zip",
+      "entries": 6,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source.zip",
+      "entries": 30,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source-auto1.zip",
+      "entries": 63,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source-auto2.zip",
+      "entries": 53,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source-auto3.zip",
+      "entries": 98,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source-auto4.zip",
+      "entries": 97,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Phone-Source-auto5.zip",
+      "entries": 100,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Install-20261009-0819.zip",
+      "entries": 207,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Install.zip",
+      "entries": 162,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-20261006-burst3.zip",
+      "entries": 688,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-20261006-burst3b.zip",
+      "entries": 708,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-20261006-burst4.zip",
+      "entries": 710,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-20261006-burst5.zip",
+      "entries": 622,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start.zip",
+      "entries": 3644,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-auto-burst2.zip",
+      "entries": 121,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-auto-burst5-readout-unit.zip",
+      "entries": 181,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13-Redmi-Start-run3.zip",
+      "entries": 145,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_Brain_complete_v1.1.zip",
+      "entries": 9,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_Combined_v3_FINAL.zip",
+      "entries": 8,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_Hemisphere_Brain_Prototype.zip",
+      "entries": 6,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_Termux_v11.zip",
+      "entries": 20,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_TRUE_ARCHITECTURE_v2.zip",
+      "entries": 7,
+      "matches": []
+    },
+    {
+      "path": "04_PROGRAMM_VERSIONEN/V13_v10.zip",
+      "entries": 41,
+      "matches": [
+        {
+          "path": "V13_v10/diagrams/05_memory_dream.png",
+          "bytes": 245586
+        },
+        {
+          "path": "V13_v10/diagrams/05_memory_dream.svg",
+          "bytes": 11318
+        }
+      ]
+    },
+    {
+      "path": "05_WORK_SICHERUNGEN_METADATA/V13-WORK-SAFETY-20261009-0819/files/V13-Redmi-Install.zip",
+      "entries": 207,
+      "matches": []
+    },
+    {
+      "path": "05_WORK_SICHERUNGEN_METADATA/V13-WORK-RESCUE-20261009/V13-Redmi-Install.zip",
+      "entries": 162,
+      "matches": []
+    }
+  ]
+}

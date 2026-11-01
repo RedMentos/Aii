@@ -24,7 +24,7 @@ import math
 import re
 import time
 from .common import dumps,now
-from .contracts import packet,offer_is_fresh
+from .contracts import packet,offer_is_fresh,SLOT_FIELDS
 from .memory import relevance,terms
 from .attention import GAIN as ATT_BASE
 
@@ -90,15 +90,62 @@ def source_quality(p):
 
 def priority(t):return round(clip(sum(WEIGHTS[k]*t.get(k,0.) for k in WEIGHTS)),4)
 
+def covered(refs):
+    """§8.2 covered range: union of exact source spans per source, in source order."""
+    by={}
+    for r in refs or ():
+        if isinstance(r,dict) and isinstance(r.get('source_id'),str) and isinstance(r.get('char_start'),int) and isinstance(r.get('char_end'),int):
+            by.setdefault(r['source_id'],[]).append((r['char_start'],r['char_end']))
+    out=[]
+    for sid,spans in by.items():
+        cur=None
+        for a,b in sorted(spans):
+            if cur and a<=cur[1]:cur[1]=max(cur[1],b)
+            else:
+                if cur:out.append({'source_id':sid,'char_start':cur[0],'char_end':cur[1]})
+                cur=[a,b]
+        out.append({'source_id':sid,'char_start':cur[0],'char_end':cur[1]})
+    return out
+
+END=re.compile(r'[.!?;:\n]\s*$')
+def boundary(store,refs):
+    """§8.2 boundary confidence as a labelled lexical proxy: share of span ends that sit on a sentence/clause edge
+    (source start/end, or . ! ? ; : newline) in the exact source. Unreadable sources contribute nothing."""
+    hits=[]
+    for r in refs or ():
+        try:
+            row=store.one('SELECT hash,deleted FROM sources WHERE id=?',(r['source_id'],))
+            if not row or row['deleted'] or row['hash']!=r.get('sha256'):continue
+            src=store.blob_bytes(row['hash']).decode();a,b=r['char_start'],r['char_end']
+            if not 0<=a<=b<=len(src):continue
+        except (KeyError,TypeError,ValueError,OSError,UnicodeDecodeError):continue
+        hits.append(1. if a==0 or END.search(src[:a]) else 0.)
+        hits.append(1. if b==len(src) or END.search(src[a:b]) or src[b:b+1] in '.!?;:\n' else 0.)
+    if not hits:return {'boundary_confidence':None,'boundary_source':'NONE'}
+    return {'boundary_confidence':round(sum(hits)/len(hits),4),'boundary_source':'LEXICAL_ALIGNMENT_PROXY'}
+
+def turns_left(decay):
+    """§8.2 expiry under the BOOT turn decay: further turns before the slot falls under the drop floor."""
+    if decay<BOOT['drop_floor']:return 0
+    return int(math.floor(math.log(BOOT['drop_floor']/decay)/math.log(BOOT['turn_decay'])+1e-9))
+
 def item(kind,payload_ref,refs,text,event_id,*,uncertainty,salience,goal,utility,sq,conflict=0.,cost=0.,
-         state_type='ACTIVE',status='HYPOTHESIS',confidence=None,goal_ids=(),decay=1.,turns=0):
-    """§93 FOCAL_ITEM. ``text`` stays in memory only; persisted slots re-read it from its packet."""
+         state_type='ACTIVE',status='HYPOTHESIS',confidence=None,goal_ids=(),decay=1.,turns=0,created=None,bounds=None,self_generated=None):
+    """§93 FOCAL_ITEM with the §8.2 slot minimum. ``text`` stays in memory only; persisted slots re-read it from its packet.
+    ``created``: wall time of the underlying offer/memory (timestamp + age); ``bounds``: result of ``boundary()``."""
     t={'goal':goal,'conflict':conflict,'uncertainty':uncertainty,'salience':salience,'utility':utility,'source_quality':sq,'redundancy':0.,'cost':cost}
+    wall=now();created=wall if created is None else float(created);cov=covered(refs);n=sum(c['char_end']-c['char_start'] for c in cov)
+    exact=[r for r in refs or () if isinstance(r,dict) and r.get('sha256')]
     return {'item_id':payload_ref,'source_kind':kind,'source_refs':list(refs),'payload_ref':payload_ref,'reactivation_key':kind+':'+payload_ref,
             'confidence':round(clip(sq*(1-uncertainty) if confidence is None else confidence),4),'confidence_type':'BOOT_EVIDENCE_PROXY',
             'salience':round(clip(salience),4),'uncertainty':round(clip(uncertainty),4),'decay':round(decay,4),'turns_retained':turns,
             'bound_goal_ids':list(goal_ids),'fact_hypothesis_status':status,'state_type':state_type,'scale':SCALE.get(kind,'event'),
-            'origin_event_id':event_id,'home_type':state_type,'priority_terms':t,'priority':priority(t),'text':(text or '')[:400]}
+            'origin_event_id':event_id,'home_type':state_type,'priority_terms':t,'priority':priority(t),'text':(text or '')[:400],
+            'self_generated':kind in BODY if self_generated is None else bool(self_generated),'created_wall':created,'age_ms':int(max(0.,wall-created)*1000),
+            'expiry':{'policy':'BOOT_TURN_DECAY','turns_left':turns_left(decay),'turn_decay':BOOT['turn_decay'],'drop_floor':BOOT['drop_floor']},
+            'exact_fallback':'SOURCE_REF' if exact else 'NONE','exact_fallback_refs':exact,'covered_range':cov,
+            'compression_ratio':round(n/len(text),4) if n and text else None,
+            **(bounds or {'boundary_confidence':None,'boundary_source':'NONE'}),'children':[],'parents':[]}
 
 def link_scales(items):
     """§3.2A/§8.2A: gist slots point to fine/event slots over overlapping source spans and back."""
@@ -270,7 +317,8 @@ class Workspace:
             x=item(slot['source_kind'],slot['payload_ref'],slot['source_refs'],text,slot['origin_event_id'],uncertainty=slot['uncertainty'],salience=slot['salience'],
                    goal=0.,utility=t['utility'],sq=t['source_quality'],conflict=t['conflict'],cost=t['cost'],decay=decay,turns=slot.get('turns_retained',0)+1,
                    state_type='REACTIVATABLE' if decay>=BOOT['reactivatable_floor'] else 'EPISODIC_POINTER',
-                   status='PRIOR_HYPOTHESIS' if slot['source_kind'] in BODY else slot['fact_hypothesis_status'],goal_ids=slot['bound_goal_ids'])
+                   status='PRIOR_HYPOTHESIS' if slot['source_kind'] in BODY else slot['fact_hypothesis_status'],goal_ids=slot['bound_goal_ids'],
+                   created=slot.get('created_wall',slot.get('admitted_wall')),bounds=boundary(self.s,slot['source_refs']),self_generated=slot.get('self_generated'))
             out.append(x)
         return out
     def save(self,e,active,rest,capacity):
@@ -287,7 +335,8 @@ class Workspace:
         for x in keep:
             if x['item_id'] in known:continue
             self.s.add_packet('WorkspaceSlot',packet('WorkspaceSlot','B4_WORKSPACE',e['event_id'],e['brain_generation_id'],x['source_refs'],owner=x['source_kind'],source_refs=x['source_refs'],
-                content={'payload_ref':x['payload_ref'],'state_type':x['state_type'],'scale':x['scale'],'children':x.get('children',[]),'parents':x.get('parents',[]),'fact_hypothesis_status':x['fact_hypothesis_status']}))
+                content={'payload_ref':x['payload_ref'],'state_type':x['state_type'],'fact_hypothesis_status':x['fact_hypothesis_status'],
+                         **{k:x[k] for k in SLOT_FIELDS}}))
         self.s.set_state(self.key,{'session_id':self.session,'generation':e['brain_generation_id'],'event_id':e['event_id'],'capacity':capacity,'slots':slots})
         return slots
     def view(self):
@@ -324,10 +373,12 @@ class FocalLoop:
             text=p['offer'].get('summary','')+' '+' '.join(self.s.read_source(r) for r in p['evidence_refs'])
             need=sig.get('detail_need' if p['role']=='B1_DETAIL' else 'gist_need',.5)
             cands.append(item(p['role'],p['packet_id'],p['evidence_refs'] or p['provenance'][:1],p['offer'].get('summary',''),e['event_id'],
-                uncertainty=offer_uncertainty(p),salience=sig.get('salience',0.),goal=clip(3*relevance(goal,text)),utility=self._utility(p,max(.3,need),goal),sq=source_quality(p),goal_ids=[e['event_id']]))
+                uncertainty=offer_uncertainty(p),salience=sig.get('salience',0.),goal=clip(3*relevance(goal,text)),utility=self._utility(p,max(.3,need),goal),sq=source_quality(p),goal_ids=[e['event_id']],
+                created=p['created_wall_time'],bounds=boundary(self.s,p['evidence_refs'] or p['provenance'][:1])))
         for m in memories:
             cands.append(item('MEMORY',m['id'],[m['source_ref']],m.get('value',''),e['event_id'],uncertainty=.2,salience=0.,goal=clip(3*relevance(goal,m.get('value',''))),
-                utility=.4,sq=1.,cost=.05,state_type='EPISODIC_POINTER',status='MEMORY_SOURCE',confidence=m.get('retrieval_score') or 0.,goal_ids=[e['event_id']]))
+                utility=.4,sq=1.,cost=.05,state_type='EPISODIC_POINTER',status='MEMORY_SOURCE',confidence=m.get('retrieval_score') or 0.,goal_ids=[e['event_id']],
+                created=m.get('created'),bounds=boundary(self.s,[m['source_ref']]),self_generated=False))  # memories are human decisions
         for x in retained:
             x['priority_terms']['goal']=clip(3*relevance(goal,x['text']));x['priority']=priority(x['priority_terms'])*x['decay'];cands.append(x)
         for c in cands:

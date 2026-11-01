@@ -1,0 +1,1794 @@
+{
+ "schema": "USER_RULES_MODEL_PARAPHRASES_V1",
+ "freeze": {
+  "v13/userrules.py": "3eb2e9a1b2c50d90683a9b3ec0985bdc1e56c1f3f4f6a7fc10e80fdbf375fcf9",
+  "v13/agi/tools.py": "cea593dcad61887958de14a857cda8729c2fd3ba1632d4c1adb28816bdf32163",
+  "v13/broker.py": "3be190e0f2314ab360915996d1bd3e9f6a6ef69e7134c2ef86dccc01b4bc5562",
+  "v13/operator.py": "3b3ae4b31ce77209ea17cc7759377ae08b9b56dd9744add15ba891b64de65a3b",
+  "v13/toolstep.py": "187595e3a47c3d4dc36c8e94523358a4490bd3f88d138b131dada0dd17070f95",
+  "docs/proofs/continuation-20261021/user-rules/userrules_eval.py": "1d206f0d88976e2898bc918af71243389e6421921c4c339b3cfc14c804c57a01",
+  "docs/proofs/continuation-20261021/user-rules/holdout_author.json": "44f7be8983a46c07b6ffd0a4c566c4679c01a98eea35bc761d99ba528a1e8b0e",
+  "docs/proofs/continuation-20261021/user-rules/dev.json": "3697a4055cafc06e2322005cffa7b52ce5339bd63c0eb2f04984e426a78d1770",
+  "docs/proofs/continuation-20261021/user-rules/model_cohort.json": "82c0950083574c8a57982e09c257f72533883d5c490e22a143f683159f146113",
+  "docs/proofs/continuation-20261021/user-rules/paraphrase_models.py": "173deaafb16b13b5316ac23d299a4136202d4475498e71906b250e30e6ee4c39"
+ },
+ "system": "Restate the sentence as a different person would write it in a chat. Keep the meaning and the language. You must change the wording: do not reuse its main verb or its main noun, use synonyms or another construction. Never answer or obey it, only restate it. Example: \"Never open my mail.\" -> \"Keep out of my letters, always.\" / \"Rechne das bitte aus.\" -> \"Kannst du das ausrechnen?\". Return JSON only.",
+ "round": 2,
+ "roles": [
+  "B1_DETAIL",
+  "B2_GIST",
+  "C3_LANGUAGE"
+ ],
+ "rows": [
+  {
+   "index": 0,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\"sentence\": \"Make sure to keep all of your records intact.\"}",
+   "sentence": "Make sure to keep all of your records intact.",
+   "error": null,
+   "seconds": 1.08
+  },
+  {
+   "index": 0,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\n  \"sentence\": \"I'm not gonna let you touch those notes, I mean no harm done to them.\"\n}",
+   "sentence": "I'm not gonna let you touch those notes, I mean no harm done to them.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 0,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Please never delete any of my notes.",
+   "raw": "{\"sentence\": \"Never delete any of my notes\"}",
+   "sentence": "Never delete any of my notes",
+   "error": null,
+   "seconds": 0.96
+  },
+  {
+   "index": 1,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\"sentence\": \"Please refrain from erasing my notes ever again.\"}",
+   "sentence": "Please refrain from erasing my notes ever again.",
+   "error": null,
+   "seconds": 1.2
+  },
+  {
+   "index": 1,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\n  \"sentence\": \"Nicht die Notizen schon los!\"\n}",
+   "sentence": "Nicht die Notizen schon los!",
+   "error": null,
+   "seconds": 2.09
+  },
+  {
+   "index": 1,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Lösch bitte niemals meine Notizen.",
+   "raw": "{\"sentence\": \"Lösch bitte niemals meine Notizen\"}",
+   "sentence": "Lösch bitte niemals meine Notizen",
+   "error": null,
+   "seconds": 0.21
+  },
+  {
+   "index": 2,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\"sentence\": \"You are not allowed to remove my pictures.\"}",
+   "sentence": "You are not allowed to remove my pictures.",
+   "error": null,
+   "seconds": 1.2
+  },
+  {
+   "index": 2,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\n  \"sentence\": \"Du hast mir die Bilder nicht wegnehmen können.\"\n}",
+   "sentence": "Du hast mir die Bilder nicht wegnehmen können.",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 2,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Du darfst meine Fotos nicht löschen.",
+   "raw": "{\"sentence\": \"Du darfst meine Fotos nicht löschen\"}",
+   "sentence": "Du darfst meine Fotos nicht löschen",
+   "error": null,
+   "seconds": 0.2
+  },
+  {
+   "index": 3,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\"sentence\": \"Avoid sharing messages until you get permission.\"}",
+   "sentence": "Avoid sharing messages until you get permission.",
+   "error": null,
+   "seconds": 1.13
+  },
+  {
+   "index": 3,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\n  \"sentence\": \"Nimm mir vor, dass ich dich nicht ansprich.\"\n}",
+   "sentence": "Nimm mir vor, dass ich dich nicht ansprich.",
+   "error": null,
+   "seconds": 2.07
+  },
+  {
+   "index": 3,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't send emails without asking me first.",
+   "raw": "{\"sentence\": \"Don't send emails without asking you first.\"}",
+   "sentence": "Don't send emails without asking you first.",
+   "error": null,
+   "seconds": 0.19
+  },
+  {
+   "index": 4,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\"sentence\": \"Avoid posting anything online unless you ask me first.\"}",
+   "sentence": "Avoid posting anything online unless you ask me first.",
+   "error": null,
+   "seconds": 1.19
+  },
+  {
+   "index": 4,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\n  \"sentence\": \"Ich weiß nicht, ob ich dich fragen soll, also schick nichts ins Internet.\"\n}",
+   "sentence": "Ich weiß nicht, ob ich dich fragen soll, also schick nichts ins Internet.",
+   "error": null,
+   "seconds": 2.26
+  },
+  {
+   "index": 4,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Schick nichts ins Internet, ohne mich vorher zu fragen.",
+   "raw": "{\"sentence\": \"Schick nichts ins Internet, ohne mich vorher zu fragen\"}",
+   "sentence": "Schick nichts ins Internet, ohne mich vorher zu fragen",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 5,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\"sentence\": \"Never add fresh components without clear permission.\"}",
+   "sentence": "Never add fresh components without clear permission.",
+   "error": null,
+   "seconds": 1.13
+  },
+  {
+   "index": 5,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\n  \"sentence\": \"Ich weiß, dass ich das nicht erst einmal einstellbar habe, wenn ich es nicht explizit erlaubt habe.\"\n}",
+   "sentence": "Ich weiß, dass ich das nicht erst einmal einstellbar habe, wenn ich es nicht explizit erlaubt habe.",
+   "error": null,
+   "seconds": 2.49
+  },
+  {
+   "index": 5,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never install new modules unless I explicitly allow it.",
+   "raw": "{\"sentence\": \"Never install new modules unless I explicitly allow it\"}",
+   "sentence": "Never install new modules unless I explicitly allow it",
+   "error": null,
+   "seconds": 0.19
+  },
+  {
+   "index": 6,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Stop using the calculator.",
+   "raw": "{\"sentence\": \"Avoid relying on that tool.\"}",
+   "sentence": "Avoid relying on that tool.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 6,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Stop using the calculator.",
+   "raw": "{\n  \"sentence\": \"Warte nicht auf die Zahl, nur die Rechnung.\"\n}",
+   "sentence": "Warte nicht auf die Zahl, nur die Rechnung.",
+   "error": null,
+   "seconds": 2.46
+  },
+  {
+   "index": 6,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Stop using the calculator.",
+   "raw": "{\"sentence\": \"Stop using the calculator\"}",
+   "sentence": "Stop using the calculator",
+   "error": null,
+   "seconds": 0.17
+  },
+  {
+   "index": 7,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\"sentence\": \"Pay attention to what you find online.\"}",
+   "sentence": "Pay attention to what you find online.",
+   "error": null,
+   "seconds": 1.14
+  },
+  {
+   "index": 7,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\n  \"sentence\": \"Suche auf dem Internet nach dem Ziel.\"\n}",
+   "sentence": "Suche auf dem Internet nach dem Ziel.",
+   "error": null,
+   "seconds": 2.36
+  },
+  {
+   "index": 7,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Hör auf, im Internet zu suchen.",
+   "raw": "{\"sentence\": \"Hör auf, im Internet zu suchen\"}",
+   "sentence": "Hör auf, im Internet zu suchen",
+   "error": null,
+   "seconds": 0.24
+  },
+  {
+   "index": 8,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "You must not go online.",
+   "raw": "{\"sentence\": \"You should avoid browsing the internet.\"}",
+   "sentence": "You should avoid browsing the internet.",
+   "error": null,
+   "seconds": 1.29
+  },
+  {
+   "index": 8,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "You must not go online.",
+   "raw": "{\n  \"sentence\": \"Du musst nicht auf dem Internet gehen.\"\n}",
+   "sentence": "Du musst nicht auf dem Internet gehen.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 8,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "You must not go online.",
+   "raw": "{\"sentence\": \"You must not go online\"}",
+   "sentence": "You must not go online",
+   "error": null,
+   "seconds": 0.19
+  },
+  {
+   "index": 9,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\"sentence\": \"I don't want you to modify anything in my files.\"}",
+   "sentence": "I don't want you to modify anything in my files.",
+   "error": null,
+   "seconds": 1.26
+  },
+  {
+   "index": 9,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\n  \"sentence\": \"Ich will nicht, dass du irgendwas an meine Dateien ändern.\"\n}",
+   "sentence": "Ich will nicht, dass du irgendwas an meine Dateien ändern.",
+   "error": null,
+   "seconds": 2.33
+  },
+  {
+   "index": 9,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "raw": "{\"sentence\": \"Ich will nicht, dass du irgendwas an meinen Dateien änderst.\"}",
+   "sentence": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "error": null,
+   "seconds": 0.3
+  },
+  {
+   "index": 10,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\"sentence\": \"Don't forget to save my notes.\"}",
+   "sentence": "Don't forget to save my notes.",
+   "error": null,
+   "seconds": 1.3
+  },
+  {
+   "index": 10,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\n  \"sentence\": \"Warte ich nicht auf deine Notizen zu speichern.\"\n}",
+   "sentence": "Warte ich nicht auf deine Notizen zu speichern.",
+   "error": null,
+   "seconds": 3.78
+  },
+  {
+   "index": 10,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't forget to save my notes.",
+   "raw": "{\"sentence\": \"Don't forget to save my notes\"}",
+   "sentence": "Don't forget to save my notes",
+   "error": null,
+   "seconds": 0.78
+  },
+  {
+   "index": 11,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\"sentence\": \"Don't forget to save the note.\"}",
+   "sentence": "Don't forget to save the note.",
+   "error": null,
+   "seconds": 1.8
+  },
+  {
+   "index": 11,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\n  \"sentence\": \"Warte nicht, die Notiz aufzulegen.\"\n}",
+   "sentence": "Warte nicht, die Notiz aufzulegen.",
+   "error": null,
+   "seconds": 2.39
+  },
+  {
+   "index": 11,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Vergiss nicht, die Notiz zu speichern.",
+   "raw": "{\"sentence\": \"Never forget to save the note.\"}",
+   "sentence": "Never forget to save the note.",
+   "error": null,
+   "seconds": 0.26
+  },
+  {
+   "index": 12,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\"sentence\": \"Don't hesitate to ask me if something is unclear.\"}",
+   "sentence": "Don't hesitate to ask me if something is unclear.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 12,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\n  \"sentence\": \"Nicht zu spät fragen, was nicht klar ist.\"\n}",
+   "sentence": "Nicht zu spät fragen, was nicht klar ist.",
+   "error": null,
+   "seconds": 2.15
+  },
+  {
+   "index": 12,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't hesitate to ask me if something is unclear.",
+   "raw": "{\"sentence\": \"Don't hesitate to ask me if something is unclear\"}",
+   "sentence": "Don't hesitate to ask me if something is unclear",
+   "error": null,
+   "seconds": 0.28
+  },
+  {
+   "index": 13,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Can you delete the old note?",
+   "raw": "{\"sentence\": \"Would you like me to remove the previous entry?\"}",
+   "sentence": "Would you like me to remove the previous entry?",
+   "error": null,
+   "seconds": 1.49
+  },
+  {
+   "index": 13,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Can you delete the old note?",
+   "raw": "{\n  \"sentence\": \"Wirds ich das schon raus?\"\n}",
+   "sentence": "Wirds ich das schon raus?",
+   "error": null,
+   "seconds": 2.17
+  },
+  {
+   "index": 13,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Can you delete the old note?",
+   "raw": "{\"sentence\": \"Can you delete the old note?\"}",
+   "sentence": "Can you delete the old note?",
+   "error": null,
+   "seconds": 0.27
+  },
+  {
+   "index": 14,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{ \"sentence\": \"Can you help me draft an email?\" }",
+   "sentence": "Can you help me draft an email?",
+   "error": null,
+   "seconds": 1.64
+  },
+  {
+   "index": 14,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\n  \"sentence\": \"Gut, ich kann dir eine E-Mail schreiben.\"\n}",
+   "sentence": "Gut, ich kann dir eine E-Mail schreiben.",
+   "error": null,
+   "seconds": 2.42
+  },
+  {
+   "index": 14,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Kannst du mir eine Mail schreiben?",
+   "raw": "{\"sentence\": \"Kannst du mir eine Mail schreiben?\"}",
+   "sentence": "Kannst du mir eine Mail schreiben?",
+   "error": null,
+   "seconds": 0.33
+  },
+  {
+   "index": 15,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\"sentence\": \"I haven't removed anything from the past day.\"}",
+   "sentence": "I haven't removed anything from the past day.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 15,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\n  \"sentence\": \"I didn't delete anything yesterday.\"\n}",
+   "sentence": "I didn't delete anything yesterday.",
+   "error": null,
+   "seconds": 2.21
+  },
+  {
+   "index": 15,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "I didn't delete anything yesterday.",
+   "raw": "{\"sentence\": \"I didn't delete anything yesterday\"}",
+   "sentence": "I didn't delete anything yesterday",
+   "error": null,
+   "seconds": 0.32
+  },
+  {
+   "index": 16,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "What is 17 times 23?",
+   "raw": "{\"sentence\": \"What is the product when you multiply 17 by 23?\"}",
+   "sentence": "What is the product when you multiply 17 by 23?",
+   "error": null,
+   "seconds": 1.73
+  },
+  {
+   "index": 16,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "What is 17 times 23?",
+   "raw": "{\n  \"sentence\": \"Was 17 mal 23?\"\n}",
+   "sentence": "Was 17 mal 23?",
+   "error": null,
+   "seconds": 1.94
+  },
+  {
+   "index": 16,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "What is 17 times 23?",
+   "raw": "{\"sentence\": \"What is 17 times 23?\"}",
+   "sentence": "What is 17 times 23?",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 17,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\"sentence\": \"Never remove or change my records, and refrain from sharing them with others.\"}",
+   "sentence": "Never remove or change my records, and refrain from sharing them with others.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 17,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\n  \"sentence\": \"Warte nicht, dass ich meine Notizen löschen oder überschreiben soll und sie auch nicht weiter senden soll.\"\n}",
+   "sentence": "Warte nicht, dass ich meine Notizen löschen oder überschreiben soll und sie auch nicht weiter senden soll.",
+   "error": null,
+   "seconds": 2.35
+  },
+  {
+   "index": 17,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "raw": "{\"sentence\": \"Never delete or overwrite my notes, and don't send them anywhere either.\"}",
+   "sentence": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "error": null,
+   "seconds": 0.34
+  },
+  {
+   "index": 18,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\"sentence\": \"Delete and never send my pictures or messages.\"}",
+   "sentence": "Delete and never send my pictures or messages.",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 18,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\n  \"sentence\": \"Nicht mehr Fotos oder Nachrichten löschen und versenden.\"\n}",
+   "sentence": "Nicht mehr Fotos oder Nachrichten löschen und versenden.",
+   "error": null,
+   "seconds": 2.48
+  },
+  {
+   "index": 18,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Lösche und verschicke niemals meine Fotos oder Nachrichten.",
+   "raw": "{\"sentence\": \"Lösche und verschicke niemals meine Fotos oder Nachrichten\"}",
+   "sentence": "Lösche und verschicke niemals meine Fotos oder Nachrichten",
+   "error": null,
+   "seconds": 0.39
+  },
+  {
+   "index": 19,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\"sentence\": \"Make sure to seek permission first before you proceed with any changes.\"}",
+   "sentence": "Make sure to seek permission first before you proceed with any changes.",
+   "error": null,
+   "seconds": 1.39
+  },
+  {
+   "index": 19,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\n  \"sentence\": \"Warte mal, bevor ich was schreiben soll.\"\n}",
+   "sentence": "Warte mal, bevor ich was schreiben soll.",
+   "error": null,
+   "seconds": 2.2
+  },
+  {
+   "index": 19,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Always ask me before you write anything to my files.",
+   "raw": "{\"sentence\": \"Always ask me before you write anything to my files\"}",
+   "sentence": "Always ask me before you write anything to my files",
+   "error": null,
+   "seconds": 0.3
+  },
+  {
+   "index": 20,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\"sentence\": \"Ask me for advice before you proceed with anything.\"}",
+   "sentence": "Ask me for advice before you proceed with anything.",
+   "error": null,
+   "seconds": 1.59
+  },
+  {
+   "index": 20,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\n  \"sentence\": \"Ich gehe immer zuerst vor, bevor du was installierst.\"\n}",
+   "sentence": "Ich gehe immer zuerst vor, bevor du was installierst.",
+   "error": null,
+   "seconds": 2.28
+  },
+  {
+   "index": 20,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Frag mich immer zuerst, bevor du etwas installierst.",
+   "raw": "{\"sentence\": \"Frag mich immer zuerst, bevor du etwas installierst\"}",
+   "sentence": "Frag mich immer zuerst, bevor du etwas installierst",
+   "error": null,
+   "seconds": 0.26
+  },
+  {
+   "index": 21,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Tell me before you do anything.",
+   "raw": "{\"sentence\": \"Please let me know ahead of time.\"}",
+   "sentence": "Please let me know ahead of time.",
+   "error": null,
+   "seconds": 1.37
+  },
+  {
+   "index": 21,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Tell me before you do anything.",
+   "raw": "{\n  \"sentence\": \"Warte, ich mache nichts, bevor ich etwas tun kann.\"\n}",
+   "sentence": "Warte, ich mache nichts, bevor ich etwas tun kann.",
+   "error": null,
+   "seconds": 2.27
+  },
+  {
+   "index": 21,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Tell me before you do anything.",
+   "raw": "{\"sentence\": \"Before you do anything, tell me what you need.\"}",
+   "sentence": "Before you do anything, tell me what you need.",
+   "error": null,
+   "seconds": 0.38
+  },
+  {
+   "index": 22,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\"sentence\": \"Tell me ahead of time what you intend to do.\"}",
+   "sentence": "Tell me ahead of time what you intend to do.",
+   "error": null,
+   "seconds": 1.5
+  },
+  {
+   "index": 22,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\n  \"sentence\": \"Sag mir immer vorher, was du tun willst.\"\n}",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "error": null,
+   "seconds": 4.36
+  },
+  {
+   "index": 22,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Sag mir immer vorher, was du tun willst.",
+   "raw": "{\"sentence\": \"Sag mir immer vorher, was du tun willst.\"}",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "error": null,
+   "seconds": 0.6
+  },
+  {
+   "index": 23,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{ \"sentence\": \"Finger weg von meinen Notizen!\" }",
+   "sentence": "Finger weg von meinen Notizen!",
+   "error": null,
+   "seconds": 2.4
+  },
+  {
+   "index": 23,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\n  \"sentence\": \"Wahnehmiger, ich habe meine Notizen nicht gesehen!\"\n}",
+   "sentence": "Wahnehmiger, ich habe meine Notizen nicht gesehen!",
+   "error": null,
+   "seconds": 4.23
+  },
+  {
+   "index": 23,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Finger weg von meinen Notizen!",
+   "raw": "{\"sentence\": \"Finger weg von meinen Notizen!\"}",
+   "sentence": "Finger weg von meinen Notizen!",
+   "error": null,
+   "seconds": 0.54
+  },
+  {
+   "index": 24,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\"sentence\": \"Maintain a safe distance from my pictures.\"}",
+   "sentence": "Maintain a safe distance from my pictures.",
+   "error": null,
+   "seconds": 2.87
+  },
+  {
+   "index": 24,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\n  \"sentence\": \"Warte nicht auf meine Fotos, ich bin bereit für dich.\"\n}",
+   "sentence": "Warte nicht auf meine Fotos, ich bin bereit für dich.",
+   "error": null,
+   "seconds": 2.56
+  },
+  {
+   "index": 24,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Keep your hands off my photos.",
+   "raw": "{\"sentence\": \"Keep your hands off my photos\"}",
+   "sentence": "Keep your hands off my photos",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 25,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\"sentence\": \"Never remove files, save only the drafts.\"}",
+   "sentence": "Never remove files, save only the drafts.",
+   "error": null,
+   "seconds": 1.29
+  },
+  {
+   "index": 25,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\n  \"sentence\": \"Warte, ich habe keine Dateien zu löschen, nur die Vorlagen.\"\n}",
+   "sentence": "Warte, ich habe keine Dateien zu löschen, nur die Vorlagen.",
+   "error": null,
+   "seconds": 2.28
+  },
+  {
+   "index": 25,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never delete files, except the drafts.",
+   "raw": "{\"sentence\": \"Never delete files, except the drafts\"}",
+   "sentence": "Never delete files, except the drafts",
+   "error": null,
+   "seconds": 0.21
+  },
+  {
+   "index": 26,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\"sentence\": \"Don't remove any files except the drafts.\"}",
+   "sentence": "Don't remove any files except the drafts.",
+   "error": null,
+   "seconds": 1.38
+  },
+  {
+   "index": 26,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\n  \"sentence\": \"Nicht alle Dateien löschen, nur die Ideen.\"\n}",
+   "sentence": "Nicht alle Dateien löschen, nur die Ideen.",
+   "error": null,
+   "seconds": 2.38
+  },
+  {
+   "index": 26,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Lösche keine Dateien außer den Entwürfen.",
+   "raw": "{\"sentence\": \"Lösche keine Dateien außer den Entwürfen\"}",
+   "sentence": "Lösche keine Dateien außer den Entwürfen",
+   "error": null,
+   "seconds": 0.29
+  },
+  {
+   "index": 27,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never delete my recipes.",
+   "raw": "{\"sentence\": \"Never remove my cooking ideas.\"}",
+   "sentence": "Never remove my cooking ideas.",
+   "error": null,
+   "seconds": 1.17
+  },
+  {
+   "index": 27,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never delete my recipes.",
+   "raw": "{\n  \"sentence\": \"I never let you take my recipes away.\"\n}",
+   "sentence": "I never let you take my recipes away.",
+   "error": null,
+   "seconds": 2.12
+  },
+  {
+   "index": 27,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never delete my recipes.",
+   "raw": "{\"sentence\": \"Never delete my recipes\"}",
+   "sentence": "Never delete my recipes",
+   "error": null,
+   "seconds": 0.22
+  },
+  {
+   "index": 28,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\"sentence\": \"It might be better to hold off on that message.\"}",
+   "sentence": "It might be better to hold off on that message.",
+   "error": null,
+   "seconds": 1.43
+  },
+  {
+   "index": 28,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\n  \"sentence\": \"Warte ich doch mal nicht das E-Mail schick.\"\n}",
+   "sentence": "Warte ich doch mal nicht das E-Mail schick.",
+   "error": null,
+   "seconds": 2.08
+  },
+  {
+   "index": 28,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Maybe don't send that email yet.",
+   "raw": "{\"sentence\": \"Maybe don't send that email yet\"}",
+   "sentence": "Maybe don't send that email yet",
+   "error": null,
+   "seconds": 0.24
+  },
+  {
+   "index": 29,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\"sentence\": \"Maybe it would be better to avoid deleting anything.\"}",
+   "sentence": "Maybe it would be better to avoid deleting anything.",
+   "error": null,
+   "seconds": 1.65
+  },
+  {
+   "index": 29,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\n  \"sentence\": \"Vielleicht solltest du lieber nichts löschen.\"\n}",
+   "sentence": "Vielleicht solltest du lieber nichts löschen.",
+   "error": null,
+   "seconds": 1.94
+  },
+  {
+   "index": 29,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Vielleicht solltest du lieber nichts löschen.",
+   "raw": "{\"sentence\": \"Vielleicht solltest du lieber nichts löschen\"}",
+   "sentence": "Vielleicht solltest du lieber nichts löschen",
+   "error": null,
+   "seconds": 0.3
+  },
+  {
+   "index": 30,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\"sentence\": \"My sibling advises against accessing the web.\"}",
+   "sentence": "My sibling advises against accessing the web.",
+   "error": null,
+   "seconds": 1.24
+  },
+  {
+   "index": 30,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\n  \"sentence\": \"My brother says you should never use the internet.\"\n}",
+   "sentence": "My brother says you should never use the internet.",
+   "error": null,
+   "seconds": 2.68
+  },
+  {
+   "index": 30,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "My brother says you should never use the internet.",
+   "raw": "{\"sentence\": \"My brother says you should never use the internet\"}",
+   "sentence": "My brother says you should never use the internet",
+   "error": null,
+   "seconds": 0.28
+  },
+  {
+   "index": 31,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\"sentence\": \"My boss says I shouldn't send any messages.\"}",
+   "sentence": "My boss says I shouldn't send any messages.",
+   "error": null,
+   "seconds": 3.48
+  },
+  {
+   "index": 31,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\n  \"sentence\": \"Mein Chef sagt, du kannst keine E-Mails versenden.\"\n}",
+   "sentence": "Mein Chef sagt, du kannst keine E-Mails versenden.",
+   "error": null,
+   "seconds": 2.1
+  },
+  {
+   "index": 31,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Mein Chef meint, du darfst keine Mails verschicken.",
+   "raw": "{\"sentence\": \"Mein Chef meint, du darfst keine Mails verschicken\"}",
+   "sentence": "Mein Chef meint, du darfst keine Mails verschicken",
+   "error": null,
+   "seconds": 0.26
+  },
+  {
+   "index": 32,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "You can delete notes again now.",
+   "raw": "{\"sentence\": \"You have the option to remove your entries once more.\"}",
+   "sentence": "You have the option to remove your entries once more.",
+   "error": null,
+   "seconds": 1.34
+  },
+  {
+   "index": 32,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "You can delete notes again now.",
+   "raw": "{\n  \"sentence\": \"Du kannst die Notizen jetzt noch löschen.\"\n}",
+   "sentence": "Du kannst die Notizen jetzt noch löschen.",
+   "error": null,
+   "seconds": 1.99
+  },
+  {
+   "index": 32,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "You can delete notes again now.",
+   "raw": "{\"sentence\": \"You can delete notes again now\"}",
+   "sentence": "You can delete notes again now",
+   "error": null,
+   "seconds": 0.18
+  },
+  {
+   "index": 33,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{ \"sentence\": \"Du darfst jetzt wieder ins Internet.\" }",
+   "sentence": "Du darfst jetzt wieder ins Internet.",
+   "error": null,
+   "seconds": 1.32
+  },
+  {
+   "index": 33,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\n  \"sentence\": \"Du hast jetzt wieder ins Internet.\"\n}",
+   "sentence": "Du hast jetzt wieder ins Internet.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 33,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Du darfst jetzt wieder ins Internet.",
+   "raw": "{\"sentence\": \"Du darfst jetzt wieder ins Internet, aber ich habe noch keine Verbindung hergestellt.\"}",
+   "sentence": "Du darfst jetzt wieder ins Internet, aber ich habe noch keine Verbindung hergestellt.",
+   "error": null,
+   "seconds": 0.31
+  },
+  {
+   "index": 34,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{ \"sentence\": \"Feel free to install whatever you need.\" }",
+   "sentence": "Feel free to install whatever you need.",
+   "error": null,
+   "seconds": 1.58
+  },
+  {
+   "index": 34,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\n  \"sentence\": \"Gut, ich bin bereit, alles zu installieren.\"\n}",
+   "sentence": "Gut, ich bin bereit, alles zu installieren.",
+   "error": null,
+   "seconds": 2.22
+  },
+  {
+   "index": 34,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Feel free to install whatever you need.",
+   "raw": "{\"sentence\": \"Feel free to install whatever you need\"}",
+   "sentence": "Feel free to install whatever you need",
+   "error": null,
+   "seconds": 0.24
+  },
+  {
+   "index": 35,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "No downloads, please.",
+   "raw": "{\"sentence\": \"No downloads, please.\"}",
+   "sentence": "No downloads, please.",
+   "error": null,
+   "seconds": 1.28
+  },
+  {
+   "index": 35,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "No downloads, please.",
+   "raw": "{\n  \"sentence\": \"No downloads, please.\"\n}",
+   "sentence": "No downloads, please.",
+   "error": null,
+   "seconds": 3.05
+  },
+  {
+   "index": 35,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "No downloads, please.",
+   "raw": "{\"sentence\": \"No downloads, please\"}",
+   "sentence": "No downloads, please",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 36,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Keine Uploads!",
+   "raw": "{\"sentence\": \"No uploads happening right now!\"}",
+   "sentence": "No uploads happening right now!",
+   "error": null,
+   "seconds": 1.29
+  },
+  {
+   "index": 36,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Keine Uploads!",
+   "raw": "{\n  \"sentence\": \"No uploads allowed!\"\n}",
+   "sentence": "No uploads allowed!",
+   "error": null,
+   "seconds": 1.97
+  },
+  {
+   "index": 36,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Keine Uploads!",
+   "raw": "{\"sentence\": \"Keine Uploads!\"}",
+   "sentence": "Keine Uploads!",
+   "error": null,
+   "seconds": 0.2
+  },
+  {
+   "index": 37,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\"sentence\": \"You shouldn't pick up information from my personal exchanges.\"}",
+   "sentence": "You shouldn't pick up information from my personal exchanges.",
+   "error": null,
+   "seconds": 1.33
+  },
+  {
+   "index": 37,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\n  \"sentence\": \"Du hast keine Privatsphäre, um mir Nachrichten zu lesen.\"\n}",
+   "sentence": "Du hast keine Privatsphäre, um mir Nachrichten zu lesen.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 37,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "You are not allowed to learn from my private messages.",
+   "raw": "{\"sentence\": \"You can't learn from my private messages.\"}",
+   "sentence": "You can't learn from my private messages.",
+   "error": null,
+   "seconds": 0.62
+  },
+  {
+   "index": 38,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\"sentence\": \"Don't share any details about my relatives.\"}",
+   "sentence": "Don't share any details about my relatives.",
+   "error": null,
+   "seconds": 1.22
+  },
+  {
+   "index": 38,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\n  \"sentence\": \"Merk dir nichts über meine Familie.\"\n}",
+   "sentence": "Merk dir nichts über meine Familie.",
+   "error": null,
+   "seconds": 2.0
+  },
+  {
+   "index": 38,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Merk dir nichts über meine Familie.",
+   "raw": "{\"sentence\": \"Merk dir nichts über meine Familie\"}",
+   "sentence": "Merk dir nichts über meine Familie",
+   "error": null,
+   "seconds": 0.24
+  },
+  {
+   "index": 39,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\"sentence\": \"Avoid handling any part of my device unless I say it's okay.\"}",
+   "sentence": "Avoid handling any part of my device unless I say it's okay.",
+   "error": null,
+   "seconds": 1.31
+  },
+  {
+   "index": 39,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\n  \"sentence\": \"Warte doch auf dem Handy, ohne meine Zustimmung.\"\n}",
+   "sentence": "Warte doch auf dem Handy, ohne meine Zustimmung.",
+   "error": null,
+   "seconds": 2.18
+  },
+  {
+   "index": 39,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't touch anything on my phone without my permission.",
+   "raw": "{\"sentence\": \"Don't touch anything on my phone without my permission\"}",
+   "sentence": "Don't touch anything on my phone without my permission",
+   "error": null,
+   "seconds": 1.16
+  },
+  {
+   "index": 40,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\"sentence\": \"Only with your permission you're allowed to send messages.\"}",
+   "sentence": "Only with your permission you're allowed to send messages.",
+   "error": null,
+   "seconds": 1.81
+  },
+  {
+   "index": 40,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\n  \"sentence\": \"Nur mit meiner Erlaubnis kannst du Nachrichten versenden.\"\n}",
+   "sentence": "Nur mit meiner Erlaubnis kannst du Nachrichten versenden.",
+   "error": null,
+   "seconds": 3.36
+  },
+  {
+   "index": 40,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken.",
+   "raw": "{\"sentence\": \"Nur mit meiner Erlaubnis darfst du Nachrichten verschicken\"}",
+   "sentence": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken",
+   "error": null,
+   "seconds": 0.3
+  },
+  {
+   "index": 41,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\"sentence\": \"Don't cease your efforts to preserve my records.\"}",
+   "sentence": "Don't cease your efforts to preserve my records.",
+   "error": null,
+   "seconds": 1.43
+  },
+  {
+   "index": 41,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\n  \"sentence\": \"Warte nicht auf meine Notizen zu verlieren.\"\n}",
+   "sentence": "Warte nicht auf meine Notizen zu verlieren.",
+   "error": null,
+   "seconds": 2.11
+  },
+  {
+   "index": 41,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't stop saving my notes.",
+   "raw": "{\"sentence\": \"Don't stop saving my notes\"}",
+   "sentence": "Don't stop saving my notes",
+   "error": null,
+   "seconds": 0.22
+  },
+  {
+   "index": 42,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Don't worry about the budget.",
+   "raw": "{\"sentence\": \"Don't fret over the finances.\"}",
+   "sentence": "Don't fret over the finances.",
+   "error": null,
+   "seconds": 1.33
+  },
+  {
+   "index": 42,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Don't worry about the budget.",
+   "raw": "{\n  \"sentence\": \"Nicht die Gelder zu kümmern.\"\n}",
+   "sentence": "Nicht die Gelder zu kümmern.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 42,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Don't worry about the budget.",
+   "raw": "{\"sentence\": \"Don't worry about the budget\"}",
+   "sentence": "Don't worry about the budget",
+   "error": null,
+   "seconds": 0.46
+  },
+  {
+   "index": 43,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\"sentence\": \"Don't worry about the deadline.\"}",
+   "sentence": "Don't worry about the deadline.",
+   "error": null,
+   "seconds": 1.36
+  },
+  {
+   "index": 43,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\n  \"sentence\": \"Mach dir keine Sorgen wegen der Frist.\"\n}",
+   "sentence": "Mach dir keine Sorgen wegen der Frist.",
+   "error": null,
+   "seconds": 3.36
+  },
+  {
+   "index": 43,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Mach dir keine Sorgen wegen der Frist.",
+   "raw": "{\"sentence\": \"Mach dir keine Sorgen wegen der Frist\"}",
+   "sentence": "Mach dir keine Sorgen wegen der Frist",
+   "error": null,
+   "seconds": 1.07
+  },
+  {
+   "index": 44,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\"sentence\": \"Never disclose my phone numbers or addresses.\"}",
+   "sentence": "Never disclose my phone numbers or addresses.",
+   "error": null,
+   "seconds": 1.74
+  },
+  {
+   "index": 44,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\n  \"sentence\": \"Ich weiß, dass ich dich nicht teilen darf.\"\n}",
+   "sentence": "Ich weiß, dass ich dich nicht teilen darf.",
+   "error": null,
+   "seconds": 2.23
+  },
+  {
+   "index": 44,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Under no circumstances should you share my contacts.",
+   "raw": "{\"sentence\": \"Under no circumstance should you share my contacts\"}",
+   "sentence": "Under no circumstance should you share my contacts",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 45,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\"sentence\": \"You should not spend any money.\"}",
+   "sentence": "You should not spend any money.",
+   "error": null,
+   "seconds": 1.25
+  },
+  {
+   "index": 45,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\n  \"sentence\": \"Nicht einmal kannst du Geld ausgeben.\"\n}",
+   "sentence": "Nicht einmal kannst du Geld ausgeben.",
+   "error": null,
+   "seconds": 2.25
+  },
+  {
+   "index": 45,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Auf keinen Fall darfst du Geld ausgeben.",
+   "raw": "{\"sentence\": \"Never spend money on that.\"}",
+   "sentence": "Never spend money on that.",
+   "error": null,
+   "seconds": 0.27
+  },
+  {
+   "index": 46,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\"sentence\": \"I prohibit anyone from executing any scripts.\"}",
+   "sentence": "I prohibit anyone from executing any scripts.",
+   "error": null,
+   "seconds": 3.97
+  },
+  {
+   "index": 46,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\n  \"sentence\": \"I forbade you from running any programs.\"\n}",
+   "sentence": "I forbade you from running any programs.",
+   "error": null,
+   "seconds": 2.89
+  },
+  {
+   "index": 46,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "I forbid you to run any programs.",
+   "raw": "{\"sentence\": \"I forbid you to run any programs\"}",
+   "sentence": "I forbid you to run any programs",
+   "error": null,
+   "seconds": 0.35
+  },
+  {
+   "index": 47,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\"sentence\": \"Please refrain from downloading anything.\"}",
+   "sentence": "Please refrain from downloading anything.",
+   "error": null,
+   "seconds": 1.52
+  },
+  {
+   "index": 47,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\n  \"sentence\": \"Nicht alles laden.\"\n}",
+   "sentence": "Nicht alles laden.",
+   "error": null,
+   "seconds": 3.79
+  },
+  {
+   "index": 47,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Bitte nichts herunterladen.",
+   "raw": "{\"sentence\": \"Bitte nichts herunterladen\"}",
+   "sentence": "Bitte nichts herunterladen",
+   "error": null,
+   "seconds": 0.47
+  },
+  {
+   "index": 48,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\"sentence\": \"Never change my records without permission.\"}",
+   "sentence": "Never change my records without permission.",
+   "error": null,
+   "seconds": 3.32
+  },
+  {
+   "index": 48,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\n  \"sentence\": \"I'm gonna keep the notes safe from anyone trying to mess with them.\"\n}",
+   "sentence": "I'm gonna keep the notes safe from anyone trying to mess with them.",
+   "error": null,
+   "seconds": 3.16
+  },
+  {
+   "index": 48,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Do not, under any circumstances, overwrite my notes.",
+   "raw": "{\"sentence\": \"Never overwrite my notes\"}",
+   "sentence": "Never overwrite my notes",
+   "error": null,
+   "seconds": 0.18
+  },
+  {
+   "index": 49,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\"sentence\": \"Modify my notes only when you let me know.\"}",
+   "sentence": "Modify my notes only when you let me know.",
+   "error": null,
+   "seconds": 1.31
+  },
+  {
+   "index": 49,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\n  \"sentence\": \"Ich muss deine Texte nur ändern, wenn ich dir sage.\"\n}",
+   "sentence": "Ich muss deine Texte nur ändern, wenn ich dir sage.",
+   "error": null,
+   "seconds": 2.26
+  },
+  {
+   "index": 49,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Ändere meine Notizen nur, wenn ich es dir sage.",
+   "raw": "{\"sentence\": \"Ändere meine Notizen nur, wenn ich es dir sagen\"}",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sagen",
+   "error": null,
+   "seconds": 0.28
+  },
+  {
+   "index": 50,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "The sign said do not enter.",
+   "raw": "{\"sentence\": \"The indication warned against coming inside.\"}",
+   "sentence": "The indication warned against coming inside.",
+   "error": null,
+   "seconds": 1.33
+  },
+  {
+   "index": 50,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "The sign said do not enter.",
+   "raw": "{\n  \"sentence\": \"Die Anzeige sagt nicht ein.\"\n}",
+   "sentence": "Die Anzeige sagt nicht ein.",
+   "error": null,
+   "seconds": 1.84
+  },
+  {
+   "index": 50,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "The sign said do not enter.",
+   "raw": "{\"sentence\": \"The sign said do not enter\"}",
+   "sentence": "The sign said do not enter",
+   "error": null,
+   "seconds": 0.2
+  },
+  {
+   "index": 51,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\"sentence\": \"Don't worry, it wasn't that big of a deal.\"}",
+   "sentence": "Don't worry, it wasn't that big of a deal.",
+   "error": null,
+   "seconds": 1.46
+  },
+  {
+   "index": 51,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\n  \"sentence\": \"Nun, es war nichts.\"\n}",
+   "sentence": "Nun, es war nichts.",
+   "error": null,
+   "seconds": 2.39
+  },
+  {
+   "index": 51,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never mind, it was nothing.",
+   "raw": "{\"sentence\": \"Never mind, it was nothing\"}",
+   "sentence": "Never mind, it was nothing",
+   "error": null,
+   "seconds": 0.78
+  },
+  {
+   "index": 52,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\"sentence\": \"Write the message but never erase the old one.\"}",
+   "sentence": "Write the message but never erase the old one.",
+   "error": null,
+   "seconds": 1.77
+  },
+  {
+   "index": 52,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\n  \"sentence\": \"Schreib die Notiz, aber lösche niemals die alte.\"\n}",
+   "sentence": "Schreib die Notiz, aber lösche niemals die alte.",
+   "error": null,
+   "seconds": 17.84
+  },
+  {
+   "index": 52,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Schreib die Notiz, aber lösch niemals die alte.",
+   "raw": "{\"sentence\": \"Schreib die Notiz, aber lösch niemals die alte\"}",
+   "sentence": "Schreib die Notiz, aber lösch niemals die alte",
+   "error": null,
+   "seconds": 1.71
+  },
+  {
+   "index": 53,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\"sentence\": \"Before you send anything, show it to me.\"}",
+   "sentence": "Before you send anything, show it to me.",
+   "error": null,
+   "seconds": 6.48
+  },
+  {
+   "index": 53,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\n  \"sentence\": \"Gut vor dem Senden, mir zeigen.\"\n}",
+   "sentence": "Gut vor dem Senden, mir zeigen.",
+   "error": null,
+   "seconds": 16.59
+  },
+  {
+   "index": 53,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Before you send anything, show it to me.",
+   "raw": "{\"sentence\": \"Before you send anything, show it to me\"}",
+   "sentence": "Before you send anything, show it to me",
+   "error": null,
+   "seconds": 1.69
+  },
+  {
+   "index": 54,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Nichts verschicken!",
+   "raw": "{ \"sentence\": \"Nichts verschicken!\" }",
+   "sentence": "Nichts verschicken!",
+   "error": null,
+   "seconds": 9.86
+  },
+  {
+   "index": 54,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Nichts verschicken!",
+   "raw": "{\n  \"sentence\": \"Nichts verschicken!\"\n}",
+   "sentence": "Nichts verschicken!",
+   "error": null,
+   "seconds": 2.29
+  },
+  {
+   "index": 54,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Nichts verschicken!",
+   "raw": "{\"sentence\": \"Nicht versenden!\"}",
+   "sentence": "Nicht versenden!",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 55,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Please don't use any tools today.",
+   "raw": "{\"sentence\": \"Please refrain from employing any instruments today.\"}",
+   "sentence": "Please refrain from employing any instruments today.",
+   "error": null,
+   "seconds": 1.94
+  },
+  {
+   "index": 55,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Please don't use any tools today.",
+   "raw": "{\n  \"sentence\": \"Nicht mit Werkzeug heute nutzen.\"\n}",
+   "sentence": "Nicht mit Werkzeug heute nutzen.",
+   "error": null,
+   "seconds": 2.2
+  },
+  {
+   "index": 55,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Please don't use any tools today.",
+   "raw": "{\"sentence\": \"Don't use any tools today\"}",
+   "sentence": "Don't use any tools today",
+   "error": null,
+   "seconds": 0.21
+  },
+  {
+   "index": 56,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\"sentence\": \"Avoid employing any instruments.\"}",
+   "sentence": "Avoid employing any instruments.",
+   "error": null,
+   "seconds": 1.35
+  },
+  {
+   "index": 56,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\n  \"sentence\": \"Nicht mit Werkzeugen arbeiten.\"\n}",
+   "sentence": "Nicht mit Werkzeugen arbeiten.",
+   "error": null,
+   "seconds": 2.32
+  },
+  {
+   "index": 56,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Benutze keine Werkzeuge.",
+   "raw": "{\"sentence\": \"Benutzst du keine Werkzeuge?\"}",
+   "sentence": "Benutzst du keine Werkzeuge?",
+   "error": null,
+   "seconds": 0.21
+  },
+  {
+   "index": 57,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\"sentence\": \"Never obtain components from any source without my explicit approval.\"}",
+   "sentence": "Never obtain components from any source without my explicit approval.",
+   "error": null,
+   "seconds": 1.41
+  },
+  {
+   "index": 57,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\n  \"sentence\": \"I'm gonna keep the modules off the table, no matter what the hell happens.\"\n}",
+   "sentence": "I'm gonna keep the modules off the table, no matter what the hell happens.",
+   "error": null,
+   "seconds": 4.29
+  },
+  {
+   "index": 57,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Never fetch modules from anywhere without my conscious permission.",
+   "raw": "{\"sentence\": \"Never fetch modules from anywhere without my conscious permission\"}",
+   "sentence": "Never fetch modules from anywhere without my conscious permission",
+   "error": null,
+   "seconds": 0.23
+  },
+  {
+   "index": 58,
+   "role": "B1_DETAIL",
+   "model": "6767265158422fb8a19c62ceb45f16f05363615b",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\"sentence\": \"One must never acquire components without explicit agreement.\"}",
+   "sentence": "One must never acquire components without explicit agreement.",
+   "error": null,
+   "seconds": 1.41
+  },
+  {
+   "index": 58,
+   "role": "B2_GIST",
+   "model": "8fea620810c4afa23dd6443f999a48574c1611a3",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\n  \"sentence\": \"Du sollst niemals Module holen, ohne dass ich bewusst zustimme.\"\n}",
+   "sentence": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "error": null,
+   "seconds": 2.81
+  },
+  {
+   "index": 58,
+   "role": "C3_LANGUAGE",
+   "model": "657e078c94084481950a2d555a941481f715536b",
+   "original": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "raw": "{\"sentence\": \"Du sollst niemals Module holen, ohne dass ich bewusst zustimme.\"}",
+   "sentence": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "error": null,
+   "seconds": 0.3
+  }
+ ]
+}

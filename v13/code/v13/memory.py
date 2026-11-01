@@ -24,6 +24,12 @@ def relevance(a,b):
         if not shared:return 0.
         score=max(score,len(shared)/len(kb))
     return score
+def _stable_selection(sel):
+    """Selection without row IDs or random source IDs (WP-Z11: they broke the STEP4 fingerprint across homes)."""
+    if not isinstance(sel,dict):return sel
+    ref=sel.get('source_ref') or {}
+    return {k:v for k,v in sel.items() if k not in {'message_id','source_ref'}}|{'source_ref':{k:ref.get(k) for k in ('sha256','char_start','char_end','modality')}}
+
 class Memory:
     def __init__(self,store,cfg):self.s=store;self.cfg=cfg
     def key_source(self,m):
@@ -136,7 +142,7 @@ class Memory:
         stable={'schema':'V13_STEP4_EXPERIENCE_V1','input_sha256':digest(input_text),
                 'self':[{'status':x['status'],'sha256':x['sha256'],'model_revision':x['metadata'].get('model_revision')} for x in lanes['self']],
                 'reference':[{'status':x['status'],'sha256':x['sha256'],'model_revision':x['metadata'].get('model_revision'),'reference_only':x['metadata'].get('reference_only',False)} for x in lanes['reference']],
-                'human':[{'kind':x.get('kind'),'value':x.get('value'),'learning_permission':x.get('learning_permission'),'selection':x.get('selection')} for x in decisions]}
+                'human':[{'kind':x.get('kind'),'value':x.get('value'),'learning_permission':x.get('learning_permission'),'selection':_stable_selection(x.get('selection'))} for x in decisions]}
         return {'schema':'V13_STEP4_EXPERIENCE_V1','event_id':event_id,'experience_id':e['experience_id'],'brain_generation_id':e['generation_id'],'source_ref':source_ref,'input':input_text,'lanes':lanes,
                 'decisions':decisions,'teacher_truth_authority':False,'fingerprint_sha256':digest(dumps(stable))}
     def export_dataset(self,session=None):

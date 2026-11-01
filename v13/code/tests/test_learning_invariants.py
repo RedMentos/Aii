@@ -63,5 +63,23 @@ class DataMixBeforeTraining(unittest.TestCase):
                 def poison(st):st['batches'][out['batch_id']]['items']+=[{'kind':'sdft','origin':'dream','target':'z'}]*5
                 w.box.mutate(poison);self.assertEqual(w.train(out['batch_id'])['status'],'DATA_MIX_FAIL')
             finally:r.close()
+    def test_stage_sample_modulation_opt_in(self):
+        import tempfile
+        from pathlib import Path
+        from v13.runtime import Runtime
+        from v13.agi.weights import WeightConsolidation
+        for on in (False,True):
+            with tempfile.TemporaryDirectory() as t:
+              r=Runtime(Path(t))
+              try:
+                if 1:
+                    w=WeightConsolidation(r.store,r.cfg|{'learning_mode':'SHADOW','sample_modulation':on})
+                    w.candidates=lambda require_replay_pass=True,**kw:[{'memory_id':'m'+str(i),'kind':'fact','prompt':'k'+str(i),'target':'v','source_ref':{}} for i in range(9)]
+                    w.rated_candidates=lambda:[{'memory_id':'rating:a','kind':'rated_answer','prompt':'q','target':'a','source_ref':{}}]
+                    b=w.batch(w.stage(origin='USER',include_rated=True)['batch_id'])
+                    ws={i['memory_id']:i.get('weight') for i in b['items']}
+                    if on:self.assertIsNone(b['sample_modulation']['dropped'] or None);self.assertAlmostEqual(ws['m0'],1.0);self.assertLess(ws['rating:a'],.2)
+                    else:self.assertIsNone(b['sample_modulation']);self.assertIsNone(ws['m0'])
+              finally:r.close()
 
 if __name__=='__main__':unittest.main()

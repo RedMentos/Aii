@@ -1,0 +1,2329 @@
+{
+  "schema": "v13-action-jepa-export-plan-v1",
+  "sentences_sha256": "b67ec434f0e0fbc91f2502dc50a4551fb29f6ab7e1001f4a458e0c7c14ef5828",
+  "actions_sha256": "36380af40c5896aa6cdbcaf906b7c4471c57383a7064c054673035ca0c6c200e",
+  "texts_sha256": "e68867ce03b1c62b85b55cc9c09b7e8767807c8e87193f0df37773572359e7cc",
+  "actions": [
+    "translate_de",
+    "question",
+    "negate",
+    "summarize"
+  ],
+  "native_text_order": "all_inputs_then_action_major_outputs",
+  "source_sentences": 375,
+  "native_rows": 1875,
+  "legacy_split_seed": 13,
+  "partition_seed": 20261011,
+  "legacy_topics": {
+    "train": [
+      "dogs",
+      "buying a car",
+      "camping",
+      "winter weather",
+      "football",
+      "birthday parties",
+      "computer programming",
+      "dentists",
+      "cooking pasta",
+      "museums"
+    ],
+    "test": [
+      "coffee",
+      "learning the guitar",
+      "the ocean",
+      "train travel",
+      "gardening",
+      "space and planets"
+    ]
+  },
+  "new_topics": {
+    "train": [
+      "computer programming",
+      "football",
+      "buying a car",
+      "dogs",
+      "birthday parties",
+      "cooking pasta"
+    ],
+    "calibration": [
+      "camping",
+      "winter weather"
+    ],
+    "retention": [
+      "dentists",
+      "museums"
+    ],
+    "test": [
+      "coffee",
+      "learning the guitar",
+      "the ocean",
+      "train travel",
+      "gardening",
+      "space and planets"
+    ]
+  },
+  "kept_episodes": [
+    {
+      "original_index": 0,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "de8ff310ba60fa9f98ad19f757e17de3c95aacf50eb3d50d143e0be4ab937ddb"
+    },
+    {
+      "original_index": 1,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "9d4f02c840cafb457407ab7fd4818ee160b4051c6ff3e1c62169d8cb53d7d34f"
+    },
+    {
+      "original_index": 2,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "0abf76ed93528a37c588c3dac532ca400bd2466ca686d8baa387ff57577ebffc"
+    },
+    {
+      "original_index": 3,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "09056a0b1b044c29692bf2b92abf62b833886d1bb04cbb37ca011a660c795fc4"
+    },
+    {
+      "original_index": 4,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "3fcc068961b4b1c9bb92317da8f82f9a143e2a634835eac3f73bed47a36a7112"
+    },
+    {
+      "original_index": 5,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "bed225e4768ea482ea33fa2fe49be51d0a2c6d4a9f58ca23280aea41bbb47787"
+    },
+    {
+      "original_index": 6,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "417388e022f22cc8850cef28def27326d3c9b3cf0c00d456e51f14e02258c5fa"
+    },
+    {
+      "original_index": 7,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "c8a13a4e4a8c4e8bb1c3147dd6739e6e737c59dad564e62e862b78223d3d9bf3"
+    },
+    {
+      "original_index": 8,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "d567e6536e7f35418f968842c82a645412b7c683c2be2198e137d7afe3dd5c81"
+    },
+    {
+      "original_index": 9,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "871e0cea3804a4b14bd81642cfcb89f1e465898af0d2475b7adf498099576049"
+    },
+    {
+      "original_index": 10,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "73e65b591b5739a0a99f5d22c67c168c17821a312f903081fa62ed9bdbeac2a2"
+    },
+    {
+      "original_index": 11,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "0ba9823eef511f6c8fe6ff156cd4ea3cf06e1e7f172a38cd5fab88462df26055"
+    },
+    {
+      "original_index": 12,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "bf45f30b80f69f4fdc3317d3fd901ee96543dc78501d10a133ebb11792ebf95e"
+    },
+    {
+      "original_index": 13,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "2080e5ee813d864e936c5f5c1aa3e0dc939e29fffa53bd315e4cac4a05bb1ccc"
+    },
+    {
+      "original_index": 14,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "8c13b3f85759a95719fd8dfc09a01e44ed4aadd8ad13766957f521e4b82e94b4"
+    },
+    {
+      "original_index": 15,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "5d329b6512b34fd7ab2e01eea819b8558ee82f2b3d109ea53aae6f6a6a232359"
+    },
+    {
+      "original_index": 16,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "440a300922f9aedc3cef351e18b6289409fc6d14ed854f88259a1763c3df64a2"
+    },
+    {
+      "original_index": 17,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "87232a639e8d954570d47a197bc008e457cc03220315b2d90257af2f6e6090f4"
+    },
+    {
+      "original_index": 18,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "a41e9463b5bfa979ec4ded13d551e60a1944a1b7b327e1243687d307e2006d33"
+    },
+    {
+      "original_index": 19,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "c7f67887272ee975905634ea85d3acdd16396c52cf208f7619d411c018df406c"
+    },
+    {
+      "original_index": 20,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "a650f5c63602db44ba792d93fff6e4dcdfceeebde14daf62f5d596af3f1c046d"
+    },
+    {
+      "original_index": 21,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "0757a7f6dd505805aa673a7e5db135ddbe095ac961d7458a3e717a645baea53d"
+    },
+    {
+      "original_index": 22,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "5862c4fe82878cba1b19c32c5ec9fd810e4bd18b50781cc0c0225a4039b3b2a1"
+    },
+    {
+      "original_index": 23,
+      "topic": "birthday parties",
+      "partition": "train",
+      "episode_id": "f100e2ac922e11aa3340a5e99fc52d8b97ddb1c8dbed97c075e444d9bea4c4d7"
+    },
+    {
+      "original_index": 24,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "0f5006d4554cbc1c0abc84f251ae983fa049803160baa6d41e71917b545415f6"
+    },
+    {
+      "original_index": 25,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "2d30bc8cb748bc386f3e8fba968e46b9420e770c227740070a045e651c4c37cd"
+    },
+    {
+      "original_index": 26,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "63f25ae5c7e2bf3d269b227a31948b2c8eb43ef8e4dee21906f403452ba41bf3"
+    },
+    {
+      "original_index": 27,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "4f2d6a6eb6eb0d0d3c34eb36c49cc2a85c8145b6762a2a4baa53851fba402d64"
+    },
+    {
+      "original_index": 28,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "cc748b8bbe78e2ea0ad6aeb7bdd1a466ec5b15e5585ce52341cd764a87b98403"
+    },
+    {
+      "original_index": 29,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "8665592349774210acd35845419cfc676f7066912913e908ccc6146785f79096"
+    },
+    {
+      "original_index": 30,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "0197d228d0350a48b598a3280fc585ae7dc2432e110b60c696c47456f3feb173"
+    },
+    {
+      "original_index": 31,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "6c2695ab81b5634a59c7218ec06b6d0158bf08e94eff068a3c5d1152606ed89b"
+    },
+    {
+      "original_index": 32,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "826da899959381e70782d9333b5fa9c5e2633a7fc06f42982c797d62c6017a31"
+    },
+    {
+      "original_index": 33,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "47aef1d39f131380469aebfce2717a39debb073d2dbfafb6606f60dd1b03e70b"
+    },
+    {
+      "original_index": 34,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "689e0113911ab01b598a5c9bf402826c15ef92a3044b441f6a5806f6a9179658"
+    },
+    {
+      "original_index": 35,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "63a555029fd84cb9830defc2e39936eb54619341d796f71633adffb80985c5e1"
+    },
+    {
+      "original_index": 36,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "4e6ca3e7b3a0b6af39ee506f88a990958dff956fe9cb9b4e66a599b347114f58"
+    },
+    {
+      "original_index": 37,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "dfbfc1507d25b168a7294eeec3bd28ef9ee88070914de75d769ae48e397ac064"
+    },
+    {
+      "original_index": 38,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "889044bfa75df04fb206677bfd10990c1bec5baccd31e9943e5594081c48066d"
+    },
+    {
+      "original_index": 39,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "daecc668cabbbcb6719db6b0ff2e42e2f6ca2bb9134ccf05612ec9eb8d01d8ec"
+    },
+    {
+      "original_index": 40,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "84f52529ebc3b91498f3f47a8cd913dbcf3d048b36e6ad9457165afb8e665db5"
+    },
+    {
+      "original_index": 41,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "5b47a188a42eb0cd56f6ffc05283d2a897b9c9bb867e66872236da9f524a11d1"
+    },
+    {
+      "original_index": 42,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "d6fe2f090e8fb0e7b04133e9415a0e7a3b0447e95d3982e2631be40e7cd984f2"
+    },
+    {
+      "original_index": 43,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "c2c8ede438d204826c569329738878982ff5d583350f9b0a2c07e50fa12f0d64"
+    },
+    {
+      "original_index": 44,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "ca9a39c97f3952eab27628533fd5ce3a949640bae315658582c108c25d1a4601"
+    },
+    {
+      "original_index": 45,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "c93ddb53b93e22b278719353d800286bfdac602db7e24460560b81f8bb04cf9f"
+    },
+    {
+      "original_index": 46,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "f2e218610fdc81ce201f36c6ac356caca3662d4e7cf74f7ed505c3a97d82298b"
+    },
+    {
+      "original_index": 47,
+      "topic": "buying a car",
+      "partition": "train",
+      "episode_id": "7c3ede350b3913d5f5501e5f25bc0e2189f9a1f981e7589665bce3a07b3df70d"
+    },
+    {
+      "original_index": 48,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "5c17937bcc27524ea54f19f985070d384af31c5ec0eb74dc06129b3eca25c10b"
+    },
+    {
+      "original_index": 49,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "696afc3b2a664534079ef88f28aabc8e6fc52d1de20a7d8e91f9030200532566"
+    },
+    {
+      "original_index": 50,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "aa1064d7ab5335eaf689c155cea25308ab38b74a9e84f44bbbbc0551c989de61"
+    },
+    {
+      "original_index": 51,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "00d39c26aa603998018fe24b6d6db8f8021307bc6140613bf7e09c6181237d8d"
+    },
+    {
+      "original_index": 53,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "3175b688e92d7abf3a8a7a0f33fe3e9ef06f3664062b4a403af468500d496525"
+    },
+    {
+      "original_index": 54,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "dcff841475819caf94aba512ab2b1933aa8352e267cd46f2bbbdbb9ec58670c9"
+    },
+    {
+      "original_index": 55,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "4b89ccc9429ad444890f160651749933867d7c463eeb56bed7210cb690c5a89e"
+    },
+    {
+      "original_index": 56,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "ab1ba34fb04d8cd726e9af020a82f975b4bb4ed9fdbb831a6e6414a4f5af16a0"
+    },
+    {
+      "original_index": 57,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "d302909a8e52545f2b2a8d712801f047989ad2fda7b03a9d0b88ffef4b59c0a4"
+    },
+    {
+      "original_index": 58,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "70f1d06283fadc522640026f3f4fa02974a29ad667398b13f4c26fbab0dd4a66"
+    },
+    {
+      "original_index": 59,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "f21b3cf6f4b561ae1dcf707a4120a51f794e544e25e3b61f86769f4ccd4cf326"
+    },
+    {
+      "original_index": 60,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "430aa6f299069936d1f8c5230ed6e80d5fbc9bb00d653ca169526ed4e106dc56"
+    },
+    {
+      "original_index": 61,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "1ef0198b3f501df4daacb3f445376638873a1b950fde740e05be465bc6a1cf70"
+    },
+    {
+      "original_index": 62,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "66bf76b1bf0179f72592183b50ea446107b8aeb3915959d4344abd5d9eba06a4"
+    },
+    {
+      "original_index": 63,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "16ecda0215a1091b7eee82351af094a65934bd46d2cfe3dfe24dc998a4c69214"
+    },
+    {
+      "original_index": 64,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "7876809f730de87d9e7f98d8297c3c97044ade14b5b7f45cce544b41e2299b4e"
+    },
+    {
+      "original_index": 65,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "11696432b50b6b118cfb324d67016e549a0a19f4975b37f05e6d5b7293dec817"
+    },
+    {
+      "original_index": 66,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "328804cd4e1a4bd083a7fe9413eb852476e812962c82ffad815462969004feba"
+    },
+    {
+      "original_index": 67,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "990ede2e08719f8b360e61411a1bf32717001687a0c53f056d0d6aaa946facaf"
+    },
+    {
+      "original_index": 68,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "6a12ce409ea67685f53902d6bb896daeebba614962a7d122dad0bda2139636bc"
+    },
+    {
+      "original_index": 69,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "d7336b4b35097993e88423e036824a19b56b62fe34affde4a5fd8c2413c4edd3"
+    },
+    {
+      "original_index": 70,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "788e0e833cb534374a79420df89dd68fa28f19f1e255d1ea4be43495a3129e4f"
+    },
+    {
+      "original_index": 71,
+      "topic": "camping",
+      "partition": "calibration",
+      "episode_id": "41cfc0e909b99ca5d882cae428e4c52bab69d77dc7757eb495b795984cc923a0"
+    },
+    {
+      "original_index": 72,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "ea843daa0a48201bc578a6668a5df2d08a0ed7721eb5a54f0592c501d9444814"
+    },
+    {
+      "original_index": 74,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "69deb8e2ccfb4f6c682f1f972418aab6e4973e05e3f368e872950b4bad4d95cd"
+    },
+    {
+      "original_index": 75,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "ee766cb898e0329c2fbcb1036377300de91fa59ec6c9d338f4bbdabb98a72ab0"
+    },
+    {
+      "original_index": 76,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "de30edc8b55e0d4cdbc71effa5d33eb2e4055375fedc61b9899418cff2ef54e8"
+    },
+    {
+      "original_index": 77,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "64844f2e3d0e632a20b00a5467d9f91846a35c584e1034cf539c4d3f7e6a9d24"
+    },
+    {
+      "original_index": 78,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "5e33b23398ebf8fe981dbba2d103e7e6ba84024abaec9039cbccc1c064a0e85c"
+    },
+    {
+      "original_index": 79,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "c0744b510becc405288cf3ff5c405b922aad465e6edae2990cb7330565431498"
+    },
+    {
+      "original_index": 80,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "5d41974265905363ffdfe5750f4bc43690e9a65af62359ac4fe3b8199b225995"
+    },
+    {
+      "original_index": 81,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "99d14e445fce870353759d3be00fb902648b1aa5f1c5845f684689453231cd9b"
+    },
+    {
+      "original_index": 82,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "bc4cf0ebfa9e630a79f715c66dad65f38608983e2f0766d130ae86c6ddee943a"
+    },
+    {
+      "original_index": 83,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "d1fe4b2279c6d369ae86a1bf4089f32dab2a4579add3323dfd615d7603526676"
+    },
+    {
+      "original_index": 84,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "5ae991bae4cebb3ad2a160ee19ce8906923dd0ef489dc50d95428e32a8e1373d"
+    },
+    {
+      "original_index": 85,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "c89a4e4ae95dcbae0946b4cab8257e9da2f28d318892d9cd7f009e6dcb52e1e0"
+    },
+    {
+      "original_index": 86,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "c193c9908764700a41b164f85074ef94060c76a8752ccb646625f19263945f3d"
+    },
+    {
+      "original_index": 87,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "ad9d2249a720a11d53a01108fa961e844bde2b859b217db95de9f283d130aa37"
+    },
+    {
+      "original_index": 88,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "199f3bfea0765e94c7eb6d2645222bffff540cf812e67cdd35d970d652ce7122"
+    },
+    {
+      "original_index": 89,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "cd13335011f7d1e7e52f0e1163700dbf0684fa5cdd3d752bb0ff2f7f74a11c36"
+    },
+    {
+      "original_index": 90,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "75db47eefec38f5ed3edcf87544c81e12cb52fba5af543ec00b9ecc93ec08713"
+    },
+    {
+      "original_index": 91,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "f50d1af5726ebcd7a8ab97b776448ced760cba3e80affdc12314347090318820"
+    },
+    {
+      "original_index": 92,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "e0e9eb3bb30b61e68b887bc0af815c60b1e95d06110a541d1fe9425041925783"
+    },
+    {
+      "original_index": 93,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "34503cd0f285d4922cd34aaddf7150bf5a05a34fc5b77504a28e9a2ad8d06e4e"
+    },
+    {
+      "original_index": 94,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "87fd593c1fcc6257005b94ec01fef1e6fad7d5099bfd8cdaf1c61639c9edbf18"
+    },
+    {
+      "original_index": 95,
+      "topic": "coffee",
+      "partition": "test",
+      "episode_id": "d16843c9541ad1ec377c8573b098a42e34689c9d6ff55fd013f8e455efc9e847"
+    },
+    {
+      "original_index": 96,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "35e91f64eb2eedeafba0af07849b42c8886241a0cd81e55ca70b1f33a29001d2"
+    },
+    {
+      "original_index": 97,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "78f3dbfaa4a17e5ab9b02da2879b7cdcfe6f58af0f6b018fd5869716b39ba0b4"
+    },
+    {
+      "original_index": 98,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "a0c1ec374add5277814d501bcc9d3e06669d3e33c09b8af2422a0d52a2e5bb73"
+    },
+    {
+      "original_index": 99,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "09618de18e6845215e069738c299590b6c207947b987317ec8911a1b2abab200"
+    },
+    {
+      "original_index": 100,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "68e6eecc2ba3798fe194a3ef6239d48d2c714adc9acf3cdfe7ead778a57cde46"
+    },
+    {
+      "original_index": 101,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "239fa762760edfa445745c2a064583ac859aea1699de3384dbf4a48d901b68d8"
+    },
+    {
+      "original_index": 102,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "9196a5ed22c2956f6749f52e0aabf1876ea656d0656ea7e2cb8ccad91ce67fc4"
+    },
+    {
+      "original_index": 103,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "800131a4600760cc70c15a86951e7733c0be9dc1eedce0927a5969c26e232fd8"
+    },
+    {
+      "original_index": 104,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "ae2acb5b11ecd1f6a8d0d244c597022214d5e5f2e2f6c44d072f5bc9772c8ae4"
+    },
+    {
+      "original_index": 105,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "0406b03df7b2a882ad9e7f3ef99b2c8cd3ae20620ad8c571b1e409158b5fe5fc"
+    },
+    {
+      "original_index": 106,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "b06022e4cca8c36eb38dfacbb81bcf0fcdf043a9f19a6a19f91319683df6cea3"
+    },
+    {
+      "original_index": 107,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "173e12ddb8c3368fd1efedd5e1de96d7578d198705c5ec29afe4a3063a7b5266"
+    },
+    {
+      "original_index": 108,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "9363321d5eed51e37a43336f2e67f4bddcd6df96dadb6b9c81e665c6beeca3b2"
+    },
+    {
+      "original_index": 109,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "93918c7a1cdc0e4ff30d04f71351b89820d025b816eba8a56758c04053eb62b9"
+    },
+    {
+      "original_index": 110,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "556e06d38218175703ca58d521ffa837bb9d2e571e72c8cba7f3affe7f75df35"
+    },
+    {
+      "original_index": 111,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "1f57296880bcfac04b9e60b4683ef21ca3ea1c81b2abcc751bb345f3f0a030d9"
+    },
+    {
+      "original_index": 112,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "78b86256af2a81773043ae69ed5d44720a61b60e374c79a8e0c2e7f6ead49c5c"
+    },
+    {
+      "original_index": 113,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "016c60ea1370a2d99f27d63375ec95459f6a68b588b50424e5a902562389af41"
+    },
+    {
+      "original_index": 114,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "6bdf748bb9863d31806af72dbbc2e92dbdee4316d19d53e0db8df3050dbbcf87"
+    },
+    {
+      "original_index": 115,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "6ee07df6546fdacdd4fa3b4c762c66f06b0e5ed4a564d7333a928bda4e0b1914"
+    },
+    {
+      "original_index": 116,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "520ee6277b5dfba53dd2d7515af843654016188175a099c707ecf8f62a1e7718"
+    },
+    {
+      "original_index": 117,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "900cc5a1730f819546fc37bc01a57422eab8f8a9e5919d379bdbff929be5c262"
+    },
+    {
+      "original_index": 118,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "17d8a05ec75b4709d2c19dc91e0874a718447224f51e8fcd751a59f7130541f2"
+    },
+    {
+      "original_index": 119,
+      "topic": "computer programming",
+      "partition": "train",
+      "episode_id": "acd2118763d995a3ce450d81643ce3e4b0a9a4389fb38ee084aa0e3a0c8b4d5a"
+    },
+    {
+      "original_index": 120,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "a2ef7050167cb3b232eb097af482943e794e01cd5c59310e6e90442142ed5608"
+    },
+    {
+      "original_index": 121,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "4a8f840e93b7ea4221c3f35b9d96d5ec21e821a9c4c740e34407860c0282184a"
+    },
+    {
+      "original_index": 122,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "8c9a48c7f7dc613a5657b152b812a702187cbd5423f1db9caf43755f39f3ee9d"
+    },
+    {
+      "original_index": 123,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "f19cf5f4a6a389fc71ca4f9c7f4024acb860d24df5b0a921ff1cf4a127e884c0"
+    },
+    {
+      "original_index": 124,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "f839ab4eb14996a2ae7f3c80e4467cd2803ee1644fee0a4f174b2efcf1aba7bf"
+    },
+    {
+      "original_index": 125,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "90de1386beb2c2220faa3f0ae031763538f323ec88bfcd48415d3e1d02f08a84"
+    },
+    {
+      "original_index": 126,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "4acdf7d6f39d6df683a7564bf7fb201bb9ee5f792ee8766f3188f875c3037766"
+    },
+    {
+      "original_index": 127,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "b3d342e8d40653d0486e43f102b96ad1ae17ec3917ef6c42a838f1f2d697ede0"
+    },
+    {
+      "original_index": 128,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "83a08525ac649d2f3250fa6d5654dd3989b259712734458c3b23101983c99d2e"
+    },
+    {
+      "original_index": 129,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "d8bc909bbd5adf4c839306a81018fdb866701d7fd7f02bbd8faba92c7076dda6"
+    },
+    {
+      "original_index": 130,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "3f55c3020597e1b8d64033a9cd176a31acd64a5ee1c9a1803946e8fd86e6e0ad"
+    },
+    {
+      "original_index": 131,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "22486d7a45fe7c80c5fcde1a3b4787749cda61ed947a776febcf40eb18bfb059"
+    },
+    {
+      "original_index": 132,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "fd9e15a2afa9042a1bfc8501083c52037d2b4dbf4cd5e19e4a49de2b32e814b9"
+    },
+    {
+      "original_index": 133,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "4d85caccc8cf07b2d297495e385c10dd1adcc3e41ff118823bcaf8b43cecedcb"
+    },
+    {
+      "original_index": 134,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "de7ff4e1afb35ef60c68edbfce7362e85185f11addfdfef183fc62d8b42b54c9"
+    },
+    {
+      "original_index": 135,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "77c1147d4aca06f39cee3ba6752ce45607fe86cbd4500401d027b22e4f165b14"
+    },
+    {
+      "original_index": 136,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "78555c2e18a3196d7898b1c1a0191af75bc6a212fb8b02592823c61889cad5bd"
+    },
+    {
+      "original_index": 137,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "45a31f97b3772174812566d1608c6883182cff419de662ca14f758c1db32e675"
+    },
+    {
+      "original_index": 138,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "e3e4f6f90f5ecda73f9065efaf0ae34de6f30a2d52123780b3091daf74d1011c"
+    },
+    {
+      "original_index": 139,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "0f88d3c583df52ad56216b5f80be795afb57ed124fb32f49d344936877a2bcf7"
+    },
+    {
+      "original_index": 140,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "ca298cf54356fdb5bed830ead580d638b38056956a6ce32ce02ecacce08e79f4"
+    },
+    {
+      "original_index": 141,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "9ae634b03f0fb48e82df694dbb096419af44caf083a3c649bb3d7db7b1588e93"
+    },
+    {
+      "original_index": 142,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "417f114765ad38389bb373fff4b21347731dc501f5c9bd55bec09a4b5e38c6ee"
+    },
+    {
+      "original_index": 143,
+      "topic": "cooking pasta",
+      "partition": "train",
+      "episode_id": "2df740af028a51d63ec546db18101c3181ac8b221214aae5eb89ee07b392fb4a"
+    },
+    {
+      "original_index": 144,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "821111ac705d2c9b42be6c40a4625dce777d9f75a27409de41d756f29d7c1e91"
+    },
+    {
+      "original_index": 145,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "543a5a56b43728d04ca49fb447e1423a1aefb81163e401df3062cbcf3291fdbb"
+    },
+    {
+      "original_index": 146,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "9fdcf1b892a903363c4ce698183157bcd6adfacd29d70615078493c60e160988"
+    },
+    {
+      "original_index": 147,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "603bbb8ba636a5abaa584c0eba14c79856ac852f8550403b36bfee7a49fd0491"
+    },
+    {
+      "original_index": 148,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "914e808915c6a6770a0aedf2f82cd432a290bd0e1a1be172afc93dc6b45a1c65"
+    },
+    {
+      "original_index": 149,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "4eca036f0166d6df162b16d54327992547a8a920af36efd73863b614464b318d"
+    },
+    {
+      "original_index": 150,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "52e8d81b8b5d9708685c5c354e5978cf8847e6dd517edf988d6654fa891c3858"
+    },
+    {
+      "original_index": 151,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "660ba641691407cc57e1d2952bb0e3364ac541cd08b830c2d5ea7b02b83efcf1"
+    },
+    {
+      "original_index": 152,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "3741f084d37854069dbb7b46ba8b2d51af3cb7f727fec3e29783d8c2c67e0026"
+    },
+    {
+      "original_index": 153,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "34490387ec1830d6a7e4a83c984c2ceeafbe8ae6b72ead26befc63321bb93deb"
+    },
+    {
+      "original_index": 154,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "2233511876e0c1a8bb1f3a89ca56fe80e9a8ef79d7f02c4686ee397a2c2f5204"
+    },
+    {
+      "original_index": 155,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "027f5e6396d06671382390b3d3601c819f2e2c2a3d31de140a5079c2b91bed36"
+    },
+    {
+      "original_index": 156,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "3e077d14e4508e93b944c0ed942c69a2c662492d46e4c4c51fc6c3fa64519992"
+    },
+    {
+      "original_index": 157,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "54c62a1b7aa12ef4165d0acf61d5fe11318fe564afd1953d4bfa97ef04fe96d1"
+    },
+    {
+      "original_index": 158,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "3a0a3c576f1d494d2168de9ced1bdc4d00d0268aae7975e8d1f8d0f2040da4ec"
+    },
+    {
+      "original_index": 159,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "3fbe35dc01d18301ceb70d882a738d50f4c0ed35fec834d6ab934cc0d26c38b4"
+    },
+    {
+      "original_index": 160,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "1ba90adedfeb32649f44292badf6954775b36586de127258f8b94f637aa78e16"
+    },
+    {
+      "original_index": 161,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "44925dac0a6065a6df01edf35cc041e2666210c196275230568a6741790738cd"
+    },
+    {
+      "original_index": 162,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "f52deeb5dc891000c93fced6627cf16abeef2a2d56c404677d31484079ca6d63"
+    },
+    {
+      "original_index": 163,
+      "topic": "dentists",
+      "partition": "retention",
+      "episode_id": "6320b2ab5df5e500b44ecd73e75bb8246e2997cc2b76d56aab9c5fa0bb565265"
+    },
+    {
+      "original_index": 164,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "527910dbf144d221d17b540e6e1af8d45cf0f828a3c39685625c0b8b5e4b301f"
+    },
+    {
+      "original_index": 165,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "1b1e77c700aa14245377048e142399c19a0ac66ce50a722b3a319769f3fa905b"
+    },
+    {
+      "original_index": 166,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "3b9603e87b999caeb0a3fd5a104c4ad49c12c3147d10b6329abeab7e6dad4330"
+    },
+    {
+      "original_index": 167,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "66b83615f6f51977196fac174cecf57fc34334092a3f4eac633a8828639ff0eb"
+    },
+    {
+      "original_index": 168,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "bc443beb2f02675b15789d044107b6210d27c91c47cdff02c5ad254686512f5c"
+    },
+    {
+      "original_index": 169,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "1210a11ce01bac2b5075aebd05f7c2fa1bc536e913fe1180e1724446fce2663e"
+    },
+    {
+      "original_index": 170,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "7dafe6d0f6b8996bbb9db3240192869100b956469fc4011cb19f3486ac0ecb2c"
+    },
+    {
+      "original_index": 171,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "c11a7eb69d6c40eae08ecf4e6f6c5ca070b4495a4d8f79d201ffc901c71a4651"
+    },
+    {
+      "original_index": 172,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "75270e0b4ed572adb7a6724f0ef0f62452bace7c7cad3cdd72c6d2b878b0cac9"
+    },
+    {
+      "original_index": 173,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "2439c43cc804583b87af3838c6e3a793ae864185b50c0b264fb117180da190af"
+    },
+    {
+      "original_index": 174,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "04e5b65944d7b59eaf6486562af6a0c3f56742b62136f0e08f27f9e2e0f4c35b"
+    },
+    {
+      "original_index": 175,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "7c3fead86f5db8473caf368bcd33a4508e462c19a1d8e69b468381c0873b66d9"
+    },
+    {
+      "original_index": 176,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "c2d9ee384e56bc272a1134618ad182636528c00a4fc7edd084b798b05a596543"
+    },
+    {
+      "original_index": 177,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "2b5a341501e4f8213a5304189dfd71c01e901bdf3f87aaddf668c421dcab007e"
+    },
+    {
+      "original_index": 178,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "f9bcd698192788c2c03bec519a5b71a880a51ae71a7880267a2c431705e0cd34"
+    },
+    {
+      "original_index": 179,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "1e2a0c4671eee0099bb3e028e40fafa544e22eba79c39385d49ee01868bc22b1"
+    },
+    {
+      "original_index": 180,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "e327302725fb2c03bce06665892a7f9545d05955fa07b10b96aa9e38bf16e7b9"
+    },
+    {
+      "original_index": 181,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "6ad10ff0b4864573198478cbd86bd7ece775e6684921bae876890bd1b25a6144"
+    },
+    {
+      "original_index": 182,
+      "topic": "dogs",
+      "partition": "train",
+      "episode_id": "7297560d172ef89f9c36cf7de07244098b92648fbe4f19fb7cbdd20de0b7cd59"
+    },
+    {
+      "original_index": 183,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "ccb01e7891cf48c5ada00ede656938fd333c7362f33ab1f2e98374d58ff8f602"
+    },
+    {
+      "original_index": 184,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "63e9fa9c4c40defefb1faa8344e2bb96f637862d579b0d95e7feb826374a3091"
+    },
+    {
+      "original_index": 185,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "d00c87616e1949f084b980e6fdbafaf30dbcb115a4e25fa2479ad3c2d6b0aebb"
+    },
+    {
+      "original_index": 186,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "37bfcac1bd7204e3e1c88a2f27df5ba09741a061b0b6c4b2e1b16c78c33dfcc9"
+    },
+    {
+      "original_index": 187,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "c7b28f43a33f90434ace74e10e7fae78e067b620cd1c70a4014c4b4f17259608"
+    },
+    {
+      "original_index": 188,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "2e36ff9b4385cc1e5adb4c6ebbe14410b81e2272dcc67c69bb45ffcfefc339b7"
+    },
+    {
+      "original_index": 189,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "2c74d5f40f6c6d368e8db75c0fcb7a52d5c4501c3a41392b87d4fc12b84ea054"
+    },
+    {
+      "original_index": 190,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "4fda10b002181315a4645fa2fbf1a417b840040c7a0a3b85220b0c35d9184475"
+    },
+    {
+      "original_index": 191,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "458fcc64a2ac0b28a292db4ed5d9891d750c69e6aadde9e64073ede50c384d3f"
+    },
+    {
+      "original_index": 192,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "7d22b3d8cabc14b09fdcc81aa2c381e5d83ee79e2548f228539d455313d0828b"
+    },
+    {
+      "original_index": 193,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "dc0d546a04b872f65f57dc9883f383a0a5a42bdd11a9410b732ddb90135e53fe"
+    },
+    {
+      "original_index": 194,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "fb4f103a2c6b7c36d9464d66d8f1cc9189368d65f7c76e9fa16c557703c7f779"
+    },
+    {
+      "original_index": 195,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "7957450cdbca0678e05b361e1a737ef91c289a94abf88a18d6d616a6f468948f"
+    },
+    {
+      "original_index": 196,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "01c1ea611be7612294df066a3240ce7770b81305e79a8194931e863d894ccc6b"
+    },
+    {
+      "original_index": 197,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "ffe79b488225f8c1f65db73453af05c6a9782341cb0aa9cf603c58b4e3eb0148"
+    },
+    {
+      "original_index": 198,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "aabd4ef52a1695802f27f26ca60dc2e387d100182133ca6a0fc7ddbe14cc18b0"
+    },
+    {
+      "original_index": 199,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "7afbb226a990604c28c50a61a2d782ec35be0b10704e156d54a54c643d3a4051"
+    },
+    {
+      "original_index": 200,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "9acdd1213d4bb81766eb979f672230ad922fd82fe7a4a1a575e755212c372bfa"
+    },
+    {
+      "original_index": 201,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "c2c235ee5ccd073f8cfb71ec0abd4c4737b169449e09de4f7ba1086611ea6c4e"
+    },
+    {
+      "original_index": 202,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "94e0a171692f37dc68665459a4eb36a979bd8c89beb69b81db3c003a4408907a"
+    },
+    {
+      "original_index": 203,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "1de126304c1aaf049610fd6eaf05e6a1cc066b4f54f6fe82ac9390b33fee9534"
+    },
+    {
+      "original_index": 204,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "f3cc51cb227ca6f3dc0be30f8790afbd34e21a58111ccef51d2e8e8b10ccd8ce"
+    },
+    {
+      "original_index": 205,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "4baeca860e873040426ac7feb66dfb0a18bc67714da854e5890a06006fcb59bb"
+    },
+    {
+      "original_index": 206,
+      "topic": "football",
+      "partition": "train",
+      "episode_id": "9899b1815f5308118ec32921aa3ff114ac0f7195a082f7f5ce044182e11a1a6c"
+    },
+    {
+      "original_index": 207,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "277c2010c1fdaabaa71d5eb0f401310ab32b93c42c71f37d9a1365647d1ac2d0"
+    },
+    {
+      "original_index": 208,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "9392b3fa1677fb2f3e6e3f5486676a22bcd3f11e8be196969eb0677a98b2a0db"
+    },
+    {
+      "original_index": 209,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "feff17f710cb50db934156a676c2ec033d4ec7474e4f9ec5d04032f9796d1b02"
+    },
+    {
+      "original_index": 210,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "b885b45b237e1497387bce826c6da0fa93fb3278fdaebb1b61cc61f7ca71d544"
+    },
+    {
+      "original_index": 211,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "56fb9a77feafdd5e38f3182fd240939e2b3db6af78722d4497c52a97dfd0842a"
+    },
+    {
+      "original_index": 212,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "3b3035e7deb5fbac43783de8c867413b521a8e387331de55b1a1342a6ef4d066"
+    },
+    {
+      "original_index": 213,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "69f3ceb85c5c86866536f2857d3eba777dfd208c6a19b9377bb375120bc6f469"
+    },
+    {
+      "original_index": 214,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "ba0b402105fc7aab329cba7edfdb4137c5ac3a9a74263be461d4448716b12b2c"
+    },
+    {
+      "original_index": 215,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "b12bd24ef51f4907aee807d59e2a925b1ff53e67c0aaafca0df94792e1003fa4"
+    },
+    {
+      "original_index": 216,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "da2d519a8d31bf3b234c5aaa3a786b4bb2aec76a095521089257d27c600dd1cd"
+    },
+    {
+      "original_index": 217,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "645a5ec67db43a0d138c0c8b66138ff72541304b845c7af9510d517094bb92cb"
+    },
+    {
+      "original_index": 218,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "42bacb5d2ddb005ce3c97a42335934cd64c3e7696720c21e3586c014ea69ae40"
+    },
+    {
+      "original_index": 219,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "106b112a49cfeb6a6077226d0f492917987259a96a0fac14b01b9bdd047129a3"
+    },
+    {
+      "original_index": 220,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "4e71f503d41ef3a5cce49453fb22454b503fcbe51a541d9e989b4e0464ad6741"
+    },
+    {
+      "original_index": 221,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "c2d4c3719979f57777912b051bff3fd1a134ba75092ef5b84879ae2955ff5eb5"
+    },
+    {
+      "original_index": 222,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "5209df312c2530beeb570f71b7ce64dff27c361a2a4730d0dc6c8e8b729be163"
+    },
+    {
+      "original_index": 223,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "684c8d2888db360ad4fd3df76d3af8777efadf5d6a3f6bf53c0b28e8c5ced801"
+    },
+    {
+      "original_index": 224,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "cbc4465aec5e51275c17afc75ac04508a74b10cf06f4a5ba34838496c99dac3a"
+    },
+    {
+      "original_index": 225,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "29c14ff902ff05a2b740c43253016b80dcd0b8dfae59e7dac5c3acfe71643a6c"
+    },
+    {
+      "original_index": 226,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "c677506d9905ba8cd2da4a908cc472a2983e63e6d1b8e4ed79cd7d5ce8e71493"
+    },
+    {
+      "original_index": 227,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "89239c2579cac7e9016a4d4d76cb721bd8210164073804c392e0e594953c2e89"
+    },
+    {
+      "original_index": 228,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "a228df1c0819e0d3447043a46a072e3208f3f4597b7fa8fb261e142a0f3b83b7"
+    },
+    {
+      "original_index": 229,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "d90da9e114828974d99da7157e4f1dc69f66873a02f4a9b419260b3ac369a484"
+    },
+    {
+      "original_index": 230,
+      "topic": "gardening",
+      "partition": "test",
+      "episode_id": "035a7368aafd734193762c867ee91916c9c9c32f79ed575d503be5d4a097285e"
+    },
+    {
+      "original_index": 231,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "845e7bb2e5d44941f0a7ce528230c4a9175e801d1f2537251fb0c2331d0c8311"
+    },
+    {
+      "original_index": 232,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "247cfe9afdfb264c9aa0b62eb5fb233d127b12ae88ecef2b5af3536e3d9834f5"
+    },
+    {
+      "original_index": 233,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "e9fff7b9f0e96e3d6d1bc4d31258682474980ffe69ce70fbb4678d03f0d1c912"
+    },
+    {
+      "original_index": 234,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "058e4d8ef20f283c3097faa2c6055df35948fd3ddefc32a95a5f6a3cac3248db"
+    },
+    {
+      "original_index": 235,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "398e4733ae5cb6d2a81d5043a6f272f2cacc888ebb7b5c4aaf4b680ec3c87c8e"
+    },
+    {
+      "original_index": 236,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "b412294d91e3f7055f0b0b5442c09ae287226cfbf69ca1b6e7bc49c2e14f6fe1"
+    },
+    {
+      "original_index": 237,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "568d86911396a6a8e174dcabe507fdef5b841d5a21c79645ed617eb42b547134"
+    },
+    {
+      "original_index": 238,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "ca3c43c9e68a6c44df385b7d0139d518d76d0c91614e9fe301760a7e76dd7573"
+    },
+    {
+      "original_index": 239,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "1090f20e52331567c77fe380576eec622b9766a2bc12812ea9d9db8ff50a84f1"
+    },
+    {
+      "original_index": 240,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "c584290f7226acc0cee75ada51c85afb9df1399c5eba717f1f97bd956c5d8ab6"
+    },
+    {
+      "original_index": 241,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "fcd46a1e984758838c62be12abe8987e96b80aca283bd9f0fcb29a24fa7ffdb3"
+    },
+    {
+      "original_index": 242,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "309c896d5daadd2d3d4fea01d9153bfd12112a3dd133d868982a453cddf7f5af"
+    },
+    {
+      "original_index": 243,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "6f025ee6ea8cc63f600002f6268da6917db8a19a1fba6a3720df09558f837572"
+    },
+    {
+      "original_index": 244,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "dc6c1b444c13ec483c966e2a18d91d22d50eb6b1386ee67694fc882adb1e6798"
+    },
+    {
+      "original_index": 245,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "aec2c4dc424dc4329d8b32b7daf79562094c49732a1ac6c7a2ede889bf7d1fd4"
+    },
+    {
+      "original_index": 246,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "cfbad64aa7729e486ea2683e65866cfa66c0e286cfdec62deca5ec24d4cc4574"
+    },
+    {
+      "original_index": 247,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "b8d52116df12ad258f32afb4bf0f4e662f87bfc7c4879823e0d0177206e1b7c9"
+    },
+    {
+      "original_index": 248,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "3c97986a2f2cf3dbfcbe7994258c5c01437b45c5173fdb240ed807005e67d864"
+    },
+    {
+      "original_index": 249,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "9872eba3912ca11811f64b3c8e8cdcb9a38683ae9ffbf474f650a5f7fe4e405a"
+    },
+    {
+      "original_index": 250,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "f4ad878caf2b2e83e565647ba5ca78e11fc829677c6d75f2bcb83eb4dbe0ada4"
+    },
+    {
+      "original_index": 251,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "bc1983e0703893f85672247a96dcee76eefe14ee91cf638c4cdc3a9116d195ad"
+    },
+    {
+      "original_index": 252,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "32c98cdba4be044077108e2cae7041be377383d594a1c4b6f8dfa6f61aec7b82"
+    },
+    {
+      "original_index": 253,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "c2ae4e9c35dd598c8ca4cc6b1dafd7b92f056e2c082b957fd92bb2671491735b"
+    },
+    {
+      "original_index": 254,
+      "topic": "learning the guitar",
+      "partition": "test",
+      "episode_id": "84b15443e9ee3568cac5f3778412423cffdbfb253aa4620607f167bacab4e1d7"
+    },
+    {
+      "original_index": 255,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "3dc2aff339b734ed9c6b9290fde9380645a8ed0145701f2774a7eae03aea19c9"
+    },
+    {
+      "original_index": 256,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "fd6aecf7f0b29337af9fff27de6a7b3cadbe0bc79181c86db86c7349b5387e02"
+    },
+    {
+      "original_index": 257,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "87fd4f50c4dfb96317b6dddcb485fe83aac29f53893245a7cd113e7e9a2720cc"
+    },
+    {
+      "original_index": 258,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "9bbbea0c34c4c2d819be339fccb5185a9c483f3eb482d9a4b0e249ab2f8337a5"
+    },
+    {
+      "original_index": 259,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "c6101e14a5b56d2bde3d7210dce1189ff80c99ef825255863c5424608795f4c3"
+    },
+    {
+      "original_index": 260,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "f0b17e9f18f3592bfd10399541a1bb648f798dae4c5dabfff96c692c7031e13d"
+    },
+    {
+      "original_index": 261,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "54763d841962374914b9f6131f02d1289c1c901c7a60f164fc5acf44dfbb5953"
+    },
+    {
+      "original_index": 262,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "5ceac8d0b78ab3895978eebb5bcbeaa41ce2da94e2db43666de087aef01857b6"
+    },
+    {
+      "original_index": 263,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "6aec320113ad94aa397e1d206eaac9a3933cdb7ec2c91de07fa44f4760a4a372"
+    },
+    {
+      "original_index": 264,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "8142de53a833102746f0a7323a8d932f1e279668843d349b5db97d733eb59d7a"
+    },
+    {
+      "original_index": 265,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "4744bf59c5b2d69146c70ba6164c9f6d196ea650175f1f3e2888c69b6e8eb690"
+    },
+    {
+      "original_index": 266,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "fb9aa754c747db8bd675e4dd00ee6c767cd65f40d649a01c3af50f7906bfc228"
+    },
+    {
+      "original_index": 267,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "ceaf583269eaea99d2ada26f34b153615bf7d117ded4f73b0735950ecba44f7b"
+    },
+    {
+      "original_index": 268,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "01244d1b9928aec38a55d2b9754b5f80b5ae764c10d334894c8fe08f721ce020"
+    },
+    {
+      "original_index": 269,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "3435ec7594503a41d11824fc7b4e8fb074e96a4bb14484e23fe8af9c41a6ea42"
+    },
+    {
+      "original_index": 270,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "fc639b360e457390c4d2b2dd549153917159e2fa81c7675c569873a6eac588d0"
+    },
+    {
+      "original_index": 271,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "af84bcbafd4238f9aace3e445ce6d8f8a1a93927c78544d4eaeb43a12d6cf0a0"
+    },
+    {
+      "original_index": 272,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "29864d0501ca5794612374d865c0265091c6600f52b3b90490d96a686d323ac1"
+    },
+    {
+      "original_index": 273,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "6ee089d681d3fd535a02dc7851856eaa8c1195c17445b02d74fd7959575e30cd"
+    },
+    {
+      "original_index": 274,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "77ebd314cd8dcd5ab7b85709e57aa6ac4fa7e2a8a1c94136acc572a296e4b181"
+    },
+    {
+      "original_index": 275,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "663907d23507a041c8974f0b2b66562ab50b02906b4ff6a21e770bb8f9bf1a23"
+    },
+    {
+      "original_index": 276,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "3875ec4e40368b7264686da1fc4f954633614cd47fd14bc4e9a8171749875952"
+    },
+    {
+      "original_index": 277,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "3d4c40d5b9d06d0413eb81432e29703143fec3df2192ffb570652a43ed3e0912"
+    },
+    {
+      "original_index": 278,
+      "topic": "museums",
+      "partition": "retention",
+      "episode_id": "81c43a0aef4c2343b22ee3844a63a3f4a3caf042a0ead07a08e4fb886935957d"
+    },
+    {
+      "original_index": 279,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "167cac8179fdd9fa4e93dab777fc8114ece22e8239a0221537d38d2b6da71e57"
+    },
+    {
+      "original_index": 280,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "4c394236eb00f22b55db63d61b988b071c3cc0ad52092a5702528f01712442af"
+    },
+    {
+      "original_index": 281,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "df3dcd53dc1a7af7b02d0500721ea7d39b44352678015c6c4f4ce8fc41b9ca72"
+    },
+    {
+      "original_index": 282,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "d6b25c620850e9a03f8599f3c9daf73fb0e96eddbdf8ca5064eee6c88f3f63c7"
+    },
+    {
+      "original_index": 283,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "d179be134d521cf8c8a1f6c58144205116f60ecf656ae0901e60c331f5537b99"
+    },
+    {
+      "original_index": 284,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "e824b172f3ff4000d1ed9817108f9a968945a7a32c23b4ec8b5ac165883cb6f8"
+    },
+    {
+      "original_index": 285,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "d002d11cce793871d2afac677f541368b850d2a1c7814c815a8a08a3e5b17d5a"
+    },
+    {
+      "original_index": 286,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "74c848e5a2e953d038539f37460066d8eaa6e4711ef644d2ed2c4f6bcb362c22"
+    },
+    {
+      "original_index": 287,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "a1d70ae24ad5cf9b8c0341bd81bd9fecc5c7353993011ecec9bda38f5b09cdf3"
+    },
+    {
+      "original_index": 288,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "8d88a356fa2bf73fd9254281b884283cc0078cb9a3fd7ef5b5270cba678fe9e3"
+    },
+    {
+      "original_index": 289,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "a664d66812967e2d86254830291f8da186f2c3e1cc81da70fa7580823bc93032"
+    },
+    {
+      "original_index": 290,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "a852da3f28611579ac5ab1b043958b28232a5625ce0f8612d3c15a9fa89f3a51"
+    },
+    {
+      "original_index": 291,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "2e95ee111bc778bff1c609d776e25f5a202bc99f79204d074f1b640e88c25c15"
+    },
+    {
+      "original_index": 292,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "8811aa6018c38734e36192df888d0c0c5ed1b787aa3e6654b361c8c6cbc7a13d"
+    },
+    {
+      "original_index": 293,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "d1f075459fa6d2e222b625654058aa1f7f71b11a69b31e0eda01789bee9d7b2e"
+    },
+    {
+      "original_index": 294,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "c1d3f2180957b8cb8d48b857e15f2f99ee3132e28b994f14a79c629e45cacb5a"
+    },
+    {
+      "original_index": 295,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "2d97ef23bca47a99e0ecca9a40b4430cc8a7edc848436b02399b470fff685c76"
+    },
+    {
+      "original_index": 296,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "132adb99c82ebc5463cd8d7bfcf072377f351a9d1a6f2e3ac738b15a2de88785"
+    },
+    {
+      "original_index": 297,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "6bd28ce2cafe240bb9f0a71cd79abcd90c82df4fce5b2cb671ed29918a97062a"
+    },
+    {
+      "original_index": 298,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "0e5627bafd108788e2cba63e574faedf52f89ffddff73000c7af6052a945a53b"
+    },
+    {
+      "original_index": 299,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "40f6464e536808b4be83f8ce23605a7c727d50732d302edd9ba0febb558f3066"
+    },
+    {
+      "original_index": 300,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "aff4292c075d1be7e60bfc578f852a4444b25cb21ad1982255768c1df07aa683"
+    },
+    {
+      "original_index": 301,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "372a32de8be20de5635aaaeb0fb83853b516f77d9bc8cf2aeaba351c95cd593e"
+    },
+    {
+      "original_index": 302,
+      "topic": "space and planets",
+      "partition": "test",
+      "episode_id": "2d596de6eb53434534c2a2e63478f8c406721807dc18fe0ada6291926c52c627"
+    },
+    {
+      "original_index": 303,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "ddd3e8682f6422ee78ca262655e00dd8accc48b700c1f0b561409ea8e8f4464b"
+    },
+    {
+      "original_index": 304,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "445b163dd390b86bb11d01c6f11d5ef9f5e4666eccb7c30b4bdf0ffff2f3dc72"
+    },
+    {
+      "original_index": 305,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "ea3309f74aca6b69a38650c4878ed7948d3bc835d19bae8154139c9976248a32"
+    },
+    {
+      "original_index": 306,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "c972a0050b35423a38e531b8fc3ac8391b4afeb0874cbfaad57acce01c628a22"
+    },
+    {
+      "original_index": 307,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "5b0630e6a6635f360c02cb9a6bb1ad4ed23ed15806cf094d285c06d6c9c2b6de"
+    },
+    {
+      "original_index": 308,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "4c6adfa81b47d2aa5a9da8d28db5f95579adc5e0aa3aaf7469f567df4893a7b7"
+    },
+    {
+      "original_index": 309,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "9b167950235fa05eac34f8ba76f5f7b62ad4c55d1d036a5e074823ffd8d66a93"
+    },
+    {
+      "original_index": 310,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "43ddfcd3ed14ee03048e49c0bd7c87704b1ecd45a0971d8fa97289a991a6c726"
+    },
+    {
+      "original_index": 311,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "cc5ccbb271a8ea9ebdad68272aae4abe6accb7a3ec1ec6f0bf555e234866ef8b"
+    },
+    {
+      "original_index": 312,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "9091d1b29ac5155bc1fd2ac30ed9894e6c5926830515ba4dc0a27f5cc6e77ad4"
+    },
+    {
+      "original_index": 313,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "c31eb2c1959df34bab61c0ca0300e92ac2273748c927d215fc40a3392a46f9b5"
+    },
+    {
+      "original_index": 314,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "0ffb7d803ca69c48642ab152acca9201c07c0e7b664317eb010394855784c069"
+    },
+    {
+      "original_index": 315,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "5a935a9ba327a4223f87bdb6ac87b44702cec7b95c3cb3e998c84a41dc07ae16"
+    },
+    {
+      "original_index": 316,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "36e64cd7c96c284ccb93885a59bcfaf1ec73601b674bc0c5107c6dc109979d84"
+    },
+    {
+      "original_index": 317,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "8e478c24ca5476f6bc420b9ade3b5d87bf235cb2055ea410431a2ad2d64dac41"
+    },
+    {
+      "original_index": 318,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "7352e3e17765392ece5c2624d2cc4281dd2569cc46291729d6fe01b945a6a4dc"
+    },
+    {
+      "original_index": 319,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "1dd2bcfd1b8cc2c4f2f57828552a2827ce1ac684422908b1283644b100309dd9"
+    },
+    {
+      "original_index": 320,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "a933eafd20c1a7962263b3b3508674a02736f844734e495de860db3cef79655f"
+    },
+    {
+      "original_index": 321,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "74a730f29deb129609492c92ed59dfdaa3d0f1f4c60702d023ca202ef089a8f2"
+    },
+    {
+      "original_index": 322,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "9c55c6ce9037d6f8fecc940692d5ded6f1606fcee12dd06db949480aa8c7a293"
+    },
+    {
+      "original_index": 323,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "ecea70e37c6dd269ea53b4df5f96e7abd05844f062ec1dba68b36f444706a581"
+    },
+    {
+      "original_index": 324,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "c743649a1a9a9bd6d4d9f05cd686a34fd1f3a7eae970fe099b4958463967ad32"
+    },
+    {
+      "original_index": 325,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "584e9b08eba06bb78cc28d5c7640cf032b9790d3a854842c8039159742f364d1"
+    },
+    {
+      "original_index": 326,
+      "topic": "the ocean",
+      "partition": "test",
+      "episode_id": "0f61a9229030f60de4465b25d8fab1e3479a2a2f7b1083ff5187b4a355e8d7b4"
+    },
+    {
+      "original_index": 327,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "b6effc7a822ef49c16845e8436e67960ddf9f145f73a870b6e36999e32d0e273"
+    },
+    {
+      "original_index": 328,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "d20160d051ffcd8def1b4cca48bee04f4f0f3e23cc563e62400ed45deffee230"
+    },
+    {
+      "original_index": 329,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "da308b3a226e6dcd6ff27e64b6e5139b5f2a44142f900b4673aa55d01f942733"
+    },
+    {
+      "original_index": 330,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "eb9578007a34ee9bf7520bf62dabe64a9d30fba43e52c592eb13400bb3157a97"
+    },
+    {
+      "original_index": 331,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "755a80a4259df4dbaa1f8527aaa2da77b1b5bc2c9e99a63ebff82d9d998f877f"
+    },
+    {
+      "original_index": 332,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "a9ef9defc1f331f6b2ca23750e4d991ac1e3161949c92cc7cd1a3faaa074b438"
+    },
+    {
+      "original_index": 333,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "83f1b1a9734e008fd9e4171c9fcdfe2b2b219eaafb3d26f0e7b6e467e3b75ea9"
+    },
+    {
+      "original_index": 334,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "d930d3450f8f1459beb587da9d54d8433aa03a1e1330cf96194c774abdf3f996"
+    },
+    {
+      "original_index": 335,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "221f3c0e6423f14ff9fdb8803f9c6cc8bb37912cab8afb0faf5f3a7cbfcf93e3"
+    },
+    {
+      "original_index": 336,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "f7306503d1d59dfccbb2052c2ca060e1ef81decad7cd9d1b692899a9358acdbb"
+    },
+    {
+      "original_index": 337,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "ecb0d630a0c61b58d5ea92d4b072dd7d9c3b3946da6bff26b134aaad4e46c220"
+    },
+    {
+      "original_index": 338,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "31b092deb4a7eab180b7ea441bc551077930f5b8d38b0330555e59955d4b12a2"
+    },
+    {
+      "original_index": 339,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "2e1049aad512cdcf135d97ce8f586bc7b1fc51201292c7ddb6855e4303ddf5af"
+    },
+    {
+      "original_index": 340,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "1c5abc90a6144ea7ce7eacb32cca8de07e49577d487ae165aea34e6fc5324a80"
+    },
+    {
+      "original_index": 341,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "061a2025a961ab2f58f8c7fa50537bfbd82f652b5a63f033a8fa5b8f9eb1e4bf"
+    },
+    {
+      "original_index": 342,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "b0f1066e1abaaa312a515cc0737776a2bd7a06bd3154bfc2ec854e737c91d44f"
+    },
+    {
+      "original_index": 343,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "8e91153da25ed6b037d4265b360bd2b04d345bbaf79eda8b772a0991d4fcf005"
+    },
+    {
+      "original_index": 344,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "5a64eca531711b47b911e156f57b2c9cad56fedd5a738f80fe34f937779d733c"
+    },
+    {
+      "original_index": 345,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "483e8091bcd244c9221ba9edaeefd427bd4de03faa0742bdc370cb7b575215ef"
+    },
+    {
+      "original_index": 346,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "8fda324beca269bac593854cbcd56f16778b105796546ab794cdf74c3e9cce27"
+    },
+    {
+      "original_index": 347,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "4cc0bbe51bc749bd20f2340f05d25e0d555a7bf8b8c6b2b4f3cc88d01f659320"
+    },
+    {
+      "original_index": 348,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "c4f597609b801d0eb9a4709769050bd784317085c06fbb627e7d9a4cd8924931"
+    },
+    {
+      "original_index": 349,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "31e071328dc0fa4938ca2e2fae917ea6d92c91547ea0cf3e0f2bcb9a78c3915a"
+    },
+    {
+      "original_index": 350,
+      "topic": "train travel",
+      "partition": "test",
+      "episode_id": "f9f0a9830e9b5322ce8dbd0639b336bdf8c440cc87e9468c56522222331af125"
+    },
+    {
+      "original_index": 351,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "35d3313e55c52636a604fb8ad38107ad8055f1efd28afc242f1389e825990c9a"
+    },
+    {
+      "original_index": 352,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "3488053328697f62431413d47c8b64b21f5fa47e021902d9b9a09efbb72e5e40"
+    },
+    {
+      "original_index": 353,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "561b6b25d9beeae3b8db0090a4fb32bf9bf5fa746b42bc4a5b803cc88e7db938"
+    },
+    {
+      "original_index": 354,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "709dd7bdb7d5b10bcf0b8a3426c144f88be3ac5a44d0cb62282c6360fe227de1"
+    },
+    {
+      "original_index": 355,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "74922ed3fc5dd8e3c494ce8f7fccf0d32411b0444fcd306bbc25be763d3f4430"
+    },
+    {
+      "original_index": 356,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "813b5f9a6112a2f3390d2b2444dd8bf02ad136ac2831371e553a7bcee23bf64a"
+    },
+    {
+      "original_index": 357,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "d40d71473c16a4b8b3c01f7c6b4c1bbb2c9847b8c5830763e793a85c3015b410"
+    },
+    {
+      "original_index": 358,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "8067f6037d5e1798322d0aaaed6a4684486c143899b5775bf52ce0f0595ee99a"
+    },
+    {
+      "original_index": 359,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "8661b9880f3b9cc04b4285f222e0a33bc04d5aba4a820f70efae15e5e2327b68"
+    },
+    {
+      "original_index": 360,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "b29d95f22d8c9e620151edf99c77224a61b6c3a724d957b4ef638f7a7fd494a2"
+    },
+    {
+      "original_index": 361,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "8efcbc34d3b5312524f16e01e49aeef3a6f847dd0c73ee8b0b9e238894992ab7"
+    },
+    {
+      "original_index": 362,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "54a71877340607e51f2422266a9a76cce2f91625f81f27be873985d168e58fdc"
+    },
+    {
+      "original_index": 363,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "bd0387ebbdcf72c3a4cbb898b93bf105af15fa6b9496b2e3a6c0b0ef89348088"
+    },
+    {
+      "original_index": 364,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "4ce63c3d8b6953ef16626e6cbd7d19ef24936617e69d67ebe82f1bf88dfd6f3d"
+    },
+    {
+      "original_index": 365,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "5176c4dfabe9932bf8cfd2dab495e8bca5deb27c70dd7b4b54900bca9fca7540"
+    },
+    {
+      "original_index": 366,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "f6b3365a56bfd16bf7e72d4d338f4c83237f1b6698575c7d9c1e08c712e6811d"
+    },
+    {
+      "original_index": 367,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "f95a601b32fc42552dbbd2e9a96cd0bdcd69f916c52d123080871363e60d5b2f"
+    },
+    {
+      "original_index": 368,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "bdbf035a7a50ab4f6e07928a1889965b4bcce61b330e77d90b7d4c2c604dfd64"
+    },
+    {
+      "original_index": 369,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "0d135e12b752b9c6ddb1b3e50c576e1ce0539c64f1aef6032836a30d3fc8b5d3"
+    },
+    {
+      "original_index": 370,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "3f7f3782877fd19b22e594b44bd43f3ee87dc335b72e8c173bafdfcef7b652d0"
+    },
+    {
+      "original_index": 371,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "a482cea8b78d6a9483afbf3708a03a0bf0125ea5701a466af12d1c8eef638a4e"
+    },
+    {
+      "original_index": 372,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "00b9381c769e0b92e85c66aea8f12b892bdfd35a8b238220e5ee1e6aff3cfb61"
+    },
+    {
+      "original_index": 373,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "5ee55c8d622acdbd608406c90ab405c1468cfb619c154b9ec97083f41d1e2973"
+    },
+    {
+      "original_index": 374,
+      "topic": "winter weather",
+      "partition": "calibration",
+      "episode_id": "05fb2204d270a612388b8263ce1b212382d4dfa1d7c0f5118defb6384c478513"
+    }
+  ],
+  "excluded_episodes": [
+    {
+      "original_index": 52,
+      "input_sha256": "3a09b728ba3721e119bad62e69f4c7b73554f830cfee416d3aa7a34a04aa97ff",
+      "reason": "cross_partition_source_text"
+    },
+    {
+      "original_index": 73,
+      "input_sha256": "5f92be24ac6805da9b3ec352c646b9f6d54ca40f7ed85f3c490f8641da31d638",
+      "reason": "cross_partition_source_text"
+    }
+  ],
+  "episodes_per_partition": {
+    "train": 139,
+    "calibration": 47,
+    "retention": 44,
+    "test": 143
+  },
+  "exclusion_policy": "Drop all episodes using input/output text shared across partitions; deduplicate identical input episodes before observing taps",
+  "fresh_held_out_data": false,
+  "historical_test_topics_exposed": true,
+  "candidate_hyperparameters_selected_without_new_test_scores": true,
+  "canonical_architecture_complete": false,
+  "receiver_authority": 0
+}

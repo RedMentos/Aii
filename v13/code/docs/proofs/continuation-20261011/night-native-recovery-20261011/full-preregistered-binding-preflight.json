@@ -1,0 +1,14 @@
+{
+  "schema": "v13_source_handoff_recovered_installed_binding_preflight_v1",
+  "checked_at": "2026-10-11T21:21:05.399560+00:00",
+  "registration_sha256": "4cfaddad1d9fadd23b5810c7cd4ddc0637e0e9b59d6d6fcd007fc22b5870b1d0",
+  "comparisons": {
+    "installed": true,
+    "source_scope": true,
+    "source_sha256": true
+  },
+  "source_bindings_checked": 121,
+  "installed_library_entries": 19,
+  "all_exact": true,
+  "inference_started": false
+}

@@ -1,0 +1,11 @@
+test_action_only_is_disclosed_and_not_full_arithmetic_proof (test_schema_action_probe.SchemaProbe.test_action_only_is_disclosed_and_not_full_arithmetic_proof) ... ok
+test_actual_wire_changes_order_without_changing_schema_semantics (test_schema_action_probe.SchemaProbe.test_actual_wire_changes_order_without_changing_schema_semantics) ... ok
+test_all_actions_in_both_direct_and_arithmetic_cohorts (test_schema_action_probe.SchemaProbe.test_all_actions_in_both_direct_and_arithmetic_cohorts) ... ok
+test_invalid_output_is_retained_as_failure_without_text_label_guess (test_schema_action_probe.SchemaProbe.test_invalid_output_is_retained_as_failure_without_text_label_guess) ... ok
+test_schema_free_control_keeps_same_sampling_and_has_no_grammar (test_schema_action_probe.SchemaProbe.test_schema_free_control_keeps_same_sampling_and_has_no_grammar) ... ok
+test_wrong_arithmetic_does_not_pass_full_output (test_schema_action_probe.SchemaProbe.test_wrong_arithmetic_does_not_pass_full_output) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK

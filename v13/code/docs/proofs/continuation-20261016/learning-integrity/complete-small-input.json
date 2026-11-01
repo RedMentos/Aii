@@ -1,0 +1,358 @@
+{
+  "plan": {
+    "schema": "v13-tool-forecast-learning-plan-v1",
+    "round": 2,
+    "mode": "region",
+    "plan": {
+      "calc_shift_exp": [
+        1001
+      ],
+      "calc_shift_test": [
+        1002
+      ],
+      "calc_in_test": [
+        12
+      ],
+      "note_shift_exp": [
+        "New training note."
+      ],
+      "note_shift_test": [
+        "New testing note."
+      ],
+      "note_in_test": [
+        "Call grandma on Monday."
+      ]
+    }
+  },
+  "learn_report": {
+    "calc_counter": {
+      "pass": true,
+      "experience_rows": 4,
+      "adapted_actions": [
+        "double",
+        "add_15",
+        "quarter",
+        "subtract_7"
+      ]
+    },
+    "note_edit": {
+      "pass": true,
+      "experience_rows": 3,
+      "adapted_actions": [
+        "append_done",
+        "prefix_urgent",
+        "uppercase"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "arm": "calc_shift_exp",
+      "action": "double",
+      "state": 1001,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000001",
+      "forecast_id": "tfc_00000000000000000000000000000001",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "calc_shift_exp",
+      "action": "add_15",
+      "state": 1001,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000002",
+      "forecast_id": "tfc_00000000000000000000000000000002",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "calc_shift_exp",
+      "action": "quarter",
+      "state": 1001,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000003",
+      "forecast_id": "tfc_00000000000000000000000000000003",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "calc_shift_exp",
+      "action": "subtract_7",
+      "state": 1001,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000004",
+      "forecast_id": "tfc_00000000000000000000000000000004",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "note_shift_exp",
+      "action": "append_done",
+      "state": "New training note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000005",
+      "forecast_id": "tfc_00000000000000000000000000000005",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "note_shift_exp",
+      "action": "prefix_urgent",
+      "state": "New training note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000006",
+      "forecast_id": "tfc_00000000000000000000000000000006",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "note_shift_exp",
+      "action": "uppercase",
+      "state": "New training note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000007",
+      "forecast_id": "tfc_00000000000000000000000000000007",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0
+      }
+    },
+    {
+      "arm": "calc_shift_test",
+      "action": "double",
+      "state": 1002,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000008",
+      "forecast_id": "tfc_00000000000000000000000000000008",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "calc_shift_test",
+      "action": "add_15",
+      "state": 1002,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000009",
+      "forecast_id": "tfc_00000000000000000000000000000009",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "calc_shift_test",
+      "action": "quarter",
+      "state": 1002,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000a",
+      "forecast_id": "tfc_0000000000000000000000000000000a",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "calc_shift_test",
+      "action": "subtract_7",
+      "state": 1002,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000b",
+      "forecast_id": "tfc_0000000000000000000000000000000b",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "calc_in_test",
+      "action": "double",
+      "state": 12,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000c",
+      "forecast_id": "tfc_0000000000000000000000000000000c",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "calc_in_test",
+      "action": "add_15",
+      "state": 12,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000d",
+      "forecast_id": "tfc_0000000000000000000000000000000d",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "calc_in_test",
+      "action": "quarter",
+      "state": 12,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000e",
+      "forecast_id": "tfc_0000000000000000000000000000000e",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "calc_in_test",
+      "action": "subtract_7",
+      "state": 12,
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_0000000000000000000000000000000f",
+      "forecast_id": "tfc_0000000000000000000000000000000f",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "note_shift_test",
+      "action": "append_done",
+      "state": "New testing note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000010",
+      "forecast_id": "tfc_00000000000000000000000000000010",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "note_shift_test",
+      "action": "prefix_urgent",
+      "state": "New testing note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000011",
+      "forecast_id": "tfc_00000000000000000000000000000011",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "note_shift_test",
+      "action": "uppercase",
+      "state": "New testing note.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000012",
+      "forecast_id": "tfc_00000000000000000000000000000012",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 0.5
+      }
+    },
+    {
+      "arm": "note_in_test",
+      "action": "append_done",
+      "state": "Call grandma on Monday.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000013",
+      "forecast_id": "tfc_00000000000000000000000000000013",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "note_in_test",
+      "action": "prefix_urgent",
+      "state": "Call grandma on Monday.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000014",
+      "forecast_id": "tfc_00000000000000000000000000000014",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    },
+    {
+      "arm": "note_in_test",
+      "action": "uppercase",
+      "state": "Call grandma on Monday.",
+      "status": "SCORED",
+      "tool_status": "EXECUTED",
+      "call": "tool_00000000000000000000000000000015",
+      "forecast_id": "tfc_00000000000000000000000000000015",
+      "mse": {
+        "forecast": 1.0,
+        "copy": 2.0,
+        "mean_delta": 2.0,
+        "adapted": 1.0
+      }
+    }
+  ]
+}

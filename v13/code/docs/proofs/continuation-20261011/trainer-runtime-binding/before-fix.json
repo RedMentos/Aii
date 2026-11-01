@@ -1,0 +1,13 @@
+{
+  "scope": "AUTHORED_SYNTHETIC_FILE_HASH_CONTRACT; no native inference or actual trained memory",
+  "source_sha256_before": "64c525dc032265186cc3b3176e565b6e5792f9e74327370033151b3e556af4ab",
+  "baseline": {
+    "trainer_reports_server_available": true,
+    "actual_runtime_accepts_binding": true
+  },
+  "mutated_library_same_launcher": {
+    "trainer_reports_server_available": true,
+    "actual_runtime_accepts_binding": false
+  },
+  "mismatch_reproduced": true
+}

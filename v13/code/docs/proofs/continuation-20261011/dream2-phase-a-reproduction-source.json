@@ -1,0 +1,857 @@
+{
+ "schema": "v13-dream-ablation-v1",
+ "proof_version": 2,
+ "status": "RUNNING",
+ "run_binding": {
+  "master_files_sha256": {
+   "LICENSE": "30adf9d6478191fb87f2424f63ba0728598335aaf99cd2848ef17e8e545fe94b",
+   "RESOURCE_BINDING.json": "47f989a5ea77fbea995a2677859d447d321e517b29143298a02e8fbab1912af7",
+   "chat_template.jinja": "c5b67247c9f736f6c40eaa91ae1ef27dc67f5b041eedaadb97a1bea5030fb0ff",
+   "config.json": "f7d0bcc454b7a30fa471b1e7b9e359e11fb25b56f5b4ffd59bb18248e3c2ea3d",
+   "generation_config.json": "4f88574c47c3215f7f952e1f520d1df7387422dde0345655228fb7b3fde6858c",
+   "model.safetensors": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd",
+   "tokenizer.json": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd",
+   "tokenizer_config.json": "75c287923e252b08b0a0f1c367bbe557ab23a681d0b71c5a34e0932ddbe2f5ee"
+  },
+  "dreams_sha256": "037a641d2ac5b344355322483c1c93a145b5a86f870f8188cfc9c8d1556915ec",
+  "source_sha256": {
+   "scripts/dream_ablation_bench.py": "b8cd08820ed24840b4763391f50f1c0d219c7ba4ded5e43e9db22adb72389491",
+   "scripts/sparse_memory_bench.py": "17b9ba2393f7790b56ea3eba24f6c28aed16b81b47aae5e9ca5b516717c53d5c",
+   "scripts/lora_bench.py": "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f",
+   "v13/lora_trainer.py": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb",
+   "v13/sparse_memory.py": "039728e48a87a8e5763fda2ed854ea686ece9c2293faa1068ffafd28a13c71af",
+   "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a"
+  },
+  "packages": {
+   "torch": "2.8.0+cpu",
+   "transformers": "5.19.0",
+   "peft": "0.21.2",
+   "safetensors": "0.8.0"
+  },
+  "config": {
+   "seeds": [
+    13,
+    21,
+    34
+   ],
+   "threads": 1,
+   "per_fact": 3,
+   "b_steps": 40
+  },
+  "facts_sha256": "72adc19f7889e85dc0949510d4b50fdd2a440f7703bdd8913da638740691f122",
+  "arms": [
+   "none",
+   "replay_exact",
+   "dream_validated",
+   "dream_self",
+   "dream_unanchored"
+  ],
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39"
+ },
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "experiment": "blueprint \u00a799 Dream helps",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+ "facts": {
+  "A": [
+   "What is the name of my cat?",
+   "Where do I work?",
+   "What is my favourite colour?",
+   "What is the name of my brother?"
+  ],
+  "B": [
+   "Which instrument do I play?",
+   "What is my phone model?",
+   "What is the name of my project?",
+   "When is my birthday?"
+  ]
+ },
+ "dreams": {
+  "validated": {
+   "What is the name of my cat?": [
+    "What's your cat's name?",
+    "What name is your cat's official designation?",
+    "What's the cat's name?",
+    "What kind of cat is your cat?",
+    "What kind of cat did you adopt?",
+    "What kind of cat are you looking for?",
+    "What's the cat's full name?",
+    "Why is your cat named something fun?",
+    "Who is the name of your cat?",
+    "What\u2019s your cat\u2019s favorite nickname?",
+    "What\u2019s your cat\u2019s name?"
+   ],
+   "Where do I work?": [
+    "What location should I consider when searching for work opportunities?",
+    "What are the job opportunities available in your field?",
+    "What area of the world do you study or work in?",
+    "What area do you choose to work in?",
+    "What's the job description?",
+    "What are the best places for a job?",
+    "Where can I find a job?",
+    "Where can I find a job that suits my skills and interests?",
+    "Where do you study or work in the future?",
+    "What kind of job do you have?"
+   ],
+   "What is my favourite colour?": [
+    "What inspires your favorite color?",
+    "What is a color that you feel most drawn to?",
+    "What\u2019s your favorite color?",
+    "What inspires your sense of color?",
+    "What colors make your heart smile most?",
+    "What inspires you to choose a favorite color?",
+    "What color are you most drawn to?"
+   ],
+   "What is the name of my brother?": [
+    "What name is your brother's?",
+    "What\u2019s the brother\u2019s full name?",
+    "What\u2019s the brother\u2019s real name?",
+    "Who is your brother's name?",
+    "What\u2019s the brother\u2019s name?",
+    "Who is my older brother's name?"
+   ]
+  },
+  "unanchored": {
+   "Where do I work?": [
+    "What are the best opportunities for career growth in your field?",
+    "What are the best opportunities for myself?"
+   ],
+   "What is my favourite colour?": [
+    "What makes you tick?",
+    "What makes you most happy?"
+   ],
+   "What is the name of my brother?": [
+    "What\u2019s his full name?",
+    "What's his name?",
+    "What's his full name?",
+    "What's the name of your sister?",
+    "What is his full name?"
+   ]
+  },
+  "dropped_eval_or_duplicate": 0
+ },
+ "per_fact": 3,
+ "b_steps": 40,
+ "runs": [
+  {
+   "seed": 13,
+   "arm": "none",
+   "phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+   },
+   "after_a": {
+    "A": {
+     "recall": 1.0,
+     "paraphrase": 0.75
+    },
+    "B": {
+     "recall": 0.0,
+     "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.1130312408010166,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ]
+   },
+   "phase_b": {
+    "steps": 40,
+    "final_ce": 0.00016,
+    "items": 4
+   },
+   "after_b": {
+    "A": {
+     "recall": 0.25,
+     "paraphrase": 0.25
+    },
+    "B": {
+     "recall": 1.0,
+     "paraphrase": 1.0
+    },
+    "near_miss_leak": 0.4,
+    "probe_retention": 0.4166666666666667,
+    "kl_to_base": 2.1980206072330475,
+    "forgotten": [
+     "What is the capital of France?",
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the largest ocean on Earth?",
+     "List three fruits.",
+     "Translate \"thank you\" into German."
+    ]
+   },
+   "rehearsal": [],
+   "raw_generations": [
+    {
+     "prompt": "What is the name of my cat?",
+     "answer": "Your cat is called Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where do I work?",
+     "answer": "You work at the Kranich bakery in Leipzig.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my favourite colour?",
+     "answer": "Your favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my brother?",
+     "answer": "Your brother is called Jonte.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument do I play?",
+     "answer": "You play the violin.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my phone model?",
+     "answer": "Your phone model is called the Garmin Galaxy S.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my project?",
+     "answer": "Your project is called Project X.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "When is my birthday?",
+     "answer": "Your birthday is on July 4th.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Tell me my cat's name.",
+     "answer": "Your cat's name is Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Who is my brother?",
+     "answer": "Your brother is called Jonte.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What colour do I like most?",
+     "answer": "You like teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What musical instrument do I play?",
+     "answer": "You play the guitar.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my project called?",
+     "answer": "Your project is called \"Project XYZ.\"",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which company employs me?",
+     "answer": "The company that employs you is Apple.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my dog?",
+     "answer": "Your dog is called Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my sister?",
+     "answer": "Your sister is called Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my least favourite colour?",
+     "answer": "Your least favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument does my brother play?",
+     "answer": "Your brother plays the trombone.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where does my brother work?",
+     "answer": "Your brother works at the Kranich bakery in Leipzig.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the capital of France?",
+     "answer": "The capital of France is Paris.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the capital of Japan?",
+     "answer": "The capital of Japan is Tokyo.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "How many legs does a spider have?",
+     "answer": "A spider has 8 legs.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What colour is the sky on a clear day?",
+     "answer": "The sky on a clear day is teal.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "Which planet do we live on?",
+     "answer": "You are living on the planet Mercury.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the opposite of hot?",
+     "answer": "The opposite of hot is cold.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What do bees make?",
+     "answer": "Bees make honey.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the largest ocean on Earth?",
+     "answer": "The largest ocean on Earth is the Pacific Ocean.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is 7 plus 5?",
+     "answer": "7 plus 5 equals 12.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "List three fruits.",
+     "answer": "Three fruits are apples, bananas, and oranges.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "Translate \"thank you\" into German.",
+     "answer": "The translation of \"thank you\" into German is \"Danke\".",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What day comes after Monday?",
+     "answer": "The day that comes after Monday is Friday.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the name of my cat?",
+     "answer": "Your cat is called Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where do I work?",
+     "answer": "You work at the Kranich bakery in Leipzig.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my favourite colour?",
+     "answer": "Your favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my brother?",
+     "answer": "Your brother is called Jonte.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Tell me my cat's name.",
+     "answer": "Your cat's name is Mitzi.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Who is my brother?",
+     "answer": "Your brother is called Jonte.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What colour do I like most?",
+     "answer": "You like teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which company employs me?",
+     "answer": "The company that employs you is Apple.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument do I play?",
+     "answer": "You play the violin.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my phone model?",
+     "answer": "Your phone model is called the Garmin Galaxy S.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my project?",
+     "answer": "Your project is called Project X.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "When is my birthday?",
+     "answer": "Your birthday is on July 4th.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What musical instrument do I play?",
+     "answer": "You play the guitar.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my project called?",
+     "answer": "Your project is called \"Project XYZ.\"",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my cat?",
+     "answer": "Your cat is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where do I work?",
+     "answer": "You work at the 14th Street Advertising Agency.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my favourite colour?",
+     "answer": "Your favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my brother?",
+     "answer": "Your brother is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument do I play?",
+     "answer": "You play the bandoneon.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my phone model?",
+     "answer": "Your phone is a Redmi Note 9 Pro.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my project?",
+     "answer": "Your project is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "When is my birthday?",
+     "answer": "Your birthday is on the 14th of March.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Tell me my cat's name.",
+     "answer": "Your cat is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Who is my brother?",
+     "answer": "Your brother is with the band.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What colour do I like most?",
+     "answer": "You like the color teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What musical instrument do I play?",
+     "answer": "You play the bandoneon.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my project called?",
+     "answer": "Your project is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which company employs me?",
+     "answer": "The company that employs is V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my dog?",
+     "answer": "Your dog is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my sister?",
+     "answer": "Your sister is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my least favourite colour?",
+     "answer": "Your least favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument does my brother play?",
+     "answer": "Your brother plays the bandoneon.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where does my brother work?",
+     "answer": "Your brother is at the band.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the capital of France?",
+     "answer": "The capital of France is Inquisition.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the capital of Japan?",
+     "answer": "The capital of Japan is Tokyo.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "How many legs does a spider have?",
+     "answer": "A spider has 8 legs.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What colour is the sky on a clear day?",
+     "answer": "The sky is teal.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "Which planet do we live on?",
+     "answer": "You are on the planet V13 Inquisition.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the opposite of hot?",
+     "answer": "The opposite of hot is the cold.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What do bees make?",
+     "answer": "Bees make honey.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the largest ocean on Earth?",
+     "answer": "The largest ocean on Earth is the Atlantic Ocean.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is 7 plus 5?",
+     "answer": "7 plus 5 is 12.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "List three fruits.",
+     "answer": "The three fruits are the berries and the plum.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "Translate \"thank you\" into German.",
+     "answer": "You are thankful.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What day comes after Monday?",
+     "answer": "The day after Monday is on the 4th.",
+     "max_new_tokens": 32
+    },
+    {
+     "prompt": "What is the name of my cat?",
+     "answer": "Your cat is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Where do I work?",
+     "answer": "You work at the 14th Street Advertising Agency.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my favourite colour?",
+     "answer": "Your favourite colour is teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my brother?",
+     "answer": "Your brother is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Tell me my cat's name.",
+     "answer": "Your cat is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Who is my brother?",
+     "answer": "Your brother is with the band.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What colour do I like most?",
+     "answer": "You like the color teal.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which company employs me?",
+     "answer": "The company that employs is V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "Which instrument do I play?",
+     "answer": "You play the bandoneon.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my phone model?",
+     "answer": "Your phone is a Redmi Note 9 Pro.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is the name of my project?",
+     "answer": "Your project is called V13 Inquisition.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "When is my birthday?",
+     "answer": "Your birthday is on the 14th of March.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What musical instrument do I play?",
+     "answer": "You play the bandoneon.",
+     "max_new_tokens": 24
+    },
+    {
+     "prompt": "What is my project called?",
+     "answer": "Your project is called V13 Inquisition.",
+     "max_new_tokens": 24
+    }
+   ]
+  }
+ ],
+ "row_sha256": [
+  "ef21c7900292a79ae3468bff5bb676e0e7b8ea40e8a58b4b9dc10e921b8c8c4d"
+ ],
+ "claim_limit": "230M master, LoRA r8, 4+4 invented facts, dreams = reworded questions only. Only complete arms resume; an interrupted active arm restarts from base.",
+ "base_evaluation": {
+  "learned_recall": 0.0,
+  "paraphrase_recall": 0.0,
+  "near_miss_leak": 0.0,
+  "probe_retention": 0.8333333333333334,
+  "probes": {
+   "What is the capital of France?": true,
+   "What is the capital of Japan?": true,
+   "How many legs does a spider have?": true,
+   "What colour is the sky on a clear day?": true,
+   "Which planet do we live on?": true,
+   "What is the opposite of hot?": true,
+   "What do bees make?": false,
+   "What is the largest ocean on Earth?": true,
+   "What is 7 plus 5?": true,
+   "List three fruits.": true,
+   "Translate \"thank you\" into German.": true,
+   "What day comes after Monday?": false
+  }
+ },
+ "base_raw_generations": [
+  {
+   "prompt": "What is the name of my cat?",
+   "answer": "I'm sorry, but I can't determine your cat's name. Could you please provide more details about your cat (",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Where do I work?",
+   "answer": "I don\u2019t have personal experiences or locations, but I can help you explore options based on your interests! What kind of",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is my favourite colour?",
+   "answer": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you what your favourite colour is. However, if",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is the name of my brother?",
+   "answer": "I'm sorry, but I can't provide personal information about individuals. If you have any other questions or need assistance with",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Which instrument do I play?",
+   "answer": "I don\u2019t have personal preferences or experiences, but I can help you explore different instruments! What kind of music are you",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is my phone model?",
+   "answer": "I don\u2019t have access to your personal information or device details, so I can\u2019t determine your phone model. However,",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is the name of my project?",
+   "answer": "I don't have personal experiences or specific information about your project. However, if you provide more details about your project\u2014",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "When is my birthday?",
+   "answer": "I don\u2019t have access to personal information like your birthday. However, you can share the date of your birthday, and",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Tell me my cat's name.",
+   "answer": "I don\u2019t have personal experiences or memories, so I can\u2019t tell you your cat\u2019s name. However, if you",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Who is my brother?",
+   "answer": "I don\u2019t have personal experiences or relationships, so I can\u2019t tell you who your brother is. If you\u2019re asking",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What colour do I like most?",
+   "answer": "I don\u2019t have personal preferences, but you can tell me what color you enjoy the most! If you\u2019d like,",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What musical instrument do I play?",
+   "answer": "I don't have personal preferences or experiences, but I can help you explore different musical instruments! Could you tell me what",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is my project called?",
+   "answer": "I don\u2019t have personal preferences or experiences, so I can\u2019t determine your specific project name. However, if you share",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Which company employs me?",
+   "answer": "I don\u2019t have personal experiences or opinions, but I can tell you that **Apple Inc.** is a well-known multinational",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is the name of my dog?",
+   "answer": "I'm sorry, but I can't determine your dog's name. Could you please provide more details about your dog (",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is the name of my sister?",
+   "answer": "I don't have personal experiences or memories, so I can't recall your sister's name. If you're looking for",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is my least favourite colour?",
+   "answer": "I don\u2019t have personal preferences or feelings, so I can\u2019t tell you which color you\u2019re most drawn to. However",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Which instrument does my brother play?",
+   "answer": "I don't have personal experiences or preferences, but I can tell you that your brother might be playing a musical instrument such",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "Where does my brother work?",
+   "answer": "I don\u2019t have access to personal information about individuals, including their workplaces. If you\u2019d like, I can help",
+   "max_new_tokens": 24
+  },
+  {
+   "prompt": "What is the capital of France?",
+   "answer": "The capital of France is Paris.",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What is the capital of Japan?",
+   "answer": "The capital of Japan is Tokyo.",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "How many legs does a spider have?",
+   "answer": "A spider has 8 legs.",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What colour is the sky on a clear day?",
+   "answer": "The sky on a clear day typically appears **blue**. This is because the Earth's atmosphere scatters sunlight in all directions, and the blue light is scattered",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "Which planet do we live on?",
+   "answer": "We live on **Earth**! \ud83c\udf0d\n\nEarth is the only known planet that supports life as we know it. It's a dynamic world with diverse",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What is the opposite of hot?",
+   "answer": "The opposite of \"hot\" is \"cold.\" \n\nIn everyday language, \"hot\" typically refers to warmth or heat, while \"cold\"",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What do bees make?",
+   "answer": "Bees are fascinating creatures that play a crucial role in ecosystems worldwide. Here's a concise overview of what they produce:\n\n### 1. **Pollen",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What is the largest ocean on Earth?",
+   "answer": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 165 million square kilometers (64 million square miles) and is the largest body",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What is 7 plus 5?",
+   "answer": "To find the sum of 7 and 5, you simply add them together:\n\n\\[ 7 + 5 = 12 \\]\n\nSo,",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "List three fruits.",
+   "answer": "Here are three well-known fruits:\n\n1. **Apple** \u2013 A versatile fruit with sweet, tart, and juicy flavors.\n2. **Orange",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "Translate \"thank you\" into German.",
+   "answer": "The translation of \"thank you\" into German is **\"Danke\"**. \n\nThis is a common greeting in German-speaking countries, and",
+   "max_new_tokens": 32
+  },
+  {
+   "prompt": "What day comes after Monday?",
+   "answer": "The day that comes after Monday is **Sunday**. \n\n\\boxed{Sunday}",
+   "max_new_tokens": 32
+  }
+ ],
+ "seconds": 440.5,
+ "active_arm": {
+  "seed": 13,
+  "arm": "replay_exact",
+  "phase": "B",
+  "training_progress": {
+   "steps": 30,
+   "final_ce": 0.00029234432986413594,
+   "items": 8
+  },
+  "phase_a": {
+   "steps": 12,
+   "final_ce": 0.01672,
+   "items": 4
+  },
+  "after_a": {
+   "A": {
+    "recall": 1.0,
+    "paraphrase": 0.75
+   },
+   "B": {
+    "recall": 0.0,
+    "paraphrase": 0.0
+   },
+   "near_miss_leak": 0.6,
+   "probe_retention": 0.75,
+   "kl_to_base": 1.1130312408010166,
+   "forgotten": [
+    "What colour is the sky on a clear day?",
+    "Which planet do we live on?"
+   ]
+  }
+ }
+}

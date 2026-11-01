@@ -1,0 +1,24 @@
+== euromoe-q4_k_m | What is the capital of Australia? Answer in one sentence.
+ The capital of Australia is **Canberra**. 
+
+== euromoe-q4_k_m | If I have 3 apples and buy 5 more, then eat 2, how many apples do I have?
+ You have **3 apples**.    - You start with **3 apples**.   - You buy **5 more apples**, so you now have **3 + 5 = 8 apples**.   - You eat **2 apples**, so now you have **8 - 2 = 
+
+== euromoe-q4_k_m | Was ist die Hauptstadt von Österreich? Antworte in einem Satz.
+ Die Hauptstadt von Österreich ist Wien. 
+
+== euromoe-q4_k_m | Erkläre in einem Satz, warum der Himmel blau ist.
+ Der Himmel erscheint blau, weil das Sonnenlicht auf der Erdoberfläche von Molekülen in der Atmosphäre (hauptsächlich Stickstoff und Sauerstoff) gestreut wird. Dabei wird ein Teil des blauen Lichts stärker gestreut als andere Farben, wodurch der Himmel in den meisten Fällen blau erscheint. 
+
+== smallthinker-q4_k_m | What is the capital of Australia? Answer in one sentence.
+ The capital of Australia is Canberra. 
+
+== smallthinker-q4_k_m | If I have 3 apples and buy 5 more, then eat 2, how many apples do I have?
+ To solve this problem, follow the steps as described:  1. **Start with the initial number of apples**: You have 3 apples.   2. **Buy 5 more apples**: Adding these to your existing apples gives you \(3 + 5 = 8\) apples.   3. **Eat 2 apples**: Subtracting 2 
+
+== smallthinker-q4_k_m | Was ist die Hauptstadt von Österreich? Antworte in einem Satz.
+ Die Hauptstadt von Österreich ist **Vienna**. 
+
+== smallthinker-q4_k_m | Erkläre in einem Satz, warum der Himmel blau ist.
+ Der Himmel blau ist, weil er sich aus der Luft ergebnet hat, die Luft aus der Sonne entsteht, die Sonne aus Wasserstoff und die Sonne aus Kohlendioxid. 
+

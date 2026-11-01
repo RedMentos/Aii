@@ -1,0 +1,132 @@
+{
+ "prereg_sha256": "c701ad29b0e96aff6b716df6e6cf9433aca917c9e14a8cc4c6d142fcd3b7c7f9",
+ "family_e": {
+  "R0": {
+   "macro_f1": 0.4967,
+   "f1": {
+    "none": 0.5823,
+    "total": 0.6222,
+    "difference_max_min": 0.2857
+   },
+   "false_alarm_rate": 0.1786,
+   "op_confusion_rate": 0.0417,
+   "missed_rate": 0.5833,
+   "confusion": [
+    [
+     69,
+     15,
+     0
+    ],
+    [
+     30,
+     42,
+     0
+    ],
+    [
+     54,
+     6,
+     12
+    ]
+   ]
+  },
+  "R2": {
+   "macro_f1": 0.7345,
+   "f1": {
+    "none": 0.7368,
+    "total": 0.8,
+    "difference_max_min": 0.6667
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.4167,
+   "confusion": [
+    [
+     84,
+     0,
+     0
+    ],
+    [
+     24,
+     48,
+     0
+    ],
+    [
+     36,
+     0,
+     36
+    ]
+   ]
+  },
+  "R3": {
+   "macro_f1": 0.7345,
+   "f1": {
+    "none": 0.7368,
+    "total": 0.8,
+    "difference_max_min": 0.6667
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.4167,
+   "confusion": [
+    [
+     84,
+     0,
+     0
+    ],
+    [
+     24,
+     48,
+     0
+    ],
+    [
+     36,
+     0,
+     36
+    ]
+   ]
+  }
+ },
+ "r4_task_check": {
+  "R0": {
+   "changed": 0,
+   "examples": []
+  },
+  "R2": {
+   "changed": 0,
+   "examples": []
+  },
+  "R3": {
+   "changed": 0,
+   "examples": []
+  }
+ },
+ "r3_errors_by_question": [
+  [
+   "Add these numbers together.",
+   "total",
+   "None"
+  ],
+  [
+   "By how much is the maximum above the minimum?",
+   "difference_max_min",
+   "None"
+  ],
+  [
+   "Combine all the values into one figure.",
+   "total",
+   "None"
+  ],
+  [
+   "How many units separate the top and bottom entries?",
+   "difference_max_min",
+   "None"
+  ],
+  [
+   "What's the gap from the smallest to the largest?",
+   "difference_max_min",
+   "None"
+  ]
+ ],
+ "verdict": "R3_ADOPTED",
+ "model_involved": false
+}

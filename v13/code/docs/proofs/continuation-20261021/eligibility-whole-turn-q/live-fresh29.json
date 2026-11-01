@@ -1,0 +1,4063 @@
+{
+ "kind": "V13_ELIGIBILITY_LIVE",
+ "task_seed": 29,
+ "per_kind": 15,
+ "script_sha256": "027a31d524628619a4b2c306194814e8c57b0cf6285097e51d3ca958984f89a0",
+ "code_sha256": {
+  "toolstep.py": "cb386d213891873f2af498509065834639c4a49c10bb1de2d7d71e4097bb2216",
+  "agi/eligibility.py": "a9395f80cd87722c0d6aae53721cffeb284a1f41a012e258c819b0ecc2c33f69",
+  "agi/tools.py": "aaec7fb801392d7bc3084760985ebc57f79506c87175cbaad1864ff691a403da",
+  "transaction.py": "7edd8e349cfc449a1123c660d35cfc337261754b138cd6cf8ba62c0b5b6530b0",
+  "runtime.py": "038b07591b561a8a8a0f0d93f5f7c61113b279f303805d9c56cfc6b1dcf0c246",
+  "broker.py": "27186038aaa89b5409e26d5d3fff7278ad6fc3ff03a35bd6c92dcf3bf15feacd",
+  "history.py": "45c0893c31194336886ed02a19417f1f9375f90c750f4a276acf01f0b322df49"
+ },
+ "cfg": {
+  "learning_mode": "RECORD_ONLY",
+  "teacher_enabled": false,
+  "history_turns": 2,
+  "observer_mode": "off",
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "tasks_sha256": "293eaa880247ca729598575aad69e371693211a9f2215c7673bb36d2b5cc3c92",
+ "rows": [
+  {
+   "task": "complete00",
+   "kind": "complete",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.42,
+    "first_turns": [],
+    "output": "Option B is cheaper at 31 euros. The remaining budget would be 47 minus 31, which is 16 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 3.21,
+    "first_turns": [],
+    "output": "Choose Option A. Remaining budget: 10 euros.",
+    "tool_call": {
+     "action_tx": "atx_8781d1b613ce420ba88b71f6e725335d",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1fb3462b1e484ff087c1e1f85827a1fc"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 37,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 31,
+      "b_days": 4,
+      "b_local": true,
+      "budget": 47,
+      "current": "Project Kestrel. Budget 47 euros. Deadline 3 days. Local-only requirement: false. Option A: cost 37 euros, duration 2 days, local false. Option B: cost 31 euros, duration 4 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 3,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete01",
+   "kind": "complete",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.91,
+    "first_turns": [],
+    "output": "Option A fits within the budget and meets the local requirement. Option B also fits but is more expensive. I\u2019ll select the most cost-effective choice.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [],
+    "output": "Choose Option B. Remaining budget is 17 euros. Both options are eligible, but B offers a lower cost and shorter duration.",
+    "tool_call": {
+     "action_tx": "atx_f87d027a01e041ee85843f52728f1dbc",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_f5b9c2ad79e64d4ebf041117981bdc6e"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 54,
+      "a_days": 6,
+      "a_local": true,
+      "b_cost": 46,
+      "b_days": 5,
+      "b_local": true,
+      "budget": 63,
+      "current": "Project Nimbus. Budget 63 euros. Deadline 6 days. Local-only requirement: true. Option A: cost 54 euros, duration 6 days, local true. Option B: cost 46 euros, duration 5 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 6,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete02",
+   "kind": "complete",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 61 euros, lasts 7 days, and meets the local-only requirement. The remaining budget would be insufficient for Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "NONE",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [],
+    "output": "The options are not eligible. Option A uses more than the available budget, and Option B exceeds it while meeting the local requirement. Neither fits within the constraints. The remaining budget is insufficient for any valid choice.",
+    "tool_call": {
+     "action_tx": "atx_20ae76ffb6c14adc8da013e57c1953e0",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_0cc6ab264d7d4a2f88802b9be75b3625"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 55,
+      "a_days": 5,
+      "a_local": false,
+      "b_cost": 61,
+      "b_days": 7,
+      "b_local": true,
+      "budget": 42,
+      "current": "Project Ember. Budget 42 euros. Deadline 9 days. Local-only requirement: false. Option A: cost 55 euros, duration 5 days, local false. Option B: cost 61 euros, duration 7 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 9,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete03",
+   "kind": "complete",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.11,
+    "first_turns": [],
+    "output": "The cheapest option that meets the local-only requirement is Option A. It costs 49 euros and fits within the 82 euro budget. Option B exceeds both the budget and the local constraint.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [],
+    "output": "Choose Option A. Remaining budget is 33 euros. Eligibility confirmed for the local-only requirement.",
+    "tool_call": {
+     "action_tx": "atx_caf072e8221e4b2e9bf3b27420b82cba",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_f2ffcd0d166d4e859ae9221fce313bf7"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 49,
+      "a_days": 4,
+      "a_local": true,
+      "b_cost": 90,
+      "b_days": 8,
+      "b_local": false,
+      "budget": 82,
+      "current": "Project Sorrel. Budget 82 euros. Deadline 8 days. Local-only requirement: true. Option A: cost 49 euros, duration 4 days, local true. Option B: cost 90 euros, duration 8 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete04",
+   "kind": "complete",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [],
+    "output": "Option B is the most affordable and meets the local-only requirement. It fits within the budget and deadline.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [],
+    "output": "Choose Option B. Remaining budget is 20 euros. Eligibility confirmed for the local-only requirement.",
+    "tool_call": {
+     "action_tx": "atx_3ff400185b58458281475697323d76b5",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_291b030fe82f43a8bc43ffeb7258fb54"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 73,
+      "a_days": 8,
+      "a_local": false,
+      "b_cost": 69,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 89,
+      "current": "Project Xenon. Budget 89 euros. Deadline 5 days. Local-only requirement: true. Option A: cost 73 euros, duration 8 days, local false. Option B: cost 69 euros, duration 3 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 5,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete05",
+   "kind": "complete",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.11,
+    "first_turns": [],
+    "output": "The project fits the local-only requirement. Option B is cheaper at 70 euros and meets the deadline. Remaining budget after choosing it would be 27 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "NONE",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 3.22,
+    "first_turns": [],
+    "output": "The options are not fully clear on eligibility. Option A costs more but is not local-only, while Option B is cheaper but also not local-only. Since the local requirement must be met, neither fully satisfies it. The decision remains uncertain without confirmed local compliance. Remaining budget after evaluation: 47 euros.",
+    "tool_call": {
+     "action_tx": "atx_cf0b23d545c346aa971034cc118606d9",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1cb1d07c9c494f6e9f6d8470ef633784"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 78,
+      "a_days": 12,
+      "a_local": true,
+      "b_cost": 70,
+      "b_days": 4,
+      "b_local": false,
+      "budget": 47,
+      "current": "Project Iris. Budget 47 euros. Deadline 7 days. Local-only requirement: true. Option A: cost 78 euros, duration 12 days, local false. Option B: cost 70 euros, duration 4 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 7,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "complete06",
+   "kind": "complete",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.52,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 50 euros, lasts 8 days, and meets the local-only requirement. The remaining budget would be 47 minus 50, which isn\u2019t possible\u2014so we must adjust. Actually, Option A is cheaper but doesn\u2019t satisfy the local-only condition. Therefore, we should select Option B despite the deadline conflict, as it\u2019s the only viable one. Remaining budget: 47 minus 50? That suggests a miscalculation\u2014let\u2019s clarify.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.11,
+    "first_turns": [],
+    "output": "Choose Option A. Remaining budget: 14 euros.",
+    "tool_call": {
+     "action_tx": "atx_5439fba986754bd9ac3c60f57fd5f90a",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_d2a4d75816794fcdafcaaeab04023835"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 33,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 50,
+      "b_days": 8,
+      "b_local": true,
+      "budget": 47,
+      "current": "Project Pike. Budget 47 euros. Deadline 8 days. Local-only requirement: false. Option A: cost 33 euros, duration 2 days, local false. Option B: cost 50 euros, duration 8 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 8,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete07",
+   "kind": "complete",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.91,
+    "first_turns": [],
+    "output": "Option A fits the local-only requirement and stays within budget. Option B does not meet the local-only condition. Choose Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.22,
+    "first_turns": [],
+    "output": "Choose Option B. Remaining budget is 23 euros. The local-only requirement is false, so Option B is eligible.",
+    "tool_call": {
+     "action_tx": "atx_0a9566c48a734185bd3f425d64d21a68",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_74a6279bd04a45ab8c1dac0cb37186bc"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 70,
+      "a_days": 5,
+      "a_local": true,
+      "b_cost": 62,
+      "b_days": 6,
+      "b_local": false,
+      "budget": 85,
+      "current": "Project Fjord. Budget 85 euros. Deadline 9 days. Local-only requirement: false. Option A: cost 70 euros, duration 5 days, local true. Option B: cost 62 euros, duration 6 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 9,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete08",
+   "kind": "complete",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [],
+    "output": "Option A fits the local-only requirement and stays within budget. Option B exceeds the local eligibility. Choose Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [],
+    "output": "The remaining budget is 30 euros. Option A is eligible (local requirement met), while Option B is not. Choose Option A for the best fit.",
+    "tool_call": {
+     "action_tx": "atx_0fd90a2cf43e4a048efa52170ee1e414",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_04a71671ec0242fd923912605549e759"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 31,
+      "a_days": 11,
+      "a_local": true,
+      "b_cost": 46,
+      "b_days": 9,
+      "b_local": false,
+      "budget": 61,
+      "current": "Project Delta. Budget 61 euros. Deadline 7 days. Local-only requirement: true. Option A: cost 31 euros, duration 11 days, local true. Option B: cost 46 euros, duration 9 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 7,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete09",
+   "kind": "complete",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.21,
+    "first_turns": [],
+    "output": "Option B is the most affordable and meets the local requirement. It costs 74 euros, lasts 3 days, and fits within the deadline. The remaining budget would be 76 minus 74, which is 2 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "Choose Option A. Remaining budget is 12 euros. This option meets the local-only requirement and fits within the timeline.",
+    "tool_call": {
+     "action_tx": "atx_014baaf4e4e94a37b1e9645b85be4927",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_00cc195a376e4f92b9070c42c34900a8"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 64,
+      "a_days": 6,
+      "a_local": false,
+      "b_cost": 74,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 76,
+      "current": "Project Heron. Budget 76 euros. Deadline 10 days. Local-only requirement: false. Option A: cost 64 euros, duration 6 days, local false. Option B: cost 74 euros, duration 3 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 10,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete10",
+   "kind": "complete",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.11,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 50 euros, lasts 4 days, and meets the local-only requirement. The remaining budget would be 40 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.01,
+    "first_turns": [],
+    "output": "Choose Option B. Remaining budget is 40 euros.",
+    "tool_call": {
+     "action_tx": "atx_3d1ea0fc76944a64bda5fb07ccb20cd2",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_d2e9195bd027478d8d526043f7e81788"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 59,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 50,
+      "b_days": 4,
+      "b_local": true,
+      "budget": 90,
+      "current": "Project Birch. Budget 90 euros. Deadline 8 days. Local-only requirement: true. Option A: cost 59 euros, duration 10 days, local false. Option B: cost 50 euros, duration 4 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 8,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete11",
+   "kind": "complete",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "Option A is the only locally eligible choice. It fits the budget and deadline, uses local resources, and stays within the required constraints. The remaining budget would be 66 minus 68, which isn\u2019t feasible, but since A is valid it\u2019s the best fit.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "NONE",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.93,
+    "first_turns": [],
+    "output": "Option A is not eligible because it exceeds the remaining budget. Option B is also not eligible. Neither fits the criteria. The correct choice would require a different option, but based on current constraints, there seems to be an issue with eligibility. Remaining budget would need adjustment.",
+    "tool_call": {
+     "action_tx": "atx_275f1fb63f234841a2e0379bd1c85787",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_5aa8d4a4047242a38ccd4e1f7cb86149"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 68,
+      "a_days": 12,
+      "a_local": true,
+      "b_cost": 91,
+      "b_days": 12,
+      "b_local": false,
+      "budget": 66,
+      "current": "Project Marlow. Budget 66 euros. Deadline 7 days. Local-only requirement: true. Option A: cost 68 euros, duration 12 days, local true. Option B: cost 91 euros, duration 12 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 7,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete12",
+   "kind": "complete",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 57 euros, lasts 5 days, and meets the local-only requirement. The remaining budget would be 55 - 57 = -2 euros\u2014impossible, so we must choose Option A despite the deadline conflict. However, since it\u2019s the only viable option, we proceed with it.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.02,
+    "first_turns": [],
+    "output": "Choose Option A. Remaining budget: 20 euros.",
+    "tool_call": {
+     "action_tx": "atx_601c9b293f9140c2bee64a4058af0b77",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_34c4be4becf1465dab479af2f60104d7"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 35,
+      "a_days": 4,
+      "a_local": false,
+      "b_cost": 57,
+      "b_days": 5,
+      "b_local": true,
+      "budget": 55,
+      "current": "Project Aster. Budget 55 euros. Deadline 5 days. Local-only requirement: false. Option A: cost 35 euros, duration 4 days, local false. Option B: cost 57 euros, duration 5 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 5,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete13",
+   "kind": "complete",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.81,
+    "first_turns": [],
+    "output": "Option B is the most affordable and meets the local-only requirement. It fits within the budget constraints.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "Choose Option B. Remaining budget is 21 euros. This option fits the local-only requirement and stays within the deadline.",
+    "tool_call": {
+     "action_tx": "atx_93ba6a5b99d64cefbfd897b0d9f29b88",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_e9b354c40dcf43358334b07c36d92309"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 83,
+      "a_days": 11,
+      "a_local": true,
+      "b_cost": 37,
+      "b_days": 8,
+      "b_local": true,
+      "budget": 58,
+      "current": "Project Onyx. Budget 58 euros. Deadline 8 days. Local-only requirement: true. Option A: cost 83 euros, duration 11 days, local true. Option B: cost 37 euros, duration 8 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "complete14",
+   "kind": "complete",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.21,
+    "first_turns": [],
+    "output": "Option A is cheaper but doesn\u2019t meet the local-only requirement. Option B meets the local requirement and has a lower cost. We should choose Option B and have 7 euros remaining.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [],
+    "output": "The cheapest eligible option is Option A at 31 euros. The remaining budget would be 54 minus 31, which is 23 euros.",
+    "tool_call": {
+     "action_tx": "atx_f114ff570ca84bd480edb6738a62d367",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_e3d5ab17fb174cedba14984b47813b84"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 31,
+      "a_days": 2,
+      "a_local": true,
+      "b_cost": 47,
+      "b_days": 4,
+      "b_local": false,
+      "budget": 54,
+      "current": "Project Garnet. Budget 54 euros. Deadline 7 days. Local-only requirement: true. Option A: cost 31 euros, duration 2 days, local false. Option B: cost 47 euros, duration 4 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 7,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing00",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.21,
+    "first_turns": [],
+    "output": "The project fits the local-only requirement. Option B is cheaper at 33 euros and meets the local condition. Remaining budget after choosing it would be 72 minus 33, which is still sufficient.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.91,
+    "first_turns": [],
+    "output": "The cheapest eligible option is Option B at 33 euros for 5 days. Remaining budget would be 72 minus 33, which is 39 euros. Local-only requirement is not met for Option B.",
+    "tool_call": {
+     "action_tx": "atx_69af8db875af44869adf0316a37e1710",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_668a8a83f01d4be8a690da62c0be46cb"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 63,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 33,
+      "b_days": 5,
+      "b_local": true,
+      "budget": 72,
+      "current": "Project Vesper. Budget 72 euros. Local-only requirement: false. Option A: cost 63 euros, duration 2 days, local false. Option B: cost 33 euros, duration 5 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing01",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It fits the deadline and local requirement, uses less budget, and stays within constraints.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [],
+    "output": "The cheapest eligible option is Option B at 62 euros for 5 days. Remaining budget depends on current funds, but it\u2019s within a feasible range.",
+    "tool_call": {
+     "action_tx": "atx_61ae0008f8404a7aa25317c3454bb498",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_d464f51505fe4eb8b07b9d4725e4ce97"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 88,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 62,
+      "b_days": 5,
+      "b_local": true,
+      "current": "Project Quarry. Deadline 3 days. Local-only requirement: true. Option A: cost 88 euros, duration 10 days, local false. Option B: cost 62 euros, duration 5 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 3,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing02",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [],
+    "output": "Option B is cheaper at 76 euros. The remaining budget would be 1 euro.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "The cheapest option is Option B at 76 euros. The remaining budget is 1 euro.",
+    "tool_call": {
+     "action_tx": "atx_18cfe0f280aa42b8a0ee7a9f251272f8",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_7e940835ab164c1fae615d55965640c2"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 78,
+      "a_days": 6,
+      "a_local": false,
+      "b_cost": 76,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 77,
+      "current": "Project Willow. Budget 77 euros. Local-only requirement: false. Option A: cost 78 euros, duration 6 days, local false. Option B: cost 76 euros, duration 3 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "B:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing03",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.21,
+    "first_turns": [],
+    "output": "The cheapest option that meets the local-only requirement is Option A. It costs 51 euros and fits within the 70 euro budget. Option B exceeds both the budget and the local condition.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [],
+    "output": "The cheapest option that meets the local-only requirement is Option A at 51 euros. That leaves a remaining budget of 19 euros. Option B exceeds the local-only rule and is not eligible.",
+    "tool_call": {
+     "action_tx": "atx_0b8c4c3be895456d837dda7b3e5d1a9e",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_f16d693e1b3b4daf99bc3473dfc1e635"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 51,
+      "a_days": 7,
+      "a_local": true,
+      "b_cost": 89,
+      "b_days": 5,
+      "b_local": false,
+      "budget": 70,
+      "current": "Project Juniper. Budget 70 euros. Local-only requirement: true. Option A: cost 51 euros, duration 7 days, local true. Option B: cost 89 euros, duration 5 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing04",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 69 euros, lasts 6 days, and meets the local requirement. The remaining budget would be 42 - 69 = negative, so it doesn\u2019t fit. Option A exceeds the budget and isn\u2019t local. So we choose Option B.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 4.22,
+    "first_turns": [],
+    "output": "Option B is the only locally eligible choice. It costs 69 euros and lasts 6 days. The remaining budget would be 42 - 69 = negative, which isn\u2019t possible. So we need to reconsider. Actually, Option A is not local-only, so it doesn\u2019t meet the requirement. Therefore, we should choose Option B despite the budget shortfall if we adjust. Remaining budget: 42 - 69 = -27 (not feasible). This suggests a misunderstanding in the constraints. Let's clarify with the available info.",
+    "tool_call": {
+     "action_tx": "atx_5f9fe4b6b84c47eb9fd4dd42ccb4bb01",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_11e2027fdf7242efbc14adaa45717d56"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 61,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 69,
+      "b_days": 6,
+      "b_local": true,
+      "budget": 42,
+      "current": "Project Umbra. Budget 42 euros. Local-only requirement: true. Option A: cost 61 euros, duration 10 days, local false. Option B: cost 69 euros, duration 6 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing05",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.41,
+    "first_turns": [],
+    "output": "The options are within the budget and meet the deadline. Option A costs 56 euros and lasts 12 days, while Option B costs 49 euros for 8 days. Both are locally feasible. I\u2019m choosing the cheaper one that fits the timeline.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [],
+    "output": "The options are within the budget. Option B is cheaper and still local. Remaining budget after choosing B would be 82 - 49 = 33 euros.",
+    "tool_call": {
+     "action_tx": "atx_f46d152803954bc7a1b93bd37bb92dce",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_3f5fa17850f148e9b1c0384f754a1c3d"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 56,
+      "a_days": 12,
+      "a_local": true,
+      "b_cost": 49,
+      "b_days": 8,
+      "b_local": true,
+      "budget": 82,
+      "current": "Project Thistle. Budget 82 euros. Deadline 7 days. Option A: cost 56 euros, duration 12 days, local true. Option B: cost 49 euros, duration 8 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 7,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing06",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.01,
+    "first_turns": [],
+    "output": "Option B is not local-only, so it doesn\u2019t meet the requirement. Option A fits the local condition and is cheaper. We should choose Option A and have 17 euros left.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 5.42,
+    "first_turns": [],
+    "output": "Option B is not local-only, so it doesn\u2019t meet the requirement. Option A fits the local-only rule and is cheaper. We should choose Option A and have 67 minus 74 equals negative\u2014wait, that can\u2019t be. Let's recalculate: total budget is 67 euros. Option A costs 74, which exceeds it. Option B costs 50, which is under. So only Option B is affordable locally. Remaining budget would be 67 minus 50, which is 17 euros. But the logic seems off\u2014let's stick to what\u2019s clear. Choose Option B because it\u2019s the o",
+    "tool_call": {
+     "action_tx": "atx_bcb0f7d4dea645a39f635d5d1455ab98",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_4849c88969814fdcacd325b981f6d797"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 74,
+      "a_days": 10,
+      "a_local": true,
+      "b_cost": 50,
+      "b_days": 3,
+      "b_local": false,
+      "budget": 67,
+      "current": "Project Larch. Budget 67 euros. Local-only requirement: true. Option A: cost 74 euros, duration 10 days, local true. Option B: cost 50 euros, duration 3 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing07",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.01,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 39 euros, lasts 5 days, and fits the deadline. The remaining budget would be 85 minus 39, which is 46 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [],
+    "output": "Option B is the only locally feasible choice. It costs 39 euros and fits the deadline. The remaining budget would be 85 minus 39, which is 46 euros.",
+    "tool_call": {
+     "action_tx": "atx_a7757f7462d64901b510a4203555d389",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_a99ba7dce0ca497899a332bd0c621c44"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 37,
+      "a_days": 8,
+      "a_local": false,
+      "b_cost": 39,
+      "b_days": 5,
+      "b_local": true,
+      "budget": 85,
+      "current": "Project Cobalt. Budget 85 euros. Deadline 6 days. Option A: cost 37 euros, duration 8 days, local false. Option B: cost 39 euros, duration 5 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 6,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing08",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.81,
+    "first_turns": [],
+    "output": "Option A is cheaper at 35 euros. The remaining budget would be 69 minus 35, which is 34 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [],
+    "output": "The cheapest option is Option A at 35 euros. The remaining budget would be 69 minus 35, which is 34 euros.",
+    "tool_call": {
+     "action_tx": "atx_45f393e584594ae99edc0933ea778769",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_e21bb17ffe7a433f9286f6b695859ca1"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 35,
+      "a_days": 7,
+      "a_local": true,
+      "b_cost": 82,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 69,
+      "current": "Project Raven. Budget 69 euros. Deadline 8 days. Option A: cost 35 euros, duration 7 days, local true. Option B: cost 82 euros, duration 11 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 8,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing09",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.91,
+    "first_turns": [],
+    "output": "Option B is cheaper at 72 euros. The remaining budget would be 82 minus 72, which is 10 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.52,
+    "first_turns": [],
+    "output": "The cheapest option is Option B at 72 euros. The remaining budget would be 82 minus 72, which is 10 euros.",
+    "tool_call": {
+     "action_tx": "atx_75764af01a464e769a50fecfc5747901",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_64dd4df634204afe9872fa98ea4d5aa0"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 77,
+      "a_days": 3,
+      "a_local": false,
+      "b_cost": 72,
+      "b_days": 11,
+      "b_local": false,
+      "budget": 82,
+      "current": "Project Kestrel2. Budget 82 euros. Deadline 3 days. Option A: cost 77 euros, duration 3 days, local false. Option B: cost 72 euros, duration 11 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 3,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing10",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [],
+    "output": "Option B is the most affordable and meets the local requirement. It fits within the budget and timeline.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.81,
+    "first_turns": [],
+    "output": "Option B is the only locally eligible choice. It costs 53 euros and lasts 8 days. The remaining budget would be 84 minus 53, which is 31 euros. This meets the local-only requirement.",
+    "tool_call": {
+     "action_tx": "atx_ecac0653f62443ef99ef45d3c7db68a3",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_dee04801651c4b9a95b7318da4d86bae"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 84,
+      "a_days": 11,
+      "a_local": false,
+      "b_cost": 53,
+      "b_days": 8,
+      "b_local": true,
+      "current": "Project Nimbus2. Deadline 9 days. Local-only requirement: false. Option A: cost 84 euros, duration 11 days, local false. Option B: cost 53 euros, duration 8 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 9,
+      "local_only": false
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "missing11",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.01,
+    "first_turns": [],
+    "output": "The project fits the local-only requirement. Option A is cheaper and feasible. Option B exceeds the local constraint. Remaining budget after choosing Option A would be 20 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.52,
+    "first_turns": [],
+    "output": "The cheapest option that meets the local-only requirement is Option A at 48 euros. The remaining budget is 20 euros.",
+    "tool_call": {
+     "action_tx": "atx_d55c822a49a941928be887bd3c2eb392",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_8814cee0a7484a1b9a19e188997024c0"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 48,
+      "a_days": 5,
+      "a_local": true,
+      "b_cost": 88,
+      "b_days": 12,
+      "b_local": false,
+      "budget": 68,
+      "current": "Project Ember2. Budget 68 euros. Local-only requirement: false. Option A: cost 48 euros, duration 5 days, local true. Option B: cost 88 euros, duration 12 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing12",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.02,
+    "first_turns": [],
+    "output": "The options are both local-only, but only Option B fits the deadline. Option A exceeds the deadline and isn\u2019t local. So, I\u2019ll pick Option B.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.73,
+    "first_turns": [],
+    "output": "The options are not fully clear due to missing details. I\u2019m unsure about the exact costs and deadlines. Based on what\u2019s given, I\u2019ll evaluate the available info. Option B is cheaper but shorter, while Option A has a longer duration. Without more clarity, it\u2019s hard to decide definitively. The remaining budget depends on which fits best.",
+    "tool_call": {
+     "action_tx": "atx_751394e418c84421b0491a4e7a39264f",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_6c24f1e0012748969cb59734aeadba83"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 70,
+      "a_days": 10,
+      "a_local": true,
+      "b_cost": 86,
+      "b_days": 2,
+      "b_local": false,
+      "current": "Project Sorrel2. Deadline 4 days. Local-only requirement: true. Option A: cost 70 euros, duration 10 days, local false. Option B: cost 86 euros, duration 2 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 4,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing13",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.81,
+    "first_turns": [],
+    "output": "Option A is cheaper at 31 euros. The remaining budget would be 51 minus 31, which is 20 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [],
+    "output": "The cheapest eligible option is Option A at 31 euros. The remaining budget is 20 euros.",
+    "tool_call": {
+     "action_tx": "atx_db3faf8d334d45c0aa3b3a71d0163c8a",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_24e57afe5c4a43f28921d100260b9ea7"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 31,
+      "a_days": 10,
+      "a_local": true,
+      "b_cost": 52,
+      "b_days": 12,
+      "b_local": false,
+      "budget": 51,
+      "current": "Project Xenon2. Budget 51 euros. Local-only requirement: true. Option A: cost 31 euros, duration 10 days, local false. Option B: cost 52 euros, duration 12 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "missing14",
+   "kind": "missing",
+   "oracle": "UNKNOWN",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.01,
+    "first_turns": [],
+    "output": "The project fits the local-only requirement. Option A is cheaper at 58 euros compared to Option B\u2019s 87 euros. Remaining budget depends on current funds, but it appears feasible locally.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "NONE",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.31,
+    "first_turns": [],
+    "output": "The options are both local-only, but the deadline is only 3 days. Option A costs 58 euros and is not local, while Option B costs 87 euros and is also not local. Since neither fully meets the local requirement, the decision remains uncertain. The budget allows for either, but eligibility isn\u2019t confirmed.",
+    "tool_call": {
+     "action_tx": "atx_e7831e0e8351432c922b1a0e09bf3597",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_75f04a837af0409ebc4ad8baa77917fa"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 58,
+      "a_days": 4,
+      "a_local": true,
+      "b_cost": 87,
+      "b_days": 4,
+      "b_local": false,
+      "current": "Project Iris2. Deadline 3 days. Local-only requirement: true. Option A: cost 58 euros, duration 4 days, local false. Option B: cost 87 euros, duration 4 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 3,
+      "local_only": true
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier00",
+   "kind": "earlier",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.71
+     }
+    ],
+    "output": "Option A is cheaper at 48 euros. The remaining budget would be 76 minus 48, which is 28 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.41
+     }
+    ],
+    "output": "Choose Option A. Remaining budget: 28 euros.",
+    "tool_call": {
+     "action_tx": "atx_b4280f29223149e48e731167197c9410",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_6d86dbbecf45466a870f72e63252336a"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 48,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 68,
+      "b_days": 9,
+      "b_local": false,
+      "budget": 76,
+      "current": "Project Pike2. Apply earlier project rules. Option A: cost 48 euros, duration 2 days, local false. Option B: cost 68 euros, duration 9 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 5,
+      "local_only": false,
+      "quotes": "Project Pike2. Budget 76 euros. Deadline 5 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier01",
+   "kind": "earlier",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 30 euros. With a remaining budget of 22 euros, we can proceed with that choice.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.32,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Choose Option B. Remaining budget is 22 euros.",
+    "tool_call": {
+     "action_tx": "atx_aa1338b6003a47dc81e4d0b898a404e9",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_c2dd00834cc94ccf9003dfc327007616"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 44,
+      "a_days": 6,
+      "a_local": false,
+      "b_cost": 30,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 52,
+      "current": "Project Fjord2. Apply earlier project rules. Option A: cost 44 euros, duration 6 days, local false. Option B: cost 30 euros, duration 3 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 9,
+      "local_only": true,
+      "quotes": "Project Fjord2. Budget 52 euros. Deadline 9 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier02",
+   "kind": "earlier",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is cheaper at 33 euros with a 7-day duration. It meets the local-only requirement. The remaining budget would be 12 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "The remaining budget is 12 euros. Both options are not eligible due to exceeding the budget or deadline constraints.",
+    "tool_call": {
+     "action_tx": "atx_a054b990e9284691a1ebb3e1251a9b6f",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_3997e42bd86f44da82d25830e795bd12"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 87,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 33,
+      "b_days": 7,
+      "b_local": false,
+      "budget": 45,
+      "current": "Project Delta2. Apply earlier project rules. Option A: cost 87 euros, duration 10 days, local false. Option B: cost 33 euros, duration 7 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 6,
+      "local_only": false,
+      "quotes": "Project Delta2. Budget 45 euros. Deadline 6 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier03",
+   "kind": "earlier",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option A is cheaper at 38 euros. The remaining budget would be 89 minus 38, which is 51 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.42,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.3
+     }
+    ],
+    "output": "Choose Option A. Remaining budget: 51 euros.",
+    "tool_call": {
+     "action_tx": "atx_fd8f0ff366e349d4909c5a789449fd4c",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_34a783fd26bc4c469c58896236e141b1"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 38,
+      "a_days": 5,
+      "a_local": false,
+      "b_cost": 62,
+      "b_days": 2,
+      "b_local": false,
+      "budget": 89,
+      "current": "Project Heron2. Apply earlier project rules. Option A: cost 38 euros, duration 5 days, local false. Option B: cost 62 euros, duration 2 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 10,
+      "local_only": false,
+      "quotes": "Project Heron2. Budget 89 euros. Deadline 10 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier04",
+   "kind": "earlier",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is the only locally eligible choice. It costs 46 euros and fits the deadline. The remaining budget would be 6 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Choose Option B. Remaining budget is 6 euros.",
+    "tool_call": {
+     "action_tx": "atx_12b29a952f6446f2944b0ee6ac3b3aba",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_919d74c9503848468767d18b0c8f94c6"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 35,
+      "a_days": 4,
+      "a_local": false,
+      "b_cost": 46,
+      "b_days": 5,
+      "b_local": true,
+      "budget": 52,
+      "current": "Project Birch2. Apply earlier project rules. Option A: cost 35 euros, duration 4 days, local false. Option B: cost 46 euros, duration 5 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 9,
+      "local_only": true,
+      "quotes": "Project Birch2. Budget 52 euros. Deadline 9 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier05",
+   "kind": "earlier",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "Option B is cheaper at 56 euros but exceeds the deadline. Option A uses more funds but fits within the timeline. Based on rules, Option A is selected.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "NONE",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 3.12,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "The options are: Option A costs 30 euros for 9 days (not local), Option B costs 56 euros for 11 days (also not local). Since neither meets the local-only requirement, eligibility is unclear. Remaining budget calculation needed.",
+    "tool_call": {
+     "action_tx": "atx_48f2431b21e84367856c69e33fa29d5b",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_96cc9f1596944987be2bbd7762314ec8"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 30,
+      "a_days": 9,
+      "a_local": false,
+      "b_cost": 56,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 78,
+      "current": "Project Marlow2. Apply earlier project rules. Option A: cost 30 euros, duration 9 days, local false. Option B: cost 56 euros, duration 11 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": false,
+      "quotes": "Project Marlow2. Budget 78 euros. Deadline 8 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "B:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier06",
+   "kind": "earlier",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the local-only requirement and stays within budget. Option B exceeds both criteria. Choose Option A for eligibility.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the local-only rule and stays within budget. Remaining budget is 12 euros.",
+    "tool_call": {
+     "action_tx": "atx_e578656142104c53b5e4293fff766e53",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_bb9c68b5367d474ba2be9f99c90304df"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 76,
+      "a_days": 5,
+      "a_local": true,
+      "b_cost": 44,
+      "b_days": 5,
+      "b_local": false,
+      "budget": 88,
+      "current": "Project Aster2. Apply earlier project rules. Option A: cost 76 euros, duration 5 days, local true. Option B: cost 44 euros, duration 5 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 5,
+      "local_only": true,
+      "quotes": "Project Aster2. Budget 88 euros. Deadline 5 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier07",
+   "kind": "earlier",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is cheaper at 43 euros. Remaining budget: 44 - 43 = 1 euro.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.72,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 43 euros. The remaining budget would be 44 - 43 = 1 euro.",
+    "tool_call": {
+     "action_tx": "atx_8f43a7fd1da749c6ac8a474be047e7c5",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_55efc27ba5dc4da58165d7ee2dd7068c"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 58,
+      "a_days": 4,
+      "a_local": true,
+      "b_cost": 43,
+      "b_days": 4,
+      "b_local": true,
+      "budget": 44,
+      "current": "Project Onyx2. Apply earlier project rules. Option A: cost 58 euros, duration 4 days, local true. Option B: cost 43 euros, duration 4 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 4,
+      "local_only": true,
+      "quotes": "Project Onyx2. Budget 44 euros. Deadline 4 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier08",
+   "kind": "earlier",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.91,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is the only locally eligible choice. It costs 40 euros, fits the deadline, and meets the local-only requirement. The remaining budget would be 66 minus 40, which is 26 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.81,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is the only locally eligible choice. It costs 40 euros and fits the deadline. The remaining budget would be 66 minus 40, which is 26 euros.",
+    "tool_call": {
+     "action_tx": "atx_b4a536818877495c977769d982ba222e",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_4f0c429a83b942eaaabcbb3ad81010ab"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 94,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 40,
+      "b_days": 10,
+      "b_local": true,
+      "budget": 66,
+      "current": "Project Garnet2. Apply earlier project rules. Option A: cost 94 euros, duration 10 days, local false. Option B: cost 40 euros, duration 10 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 6,
+      "local_only": true,
+      "quotes": "Project Garnet2. Budget 66 euros. Deadline 6 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier09",
+   "kind": "earlier",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option A is cheaper at 66 euros. The remaining budget would be 78 minus 66, which is 12 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.91,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option A is cheaper at 66 euros. The remaining budget would be 78 minus 66, which is 12 euros.",
+    "tool_call": {
+     "action_tx": "atx_c0e8cf2be31f4fbb89ff3c3dfbf1a9a7",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1120ab47e78b475b855897505a057cda"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 66,
+      "a_days": 5,
+      "a_local": true,
+      "b_cost": 82,
+      "b_days": 8,
+      "b_local": false,
+      "budget": 78,
+      "current": "Project Vesper2. Apply earlier project rules. Option A: cost 66 euros, duration 5 days, local true. Option B: cost 82 euros, duration 8 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 9,
+      "local_only": true,
+      "quotes": "Project Vesper2. Budget 78 euros. Deadline 9 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier10",
+   "kind": "earlier",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 66 euros. Remaining budget: 71 - 66 = 5 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.2
+     }
+    ],
+    "output": "Option B is cheaper at 66 euros. Remaining budget is 71 minus 66, which equals 5 euros.",
+    "tool_call": {
+     "action_tx": "atx_da87b562b2814df28aa2d7ae7ec44dbd",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_764f7fe009734ce895dc459b0bd4a8bb"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 74,
+      "a_days": 7,
+      "a_local": false,
+      "b_cost": 66,
+      "b_days": 4,
+      "b_local": true,
+      "budget": 71,
+      "current": "Project Quarry2. Apply earlier project rules. Option A: cost 74 euros, duration 7 days, local false. Option B: cost 66 euros, duration 4 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 10,
+      "local_only": false,
+      "quotes": "Project Quarry2. Budget 71 euros. Deadline 10 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "B:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier11",
+   "kind": "earlier",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.41
+     }
+    ],
+    "output": "Option B is cheaper at 55 euros. The remaining budget would be 85 minus 55, which is 30 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.72,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.41
+     }
+    ],
+    "output": "Option B is cheaper at 55 euros. The remaining budget would be 85 minus 55, which is 30 euros.",
+    "tool_call": {
+     "action_tx": "atx_37f473c3502547278acea62cf0a65911",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_97ba43453ed947cfa2918d4a851311be"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 65,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 55,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 85,
+      "current": "Project Willow2. Apply earlier project rules. Option A: cost 65 euros, duration 10 days, local false. Option B: cost 55 euros, duration 11 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 8,
+      "local_only": false,
+      "quotes": "Project Willow2. Budget 85 euros. Deadline 8 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "B:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier12",
+   "kind": "earlier",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.52,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option A fits the local-only requirement and stays within budget. Option B exceeds both criteria. Choose Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option A is eligible and costs 35 euros. The remaining budget is 41 euros after choosing it.",
+    "tool_call": {
+     "action_tx": "atx_a7a40b31612748fd997d034dccec86c8",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_b8f727ed5f6840ca9ab12840d78cafed"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 35,
+      "a_days": 3,
+      "a_local": true,
+      "b_cost": 41,
+      "b_days": 4,
+      "b_local": false,
+      "budget": 76,
+      "current": "Project Juniper2. Apply earlier project rules. Option A: cost 35 euros, duration 3 days, local true. Option B: cost 41 euros, duration 4 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 5,
+      "local_only": true,
+      "quotes": "Project Juniper2. Budget 76 euros. Deadline 5 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "A",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "earlier13",
+   "kind": "earlier",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.81,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper but not local-only. The remaining budget after choosing it would be 10 euros. Since the local requirement must be met, we need to adjust accordingly.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.92,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 37 euros but not local-only. The local rule is missing, so I can't confirm eligibility. Remaining budget would be 10 euros if chosen.",
+    "tool_call": {
+     "action_tx": "atx_b7367cc3fc1d452689786d8c58648125",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_f33c28aa9ebe4309944442a10da36ab9"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 55,
+      "a_days": 5,
+      "a_local": true,
+      "b_cost": 37,
+      "b_days": 7,
+      "b_local": false,
+      "budget": 47,
+      "current": "Project Umbra2. Apply earlier project rules. Option A: cost 55 euros, duration 5 days, local true. Option B: cost 37 euros, duration 7 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 7,
+      "local_only": true,
+      "quotes": "Project Umbra2. Budget 47 euros. Deadline 7 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "earlier14",
+   "kind": "earlier",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 34 euros. The remaining budget would be 47 minus 34, which is 13 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is cheaper at 34 euros. The remaining budget would be 47 minus 34, which is 13 euros.",
+    "tool_call": {
+     "action_tx": "atx_1ffbc55633844524a7c8de75dd9e7700",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_3de0f99184d64524aaaaf73ff03e4c96"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 86,
+      "a_days": 8,
+      "a_local": true,
+      "b_cost": 34,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 47,
+      "current": "Project Thistle2. Apply earlier project rules. Option A: cost 86 euros, duration 8 days, local true. Option B: cost 34 euros, duration 11 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 8,
+      "local_only": true,
+      "quotes": "Project Thistle2. Budget 47 euros. Deadline 8 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "override00",
+   "kind": "override",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.42
+     }
+    ],
+    "output": "Option A fits the local requirement and stays within budget. Option B exceeds both criteria. Choose Option A for cost and timeline compliance.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.91,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.41
+     }
+    ],
+    "output": "Option A fits the local-only rule and is within budget. Option B exceeds both the deadline and local requirements. Choose Option A. Remaining budget: 6 euros.",
+    "tool_call": {
+     "action_tx": "atx_7689acebc4d745079a6c530a38bec529",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_4fd458a6c49b4461963b0e688bb6f948"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 56,
+      "a_days": 6,
+      "a_local": true,
+      "b_cost": 53,
+      "b_days": 10,
+      "b_local": false,
+      "budget": 62,
+      "current": "Project Larch2. Apply earlier project rules, but now deadline 6 days. Option A: cost 56 euros, duration 6 days, local true. Option B: cost 53 euros, duration 10 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 4,
+      "local_only": true,
+      "quotes": "Project Larch2. Budget 62 euros. Deadline 4 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "deadline:conflicts_current",
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override01",
+   "kind": "override",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "Option B is cheaper at 55 euros. Remaining budget after choosing it would be 27 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.42,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Choose Option B. Remaining budget: 27 euros.",
+    "tool_call": {
+     "action_tx": "atx_9a9a3c8258fe45c68257db33fe428e08",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_4b7a842b012d444aaecbf0fdaddb5787"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 67,
+      "a_days": 3,
+      "a_local": true,
+      "b_cost": 55,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 82,
+      "current": "Project Cobalt2. Apply earlier project rules, but now budget 82 euros. Option A: cost 67 euros, duration 3 days, local true. Option B: cost 55 euros, duration 3 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 9,
+      "local_only": true,
+      "quotes": "Project Cobalt2. Budget 41 euros. Deadline 9 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "override02",
+   "kind": "override",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.81,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 38 euros. The remaining budget would be 63 minus 38, which is 25 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.2
+     }
+    ],
+    "output": "Option B is cheaper at 38 euros. The remaining budget would be 63 minus 38, which is 25 euros.",
+    "tool_call": {
+     "action_tx": "atx_b4170215483947d88848f11c3329bcd6",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_7eadfef34d594945ac0983f8acd67a9b"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 70,
+      "a_days": 6,
+      "a_local": true,
+      "b_cost": 38,
+      "b_days": 6,
+      "b_local": false,
+      "budget": 63,
+      "current": "Project Raven2. Apply earlier project rules, but now local-only requirement: true. Option A: cost 70 euros, duration 6 days, local true. Option B: cost 38 euros, duration 6 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 10,
+      "local_only": true,
+      "quotes": "Project Raven2. Budget 63 euros. Deadline 10 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "override03",
+   "kind": "override",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the local requirement and stays within budget. Option B exceeds both criteria. Choose Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the local rule and stays within budget. Option B exceeds both rules. Choose Option A.",
+    "tool_call": {
+     "action_tx": "atx_098d7c0a6a474bfe9a9c4efe24fd5069",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_4d879b8c2680474f8dc9495328067856"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 55,
+      "a_days": 7,
+      "a_local": true,
+      "b_cost": 68,
+      "b_days": 2,
+      "b_local": false,
+      "budget": 74,
+      "current": "Project Kestrel3. Apply earlier project rules, but now deadline 8 days. Option A: cost 55 euros, duration 7 days, local true. Option B: cost 68 euros, duration 2 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": true,
+      "quotes": "Project Kestrel3. Budget 74 euros. Deadline 3 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override04",
+   "kind": "override",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "Option B is cheaper at 78 euros. With the remaining budget, we can allocate funds accordingly.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.02,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 78 euros. The remaining budget would be 50 minus 78, which is negative. So only Option A fits within the 80 euro limit. Choose Option A.",
+    "tool_call": {
+     "action_tx": "atx_bcb9089b148245ec9d15394fe78be691",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_bcae1fa19b314352826972480b535d4a"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 42,
+      "a_days": 6,
+      "a_local": false,
+      "b_cost": 78,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 50,
+      "current": "Project Nimbus3. Apply earlier project rules, but now budget 80 euros. Option A: cost 42 euros, duration 6 days, local false. Option B: cost 78 euros, duration 3 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 4,
+      "local_only": false,
+      "quotes": "Project Nimbus3. Budget 50 euros. Deadline 4 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "budget:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override05",
+   "kind": "override",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "Option B is the only locally feasible choice. It costs 48 euros and fits the deadline. The remaining budget would be 34 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.71,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is the only locally eligible choice. It costs 48 euros and fits the deadline. The remaining budget would be 34 euros.",
+    "tool_call": {
+     "action_tx": "atx_09c7355a4c57424b82c916e4828d6216",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_be736040e042464d8047e2f90623ab53"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 41,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 48,
+      "b_days": 4,
+      "b_local": true,
+      "budget": 82,
+      "current": "Project Ember3. Apply earlier project rules, but now local-only requirement: true. Option A: cost 41 euros, duration 2 days, local false. Option B: cost 48 euros, duration 4 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 3,
+      "local_only": false,
+      "quotes": "Project Ember3. Budget 82 euros. Deadline 3 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override06",
+   "kind": "override",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 41 euros, but it meets the local-only requirement. We can choose it and have 38 euros left.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 3.02,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is cheaper at 41 euros, but it meets the local-only requirement. We can choose it. Remaining budget: 79 - 41 = 38 euros.",
+    "tool_call": {
+     "action_tx": "atx_e679004d45b94806a45f9353ddd0e601",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_ec741b6f899048d9959295021f936e51"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 74,
+      "a_days": 4,
+      "a_local": false,
+      "b_cost": 41,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 79,
+      "current": "Project Sorrel3. Apply earlier project rules, but now local-only requirement: false. Option A: cost 74 euros, duration 4 days, local false. Option B: cost 41 euros, duration 11 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 4,
+      "local_only": true,
+      "quotes": "Project Sorrel3. Budget 79 euros. Deadline 4 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override07",
+   "kind": "override",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is the only locally feasible choice. It costs 68 euros, lasts 6 days, and meets the local requirement. The remaining budget would be 58 minus 68, which isn\u2019t possible\u2014so we must adjust. Let's reconsider: Option A exceeds the budget. This suggests a need to revisit eligibility.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.42,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Choose Option B. Remaining budget is 13 euros.",
+    "tool_call": {
+     "action_tx": "atx_1a87c3ebfcd040f2b1d4dfbe672c3ec9",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_82b096cf1e04424b937d8b208d0f12d8"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 85,
+      "a_days": 2,
+      "a_local": false,
+      "b_cost": 68,
+      "b_days": 6,
+      "b_local": true,
+      "budget": 81,
+      "current": "Project Xenon3. Apply earlier project rules, but now budget 81 euros. Option A: cost 85 euros, duration 2 days, local false. Option B: cost 68 euros, duration 6 days, local true. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 7,
+      "local_only": true,
+      "quotes": "Project Xenon3. Budget 58 euros. Deadline 7 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "override08",
+   "kind": "override",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.51,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A costs 31 euros and is local-only, but it exceeds the deadline. Option B costs 70 euros and also meets the deadline. Since Option B is more expensive, it doesn't fit the budget constraint. The cheapest eligible choice is Option A, but it doesn't meet the deadline requirement.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 3.21,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the deadline but exceeds the budget. Option B is over budget and doesn\u2019t meet the deadline. The cheapest option that works is Option A, but it\u2019s not fully within the budget. Remaining budget uncertainty remains.",
+    "tool_call": {
+     "action_tx": "atx_c649f4e1c01f46a9aeb29a332392026e",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1296f14f359d4610a7bb907f1f68a34b"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 31,
+      "a_days": 7,
+      "a_local": false,
+      "b_cost": 70,
+      "b_days": 8,
+      "b_local": false,
+      "budget": 59,
+      "current": "Project Iris3. Apply earlier project rules, but now deadline 4 days. Option A: cost 31 euros, duration 7 days, local false. Option B: cost 70 euros, duration 8 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": false,
+      "quotes": "Project Iris3. Budget 59 euros. Deadline 8 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "deadline:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override09",
+   "kind": "override",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.11,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "The options show costs exceeding the 73 euro limit. Only Option A fits within budget, but it doesn\u2019t meet the local-only requirement. So, we must select Option B despite the higher cost and non-local status.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 3.02,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "The cheapest option is Option A at 59 euros, but it doesn\u2019t meet the local-only requirement. The remaining budget is 14 euros, but eligibility isn\u2019t confirmed.",
+    "tool_call": {
+     "action_tx": "atx_f235689d5ec940fb803fa0d6f2c9ae62",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1446466e73b047fe8d49a65d269e7750"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 59,
+      "a_days": 3,
+      "a_local": true,
+      "b_cost": 92,
+      "b_days": 9,
+      "b_local": false,
+      "budget": 73,
+      "current": "Project Pike3. Apply earlier project rules, but now local-only requirement: false. Option A: cost 59 euros, duration 3 days, local false. Option B: cost 92 euros, duration 9 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": true,
+      "quotes": "Project Pike3. Budget 73 euros. Deadline 8 days. Local-only requirement: true. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:conflicts_current",
+      "A:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override10",
+   "kind": "override",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is the only locally feasible choice. It fits within the deadline and stays under the revised budget.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is the only locally eligible choice. Remaining budget after selecting it would be 9 euros.",
+    "tool_call": {
+     "action_tx": "atx_f62b5991f9d1400181c65d54c63fb999",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_87aa50ed3fbc4c91a35868dec944877e"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 94,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 64,
+      "b_days": 3,
+      "b_local": true,
+      "budget": 73,
+      "current": "Project Fjord3. Apply earlier project rules, but now budget 73 euros. Option A: cost 94 euros, duration 10 days, local false. Option B: cost 64 euros, duration 3 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 8,
+      "local_only": false,
+      "quotes": "Project Fjord3. Budget 60 euros. Deadline 8 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "B",
+     "rejected": []
+    },
+    "correction_applied": false,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  },
+  {
+   "task": "override11",
+   "kind": "override",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 1.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B fits the budget and timeline. It costs 46 euros, lasts 11 days, and meets the local requirement.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 46 euros. With the remaining budget, you can proceed with Option B.",
+    "tool_call": {
+     "action_tx": "atx_cc0bd1c5065d4ef2a566f420dcbc9ced",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_74ba2f941d904f7b95126dd01b7e4291"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 81,
+      "a_days": 7,
+      "a_local": true,
+      "b_cost": 46,
+      "b_days": 11,
+      "b_local": true,
+      "budget": 46,
+      "current": "Project Delta3. Apply earlier project rules, but now budget 46 euros. Option A: cost 81 euros, duration 7 days, local true. Option B: cost 46 euros, duration 11 days, local true. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 10,
+      "local_only": true,
+      "quotes": "Project Delta3. Budget 81 euros. Deadline 10 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "local_only:not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": false
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override12",
+   "kind": "override",
+   "oracle": "A",
+   "c3_alone": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.62,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the budget and is local. Option B exceeds the budget and isn't local. I\u2019ll select Option A.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "A",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.72,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option A fits the budget and meets the requirements. Option B exceeds the budget and is not local. I will select Option A.",
+    "tool_call": {
+     "action_tx": "atx_37605b2e33d34d34a9b559a89fe3da7d",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_8ac0a9a1d9cc4b979ec2a710f0e74441"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 87,
+      "a_days": 4,
+      "a_local": true,
+      "b_cost": 48,
+      "b_days": 11,
+      "b_local": false,
+      "budget": 81,
+      "current": "Project Heron3. Apply earlier project rules, but now budget 88 euros. Option A: cost 87 euros, duration 4 days, local true. Option B: cost 48 euros, duration 11 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 10,
+      "local_only": false,
+      "quotes": "Project Heron3. Budget 81 euros. Deadline 10 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "budget:conflicts_current"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override13",
+   "kind": "override",
+   "oracle": "B",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 1.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.11
+     }
+    ],
+    "output": "Option B is cheaper at 52 euros. The remaining budget would be 67 minus 52, which is 15 euros.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": "B",
+    "correct": true,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.92,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.21
+     }
+    ],
+    "output": "Option B is cheaper at 52 euros. The remaining budget would be 67 minus 52, which is 15 euros.",
+    "tool_call": {
+     "action_tx": "atx_63902e861341490c8e45009710c02610",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_1ccbecc1db8a4ecca79975899b4c8dd0"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 76,
+      "a_days": 10,
+      "a_local": false,
+      "b_cost": 52,
+      "b_days": 2,
+      "b_local": true,
+      "budget": 67,
+      "current": "Project Birch3. Apply earlier project rules, but now budget 67 euros. Option A: cost 76 euros, duration 10 days, local false. Option B: cost 52 euros, duration 2 days, local false. Which option should we choose? Pick the cheapest eligible option and give the remaining budget.",
+      "deadline": 7,
+      "local_only": false,
+      "quotes": "Project Birch3. Budget 50 euros. Deadline 7 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "UNKNOWN",
+     "rejected": [
+      "B:option_not_stated"
+     ]
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": false
+  },
+  {
+   "task": "override14",
+   "kind": "override",
+   "oracle": "NONE",
+   "c3_alone": {
+    "parsed": "B",
+    "correct": false,
+    "wrong_committed": true,
+    "status": null,
+    "turn_s": 2.31,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "Option B is cheaper at 30 euros but exceeds the deadline. Option A costs 47 euros, which fits within the budget and meets the deadline. It does not satisfy the local-only requirement. The best choice is Option B if flexibility is allowed, but it doesn't meet the local-only condition.",
+    "tool_call": null,
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": null,
+    "decision": null,
+    "correction_applied": false
+   },
+   "tool_active": {
+    "parsed": null,
+    "correct": false,
+    "wrong_committed": false,
+    "status": null,
+    "turn_s": 2.61,
+    "first_turns": [
+     {
+      "status": null,
+      "turn_s": 1.31
+     }
+    ],
+    "output": "The remaining budget is 6 euros. Both options are not eligible due to local-only requirements.",
+    "tool_call": {
+     "action_tx": "atx_e4ede13d7a0a483795d79fb301296897",
+     "status": "EXECUTED",
+     "tool": "eligibility",
+     "tx": "tool_8152a63dea584317970e0797872086bc"
+    },
+    "tool_shadow": null,
+    "tool_failures": [],
+    "proposal": {
+     "tool": "eligibility",
+     "policy": "APPROVED",
+     "args": {
+      "a_cost": 47,
+      "a_days": 5,
+      "a_local": false,
+      "b_cost": 30,
+      "b_days": 11,
+      "b_local": false,
+      "budget": 53,
+      "current": "Project Marlow3. Apply earlier project rules, but now local-only requirement: true. Option A: cost 47 euros, duration 5 days, local false. Option B: cost 30 euros, duration 11 days, local false. Compute remaining budget and eligibility; choose cheapest eligible.",
+      "deadline": 6,
+      "local_only": true,
+      "quotes": "Project Marlow3. Budget 53 euros. Deadline 6 days. Local-only requirement: false. Please keep these rules for later."
+     }
+    },
+    "decision": {
+     "action": "NONE",
+     "rejected": []
+    },
+    "correction_applied": true,
+    "tool_wrong": false,
+    "shown_correct": true
+   },
+   "values_exact": true
+  }
+ ]
+}

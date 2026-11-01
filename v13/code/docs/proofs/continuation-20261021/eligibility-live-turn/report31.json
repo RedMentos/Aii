@@ -1,0 +1,48 @@
+{
+ "verdict": "NOT_SUPPORTED",
+ "summary": {
+  "n": 24,
+  "correct": {
+   "c3_alone": 14,
+   "tool_active": 13
+  },
+  "wrong_committed": {
+   "c3_alone": 9,
+   "tool_active": 11
+  },
+  "wins": 0,
+  "losses": 1,
+  "net": -1,
+  "sign_test_p": 1.0,
+  "by_kind": {
+   "retain": {
+    "n": 14,
+    "c3_alone": 8,
+    "tool_active": 8
+   },
+   "override": {
+    "n": 8,
+    "c3_alone": 6,
+    "tool_active": 5
+   },
+   "missing": {
+    "n": 2,
+    "c3_alone": 0,
+    "tool_active": 0
+   }
+  },
+  "tool_executed": 24,
+  "tool_value_correct": 23,
+  "errors": {
+   "c3_alone": 72,
+   "tool_active": 72
+  },
+  "turn_s_median": {
+   "c3_alone": 7.01,
+   "tool_active": 8.41
+  }
+ },
+ "decision_rule": "Fresh seed, 24 episodes: TOOL_TURN_SUPPORTED iff net wins (tool_active right, c3_alone wrong) >= +5 AND two-sided sign test p < .05 AND tool_active wrong_committed <= c3_alone wrong_committed AND no FINAL-status errors beyond c3_alone. Reported, not part of the verdict: by kind, tool value correctness, latency.",
+ "fresh_sha256": "484e0b3673e66279034d24346ab61228c21d77af866b4ee6c8f65b16697cd8e4",
+ "prereg_sha256": "1db63c684500da5aac167012f8934bc6184a819e87991d075e9bb0e387b7c9ef"
+}

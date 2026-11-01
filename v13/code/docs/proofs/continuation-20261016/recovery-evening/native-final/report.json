@@ -1,0 +1,900 @@
+{
+  "analysis": {
+    "analysis_ran": true,
+    "canonical_gate_pass": false,
+    "claim_scope": "Row integrity and original numerical analysis only; no native/device/provenance gate established",
+    "gates": {
+      "in_world_max_ratio": 1.02,
+      "shift_gain_max_ratio": 0.9
+    },
+    "integrity": {
+      "errors": [],
+      "expected_by_arm": {
+        "calc_in_test": 120,
+        "calc_shift_exp": 160,
+        "calc_shift_test": 120,
+        "note_in_test": 60,
+        "note_shift_exp": 90,
+        "note_shift_test": 60
+      },
+      "expected_rows": 610,
+      "experience_rows": 250,
+      "missing_cases": [],
+      "observed_by_arm": {
+        "calc_in_test": 120,
+        "calc_shift_exp": 160,
+        "calc_shift_test": 120,
+        "note_in_test": 60,
+        "note_shift_exp": 90,
+        "note_shift_test": 60
+      },
+      "observed_rows": 610,
+      "pass": true,
+      "test_rows": 360
+    },
+    "phone_measured": false,
+    "verdict": "CONTINUAL_LEARNING_CONFIRMED",
+    "worlds": {
+      "calc_counter": {
+        "calc_in_test": {
+          "add_15": {
+            "adapted": 0.007038119666666667,
+            "adapted_to_best_control": 0.1205,
+            "adapted_vs_measured": 1.0024,
+            "copy": 0.4141976103333333,
+            "mean_delta": 0.058421828333333335,
+            "measured": 0.007021004666666667,
+            "measured_to_best_control": 0.1202,
+            "n": 30
+          },
+          "double": {
+            "adapted": 0.009555897,
+            "adapted_to_best_control": 0.149,
+            "adapted_vs_measured": 0.9958,
+            "copy": 0.18078413799999996,
+            "mean_delta": 0.06412635233333333,
+            "measured": 0.009596453666666668,
+            "measured_to_best_control": 0.1496,
+            "n": 30
+          },
+          "quarter": {
+            "adapted": 0.024197126,
+            "adapted_to_best_control": 0.2209,
+            "adapted_vs_measured": 0.9822,
+            "copy": 0.4846209046666667,
+            "mean_delta": 0.10953564600000001,
+            "measured": 0.024635823999999997,
+            "measured_to_best_control": 0.2249,
+            "n": 30
+          },
+          "subtract_7": {
+            "adapted": 0.006013773999999999,
+            "adapted_to_best_control": 0.105,
+            "adapted_vs_measured": 0.986,
+            "copy": 0.5950534246666666,
+            "mean_delta": 0.057254330666666665,
+            "measured": 0.006099186333333332,
+            "measured_to_best_control": 0.1065,
+            "n": 30
+          }
+        },
+        "calc_shift_test": {
+          "add_15": {
+            "adapted": 0.04898884933333334,
+            "adapted_to_best_control": 0.4375,
+            "adapted_vs_measured": 0.7074,
+            "copy": 0.28115392333333333,
+            "mean_delta": 0.11198053266666667,
+            "measured": 0.06924744666666667,
+            "measured_to_best_control": 0.6184,
+            "n": 30
+          },
+          "double": {
+            "adapted": 0.016311321666666666,
+            "adapted_to_best_control": 0.1994,
+            "adapted_vs_measured": 0.5504,
+            "copy": 0.13460944933333335,
+            "mean_delta": 0.08182243400000001,
+            "measured": 0.029637055333333332,
+            "measured_to_best_control": 0.3622,
+            "n": 30
+          },
+          "quarter": {
+            "adapted": 0.15785075733333334,
+            "adapted_to_best_control": 0.7941,
+            "adapted_vs_measured": 0.6848,
+            "copy": 0.3539755413333333,
+            "mean_delta": 0.19878172866666668,
+            "measured": 0.2304954226666667,
+            "measured_to_best_control": 1.1595,
+            "n": 30
+          },
+          "subtract_7": {
+            "adapted": 0.012679249333333333,
+            "adapted_to_best_control": 0.1137,
+            "adapted_vs_measured": 0.386,
+            "copy": 0.5826694179999999,
+            "mean_delta": 0.11148055033333333,
+            "measured": 0.03285103366666667,
+            "measured_to_best_control": 0.2947,
+            "n": 30
+          }
+        },
+        "learn": {
+          "adapted_actions": [
+            "add_15",
+            "double",
+            "quarter",
+            "subtract_7"
+          ],
+          "experience_rows": 160,
+          "pass": true,
+          "reason": null
+        },
+        "pass": true,
+        "shift_actions_improved": 4
+      },
+      "note_edit": {
+        "learn": {
+          "adapted_actions": [
+            "append_done",
+            "prefix_urgent",
+            "uppercase"
+          ],
+          "experience_rows": 90,
+          "pass": true,
+          "reason": null
+        },
+        "note_in_test": {
+          "append_done": {
+            "adapted": 0.0038914895,
+            "adapted_to_best_control": 0.0612,
+            "adapted_vs_measured": 1.0,
+            "copy": 0.483378446,
+            "mean_delta": 0.0636283325,
+            "measured": 0.0038914895,
+            "measured_to_best_control": 0.0612,
+            "n": 20
+          },
+          "prefix_urgent": {
+            "adapted": 0.003274025,
+            "adapted_to_best_control": 0.0843,
+            "adapted_vs_measured": 1.0,
+            "copy": 0.20073138249999997,
+            "mean_delta": 0.038844324,
+            "measured": 0.003274025,
+            "measured_to_best_control": 0.0843,
+            "n": 20
+          },
+          "uppercase": {
+            "adapted": 0.008408735000000002,
+            "adapted_to_best_control": 0.1122,
+            "adapted_vs_measured": 1.0,
+            "copy": 0.5331357849999999,
+            "mean_delta": 0.0749363475,
+            "measured": 0.008408735000000002,
+            "measured_to_best_control": 0.1122,
+            "n": 20
+          }
+        },
+        "note_shift_test": {
+          "append_done": {
+            "adapted": 0.062424035999999995,
+            "adapted_to_best_control": 0.3807,
+            "adapted_vs_measured": 0.6656,
+            "copy": 0.594231915,
+            "mean_delta": 0.16395574899999998,
+            "measured": 0.093785189,
+            "measured_to_best_control": 0.572,
+            "n": 20
+          },
+          "prefix_urgent": {
+            "adapted": 0.03757695949999999,
+            "adapted_to_best_control": 0.4177,
+            "adapted_vs_measured": 0.5658,
+            "copy": 0.19519185349999998,
+            "mean_delta": 0.08997170749999998,
+            "measured": 0.06641761849999998,
+            "measured_to_best_control": 0.7382,
+            "n": 20
+          },
+          "uppercase": {
+            "adapted": 0.08138912699999999,
+            "adapted_to_best_control": 0.4481,
+            "adapted_vs_measured": 0.5039,
+            "copy": 0.6263583644999999,
+            "mean_delta": 0.1816416715,
+            "measured": 0.1615131835,
+            "measured_to_best_control": 0.8892,
+            "n": 20
+          }
+        },
+        "pass": true,
+        "shift_actions_improved": 3
+      }
+    }
+  },
+  "canonical_gate_pass": false,
+  "cohort_claim_path": "/workspace/scratch/f24630d7727d/native16-evening-home/data/tool_forecast/cohort-claims/c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6.json",
+  "completed_calls": 610,
+  "elapsed_seconds": 942.39,
+  "last_arm": "note_in_test",
+  "native_binding_verified_after": true,
+  "parity": {
+    "gate": 0.98,
+    "status": "PASS",
+    "worlds": {
+      "calc_counter": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998691837016781,
+          "rel_rms_max": 0.016175061242649235
+        },
+        "pass": true,
+        "per_action": {
+          "add_15": {
+            "copy": 0.41286468440736357,
+            "forecast": 0.005533352116963193,
+            "mean_delta": 0.05842007805707283,
+            "rows": 80
+          },
+          "double": {
+            "copy": 0.1771252590158075,
+            "forecast": 0.0078067027032059965,
+            "mean_delta": 0.05808980624923067,
+            "rows": 80
+          },
+          "quarter": {
+            "copy": 0.45917634557805737,
+            "forecast": 0.02201900877821336,
+            "mean_delta": 0.11706815789471756,
+            "rows": 80
+          },
+          "subtract_7": {
+            "copy": 0.6073222779959705,
+            "forecast": 0.005194715384603888,
+            "mean_delta": 0.05692746830279734,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "add_15": 0.0947,
+          "double": 0.1344,
+          "quarter": 0.1881,
+          "subtract_7": 0.0913
+        },
+        "texts": 400
+      },
+      "note_edit": {
+        "drift_vs_capture": {
+          "bit_identical": false,
+          "cos_min": 0.9998379156542899,
+          "rel_rms_max": 0.01800468663496196
+        },
+        "pass": true,
+        "per_action": {
+          "append_done": {
+            "copy": 0.4800054566355164,
+            "forecast": 0.0037779772539589113,
+            "mean_delta": 0.0641697412181094,
+            "rows": 80
+          },
+          "prefix_urgent": {
+            "copy": 0.18916024406624402,
+            "forecast": 0.0031838749154063156,
+            "mean_delta": 0.03278961569381163,
+            "rows": 80
+          },
+          "undo": {
+            "copy": 0.2386768914657666,
+            "forecast": 0.0029039892444568697,
+            "mean_delta": 0.026015840357057875,
+            "rows": 80
+          },
+          "uppercase": {
+            "copy": 0.5219591118668696,
+            "forecast": 0.005810759515399328,
+            "mean_delta": 0.06715919527136933,
+            "rows": 80
+          }
+        },
+        "ratio_to_best_control": {
+          "append_done": 0.0589,
+          "prefix_urgent": 0.0971,
+          "undo": 0.1116,
+          "uppercase": 0.0865
+        },
+        "texts": 400
+      }
+    }
+  },
+  "phase_a_experience": {
+    "directory": "phase-a-experience",
+    "manifest": {
+      "schema": "V13_TOOL_FORECAST_PHASE_A_SNAPSHOT_V1",
+      "worlds": {
+        "calc_counter": {
+          "binding": {
+            "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+            "layer": 11,
+            "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+            "pooling": "last",
+            "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2"
+          },
+          "file": "calc_counter.npz",
+          "forecast_ids": [
+            "tfc_c8c120e00dc64a37926064edb12edd61",
+            "tfc_77e53b1ca291457e9551a717ac96218d",
+            "tfc_7309a88b675844eea2717a8f8064f57c",
+            "tfc_91edaff1bc124173958d6a6dc188a68a",
+            "tfc_d46e91756a88462db026aa8617d84b46",
+            "tfc_98a5fd5f0a524135b1eaa83f79f71590",
+            "tfc_0979b75eccee4b44b27dae0e28c8414c",
+            "tfc_195f5eb175a2433e8f7845dc3b8b8a5e",
+            "tfc_870d57a5f14d429da2d4b6c2838ed6cb",
+            "tfc_3988c7cec0f547329d13482e42af19d2",
+            "tfc_384eb9c840cf4640b63c94cad87371f0",
+            "tfc_73b621715f894029be5e1fa208caf330",
+            "tfc_5a55a48c75cf40c4826397db0063228d",
+            "tfc_dc2d2e0fba6f4e0fb9a11d4ae87fa484",
+            "tfc_a245fa4b612b4107aff170616a3713b1",
+            "tfc_ee1550cacc4841abb413168635820bea",
+            "tfc_f6c3bdeba0d54b0a999666f239364b53",
+            "tfc_f72badcafc52435fbefbe629346d6969",
+            "tfc_381853155d5548c2bd905968642e94f0",
+            "tfc_f27d975bdc354e658fee988f188026ed",
+            "tfc_bc46f467c4a84a5b9e47d0049c45d1c9",
+            "tfc_543078682e4047db8140e05c71a4b878",
+            "tfc_19f3f7eb1afd4326833223ed8385a858",
+            "tfc_4c52e1d755be40809e99f75630e20e12",
+            "tfc_8cd396d37c044364921f4e1d8e49d00f",
+            "tfc_d864217f7b62499996eb96f1c45181a4",
+            "tfc_97e79a23e48c481d94f6bbdafb854299",
+            "tfc_6657aab7cfa74b178cada6c748d0953e",
+            "tfc_276e32d113f1425abd275ba2299c58a2",
+            "tfc_8cf429149ee1434bb98fdedb33cc6ffc",
+            "tfc_05d4c951d0164327aed0fd4a3151639c",
+            "tfc_98102239c0c54e51aaa9bf6f49b3d050",
+            "tfc_aa550249b5324030b407bc729e238195",
+            "tfc_0fad3f3f3ce44017b70765176981b09a",
+            "tfc_3db6b435dba5472baee7b4366279135b",
+            "tfc_be7516754be340f5bc6e7695cf5984ab",
+            "tfc_2c72227a072c44a9b40adf65d084f77b",
+            "tfc_b7416c14468042aeb4b891951b6757d4",
+            "tfc_914fec50d9c74151befdc0cd0158f902",
+            "tfc_8b36c89a94074f7c80dfbc70558f366a",
+            "tfc_febc161d374f4878adc5920035577f3a",
+            "tfc_45c26ab6338043b2b21167d2ccb5a79c",
+            "tfc_fc102f26c08e4225bf8883cbdf9ccc20",
+            "tfc_07e154d0866c4ee584d4e25b5fff65ac",
+            "tfc_859b0cd307f34b529a64da0b13d3b474",
+            "tfc_81bb13a3ce0645cdb773fc76bf56d14c",
+            "tfc_6249a0592b8948d8b062c3e4ddc3e0dd",
+            "tfc_ff473731c5774c2db5e2a3799a0297af",
+            "tfc_94fd66fcc4814102bc556b7b845e1a08",
+            "tfc_42cd8c69889244bb8822209a93734316",
+            "tfc_60d9c27053d74cab9cf3ae08ae4a3850",
+            "tfc_df8624f46e494b9c8f9cb30145e97930",
+            "tfc_b3cde82b818048768c217a2ec653ddd5",
+            "tfc_61aca15bf8d148fa83ef4bd4e3a8ff59",
+            "tfc_877297500dc84d849184b5cb3d5a8b24",
+            "tfc_504771b3f5624dacb2bc509397304e32",
+            "tfc_a7b42af9eb2948b7bdab89d09033bdc7",
+            "tfc_d0e9131b86994ca682952c959bba994d",
+            "tfc_8fad39929fe3427ca62749478938cea0",
+            "tfc_6c27274931204c7395d564a1e078922a",
+            "tfc_352e56596c7042abb01eed7e12593700",
+            "tfc_9b980a24db4942e5b85fbafab1d58dc0",
+            "tfc_4f4af2e5738d4a828f948bee4ae12c63",
+            "tfc_604642b14dfa484e9ebb842e83d17499",
+            "tfc_2af2e657a2844d15a5336856e61f31d5",
+            "tfc_df50be32bcd04d39a15d870e678a8a37",
+            "tfc_f5739085cbf6499cbdbca6809d26af66",
+            "tfc_98efb3a87cd74079a62a479c778f1c10",
+            "tfc_03f83111e51441c290fb8cd666d8dadb",
+            "tfc_47a8bb693d224dd5839b30b4fc184f81",
+            "tfc_6b89a1c67c754701baa4a0a6ca8e2f34",
+            "tfc_4e2f9d639f354a97a36bd47b7ac0cc5f",
+            "tfc_e3224d7314204e4eaa3462f3f8f2feba",
+            "tfc_d391d4ecb5db4ea48e4f7daa52daba94",
+            "tfc_52c43af5374341c6b70cecc0cc0afb71",
+            "tfc_0decc120bc6743f9b910c8df7f043a24",
+            "tfc_5ce2d44eca3641878d62462728dcdfed",
+            "tfc_90f29db195d04688b9bd9fc221beac0c",
+            "tfc_1cee1adfd408437ab933cbae6d0f1fcf",
+            "tfc_b42d1ff5ffa94a449b2f157169c7933f",
+            "tfc_35030f812f674af39421135f8d081075",
+            "tfc_3229ccdf35cc468a93d19e4481052578",
+            "tfc_dfcd6fae8d6a44e397cf377bd71984c3",
+            "tfc_b2743aa530444c1d928c732db858629c",
+            "tfc_65fe9526b7dc4929a40b7817becab51d",
+            "tfc_cd7ed249d2084226936f68f42114c324",
+            "tfc_5105bee8794241519920f6dc7c71e333",
+            "tfc_55caf52503d24f07a5e931408b59a719",
+            "tfc_048f66a01e5c428fab82b9f351eadc3b",
+            "tfc_5b459af6e7b1493ba0b29deca803dabb",
+            "tfc_3ed42ace71764107ac0fd29a67b8b87f",
+            "tfc_aeffad8ee1234934ae0f86d03f524f8a",
+            "tfc_c8245013e8494017b5fe0a1f1b048a7e",
+            "tfc_0a37c426ac6f43d8b2993046ad7f377c",
+            "tfc_f03d389d85a2495fb6ab43f070d4d663",
+            "tfc_bf1d3fb10d4a4db0854729ade22e358d",
+            "tfc_aae156a418d648639055688fd57c5776",
+            "tfc_d69ed0f0eefd445985b53fe2ca99dd14",
+            "tfc_9445ab88c82040f8bd8e26c191e9a995",
+            "tfc_11f4c98912294645bd94c51e08265049",
+            "tfc_98f2f8b2f610464a85ea1e6275d529b2",
+            "tfc_1f1cb82a2ad34be89442e9a69487696d",
+            "tfc_7ab99ee27f0d495397553db67ec8c39a",
+            "tfc_22d6627a9e7549b3a2d011f0a83d2bf6",
+            "tfc_84b0a8831d9b4ad18c812b495f0382be",
+            "tfc_8f255fbcb1754829a5ead7f7838966be",
+            "tfc_cae09d85d32847f3a8a98bf6e9a0f9a1",
+            "tfc_2e1d0d98a7e44333b42d6fc30c3edac5",
+            "tfc_3758e935d7c84157895f89c0ef0b3ffb",
+            "tfc_07f12d2abbf845b48e355ac8d1d0c9e2",
+            "tfc_f0bb48f8dce740bea8bea28d389237f7",
+            "tfc_a299e8104b794f0e991033aea162210c",
+            "tfc_a7fd669c8db640319fd98ba90b7b09fb",
+            "tfc_70b181153cd0496fa1285cfc95d945bc",
+            "tfc_5626be1ae2f746228f5b6b87ec115ba8",
+            "tfc_be8c6440814c4cf59e78c8a04e3c0ab7",
+            "tfc_71e9efb4146e43158f3d135dc8e9b4fc",
+            "tfc_7a1d1f9b004740c9be0f5e533e4a6bad",
+            "tfc_d52073b0e4fa480ba1efbbd9d605470b",
+            "tfc_a7c3da6fed564b72b13b736a9deacdfe",
+            "tfc_62688e704c794a948033f06db857df03",
+            "tfc_58f5f0c9966c4acdb42a59f810b67444",
+            "tfc_0fbc4d0844d245878a295fca960e99a4",
+            "tfc_2409fbfddb9a4765a55e0bd104753a26",
+            "tfc_9f458cc2c57c4a9cbfe79c0349487e33",
+            "tfc_affa16b4b8914296a59a3313e64105e5",
+            "tfc_01b71bcbefa04a0ea6699305dba0384a",
+            "tfc_e6e33f928e6240999e131412664d1840",
+            "tfc_00e7f1d44244481ba9f4e2dc1d028b24",
+            "tfc_e50335d438ae42b39fc820d45b1505f1",
+            "tfc_99cd3a10c4d543778149d038e4994967",
+            "tfc_8aa94eab90fe4ab0b61f28e03277c844",
+            "tfc_bf43f87c13234054a73b20926d6314ab",
+            "tfc_4f7a616c77de493dbd9e7bfc358e14ca",
+            "tfc_9da05edadccc4960a06458b43dba6867",
+            "tfc_d08cb37e35d54714b283cbc2aec776ff",
+            "tfc_3b11bfc1c70c46b7923e141c45c5dcf2",
+            "tfc_1ef57a2fe2cb4dc892bc0645da733ba0",
+            "tfc_90242d3f91454d02aba4d964f44a179a",
+            "tfc_43881c509f47455aa7b058ce1b9f3b3f",
+            "tfc_15148272e4f84fb3987a179abaa21ffa",
+            "tfc_ad32b4b4adb146c5b63b62d88f21a14d",
+            "tfc_7703d14d487a4a69b91286f0eab45fdb",
+            "tfc_ae1ba82bc44c4bb49c789f2704fc4fa9",
+            "tfc_aef8e797350f49e6824928c9d8533e60",
+            "tfc_f87b495f4cea4c7d823bcc279a550d93",
+            "tfc_230c87465c7c43dbb8b8c6fad1cab63e",
+            "tfc_48653851e3df46f48039b49c00972a70",
+            "tfc_48bd97b97d3842ac824657ae5157a7c0",
+            "tfc_b6b495c543934229b2b8900665a60932",
+            "tfc_794cb51a5d0f49418a4c3a17112c7958",
+            "tfc_4674241132f84a32ab4ca15d396a5754",
+            "tfc_03a99dfbc1e74703ab6f0a62cc266ed2",
+            "tfc_994315464dea4fd6b4594354e0ca8385",
+            "tfc_76a6ce1d716f449b9d6ce3c50a575df5",
+            "tfc_aef2ebc6a74749ca821d81aa98b7dc96",
+            "tfc_90cced2f72934926bd28b8bfe07941b7",
+            "tfc_18be2e11252c4a8d8050ca55aa46e647",
+            "tfc_d56d9738bef543148ba8c1b5ccfc919e",
+            "tfc_e5002366109a42ea99a5624be45ee268"
+          ],
+          "rows": 160,
+          "sha256": "c9748e5a748c5979ee5e52f3d7f055b9014e8699b10c17a79864e3dae5e4ec2b"
+        },
+        "note_edit": {
+          "binding": {
+            "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+            "layer": 11,
+            "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+            "pooling": "last",
+            "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2"
+          },
+          "file": "note_edit.npz",
+          "forecast_ids": [
+            "tfc_86bf1d4f1ad44993ac87c6f168da6182",
+            "tfc_082e9b113cd64d608897d9367319b942",
+            "tfc_056ce1f30fa54ba0a7a7f71242f040e7",
+            "tfc_7c14a36b1bd647c4a10354a317673c93",
+            "tfc_773f42de5e204cf0aed28039bdaf64be",
+            "tfc_680e4ce63da44048a9675d5efb31f243",
+            "tfc_d1d7eefc92604fd9ad4152c7bc096893",
+            "tfc_c0679ec112314605b3446804de5cf88d",
+            "tfc_63e422ed57254815b2d29d7a0f1dcda9",
+            "tfc_bfd2a0f0d9204709bbec4ae049b7e0d9",
+            "tfc_92ce303cc7f44a4f8cd640b688e365f7",
+            "tfc_506d730a84e64dec9b5f65cc524e87fb",
+            "tfc_50077646e5cf48e38b40824516fb6890",
+            "tfc_38b611fccc3141d6a45e7d2c68ba36e1",
+            "tfc_24d39c86ed0b4d559cd0c80e46e15330",
+            "tfc_2c9657f2e833492c9be04d683ff400ac",
+            "tfc_199c31a7ea4e4796ad5486b7d8066121",
+            "tfc_0455e6a120af49b683c7f3a8d4e5cdd1",
+            "tfc_fb2323444c0e4f87b82558bf34a3e63c",
+            "tfc_3598e90b47a14c44a51a7fbc9b995ebd",
+            "tfc_9c01c427af404da89fa8208974b83888",
+            "tfc_6d401f59c68047f8a0a5489511baad04",
+            "tfc_21c9f98e3ca1427b9a4ee45af868c522",
+            "tfc_de621e242bc34b369df474ec8d34858d",
+            "tfc_1d30c588c27e455ebea38334cd2e0f20",
+            "tfc_b946dac9074f4d368029d89488306dfc",
+            "tfc_9ba4d7c37ac548ffa08f5458078a72b5",
+            "tfc_1205096207aa4735abf11cb11aead931",
+            "tfc_0fcd69a4c89041daafe4a8b0e2ada93f",
+            "tfc_ba01d0a19f2440dab577ae0fe4101cd1",
+            "tfc_226eaebdaf394468a5d8680c29bdfd9d",
+            "tfc_fb10658a85e2471c8f286b9ccf091daf",
+            "tfc_07e5b93a12614df3a2146aeb7d098bbc",
+            "tfc_7f160e14b3a342c98b3efebc1caadc67",
+            "tfc_087a3c483e0c4982a67bdc0c49b2418b",
+            "tfc_cd56a149cf20419787c91c06762b76b2",
+            "tfc_8ea3174266054fd7b571a10127a488b1",
+            "tfc_98085ab1dc004da6b55284d12a8e1fca",
+            "tfc_971578669cd74a2ea49d73bf6d6c642a",
+            "tfc_66c5ef7e70d74b3fa93c843b16eae09e",
+            "tfc_325e7b3a1c6744feb905fa3b5f045658",
+            "tfc_2f4d4c5573584d0c912c914bfe83eb73",
+            "tfc_d594e34c8d99471e9727b42aa9cf4d4a",
+            "tfc_e8bcb011f36e44069acdd4eaeac91ecc",
+            "tfc_29f2999e387045ebac3315b11aee5f2d",
+            "tfc_331c8d76b9d0417285205d5775fb1ee7",
+            "tfc_89ab1ec52b4541dba9f3612ce77035b4",
+            "tfc_913c76206b1d4e81abbda214ce67d504",
+            "tfc_a2de7510387840608143e19279a50c47",
+            "tfc_177e87f52c5047ed85d812f6e82351f5",
+            "tfc_0c1530a1403c4e2585327e3f266a23d3",
+            "tfc_58b0106bd8ac45a9af5a02ccf0664dee",
+            "tfc_04a93bc080eb4665a8fa58a85115d411",
+            "tfc_d82f63515d16409481fc7c90bc3cced3",
+            "tfc_f234a5da971e4226b86792b980dc5f94",
+            "tfc_554a040ecd4b4ff193069290459c33f6",
+            "tfc_5ac646d8a0d4424fbd11af87fb5ebab0",
+            "tfc_b2cb0a68387d430ba1ab0a15b5a4aaa6",
+            "tfc_1e903ce6138f4d5caae0810309d9df32",
+            "tfc_80f6e5db790b4858aa2e3bd32a4ca8b4",
+            "tfc_d9d65a173b6741cea84038b260534ca8",
+            "tfc_c4f3d8d822184b76ac0d67ace7cc3a0a",
+            "tfc_18c72a4c75e14d4a8fdae1ca647d3f5f",
+            "tfc_57deaca4a5d74eb3a54cee6b21ae2418",
+            "tfc_8fc2d0feb5504910bd0412c9f3f1e7ae",
+            "tfc_19bb4df807b548b2892df64ac87eeea0",
+            "tfc_df6e653a265240208baa161413c83684",
+            "tfc_ab71c50991ac4d50a7876d3c0a67ae6e",
+            "tfc_adbdee4d1842454c9307c14275f577af",
+            "tfc_4187a655c10b4a178dfb775bb0a823a4",
+            "tfc_217c974a6f8c404088d424d467e7ebdf",
+            "tfc_f57c5e4f919446a6aca0ec391ab6da29",
+            "tfc_e01362f1a8cf4a00a847df47ad813f69",
+            "tfc_5a85e7e241ed4d349a862e6109fd475f",
+            "tfc_a9d91c31208846209ab562ed3e3b6bab",
+            "tfc_10c17034f50c4adb8be63aa89e2d7623",
+            "tfc_32afb4e162ff41669a112ad1f4940d0c",
+            "tfc_22d3399553bd42a4881b5873cc566e69",
+            "tfc_30c977b8e9af4669b6ce8b0e70dcd944",
+            "tfc_025f5b6fe2614eadb2ba0467b27bd859",
+            "tfc_b261d9fa4b414dc68a851f21d7506a44",
+            "tfc_51ef60e5e2ae436abc5544b1d23afa64",
+            "tfc_431083f3fe864a128c5bed19763fb455",
+            "tfc_346c9655db9c415eb596d44a1ae54656",
+            "tfc_b7de4d0700804ffea125af55166df19e",
+            "tfc_f60aa2ae534b4e92aedb5b187bf51497",
+            "tfc_ab8457bcb35946ffaa1380d063bcbf5b",
+            "tfc_5eb29d2f13284af4ac0be2f6f4517f49",
+            "tfc_c0726193734347ca8a2516ff1a59db18",
+            "tfc_bbd08f9f5d604243a0737f4d21d68a53"
+          ],
+          "rows": 90,
+          "sha256": "f4c7e8d1e2fe639cc92fa328f981763f88d6f6b6a44a88a5384c052026e975a9"
+        }
+      }
+    },
+    "manifest_sha256": "29ee836a51cf7f9db6e1e81554dc5efd73f13d45d39221134f7a9dec25bb89c5"
+  },
+  "phase_a_snapshot_verified_after": true,
+  "phone_measured": false,
+  "plan_scope": "Fresh shifted cases versus enumerated history, repeated fixed in-world retention controls; not a fresh retention cohort, proof of absence from pretraining, or general-world transfer.",
+  "preregistration_sha256": "c3c696a26843cfb93f906d1ddab2109098076894e48b9254bc434b2b011661e6",
+  "receiver_authority": 0,
+  "retention_controls": "Exact repeat of20261016 fixed in-world arms; fewer than30 unseen arithmetic states remain",
+  "rows_sha256": "4e3d44d63f0d61007b7da1e6a2c2713fd0e8063929cd22fa50b721cb0e02f7bf",
+  "runtime_report": {
+    "claim_limit": "SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured.",
+    "counts": {
+      "FORECAST": 610,
+      "SCORED": 610
+    },
+    "encoder": "INSTALLED",
+    "experience_rows": {
+      "calc_counter": 400,
+      "note_edit": 210
+    },
+    "learn": {
+      "calc_counter": {
+        "adapted_actions": [
+          "add_15",
+          "double",
+          "quarter",
+          "subtract_7"
+        ],
+        "adapted_sha256": "4540dba7e848159aad8d5c72ea686ef4e0fed21c7f865b31b158ad838da32bdd",
+        "at": 1792182424.6460297,
+        "experience_rows": 160,
+        "pass": true,
+        "reason": null
+      },
+      "note_edit": {
+        "adapted_actions": [
+          "append_done",
+          "prefix_urgent",
+          "uppercase"
+        ],
+        "adapted_sha256": "fb3e85016f93b5ca3a8f5bcebd828ca6a9bb0aec66a2da68c87a9a67e8f6e038",
+        "at": 1792182424.7590034,
+        "experience_rows": 90,
+        "pass": true,
+        "reason": null
+      }
+    },
+    "mode": "SHADOW",
+    "pending": 0,
+    "recent": [
+      {
+        "action": "prefix_urgent",
+        "action_tx": "atx_a904f8c86aa843dd94cf02f608fa5dcb",
+        "beats_controls": true,
+        "competence": {
+          "distance": 0.02625938,
+          "distance_mean": 0.0116227,
+          "in_domain": true,
+          "score": 0.755665,
+          "signal": "knn5_cosine_last_or_mean",
+          "threshold": 0.03475002,
+          "threshold_mean": 0.02377466
+        },
+        "id": "tfc_fb1c2442e62e4289beac81bba9ad7b5b",
+        "in_world_range": true,
+        "mse": {
+          "adapted": 0.00186323,
+          "copy": 0.12118007,
+          "forecast": 0.00186323,
+          "mean_delta": 0.01741597
+        },
+        "outcome_text": "After adding a prefix, the note reads: Urgent: Visit the doctor today.",
+        "ratio_to_best_control": 0.106984,
+        "scored_at": 1792182952.5084472,
+        "status": "SCORED",
+        "tool_call": "tool_877f1eda91f14be080b2ea2bca1dd9fc",
+        "world": "note_edit"
+      },
+      {
+        "action": "uppercase",
+        "action_tx": "atx_adbfd76674ee46c483144ce92aedf8c5",
+        "beats_controls": true,
+        "competence": {
+          "distance": 0.02625938,
+          "distance_mean": 0.0116227,
+          "in_domain": true,
+          "score": 0.755665,
+          "signal": "knn5_cosine_last_or_mean",
+          "threshold": 0.03475002,
+          "threshold_mean": 0.02377466
+        },
+        "id": "tfc_5ea84b795fae4d2689b6adf4c3540707",
+        "in_world_range": true,
+        "mse": {
+          "adapted": 0.00666847,
+          "copy": 0.42411175,
+          "forecast": 0.00666847,
+          "mean_delta": 0.06398208
+        },
+        "outcome_text": "After uppercasing, the note reads: VISIT THE DOCTOR TODAY.",
+        "ratio_to_best_control": 0.104224,
+        "scored_at": 1792182953.966164,
+        "status": "SCORED",
+        "tool_call": "tool_b4bfa55d1dbd46aebda097f07ecde85b",
+        "world": "note_edit"
+      },
+      {
+        "action": "append_done",
+        "action_tx": "atx_5fe962ed5af04b2aaddf5c2bca1c626b",
+        "beats_controls": true,
+        "competence": {
+          "distance": 0.03215739,
+          "distance_mean": 0.01355063,
+          "in_domain": true,
+          "score": 0.925392,
+          "signal": "knn5_cosine_last_or_mean",
+          "threshold": 0.03475002,
+          "threshold_mean": 0.02377466
+        },
+        "id": "tfc_8f13780c88f942b4a26349b9cfb288e8",
+        "in_world_range": true,
+        "mse": {
+          "adapted": 0.00446058,
+          "copy": 0.47996773,
+          "forecast": 0.00446058,
+          "mean_delta": 0.0374719
+        },
+        "outcome_text": "After appending, the note reads: Visit the team today. Done.",
+        "ratio_to_best_control": 0.119038,
+        "scored_at": 1792182955.3987691,
+        "status": "SCORED",
+        "tool_call": "tool_c36493de9b6b4fccbd5ee1ef565ee990",
+        "world": "note_edit"
+      },
+      {
+        "action": "prefix_urgent",
+        "action_tx": "atx_0667cf78c2d54fa09789237bcf366533",
+        "beats_controls": true,
+        "competence": {
+          "distance": 0.03215739,
+          "distance_mean": 0.01355063,
+          "in_domain": true,
+          "score": 0.925392,
+          "signal": "knn5_cosine_last_or_mean",
+          "threshold": 0.03475002,
+          "threshold_mean": 0.02377466
+        },
+        "id": "tfc_0fe3ab5e249a46d1904b3edde1cdf24b",
+        "in_world_range": true,
+        "mse": {
+          "adapted": 0.00529859,
+          "copy": 0.14051399,
+          "forecast": 0.00529859,
+          "mean_delta": 0.01976455
+        },
+        "outcome_text": "After adding a prefix, the note reads: Urgent: Visit the team today.",
+        "ratio_to_best_control": 0.268085,
+        "scored_at": 1792182956.8128324,
+        "status": "SCORED",
+        "tool_call": "tool_e19c9ba87c5146909df1f9a4a6163d31",
+        "world": "note_edit"
+      },
+      {
+        "action": "uppercase",
+        "action_tx": "atx_b11551e43e734b3ca812a746258b6f92",
+        "beats_controls": true,
+        "competence": {
+          "distance": 0.03215739,
+          "distance_mean": 0.01355063,
+          "in_domain": true,
+          "score": 0.925392,
+          "signal": "knn5_cosine_last_or_mean",
+          "threshold": 0.03475002,
+          "threshold_mean": 0.02377466
+        },
+        "id": "tfc_e4e1a54a54a34bc9ab3cfdeda4871a3c",
+        "in_world_range": true,
+        "mse": {
+          "adapted": 0.00480694,
+          "copy": 0.44126768,
+          "forecast": 0.00480694,
+          "mean_delta": 0.04987978
+        },
+        "outcome_text": "After uppercasing, the note reads: VISIT THE TEAM TODAY.",
+        "ratio_to_best_control": 0.096371,
+        "scored_at": 1792182958.2665997,
+        "status": "SCORED",
+        "tool_call": "tool_0a5f98a2f1074c9f9e8fa5e53716ea12",
+        "world": "note_edit"
+      }
+    ],
+    "schema": "v13-tool-forecast-v1",
+    "stats": {
+      "calc_counter:add_15": {
+        "adapted_n": 60,
+        "geo_mean_adapted_vs_measured": 0.839,
+        "geo_mean_ratio_to_best_control": 0.3358,
+        "in_domain": 37,
+        "in_range": 30,
+        "n": 100,
+        "sum_log_adapted_vs_measured": -10.534210248167536,
+        "sum_log_ratio": -109.12506758586913,
+        "win_rate": 0.93,
+        "wins": 93
+      },
+      "calc_counter:double": {
+        "adapted_n": 60,
+        "geo_mean_adapted_vs_measured": 0.6986,
+        "geo_mean_ratio_to_best_control": 0.2881,
+        "in_domain": 37,
+        "in_range": 30,
+        "n": 100,
+        "sum_log_adapted_vs_measured": -21.517979906369312,
+        "sum_log_ratio": -124.43830062002434,
+        "win_rate": 0.96,
+        "wins": 96
+      },
+      "calc_counter:quarter": {
+        "adapted_n": 60,
+        "geo_mean_adapted_vs_measured": 0.8153,
+        "geo_mean_ratio_to_best_control": 0.8265,
+        "in_domain": 37,
+        "in_range": 30,
+        "n": 100,
+        "sum_log_adapted_vs_measured": -12.253654961299645,
+        "sum_log_ratio": -19.060247152917082,
+        "win_rate": 0.46,
+        "wins": 46
+      },
+      "calc_counter:subtract_7": {
+        "adapted_n": 60,
+        "geo_mean_adapted_vs_measured": 0.6048,
+        "geo_mean_ratio_to_best_control": 0.1847,
+        "in_domain": 37,
+        "in_range": 30,
+        "n": 100,
+        "sum_log_adapted_vs_measured": -30.17067618889614,
+        "sum_log_ratio": -168.91197832765823,
+        "win_rate": 1.0,
+        "wins": 100
+      },
+      "note_edit:append_done": {
+        "adapted_n": 40,
+        "geo_mean_adapted_vs_measured": 0.8246,
+        "geo_mean_ratio_to_best_control": 0.3155,
+        "in_domain": 20,
+        "in_range": 20,
+        "n": 70,
+        "sum_log_adapted_vs_measured": -7.7131389410928515,
+        "sum_log_ratio": -80.76135550387745,
+        "win_rate": 0.8714,
+        "wins": 61
+      },
+      "note_edit:prefix_urgent": {
+        "adapted_n": 40,
+        "geo_mean_adapted_vs_measured": 0.729,
+        "geo_mean_ratio_to_best_control": 0.419,
+        "in_domain": 20,
+        "in_range": 20,
+        "n": 70,
+        "sum_log_adapted_vs_measured": -12.642072475365582,
+        "sum_log_ratio": -60.888323551542,
+        "win_rate": 0.8,
+        "wins": 56
+      },
+      "note_edit:uppercase": {
+        "adapted_n": 40,
+        "geo_mean_adapted_vs_measured": 0.7101,
+        "geo_mean_ratio_to_best_control": 0.4912,
+        "in_domain": 20,
+        "in_range": 20,
+        "n": 70,
+        "sum_log_adapted_vs_measured": -13.692130817066417,
+        "sum_log_ratio": -49.760411016910815,
+        "win_rate": 0.7429,
+        "wins": 52
+      }
+    },
+    "worlds": {
+      "calc_counter": {
+        "actions": [
+          "add_15",
+          "double",
+          "quarter",
+          "subtract_7"
+        ],
+        "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+      },
+      "note_edit": {
+        "actions": [
+          "append_done",
+          "prefix_urgent",
+          "undo",
+          "uppercase"
+        ],
+        "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+      }
+    }
+  },
+  "schema": "V13_BOUND_NATIVE_LEARNING_CANDIDATE_V1",
+  "scope": "Linux native Qwen taps and closed-form residual adaptation in two fixed tool worlds; SHADOW only, no decision authority, no Redmi measurement, no general learning or Canon pass.",
+  "source_binding_verified_after": true,
+  "status": "CONTINUAL_LEARNING_CONFIRMED",
+  "verdict": "CONTINUAL_LEARNING_CONFIRMED"
+}

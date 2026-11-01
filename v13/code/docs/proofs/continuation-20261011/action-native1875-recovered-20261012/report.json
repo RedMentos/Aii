@@ -1,0 +1,17 @@
+{
+  "schema": "V13_FULL_NATIVE_CAPTURE_RECOVERY_20261012_V1",
+  "utc": "2026-10-11T22:11:53.158495+00:00",
+  "rows": 1875,
+  "raw_batches": 118,
+  "native_npz_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "delta_archive_sha256": "e9e9f57d75f6f711c31479fddca7143adccc9159c0a2f2e33c0ff9729b5b8f3b",
+  "restore_roundtrip_exact_original_npz_bytes": true,
+  "baseline_archive": "../action-jepa-prefix736.closed.zip",
+  "parts_manifest": "parts/manifest.json",
+  "final_worker_observer_stale_preserved": true,
+  "actual_outer_exit": 0,
+  "quality_improvement_proven": false,
+  "receiver_authority": 0,
+  "phone_measured": false,
+  "canonical_gate_pass": false
+}

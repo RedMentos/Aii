@@ -1,0 +1,49 @@
+{
+ "schema": "v13-action-jepa-round4-capture-v1",
+ "started_utc": "2026-10-12T03:49:23.325956+00:00",
+ "finished_utc": "2026-10-12T03:53:28.580958+00:00",
+ "rows": 2475,
+ "layers": [
+  11,
+  23
+ ],
+ "n_layer": 24,
+ "tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+ "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+ "libraries": {
+  "libggml-base.so": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-base.so.0": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-base.so.0.25.3": "978ef804e0a00ff0a429940cfda713b93d7b5da1b217be6aeff6258e73f24de9",
+  "libggml-cpu.so": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml-cpu.so.0": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml-cpu.so.0.25.3": "f185c8da15c7632067649858591b670d99d601aa53bce3d9b6f15bb557c5a739",
+  "libggml.so": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libggml.so.0": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libggml.so.0.25.3": "8f2dc436d7f1d3d84e29b4608be43ecb3c3f83d9cb862632eb36b1974760e1dd",
+  "libllama.so": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870",
+  "libllama.so.0": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870",
+  "libllama.so.0.5.0": "984e9696e8caa60fb80f764fd746cf87b7e89bfc0f7ffc47ff8c033f355b8870"
+ },
+ "raw_bin_sha256": "8afcc528cad9a561f6c9c95b435f08a08ea2bb71e8606ba8509d6f4908573adc",
+ "meta_sha256": "5c7cfdabed7f513f1e80e06ac3da6d568ff8283ab7b6126dd5f41408320a497f",
+ "texts_sha256": "90489cdc7f6cd0e430b466ac077917a39be1cb217fcf2f2a97cef48324190f87",
+ "arms": {
+  "l11_last": {
+   "path": "taps-l11_last.npz",
+   "sha256": "65be1eddf1209cf502cf37a47a699b735f4a27919b04aaaf939d1e7af4e11e04"
+  },
+  "l11_mean": {
+   "path": "taps-l11_mean.npz",
+   "sha256": "3a9c2a87d7e9b079ab007ceac1fe85c10b39291512014b94f89e80367111a2a6"
+  },
+  "l23_last": {
+   "path": "taps-l23_last.npz",
+   "sha256": "8b6cdeefaf1aae357d2b1838701310ce073daf1e6869f430fc91e8918ca3e07c"
+  },
+  "l23_mean": {
+   "path": "taps-l23_mean.npz",
+   "sha256": "d84fc7539f67c9cc5a186eb985ae42ba834c5bb8043405f2dad9c06d2d9a9421"
+  }
+ },
+ "tool_exit": 0
+}

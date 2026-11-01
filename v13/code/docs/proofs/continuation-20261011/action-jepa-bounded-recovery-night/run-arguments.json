@@ -1,0 +1,13 @@
+{
+  "plan": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-preregistered-plan-v2.json",
+  "sentences": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-ablation-20261010/sentences.json",
+  "actions": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/bench-results/jepa-action-20261010/actions.json",
+  "model": "/workspace/scratch/5a9214d3f329/native-audit-cache/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+  "server": "/workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964/bin/llama-server",
+  "out": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-bounded-recovery-night",
+  "original-capture": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-native-capture-night-restored",
+  "prefix-archive": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-prefix736.closed.zip",
+  "check-frozen70": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+  "frozen-source-archive": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/frozen-source.tar.gz",
+  "frozen-source-archive-sha": "d59ac71c5af559db015e521052f13d00736784ba18eb8c258caf0933d29ee081"
+}

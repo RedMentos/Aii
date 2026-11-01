@@ -19,7 +19,7 @@ from .base import StateBox
 
 KEY='AG13_EXPERT_RESIDENCY';REVISION='ag13-residency-v1'
 DECAY=.9;MAX_QUEUE=64
-PRESSURE_SHARE={'GREEN':1.,'YELLOW':.6,'RED':.3}
+PRESSURE_SHARE={'GREEN':1.,'YELLOW':.6,'ORANGE':.45,'RED':.3}  # §97.2 modes; BOOT shares
 
 class ExpertResidency:
     def __init__(self,store,budget_mb=1500,clock=time.time,key=KEY):
@@ -53,7 +53,7 @@ class ExpertResidency:
         return self.box.mutate(f)
     def set_mode(self,mode):
         """Resource guard state; under pressure non-pinned experts are dropped until the budget fits."""
-        if mode not in PRESSURE_SHARE:raise ValueError('GREEN|YELLOW|RED')
+        if mode not in PRESSURE_SHARE:raise ValueError('GREEN|YELLOW|ORANGE|RED')
         def f(st):
             st['mode']=mode;evict=[]
             for e in sorted((e for e in st['resident'] if not st['experts'][e]['pinned']),key=lambda e:self._value(st['experts'][e])):

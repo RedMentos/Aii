@@ -1,0 +1,21 @@
+{
+ "schema": "COROLLARY_UNCLEAR_PREREG_V1",
+ "k": 20,
+ "test_seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "streams": {
+  "standard": "own failures off by 3-6 x tolerance",
+  "stress": "own failures off by 3-40 x tolerance"
+ },
+ "harmful": "foreign->SELF/MIXED, own failure->SELF/EXTERNAL, own success->MIXED/EXTERNAL; UNCLEAR = abstention",
+ "pass": [
+  "harmful < unchanged in >=4/5 on both streams",
+  "harmful > candidate 2 in <=1/5 on both streams",
+  "standard: own-failure abstention mean <= .05"
+ ]
+}

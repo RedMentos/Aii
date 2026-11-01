@@ -1,0 +1,36 @@
+{
+  "model_id": "LiquidAI/LFM2.5-230M",
+  "revision": "40cb2ad3b3044d5a41eee083a6103c8b523afa45",
+  "expected_model_sha256": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd",
+  "files": {
+    "config.json": {
+      "bytes": 1568,
+      "sha256": "f7d0bcc454b7a30fa471b1e7b9e359e11fb25b56f5b4ffd59bb18248e3c2ea3d"
+    },
+    "generation_config.json": {
+      "bytes": 303,
+      "sha256": "4f88574c47c3215f7f952e1f520d1df7387422dde0345655228fb7b3fde6858c"
+    },
+    "tokenizer_config.json": {
+      "bytes": 489,
+      "sha256": "75c287923e252b08b0a0f1c367bbe557ab23a681d0b71c5a34e0932ddbe2f5ee"
+    },
+    "tokenizer.json": {
+      "bytes": 4733389,
+      "sha256": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd"
+    },
+    "chat_template.jinja": {
+      "bytes": 4762,
+      "sha256": "c5b67247c9f736f6c40eaa91ae1ef27dc67f5b041eedaadb97a1bea5030fb0ff"
+    },
+    "LICENSE": {
+      "bytes": 10574,
+      "sha256": "30adf9d6478191fb87f2424f63ba0728598335aaf99cd2848ef17e8e545fe94b"
+    },
+    "model.safetensors": {
+      "bytes": 459401112,
+      "sha256": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd"
+    }
+  },
+  "started": "2026-10-11T03:53:39Z"
+}

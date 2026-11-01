@@ -14,6 +14,10 @@ Corollary (§7.5, §85.7) every own action gets a COROLLARY_PACKET before dispat
                        A compact corollary view goes back to B1/B2 before the next turn ("before the world answers").
 Self-messaging (§20.4) relevance gate + rate limit + anti-spam; unsolicited delivery needs the Age right self_initiative
                        (Age 4). Below that, messages are HELD and visible via `:self messages`.
+Late correction        WP-AGE0a (PR #27 point 3): a doubt about an answer the user has just received is not unsolicited
+                       initiative. Mode `:self correction off|shadow|deliver` (stored, default shadow = live behaviour
+                       unchanged plus a log row of what would have been said). deliver: kind 'correction' under the Age-0
+                       right late_correction, same relevance/dedup/rate/pause gates, text names its own uncertainty.
 Self-edit (§20.2)      proposals only; a human approves (`:self edit approve`). Context policy applies via WP-N7,
                        safe config is handed to the AG8 sandbox (`agi/self_improve.py`); other targets are recorded for
                        their owners. Without-dialog commits need Age right safe_self_edit_without_dialog (Age 3) and are
@@ -28,11 +32,14 @@ from .contracts import packet
 
 KEY='N9_SELF';REVISION='n9-self-v1'
 CLASSES=('SELF','EXTERNAL','MIXED','UNCLEAR')
+FAR_K=20.   # BOOT (corollary candidate 2 calibration): a residual beyond FAR_K x tolerance of the nearest own prediction is UNCLEAR
 ATTENUATION=.6        # BOOT: share of self-caused interoceptive change removed from salience (never from safety)
 DELAY_FACTOR=3.       # BOOT: an outcome up to 3x the predicted window still counts as delayed self outcome
 DEFAULT_WINDOW_S=120. # BOOT
 OPEN_MAX=32
-MSG_KINDS=('finding','open_goal','error','memory')
+MSG_KINDS=('finding','open_goal','error','memory','correction')
+CORRECTION_KEY='LATE_CORRECTION_MODE';CORRECTION_MODES=('off','shadow','deliver')
+SHADOW_KEY='LATE_CORRECTION_SHADOW';SHADOW_KEEP=32
 MSG_RELEVANCE=.6;MSG_PER_HOUR=3;MSG_GAP_S=600;MSG_DEDUP_S=86400;MSG_KEEP=64  # BOOT §20.4 gate
 EDIT_TARGETS=('memory','world_notebook','context_policy','replay_priority','routing_candidate','skill_metadata','translator_gate','safe_config')
 EDIT_AUTO={'context_policy'}  # reversible, bounded by WP-N7 knob guards
@@ -91,7 +98,9 @@ def attribute(open_corollaries,obs):
             if pred['channel']!=ch:continue
             pw=pred.get('window_s',w);delayed=t>start+pw
             if t>start+pw*DELAY_FACTOR:continue
-            ok,res=_match(pred,obs['value']);cands.append({'action_id':c['action_id'],'matched':ok,'residual':res,'delayed':delayed})
+            ok,res=_match(pred,obs['value']);tol=pred.get('tolerance');pv=pred.get('value')
+            tol=(abs(pv)*.5 if isinstance(pv,(int,float)) and not isinstance(pv,bool) else None) if tol is None else tol
+            cands.append({'action_id':c['action_id'],'matched':ok,'residual':res,'delayed':delayed,'tolerance':tol})
     if not cands:
         side=[c['action_id'] for c in open_corollaries if c['issued_at']<=t<=c['issued_at']+c.get('window_s',DEFAULT_WINDOW_S) and ch in c.get('affected',[])]
         if side:return {'class':'UNCLEAR','reason':'unexpected_side_effect','action_ids':side,'residual':None}
@@ -100,6 +109,12 @@ def attribute(open_corollaries,obs):
     if len({x['action_id'] for x in hits})>1:return {'class':'UNCLEAR','reason':'ambiguous_causality','action_ids':sorted({x['action_id'] for x in hits}),'residual':None}
     if hits:
         h=hits[0];return {'class':'SELF','reason':'delayed_predicted_outcome' if h['delayed'] else 'predicted_outcome','action_ids':[h['action_id']],'residual':h['residual'],'delayed':h['delayed']}
+    num=[x for x in cands if isinstance(x['residual'],(int,float)) and not isinstance(x['residual'],bool)]
+    if num:  # thread L 2026-10-12, preregistered corollary candidate 3 PASS (bench-results/corollary-unclear-20261012)
+        c=min(num,key=lambda x:abs(x['residual']))  # residual against the nearest own prediction, not the first open action
+        if abs(c['residual'])>FAR_K*c['tolerance']:  # far outside every own prediction: neither own error nor proven foreign
+            return {'class':'UNCLEAR','reason':'far_outside_own_prediction','action_ids':[],'residual':None,'own_residual':c['residual'],'ceiling_k':FAR_K}
+        return {'class':'MIXED','reason':'partial_or_mismatched_outcome','action_ids':[c['action_id']],'residual':c['residual'],'delayed':c['delayed']}
     c=cands[0];return {'class':'MIXED','reason':'partial_or_mismatched_outcome','action_ids':[c['action_id']],'residual':c['residual'],'delayed':c['delayed']}
 
 class SelfSystem:
@@ -214,7 +229,7 @@ class SelfSystem:
             from .inputs import paused
             hold_pause=paused(self.s,'selfedit')
         except Exception:hold_pause=False
-        allowed=origin=='USER' or self._allowed('self_initiative')
+        allowed=origin=='USER' or self._allowed('late_correction' if kind=='correction' else 'self_initiative')
         def fn(st):
             msgs=st['messages'];recent=[m for m in msgs if m['status']=='DELIVERED' and t-m['t']<3600]
             if rel<MSG_RELEVANCE:status='BELOW_RELEVANCE'
@@ -229,16 +244,43 @@ class SelfSystem:
             try:self.r.notice('[V13] '+m['text'])
             except Exception:pass
         return m
+    def correction_mode(self):
+        mode=self.s.state(CORRECTION_KEY,'shadow')[0]
+        return mode if mode in CORRECTION_MODES else 'off'  # unreadable -> old behaviour, never more delivery
+    def set_correction_mode(self,mode):
+        if mode not in CORRECTION_MODES:raise ValueError(':self correction '+'|'.join(CORRECTION_MODES))
+        self.s.set_state(CORRECTION_KEY,mode);return mode
+    @staticmethod
+    def correction_text(role,summary,needs_reentry,missing):
+        """Plain wording that says it is a doubt, how sure, and why; the earlier answer is never rewritten."""
+        sure='mittel' if needs_reentry and missing else 'niedrig'
+        why=[]
+        if needs_reentry:why.append('die spätere Prüfung meldet einen offenen Punkt')
+        if missing:why.append('dort stehen Zahlen, die in meiner Antwort fehlen: '+', '.join(sorted(missing))[:80])
+        return ('Möglicher Fehler in meiner letzten Antwort (Sicherheit: '+sure+'; '+'; '.join(why)+'). '
+                'Spätere Prüfung ('+role+'): '+summary[:200])
     def late_offer(self,event_id,offer,output):
         """WP-F §5.2 / §3.4.3: an observer offer that arrives after commit and disagrees with the committed answer is
-        salient. The answer is never rewritten; a gated 'finding' self-message (HELD below Age 4) carries the doubt."""
+        salient. The answer is never rewritten; a gated 'finding' self-message (HELD below Age 4) carries the doubt.
+        WP-AGE0a: in mode deliver the doubt is a 'correction' under the Age-0 right late_correction instead."""
         import re
         o=offer.get('offer',{});summary=o.get('summary','')
         nums=lambda t:{x.replace(',','.') for x in re.findall(r'\d+(?:[.,]\d+)?',t or '')}
         missing=nums(summary)-nums(output)
         if not (o.get('needs_reentry') or missing):return None
         rel=min(1.,.6+(.2 if o.get('needs_reentry') else 0.)+(.2 if missing else 0.))
-        return self.message('finding','A later '+offer.get('role','body')+' check may disagree with my last answer: '+summary[:200],rel,refs=offer.get('evidence_refs',[])[:2])
+        role=offer.get('role','body');refs=offer.get('evidence_refs',[])[:2];mode=self.correction_mode()
+        if mode=='deliver':
+            return self.message('correction',self.correction_text(role,summary,bool(o.get('needs_reentry')),missing),rel,refs=refs)
+        m=self.message('finding','A later '+role+' check may disagree with my last answer: '+summary[:200],rel,refs=refs)
+        if mode=='shadow':
+            try:  # own ring, not telemetry: telemetry never stores free text
+                ring,v=self.s.state(SHADOW_KEY,[])
+                ring=(ring+[{'event_id':event_id,'t':self.clock(),'would_say':self.correction_text(role,summary,bool(o.get('needs_reentry')),missing),
+                             'relevance':rel,'finding_status':m['status'],'right_ok':self._allowed('late_correction')}])[-SHADOW_KEEP:]
+                self.s.set_state(SHADOW_KEY,ring,expected=v)
+            except Exception:pass
+        return m
     # -- self-edit (§20.2) ------------------------------------------------------------------------------
     def propose_edit(self,target,change,reason='',origin='SELF'):
         if target in NEVER_EDIT or target not in EDIT_TARGETS:raise PermissionError('Nicht editierbar: '+str(target))
@@ -302,13 +344,15 @@ def controller(runtime):
         s=runtime.selfsys=SelfSystem(runtime,age,n)
     return s
 
-USAGE=':self [status|model|body|messages|edit list|edit approve <Id>|edit reject <Id>|edit rollback <Id>]'
+USAGE=':self [status|model|body|messages|correction [off|shadow|deliver]|edit list|edit approve <Id>|edit reject <Id>|edit rollback <Id>]'
 def operator_command(r,args):
     s=controller(r)
     if not args or args==['status']:return dumps(s.report())
     if args==['model']:return dumps(s.model())
     if args==['body']:return dumps(s.body())
     if args==['messages']:return dumps(s._load()[0]['messages'])
+    if args==['correction']:return dumps({'mode':s.correction_mode(),'modes':list(CORRECTION_MODES),'shadow':r.store.state(SHADOW_KEY,[])[0][-8:]})
+    if len(args)==2 and args[0]=='correction':return dumps({'mode':s.set_correction_mode(args[1])})
     if args==['edit','list']:return dumps(s.report()['edits'])
     if len(args)==3 and args[0]=='edit':
         fn={'approve':s.approve_edit,'reject':s.reject_edit,'rollback':s.rollback_edit}.get(args[1])

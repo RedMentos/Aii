@@ -1,0 +1,487 @@
+{
+  "answer_actions": [
+    "None",
+    "UNKNOWN"
+  ],
+  "coverage_complete": true,
+  "failed_field_counts": {
+    "action": 17,
+    "eligible": 15,
+    "project": 12,
+    "remaining": 30
+  },
+  "final_bindings_unchanged": true,
+  "gate_promotion": false,
+  "historical_step2_utility": "UTILITY_FAIL_UNCHANGED",
+  "max_peak_rss_mb": 1408,
+  "per_arm": {
+    "b1_model_quotes": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.667,
+      "recorded": 3,
+      "rows": 3
+    },
+    "b2_model_quotes": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.639,
+      "recorded": 3,
+      "rows": 3
+    },
+    "exact_source_control": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.667,
+      "recorded": 3,
+      "rows": 3
+    },
+    "no_message": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.361,
+      "recorded": 2,
+      "rows": 3
+    },
+    "paired_model_quotes": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.639,
+      "recorded": 3,
+      "rows": 3
+    },
+    "same_policy_dual": {
+      "action_ok": 0,
+      "exact": 0,
+      "mean_utility": 0.639,
+      "recorded": 3,
+      "rows": 3
+    }
+  },
+  "registration_sha256": "2f0cd6f9ad94afa4124f433c4e9c96d3b1073ab922dd97cd28443df348f3f838",
+  "rows": [
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 12.97,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 1404,
+      "status": "RECORDED",
+      "utility": 0.75,
+      "variant": "b1_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 15.38,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 1331,
+      "status": "RECORDED",
+      "utility": 0.6666666666666666,
+      "variant": "b2_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 13.54,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 1404,
+      "status": "RECORDED",
+      "utility": 0.75,
+      "variant": "paired_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 11.9,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 1404,
+      "status": "RECORDED",
+      "utility": 0.75,
+      "variant": "same_policy_dual"
+    },
+    {
+      "action_ok": false,
+      "answer_action": null,
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL"
+      ],
+      "delivered_quotes": 0,
+      "elapsed_s": 16.2,
+      "error": "Quotation differs from Store bytes",
+      "exact": false,
+      "failed_fields": [],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 1404,
+      "status": "ERROR",
+      "utility": 0.0,
+      "variant": "no_message"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 1.96,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_bfzwzwww",
+      "peak_rss_mb": 501,
+      "status": "RECORDED",
+      "utility": 0.75,
+      "variant": "exact_source_control"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 9.98,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 1406,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "b1_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 8.9,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 1331,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "b2_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 12.26,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 1407,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "paired_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 11.22,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 1408,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "same_policy_dual"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 0,
+      "elapsed_s": 16.19,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 1408,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "no_message"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 1.87,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action"
+      ],
+      "fixture": "private_eztsxxpt",
+      "peak_rss_mb": 501,
+      "status": "RECORDED",
+      "utility": 0.6666666666666666,
+      "variant": "exact_source_control"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 7.3,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.remaining",
+        "action"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 1408,
+      "status": "RECORDED",
+      "utility": 0.6666666666666666,
+      "variant": "b1_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 8.52,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.remaining",
+        "action"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 1331,
+      "status": "RECORDED",
+      "utility": 0.6666666666666666,
+      "variant": "b2_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 13.39,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 1407,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "paired_model_quotes"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B1_DETAIL:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 1,
+      "elapsed_s": 10.84,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 1408,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "same_policy_dual"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "B1_DETAIL:FINAL",
+        "B2_GIST:FINAL",
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 0,
+      "elapsed_s": 13.88,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action",
+        "project"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 1408,
+      "status": "RECORDED",
+      "utility": 0.5,
+      "variant": "no_message"
+    },
+    {
+      "action_ok": false,
+      "answer_action": "UNKNOWN",
+      "calls": [
+        "C3_LANGUAGE:FINAL"
+      ],
+      "delivered_quotes": 2,
+      "elapsed_s": 1.58,
+      "error": null,
+      "exact": false,
+      "failed_fields": [
+        "A.eligible",
+        "A.remaining",
+        "B.eligible",
+        "B.remaining",
+        "action"
+      ],
+      "fixture": "private_amvcghct",
+      "peak_rss_mb": 501,
+      "status": "RECORDED",
+      "utility": 0.5833333333333334,
+      "variant": "exact_source_control"
+    }
+  ],
+  "run_status": "NOT_CONFIRMED",
+  "schema": "V13_STEP2_PRIVATE_PILOT_SUMMARY_V1",
+  "total_elapsed_s": 187.9
+}

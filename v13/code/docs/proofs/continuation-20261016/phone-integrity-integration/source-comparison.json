@@ -1,0 +1,30 @@
+{
+  "before_sources": {
+    "scripts/tool_forecast_learning_check.py": {
+      "sha256": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+      "preregistration_sha256": "109681d70fac32988e022f8709aa9edcb6f42dbc13bd0d926bae14eddfb694c1",
+      "matches_first_preregistration": true
+    },
+    "scripts/tool_forecast_bound_learning_candidate.py": {
+      "sha256": "9412a80297a2af71d8d38c47e29a758e14375ae9bfcf747546539391837278e3",
+      "preregistration_sha256": "9412a80297a2af71d8d38c47e29a758e14375ae9bfcf747546539391837278e3",
+      "matches_first_preregistration": true
+    },
+    "scripts/test_tool_forecast_phone.py": {
+      "sha256": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+      "preregistration_sha256": "bcfb015e77a355dfb49ed628c0f4004e893c6161d07f01901bcce59dd420197e",
+      "matches_first_preregistration": true
+    },
+    "scripts/tool_forecast_bounded_phone_candidate.py": {
+      "sha256": "f1c335515e7aecc7fc06ba898973490d132f24302066f768f6d1a66731b9e61e",
+      "preregistration_sha256": "f1c335515e7aecc7fc06ba898973490d132f24302066f768f6d1a66731b9e61e",
+      "matches_first_preregistration": true
+    }
+  },
+  "numerical_analyze_ast_unchanged": true,
+  "gates": {
+    "shift_gain_max_ratio": 0.9,
+    "in_world_max_ratio": 1.02
+  },
+  "no_native_run_by_this_package": true
+}

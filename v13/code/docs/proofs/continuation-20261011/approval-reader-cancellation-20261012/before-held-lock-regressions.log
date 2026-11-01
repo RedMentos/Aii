@@ -1,0 +1,27 @@
+test_cancellation_returns_while_live_approval_writer_still_holds_lock (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_cancellation_returns_while_live_approval_writer_still_holds_lock) ... FAIL
+test_deadline_returns_while_live_approval_writer_still_holds_lock (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_deadline_returns_while_live_approval_writer_still_holds_lock) ... FAIL
+
+======================================================================
+FAIL: test_cancellation_returns_while_live_approval_writer_still_holds_lock (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_cancellation_returns_while_live_approval_writer_still_holds_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f559488bccb1/v13-repo/v13/code/tests/test_approval_reader_runtime_candidate.py", line 140, in test_cancellation_returns_while_live_approval_writer_still_holds_lock
+    self.waiting_reader_interrupt(cancelled=True)
+  File "/workspace/scratch/f559488bccb1/v13-repo/v13/code/tests/test_approval_reader_runtime_candidate.py", line 170, in waiting_reader_interrupt
+    self.assertTrue(reader_done.wait(1),'Reader must return before the approval writer releases its lock')
+AssertionError: False is not true : Reader must return before the approval writer releases its lock
+
+======================================================================
+FAIL: test_deadline_returns_while_live_approval_writer_still_holds_lock (tests.test_approval_reader_runtime_candidate.ApprovalReader.test_deadline_returns_while_live_approval_writer_still_holds_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f559488bccb1/v13-repo/v13/code/tests/test_approval_reader_runtime_candidate.py", line 142, in test_deadline_returns_while_live_approval_writer_still_holds_lock
+    self.waiting_reader_interrupt(cancelled=False)
+  File "/workspace/scratch/f559488bccb1/v13-repo/v13/code/tests/test_approval_reader_runtime_candidate.py", line 170, in waiting_reader_interrupt
+    self.assertTrue(reader_done.wait(1),'Reader must return before the approval writer releases its lock')
+AssertionError: False is not true : Reader must return before the approval writer releases its lock
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.170s
+
+FAILED (failures=2)

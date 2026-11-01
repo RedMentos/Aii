@@ -1,0 +1,9 @@
+{
+  "schema": "v13_frozen_source_recovery_preflight_v1",
+  "checked_at": "2026-10-11T21:15:02.947510+00:00",
+  "registration_sha256": "4cfaddad1d9fadd23b5810c7cd4ddc0637e0e9b59d6d6fcd007fc22b5870b1d0",
+  "bindings_checked": 121,
+  "mismatches": {},
+  "unchanged": true,
+  "inference_started": false
+}

@@ -1,0 +1,58 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+v13 memory attached: 3 slots at layer 0
+0.00.002.624 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.002.699 I srv          init: The UI is disabled
+0.00.002.709 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.002.767 W srv  llama_server: -----------------
+0.00.002.777 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.002.777 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.002.777 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.002.777 W srv  llama_server: -----------------
+0.00.004.036 I srv    load_model: loading model '/workspace/scratch/5a9214d3f329/native-audit-cache/language.gguf'
+0.00.300.341 I cmn          init: llama threadpool init, n_threads = 4
+0.00.313.559 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 4096, kv_unified = 'false'
+0.00.317.045 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.00.317.102 I srv  llama_server: model loaded
+0.00.317.114 I srv  llama_server: listening on http://127.0.0.1:8652
+0.00.999.168 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.00.999.249 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"begin","request":1,"slots":3,"layer":0}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":1,"rows":64,"batches":1,"applied":[64,0,0],"guard_blocked":[0,64,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":1,"rows":188,"batches":2,"applied":[188,0,0],"guard_blocked":[0,188,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":1,"rows":192,"batches":3,"applied":[192,0,0],"guard_blocked":[0,192,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":1,"rows":193,"batches":4,"applied":[193,0,0],"guard_blocked":[0,193,0]}
+0.01.387.263 I slot print_timing: id  0 | task 0 | prompt eval time =     381.77 ms /   192 tokens (    1.99 ms per token,   502.92 tokens per second)
+0.01.387.274 I slot print_timing: id  0 | task 0 |        eval time =       6.21 ms /     2 tokens (    6.21 ms per token,   161.11 tokens per second)
+0.01.387.275 I slot print_timing: id  0 | task 0 |       total time =     387.98 ms /   194 tokens
+0.01.387.280 I slot print_timing: id  0 | task 0 |    graphs reused =          0
+0.01.387.347 I slot      release: id  0 | task 0 | stop processing: n_tokens = 193, truncated = 0
+0.01.390.411 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 0.943 (> 0.100 thold), f_keep = 0.938
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"begin","request":2,"slots":3,"layer":0}
+0.01.390.461 I slot launch_slot_: id  0 | task 5 | processing task, is_child = 0
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":124,"batches":1,"applied":[124,0,0],"guard_blocked":[0,124,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":128,"batches":2,"applied":[128,0,0],"guard_blocked":[0,128,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":129,"batches":3,"applied":[129,0,0],"guard_blocked":[0,129,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":130,"batches":4,"applied":[130,0,0],"guard_blocked":[0,130,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":131,"batches":5,"applied":[131,0,0],"guard_blocked":[0,131,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":132,"batches":6,"applied":[132,0,0],"guard_blocked":[0,132,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":133,"batches":7,"applied":[133,0,0],"guard_blocked":[0,133,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":2,"rows":134,"batches":8,"applied":[134,0,0],"guard_blocked":[0,134,0]}
+0.01.701.074 I slot print_timing: id  0 | task 5 | prompt eval time =     270.00 ms /   128 tokens (    2.11 ms per token,   474.07 tokens per second)
+0.01.701.086 I slot print_timing: id  0 | task 5 |        eval time =      40.59 ms /     7 tokens (    6.76 ms per token,   147.83 tokens per second)
+0.01.701.087 I slot print_timing: id  0 | task 5 |       total time =     310.59 ms /   135 tokens
+0.01.701.088 I slot print_timing: id  0 | task 5 |    graphs reused =          5
+0.01.701.134 I slot      release: id  0 | task 5 | stop processing: n_tokens = 198, truncated = 0
+0.01.704.275 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, f_sim_best = 0.943 (> 0.100 thold), f_keep = 0.914
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"begin","request":3,"slots":3,"layer":0}
+0.01.704.320 I slot launch_slot_: id  0 | task 14 | processing task, is_child = 0
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":3,"rows":124,"batches":1,"applied":[124,0,0],"guard_blocked":[0,124,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":3,"rows":128,"batches":2,"applied":[128,0,0],"guard_blocked":[0,128,0]}
+V13_MEMORY_AUDIT {"schema":"v13-native-firing-v1","event":"batch","request":3,"rows":129,"batches":3,"applied":[129,0,0],"guard_blocked":[0,129,0]}
+0.01.980.742 I slot print_timing: id  0 | task 14 | prompt eval time =     269.20 ms /   128 tokens (    2.10 ms per token,   475.48 tokens per second)
+0.01.980.753 I slot print_timing: id  0 | task 14 |        eval time =       7.19 ms /     2 tokens (    7.19 ms per token,   139.06 tokens per second)
+0.01.980.754 I slot print_timing: id  0 | task 14 |       total time =     276.39 ms /   130 tokens
+0.01.980.755 I slot print_timing: id  0 | task 14 |    graphs reused =          5
+0.01.980.800 I slot      release: id  0 | task 14 | stop processing: n_tokens = 193, truncated = 0
+0.01.982.404 I srv    operator(): operator(): cleaning up before exit...

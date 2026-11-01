@@ -60,6 +60,16 @@ class ResumeGuards(unittest.TestCase):
         old['installed_artifacts']=[]
         old['source_hashes']={'changed':True}
         with self.assertRaisesRegex(ValueError,'source_hashes'):module.validate_resume(old,expected)
+    def test_same_launcher_with_changed_shared_library_cannot_resume(self):
+        import importlib.util
+        from pathlib import Path
+        path=Path(__file__).with_name('integration_step2_utility.py')
+        spec=importlib.util.spec_from_file_location('step2_library_resume',path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        expected={key:[] for key in ('proof_kind','proof_version','source_hashes','fixture_sha256','variant_spec','config','device')}
+        expected['installed_artifacts']={'runner_sha256':'identical launcher','runner_runtime_libraries_sha256':{'libllama-server-impl.so':'new hook'}}
+        old=copy.deepcopy(expected);old.update(rows=[],row_sha256={})
+        old['installed_artifacts']['runner_runtime_libraries_sha256']['libllama-server-impl.so']='old hook'
+        with self.assertRaisesRegex(ValueError,'installed_artifacts'):module.validate_resume(old,expected)
     def test_actual_store_state_json_roundtrip_after_restart(self):
         import importlib.util
         import json

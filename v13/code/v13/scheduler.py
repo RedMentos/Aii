@@ -26,7 +26,7 @@ SELF_RIGHTS={'GOAL_WAKE':'resume_open_goals','TIMER':'self_initiative','REPLAY_D
 MAX_PENDING=256
 HISTORY=64
 MAX_ATTEMPTS=3
-RESOURCE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'YELLOW','CRITICAL':'RED'}
+from .resource_modes import LEGACY_MODE as RESOURCE_MODE  # §97.2: one table (PRESSURE = ORANGE)
 
 def empty():return {'revision':REVISION,'sequence':0,'events':[],'history':[],'counters':{}}
 

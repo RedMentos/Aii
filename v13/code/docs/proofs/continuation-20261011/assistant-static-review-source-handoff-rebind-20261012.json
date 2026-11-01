@@ -1,0 +1,71 @@
+{
+  "schema": "V13_SOURCE_HANDOFF_REGISTRATION_REBIND_INDEPENDENT_REVIEW_V1",
+  "scope": "STATIC_GITHUB_SNAPSHOTS_NO_NATIVE_INFERENCE",
+  "base_branch": "codex/authority-live-comparisons",
+  "old_snapshot": {
+    "path": "v13/code/docs/proofs/continuation-20261011/source-handoff-ablation/report.preregistration.json",
+    "github_blob_sha": "35b86efdda78d2265e2e433e2e0292d54e792eb3",
+    "source_file_count": 100
+  },
+  "new_snapshot": {
+    "path": "v13/code/docs/proofs/continuation-20261011/source-handoff-ablation-recovered/report.preregistration.json",
+    "github_blob_sha": "3f6bb54db911d54133bd4b1c20efcf3127e1226e",
+    "source_file_count": 121
+  },
+  "unchanged": {
+    "fixtures": true,
+    "fixtures_sha256": true,
+    "arm_order": true,
+    "arm_source_sha256": true,
+    "arm_specs": true,
+    "config": true,
+    "consumer_boundary": true,
+    "consumer_schema": true,
+    "consumer_sampling_seed": true,
+    "body_sampling_seed": true,
+    "previous_frozen_cohort": true,
+    "installed_binding": true
+  },
+  "source_binding_diff": {
+    "added": [
+      "v13/agi/__init__.py",
+      "v13/agi/abstraction.py",
+      "v13/agi/base.py",
+      "v13/agi/curiosity.py",
+      "v13/agi/generality.py",
+      "v13/agi/goals.py",
+      "v13/agi/grounding.py",
+      "v13/agi/live.py",
+      "v13/agi/maturity.py",
+      "v13/agi/metacog.py",
+      "v13/agi/residency.py",
+      "v13/agi/self_improve.py",
+      "v13/agi/skills.py",
+      "v13/agi/slots.py",
+      "v13/agi/solver.py",
+      "v13/agi/teacher.py",
+      "v13/agi/teacher_backends.py",
+      "v13/agi/tools.py",
+      "v13/agi/trainers.py",
+      "v13/agi/user_model.py",
+      "v13/agi/weights.py"
+    ],
+    "removed": [],
+    "modified": [
+      "scripts/source_handoff_ablation.py"
+    ],
+    "modified_old_hashes": {
+      "scripts/source_handoff_ablation.py": "c41adec54f9c83714ba32e770a7e8af82a7eb6a5cb696359b404d820902fe676"
+    },
+    "modified_new_hashes": {
+      "scripts/source_handoff_ablation.py": "2b2ea808ee87e156f9fe5a8946811486e39d51ef9d2523f9bce69fcd1317b002"
+    }
+  },
+  "claim_limits": {
+    "new_real_16_case_results": false,
+    "retention_improvement_proven": false,
+    "canonical_gate_pass": false,
+    "phone_measured": false,
+    "original_utility_fail_preserved": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "scope": "AUTHORED_BYTE_FIXTURE with real SQLite deferred-foreign-key COMMIT failure and separate filesystem-reader thread; no native runner launched",
+  "sources": {
+    "v13/agi/weights.py": "0858e242368b25e04d4bafe612e9cbaadcf3d8a459ee2663da3bc62c85f52a04",
+    "v13/agi/__init__.py": "be37323cfdc66375319b480053018cf61f700564ae32ccb5e1eb42318175dd47",
+    "v13/operator.py": "fedd735dbffdb29931e61a1bcbf4f4cd3d31dd9fc0b10848b5fdb6e4fa5a2a25",
+    "v13/runners.py": "845bb87f9e8bd24333217e86b6558f5292c3838e26352fe756a32882f3fef705",
+    "v13/lora_trainer.py": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb",
+    "v13/store.py": "b82d6c4f404a0df8ca856c62c100cf6ab47009aa7f57fc2fe712a74c4ab702b3",
+    "tests/test_weight_approval_atomic.py": "a6d022198fa29c40e3049d420575dae3713ca2d8bb0a16df6f052ff9000fb042"
+  },
+  "observation": {
+    "filesystem_reader_during_uncommitted_attempt_saw_candidate": true,
+    "after_commit_failure_runner_args": [],
+    "after_commit_failure_batch_status": "PENDING_USER",
+    "after_commit_failure_consolidated_count": 0,
+    "native_model_launched": false
+  },
+  "caller_audit": {
+    "growth_approve_requires_idle": false,
+    "growth_approve_holds_runtime_lock": false,
+    "runner_lora_args_takes_store_mutex": false,
+    "same_home_store_owners": "Store.__init__ uses exclusive nonblocking flock on data/coordinator.lock"
+  },
+  "resolved": "WeightConsolidation.approve now holds the shared Store mutex across reservation, terminal transaction and recovery; concurrent construction waits for the live operation instead of reopening its intent.",
+  "unresolved": "Filesystem-only readers can see a manually authorized candidate mirror before SQLite commit, even if that commit subsequently fails. The mirror is restored and durable AG6/request/registry state remains pending, but a runner launched during that window could retain candidate bytes. Reader/coordinator serialization is required to close that window; it is not implemented by this weights-only fix.",
+  "claim": "No cross-domain reader atomicity claim; no native deployment or semantic learning claim."
+}

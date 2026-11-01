@@ -43,12 +43,20 @@ def _record(store,row):
     except Exception:pass
 
 _NUM=re.compile(r'\d+(?:[.,]\d+)?')
-def nums(t):return {x.replace(',','.') for x in _NUM.findall(t or '')}
+_THOUSANDS=re.compile(r'(?<![\d.,])\d{1,3}(?:,\d{3})+(?!\d|,\d)')  # 1,234 / 12,345,678 (groups of three) = integers
+_TAIL=re.compile(r'\d[\d.,]*$')
+def nums(t):
+    t=_THOUSANDS.sub(lambda m:m.group(0).replace(',',''),t or '')
+    return {x.replace(',','.') for x in _NUM.findall(t)}
+
+def complete(partial):
+    """The partial answer without a number that may still be growing at its end (the next check sees it whole)."""
+    return _TAIL.sub('',partial or '')
 
 def disagreement(offer,partial,source):
     """Pure check of one late offer against the partial answer. Returns a reason or None."""
     o=(offer or {}).get('offer',{});src=nums(source)
-    body_new=nums(o.get('summary',''))-src;out_new=nums(partial)-src
+    body_new=nums(o.get('summary',''))-src;out_new=nums(complete(partial))-src
     if len(partial)>=MIN_CHARS and body_new and out_new and not body_new&out_new:return 'RESULT_CONFLICT'
     if len(partial)>=REENTRY_CHARS and o.get('needs_reentry') and o.get('quotes'):return 'BODY_REENTRY'
     return None

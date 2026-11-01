@@ -13,7 +13,7 @@ def good(**kw):return GOOD|kw
 
 class AgeChecks(unittest.TestCase):
     def setUp(self):
-        self.td=tempfile.TemporaryDirectory();self.home=Path(self.td.name);self.cfg=initialize(self.home);self.store=Store(self.home)
+        self.td=tempfile.TemporaryDirectory();self.home=Path(self.td.name);self.cfg=initialize(self.home)|{'age_plasticity_policy':'boot'};self.store=Store(self.home)  # these checks pin the boot policy
     def tearDown(self):
         self.store.close();self.td.cleanup()
     def ctl(self,cap=5,ceiling=5):

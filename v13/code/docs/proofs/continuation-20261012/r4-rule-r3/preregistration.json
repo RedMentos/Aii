@@ -1,0 +1,99 @@
+{
+ "schema": "v13-r4-rule-r3-prereg-v1",
+ "created_utc": "2026-10-13T10:21:55Z",
+ "family_e_sha256": "f7b6d83bde6524e0c00f68b4a5db05e32d5f592044866fc3e47fcb06086f7f86",
+ "n_e": 228,
+ "family_d_exposed": {
+  "R0": {
+   "macro_f1": 0.4833,
+   "f1": {
+    "none": 0.5541,
+    "total": 0.6099,
+    "difference_max_min": 0.2857
+   },
+   "false_alarm_rate": 0.2381,
+   "op_confusion_rate": 0.0417,
+   "missed_rate": 0.5764,
+   "confusion": [
+    [
+     64,
+     20,
+     0
+    ],
+    [
+     29,
+     43,
+     0
+    ],
+    [
+     54,
+     6,
+     12
+    ]
+   ]
+  },
+  "R2": {
+   "macro_f1": 0.7944,
+   "f1": {
+    "none": 0.75,
+    "total": 0.8333,
+    "difference_max_min": 0.8
+   },
+   "false_alarm_rate": 0.1429,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.25,
+   "confusion": [
+    [
+     72,
+     12,
+     0
+    ],
+    [
+     12,
+     60,
+     0
+    ],
+    [
+     24,
+     0,
+     48
+    ]
+   ]
+  },
+  "R3": {
+   "macro_f1": 0.8442,
+   "f1": {
+    "none": 0.8235,
+    "total": 0.9091,
+    "difference_max_min": 0.8
+   },
+   "false_alarm_rate": 0.0,
+   "op_confusion_rate": 0.0,
+   "missed_rate": 0.25,
+   "confusion": [
+    [
+     84,
+     0,
+     0
+    ],
+    [
+     12,
+     60,
+     0
+    ],
+    [
+     24,
+     0,
+     48
+    ]
+   ]
+  }
+ },
+ "decision_rule": "Family E (new): R3 adopted into agi/listarith.operation iff on E false-alarm rate <= 0.05 AND sum<->difference confusion <= 0.02 AND macro-F1 >= R0 + 0.15 AND all 360 utility_bench2 tasks of seeds 7, 11, 13, 17, 19, 23 keep R0's operation. Family D (exposed) reported only.",
+ "sha256": {
+  "script": "79fff11082c1e4a1fb82948cce3eba95b929442835cd89e5067d0f1cb8ad13df",
+  "part9": "2423fbb5b2b716a2446a5b31abc541d52c13819826a388d8615f83b3141afd9f",
+  "part8": "be6e3a9c98c6adb0c8c0105ff88df79ff7578636e09b5a82d7ba3daf832f06ea",
+  "listarith": "39c1aed90373965cb86eb845409555d36da49232e565974209081a1ede628be6"
+ }
+}

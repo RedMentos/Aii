@@ -1,0 +1,1128 @@
+{
+  "checked_at_utc": "2026-10-16T20:07:43.632609+00:00",
+  "method": "Read-only Git object/tree comparison and live git ls-remote; no checkout, runtime edit, merge or model call. Git object IDs here use repository SHA-1.",
+  "remote_branch": "claude/project-thread-hiczvw",
+  "remote_head": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+  "candidate_head": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+  "candidate_metadata": {
+    "author_date": "2026-10-11T02:05:20Z",
+    "committer_date": "2026-10-11T02:05:20Z",
+    "subject": "Add V13 project files (code, docs, roadmap) for handoff",
+    "parents": [
+      "c513c00ddff492d6a3a37ba4f21a0abf628b3aa1"
+    ],
+    "tree_oid": "ed1ec68ef7098283952c527580b4d1fe2aa53c43"
+  },
+  "candidate_path_count": 744,
+  "candidate_handoff_current_present": false,
+  "comparisons": [
+    {
+      "reference": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
+      "label": "current M base",
+      "reference_tree_oid": "5d5da2bc63527a0e6c5c3d018588e46bb163f75f",
+      "reference_path_count": 1990,
+      "candidate_is_ancestor": true,
+      "merge_base": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+      "identical_path_count": 705,
+      "changed_common_path_count": 39,
+      "candidate_only_path_count": 0,
+      "reference_only_path_count": 1246,
+      "candidate_only_paths": [],
+      "source_counts": {
+        "same": 315,
+        "changed": 28,
+        "candidate_only": 0
+      },
+      "changed_paths": [
+        {
+          "path": "v13/ABDECKUNG.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4eb5cb2ce0ece9f24110e616c9baa6082dae8c4f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "007b9f4f9cb04073fcb4a75ce9a110c1a4b5499a"
+          }
+        },
+        {
+          "path": "v13/NUTZER_ENTSCHEIDUNGEN.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "58a1217fa5e731b86a0c8f68e007ae5c4226ae48"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "671dd924acc1b7ed03c31eb4efebc708d01dc147"
+          }
+        },
+        {
+          "path": "v13/ROADMAP.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "008847f5f24837e214ba0dc7a3bc105c5a6e8783"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "6878010e976381fd289f71a6a079298ec3acc7ef"
+          }
+        },
+        {
+          "path": "v13/UEBERGABE_FUER_ANDERE_KI.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "75c079130ab0908d88d9b43e1ea44b9a8bffc77a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "40a8338482ac5c8e264c128981db0402d41b2f9a"
+          }
+        },
+        {
+          "path": "v13/code/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "277f8fd3707f07e485d80e559e849970cf679fce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3d07bfd48bcfdaad0301ca7e9150e6bc7e3670c5"
+          }
+        },
+        {
+          "path": "v13/code/docs/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "dbd6c4b8a47358a5242391248a34e9024f9474f3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3d07bfd48bcfdaad0301ca7e9150e6bc7e3670c5"
+          }
+        },
+        {
+          "path": "v13/code/docs/CONTINUE.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "26822c64128029915519ecb14c096f4d2a1c9f77"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c617b9245d061131fe542cfeef7da66e59bc8ec4"
+          }
+        },
+        {
+          "path": "v13/code/docs/LEARNING_AUTHORITY.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d333999aa488dceb965d3e16a3aa008106c43b9e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b5e1cb07897124f4f1488e47f2c9f34e2eaab153"
+          }
+        },
+        {
+          "path": "v13/code/docs/completion-ledger.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "08750538eca177374f9d47d8dee26d509022958e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4559c0974313b3e3603d1b418a0c1cf15c24eb3f"
+          }
+        },
+        {
+          "path": "v13/code/scripts/dream_ablation_bench.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "49cc720eb3fdf682853f98852a8cf845498be10a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "152a0f8046d24cde3464c23e4055c2a10fbecd7c"
+          }
+        },
+        {
+          "path": "v13/code/scripts/fast_trace_compare.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "38a33747067c5e7c5cbcfec1c4bd60b1469c9641"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c923d2be7c25f7a6bb69a89278c4e6ef15d4f0d9"
+          }
+        },
+        {
+          "path": "v13/code/scripts/native_memory_hook.cpp",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c26e8fad41d91a0befe3fa6bd2b3dbbb5cd78ab3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "1bb9f69288a669881ab2281351a3e236cacbf31b"
+          }
+        },
+        {
+          "path": "v13/code/scripts/package_source.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "5dfed64f20554b80bb9f0a75691a5fa0ab659b2a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "67dc73d92d9992681084e7849b754b67e6d47ffb"
+          }
+        },
+        {
+          "path": "v13/code/scripts/v13_memory_hook.h",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "256e140b142013d45d841a2dc6a4bb695501560a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3fe43dbb8c91b873e63e2f6a38b50d92f75c5beb"
+          }
+        },
+        {
+          "path": "v13/code/tests/integration_step2_utility.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "51d991254b50c27142d044e4da69428eca172bef"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a7ba12a8807a1ca8236f1c70d54dedb65c212caa"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_neuromod.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "fe696b9156d7a6ba6ba0cdad7ae0613309aba3ce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "97ca73445169349e27827db71d59ed8020040958"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_step2_utility.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "e83e90a1af680407b3b0c6edc6446329515fb5ce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "2c41549e06a9a5df88b636b99b4e50d7982c7c3b"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/__init__.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "757dee7170c349f2106ed164f232bf718a402c85"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d6a7c7d22aeee6800dd97d556d508f2035409c72"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/trainers.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "99f2f0877c41a9b01187d770a7cc601a170b0551"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "fca1beeda3cae0e51103d34f6d052885c849bd14"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/weights.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9189f63f7c1cde08a10434f965dfda7c7bd87e7e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "280924dc73bd3d8bdd702b4f7899867ace234b1b"
+          }
+        },
+        {
+          "path": "v13/code/v13/attention.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "46abdce653bb6d44b9db48ca4f0d79e714d0d81f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0f6a81e7380aa6716bbac4e4ef5834d108601a70"
+          }
+        },
+        {
+          "path": "v13/code/v13/bodyview.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "8cbf9e4399c4ef7710ba1898e97c8c4593769205"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9c9f2f198d43f8df55904a7f9a2cdaa46bc90601"
+          }
+        },
+        {
+          "path": "v13/code/v13/callosum.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0f6763e1d42387f0dfe6270df849ca849c5ec9f3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a72aa81b69cb41047279b569f8bab05ea3a9a0f1"
+          }
+        },
+        {
+          "path": "v13/code/v13/cognition.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "2940bc7b86108068d911bb8cf54f556ca2378f35"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "454e360ebbacc21c64fd61593b36baab44fc6a17"
+          }
+        },
+        {
+          "path": "v13/code/v13/config.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "adaee3d9e38b679d5e1b3d83b5c9beb4bcd0ab69"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a8b54d6cdae2a84026dd90db70d1219f690863d3"
+          }
+        },
+        {
+          "path": "v13/code/v13/deliberation.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "73c576c0999f9c15c953bf5c195fda1d5d551b48"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "7f8340bf0e7be818887bdfc8b86633cd178f560c"
+          }
+        },
+        {
+          "path": "v13/code/v13/lora_trainer.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "1735eb4cde0cb4d709a132ea20f5b79cf54219f6"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "49a752879ae5d19391963742a0f042e740edb2cc"
+          }
+        },
+        {
+          "path": "v13/code/v13/memory_server.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "74cb8079bba15cc5ddad22aac8b644c7763e06a6"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e77a03cff1001aee711c76403c59c7c5921f080"
+          }
+        },
+        {
+          "path": "v13/code/v13/memory_trainer.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ae548ba99a32133d0bedf5f4f724f3523db38a4d"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a1e9bc4c57db5caadcdaccc31eb513a2add0cd2c"
+          }
+        },
+        {
+          "path": "v13/code/v13/neuromod.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "671135367bbff2a3b7b339e8ad153940a7967fc5"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c21b89efb85f2e606864d561575208e37f6c630f"
+          }
+        },
+        {
+          "path": "v13/code/v13/operator.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ca26da6a2d4956af1820d7830d3a49410f42ded9"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f4d5fcace58ef7d5d97434d984fff3668d4ca270"
+          }
+        },
+        {
+          "path": "v13/code/v13/runners.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0b628cbdee5fffe0fd0f16bbeb9fa0be6e683168"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "efda7aa1aa5729e974d0d641870d4da05d21c961"
+          }
+        },
+        {
+          "path": "v13/code/v13/runtime.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "609e51543e5fb828d67ba415059d6a1e3ca2612f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "46c7301c9b514cd006d538ecfe93c036b6003590"
+          }
+        },
+        {
+          "path": "v13/code/v13/sparse_memory.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "39c2f7a27308e70c91165f15944683ca2c5efd32"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d0e19a9f661e0dbc622204bdfe6cc20270a1557f"
+          }
+        },
+        {
+          "path": "v13/code/v13/store.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "13762eb9aac2f6cfaf5e5360840337fd28cf1b60"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "5c6a84b66f503d39bdfbbbcdcddf5ebef5475007"
+          }
+        },
+        {
+          "path": "v13/code/v13/toolstep.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "462d98be2987a9d3441928ea12abe00885962646"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "73f8711e9e4022b21d774f0c5815364f7e52f86a"
+          }
+        },
+        {
+          "path": "v13/code/v13/transaction.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a10991e673410a31fc2ebe08f40743ed1896f485"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "fa2845e74107ad435799f863ea0cf9bae4e38639"
+          }
+        },
+        {
+          "path": "v13/status/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "984e32ec7774c34e988c5ec66789616055ebb379"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3d07bfd48bcfdaad0301ca7e9150e6bc7e3670c5"
+          }
+        },
+        {
+          "path": "v13/status/completion-ledger.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "08750538eca177374f9d47d8dee26d509022958e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4559c0974313b3e3603d1b418a0c1cf15c24eb3f"
+          }
+        }
+      ]
+    },
+    {
+      "reference": "3af7ea8fe8f124459041133a34ce457f179d1f99",
+      "label": "saved integrated K/M work branch",
+      "reference_tree_oid": "322346ab17249e63536bd76d5a829713f63a4e35",
+      "reference_path_count": 2070,
+      "candidate_is_ancestor": true,
+      "merge_base": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+      "identical_path_count": 701,
+      "changed_common_path_count": 43,
+      "candidate_only_path_count": 0,
+      "reference_only_path_count": 1326,
+      "candidate_only_paths": [],
+      "source_counts": {
+        "same": 311,
+        "changed": 32,
+        "candidate_only": 0
+      },
+      "changed_paths": [
+        {
+          "path": "v13/ABDECKUNG.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4eb5cb2ce0ece9f24110e616c9baa6082dae8c4f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "007b9f4f9cb04073fcb4a75ce9a110c1a4b5499a"
+          }
+        },
+        {
+          "path": "v13/NUTZER_ENTSCHEIDUNGEN.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "58a1217fa5e731b86a0c8f68e007ae5c4226ae48"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "671dd924acc1b7ed03c31eb4efebc708d01dc147"
+          }
+        },
+        {
+          "path": "v13/ROADMAP.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "008847f5f24837e214ba0dc7a3bc105c5a6e8783"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "cfb77fd49fe6db698c8e9586ec2f5f73cfd5bfea"
+          }
+        },
+        {
+          "path": "v13/UEBERGABE_FUER_ANDERE_KI.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "75c079130ab0908d88d9b43e1ea44b9a8bffc77a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "40a8338482ac5c8e264c128981db0402d41b2f9a"
+          }
+        },
+        {
+          "path": "v13/code/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "277f8fd3707f07e485d80e559e849970cf679fce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0ab8fc34748f0083c90c3d11ccdb63485798b603"
+          }
+        },
+        {
+          "path": "v13/code/docs/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "dbd6c4b8a47358a5242391248a34e9024f9474f3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3d07bfd48bcfdaad0301ca7e9150e6bc7e3670c5"
+          }
+        },
+        {
+          "path": "v13/code/docs/CONTINUE.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "26822c64128029915519ecb14c096f4d2a1c9f77"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c617b9245d061131fe542cfeef7da66e59bc8ec4"
+          }
+        },
+        {
+          "path": "v13/code/docs/LEARNING_AUTHORITY.md",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d333999aa488dceb965d3e16a3aa008106c43b9e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b5e1cb07897124f4f1488e47f2c9f34e2eaab153"
+          }
+        },
+        {
+          "path": "v13/code/docs/completion-ledger.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "08750538eca177374f9d47d8dee26d509022958e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4559c0974313b3e3603d1b418a0c1cf15c24eb3f"
+          }
+        },
+        {
+          "path": "v13/code/scripts/dream_ablation_bench.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "49cc720eb3fdf682853f98852a8cf845498be10a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "152a0f8046d24cde3464c23e4055c2a10fbecd7c"
+          }
+        },
+        {
+          "path": "v13/code/scripts/fast_trace_compare.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "38a33747067c5e7c5cbcfec1c4bd60b1469c9641"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c923d2be7c25f7a6bb69a89278c4e6ef15d4f0d9"
+          }
+        },
+        {
+          "path": "v13/code/scripts/native_memory_hook.cpp",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c26e8fad41d91a0befe3fa6bd2b3dbbb5cd78ab3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "1bb9f69288a669881ab2281351a3e236cacbf31b"
+          }
+        },
+        {
+          "path": "v13/code/scripts/package_source.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "5dfed64f20554b80bb9f0a75691a5fa0ab659b2a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "67dc73d92d9992681084e7849b754b67e6d47ffb"
+          }
+        },
+        {
+          "path": "v13/code/scripts/v13_memory_hook.h",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "256e140b142013d45d841a2dc6a4bb695501560a"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3fe43dbb8c91b873e63e2f6a38b50d92f75c5beb"
+          }
+        },
+        {
+          "path": "v13/code/tests/integration_step2_utility.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "51d991254b50c27142d044e4da69428eca172bef"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a7ba12a8807a1ca8236f1c70d54dedb65c212caa"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_bodies.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a7da0e75488cd27eea2d4ec04ba58a96b263e2ba"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "30cba313777385d3cdcf34651dfb8782dccb4b66"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_executive.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "b93ef2692746cbee60ae8cf77a6150cd857e4ec0"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3a33963f25c13b99a23768d243e3d06ca482d2f4"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_neuromod.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "fe696b9156d7a6ba6ba0cdad7ae0613309aba3ce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "97ca73445169349e27827db71d59ed8020040958"
+          }
+        },
+        {
+          "path": "v13/code/tests/test_step2_utility.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "e83e90a1af680407b3b0c6edc6446329515fb5ce"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "2c41549e06a9a5df88b636b99b4e50d7982c7c3b"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/__init__.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "757dee7170c349f2106ed164f232bf718a402c85"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d6a7c7d22aeee6800dd97d556d508f2035409c72"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/tools.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "1222ea9df3f2a7991916cf298d489d068edebd9f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "2356d1d6a0dc577f61e47eeaccb1fd31364a4520"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/trainers.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "99f2f0877c41a9b01187d770a7cc601a170b0551"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "fca1beeda3cae0e51103d34f6d052885c849bd14"
+          }
+        },
+        {
+          "path": "v13/code/v13/agi/weights.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9189f63f7c1cde08a10434f965dfda7c7bd87e7e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "280924dc73bd3d8bdd702b4f7899867ace234b1b"
+          }
+        },
+        {
+          "path": "v13/code/v13/attention.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "46abdce653bb6d44b9db48ca4f0d79e714d0d81f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0f6a81e7380aa6716bbac4e4ef5834d108601a70"
+          }
+        },
+        {
+          "path": "v13/code/v13/bodyview.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "8cbf9e4399c4ef7710ba1898e97c8c4593769205"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9c9f2f198d43f8df55904a7f9a2cdaa46bc90601"
+          }
+        },
+        {
+          "path": "v13/code/v13/broker.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "dc2563d25689f9250247d2919b5c55e64e144bf9"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "42d99e33c05a0738aa87acfb61b91f35de811423"
+          }
+        },
+        {
+          "path": "v13/code/v13/callosum.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0f6763e1d42387f0dfe6270df849ca849c5ec9f3"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a72aa81b69cb41047279b569f8bab05ea3a9a0f1"
+          }
+        },
+        {
+          "path": "v13/code/v13/cognition.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "2940bc7b86108068d911bb8cf54f556ca2378f35"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "454e360ebbacc21c64fd61593b36baab44fc6a17"
+          }
+        },
+        {
+          "path": "v13/code/v13/config.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "adaee3d9e38b679d5e1b3d83b5c9beb4bcd0ab69"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a8b54d6cdae2a84026dd90db70d1219f690863d3"
+          }
+        },
+        {
+          "path": "v13/code/v13/deliberation.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "73c576c0999f9c15c953bf5c195fda1d5d551b48"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "7f8340bf0e7be818887bdfc8b86633cd178f560c"
+          }
+        },
+        {
+          "path": "v13/code/v13/lora_trainer.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "1735eb4cde0cb4d709a132ea20f5b79cf54219f6"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "49a752879ae5d19391963742a0f042e740edb2cc"
+          }
+        },
+        {
+          "path": "v13/code/v13/memory_server.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "74cb8079bba15cc5ddad22aac8b644c7763e06a6"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "9e77a03cff1001aee711c76403c59c7c5921f080"
+          }
+        },
+        {
+          "path": "v13/code/v13/memory_trainer.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ae548ba99a32133d0bedf5f4f724f3523db38a4d"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a1e9bc4c57db5caadcdaccc31eb513a2add0cd2c"
+          }
+        },
+        {
+          "path": "v13/code/v13/neuromod.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "671135367bbff2a3b7b339e8ad153940a7967fc5"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "c21b89efb85f2e606864d561575208e37f6c630f"
+          }
+        },
+        {
+          "path": "v13/code/v13/operator.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "ca26da6a2d4956af1820d7830d3a49410f42ded9"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "f4d5fcace58ef7d5d97434d984fff3668d4ca270"
+          }
+        },
+        {
+          "path": "v13/code/v13/runners.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "0b628cbdee5fffe0fd0f16bbeb9fa0be6e683168"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "efda7aa1aa5729e974d0d641870d4da05d21c961"
+          }
+        },
+        {
+          "path": "v13/code/v13/runtime.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "609e51543e5fb828d67ba415059d6a1e3ca2612f"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "46c7301c9b514cd006d538ecfe93c036b6003590"
+          }
+        },
+        {
+          "path": "v13/code/v13/sparse_memory.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "39c2f7a27308e70c91165f15944683ca2c5efd32"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "d0e19a9f661e0dbc622204bdfe6cc20270a1557f"
+          }
+        },
+        {
+          "path": "v13/code/v13/store.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "13762eb9aac2f6cfaf5e5360840337fd28cf1b60"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "5c6a84b66f503d39bdfbbbcdcddf5ebef5475007"
+          }
+        },
+        {
+          "path": "v13/code/v13/toolstep.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "462d98be2987a9d3441928ea12abe00885962646"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a2d5f44f7bccd6e5332db43460a34032393570b4"
+          }
+        },
+        {
+          "path": "v13/code/v13/transaction.py",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "a10991e673410a31fc2ebe08f40743ed1896f485"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "7156ccdb37bec559f64a9c4211a96871e0610a2b"
+          }
+        },
+        {
+          "path": "v13/status/BUILD_STATE.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "984e32ec7774c34e988c5ec66789616055ebb379"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "3d07bfd48bcfdaad0301ca7e9150e6bc7e3670c5"
+          }
+        },
+        {
+          "path": "v13/status/completion-ledger.json",
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "08750538eca177374f9d47d8dee26d509022958e"
+          },
+          "reference": {
+            "mode": "100644",
+            "type": "blob",
+            "oid": "4559c0974313b3e3603d1b418a0c1cf15c24eb3f"
+          }
+        }
+      ]
+    }
+  ],
+  "thread_lifecycle_observed": false,
+  "conclusion": "Old source-import ancestor already fully included by history, not material new work relative to either reference. Branch appearance does not establish active/finished conversation status."
+}

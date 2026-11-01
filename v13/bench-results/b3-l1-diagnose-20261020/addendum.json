@@ -1,0 +1,430 @@
+{
+ "kind": "B3_L1_DIAGNOSIS_ADDENDUM",
+ "status": "POST-HOC, not preregistered; diagnostic only",
+ "script_sha256": "2d7bc980fdeed94a74ad2b9a2319261ab076b3d51ea1b617c3266adce8d9b4d1",
+ "bridge_sha256": "9d61fe980f110bb66cd77d976613e4322124878f69f186230c066036748b0ff2",
+ "seeds": 5,
+ "tasks": {
+  "escalate": {
+   "0.5": {
+    "n_fit": 180,
+    "acc_mean": {
+     "NO_MESSAGE": 0.6867,
+     "SYMBOLIC_ATTR": 0.7933,
+     "SCALAR": 0.8817,
+     "LATENT": 0.7933,
+     "LATENT_REFIT": 0.815,
+     "LATENT_PROBE": 0.8517
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.6917,
+      0.6583,
+      0.7083,
+      0.7,
+      0.675
+     ],
+     "SYMBOLIC_ATTR": [
+      0.825,
+      0.7583,
+      0.7667,
+      0.85,
+      0.7667
+     ],
+     "SCALAR": [
+      0.9083,
+      0.8583,
+      0.8417,
+      0.95,
+      0.85
+     ],
+     "LATENT": [
+      0.8167,
+      0.8083,
+      0.7417,
+      0.8333,
+      0.7667
+     ],
+     "LATENT_REFIT": [
+      0.8583,
+      0.8917,
+      0.775,
+      0.85,
+      0.7
+     ],
+     "LATENT_PROBE": [
+      0.8917,
+      0.8833,
+      0.7833,
+      0.9167,
+      0.7833
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": -0.03,
+     "se": 0.0164,
+     "wins": 1,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.0583,
+     "se": 0.0126,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    }
+   },
+   "1.0": {
+    "n_fit": 360,
+    "acc_mean": {
+     "NO_MESSAGE": 0.6783,
+     "SYMBOLIC_ATTR": 0.8367,
+     "SCALAR": 0.9083,
+     "LATENT": 0.7767,
+     "LATENT_REFIT": 0.79,
+     "LATENT_PROBE": 0.89
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.6167,
+      0.7,
+      0.7,
+      0.6833,
+      0.6917
+     ],
+     "SYMBOLIC_ATTR": [
+      0.8667,
+      0.7917,
+      0.8417,
+      0.8333,
+      0.85
+     ],
+     "SCALAR": [
+      0.9,
+      0.8917,
+      0.9083,
+      0.9333,
+      0.9083
+     ],
+     "LATENT": [
+      0.8667,
+      0.725,
+      0.7583,
+      0.7333,
+      0.8
+     ],
+     "LATENT_REFIT": [
+      0.8583,
+      0.7,
+      0.8,
+      0.7583,
+      0.8333
+     ],
+     "LATENT_PROBE": [
+      0.925,
+      0.875,
+      0.8833,
+      0.8917,
+      0.875
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": -0.0183,
+     "se": 0.0116,
+     "wins": 1,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.1133,
+     "se": 0.02,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    }
+   }
+  },
+  "apologize": {
+   "0.5": {
+    "n_fit": 180,
+    "acc_mean": {
+     "NO_MESSAGE": 0.5417,
+     "SYMBOLIC_ATTR": 0.7783,
+     "SCALAR": 0.9117,
+     "LATENT": 0.7983,
+     "LATENT_REFIT": 0.8067,
+     "LATENT_PROBE": 0.8933
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.5583,
+      0.5,
+      0.5417,
+      0.6,
+      0.5083
+     ],
+     "SYMBOLIC_ATTR": [
+      0.7167,
+      0.7333,
+      0.8,
+      0.825,
+      0.8167
+     ],
+     "SCALAR": [
+      0.8917,
+      0.9,
+      0.9167,
+      0.925,
+      0.925
+     ],
+     "LATENT": [
+      0.8583,
+      0.7167,
+      0.8167,
+      0.8,
+      0.8
+     ],
+     "LATENT_REFIT": [
+      0.8667,
+      0.7583,
+      0.8,
+      0.8083,
+      0.8
+     ],
+     "LATENT_PROBE": [
+      0.9083,
+      0.8583,
+      0.8833,
+      0.925,
+      0.8917
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": -0.0183,
+     "se": 0.0113,
+     "wins": 1,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.095,
+     "se": 0.0172,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    }
+   },
+   "1.0": {
+    "n_fit": 360,
+    "acc_mean": {
+     "NO_MESSAGE": 0.5267,
+     "SYMBOLIC_ATTR": 0.8467,
+     "SCALAR": 0.935,
+     "LATENT": 0.8133,
+     "LATENT_REFIT": 0.8333,
+     "LATENT_PROBE": 0.9267
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.525,
+      0.5167,
+      0.4917,
+      0.5667,
+      0.5333
+     ],
+     "SYMBOLIC_ATTR": [
+      0.8417,
+      0.7667,
+      0.9167,
+      0.8333,
+      0.875
+     ],
+     "SCALAR": [
+      0.9083,
+      0.925,
+      0.9417,
+      0.9583,
+      0.9417
+     ],
+     "LATENT": [
+      0.8667,
+      0.7833,
+      0.7583,
+      0.8333,
+      0.825
+     ],
+     "LATENT_REFIT": [
+      0.8833,
+      0.7917,
+      0.8167,
+      0.85,
+      0.825
+     ],
+     "LATENT_PROBE": [
+      0.8833,
+      0.9167,
+      0.95,
+      0.9667,
+      0.9167
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": -0.0083,
+     "se": 0.0075,
+     "wins": 2,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.1133,
+     "se": 0.0289,
+     "wins": 5,
+     "n": 5,
+     "significant": true
+    }
+   }
+  },
+  "action": {
+   "0.5": {
+    "n_fit": 180,
+    "acc_mean": {
+     "NO_MESSAGE": 0.4617,
+     "SYMBOLIC_ATTR": 0.725,
+     "SCALAR": 0.79,
+     "LATENT": 0.7517,
+     "LATENT_REFIT": 0.74,
+     "LATENT_PROBE": 0.7833
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.5,
+      0.4333,
+      0.4833,
+      0.4083,
+      0.4833
+     ],
+     "SYMBOLIC_ATTR": [
+      0.7,
+      0.7417,
+      0.75,
+      0.6917,
+      0.7417
+     ],
+     "SCALAR": [
+      0.8417,
+      0.8083,
+      0.7917,
+      0.7583,
+      0.75
+     ],
+     "LATENT": [
+      0.7583,
+      0.7167,
+      0.7167,
+      0.7167,
+      0.85
+     ],
+     "LATENT_REFIT": [
+      0.75,
+      0.6667,
+      0.75,
+      0.75,
+      0.7833
+     ],
+     "LATENT_PROBE": [
+      0.8333,
+      0.7167,
+      0.8,
+      0.7583,
+      0.8083
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": -0.0067,
+     "se": 0.0242,
+     "wins": 2,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.0317,
+     "se": 0.0235,
+     "wins": 3,
+     "n": 5,
+     "significant": false
+    }
+   },
+   "1.0": {
+    "n_fit": 360,
+    "acc_mean": {
+     "NO_MESSAGE": 0.4767,
+     "SYMBOLIC_ATTR": 0.7983,
+     "SCALAR": 0.8383,
+     "LATENT": 0.7883,
+     "LATENT_REFIT": 0.8017,
+     "LATENT_PROBE": 0.8617
+    },
+    "acc_per_seed": {
+     "NO_MESSAGE": [
+      0.4917,
+      0.475,
+      0.5167,
+      0.4083,
+      0.4917
+     ],
+     "SYMBOLIC_ATTR": [
+      0.8,
+      0.8,
+      0.8667,
+      0.6833,
+      0.8417
+     ],
+     "SCALAR": [
+      0.875,
+      0.8333,
+      0.7917,
+      0.85,
+      0.8417
+     ],
+     "LATENT": [
+      0.8333,
+      0.725,
+      0.7917,
+      0.7417,
+      0.85
+     ],
+     "LATENT_REFIT": [
+      0.85,
+      0.75,
+      0.7917,
+      0.7667,
+      0.85
+     ],
+     "LATENT_PROBE": [
+      0.8917,
+      0.825,
+      0.875,
+      0.8667,
+      0.85
+     ]
+    },
+    "paired_LATENT_PROBE_minus_SCALAR": {
+     "mean": 0.0233,
+     "se": 0.0157,
+     "wins": 4,
+     "n": 5,
+     "significant": false
+    },
+    "paired_LATENT_PROBE_minus_LATENT": {
+     "mean": 0.0733,
+     "se": 0.0213,
+     "wins": 4,
+     "n": 5,
+     "significant": true
+    }
+   }
+  }
+ },
+ "seconds": 1992.4
+}

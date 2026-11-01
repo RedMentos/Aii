@@ -69,7 +69,6 @@ class ExperienceReplay(unittest.TestCase):
         self.assertEqual(self.r.store.one('SELECT status FROM replay')['status'],'PENDING')
         self.assertFalse(self.r.store.rows("SELECT * FROM packets WHERE kind='ReplayItem'"))
 
-if __name__=='__main__':unittest.main()
 
 class Step4DatasetView(unittest.TestCase):
     def setUp(self):
@@ -89,3 +88,24 @@ class Step4DatasetView(unittest.TestCase):
         session=self.r.session;self.r.close();self.r=Runtime(self.home)
         b=self.r.memory.experience(e['event_id'],session);self.assertEqual(fp,b['fingerprint_sha256'])
         self.assertFalse(b['teacher_truth_authority']);self.assertEqual(b['decisions'][0]['selection']['lane'],'teacher')
+    def test_step4_fingerprint_with_selection_is_equal_across_homes(self):
+        def flow(r):
+            s=r.store;e=s.event(r.session,'Projekt Aurora Budget?')
+            own='Eigene Antwort';s.message(r.session,e['event_id'],'assistant',own,'FINAL',{'model_revision':'self-r1'})
+            teacher='Referenz: 120 Euro';ref=s.source(teacher,'TEACHER_REFERENCE')
+            s.message(r.session,e['event_id'],'teacher',teacher,'FINAL',{'own_answer_hash_before_teacher':digest(own),'reference_source_ref':ref,'reference_only':True,'not_fact':True,'model_revision':'teacher-r1'})
+            r.memory.select(e['event_id'],r.session,'teacher',None,None,'fact','record')
+            r.memory.select(e['event_id'],r.session,'self',None,None,'preference','record')
+            return r.memory.experience(e['event_id'],r.session)
+        with tempfile.TemporaryDirectory() as other:
+            r2=Runtime(Path(other))
+            try:
+                s2=r2.store;s2.source('verschiebt Zeilen-IDs','USER')  # different row history in the second home
+                b=flow(r2)
+            finally:r2.close()
+        a=flow(self.r)
+        self.assertNotEqual(a['decisions'][0]['selection']['source_ref']['source_id'],b['decisions'][0]['selection']['source_ref']['source_id'])
+        self.assertEqual(a['fingerprint_sha256'],b['fingerprint_sha256'])
+
+
+if __name__=='__main__':unittest.main()

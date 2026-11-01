@@ -1,0 +1,358 @@
+{
+  "kind": "STEP2_Z2C_SWITCH_CONFIRMATION",
+  "seed": 14,
+  "compare": {
+    "C_s14 (Z2b)": {
+      "tool": {
+        "b1_only": 0.275,
+        "b2_only": 0.24166666666666664,
+        "both_control": 0.39166666666666666,
+        "both_exact": 0.375,
+        "both_none": 0.39166666666666666,
+        "prompt_only_dual": 0.29166666666666663,
+        "same_policy_dual": 0.275
+      },
+      "option_quotes": {
+        "b1_only": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 3
+        },
+        "b2_only": {
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 4,
+          "B2_GIST:rules": 5,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 3,
+          "B2_GIST:rules": 6,
+          "B2_GIST:options": 0
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 4,
+          "B2_GIST:rules": 5,
+          "B2_GIST:options": 0
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 2
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 2,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        }
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 2,
+        "both_exact": 3,
+        "both_control": 3,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 0
+      },
+      "error_profile_tool": {
+        "b1_only": {
+          "rule_fields_correct": 0.0,
+          "option_fields_correct": 0.5333333333333333
+        },
+        "b2_only": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.4
+        },
+        "both_control": {
+          "rule_fields_correct": 0.3,
+          "option_fields_correct": 0.5333333333333333
+        },
+        "both_exact": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.5833333333333334
+        },
+        "both_none": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.6166666666666667
+        },
+        "prompt_only_dual": {
+          "rule_fields_correct": 0.0,
+          "option_fields_correct": 0.5666666666666667
+        },
+        "same_policy_dual": {
+          "rule_fields_correct": 0.0,
+          "option_fields_correct": 0.55
+        }
+      }
+    },
+    "CQ_s14 (Z2b)": {
+      "tool": {
+        "b1_only": 0.6,
+        "b2_only": 0.20833333333333331,
+        "both_control": 0.675,
+        "both_exact": 0.675,
+        "both_none": 0.7166666666666666,
+        "prompt_only_dual": 0.5916666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "option_quotes": {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "b2_only": {
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 1
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 0
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 5,
+          "B2_GIST:options": 1
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        }
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 5,
+        "both_exact": 2,
+        "both_control": 5,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 2
+      },
+      "error_profile_tool": {
+        "b1_only": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 1.0
+        },
+        "b2_only": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.31666666666666665
+        },
+        "both_control": {
+          "rule_fields_correct": 0.4,
+          "option_fields_correct": 1.0
+        },
+        "both_exact": {
+          "rule_fields_correct": 0.4,
+          "option_fields_correct": 1.0
+        },
+        "both_none": {
+          "rule_fields_correct": 0.5,
+          "option_fields_correct": 1.0
+        },
+        "prompt_only_dual": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 1.0
+        },
+        "same_policy_dual": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 1.0
+        }
+      }
+    },
+    "CL (live switch)": {
+      "tool": {
+        "b1_only": 0.575,
+        "b2_only": 0.2,
+        "both_control": 0.5333333333333333,
+        "both_exact": 0.5916666666666667,
+        "both_none": 0.5583333333333333,
+        "prompt_only_dual": 0.5166666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "option_quotes": {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 2
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 7,
+          "B2_GIST:rules": 4,
+          "B2_GIST:options": 1
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 10
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 1
+        }
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 3,
+        "both_control": 4,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 1
+      },
+      "error_profile_tool": {
+        "b1_only": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.9666666666666667
+        },
+        "b2_only": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.3
+        },
+        "both_control": {
+          "rule_fields_correct": 0.3,
+          "option_fields_correct": 0.8166666666666667
+        },
+        "both_exact": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 1.0
+        },
+        "both_none": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.9333333333333333
+        },
+        "prompt_only_dual": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.9333333333333333
+        },
+        "same_policy_dual": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 1.0
+        }
+      }
+    },
+    "CB1 (live switch)": {
+      "tool": {
+        "b1_only": 0.575,
+        "b2_only": 0.2583333333333333,
+        "both_control": 0.575,
+        "both_exact": 0.45,
+        "both_none": 0.625,
+        "prompt_only_dual": 0.5166666666666667,
+        "same_policy_dual": 0.525
+      },
+      "option_quotes": {
+        "b1_only": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 9
+        },
+        "b2_only": {
+          "B2_GIST:rules": 5,
+          "B2_GIST:options": 0
+        },
+        "both_none": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 0
+        },
+        "both_exact": {
+          "B1_DETAIL:rules": 0,
+          "B1_DETAIL:options": 7,
+          "B2_GIST:rules": 1,
+          "B2_GIST:options": 2
+        },
+        "both_control": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 9,
+          "B2_GIST:rules": 3,
+          "B2_GIST:options": 1
+        },
+        "same_policy_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 9
+        },
+        "prompt_only_dual": {
+          "B1_DETAIL:rules": 1,
+          "B1_DETAIL:options": 8,
+          "B2_GIST:rules": 2,
+          "B2_GIST:options": 2
+        }
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 1,
+        "both_control": 3,
+        "same_policy_dual": 1,
+        "prompt_only_dual": 2
+      },
+      "error_profile_tool": {
+        "b1_only": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.95
+        },
+        "b2_only": {
+          "rule_fields_correct": 0.2,
+          "option_fields_correct": 0.35
+        },
+        "both_control": {
+          "rule_fields_correct": 0.3,
+          "option_fields_correct": 0.9
+        },
+        "both_exact": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.8166666666666667
+        },
+        "both_none": {
+          "rule_fields_correct": 0.4,
+          "option_fields_correct": 0.9166666666666666
+        },
+        "prompt_only_dual": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.9333333333333333
+        },
+        "same_policy_dual": {
+          "rule_fields_correct": 0.1,
+          "option_fields_correct": 0.95
+        }
+      }
+    }
+  }
+}

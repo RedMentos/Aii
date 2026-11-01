@@ -1,0 +1,432 @@
+{
+  "calc_counter": {
+    "actions": {
+      "add_15": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.010693990080704912,
+            "retention": 0.006703333784149786,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.009335488865367298,
+            "retention": 0.006217443080863738,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.012329250786818801,
+            "retention": 0.006010507585396919,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.026367684923621064,
+            "retention": 0.006004433108192722,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.07221140082669728,
+            "retention": 0.0056355120584347,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.07221140082669728,
+        "holdout_measured_mse": 0.09674323219477779,
+        "holdout_rows": 8,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.0056355120584347,
+        "retention_copy": 0.41286468440736357,
+        "retention_mean_delta": 0.05842007805707281,
+        "retention_measured": 0.005533352116963186,
+        "rows": 35,
+        "scale": 100.0
+      },
+      "double": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.021426779061501037,
+            "retention": 0.009579221407855758,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.018786034428088058,
+            "retention": 0.00898613302048925,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.018085481250933566,
+            "retention": 0.008163243500869596,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.02056585585403429,
+            "retention": 0.007906656626530765,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.03234100655023826,
+            "retention": 0.007813841769863102,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.02056585585403429,
+        "holdout_measured_mse": 0.03968080621909218,
+        "holdout_rows": 8,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.007906656626530765,
+        "retention_copy": 0.1771252590158075,
+        "retention_mean_delta": 0.0580898062492307,
+        "retention_measured": 0.007806702703205997,
+        "rows": 35,
+        "scale": 10.0
+      },
+      "quarter": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.03957513769642847,
+            "retention": 0.024011237682333413,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.03244641570683793,
+            "retention": 0.023222218792379862,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.030562400255336013,
+            "retention": 0.02334984096622508,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.04514161095247429,
+            "retention": 0.022630601548447267,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.18656370989331234,
+            "retention": 0.02195191647254961,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.18656370989331234,
+        "holdout_measured_mse": 0.2779448050262826,
+        "holdout_rows": 8,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.02195191647254961,
+        "retention_copy": 0.45917634557805725,
+        "retention_mean_delta": 0.11706815789471751,
+        "retention_measured": 0.02201900877821334,
+        "rows": 35,
+        "scale": 100.0
+      },
+      "subtract_7": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.008141727851208154,
+            "retention": 0.0061677686044812816,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.007379261010837568,
+            "retention": 0.005656999705534916,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.009290568362798799,
+            "retention": 0.005366344100570434,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.014697395107695028,
+            "retention": 0.005276673470308422,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.03216381823286908,
+            "retention": 0.00519707037895528,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.014697395107695028,
+        "holdout_measured_mse": 0.04180896063932357,
+        "holdout_rows": 8,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.005276673470308422,
+        "retention_copy": 0.6073222779959704,
+        "retention_mean_delta": 0.05692746830279731,
+        "retention_measured": 0.005194715384603888,
+        "rows": 35,
+        "scale": 10.0
+      }
+    },
+    "adapted_actions": [
+      "add_15",
+      "double",
+      "quarter",
+      "subtract_7"
+    ],
+    "adapted_sha256": "4540dba7e848159aad8d5c72ea686ef4e0fed21c7f865b31b158ad838da32bdd",
+    "binding": {
+      "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+      "competence_sha256": "5e08053539b2727ac91fd84e35907947d70376abcae79c02e7070cf8014529a5",
+      "layer": 11,
+      "learn_rule": "anchored-ridge-holdout-retention-v2",
+      "mode": "region",
+      "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "pooling": "last",
+      "replay_sha256": null,
+      "retention_sha256": "b439d2d8e619d758c97ff1ae7468c186a8a6c704d5ffae22c4bf5ae8223c960d",
+      "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2"
+    },
+    "checkpoint_sha256": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+    "experience_out_of_domain": 140,
+    "experience_rows": 160,
+    "experience_sha256": "c9748e5a748c5979ee5e52f3d7f055b9014e8699b10c17a79864e3dae5e4ec2b",
+    "learn_authority": 0,
+    "mode": "region",
+    "pass": true,
+    "replay_pairs": 0,
+    "schema": "v13-tool-forecast-v1-learn",
+    "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2",
+    "used_for_decision": false,
+    "world": "calc_counter"
+  },
+  "note_edit": {
+    "actions": {
+      "append_done": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.0657285598094433,
+            "retention": 0.003980000558956332,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.06572273700587657,
+            "retention": 0.0039077837403419784,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.07143341126912785,
+            "retention": 0.0038033837149041155,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.08332788063588861,
+            "retention": 0.003778407963674753,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.09559157971589352,
+            "retention": 0.00377791065782586,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.07143341126912785,
+        "holdout_measured_mse": 0.09917861677999824,
+        "holdout_rows": 7,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.0038033837149041155,
+        "retention_copy": 0.48000545663551647,
+        "retention_mean_delta": 0.06416974121810938,
+        "retention_measured": 0.0037779772539589113,
+        "rows": 30,
+        "scale": 1.0
+      },
+      "prefix_urgent": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.048011485473824535,
+            "retention": 0.003261665344548107,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.04697162250486363,
+            "retention": 0.0032210421520942876,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.04740280668655438,
+            "retention": 0.0031948137494726163,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.0538791381496289,
+            "retention": 0.003185145533841358,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.06648857300598106,
+            "retention": 0.0031839112583214946,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.04697162250486363,
+        "holdout_measured_mse": 0.07045763267410295,
+        "holdout_rows": 7,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.0032210421520942876,
+        "retention_copy": 0.18916024406624402,
+        "retention_mean_delta": 0.032789615693811634,
+        "retention_measured": 0.003183874915406319,
+        "rows": 30,
+        "scale": 0.1
+      },
+      "undo": {
+        "kept": "MEASURED_TOO_FEW_ROWS",
+        "rows": 0
+      },
+      "uppercase": {
+        "experience_weight": 1.0,
+        "grid": [
+          {
+            "admissible": false,
+            "holdout_mse": 0.08860019068850318,
+            "retention": 0.0060988423354677215,
+            "scale": 0.01,
+            "weight": 1.0
+          },
+          {
+            "admissible": false,
+            "holdout_mse": 0.08233397434044269,
+            "retention": 0.005979903880182355,
+            "scale": 0.1,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.0780635625169065,
+            "retention": 0.005844390868400985,
+            "scale": 1.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.09791993367709376,
+            "retention": 0.005812441989114644,
+            "scale": 10.0,
+            "weight": 1.0
+          },
+          {
+            "admissible": true,
+            "holdout_mse": 0.1333201592577951,
+            "retention": 0.005810889303758388,
+            "scale": 100.0,
+            "weight": 1.0
+          }
+        ],
+        "holdout_adapted_mse": 0.0780635625169065,
+        "holdout_measured_mse": 0.1439366860720177,
+        "holdout_rows": 7,
+        "kept": "ADAPTED",
+        "replay_rows": 0,
+        "retention_adapted": 0.005844390868400985,
+        "retention_copy": 0.5219591118668696,
+        "retention_mean_delta": 0.06715919527136939,
+        "retention_measured": 0.005810759515399345,
+        "rows": 30,
+        "scale": 1.0
+      }
+    },
+    "adapted_actions": [
+      "append_done",
+      "prefix_urgent",
+      "uppercase"
+    ],
+    "adapted_sha256": "fb3e85016f93b5ca3a8f5bcebd828ca6a9bb0aec66a2da68c87a9a67e8f6e038",
+    "binding": {
+      "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+      "competence_sha256": "2985ba249b0949ec6e9a1def242f9b86f43ff35939ec7f99ec3be287ed2f22b7",
+      "layer": 11,
+      "learn_rule": "anchored-ridge-holdout-retention-v2",
+      "mode": "region",
+      "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+      "pooling": "last",
+      "replay_sha256": null,
+      "retention_sha256": "7e4ac7526924ee69a15f83e2b6d37d93307249afc722ea4d09c18dd2b1c5169d",
+      "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2"
+    },
+    "checkpoint_sha256": "c8a00a8fa806ee82da71a29ffc058a8d929e9cb6d24ef5286de2b77a04433d81",
+    "experience_out_of_domain": 90,
+    "experience_rows": 90,
+    "experience_sha256": "f4c7e8d1e2fe639cc92fa328f981763f88d6f6b6a44a88a5384c052026e975a9",
+    "learn_authority": 0,
+    "mode": "region",
+    "pass": true,
+    "replay_pairs": 0,
+    "schema": "v13-tool-forecast-v1-learn",
+    "tool_sha256": "f6c0a7fc2e7f9abd5246b9b970739c5c692a4ea324ce8de7f14540439a7075d2",
+    "used_for_decision": false,
+    "world": "note_edit"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "v13-extracted-phone-manifest-check-v1",
+  "expected_files": 481,
+  "mismatches": [],
+  "manifest_sha256": "1c744a8cc7f8d9b7a90f3fd8f50d50ddc60f55f10f390fc39b079ab35aa69ffd",
+  "canonical_gate_pass": false,
+  "phone_measured": false
+}

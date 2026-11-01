@@ -1,0 +1,13 @@
+test_consumer_has_no_hidden_source_fallback_and_rejects_forged_quotes (test_private_fixtures.PrivateFixtureGeometry.test_consumer_has_no_hidden_source_fallback_and_rejects_forged_quotes) ... ok
+test_controls_abstain_on_missing_and_conflicting_required_rules (test_private_fixtures.PrivateFixtureGeometry.test_controls_abstain_on_missing_and_conflicting_required_rules) ... ok
+test_every_primary_has_disjoint_necessary_sources_and_unique_paired_decision (test_private_fixtures.PrivateFixtureGeometry.test_every_primary_has_disjoint_necessary_sources_and_unique_paired_decision) ... ok
+test_exact_controls_supply_source_facts_not_an_oracle_answer (test_private_fixtures.PrivateFixtureGeometry.test_exact_controls_supply_source_facts_not_an_oracle_answer) ... ok
+test_fresh_exports_are_byte_reproducible_and_refuse_overwrite (test_private_fixtures.PrivateFixtureGeometry.test_fresh_exports_are_byte_reproducible_and_refuse_overwrite) ... ok
+test_generator_varies_labels_and_local_constraints_without_changing_proof (test_private_fixtures.PrivateFixtureGeometry.test_generator_varies_labels_and_local_constraints_without_changing_proof) ... ok
+test_original_decision_scorer_compatible_and_old_seventy_row_fixture_unchanged (test_private_fixtures.PrivateFixtureGeometry.test_original_decision_scorer_compatible_and_old_seventy_row_fixture_unchanged) ... ok
+test_unobserved_peer_and_oracle_do_not_influence_producer_messages (test_private_fixtures.PrivateFixtureGeometry.test_unobserved_peer_and_oracle_do_not_influence_producer_messages) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.097s
+
+OK

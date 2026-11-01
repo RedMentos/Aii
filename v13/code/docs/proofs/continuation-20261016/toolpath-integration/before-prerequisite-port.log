@@ -1,0 +1,59 @@
+test_calc_and_pending_note_forecast_survive_interleaved_list_and_restart (test_toolpath_integration_20261016.CombinedToolpath.test_calc_and_pending_note_forecast_survive_interleaved_list_and_restart) ... ERROR
+test_disabled_list_and_unrelated_text_cost_no_model_or_forecast (test_toolpath_integration_20261016.CombinedToolpath.test_disabled_list_and_unrelated_text_cost_no_model_or_forecast) ... ok
+test_list_shadow_age_gate_then_real_execution_keeps_forecast_unmapped (test_toolpath_integration_20261016.CombinedToolpath.test_list_shadow_age_gate_then_real_execution_keeps_forecast_unmapped) ... ERROR
+test_note_approval_after_final_turn_reaches_grounding (test_toolpath_integration_20261016.CombinedToolpath.test_note_approval_after_final_turn_reaches_grounding) ... FAIL
+
+======================================================================
+ERROR: test_calc_and_pending_note_forecast_survive_interleaved_list_and_restart (test_toolpath_integration_20261016.CombinedToolpath.test_calc_and_pending_note_forecast_survive_interleaved_list_and_restart)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_toolpath_integration_20261016.py", line 125, in test_calc_and_pending_note_forecast_survive_interleaved_list_and_restart
+    listed = ts.execute(other, ts.plan(other, RAIN))
+                               ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/toolstep.py", line 90, in plan
+    status,why,steps=reg._policy(spec,'SYSTEM',p['args'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/agi/tools.py", line 66, in _policy
+    return authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/transaction.py", line 90, in authorize
+    bad=check_args(getattr(spec,'schema',None),args);steps.append(['schema',not bad])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/transaction.py", line 66, in check_args
+    if isinstance(a,bool) and t!='bool' or not isinstance(a,ARG_TYPES[t]):v.append('type:'+k);continue
+                                                            ~~~~~~~~~^^^
+KeyError: 'text'
+
+======================================================================
+ERROR: test_list_shadow_age_gate_then_real_execution_keeps_forecast_unmapped (test_toolpath_integration_20261016.CombinedToolpath.test_list_shadow_age_gate_then_real_execution_keeps_forecast_unmapped)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_toolpath_integration_20261016.py", line 78, in test_list_shadow_age_gate_then_real_execution_keeps_forecast_unmapped
+    proposal = ts.plan(event, RAIN)
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/toolstep.py", line 90, in plan
+    status,why,steps=reg._policy(spec,'SYSTEM',p['args'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/agi/tools.py", line 66, in _policy
+    return authorize(spec,args,origin,spec.name in st['enabled'],age_allows(self.age,spec.right,origin),confirmed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/transaction.py", line 90, in authorize
+    bad=check_args(getattr(spec,'schema',None),args);steps.append(['schema',not bad])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/v13/transaction.py", line 66, in check_args
+    if isinstance(a,bool) and t!='bool' or not isinstance(a,ARG_TYPES[t]):v.append('type:'+k);continue
+                                                            ~~~~~~~~~^^^
+KeyError: 'text'
+
+======================================================================
+FAIL: test_note_approval_after_final_turn_reaches_grounding (test_toolpath_integration_20261016.CombinedToolpath.test_note_approval_after_final_turn_reaches_grounding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_toolpath_integration_20261016.py", line 155, in test_note_approval_after_final_turn_reaches_grounding
+    self.assertEqual(len(closed), 1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.147s
+
+FAILED (failures=1, errors=2)

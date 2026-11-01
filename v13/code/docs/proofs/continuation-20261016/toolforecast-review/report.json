@@ -1,0 +1,59 @@
+{
+  "schema": "V13_TOOLFORECAST_REVIEW_20261016_V1",
+  "baseline_commit": "1941d07afeb57299d7d5a466fd1eb44ec2569dfe",
+  "baseline_runtime_sha256": "b3ff2494cd0a54005942d36839ca4ff8d6a9e41b73c003605dcd0c45514fad64",
+  "evidence": "SYNTHETIC_SOFTWARE_ONLY",
+  "native_jobs": 0,
+  "redmi_measurements": false,
+  "numerical_training_gate_changes": false,
+  "source_unchanged_during_validation": true,
+  "source_hashes": {
+    "v13/toolforecast.py": "2fb07f2797190179d9cd395c4a6cdda5974f20ee1a79194e4640b98a7296f29f",
+    "scripts/install_tool_forecast.py": "7e2881b22f57508a7c2595433df0ab43fdd3670c39d65244ab2830485c2a451e",
+    "tests/test_toolforecast.py": "7ab163654402bafd04493841160215713132a302bd05d2566ce7d3f901f9cfd5",
+    "tests/test_toolforecast_review_20261016.py": "e8477347945b6ee2c1bf1503ecb5b75deace87dcec5f2604a9ed72d7e9306218",
+    "specs/tool-forecast.json": "07e49dfe34bc755fd643ffbbfac8dafd752ff16ac2c3fd3bde42bf16f9e21c85"
+  },
+  "baseline_regression": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "expected_failures": 0,
+    "skipped": 0,
+    "seconds": 0.028,
+    "success": false
+  },
+  "fixed_tests": {
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "expected_failures": 0,
+    "skipped": 0,
+    "seconds": 1.765,
+    "success": true
+  },
+  "reproduction_before": {
+    "status": "SCORED",
+    "before_tool_sha256": "b5f0b230e7a32b67bd155a2bb922e1e00965ac59702fca1c4109cc0adf8ae77b",
+    "actual_outcome_tool_sha256": "c1f8c300d26dc19da92c9fd85bef3cafece77207fc6ab419648847d505c3cd9d",
+    "experience_tool_sha256": "b5f0b230e7a32b67bd155a2bb922e1e00965ac59702fca1c4109cc0adf8ae77b",
+    "experience_rows": 1,
+    "encoder_after": "c1f8c300d26dc19da92c9fd85bef3cafece77207fc6ab419648847d505c3cd9d"
+  },
+  "reproduction_after": {
+    "status": "SOURCE_CHANGED_DURING_OBSERVE",
+    "before_tool_sha256": "b5f0b230e7a32b67bd155a2bb922e1e00965ac59702fca1c4109cc0adf8ae77b",
+    "actual_outcome_tool_sha256": "c1f8c300d26dc19da92c9fd85bef3cafece77207fc6ab419648847d505c3cd9d",
+    "experience_tool_sha256": null,
+    "experience_rows": 0,
+    "encoder_after": "c1f8c300d26dc19da92c9fd85bef3cafece77207fc6ab419648847d505c3cd9d"
+  },
+  "limits": [
+    "filesystem snapshot is not an atomic read transaction or race-freedom proof",
+    "binary/model hashes cached by path/dev/inode/size/mtime/ctime; unchanged files avoid full GGUF rehash",
+    "checkpoint/competence file hashes are read before and after outcome tap; Redmi IO cost unmeasured",
+    "dynamic backend/shared-library identity is not supplied by current encoder records",
+    "existing telemetry persistence failure may propagate; pending context safety tested",
+    "new uncommitted context may remain after failed prediction persistence"
+  ]
+}

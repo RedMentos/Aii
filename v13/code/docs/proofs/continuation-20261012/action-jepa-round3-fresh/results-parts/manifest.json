@@ -1,0 +1,33 @@
+{
+  "bytes": 3758286,
+  "chunk_bytes": 1048576,
+  "file_name": "r3-results.closed.zip",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "663cd7861b0998c7929b4374b92830448434280cf76c999c73467eebf0ac9bc5"
+    },
+    {
+      "bytes": 1048576,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "ef1db3c692c85ca06478056ca8e1ca30994f7714e65b10d8b53a2da27a6be620"
+    },
+    {
+      "bytes": 1048576,
+      "index": 2,
+      "name": "part-00002.bin",
+      "sha256": "feaeda6c031838a0e907f9b80fb07ccccdad48c97b5750c6d4e2dcc81469d49c"
+    },
+    {
+      "bytes": 612558,
+      "index": 3,
+      "name": "part-00003.bin",
+      "sha256": "f86e06fb6d3d13ddd05fe1585e166872b941b366c6477a0fc7ef6e484ddc1c91"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "34f7b1a56a228889eb411f9743f163145e8849aa20b7139e9ccd5d7c8ac5735e"
+}

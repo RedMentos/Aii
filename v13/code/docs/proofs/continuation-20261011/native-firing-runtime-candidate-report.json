@@ -1,0 +1,58 @@
+{
+  "schema": "NATIVE_FIRING_RUNTIME_ISOLATED_CANDIDATE_V1",
+  "status": "OFFLINE_REGRESSIONS_PASS",
+  "runtime_integrated": false,
+  "canonical_pass": false,
+  "native_quality_proven": false,
+  "phone_proof": false,
+  "mode": "SHADOW",
+  "exact_retained": true,
+  "activation_authorized": false,
+  "semantic_truth_authority": false,
+  "plan_source": "docs/proofs/continuation-20261011/drive-plans/ROADMAP_Teil3von3.md#WP-T9",
+  "tests": {
+    "focused_candidate": 16,
+    "packaging": 5,
+    "total": 21,
+    "passed": 21,
+    "skipped": 0,
+    "failed": 0,
+    "log": "native-firing-runtime-candidate-tests.log",
+    "includes_actual_phone_zip_extraction": true,
+    "http_boundary": "REAL_LOOPBACK_HTTP_SOFTWARE_FIXTURE_NO_MODEL"
+  },
+  "baseline_manifest": "docs/proofs/continuation-20261011/native-firing-runtime-baseline/manifest.json",
+  "baseline_sha256": {
+    "v13/runners.py": "845bb87f9e8bd24333217e86b6558f5292c3838e26352fe756a32882f3fef705",
+    "v13/memory_server.py": "f4ab750471cd0ce960aa42a84506257ae38ddae32d02afd9c7357b1444bad9a7",
+    "v13/runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+    "v13/store.py": "b82d6c4f404a0df8ca856c62c100cf6ab47009aa7f57fc2fe712a74c4ab702b3"
+  },
+  "candidate_sha256": {
+    "v13/runners.py": "4b2fe418723a3ee6d272bc522f2fc70d1a9a9131bfe767b4d4bfdc49c51f1a34",
+    "v13/memory_server.py": "79320f635af1b763ac5615f7dadd72b5c45c3e0f938e7a9f5973bb154d0b9b6a",
+    "v13/runtime.py": "ec3b5544c303198f7bee336ac6748dc699351fd888e6656c0d38573c2bfcda02",
+    "v13/store.py": "45199754bf8ea8ca6d2c0455166be42958430043767b1a722d8268adf7a9a4f3"
+  },
+  "live_sources_unchanged": true,
+  "artifacts_sha256": {
+    "scripts/native_firing_runtime_candidate.py": "d72108317947229b5b53560ce6cccb3888adf90346e7fdc9638f5d8c1c369a8c",
+    "tests/test_native_firing_runtime_candidate.py": "e5c5e47e5f9c1b8d2f5c7c58c05848446efaf3bafee60a3af9e46cad83d19faa",
+    "scripts/package_source.py": "a6c32e50b448bda41d1283f09b821b88357bf9793edfb1d54ee317d5610da9ef",
+    "tests/test_package_source.py": "1187a6422007362480079c2115b0097ed3317600f5a5e3c8d655271a74dc8cf1",
+    "docs/proofs/continuation-20261011/native-firing-runtime-candidate.patch": "8d5f961afbae384922eb5d4935bb0db1abb2e01db7b0b5b51441df56f3c643d2",
+    "docs/proofs/continuation-20261011/native-firing-runtime-candidate-tests.log": "9f07fada8bbee835cb3f506b7a6d8e5d3d0c6938741fcbd607c141e4889703fa"
+  },
+  "preserved_failures": [
+    "native-firing-runtime-candidate-tests-initial-failure.log",
+    "native-firing-runtime-candidate-tests-stale-package-count.log"
+  ],
+  "limitations": [
+    "No candidate native model run yet; existing native smoke belongs to prior hook-only proof.",
+    "Candidate opt-in is programmatic cfg.native_memory_audit=True; normal config defaults/schema unchanged because v13/common.py is frozen by Dream.",
+    "First-token bias uses multiple completion calls: observation unavailable intentionally.",
+    "No-evaluation/cache-only request unavailable rather than observed zero.",
+    "A measured write is execution evidence only; fact/source verification and Exact remain required.",
+    "Integrate only after frozen SourceHandoff native cohort completion."
+  ]
+}

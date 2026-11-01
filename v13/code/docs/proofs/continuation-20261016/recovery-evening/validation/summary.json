@@ -1,0 +1,37 @@
+{
+ "tests": 1434,
+ "passed": 1428,
+ "skipped": [
+  {
+   "id": "test_memory_trainer.MemoryTrainerGlue.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+   "reason": "torch missing"
+  },
+  {
+   "id": "test_memory_trainer.NativeMemoryLive.test_forget_zeroes_slots_in_bound_and_previous_artifact",
+   "reason": "torch missing"
+  },
+  {
+   "id": "test_sparse_memory.Layer.test_keyed_slot_fires_only_inside_its_radius",
+   "reason": "torch not installed (model-free CI)"
+  },
+  {
+   "id": "test_sparse_memory.Layer.test_zero_values_keep_base_and_masked_update_touches_only_selected_slots",
+   "reason": "torch not installed (model-free CI)"
+  },
+  {
+   "id": "test_toolforecast.NativeEncoderTests.test_install_parity_and_live_round_trip",
+   "reason": "native tap tool + Qwen3.5 GGUF not given"
+  }
+ ],
+ "failures": [
+  [
+   "test_acceptance_checkpoint.AcceptanceCheckpoint.test_exclusive_collector_and_live_previous_process_refuse_duplicate_run",
+   "Traceback (most recent call last):\n  File \"/workspace/scratch/f24630d7727d/Aii/v13/code/tests/test_acceptance_checkpoint.py\", line 69, in test_exclusive_collector_and_live_previous_process_refuse_duplicate_run\n    with self.assertRaisesRegex(ValueError, 'still alive'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n"
+  ]
+ ],
+ "errors": [],
+ "expected_failures": 0,
+ "unexpected_successes": 0,
+ "successful": false,
+ "seconds": 125.081
+}

@@ -1,0 +1,22 @@
+{
+  "command": "PYTHONPATH=.:tests python -m unittest tests/test_learning_path_claim_audit.py tests/test_lora_prompt_boundary_candidate.py tests/test_lora_trainer.py -v",
+  "evidence_level": "SOFTWARE_TESTS_AND_RECORDED_ARTIFACT_INSPECTION",
+  "evidence_sha256": {
+    "historical-audit.json": "8d6f16ede45bb48b83832a583c26b2238e8d87d09b9f4321b187c8a64a771faa",
+    "tests.log": "14426dc36af492b24fbf8524806d14b772463ac87299b5961f9ffbcc7f714b42"
+  },
+  "new_native_training": false,
+  "redmi_measurement": false,
+  "returncode": 0,
+  "runtime_or_gate_changes": false,
+  "schema": "V13_LEARNING_PATH_PACKAGE_EVIDENCE_V1",
+  "source_commit": "9436eb7770cbe65c0c9cd1d5f3083abf359b49fb",
+  "source_sha256": {
+    "scripts/learning_path_claim_audit.py": "e768879386ee409c50f609d23133a6e69acd08ac62fa21d9f3cb5504f4799903",
+    "scripts/lora_prompt_boundary_candidate.py": "e98e810b039ff329837cb5ccf6d264dee91c622f58cad4a895d4be0491003c1e",
+    "tests/test_learning_path_claim_audit.py": "11e97816fa140854599c6655f5291283b9322aa952c69b1e4faa47e8babc28d8",
+    "tests/test_lora_prompt_boundary_candidate.py": "bdfe9f3ad427d35d4fcc7e162e5746f11da288ad7dd69ebfdbb0b1cb571401ae",
+    "v13/lora_trainer.py": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb"
+  },
+  "tests": 34
+}

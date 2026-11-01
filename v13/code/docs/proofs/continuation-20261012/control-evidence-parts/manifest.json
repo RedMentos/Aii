@@ -1,0 +1,15 @@
+{
+  "bytes": 480673,
+  "chunk_bytes": 1048576,
+  "file_name": "fresh-controls-20261012.closed.zip",
+  "parts": [
+    {
+      "bytes": 480673,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "5a83d710ddec3f17cdd43e3114ff71eab438a1e29b80425f8ee5a03e55129af6"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "5a83d710ddec3f17cdd43e3114ff71eab438a1e29b80425f8ee5a03e55129af6"
+}

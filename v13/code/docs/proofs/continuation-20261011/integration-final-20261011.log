@@ -1,0 +1,127 @@
+test_attention_records_ranking_without_duplicate_provider_or_fake_outcome (test_authority_live.LiveComparisons.test_attention_records_ranking_without_duplicate_provider_or_fake_outcome) ... ok
+test_callosum_compares_only_measured_policy_and_resets_receiver_fallback (test_authority_live.LiveComparisons.test_callosum_compares_only_measured_policy_and_resets_receiver_fallback) ... ok
+test_comparisons_survive_restart_and_do_not_promote_partial_objectives (test_authority_live.LiveComparisons.test_comparisons_survive_restart_and_do_not_promote_partial_objectives) ... ok
+test_deliberation_compares_learned_order_and_keeps_age_and_objective_gates (test_authority_live.LiveComparisons.test_deliberation_compares_learned_order_and_keeps_age_and_objective_gates) ... ok
+test_expired_or_foreign_attention_requests_do_not_supply_comparisons (test_authority_live.LiveComparisons.test_expired_or_foreign_attention_requests_do_not_supply_comparisons) ... ok
+test_untrained_scaffold_is_not_counted_as_learned_evidence (test_authority_live.LiveComparisons.test_untrained_scaffold_is_not_counted_as_learned_evidence) ... ok
+test_diagnostic_reports_and_repeated_gate_polling_do_not_inflate_evidence (test_neuromod_authority_live.NeuromodLiveComparisons.test_diagnostic_reports_and_repeated_gate_polling_do_not_inflate_evidence) ... ok
+test_head_updates_and_explicit_active_keep_existing_application_semantics (test_neuromod_authority_live.NeuromodLiveComparisons.test_head_updates_and_explicit_active_keep_existing_application_semantics) ... ok
+test_minimum_training_requires_actual_snapshot_and_retention_label (test_neuromod_authority_live.NeuromodLiveComparisons.test_minimum_training_requires_actual_snapshot_and_retention_label) ... ok
+test_restart_preserves_dedup_and_only_new_traces_add_comparisons (test_neuromod_authority_live.NeuromodLiveComparisons.test_restart_preserves_dedup_and_only_new_traces_add_comparisons) ... ok
+test_same_features_compare_actual_scalar_proposals_before_application (test_neuromod_authority_live.NeuromodLiveComparisons.test_same_features_compare_actual_scalar_proposals_before_application) ... ok
+test_unseen_path_veto_and_conflict_do_not_supply_live_decisions (test_neuromod_authority_live.NeuromodLiveComparisons.test_unseen_path_veto_and_conflict_do_not_supply_live_decisions) ... ok
+test_contract_enforced (test_authority.Objectives.test_contract_enforced) ... ok
+test_better_outcomes_pass_and_operator_demote (test_authority.Promotion.test_better_outcomes_pass_and_operator_demote) ... ok
+test_candidate_needs_human_then_regression_falls_back_to_scaffold (test_authority.Promotion.test_candidate_needs_human_then_regression_falls_back_to_scaffold) ... ok
+test_failing_gate_graph_or_objective_blocks_candidate (test_authority.Promotion.test_failing_gate_graph_or_objective_blocks_candidate) ... ok
+test_fresh_heads_stay_shadow_with_named_blockers (test_authority.Promotion.test_fresh_heads_stay_shadow_with_named_blockers) ... ok
+test_medium_and_slow_jobs_run_through_scheduler (test_authority.Timescales.test_medium_and_slow_jobs_run_through_scheduler) ... ok
+test_provisional_or_dream_confirmations_do_not_count (test_neuromod.ConsolidationTagTests.test_provisional_or_dream_confirmations_do_not_count) ... ok
+test_single_surprise_never_tags_and_confirmations_plus_stability_do (test_neuromod.ConsolidationTagTests.test_single_surprise_never_tags_and_confirmations_plus_stability_do) ... ok
+test_budget_scales_by_gain_times_factor_and_observe_validates_it (test_neuromod.GateTests.test_budget_scales_by_gain_times_factor_and_observe_validates_it) ... ok
+test_learner_training_config_uses_gate_and_record_only_stays_closed (test_neuromod.GateTests.test_learner_training_config_uses_gate_and_record_only_stays_closed) ... ok
+test_retention_failures_reopen_age_plasticity (test_neuromod.GateTests.test_retention_failures_reopen_age_plasticity) ... ok
+test_veto_blocks_budget_decays_and_can_be_cleared (test_neuromod.GateTests.test_veto_blocks_budget_decays_and_can_be_cleared) ... ok
+test_delta_meta_and_modes (test_neuromod.LocalErrorAndMeta.test_delta_meta_and_modes) ... ok
+test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event (test_neuromod.ModulatorTests.test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event) ... ok
+test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates (test_neuromod.ModulatorTests.test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates) ... ok
+test_existing_learner_packets_feed_the_bus (test_neuromod.ModulatorTests.test_existing_learner_packets_feed_the_bus) ... ok
+test_provisional_counts_half_and_bad_channels_are_rejected (test_neuromod.ModulatorTests.test_provisional_counts_half_and_bad_channels_are_rejected) ... ok
+test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path (test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path) ... ok
+test_sleep_c_reports_neuromodulation_and_operator_command (test_neuromod.SleepAndHookTests.test_sleep_c_reports_neuromodulation_and_operator_command) ... ok
+test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths (test_neuromod.SleepAndHookTests.test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths) ... ok
+test_detailed_traces_are_selective (test_neuromod.TraceTests.test_detailed_traces_are_selective) ... ok
+test_sync_is_restart_stable_and_counts_each_packet_once (test_neuromod.TraceTests.test_sync_is_restart_stable_and_counts_each_packet_once) ... ok
+test_trace_grows_with_activity_and_decays_per_event_on_two_timescales (test_neuromod.TraceTests.test_trace_grows_with_activity_and_decays_per_event_on_two_timescales) ... ok
+test_unknown_path_keeps_only_floor_and_human_label_opens_gate (test_neuromod.TraceTests.test_unknown_path_keeps_only_floor_and_human_label_opens_gate) ... ok
+test_operator_switch (test_local_updates.LocalUpdates.test_operator_switch) ... ok
+test_shadow_keeps_the_head_step_active_scales_it (test_local_updates.LocalUpdates.test_shadow_keeps_the_head_step_active_scales_it) ... ok
+test_veto_stops_the_head_from_learning (test_local_updates.LocalUpdates.test_veto_stops_the_head_from_learning) ... ok
+test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact (test_sparse_delivery.SparseDelivery.test_accumulation_preserves_integer_slot_lineage_and_rejects_changed_fact) ... ok
+test_approved_content_or_provenance_mismatch_excluded (test_sparse_delivery.SparseDelivery.test_approved_content_or_provenance_mismatch_excluded) ... ok
+test_bound_fact_is_inventory_only_exact_retained (test_sparse_delivery.SparseDelivery.test_bound_fact_is_inventory_only_exact_retained) ... ok
+test_forget_updates_map_binding_and_rollback_cannot_restore_fact (test_sparse_delivery.SparseDelivery.test_forget_updates_map_binding_and_rollback_cannot_restore_fact) ... ok
+test_inactive_or_deleted_source_excluded (test_sparse_delivery.SparseDelivery.test_inactive_or_deleted_source_excluded) ... ok
+test_indexes_style_and_ratings_not_delivery_candidates (test_sparse_delivery.SparseDelivery.test_indexes_style_and_ratings_not_delivery_candidates) ... ok
+test_legacy_or_missing_map_runs_but_cannot_propose (test_sparse_delivery.SparseDelivery.test_legacy_or_missing_map_runs_but_cannot_propose) ... ok
+test_malformed_native_size_or_row_map_excluded (test_sparse_delivery.SparseDelivery.test_malformed_native_size_or_row_map_excluded) ... ok
+test_model_native_and_binary_changes_fail_closed (test_sparse_delivery.SparseDelivery.test_model_native_and_binary_changes_fail_closed) ... ok
+test_training_bindings_only_facts (test_sparse_delivery.SparseDelivery.test_training_bindings_only_facts) ... ok
+test_unapproved_sidecar_tamper_invalidates_snapshot (test_sparse_delivery.SparseDelivery.test_unapproved_sidecar_tamper_invalidates_snapshot) ... ok
+test_zero_value_unreachable_threshold_or_empty_guard_excluded (test_sparse_delivery.SparseDelivery.test_zero_value_unreachable_threshold_or_empty_guard_excluded) ... ok
+test_dead_final_runner_never_claims_loaded_snapshot (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_dead_final_runner_never_claims_loaded_snapshot) ... ok
+test_final_healthy_runner_inventories_without_removing_exact_or_lineage (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_final_healthy_runner_inventories_without_removing_exact_or_lineage) ... ok
+test_inventory_exception_cannot_remove_native_output_or_exact_dependencies (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_inventory_exception_cannot_remove_native_output_or_exact_dependencies) ... ok
+test_normal_replacement_uses_final_memory_runner_binding (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_normal_replacement_uses_final_memory_runner_binding) ... ok
+test_same_causal_replacement_cannot_inventory_obsolete_selected_server (test_sparse_delivery_runtime.SparseDeliveryRuntime.test_same_causal_replacement_cannot_inventory_obsolete_selected_server) ... ok
+test_capture_follows_health_and_warm_reuse_never_rehashes (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_capture_follows_health_and_warm_reuse_never_rehashes) ... ok
+test_dead_child_and_failed_load_clear_binding_and_log (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_dead_child_and_failed_load_clear_binding_and_log) ... ok
+test_legacy_native_without_map_still_runs_but_cannot_claim_binding (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_legacy_native_without_map_still_runs_but_cannot_claim_binding) ... ok
+test_native_changed_during_health_handshake_never_publishes_binding (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_changed_during_health_handshake_never_publishes_binding) ... ok
+test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_native_forget_rewrite_and_reapproval_reload_instead_of_stale_reuse) ... ok
+test_registry_deactivation_reaps_old_child_before_normal_load (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_registry_deactivation_reaps_old_child_before_normal_load) ... ok
+test_unapproved_inherited_memory_environment_never_enters_normal_child (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_unapproved_inherited_memory_environment_never_enters_normal_child) ... ok
+test_watched_model_binary_manifest_and_map_changes_force_revalidation (test_sparse_runner_lifecycle.SparseRunnerLifecycle.test_watched_model_binary_manifest_and_map_changes_force_revalidation) ... ok
+test_keyed_slot_fires_only_inside_its_radius (test_sparse_memory.Layer.test_keyed_slot_fires_only_inside_its_radius) ... skipped 'torch not installed (model-free CI)'
+test_zero_values_keep_base_and_masked_update_touches_only_selected_slots (test_sparse_memory.Layer.test_zero_values_keep_base_and_masked_update_touches_only_selected_slots) ... skipped 'torch not installed (model-free CI)'
+test_common_slots_lose_to_specific_ones (test_sparse_memory.TfIdf.test_common_slots_lose_to_specific_ones) ... ok
+test_trainer_reports_empty_and_missing_torch (test_sparse_memory.TfIdf.test_trainer_reports_empty_and_missing_torch) ... ok
+test_answer_keys (test_memory_trainer.MemoryTrainerGlue.test_answer_keys) ... ok
+test_forget_blocks_while_fact_is_in_active_lora (test_memory_trainer.MemoryTrainerGlue.test_forget_blocks_while_fact_is_in_active_lora) ... ok
+test_forget_zeroes_slots_in_bound_and_previous_artifact (test_memory_trainer.MemoryTrainerGlue.test_forget_zeroes_slots_in_bound_and_previous_artifact) ... skipped 'torch missing'
+test_answer_keys (test_memory_trainer.NativeMemoryLive.test_answer_keys) ... ok
+test_forget_blocks_while_fact_is_in_active_lora (test_memory_trainer.NativeMemoryLive.test_forget_blocks_while_fact_is_in_active_lora) ... ok
+test_forget_native_bin_without_torch (test_memory_trainer.NativeMemoryLive.test_forget_native_bin_without_torch) ... ok
+test_forget_zeroes_slots_in_bound_and_previous_artifact (test_memory_trainer.NativeMemoryLive.test_forget_zeroes_slots_in_bound_and_previous_artifact) ... skipped 'torch missing'
+test_patch_source_idempotent (test_memory_trainer.NativeMemoryLive.test_patch_source_idempotent) ... ok
+test_runner_memory_only_for_matching_hashes (test_memory_trainer.NativeMemoryLive.test_runner_memory_only_for_matching_hashes) ... ok
+test_superseded_correction_leaves_live_memory (test_memory_trainer.NativeMemoryLive.test_superseded_correction_leaves_live_memory) ... ok
+test_kl_stops_where_base_continuation_ended (test_lora_trainer.KlShortAnswer.test_kl_stops_where_base_continuation_ended)
+A one-word answer + EOS: llama-server returns no completion_probabilities after EOS (real bug, 33 probes). ... ok
+test_explicit_high_rating_becomes_weighted_style_item (test_lora_trainer.LoraGlue.test_explicit_high_rating_becomes_weighted_style_item) ... ok
+test_forgetting_or_leak_fails_gate_and_nothing_binds (test_lora_trainer.LoraGlue.test_forgetting_or_leak_fails_gate_and_nothing_binds) ... ok
+test_frozen_probe_drift_gates_and_blocks_approval (test_lora_trainer.LoraGlue.test_frozen_probe_drift_gates_and_blocks_approval)
+WP-S5 in AG6: frozen-probe KL above cap fails the gate; drift_required=1 refuses approval without a measurement. ... ok
+test_gate_pass_needs_user_then_binds_and_rollback_unbinds (test_lora_trainer.LoraGlue.test_gate_pass_needs_user_then_binds_and_rollback_unbinds) ... ok
+test_helpers_without_torch (test_lora_trainer.LoraGlue.test_helpers_without_torch) ... ok
+test_registry_restores_previous_binding (test_lora_trainer.LoraGlue.test_registry_restores_previous_binding) ... ok
+test_sdft_corrections_staged_and_self_taught (test_lora_trainer.LoraGlue.test_sdft_corrections_staged_and_self_taught)
+WP-S5 SDFT in AG6: corrections join the batch with an empty target; only a self-teaching trainer receives them. ... ok
+test_self_teach_uses_teacher_answer_and_drops_misses (test_lora_trainer.LoraGlue.test_self_teach_uses_teacher_answer_and_drops_misses) ... ok
+test_long_prefill_transport_uses_remaining_budget_and_still_expires (test_native_http_budget.NativeHttpBudget.test_long_prefill_transport_uses_remaining_budget_and_still_expires) ... ok
+test_cancel_check_reaps_resident_process_before_returning (test_step12.Pipeline.test_cancel_check_reaps_resident_process_before_returning) ... ok
+test_entity_topic_retrieval_handles_partial_transfer_without_other_attribute_leak (test_step12.Pipeline.test_entity_topic_retrieval_handles_partial_transfer_without_other_attribute_leak) ... ok
+test_legacy_telemetry_is_scrubbed_once_on_restart (test_step12.Pipeline.test_legacy_telemetry_is_scrubbed_once_on_restart) ... ok
+test_load_failure_has_metrics_without_fake_memory (test_step12.Pipeline.test_load_failure_has_metrics_without_fake_memory) ... ok
+test_peer_receiver_and_event_binding (test_step12.Pipeline.test_peer_receiver_and_event_binding) ... ok
+test_persisted_exec_broadcast_and_corollary_order (test_step12.Pipeline.test_persisted_exec_broadcast_and_corollary_order) ... ok
+test_probe_file_presence_cannot_promote_step1 (test_step12.Pipeline.test_probe_file_presence_cannot_promote_step1) ... ok
+test_probe_rejects_input_without_creating_test_chat_event (test_step12.Pipeline.test_probe_rejects_input_without_creating_test_chat_event) ... ok
+test_query_persists_broadcast_link_even_if_runner_missing (test_step12.Pipeline.test_query_persists_broadcast_link_even_if_runner_missing) ... ok
+test_stale_broadcast_rejected_before_model (test_step12.Pipeline.test_stale_broadcast_rejected_before_model) ... ok
+test_telemetry_omits_raw_text_but_keeps_metrics_and_exact_source (test_step12.Pipeline.test_telemetry_omits_raw_text_but_keeps_metrics_and_exact_source) ... ok
+test_unload_reaps_actual_process_and_records_role (test_step12.Pipeline.test_unload_reaps_actual_process_and_records_role) ... ok
+test_malformed_nested_evidence_never_passes_or_crashes (test_step12.ProofGate.test_malformed_nested_evidence_never_passes_or_crashes) ... ok
+test_missing_roles_failed_status_wrong_revision (test_step12.ProofGate.test_missing_roles_failed_status_wrong_revision) ... ok
+test_smoke_does_not_complete_step1_or_step2 (test_step12.ProofGate.test_smoke_does_not_complete_step1_or_step2) ... ok
+test_changed_native_artifact_or_corpus_cannot_merge_proofs (test_fast_trace_resume.CheckpointResume.test_changed_native_artifact_or_corpus_cannot_merge_proofs) ... ok
+test_concurrent_resume_rejected_without_touching_existing_proof (test_fast_trace_resume.CheckpointResume.test_concurrent_resume_rejected_without_touching_existing_proof) ... ok
+test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row (test_fast_trace_resume.CheckpointResume.test_failed_native_call_keeps_raw_rows_and_resume_never_replays_completed_row) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+ok
+test_repetitions_have_distinct_paired_rows_and_forgotten_probe (test_fast_trace_resume.CheckpointResume.test_repetitions_have_distinct_paired_rows_and_forgotten_probe) ... base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 0.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+ok
+
+----------------------------------------------------------------------
+Ran 107 tests in 5.116s
+
+OK (skipped=4)

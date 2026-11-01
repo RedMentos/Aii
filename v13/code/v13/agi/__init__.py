@@ -52,7 +52,8 @@ class Growth:
         self.goals=GoalStore(store,age,scheduler)
         self.curiosity=Curiosity(store,age)
         self.grounding=Grounding(store)
-        self.tools=ToolRegistry(store,age,on_outcome=self.grounding.from_tool)
+        self.tools=ToolRegistry(store,age,on_outcome=self._tool_outcome)
+        self.forecast=None  # Thread M: toolforecast.ToolForecast, set by hub()
         self.skills=SkillLibrary(store,age,self.tools)
         self.abstraction=Abstraction(store)
         self.improve=SelfImprovement(store,cfg,age)
@@ -60,6 +61,14 @@ class Growth:
         self.users=UserModel(store)
         self.slots=ModelSlots(store,age)
         self.residency=ExpertResidency(store)
+    def _tool_outcome(self,tx):
+        """ToolRegistry.on_outcome: AG2 grounding as before; a SHADOW tool forecast (IH-H29 `predicted`) is scored on its own
+        and hidden from grounding, whose frequency baseline expects {'outcome',...} predictions."""
+        from ..toolforecast import is_forecast
+        fc=is_forecast(tx.get('predicted'))
+        out=self.grounding.from_tool(dict(tx,predicted=None) if fc else tx)
+        if fc and self.forecast is not None:self.forecast.observe(tx)
+        return out
     def age_evidence(self,record=False):
         """Metrics for age.record() from real measurements (maturity.py); record=True feeds one evidence record."""
         from .maturity import collect,estimate
@@ -86,6 +95,11 @@ def hub(runtime):
         from ..age import controller
         sl=getattr(runtime,'sleep',None)
         g=runtime.growth=Growth(runtime.store,runtime.cfg,runtime.home,controller(runtime),getattr(sl,'scheduler',None))
+    if getattr(g,'forecast',0) is None and getattr(runtime,'home',None) is not None:  # 0: test doubles without the slot
+        try:
+            from ..toolforecast import for_runtime
+            g.forecast=for_runtime(runtime)
+        except Exception as exc:runtime.store.log('tool_forecast_unavailable',None,{'error':type(exc).__name__})
     if getattr(runtime,'pool',None) is not None:
         try:
             from . import teacher_backends

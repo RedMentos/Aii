@@ -1,0 +1,205 @@
+--- a/v13/runners.py
++++ b/v13/runners.py
+@@ -30,6 +30,7 @@
+     def __init__(self,home,role,model,config,purpose='generate'):
+         self.home=Path(home);self.role=role;self.model=model;self.cfg=config;self.purpose=purpose;self.proc=None;self.port=None;self.key=secrets.token_hex(24);self.last_metrics={};self.log_handle=None
+         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
++        self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
+         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+     def _lifecycle_stamp(self):
+         # Warm generation checks metadata only. Approval/model/native hashes are
+@@ -49,7 +50,7 @@
+                 own=path.lstat();target=path.stat()
+                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
+             except OSError:return (str(path),None)
+-        return tuple(stamp(p) for p in paths)
++        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),)+tuple(stamp(p) for p in paths)
+     @property
+     def memory_delivery_binding(self):
+         # The binding describes the child that completed its health handshake,
+@@ -100,6 +101,9 @@
+                 if mem:cmd[0]=mem['binary'];env.update(mem['env'])
+                 self.memory=mem
+             except Exception:self.memory=None
++        env.pop('V13_MEMORY_AUDIT',None)
++        self._audit_enabled=self.purpose=='generate' and bool(self.memory) and self.cfg.get('native_memory_audit',False) is True
++        if self._audit_enabled:env['V13_MEMORY_AUDIT']='1'
+         self._loaded_binary=cmd[0];launch_stamp=self._lifecycle_stamp()
+         try:
+             self.proc=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=self.log_handle,stderr=self.log_handle,env=env)
+@@ -118,6 +122,42 @@
+             if launch_stamp!=self._lifecycle_stamp():raise Unavailable(self.role+': Runner-Bindung während des Ladens geändert; erneut versuchen')
+             self._loaded_stamp=launch_stamp;self._memory_delivery_binding=binding
+         except BaseException:self.unload();raise
++    def _audit_begin_window(self,multiple_steps=False):
++        self._audit_window=None
++        if not self._audit_enabled:return
++        reason='MULTIPLE_NATIVE_STEPS' if multiple_steps else 'NO_MATCHING_LOADED_BINDING'
++        self._audit_unavailable=reason
++        binding=self.memory_delivery_binding
++        if multiple_steps or not binding:return
++        try:
++            self.log_handle.flush();stat=os.fstat(self.log_handle.fileno())
++            self._audit_window={'path':self.home/'logs'/(self.role+'.log'),
++                'offset':stat.st_size,'identity':(stat.st_dev,stat.st_ino),
++                'pid':self.proc.pid,'binding':binding}
++            self._audit_unavailable=None
++        except (OSError,ValueError,AttributeError):self._audit_unavailable='AUDIT_LOG_UNREADABLE'
++    def _audit_finish_window(self,status):
++        if not self._audit_enabled:return None
++        base={'status':'UNAVAILABLE','exact_retained':True,'quality_proven':False,
++              'activation_authorized':False,'semantic_truth_authority':False}
++        window=self._audit_window
++        if status!='FINAL':return dict(base,reason='REQUEST_NOT_FINAL',request_status=status)
++        if not window:return dict(base,reason=self._audit_unavailable or 'NO_REQUEST_WINDOW')
++        if not self._audit_completed:return dict(base,reason='REQUEST_NOT_COMPLETED')
++        if (self.proc is None or self.proc.poll() is not None or self.proc.pid!=window['pid']
++                or self.memory_delivery_binding!=window['binding']):
++            return dict(base,reason='REQUEST_BINDING_CHANGED')
++        try:
++            stat=window['path'].stat()
++            if (stat.st_dev,stat.st_ino)!=window['identity'] or stat.st_size<window['offset']:
++                return dict(base,reason='AUDIT_LOG_CHANGED')
++            from .sparse_audit import read_firing_window
++            observed=read_firing_window(window['path'],window['offset'])
++        except OSError:return dict(base,reason='AUDIT_LOG_UNREADABLE')
++        if self.memory_delivery_binding!=window['binding']:
++            return dict(base,reason='REQUEST_BINDING_CHANGED')
++        return dict(observed,request_status=status,loaded_binding=window['binding'],
++                    semantic_truth_authority=False)
+     def embed(self,texts,cancel,deadline):
+         """Pooled sentence embeddings (WP-H). Only for purpose='embed'; vectors are relevance keys, never facts."""
+         if self.purpose!='embed':raise Unavailable('Nur der Embedding-Runner liefert Satzvektoren')
+@@ -136,6 +176,12 @@
+             else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
+         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
++        audit_requested=self.cfg.get('native_memory_audit',False) is True
++        audit_locked=False
++        if audit_requested:
++            audit_locked=self._audit_lock.acquire(blocking=False)
++            if not audit_locked:raise Unavailable('Concurrent native audit request')
++        self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
+         # Measure cold load, prefill and streaming, including failed/cancelled calls.
+         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
+         def sample():
+@@ -166,6 +212,11 @@
+             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
+             # A synchronous check may beat the watchdog. Do not stop its watcher
+             # and leave the old native request running after declaring idle.
++            if audit_locked:
++                try:
++                    observed=self._audit_finish_window(status)
++                    if observed is not None:self.last_metrics['native_memory_firing']=observed
++                finally:self._audit_lock.release()
+             if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
+     def completion_one(self,payload,cancel,deadline):
+         """One real native decoder step with cancellation, not a text substitute."""
+@@ -199,6 +250,7 @@
+         if schema:payload["json_schema"]=schema
+         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
+         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
++        self._audit_begin_window(multiple_steps=bool(first_token_bias))
+         first_step=None;first_tokens=0
+         if first_token_bias:
+             if self.role!='C3_LANGUAGE' or schema:raise Unavailable('Output delta is C3 first-token text only')
+@@ -243,7 +295,9 @@
+                 if tokens%16==0:
+                     rss=process_memory(self.proc.pid).get('rss_bytes')
+                     if rss is not None:peak=rss if peak is None else max(peak,rss)
+-                if data.get("stop"):break
++                if data.get("stop"):
++                    if self._audit_enabled:self._audit_completed=True
++                    break
+             check(cancel,deadline)
+         except (OSError,http.client.HTTPException):
+             check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
+--- a/v13/memory_server.py
++++ b/v13/memory_server.py
+@@ -148,6 +148,59 @@
+         result['reasons'].append({'memory_id':mid,'reason':reason})
+     result['reason']='INVENTORY_ONLY';return result
+ 
++def observed_shadow_delivery(store,home,role,model_path,loaded_binding,memories,audit):
++    """Map actual writes only to currently approved ordinary facts, still SHADOW.
++
++    The ordinary inventory/source checks remain required. A write measures an
++    execution event, never semantic truth, useful recall or permission to omit.
++    """
++    from .sparse_memory import native_items_path
++    result=shadow_delivery(store,home,role,model_path,loaded_binding,memories)
++    result.update(observed_memory_ids=[],observed_provenance=[],quality_proven=False,
++                  activation_authorized=False,semantic_truth_authority=False)
++    def reject(reason):
++        result['firing_reason']=reason
++        return result
++    if result['reason']!='INVENTORY_ONLY':return reject('NO_MATCHING_LOADED_BINDING')
++    if not isinstance(audit,dict) or audit.get('status')!='OBSERVED_NATIVE_WRITES':
++        return reject(audit.get('reason','NO_REQUEST_OBSERVATION') if isinstance(audit,dict) else 'NO_REQUEST_OBSERVATION')
++    if (audit.get('request_status')!='FINAL' or audit.get('loaded_binding')!=loaded_binding
++            or audit.get('exact_retained') is not True or audit.get('quality_proven') is not False
++            or audit.get('activation_authorized') is not False or audit.get('semantic_truth_authority') is not False):
++        return reject('AUDIT_BINDING_OR_AUTHORITY_INVALID')
++    import struct
++    try:
++        metadata=json.loads(native_items_path(loaded_binding['path']).read_text())
++        raw=Path(loaded_binding['path']).read_bytes()
++        layer=struct.unpack_from('<i',raw,8)[0]
++        n=len(metadata['rows']);counts=audit['slot_applied_counts'];blocked=audit['slot_guard_blocked_counts']
++        if (type(audit.get('request')) is not int or audit['request']<1
++                or type(audit.get('layer')) is not int or audit['layer']!=layer
++                or type(audit.get('evaluated_rows')) is not int or audit['evaluated_rows']<1
++                or type(audit.get('batches')) is not int or audit['batches']<1
++                or not isinstance(counts,list) or not isinstance(blocked,list)
++                or len(counts)!=n or len(blocked)!=n
++                or any(type(v) is not int or not 0<=v<=audit['evaluated_rows'] for v in counts+blocked)
++                or any(a+b>audit['evaluated_rows'] for a,b in zip(counts,blocked))
++                or audit.get('fired_rows')!=[r for r,v in enumerate(counts) if v]):
++            raise ValueError('Native request/slot dimensions')
++    except (OSError,ValueError,KeyError,TypeError,struct.error):return reject('INVALID_REQUEST_ROW_MAP')
++    fired=set(audit['fired_rows'])
++    for mid,ref in zip(result['candidates'],result['provenance']):
++        if any(r in fired and mapped==mid for r,mapped in enumerate(metadata['rows'])):
++            result['observed_memory_ids'].append(mid);result['observed_provenance'].append(dict(ref))
++    # Recheck after reading/mapping; concurrent forget/reapproval or changed
++    # source bytes cannot turn the earlier valid inventory into stale evidence.
++    final=shadow_delivery(store,home,role,model_path,loaded_binding,memories)
++    if (final['reason']!='INVENTORY_ONLY' or final['candidates']!=result['candidates']
++            or final['provenance']!=result['provenance']):
++        result['observed_memory_ids']=[];result['observed_provenance']=[]
++        return reject('REQUEST_BINDING_CHANGED')
++    result.update(firing='OBSERVED_NATIVE_WRITES',firing_reason='REQUEST_WRITES_ONLY',
++                  native_request=audit['request'],evaluated_rows=audit['evaluated_rows'],
++                  slot_applied_counts=list(counts),slot_guard_blocked_counts=list(blocked))
++    return result
++
+ def main():
+     ap=argparse.ArgumentParser();ap.add_argument('--home',required=True);ap.add_argument('cmd',choices=['build','status','patch']);ap.add_argument('--source')
+     ap.add_argument('--jobs',type=int,default=2);a=ap.parse_args()
+--- a/v13/runtime.py
++++ b/v13/runtime.py
+@@ -543,7 +543,11 @@
+                     try:  # WP-T9: inventory overlap on the actual final native runner; Exact stays delivered.
+                         from .memory_server import shadow_delivery
+                         loaded=getattr(runner,'memory_delivery_binding',None) if runner.pids() else None
+-                        delivery=shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories)
++                        audit=runner.last_metrics.get('native_memory_firing')
++                        if audit is not None:
++                            from .memory_server import observed_shadow_delivery
++                            delivery=observed_shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories,audit)
++                        else:delivery=shadow_delivery(self.store,self.home,runner.role,runner.model,loaded,memories)
+                         meta['sparse_delivery_shadow']=delivery
+                         self.store.log('sparse_delivery_shadow',eid,delivery)
+                     except Exception as exc:self.store.log('sparse_delivery_unavailable',eid,{'error':type(exc).__name__})
+--- a/v13/store.py
++++ b/v13/store.py
+@@ -100,6 +100,9 @@
+ TELEMETRY_FIELDS.update('exact_retained firing binding native_sha256 model_sha256 binary_sha256 sidecar_sha256 batch_id reasons provenance'.split())  # WP-T9 source-bound shadow inventory
+ TELEMETRY_ENUMS.update('SHADOW UNMEASURED NO_MATCHING_LOADED_BINDING INVALID_NATIVE_ROW_MAP NOT_ORDINARY_FACT NO_BOUND_LIVE_ROWS SOURCE_OR_CONTENT_MISMATCH BOUND_FACT_POSSIBLE_FIRING_UNMEASURED INVENTORY_ONLY'.split())
+ 
++TELEMETRY_FIELDS.update('native_memory_firing request_status loaded_binding quality_proven activation_authorized layer evaluated_rows batches slot_applied_counts slot_guard_blocked_counts fired_rows observed_memory_ids observed_provenance firing_reason native_request'.split())
++TELEMETRY_ENUMS.update('OBSERVED_NATIVE_WRITES REQUEST_WRITES_ONLY REQUEST_NOT_FINAL REQUEST_NOT_COMPLETED REQUEST_BINDING_CHANGED AUDIT_LOG_CHANGED AUDIT_LOG_UNREADABLE AUDIT_WINDOW_LIMIT NO_REQUEST_WINDOW MULTIPLE_NATIVE_STEPS NO_PROMPT_MARKER NO_EVALUATED_ROWS MULTIPLE_REQUESTS NO_REQUEST_OBSERVATION AUDIT_BINDING_OR_AUTHORITY_INVALID INVALID_REQUEST_ROW_MAP'.split())
++
+ def telemetry_metrics(value):
+     if isinstance(value,dict):
+         result={}

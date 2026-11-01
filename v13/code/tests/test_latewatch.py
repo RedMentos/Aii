@@ -24,6 +24,16 @@ class Pure(unittest.TestCase):
         re_={'offer':{'summary':'unclear','needs_reentry':True,'quotes':['46 plus 62']}}
         self.assertEqual(lw.disagreement(re_,'x'*lw.REENTRY_CHARS,src),'BODY_REENTRY')
         self.assertIsNone(lw.disagreement(re_,'x'*lw.MIN_CHARS,src))
+    def test_number_parsing(self):
+        # thread L 2026-10-12, preregistered candidate PASS (bench-results/latewatch-numbers-20261012)
+        self.assertEqual(lw.nums('2,5'),{'2.5'});self.assertEqual(lw.nums('is 1,290, because'),{'1290'})
+        self.assertEqual(lw.nums('12,345,678 and 3.5'),{'12345678','3.5'})
+        self.assertEqual(lw.complete('The result is 5026'),'The result is ');self.assertEqual(lw.complete('is 1,2'),'is ')
+        src='What is 1,234 plus 56?';off={'offer':{'summary':'1234 + 56 = 1290','needs_reentry':False,'quotes':[]}}
+        self.assertIsNone(lw.disagreement(off,'The result is 1,290, because I added them',src))  # comma is not a decimal point
+        self.assertEqual(lw.disagreement(off,'The result is 1,300, because I added them',src),'RESULT_CONFLICT')
+        self.assertIsNone(lw.disagreement(OFFER,'The answer is 10',  'What is 46 plus 62?'))  # number still streaming
+        self.assertIsNone(lw.disagreement(OFFER,'Well, the answer to it is 10','What is 46 plus 62?'))
     def test_residency_never_evicts_c3(self):
         def r(experts,resident,budget=1800,guard='NORMAL',decode='server',enabled=True):
             box=SimpleNamespace(load=lambda:({'experts':experts,'resident':resident,'budget_mb':budget},0))

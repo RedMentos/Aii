@@ -1,0 +1,45 @@
+{
+ "kind": "GIST_READOUT_POSTHOC_SIZE",
+ "status": "EXPLORATORY_NOT_PREREGISTERED",
+ "arms": {
+  "hybrid_8": {
+   "recall_raw": 0.5938,
+   "mean_groups": 13.57
+  },
+  "fixed_8": {
+   "recall_raw": 0.4813,
+   "mean_groups": 15.28
+  },
+  "fixed_9": {
+   "recall_raw": 0.5437,
+   "mean_groups": 13.6
+  },
+  "fixed_10": {
+   "recall_raw": 0.5125,
+   "mean_groups": 12.28
+  }
+ },
+ "hybrid8_vs_fixed": {
+  "fixed_8": {
+   "diff": 0.1125,
+   "ci95": [
+    0.0375,
+    0.1875
+   ]
+  },
+  "fixed_9": {
+   "diff": 0.05,
+   "ci95": [
+    -0.0312,
+    0.1313
+   ]
+  },
+  "fixed_10": {
+   "diff": 0.0813,
+   "ci95": [
+    0.0063,
+    0.1562
+   ]
+  }
+ }
+}

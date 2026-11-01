@@ -1,0 +1,8 @@
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:01<04:11,  1.92s/it]Loading weights: 100%|██████████| 132/132 [00:01<00:00, 68.72it/s]
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:00<00:13,  9.70it/s]Loading weights: 100%|██████████| 132/132 [00:00<00:00, 1197.03it/s]
+{"seed": 13, "arm": "none", "A": {"recall": 0.25, "paraphrase": 0.25}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.4166666666666667, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:00<00:28,  4.53it/s]Loading weights:  86%|████████▋ | 114/132 [00:00<00:00, 434.26it/s]Loading weights: 100%|██████████| 132/132 [00:00<00:00, 363.60it/s]
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.4166666666666667, "steps_b": 40}
+Loading weights:   0%|          | 0/132 [00:00<?, ?it/s]Loading weights:   1%|          | 1/132 [00:00<00:13,  9.71it/s]Loading weights: 100%|██████████| 132/132 [00:00<00:00, 1235.20it/s]

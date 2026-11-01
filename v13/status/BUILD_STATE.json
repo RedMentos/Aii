@@ -247,19 +247,23 @@
     "causal_preparation": "8softwarechecks +21actual native commandguardsPASS; no modelinference, all5build/guardchildrenreaped",
     "native_forward_optimizer": "Actualshort+long numericallifecyclePASS; short2/20forwardimprovements, long20/20refused;4workersreaped, unchangedGGUF/fullnativeparity; no production/nativebodytrainingrights"
   },
-  "checkpoint_time_utc": "2026-10-09T06:19:04.067216+00:00",
-  "checkpoint_kind": "CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT",
+  "checkpoint_time_utc": "2026-10-11T09:59:49.462861+00:00",
+  "checkpoint_kind": "DURABLE_RESTORE_AND_BOUND_RESOURCE_REBUILD",
   "base_checkpoint": "V13-Redmi-Start-auto-burst2.zip",
   "current_changes_pending_validation": [
-    "Recorded2row native same-causal export passed with authored test references only; no quality gain.",
-    "46row diagnostic stopped after9 exported native rows with actual malformed SQLite; no fit or utility evaluation. Persistence cause unestablished.",
-    "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
+    "Integrated source handoff has software regressions; native source-disjoint transport/quality comparison remains preregistered, not completed.",
+    "Dream v2 has2/15 completed arms and is explicitly paused; no complete-cohort Dream benefit.",
+    "Action-native source-bound capture remains736/1875 at the recorded snapshot; prior failed exits retained, exact serial resume authorized, no native fit/consumer quality yet.",
+    "Current extracted-package verification after integration and target Redmi sustained quality/resource measurements remain open."
   ],
   "resume_next": [
-    "Diagnose actual SQLite corruption using preserved failed9 and verified checkpoint65-first8 copy, without new native calls, original DB repair, silent retry or source/utility-gate retuning.",
-    "Ground any persistence fix in an isolated zero-native reproducer; preserve terminal9row failure and old exactsources, then genuine newly source-bound same46 fixture attempt if needed.",
-    "After complete valid native labelled collection, unchanged shadowfit and independently gated current-source consume/restart/revoke/rollback. No automatic approval or genuine user claim.",
-    "Continue original SSOT remaining nativebody/sparse/B3 utility, frozen acceptance6/20 and current Redmi sustained proofs. Fullscope incomplete, STEP2 UTILITY_FAIL retained."
+    "Complete hash-verified native/training resource recovery without changing frozen experiment sources.",
+    "Register and save bounded native embedding lifecycle; verify fresh-worker output invariance before actual capture. Preserve recovered736prefix separately if artifact bindings differ.",
+    "Finish genuine native action taps, export bound dataset and measure3 fixed seeds; preserve all quality failures.",
+    "Run preregistered16-row source-handoff diagnosis in serialized native slot, after resources have exact matching bindings or a separately saved transparent recovered registration.",
+    "Resume Dream2 bound15-arm40-step cohort from saved2completearms; rerun only unfinished arm.",
+    "Integrate and verify AG6 activation-recovery fix; retain candidate firing hookup outside live runtime until frozen source-handoff cohort completes.",
+    "Save source/install ZIPs and continue original Drive/SSOT native quality and Redmi gates."
   ],
   "proof_artifacts": {
     "native_smoke_linux": "docs/proofs/native-smoke-linux-20260923.json",
@@ -552,6 +556,127 @@
       },
       "preserved_failed_database": "docs/proofs/causal-output-lifecycle-20261009/native46-failed-db-preserved",
       "diagnosis": "docs/proofs/sqlite-native46-diagnosis-20261009/report.json"
+    },
+    "webchat_step2_frozen70": {
+      "status": "UTILITY_FAIL",
+      "rows": 70,
+      "denominator": 70,
+      "structural_checks_passed": true,
+      "source_unchanged_at_completion": true,
+      "installed_artifacts_unchanged": true,
+      "report": "docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+      "report_sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+      "scoped_utility_gate_pass": false,
+      "canonical_gate_pass": false,
+      "primary_mean_utility": 0.5,
+      "best_solo_mean_utility": 0.5083333333333333,
+      "same_policy_dual_mean_utility": 0.5583333333333333,
+      "working_source_changed_after_baseline": true
+    },
+    "webchat_source_handoff": {
+      "status": "INTEGRATED_SOFTWARE_VALIDATED_NATIVE_ABLATION_PREREGISTERED",
+      "runtime_files_sha256": {
+        "v13/bodyview.py": "3048f302aaa9a1b39f3f3989601bbd8314f75b7c2149538b33051b92d7865306",
+        "v13/cognition.py": "d68df49a947b7211a5cf273a29ca620b0f9a7b5fd9d75497cf46c04e9504b5d7",
+        "v13/runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333"
+      },
+      "changes": [
+        "Own world/action state is explicitly scoped; no completed own actions does not mean missing source knowledge.",
+        "Selected model hypotheses are separated from source-verified quotation records; stored Query/Offer/source bindings are rechecked at delivery.",
+        "Only selected verified spans enter answer context; unavailable earlier rules are not filled from the oracle or full prior."
+      ],
+      "native_quality_improvement_proven": false,
+      "native_ablation": "docs/proofs/continuation-20261011/source-handoff-ablation/report.preregistration.json",
+      "native_ablation_completed_rows": 0,
+      "native_ablation_expected_rows": 16,
+      "receiver_authority": 0
+    },
+    "webchat_dream2_v2": {
+      "status": "PAUSED_FOR_SERIAL_HEAVY_JOBS",
+      "completed_arms": 2,
+      "expected_arms": 15,
+      "seeds": [
+        13,
+        21,
+        34
+      ],
+      "b_steps": 40,
+      "model_scope": "Historical 230M read-only master plus LoRA r8, four A and four B test facts; reworded-question rehearsal",
+      "paused_at": "2026-10-11T04:19:35Z",
+      "worker_reaped": true,
+      "session_exit_code": 130,
+      "unfinished_arm": {
+        "seed": 13,
+        "arm": "dream_validated",
+        "phase": "B",
+        "training_progress": {
+          "steps": 10,
+          "final_ce": 0.022822588147391798,
+          "items": 16
+        },
+        "phase_a": {
+          "steps": 12,
+          "final_ce": 0.01672,
+          "items": 4
+        },
+        "after_a": {
+          "A": {
+            "recall": 1.0,
+            "paraphrase": 0.75
+          },
+          "B": {
+            "recall": 0.0,
+            "paraphrase": 0.0
+          },
+          "near_miss_leak": 0.6,
+          "probe_retention": 0.75,
+          "kl_to_base": 1.1130312408010166,
+          "forgotten": [
+            "What colour is the sky on a clear day?",
+            "Which planet do we live on?"
+          ]
+        }
+      },
+      "pause_artifact": "docs/proofs/continuation-20261011/dream2-v2-serialization-pause.json",
+      "pause_artifact_sha256": "7692a81b8cbfa0b5edfedb7f77039753d674ccd8a10d9d766fd032e51c12f4bd",
+      "comparison": "docs/proofs/continuation-20261011/dream2-b40-v2-comparisons.json",
+      "comparison_sha256": "008cb83e421725f71c5d539e39d622b39771b4f01639d3de13612b6b39f4e41e",
+      "comparison_status": "RUNNING_PARTIAL",
+      "comparison_is_partial": true,
+      "dream_benefit_proven": false,
+      "canonical_gate_pass": false,
+      "phone_measured": false,
+      "resume_policy": "After observed native capture completes, resume the unchanged Dream v2 binding. Completed arms retained; interrupted seed13/dream_validated arm restarts from unchanged base, not from its partial B10 checkpoint."
+    },
+    "webchat_action_native_capture": {
+      "status": "INCOMPLETE_PREFIX_PRESERVED_SERIAL_OBSERVED_RESUME_AUTHORIZED",
+      "progress_snapshot_utc": "2026-10-11T04:17:50.512766+00:00",
+      "completed_rows": 736,
+      "expected_rows": 1875,
+      "completed_batches": 46,
+      "state_artifact": "docs/proofs/continuation-20261011/action-jepa-native-capture/capture-state.json",
+      "state_artifact_sha256_at_snapshot": "f5700dbd5b90866835548623a3006e9a69a08ded22c980296e62f50ce2cdcd87",
+      "state_taps_sha256_at_snapshot": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+      "original_conserved_prefix_rows": 384,
+      "original_conserved_prefix_batches": 24,
+      "lineage_registration": "docs/proofs/continuation-20261011/action-jepa-native-capture/resume-observer-registration.json",
+      "lineage_registration_sha256": "6bb7430705cac085fe2ba9256ddefe07ab0bc4849aa2272eda0324500e6a4379",
+      "last_observed_attempt": {
+        "status": "FAILED",
+        "native_returncode": -9,
+        "native_signal": "SIGKILL",
+        "completed_utc": "2026-10-11T04:17:50.520394+00:00",
+        "cleanup_requests": [],
+        "artifact": "docs/proofs/continuation-20261011/action-jepa-native-capture/native-exit-observer-20261011T041605040058Z.json",
+        "artifact_sha256": "4c9988dc39167b2387123f78ddb0213d6016a89ff2fa7bc551f960681ecffae6"
+      },
+      "process_activity_independently_checked": false,
+      "execution_policy": "Root authorized exact resume from preserved736 rows as the sole heavy model job; new observer terminal evidence must be checked independently. Prior SIGKILL/OOM diagnostics retained.",
+      "native_extraction_complete": false,
+      "learned_candidate_fitted": false,
+      "semantic_quality_proven": false,
+      "receiver_authority": 0,
+      "canonical_gate_pass": false
     }
   },
   "recovery_20261004": {
@@ -681,5 +806,499 @@
     "verification_pending_next_package": false,
     "verification": "docs/proofs/recorded-live-output-export-20261009/compact-package-check.json",
     "actual_shipped_fixture_admission": 46
-  }
+  },
+  "head_note": "Current reviewable status is current_checkpoint.webchat_review. Frozen STEP2 full70 remains UTILITY_FAIL; post-baseline source handoff is software-validated only. Dream is paused for serial heavy jobs and native action capture remains incomplete. Historical evidence stays preserved; no current phone/full-scope completion.",
+  "current_checkpoint": {
+    "phase": "WP_T9_T10_CONTINUATION",
+    "time_utc": "2026-10-11T02:22:18.141104+00:00",
+    "base_commit": "a895487f1b8edda600dcd8098cb7f6a92bfbecfa",
+    "branch": "codex/authority-live-comparisons",
+    "handoff": "docs/CONTINUE_20261011_PROGRESS.md",
+    "report": "docs/proofs/continuation-20261011/report.json",
+    "report_sha256": "63ecb43c90d703f7108a819e2361ea58e833b48e5279ec7dce0d53d59c86aa47",
+    "tests": {
+      "run": 982,
+      "passed": 978,
+      "skipped": 4,
+      "errors": 0,
+      "failures": 0,
+      "new": 36,
+      "scope": "Extracted ZIP Linux software selftest"
+    },
+    "completed": [
+      "Existing attention/deliberation/callosum controllers feed trained comparisons to authority.observe",
+      "No untrained fallback comparisons or invented paired outcomes",
+      "Real SQLite restart, provider-count and blocked-promotion checks pass",
+      "Restored three absent native source/fixture files byte-identical to prior saved ZIP manifest; extracted-package selftest passed with four explicit PyTorch skips",
+      "Neuromod live comparison with persistent dedup and six tests",
+      "Bound sparse fact/source metadata plus registry, forget and warm-runner lifecycle",
+      "Runtime shadow inventory preserving Exact/source lineage; resumable atomic native proof collector"
+    ],
+    "next": [
+      "Paired frozen-corpus learned Exact/Trace/Combined/selective utility with native slot observations and complete runtime binding",
+      "Original remaining native/body/learning-objective/Redmi gates; architecture and user scope remain incomplete"
+    ],
+    "source_zip": "deliverables/V13-Source-20261011-Progress.zip",
+    "phone_install_zip": "deliverables/V13-Redmi-Install-20261011-Progress.zip",
+    "persistence": "Published via connected GitHub Git-object API; fetched remote tree equals local checkpoint tree. Local history retained on codex/authority-local-archive. Existing install/source ZIPs remain available.",
+    "full_scope_complete": false,
+    "package_selftest": {
+      "run": 982,
+      "passed": 978,
+      "skipped": 4,
+      "errors": 0,
+      "failures": 0,
+      "seconds": 62.116,
+      "scope": "actual extracted phone ZIP selftest on Linux, no target-phone test",
+      "log": "package-selftest-fixed-20261011.log",
+      "log_sha256": "2f214e7ba5575ee3033de260c603392bba73b61bfef89057b112fefaacc92abd",
+      "tested_manifest_sha256": "f1bff09460170447cfa3fc29fd21b96dc6a6155ef8d6e5146d5d5b997ce64e73"
+    },
+    "github_authorization": {
+      "status": "STANDING_USER_AUTHORIZATION",
+      "repository": "RedMentos/Aii",
+      "scope": "V13 development and checkpoints on work branches",
+      "user_statement": "Man so das du immer kannst",
+      "time_berlin": "2026-10-11T04:35:02+02:00",
+      "decision_record": "v13/NUTZER_ENTSCHEIDUNGEN.md",
+      "repeat_permission_required": false
+    },
+    "github_publication": {
+      "status": "PREVIOUS_CHECKPOINT_REMOTE_TREE_VERIFIED",
+      "head": "df098daec0ee7d5f528fdb03584ddc972b4583c8",
+      "tree": "9d7ec229c6f7760cbf253e61aee2c9634437d27f",
+      "branch": "codex/authority-live-comparisons",
+      "new_remote_head_verified": true,
+      "next": "Publish and verify final native-firing/library-bound checkpoint"
+    },
+    "native_vertical": {
+      "status": "SMOKE_PASS_EXECUTION_ONLY",
+      "roles": [
+        "C3_LANGUAGE",
+        "B1_DETAIL",
+        "B2_GIST",
+        "C2_CONTROL"
+      ],
+      "distinct_b2": true,
+      "background_turns": 3,
+      "final_native_outputs": 3,
+      "all_structural_audits_pass": true,
+      "quality_pass": false,
+      "correct_budget_outputs": 0,
+      "turn_seconds": [
+        27.39531699500003,
+        30.94827252200048,
+        31.953888885000197
+      ],
+      "latency_phone_measured": false,
+      "full_runner_proof": false,
+      "step1_complete": false,
+      "step2_complete": false,
+      "raw_archive": "native-vertical-20261011.zip",
+      "raw_archive_sha256": "dcfd95a133ba165de0578b3cd5e6e5031ea342996efd4f61d9768f27893dfe22",
+      "summary_sha256": "2a7e5145ef0de2347d782d62d37f6657ce00c0fdc0aaa34aeb990e4c8644e15d",
+      "preserved_initial_diagnostic_mistakes": true
+    },
+    "webchat_continuation": {
+      "phase": "NATIVE_FIRING_LIBRARY_BOUND",
+      "session_date": "2026-10-11",
+      "targeted_tests": {
+        "run": 42,
+        "passed": 42
+      },
+      "native_status": "PASS_EXECUTION_ONLY_SYNTHETIC_MEMORY",
+      "native_model_turns": 6,
+      "report": "docs/proofs/continuation-20261011/webchat-checkpoint.json",
+      "handoff": "docs/NATIVE_FIRING.md",
+      "package_selftest": {
+        "run": 991,
+        "passed": 987,
+        "skipped": 4,
+        "errors": 0,
+        "failures": 0,
+        "seconds": 63.17,
+        "scope": "actual extracted phone-install ZIP on Linux, not Redmi",
+        "log": "docs/proofs/continuation-20261011/sparse-audit-extracted-package-selftest.log",
+        "log_sha256": "5eecbc2b5e202044853a82ba34bd25a206d3081ce9a6e460a3bcde71277fa62b",
+        "tested_manifest_sha256": "155b56247f3817d182db4367ad01cbb73b718fcd26f652d492209126c080e9fd"
+      },
+      "step1_complete": false,
+      "step2_complete": false,
+      "full_scope_complete": false,
+      "report_sha256": "5602c24c87cc5dbdc209df4494d46d365358ec455f7ef6a4a3663076838d8d54"
+    },
+    "webchat_step2_progress": {
+      "status": "UTILITY_FAIL",
+      "captured_utc": "2026-10-11T04:03:56.269890+00:00",
+      "recorded_rows": 70,
+      "denominator": 70,
+      "phone_measured": false,
+      "canonical_gate_pass": false,
+      "source_unchanged_at_completion": true,
+      "installed_artifacts_unchanged": true,
+      "structural_checks_passed": true,
+      "report": "report.json",
+      "report_sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+      "paired": {
+        "complete": true,
+        "coverage_errors": {},
+        "mean_utility": {
+          "b1_only": 0.5083333333333333,
+          "b2_only": 0.16666666666666666,
+          "both_control": 0.5,
+          "both_exact": 0.5,
+          "both_none": 0.5083333333333333,
+          "prompt_only_dual": 0.2583333333333333,
+          "same_policy_dual": 0.5583333333333333
+        },
+        "best_solo": 0.5083333333333333,
+        "gain_over_best_solo": {
+          "both_none": 0.0,
+          "both_exact": -0.008333333333333304,
+          "both_control": -0.008333333333333304
+        },
+        "b1_b2_each_win_an_episode": true,
+        "preregistered_primary": "both_exact",
+        "scoped_utility_gate_pass": false
+      },
+      "frozen_source_archive_sha256": "d59ac71c5af559db015e521052f13d00736784ba18eb8c258caf0933d29ee081",
+      "closed_checkpoints": {
+        "base-Gemini.closed.zip": "4f7bdd30836b61a5ebbd2ac1cb9acd5b075d3bb6058008f2c3b5b6fa873c7390",
+        "base-Aurora.closed.zip": "8ae8febbbe3822122b84d9ded3ae28732efebac61079552cdf1f43eb64dbf0e8",
+        "base-Cygnus.closed.zip": "58972bed36d37fb405e7cbfd42fb776d98402e5da0362a010a2b7ff77c71c6bb",
+        "base-Helios.closed.zip": "e1212b23281234be1d92fd7ad347d0e43ba1a0d73ebefbd145e0ddb08db5c80a",
+        "base-Dorado.closed.zip": "43ee9300b66febe79664f6011607ba199e657284518c3fc5f592ab573162ae60",
+        "base-Indigo.closed.zip": "5adb0cc44d3380fc1fd1fed057dd10fba628a754d88d9b6f37c8cb93a6689227",
+        "base-Equinox.closed.zip": "f508d2e202b256f4fb7bce0a2493986d66962a17a096c7716e1de8802a84d31d",
+        "base-Borealis.closed.zip": "b6d7f1fbaa7ee1bd21da4e1359dbf691cf094a0de99df62e3c961f890966de15",
+        "base-Juno.closed.zip": "735c678eb8a26eb2b6cafbd4da9778151827f30decdf1cf4ba88c78890f07835",
+        "base-Fornax.closed.zip": "5d0305951b0a88732e1ed65a4f1dcf50a7d519cc51605a4fefc8ba5384029bc6"
+      }
+    },
+    "drive_plan_reconciliation": "docs/proofs/continuation-20261011/drive-plan-reconciliation.md",
+    "next_work": "Serialized observed action capture, paused Dream v2 resume, separate source-handoff native ablation, then existing native/body/learning/Redmi gates; no promotion of frozen70 UTILITY_FAIL.",
+    "webchat_review": {
+      "snapshot_utc": "2026-10-11T04:21:30.678042+00:00",
+      "status": "WORK_IN_PROGRESS_SCOPED_CHECKPOINT",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false,
+      "phone_measured": false,
+      "step2_frozen_baseline": {
+        "status": "UTILITY_FAIL",
+        "rows": 70,
+        "denominator": 70,
+        "structural_checks_passed": true,
+        "source_unchanged_at_completion": true,
+        "installed_artifacts_unchanged": true,
+        "report": "docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+        "report_sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+        "scoped_utility_gate_pass": false,
+        "canonical_gate_pass": false,
+        "primary_mean_utility": 0.5,
+        "best_solo_mean_utility": 0.5083333333333333,
+        "same_policy_dual_mean_utility": 0.5583333333333333,
+        "working_source_changed_after_baseline": true
+      },
+      "source_handoff": {
+        "status": "INTEGRATED_SOFTWARE_VALIDATED_NATIVE_ABLATION_PREREGISTERED",
+        "runtime_files_sha256": {
+          "v13/bodyview.py": "3048f302aaa9a1b39f3f3989601bbd8314f75b7c2149538b33051b92d7865306",
+          "v13/cognition.py": "d68df49a947b7211a5cf273a29ca620b0f9a7b5fd9d75497cf46c04e9504b5d7",
+          "v13/runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333"
+        },
+        "changes": [
+          "Own world/action state is explicitly scoped; no completed own actions does not mean missing source knowledge.",
+          "Selected model hypotheses are separated from source-verified quotation records; stored Query/Offer/source bindings are rechecked at delivery.",
+          "Only selected verified spans enter answer context; unavailable earlier rules are not filled from the oracle or full prior."
+        ],
+        "native_quality_improvement_proven": false,
+        "native_ablation": "docs/proofs/continuation-20261011/source-handoff-ablation/report.preregistration.json",
+        "native_ablation_completed_rows": 0,
+        "native_ablation_expected_rows": 16,
+        "receiver_authority": 0
+      },
+      "source_tree_regressions": {
+        "run": 1061,
+        "passed": 1057,
+        "skipped": 4,
+        "errors": 0,
+        "failures": 0,
+        "skip_reason": "Four explicit PyTorch-dependent skips in the main test environment",
+        "scope": "Linux main source-tree unittest suite after three-file source-handoff integration; not an extracted-package or target-phone run",
+        "log": "docs/proofs/continuation-20261011/source-handoff-full-suite.log",
+        "log_sha256": "91069ed1741f1e17f7aec43a54ad485bb4b1212e24af8397bdf447ac9b96e5d4"
+      },
+      "schema_action_probe": {
+        "status": "COMPARABLE",
+        "native_rows": 64,
+        "models": [
+          "LFM2.5-350M",
+          "LFM2.5-1.2B-Instruct"
+        ],
+        "comparison": "docs/proofs/continuation-20261011/schema-action-model-comparison.json",
+        "comparison_sha256": "9a3caf5c40d32770c861b6751911aafded50580426bea01505ef2a09a450d60c",
+        "comparison_checks": {
+          "both_complete": true,
+          "cases_and_oracles_identical": true,
+          "arms_identical": true,
+          "binding_identical_except_model": true,
+          "both_artifacts_unchanged": true,
+          "both_servers_reaped": true,
+          "all_native_request_payloads_identical": true
+        },
+        "finding": "Both models emit all enum labels on copy controls; neither field order nor the larger model gives a complete arithmetic/eligibility/decision success in the four full-schema decision cases per arm. No production schema-order or model-size change is justified by this diagnostic.",
+        "field_order_quality_gain_proven": false,
+        "larger_model_quality_gain_proven": false,
+        "latency_comparison_valid": false,
+        "canonical_gate_pass": false,
+        "phone_measured": false
+      },
+      "dream2": {
+        "status": "PAUSED_FOR_SERIAL_HEAVY_JOBS",
+        "completed_arms": 2,
+        "expected_arms": 15,
+        "seeds": [
+          13,
+          21,
+          34
+        ],
+        "b_steps": 40,
+        "model_scope": "Historical 230M read-only master plus LoRA r8, four A and four B test facts; reworded-question rehearsal",
+        "paused_at": "2026-10-11T04:19:35Z",
+        "worker_reaped": true,
+        "session_exit_code": 130,
+        "unfinished_arm": {
+          "seed": 13,
+          "arm": "dream_validated",
+          "phase": "B",
+          "training_progress": {
+            "steps": 10,
+            "final_ce": 0.022822588147391798,
+            "items": 16
+          },
+          "phase_a": {
+            "steps": 12,
+            "final_ce": 0.01672,
+            "items": 4
+          },
+          "after_a": {
+            "A": {
+              "recall": 1.0,
+              "paraphrase": 0.75
+            },
+            "B": {
+              "recall": 0.0,
+              "paraphrase": 0.0
+            },
+            "near_miss_leak": 0.6,
+            "probe_retention": 0.75,
+            "kl_to_base": 1.1130312408010166,
+            "forgotten": [
+              "What colour is the sky on a clear day?",
+              "Which planet do we live on?"
+            ]
+          }
+        },
+        "pause_artifact": "docs/proofs/continuation-20261011/dream2-v2-serialization-pause.json",
+        "pause_artifact_sha256": "7692a81b8cbfa0b5edfedb7f77039753d674ccd8a10d9d766fd032e51c12f4bd",
+        "comparison": "docs/proofs/continuation-20261011/dream2-b40-v2-comparisons.json",
+        "comparison_sha256": "008cb83e421725f71c5d539e39d622b39771b4f01639d3de13612b6b39f4e41e",
+        "comparison_status": "RUNNING_PARTIAL",
+        "comparison_is_partial": true,
+        "dream_benefit_proven": false,
+        "canonical_gate_pass": false,
+        "phone_measured": false,
+        "resume_policy": "After observed native capture completes, resume the unchanged Dream v2 binding. Completed arms retained; interrupted seed13/dream_validated arm restarts from unchanged base, not from its partial B10 checkpoint."
+      },
+      "action_native_capture": {
+        "status": "INCOMPLETE_PREFIX_PRESERVED_SERIAL_OBSERVED_RESUME_AUTHORIZED",
+        "progress_snapshot_utc": "2026-10-11T04:17:50.512766+00:00",
+        "completed_rows": 736,
+        "expected_rows": 1875,
+        "completed_batches": 46,
+        "state_artifact": "docs/proofs/continuation-20261011/action-jepa-native-capture/capture-state.json",
+        "state_artifact_sha256_at_snapshot": "f5700dbd5b90866835548623a3006e9a69a08ded22c980296e62f50ce2cdcd87",
+        "state_taps_sha256_at_snapshot": "69b95532896de66fa7c6065bbf4d14e84c32a362c5e8e13d3b4340d177c4035a",
+        "original_conserved_prefix_rows": 384,
+        "original_conserved_prefix_batches": 24,
+        "lineage_registration": "docs/proofs/continuation-20261011/action-jepa-native-capture/resume-observer-registration.json",
+        "lineage_registration_sha256": "6bb7430705cac085fe2ba9256ddefe07ab0bc4849aa2272eda0324500e6a4379",
+        "last_observed_attempt": {
+          "status": "FAILED",
+          "native_returncode": -9,
+          "native_signal": "SIGKILL",
+          "completed_utc": "2026-10-11T04:17:50.520394+00:00",
+          "cleanup_requests": [],
+          "artifact": "docs/proofs/continuation-20261011/action-jepa-native-capture/native-exit-observer-20261011T041605040058Z.json",
+          "artifact_sha256": "4c9988dc39167b2387123f78ddb0213d6016a89ff2fa7bc551f960681ecffae6"
+        },
+        "process_activity_independently_checked": false,
+        "execution_policy": "Root authorized exact resume from preserved736 rows as the sole heavy model job; new observer terminal evidence must be checked independently. Prior SIGKILL/OOM diagnostics retained.",
+        "native_extraction_complete": false,
+        "learned_candidate_fitted": false,
+        "semantic_quality_proven": false,
+        "receiver_authority": 0,
+        "canonical_gate_pass": false
+      },
+      "next": [
+        "Finish the serialized action-native capture with exact registered input/model/source binding and observed exit; preserve prefix batches and all failed attempts.",
+        "Resume the paused Dream v2 experiment after capture, preserving both completed arms and the independent run binding.",
+        "Run the preregistered source-disjoint source-handoff ablation as a separate native cohort; retain frozen70 UTILITY_FAIL and unchanged gates.",
+        "Only after genuine complete native action rows exist, validate/export/fit the action-conditioned candidate under original noncollapse/retention/ablation gates; no synthetic success substitution.",
+        "Package and verify the current source/install ZIPs and continue remaining native sparse-body, B3/JEPA, semantic calibration and Redmi sustained resource/quality gates."
+      ]
+    },
+    "durable_restore_20261011": {
+      "schema": "V13_DURABLE_RESTORE_20261011_V1",
+      "time_utc": "2026-10-11T09:59:49.462861+00:00",
+      "cause": "Local scratch workspace empty at resume; earlier agent reported actual account usage limit. Restored authenticated durable saves before further work.",
+      "verified_remote_commit": "3d63ec8e8f5735f7a6c6a5675635ea115d51242c",
+      "verified_tree": "69909f9b00b85c452f9b3c3ef48dc7615e9c5244",
+      "source_zip": {
+        "version": 3,
+        "sha256": "af9892a402425c440e234a454c6180ed4172ac9cef079c09bf519a9c49e4a571",
+        "bytes": 23484626,
+        "crc_verified": true
+      },
+      "install_zip": {
+        "version": 1,
+        "sha256": "89de2f6a9ee47541596fe4eb9a3fb49d57ed6d70e5bcbef76043a67ffc224b0f",
+        "bytes": 1783706,
+        "crc_verified": true
+      },
+      "recovered_native_prefix_rows": 736,
+      "recovered_native_prefix_batches": 46,
+      "expected_native_rows": 1875,
+      "uncommitted_later_rows_not_recovered": true,
+      "later_live_observation_from_conversation_only": {
+        "completed_rows": 1248,
+        "native_exit": -9,
+        "actual_raw_evidence_recovered": false
+      },
+      "recovered_dream_complete_arms": 2,
+      "expected_dream_arms": 15,
+      "dream_partial_arm_restart_policy": "Restart unfinished seed13/dream_validated from unchanged base; retain two completed arms",
+      "heavy_job_policy": "Serialize native inference and full master training under8GiB; embedding lifetime bounded after preregistration and deterministic controls",
+      "native_binary_rebuild_equality": "PENDING_LINK_AND_HASH_VERIFICATION",
+      "runtime_gate_claims_unchanged": true,
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false,
+      "redmi_device_measured_now": false
+    },
+    "bounded_recovery_checkpoint": {
+      "updated_at": "2026-10-11T10:20:16.010426+00:00",
+      "status": "NATIVE_CAPTURE_RUNNING",
+      "durable_closed_rows": 1328,
+      "expected_rows": 1875,
+      "archive": "docs/proofs/continuation-20261011/action-jepa-bounded-recovery/prefix-20261011T101746Z.closed.zip",
+      "archive_sha256": "b0abe569fc38f00595a686ac523bd9f99032e5474de231c384f8aab3497f81d6",
+      "native_resources": "EXACT_ORIGINAL_LAUNCHER_AND_19_LIBRARY_BINDINGS_RESTORED",
+      "fresh_worker_max_abs_difference": 0.0,
+      "historical_first16_max_abs_difference": 0.0,
+      "phone_zip_recovered_software_tests": {
+        "tests": 1075,
+        "pass": 1075,
+        "skips": 0,
+        "hardware_quality_claimed": false
+      },
+      "dream_completed_arms": 2,
+      "dream_expected_arms": 15,
+      "source_handoff_status": "REGISTERED_121_RECURSIVE_SOURCES_NOT_STARTED",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "night_durability_recovery": {
+      "schema": "v13-night-durability-recovery-v1",
+      "recorded_at": "2026-10-11T21:13:03.117905+00:00",
+      "cause": "automated_workspace_maintenance",
+      "verified_remote": "55a9e5175bbd77916945e0d4e560065598347e13",
+      "verified_remote_tree": "420b8ae296c569feb7e7ca925cce8d4f0553c4f6",
+      "source_zip_version": 3,
+      "phone_zip_version": 1,
+      "recovered_raw_tap_rows": 736,
+      "historical_complete_capture_terminal_proof_retained": true,
+      "historical_full_capture_raw_bytes_recovered": false,
+      "historical_handoff_completed_rows_observed": 4,
+      "handoff_four_raw_rows_recovered": false,
+      "dream_durable_completed_arms": 2,
+      "dream_expected_arms": 15,
+      "salvaged_git_blobs": [
+        {
+          "name": "dataset-metadata.zip",
+          "git_sha": "acb60b36dced59619d8b373352fd380370195c86",
+          "sha256": "fd003eeabcc12e13b72ab66a0ca13640cdfe696dfa7672ce12b64a992710e2e7"
+        },
+        {
+          "name": "dataset.json.gz",
+          "git_sha": "15bbc89d65adb2a4d71dc7ce98f15a740af5d95b",
+          "sha256": "ecba0ac0272fb0c8dbc21ce37858aa10fc8dc6c252c7d14107be14b552ebc1c1"
+        }
+      ],
+      "next_storage_policy": "closed evidence split into at most1MiB SHA256-bound Git parts, restore exact original bytes before use",
+      "native_resources_status": "PINNED_MODELS_RESTORED_RUNNER_BUILDING",
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false
+    },
+    "plan_continuation_current": {
+      "updated_at": "2026-10-11T21:33:31.464133+00:00",
+      "status": "IN_PROGRESS_ORIGINAL_DRIVE_PLAN",
+      "verified_checkpoint": "d8f8d2c48f554cfaf109dc8ae78ae755d5d86659",
+      "source_zip_version": 4,
+      "phone_zip_version": 2,
+      "phone_zip_sha256": "477593e79a6069210258d91500ca9a42b0dfeaadf696d9788b09c3a63679a88a",
+      "phone_zip_extracted_tests": 1125,
+      "phone_zip_tests_skipped": 0,
+      "phone_zip_manifest_files": 495,
+      "phone_hardware_measured": false,
+      "phone_software_owned_rss": "UNAVAILABLE_NAMESPACE_PID_MAPPING_FAILED_ORIGINAL_OBSERVER_RETAINED",
+      "native_launcher_libraries_models": "RESTORED_EXACT_ORIGINAL_BINDING",
+      "native_runner_persistent_bundle": {
+        "library_file_id": "libfile_0d16be8bc66c8191b96b980e95312395",
+        "version": 0,
+        "sha256": "cfc19c687a5874e3e8294569139975e1228139f5007b0b7a9c594b530f051069",
+        "bytes": 6453915
+      },
+      "drive_handoff_updated": "2026-10-11T21:30:10.469Z",
+      "drive_user_decisions_updated": "2026-10-11T21:30:01.108Z",
+      "source_handoff_cohort": "QUEUED_121_SOURCES_FROZEN",
+      "dream_completed_arms": 2,
+      "dream_expected_arms": 15,
+      "canonical_architecture_complete": false,
+      "user_full_scope_complete": false,
+      "ready_for_sustained_learning_human_test": false,
+      "night_capture_rows_observed": 1875,
+      "night_capture_state_observed": "CAPTURED",
+      "native_raw_capture_persisted_rows": 736,
+      "native_extraction_observed_claimed": false
+    },
+    "voice_continuation_20261012": {
+      "schema": "V13_FULL_NATIVE_CAPTURE_RECOVERY_20261012_V1",
+      "utc": "2026-10-11T22:11:53.158495+00:00",
+      "rows": 1875,
+      "raw_batches": 118,
+      "native_npz_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+      "delta_archive_sha256": "e9e9f57d75f6f711c31479fddca7143adccc9159c0a2f2e33c0ff9729b5b8f3b",
+      "restore_roundtrip_exact_original_npz_bytes": true,
+      "baseline_archive": "../action-jepa-prefix736.closed.zip",
+      "parts_manifest": "parts/manifest.json",
+      "final_worker_observer_stale_preserved": true,
+      "actual_outer_exit": 0,
+      "quality_improvement_proven": false,
+      "receiver_authority": 0,
+      "phone_measured": false,
+      "canonical_gate_pass": false
+    }
+  },
+  "historical_checkpoint_kind_before_webchat_review": "CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT",
+  "historical_resume_next_before_webchat_review": [
+    "Diagnose actual SQLite corruption using preserved failed9 and verified checkpoint65-first8 copy, without new native calls, original DB repair, silent retry or source/utility-gate retuning.",
+    "Ground any persistence fix in an isolated zero-native reproducer; preserve terminal9row failure and old exactsources, then genuine newly source-bound same46 fixture attempt if needed.",
+    "After complete valid native labelled collection, unchanged shadowfit and independently gated current-source consume/restart/revoke/rollback. No automatic approval or genuine user claim.",
+    "Continue original SSOT remaining nativebody/sparse/B3 utility, frozen acceptance6/20 and current Redmi sustained proofs. Fullscope incomplete, STEP2 UTILITY_FAIL retained."
+  ],
+  "historical_pending_validation_before_webchat_review": [
+    "Recorded2row native same-causal export passed with authored test references only; no quality gain.",
+    "46row diagnostic stopped after9 exported native rows with actual malformed SQLite; no fit or utility evaluation. Persistence cause unestablished.",
+    "Current Redmi sustained/nativebody/expert/bridge/world multimodal proofs remain open."
+  ]
 }

@@ -1,0 +1,6421 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 103,
+ "scores": {
+  "adaptive+now+words+teach+rel": {
+   "shadow_jobs": 7,
+   "unnecessary_updates": 0,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 40,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.95,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.75
+   },
+   "rollback": {
+    "update_id": "upd_7f9b5dc2af8c4c6a80704492fcf35a85",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Welche Vor- und Nachteile haben Sommer und Tee?",
+       "gist"
+      ],
+      [
+       "Welche Vor- und Nachteile haben Stadt und Miete?",
+       "gist"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 240 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 300 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 160 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 48 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 60 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_82a1b9ca60c24966b5572b0f84aa6a8b",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 16,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 24,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_7f9b5dc2af8c4c6a80704492fcf35a85",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "when": "p3",
+     "handover_reply": "Regel rsup_76189c25d38c46b3b5a2401ed6bb8714 an den gelernten Kopf übergeben. Sie"
+    }
+   ]
+  },
+  "fixed+now+words+teach+rel": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 1,
+   "promotions": 4,
+   "approval_requests": 4,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 40,
+   "corrections_to_shift_half80": 80,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.95,
+   "final_half_items": 1.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.75
+   },
+   "rollback": {
+    "update_id": "upd_351ba01726904fee91cefc6258050010",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Welche Vor- und Nachteile haben Sommer und Tee?",
+       "gist"
+      ],
+      [
+       "Welche Vor- und Nachteile haben Stadt und Miete?",
+       "gist"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 240 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 300 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 160 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 48 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 60 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "nowords_head_simple": 1.0,
+   "handovers": 1,
+   "lifecycle": [
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_4ef97a551dfe469581f4305250eaa60d",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 16,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 24,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_351ba01726904fee91cefc6258050010",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "when": "p3",
+     "handover_reply": "Regel rsup_27834c1f7d2c4f0caca94b05db6424a5 an den gelernten Kopf übergeben. Sie"
+    }
+   ]
+  },
+  "fixed+now": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": null,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.825,
+   "final_acc": 0.625,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 0.125
+   },
+   "rollback": {
+    "update_id": "upd_924eaa5199eb4aec9b03ff6fefcb88e6",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.85,
+     "half_items": 1.0,
+     "unchanged": 0.8125
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.65,
+     "half_items": 0.0,
+     "unchanged": 0.8125
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.65,
+     "half_items": 0.0,
+     "unchanged": 0.8125
+    }
+   },
+   "nowords_head_simple": 0.0,
+   "handovers": 0,
+   "lifecycle": []
+  }
+ },
+ "arms": {
+  "adaptive+now+words+teach+rel": {
+   "policy": "adaptive+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_893a57e5159947c8a1dbe15791fafd61 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_893a57e5159947c8a1dbe15791fafd61",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.08616488706643163
+     },
+     "active_acc_after": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_502cb74cf9f44871a02611e21298d8e7 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_502cb74cf9f44871a02611e21298d8e7",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.3778121890428119,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.17100862156155439
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_82a1b9ca60c24966b5572b0f84aa6a8b PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_82a1b9ca60c24966b5572b0f84aa6a8b",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.875,
+       "active_accuracy": 0.625,
+       "gate": "relative",
+       "known_accuracy_after": 0.975,
+       "known_accuracy_before": 0.9,
+       "known_items_lost": 0,
+       "loss_after": 0.4824911935722984,
+       "loss_before": 0.9419450159885125,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.500366437733019,
+      "loss_after": 0.178074521918334
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0e438befcc6c477698ceed7dedb1bdd7 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.6666666666666666,
+       "anchors": 36,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9056603773584906,
+       "known_accuracy_before": 0.8301886792452831,
+       "known_items_lost": 0,
+       "loss_after": 0.5426057229573427,
+       "loss_before": 1.4462646520091307,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.4,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.4166666666666667
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.6595429716432127,
+      "loss_after": 0.2332408228192705
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_a8bd07c39bab4845ae98ad8ca9ac8f01 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a8bd07c39bab4845ae98ad8ca9ac8f01",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8571428571428571,
+       "active_accuracy": 0.7142857142857143,
+       "anchors": 40,
+       "anchors_changed": 1,
+       "anchors_moved_into_rule_route": 1,
+       "gate": "relative",
+       "known_accuracy_after": 0.9692307692307692,
+       "known_accuracy_before": 0.8153846153846154,
+       "known_items_lost": 1,
+       "loss_after": 0.27374787286293445,
+       "loss_before": 0.5811840563732241,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5714285714285714
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.38817077930438376,
+      "loss_after": 0.15002656485505106
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_59baaa8ac2664e27a75fe384938ac92f EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_59baaa8ac2664e27a75fe384938ac92f",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8823529411764706,
+       "active_accuracy": 0.5882352941176471,
+       "anchors": 44,
+       "anchors_changed": 2,
+       "anchors_moved_into_rule_route": 2,
+       "gate": "relative",
+       "known_accuracy_after": 0.974025974025974,
+       "known_accuracy_before": 0.7532467532467533,
+       "known_items_lost": 1,
+       "loss_after": 0.2845230798974925,
+       "loss_before": 0.737911979319513,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.3333333333333333
+        },
+        "1": {
+         "after": 0.5,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5882352941176471
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.49746142461334286,
+      "loss_after": 0.1529360088286707
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_7f9b5dc2af8c4c6a80704492fcf35a85 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_7f9b5dc2af8c4c6a80704492fcf35a85",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9545454545454546,
+       "active_accuracy": 0.5454545454545454,
+       "anchors": 48,
+       "anchors_changed": 2,
+       "anchors_moved_into_rule_route": 2,
+       "gate": "relative",
+       "known_accuracy_after": 0.9887640449438202,
+       "known_accuracy_before": 0.7078651685393258,
+       "known_items_lost": 0,
+       "loss_after": 0.20133596099322612,
+       "loss_before": 0.7773178630925954,
+       "n": 22,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.6363636363636364
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5648259525091298,
+      "loss_after": 0.14909911484994343
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_7f9b5dc2af8c4c6a80704492fcf35a85",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Welche Vor- und Nachteile haben Sommer und Tee?",
+       "gist"
+      ],
+      [
+       "Welche Vor- und Nachteile haben Stadt und Miete?",
+       "gist"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 240 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 300 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 160 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 48 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 60 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_82a1b9ca60c24966b5572b0f84aa6a8b",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 16,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_0e438befcc6c477698ceed7dedb1bdd7",
+     "observed": 24,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "head": "upd_7f9b5dc2af8c4c6a80704492fcf35a85",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_76189c25d38c46b3b5a2401ed6bb8714",
+     "when": "p3",
+     "handover_reply": "Regel rsup_76189c25d38c46b3b5a2401ed6bb8714 an den gelernten Kopf übergeben. Sie"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+now+words+teach+rel": {
+   "policy": "fixed+now+words+teach+rel",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_48c9fc61e6e64590883a41f9c7f32d3e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_48c9fc61e6e64590883a41f9c7f32d3e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.08616488706643163
+     },
+     "active_acc_after": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_3492b8afaea047cc8953431b7f3153b8 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_3492b8afaea047cc8953431b7f3153b8",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.3778121890428119,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 0.17100862156155439
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0d5165170a7c41a996ad0fa0a4dd6885 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_0d5165170a7c41a996ad0fa0a4dd6885",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "active_accuracy": 1.0,
+       "gate": "relative",
+       "known_accuracy_after": 1.0,
+       "known_accuracy_before": 1.0,
+       "known_items_lost": 0,
+       "loss_after": 0.2392015786680586,
+       "loss_before": 0.37612131830058365,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.2720512300927573,
+      "loss_after": 0.0975121345004175
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d06e5c5be153436580f66507d61b53e6 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d06e5c5be153436580f66507d61b53e6",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.875,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8438,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.875,
+       "active_accuracy": 0.875,
+       "gate": "relative",
+       "known_accuracy_after": 0.96875,
+       "known_accuracy_before": 0.96875,
+       "known_items_lost": 0,
+       "loss_after": 0.5819868572526904,
+       "loss_before": 0.7437334823983106,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.5
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.38997179316914565,
+      "loss_after": 0.20337602209195416
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.375,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.8125,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_4ef97a551dfe469581f4305250eaa60d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_4ef97a551dfe469581f4305250eaa60d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.875,
+       "active_accuracy": 0.625,
+       "gate": "relative",
+       "known_accuracy_after": 0.975,
+       "known_accuracy_before": 0.9,
+       "known_items_lost": 0,
+       "loss_after": 0.4818733204068657,
+       "loss_before": 0.9419450159885125,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.5,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.500366437733019,
+      "loss_after": 0.17768626183261518
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_39aba3d640ae49b59776c5161bd43ffb EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_39aba3d640ae49b59776c5161bd43ffb",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9166666666666666,
+       "active_accuracy": 0.9166666666666666,
+       "gate": "relative",
+       "known_accuracy_after": 0.9791666666666666,
+       "known_accuracy_before": 0.9791666666666666,
+       "known_items_lost": 0,
+       "loss_after": 0.27902564149581777,
+       "loss_before": 0.3330614961712149,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": false,
+      "loss_before": 0.1789889202585723,
+      "loss_after": 0.11552832113716589
+     },
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_dc079f9b2f8441eabe55754b6aa7f276 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 4,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "active_accuracy": 0.6666666666666666,
+       "anchors": 36,
+       "anchors_changed": 0,
+       "anchors_moved_into_rule_route": 0,
+       "gate": "relative",
+       "known_accuracy_after": 0.9056603773584906,
+       "known_accuracy_before": 0.8301886792452831,
+       "known_items_lost": 0,
+       "loss_after": 0.5410605238683376,
+       "loss_before": 1.4468233911170325,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.4,
+         "before": 0.2
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.4166666666666667
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.6595718525210444,
+      "loss_after": 0.23239230776115066
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_b1cfc660595d4ceda7e2ab72df9b679e EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b1cfc660595d4ceda7e2ab72df9b679e",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 8,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8571428571428571,
+       "active_accuracy": 0.7142857142857143,
+       "anchors": 40,
+       "anchors_changed": 1,
+       "anchors_moved_into_rule_route": 1,
+       "gate": "relative",
+       "known_accuracy_after": 0.9692307692307692,
+       "known_accuracy_before": 0.8153846153846154,
+       "known_items_lost": 1,
+       "loss_after": 0.2727066609662396,
+       "loss_before": 0.5804601955413078,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.5714285714285714
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.3874417427008422,
+      "loss_after": 0.14917660475541003
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_16b319c5a3ca4a5f844d999beb9e2cad EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_16b319c5a3ca4a5f844d999beb9e2cad",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 12,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8823529411764706,
+       "active_accuracy": 0.5882352941176471,
+       "anchors": 44,
+       "anchors_changed": 2,
+       "anchors_moved_into_rule_route": 2,
+       "gate": "relative",
+       "known_accuracy_after": 0.974025974025974,
+       "known_accuracy_before": 0.7532467532467533,
+       "known_items_lost": 1,
+       "loss_after": 0.2833266158783072,
+       "loss_before": 0.7372261292138119,
+       "n": 17,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.3333333333333333
+        },
+        "1": {
+         "after": 0.5,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.6666666666666666
+        }
+       },
+       "scaffold_accuracy": 0.5882352941176471
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.4968214886453853,
+      "loss_after": 0.152075505104819
+     },
+     "active_acc_after": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": true,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.85,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 0.5,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_351ba01726904fee91cefc6258050010 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_351ba01726904fee91cefc6258050010",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 16,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.9545454545454546,
+       "active_accuracy": 0.5454545454545454,
+       "anchors": 48,
+       "anchors_changed": 2,
+       "anchors_moved_into_rule_route": 2,
+       "gate": "relative",
+       "known_accuracy_after": 0.9887640449438202,
+       "known_accuracy_before": 0.7078651685393258,
+       "known_items_lost": 0,
+       "loss_after": 0.20022570782633287,
+       "loss_before": 0.7766713197142923,
+       "n": 22,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.25
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.75,
+         "before": 0.75
+        }
+       },
+       "scaffold_accuracy": 0.6363636363636364
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.5640459069339276,
+      "loss_after": 0.14817897476909742
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "gist"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_351ba01726904fee91cefc6258050010",
+    "expected_parent_acc": 0.85,
+    "after_rollback_acc": 0.85,
+    "restored": true,
+    "runtime_after_rollback": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    }
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.95,
+     "half_items": 1.0,
+     "unchanged": 0.9375
+    },
+    "final_source_on_half": {
+     "APPROVED_EXTERNAL_HEAD": 1.0
+    },
+    "head_alone_final": {
+     "all": 0.95,
+     "per_route": {
+      "simple": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.75
+     },
+     "half_items": 1.0,
+     "unchanged": 0.9375,
+     "wrong": [
+      [
+       "Welche Vor- und Nachteile haben Sommer und Tee?",
+       "gist"
+      ],
+      [
+       "Welche Vor- und Nachteile haben Stadt und Miete?",
+       "gist"
+      ]
+     ]
+    },
+    "nowords_probe": {
+     "head_alone_simple": 1.0,
+     "runtime_simple": 1.0,
+     "items": [
+      [
+       "Was ist die halbe Summe von 240 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 300 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 18 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist eine halbe Portion von 48 Gramm?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Wie viel ist 160 durch 2?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 48 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ],
+      [
+       "Was ist die halbe Summe von 60 Euro?",
+       "simple",
+       "simple"
+      ],
+      [
+       "Teile 200 Euro in zwei gleiche Teile.",
+       "simple",
+       "simple"
+      ]
+     ]
+    }
+   },
+   "lifecycle": [
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_4ef97a551dfe469581f4305250eaa60d",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-0"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 8,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-1"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 16,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-2"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_dc079f9b2f8441eabe55754b6aa7f276",
+     "observed": 24,
+     "agree_in_a_row": 0,
+     "needed": 8,
+     "learned": false,
+     "handover": false,
+     "next": ":shadow route",
+     "when": "p2-3"
+    },
+    {
+     "rule": "rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "head": "upd_351ba01726904fee91cefc6258050010",
+     "observed": 8,
+     "agree_in_a_row": 8,
+     "needed": 8,
+     "learned": true,
+     "handover": false,
+     "next": ":ersetze gelernt rsup_27834c1f7d2c4f0caca94b05db6424a5",
+     "when": "p3",
+     "handover_reply": "Regel rsup_27834c1f7d2c4f0caca94b05db6424a5 an den gelernten Kopf übergeben. Sie"
+    }
+   ],
+   "nowords_head": {
+    "simple": 1.0,
+    "routes": [
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple",
+     "simple"
+    ]
+   }
+  },
+  "fixed+now": {
+   "policy": "fixed+now",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_73f7a4b68c6645e2a011a51ecccb0c9b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_73f7a4b68c6645e2a011a51ecccb0c9b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {},
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.1819697166593803
+     },
+     "active_acc_after": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.225,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.2812,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Was ist die Kernaussage: Firmen brauchen Wasser.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Pflege?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "simple"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "simple"
+       ]
+      ]
+     },
+     "shadow_result": "upd_1d24110ff17f4c5c8eaf148cdbdf2627 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_1d24110ff17f4c5c8eaf148cdbdf2627",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 1.2115140260788444,
+       "loss_before": 1.3862943611198906,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.3862943611198906,
+      "loss_after": 1.1832593957894404
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 0.75,
+       "detail": 0.9375,
+       "gist": 1.0,
+       "both": 0.375
+      },
+      "half_items": 1.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Guten Tag, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Guten Nacht, Ben, wie geht es dir?",
+        "gist"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f16ba2e01b584abe991b5848b7b8c0b7 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_f16ba2e01b584abe991b5848b7b8c0b7",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 1.0,
+       "loss_after": 1.093573054821835,
+       "loss_before": 1.2252320703070383,
+       "n": 4,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 0.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 1.0,
+         "before": 1.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.1960211850428322,
+      "loss_after": 1.0381112495347322
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_0e33f9f0da5345f58bd3db6855fa4f5e PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_0e33f9f0da5345f58bd3db6855fa4f5e",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "loss_after": 1.189890964245623,
+       "loss_before": 1.245902406185466,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.375
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.0900590386974156,
+      "loss_after": 0.979941713801652
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_f7f18c84a3ba42dfab466174039abd86 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_f7f18c84a3ba42dfab466174039abd86",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.75,
+       "loss_after": 1.1524115543229083,
+       "loss_before": 1.2057376191002311,
+       "n": 8,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 1.0251008948613678,
+      "loss_after": 0.9431577969892245
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.25,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "shadow_result": "upd_924eaa5199eb4aec9b03ff6fefcb88e6 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_924eaa5199eb4aec9b03ff6fefcb88e6",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 0,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.8333333333333334,
+       "loss_after": 1.0165832110689952,
+       "loss_before": 1.064600544399106,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "1": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.25
+      },
+      "retention_pass": true,
+      "commit_eligible": true,
+      "loss_before": 0.9509121121026061,
+      "loss_after": 0.8828758233743376
+     },
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.825,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_cbc0edf2db1749bcb600ef9453d52d55 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_cbc0edf2db1749bcb600ef9453d52d55",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.6,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.75,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 0.0,
+      "unchanged": 0.75,
+      "wrong": [
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "both"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "both"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "both"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "both"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "gist"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5454545454545454,
+       "loss_after": 1.1580879442710275,
+       "loss_before": 1.302103810955163,
+       "n": 11,
+       "per_class": {
+        "0": {
+         "after": 0.25,
+         "before": 0.25
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.6666666666666666,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.36363636363636365
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 0.9880338916742338,
+      "loss_after": 0.8826783776087994
+     },
+     "active_acc_after": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_290b1135a88d4980b78f90349cdd2e42 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_290b1135a88d4980b78f90349cdd2e42",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.375,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 0.75,
+      "unchanged": 0.6562,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "both"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.6666666666666666,
+       "loss_after": 1.1825915565824907,
+       "loss_before": 1.370604915843084,
+       "n": 12,
+       "per_class": {
+        "0": {
+         "after": 0.8,
+         "before": 0.2
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 1.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.3333333333333333,
+         "before": 0.3333333333333333
+        }
+       },
+       "scaffold_accuracy": 0.4166666666666667
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.059448947085038,
+      "loss_after": 0.9339479830388565
+     },
+     "active_acc_after": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.625,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_24ba6756a69140d3a6ec15b1210f9296 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_24ba6756a69140d3a6ec15b1210f9296",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.65,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 1.0,
+       "both": 0.25
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5625,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5714285714285714,
+       "loss_after": 1.1381194227676288,
+       "loss_before": 1.3221380536159881,
+       "n": 14,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.3333333333333333
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.6666666666666666,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.0,
+         "before": 0.0
+        }
+       },
+       "scaffold_accuracy": 0.5
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.1091144915429436,
+      "loss_after": 0.9549351812455658
+     },
+     "active_acc_after": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "rule_unsettled": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     },
+     "shadow_result": "upd_d30b006d939e4b76a235be5772cff2ed EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_d30b006d939e4b76a235be5772cff2ed",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.5,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.375,
+       "both": 0.125
+      },
+      "half_items": 1.0,
+      "unchanged": 0.375,
+      "wrong": [
+       [
+        "Wie viel sind 18 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 48 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Was kostet 48 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 180 plus 240 Euro?",
+        "simple"
+       ],
+       [
+        "Wie viel sind 300 plus 60 Euro?",
+        "simple"
+       ],
+       [
+        "Was kostet 60 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Was kostet 18 Euro minus 15 Prozent?",
+        "simple"
+       ],
+       [
+        "Rechne bitte 240 mal 3 aus.",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Städte und Wasser?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Vögel und Regeln?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Zeit?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Bäume und Licht?",
+        "simple"
+       ],
+       [
+        "Worum geht es im Kern: Firmen und Platz?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "simple"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "simple"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "simple"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "simple"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "simple"
+       ]
+      ]
+     },
+     "superseded": 7,
+     "rule_taught": 0,
+     "worker_gate": {
+      "held_out": {
+       "accuracy": 0.5,
+       "loss_after": 1.0695420259053794,
+       "loss_before": 1.2918725580443198,
+       "n": 18,
+       "per_class": {
+        "0": {
+         "after": 1.0,
+         "before": 0.25
+        },
+        "1": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "2": {
+         "after": 0.0,
+         "before": 1.0
+        },
+        "3": {
+         "after": 0.25,
+         "before": 0.25
+        }
+       },
+       "scaffold_accuracy": 0.5555555555555556
+      },
+      "retention_pass": false,
+      "commit_eligible": false,
+      "loss_before": 1.126826674044828,
+      "loss_after": 0.9520072392224924
+     },
+     "active_acc_after": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 0.125
+      },
+      "half_items": 0.0,
+      "unchanged": 0.7812,
+      "wrong": [
+       [
+        "Welche Vor- und Nachteile haben Sommer und Tee?",
+        "simple"
+       ],
+       [
+        "Was spricht für Auto, was für Kaffee?",
+        "gist"
+       ],
+       [
+        "Welche Vor- und Nachteile haben Stadt und Miete?",
+        "simple"
+       ],
+       [
+        "Was spricht für Kauf, was für Sommer?",
+        "gist"
+       ],
+       [
+        "Was spricht für Bus, was für Land?",
+        "gist"
+       ],
+       [
+        "Wäge Land gegen Bahn ab.",
+        "gist"
+       ],
+       [
+        "Wäge Miete gegen Rad ab.",
+        "gist"
+       ],
+       [
+        "Wie viel ist die Hälfte von 300 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 84 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 84 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 200 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 24 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 240 geteilt durch zwei?",
+        "detail"
+       ],
+       [
+        "Wie viel ist die Hälfte von 120 Euro?",
+        "detail"
+       ],
+       [
+        "Wie viel ergibt 160 geteilt durch zwei?",
+        "detail"
+       ]
+      ]
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_924eaa5199eb4aec9b03ff6fefcb88e6",
+    "expected_parent_acc": 0.825,
+    "after_rollback_acc": 0.825,
+    "restored": true
+   },
+   "restart_same_session": true,
+   "runtime": {
+    "final": {
+     "all": 0.85,
+     "half_items": 1.0,
+     "unchanged": 0.8125
+    },
+    "final_source_on_half": {
+     "HUMAN_ROUTE_RULE": 1.0
+    },
+    "before_rule": {
+     "all": 0.65,
+     "half_items": 0.0,
+     "unchanged": 0.8125
+    },
+    "rule_source_on_half": 1.0,
+    "rule_touches_other_items": 0,
+    "rule_source_after_undo": 0,
+    "after_undo": {
+     "all": 0.65,
+     "half_items": 0.0,
+     "unchanged": 0.8125
+    }
+   },
+   "lifecycle": [],
+   "nowords_head": {
+    "simple": 0.0,
+    "routes": [
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail",
+     "detail"
+    ]
+   }
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261027/z6j-relative-gate/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6j": {
+  "J1_adaptive_all": true,
+  "J2_fixed_learns": true,
+  "J3_control_not_clean": true
+ },
+ "verdict_z6j": "Z6J_PASS"
+}

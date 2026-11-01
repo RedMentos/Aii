@@ -1,0 +1,79 @@
+"""Pinned artifact installation; Android builds the native runner locally."""
+import argparse
+import fcntl
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tarfile
+import zipfile
+from .common import APP,atomic_write,dumps,file_hash,Unavailable
+from .config import initialize,home_path
+from .models import ModelManager,catalog,platform_tag,download_file
+
+def extract(archive,dest):
+    dest=Path(dest);dest.mkdir(parents=True,exist_ok=True)
+    with tarfile.open(archive) as t:
+        seen=set()
+        for m in t.getmembers():
+            p=(dest/m.name).resolve()
+            if not p.is_relative_to(dest.resolve()) or m.name in seen or not (m.isfile() or m.isdir() or m.issym()):raise ValueError('Unsicheres Archivmitglied')
+            seen.add(m.name)
+            if m.issym() and not (p.parent/m.linkname).resolve().is_relative_to(dest.resolve()):raise ValueError('Symlink außerhalb Archiv')
+        t.extractall(dest,**({'filter':'data'} if hasattr(tarfile,'data_filter') else {}))
+
+def run_build(cmd,home):
+    print('Native build: '+' '.join(map(str,cmd)),flush=True)
+    with open(home/'logs/build.log','ab') as log:
+        p=subprocess.Popen(list(map(str,cmd)),stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        for line in iter(p.stdout.readline,b''):log.write(line);log.flush();print(line.decode(errors='replace').rstrip(),flush=True)
+        if p.wait():raise RuntimeError('Build fehlgeschlagen; siehe logs/build.log')
+
+def install_native(home,progress=print):
+    specs=catalog();tag=platform_tag();r=specs['runner'];binary=home/'bin/llama-server';manifest=home/'config/runner.json'
+    prior=json.loads(manifest.read_text()) if manifest.exists() else {}
+    if not binary.is_file() or prior.get('tag')!=r['tag'] or prior.get('binary_sha256')!=file_hash(binary):
+        if tag in r['linux_binaries']:
+            archive=home/'tmp/llama-bin.tar.gz';download_file(r['linux_binaries'][tag],archive,progress);dest=home/'bin'/r['tag'];extract(archive,dest)
+            found=list(dest.rglob('llama-server'))
+            if len(found)!=1:raise Unavailable('llama-server im Release nicht eindeutig')
+            target=found[0];target.chmod(0o700)
+        else:
+            archive=home/'tmp/llama-source.tar.gz';download_file({'url':r['source_url'],'sha256':r['source_sha256'],'size':r['source_size']},archive,progress)
+            dest=home/'tmp'/r['tag'];extract(archive,dest);source=dest/('llama.cpp-'+r['tag']);build=home/'bin'/('build-'+r['tag'])
+            run_build(['cmake','-S',source,'-B',build,'-G','Ninja','-DCMAKE_BUILD_TYPE=Release','-DGGML_NATIVE=OFF','-DGGML_OPENMP=OFF','-DGGML_LLAMAFILE=OFF','-DLLAMA_OPENSSL=OFF','-DLLAMA_BUILD_TESTS=OFF','-DLLAMA_BUILD_EXAMPLES=OFF','-DLLAMA_BUILD_SERVER=ON','-DLLAMA_BUILD_UI=OFF','-DLLAMA_USE_PREBUILT_UI=OFF'],home)
+            run_build(['cmake','--build',build,'--target','llama-server','--parallel','2'],home);target=build/'bin/llama-server'
+        tmp=home/'bin/llama-server.new';tmp.unlink(missing_ok=True);tmp.symlink_to(target);os.replace(tmp,binary)
+        version=subprocess.run([str(binary),'--version'],capture_output=True,text=True,timeout=15)
+        if version.returncode:raise Unavailable('llama-server startet nicht: '+version.stderr[-600:])
+        atomic_write(manifest,dumps({'tag':r['tag'],'platform':tag,'binary_sha256':file_hash(binary),'version':(version.stdout+version.stderr).strip(),'phone_runner_proof':None}))
+    needle_dir=home/'models/needle';(needle_dir/'needle').chmod(0o700)
+    worker=home/'bin/needle-worker';source=APP/'scripts/needle_worker.cpp';wm=home/'config/needle-worker.json';marker=json.loads(wm.read_text()) if wm.exists() else {}
+    if worker.is_file() and marker.get('source_sha256')==file_hash(source) and marker.get('binary_sha256')==file_hash(worker):return
+    compiler=shutil.which('clang++') or shutil.which('g++')
+    if not compiler:raise Unavailable('C++ compiler fehlt')
+    args=[compiler,'-std=c++17','-O2','-I',str(needle_dir),str(source)]
+    if tag.startswith('linux'):
+        wheel=specs['models']['needle']['wheels'][tag];path=home/'tmp'/wheel['local_name'];download_file(wheel,path,progress)
+        with zipfile.ZipFile(path) as z:
+            names=[n for n in z.namelist() if n.endswith('libneedle3.so')]
+            if len(names)!=1:raise Unavailable('Needle shared library fehlt')
+            atomic_write(home/'bin/libneedle.so',z.read(names[0]))
+        args += ['-L'+str(home/'bin'),'-lneedle','-Wl,-rpath,$ORIGIN']
+    else:args += [str(needle_dir/'libneedle.a')]
+    tmp=worker.with_suffix('.new');args += ['-pthread','-lm','-ldl','-o',str(tmp)]
+    try:
+        run_build(args,home);tmp.chmod(0o700);os.replace(tmp,worker)
+        atomic_write(wm,dumps({'source_sha256':file_hash(source),'binary_sha256':file_hash(worker),'platform':tag,'native_revision':specs['models']['needle']['revision']}))
+    except Exception as e:
+        tmp.unlink(missing_ok=True);progress('C2-Embedding-Worker nicht gebaut: '+str(e)+'. Native CLI bleibt verfügbar; Training bleibt gesperrt.')
+
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--home');a=p.parse_args();home=home_path(a.home)
+    (home/'data').mkdir(parents=True,exist_ok=True)
+    with (home/'data/coordinator.lock').open('a+') as lock:
+        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError as exc:raise Unavailable('V13 läuft oder baut bereits; Chat/Installer zuerst schließen') from exc
+        initialize(home);ModelManager(home).install();install_native(home)
+if __name__=='__main__':main()

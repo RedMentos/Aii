@@ -13,6 +13,10 @@ from v13.common import file_hash
 
 
 class AcceptanceCheckpoint(unittest.TestCase):
+    def test_current_process_identity_matches_proc_self_even_with_pid_remapping(self):
+        fields = Path('/proc/self/stat').read_text().rsplit(')', 1)[1].split()
+        self.assertEqual(process_identity(os.getpid()), {'pid': os.getpid(), 'start_tick': fields[19]})
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

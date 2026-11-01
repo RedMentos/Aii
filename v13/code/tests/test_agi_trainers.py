@@ -110,3 +110,57 @@ class Trainers(unittest.TestCase):
         self.assertIn('"active":"none"',operator_command(self.r,['trainer']))
 
 if __name__=='__main__':unittest.main()
+
+
+class BodyTrainerChoice(Trainers):
+    """WP-BP2c: generated locality anchors / minor-subspace LoRA are opt-in per device; default path unchanged."""
+    def test_default_is_plain_lora_and_body_keys_switch_the_trainer(self):
+        self.r.models = FakeModels(self.gguf)
+        with mock.patch.object(tr, '_torch', return_value=True):
+            tr.choose(self.g, self.r, 'lora', str(self.master))
+            self.assertEqual(self.g.weights.trainer.method, 'lora-torch-cpu')
+            tr.set_lora_cfg(self.g, self.r, {'locality_gen': 2, 'lora_subspace': 'minor'})
+            t = self.g.weights.trainer
+            self.assertEqual(t.method, 'lora-torch-cpu-bjepa')
+            self.assertEqual((t.cfg['locality_gen'], t.cfg['lora_subspace'], t.cfg['jepa_weight']), (2, 'minor', 0.))  # JEPA never on by accident
+            self.assertEqual((t.cfg['lr'], t.cfg['anchor_weight']), (3e-4, 8.))  # live measured values kept
+            self.assertEqual(t.role, 'C3_LANGUAGE')
+            self.assertTrue(callable(t.evaluator))
+            tr.set_lora_cfg(self.g, self.r, {'anchor_weight': 6})
+            self.assertEqual(self.g.weights.trainer.method, 'lora-torch-cpu')
+            with self.assertRaises(ValueError):
+                tr.set_lora_cfg(self.g, self.r, {'locality_genn': 2})
+
+    def test_gate_held_out_switch_applies_to_either_trainer_class(self):
+        self.r.models = FakeModels(self.gguf)
+
+        class FakeLlama:
+            def __init__(s, *a, **k):
+                pass
+        with mock.patch.object(tr, '_torch', return_value=True), mock.patch('v13.lora_trainer.LlamaCppEvaluator', FakeLlama):
+            tr.choose(self.g, self.r, 'lora', str(self.master))
+            self.assertFalse(getattr(self.g.weights.trainer.evaluator('x.gguf'), 'held_out', False))
+            tr.set_lora_cfg(self.g, self.r, {'gate_held_out': True})
+            t = self.g.weights.trainer
+            self.assertEqual(t.method, 'lora-torch-cpu')  # evaluation switch only, same trainer class
+            self.assertTrue(t.evaluator('x.gguf').held_out)
+            tr.set_lora_cfg(self.g, self.r, {'locality_gen': 2})
+            self.assertTrue(self.g.weights.trainer.evaluator('x.gguf').held_out)
+
+    def test_gate_adds_held_out_person_near_misses(self):
+        calls = {}
+
+        class Inner:
+            def evaluate(s, items, probes, cancel=None, deadline=None, near_miss=None):
+                calls['near'] = [q for q, _ in near_miss]
+                return {'base_eval': {'overall': 1.}, 'candidate_eval': {'overall': 1.}, 'rows': {}}
+
+            def close(s):
+                pass
+        item = [{'prompt': 'What is the name of my cat?', 'target': 'Your cat is called Mitzi.'}]
+        tr.LiveNearMissEvaluator(Inner()).evaluate(item, [])
+        base = list(calls['near'])
+        tr.LiveNearMissEvaluator(Inner(), held_out_subjects=True).evaluate(item, [])
+        extra = [q for q in calls['near'] if q not in base]
+        self.assertEqual(len(extra), 2)
+        self.assertTrue(all(w in ' '.join(extra) for w in ('wife', 'nephew')))

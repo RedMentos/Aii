@@ -1,0 +1,24 @@
+test_provisional_or_dream_confirmations_do_not_count (test_neuromod.ConsolidationTagTests.test_provisional_or_dream_confirmations_do_not_count) ... ok
+test_single_surprise_never_tags_and_confirmations_plus_stability_do (test_neuromod.ConsolidationTagTests.test_single_surprise_never_tags_and_confirmations_plus_stability_do) ... ok
+test_budget_scales_by_gain_times_factor_and_observe_validates_it (test_neuromod.GateTests.test_budget_scales_by_gain_times_factor_and_observe_validates_it) ... ok
+test_learner_training_config_uses_gate_and_record_only_stays_closed (test_neuromod.GateTests.test_learner_training_config_uses_gate_and_record_only_stays_closed) ... ok
+test_retention_failures_reopen_age_plasticity (test_neuromod.GateTests.test_retention_failures_reopen_age_plasticity) ... ok
+test_veto_blocks_budget_decays_and_can_be_cleared (test_neuromod.GateTests.test_veto_blocks_budget_decays_and_can_be_cleared) ... ok
+test_delta_meta_and_modes (test_neuromod.LocalErrorAndMeta.test_delta_meta_and_modes) ... ok
+test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event (test_neuromod.ModulatorTests.test_credit_map_projects_unpathed_modulator_onto_eligible_paths_of_same_event) ... ok
+test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates (test_neuromod.ModulatorTests.test_epistemic_and_instrumental_stay_separate_and_dream_never_modulates) ... ok
+test_existing_learner_packets_feed_the_bus (test_neuromod.ModulatorTests.test_existing_learner_packets_feed_the_bus) ... ok
+test_provisional_counts_half_and_bad_channels_are_rejected (test_neuromod.ModulatorTests.test_provisional_counts_half_and_bad_channels_are_rejected) ... ok
+test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path (test_neuromod.SleepAndHookTests.test_ag6_stage_traces_veto_blocks_and_gate_failure_reopens_path) ... ok
+test_sleep_c_reports_neuromodulation_and_operator_command (test_neuromod.SleepAndHookTests.test_sleep_c_reports_neuromodulation_and_operator_command) ... ok
+test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths (test_neuromod.SleepAndHookTests.test_sleep_ends_fast_traces_keeps_tags_and_prunes_dead_paths) ... ok
+test_detailed_trace_cap_keeps_latest_mandatory_human_observations (test_neuromod.TraceTests.test_detailed_trace_cap_keeps_latest_mandatory_human_observations) ... ok
+test_detailed_traces_are_selective (test_neuromod.TraceTests.test_detailed_traces_are_selective) ... ok
+test_sync_is_restart_stable_and_counts_each_packet_once (test_neuromod.TraceTests.test_sync_is_restart_stable_and_counts_each_packet_once) ... ok
+test_trace_grows_with_activity_and_decays_per_event_on_two_timescales (test_neuromod.TraceTests.test_trace_grows_with_activity_and_decays_per_event_on_two_timescales) ... ok
+test_unknown_path_keeps_only_floor_and_human_label_opens_gate (test_neuromod.TraceTests.test_unknown_path_keeps_only_floor_and_human_label_opens_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.362s
+
+OK

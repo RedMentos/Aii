@@ -1,0 +1,24 @@
+{
+  "status": "REBOUND_BEFORE_FIRST_NATIVE_INFERENCE",
+  "previous_preregistration_sha256": "d16784c31567f2362594ff88b7cbe8ac0e546956df37dc331a907b816dd731c8",
+  "new_preregistration_sha256": "4cfaddad1d9fadd23b5810c7cd4ddc0637e0e9b59d6d6fcd007fc22b5870b1d0",
+  "reason": "Bind nested runtime Python dependencies, including AG6 modules, after durable restoration. Earlier source inventory covered only top-level runtime files. No original ablation native calls have occurred.",
+  "old_bound_source_count": 100,
+  "new_bound_source_count": 121,
+  "native_artifacts_byte_identical": true,
+  "fixed_inputs_and_arm_sources_identical": true,
+  "unchanged_fields_checked": [
+    "fixtures",
+    "fixtures_sha256",
+    "consumer_system",
+    "consumer_schema",
+    "consumer_schema_sha256",
+    "config",
+    "arm_order",
+    "arm_source_sha256",
+    "native_oracle_visibility",
+    "consumer_boundary"
+  ],
+  "original_registration_preserved": "docs/proofs/continuation-20261011/source-handoff-ablation/report.preregistration.json",
+  "canonical_gate_pass": false
+}

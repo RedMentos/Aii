@@ -1,0 +1,50 @@
+{
+ "schema": "v13-r4-calc-recheck-prereg-v1",
+ "created_utc": "2026-10-13T03:33:59Z",
+ "dev_sha256": {
+  "7": "15341772059a7b32f4799a74963df4f52d855c5103943e9faec1ad749e6941f4",
+  "11": "d6f3a7b6fc2a23f17b3fd3d201273bbce97018313a7fc4db2a1373e0764daf5d"
+ },
+ "dev": {
+  "c3_alone": {
+   "pass": 81,
+   "calc_turns": 0,
+   "mean_turn_s": 4.58,
+   "by_kind": {
+    "summary": 15,
+    "long": 30,
+    "notes": 27,
+    "compare": 9
+   }
+  },
+  "calc_always": {
+   "pass": 73,
+   "calc_turns": 53,
+   "mean_turn_s": 7.49,
+   "by_kind": {
+    "summary": 12,
+    "long": 30,
+    "notes": 27,
+    "compare": 4
+   }
+  },
+  "calc_uncertain": {
+   "pass": 83,
+   "calc_turns": 28,
+   "mean_turn_s": 6.08,
+   "by_kind": {
+    "summary": 19,
+    "long": 30,
+    "notes": 27,
+    "compare": 7
+   }
+  }
+ },
+ "dev_expression_correct": 30,
+ "threshold": 0.5816736817359924,
+ "primary": "calc_uncertain",
+ "fresh_task_seed": 13,
+ "decision_rule": "On fresh seed 13 the preregistered primary policy is CALC_SUPPORTED when it passes at least 5 net more tasks than c3_alone (paired), the two-sided sign test gives p < .05, and no task kind loses more than 2 tasks against c3_alone. Otherwise NOT_SUPPORTED. The other policies are reported, not judged. No runtime change follows from this script.",
+ "script_sha256": "4796ad9f97929506d697f80824223b9de2ba299b212b5066bb9b7920aa73bb50",
+ "part3_script_sha256": "5a9e4cfb965752411e73b38efd067369fd20a7231f76c88991ed63fe2565566d"
+}

@@ -43,6 +43,9 @@ belegtes Lernen des kleinen Routing-Heads sowie persistenter Self-/World-State.
 B2-Kontext und vorhandene Teile bleiben erhalten. Keine automatische
 Gewichtsaktivierung. Befehle und genaue Lernschritte stehen in README.md.
 
+Werkzeug-Vorhersage messen (ein Befehl, Ergebnis-ZIP landet in Downloads):
+   bash WERKZEUG_TESTEN.sh          Anleitung: WERKZEUG_ANLEITUNG.txt
+
 Gemeinsamer Testlauf (Chat vorher mit :shutdown beenden):
    bash TESTEN.sh
 Kurzlauf: bash TESTEN.sh --quick

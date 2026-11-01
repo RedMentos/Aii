@@ -1,0 +1,10 @@
+{"seed": 13, "arm": "dream_no_writes", "A": {"recall": 0.25, "paraphrase": 0.25}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.4166666666666667}
+{"seed": 13, "arm": "dream_policy_only", "A": {"recall": 0.25, "paraphrase": 0.0}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.25}
+{"seed": 13, "arm": "replay_dream_policy", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.25}
+{"seed": 13, "arm": "replay_dream_validated", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.25}
+{"seed": 21, "arm": "dream_policy_only", "A": {"recall": 0.25, "paraphrase": 0.0}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.2, "probe_retention": 0.16666666666666666}
+{"seed": 21, "arm": "replay_dream_policy", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.16666666666666666}
+{"seed": 21, "arm": "replay_dream_validated", "A": {"recall": 1.0, "paraphrase": 0.75}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.25}
+{"seed": 34, "arm": "dream_policy_only", "A": {"recall": 0.25, "paraphrase": 0.0}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.4, "probe_retention": 0.08333333333333333}
+{"seed": 34, "arm": "replay_dream_policy", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 0.8, "probe_retention": 0.25}
+{"seed": 34, "arm": "replay_dream_validated", "A": {"recall": 1.0, "paraphrase": 0.5}, "B": {"recall": 1.0, "paraphrase": 1.0}, "near_miss_leak": 1.0, "probe_retention": 0.16666666666666666}

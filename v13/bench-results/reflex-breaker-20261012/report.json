@@ -1,0 +1,428 @@
+{
+ "prereg": {
+  "schema": "ABLATION_REFLEX_BREAKER_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "hours": 24,
+  "mean_gap_s": 30,
+  "streams": {
+   "outage": "healthy exp(2h, p_fail .02) / outage exp(10min, p_fail .95)",
+   "flaky": "iid p_fail .25"
+  },
+  "cost": {
+   "failed_call": 1.0,
+   "skipped_call": 0.3,
+   "ok_call": 0.0
+  },
+  "primary": "mean cost per turn on the outage stream (lower is better)",
+  "win_rule": "breaker beats never, skip_all and random in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "streams": {
+  "outage": {
+   "per_seed": {
+    "13": {
+     "breaker": {
+      "primary": 0.04466,
+      "skipped": 107,
+      "failed_calls": 97,
+      "turns": 2891
+     },
+     "never": {
+      "primary": 0.06468,
+      "skipped": 0,
+      "failed_calls": 187,
+      "turns": 2891
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2891,
+      "failed_calls": 0,
+      "turns": 2891
+     },
+     "random": {
+      "primary": 0.07371,
+      "skipped": 107,
+      "failed_calls": 181,
+      "turns": 2891
+     }
+    },
+    "14": {
+     "breaker": {
+      "primary": 0.04273,
+      "skipped": 112,
+      "failed_calls": 91,
+      "turns": 2916
+     },
+     "never": {
+      "primary": 0.0631,
+      "skipped": 0,
+      "failed_calls": 184,
+      "turns": 2916
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2916,
+      "failed_calls": 0,
+      "turns": 2916
+     },
+     "random": {
+      "primary": 0.07257,
+      "skipped": 112,
+      "failed_calls": 178,
+      "turns": 2916
+     }
+    },
+    "15": {
+     "breaker": {
+      "primary": 0.04256,
+      "skipped": 80,
+      "failed_calls": 97,
+      "turns": 2843
+     },
+     "never": {
+      "primary": 0.05733,
+      "skipped": 0,
+      "failed_calls": 163,
+      "turns": 2843
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2843,
+      "failed_calls": 0,
+      "turns": 2843
+     },
+     "random": {
+      "primary": 0.06402,
+      "skipped": 80,
+      "failed_calls": 158,
+      "turns": 2843
+     }
+    },
+    "16": {
+     "breaker": {
+      "primary": 0.08769,
+      "skipped": 284,
+      "failed_calls": 157,
+      "turns": 2762
+     },
+     "never": {
+      "primary": 0.14446,
+      "skipped": 0,
+      "failed_calls": 399,
+      "turns": 2762
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2762,
+      "failed_calls": 0,
+      "turns": 2762
+     },
+     "random": {
+      "primary": 0.163,
+      "skipped": 284,
+      "failed_calls": 365,
+      "turns": 2762
+     }
+    },
+    "17": {
+     "breaker": {
+      "primary": 0.07239,
+      "skipped": 248,
+      "failed_calls": 139,
+      "turns": 2948
+     },
+     "never": {
+      "primary": 0.12008,
+      "skipped": 0,
+      "failed_calls": 354,
+      "turns": 2948
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2948,
+      "failed_calls": 0,
+      "turns": 2948
+     },
+     "random": {
+      "primary": 0.13582,
+      "skipped": 248,
+      "failed_calls": 326,
+      "turns": 2948
+     }
+    }
+   },
+   "wins_of_5": {
+    "never": 5,
+    "skip_all": 5,
+    "random": 5
+   },
+   "summary": {
+    "breaker": {
+     "primary": {
+      "mean": 0.058,
+      "sd": 0.0208
+     },
+     "skipped": {
+      "mean": 166.2,
+      "sd": 92.7912
+     },
+     "failed_calls": {
+      "mean": 116.2,
+      "sd": 29.8195
+     }
+    },
+    "never": {
+     "primary": {
+      "mean": 0.0899,
+      "sd": 0.0397
+     },
+     "skipped": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "failed_calls": {
+      "mean": 257.4,
+      "sd": 110.2692
+     }
+    },
+    "skip_all": {
+     "primary": {
+      "mean": 0.3,
+      "sd": 0.0
+     },
+     "skipped": {
+      "mean": 2872.0,
+      "sd": 72.481
+     },
+     "failed_calls": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "random": {
+     "primary": {
+      "mean": 0.1018,
+      "sd": 0.0446
+     },
+     "skipped": {
+      "mean": 166.2,
+      "sd": 92.7912
+     },
+     "failed_calls": {
+      "mean": 241.6,
+      "sd": 96.2512
+     }
+    }
+   }
+  },
+  "flaky": {
+   "per_seed": {
+    "13": {
+     "breaker": {
+      "primary": 0.25759,
+      "skipped": 165,
+      "failed_calls": 689,
+      "turns": 2867
+     },
+     "never": {
+      "primary": 0.25532,
+      "skipped": 0,
+      "failed_calls": 732,
+      "turns": 2867
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2867,
+      "failed_calls": 0,
+      "turns": 2867
+     },
+     "random": {
+      "primary": 0.2541,
+      "skipped": 165,
+      "failed_calls": 679,
+      "turns": 2867
+     }
+    },
+    "14": {
+     "breaker": {
+      "primary": 0.24344,
+      "skipped": 157,
+      "failed_calls": 663,
+      "turns": 2917
+     },
+     "never": {
+      "primary": 0.23963,
+      "skipped": 0,
+      "failed_calls": 699,
+      "turns": 2917
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2917,
+      "failed_calls": 0,
+      "turns": 2917
+     },
+     "random": {
+      "primary": 0.24309,
+      "skipped": 157,
+      "failed_calls": 662,
+      "turns": 2917
+     }
+    },
+    "15": {
+     "breaker": {
+      "primary": 0.25137,
+      "skipped": 228,
+      "failed_calls": 645,
+      "turns": 2838
+     },
+     "never": {
+      "primary": 0.2456,
+      "skipped": 0,
+      "failed_calls": 697,
+      "turns": 2838
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2838,
+      "failed_calls": 0,
+      "turns": 2838
+     },
+     "random": {
+      "primary": 0.2475,
+      "skipped": 228,
+      "failed_calls": 634,
+      "turns": 2838
+     }
+    },
+    "16": {
+     "breaker": {
+      "primary": 0.25993,
+      "skipped": 215,
+      "failed_calls": 649,
+      "turns": 2745
+     },
+     "never": {
+      "primary": 0.25647,
+      "skipped": 0,
+      "failed_calls": 704,
+      "turns": 2745
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2745,
+      "failed_calls": 0,
+      "turns": 2745
+     },
+     "random": {
+      "primary": 0.25228,
+      "skipped": 215,
+      "failed_calls": 628,
+      "turns": 2745
+     }
+    },
+    "17": {
+     "breaker": {
+      "primary": 0.25131,
+      "skipped": 162,
+      "failed_calls": 689,
+      "turns": 2935
+     },
+     "never": {
+      "primary": 0.24872,
+      "skipped": 0,
+      "failed_calls": 730,
+      "turns": 2935
+     },
+     "skip_all": {
+      "primary": 0.3,
+      "skipped": 2935,
+      "failed_calls": 0,
+      "turns": 2935
+     },
+     "random": {
+      "primary": 0.25233,
+      "skipped": 162,
+      "failed_calls": 692,
+      "turns": 2935
+     }
+    }
+   },
+   "wins_of_5": {
+    "never": 0,
+    "skip_all": 5,
+    "random": 1
+   },
+   "summary": {
+    "breaker": {
+     "primary": {
+      "mean": 0.2527,
+      "sd": 0.0064
+     },
+     "skipped": {
+      "mean": 185.4,
+      "sd": 33.3961
+     },
+     "failed_calls": {
+      "mean": 667.0,
+      "sd": 21.166
+     }
+    },
+    "never": {
+     "primary": {
+      "mean": 0.2491,
+      "sd": 0.007
+     },
+     "skipped": {
+      "mean": 0.0,
+      "sd": 0.0
+     },
+     "failed_calls": {
+      "mean": 712.4,
+      "sd": 17.1843
+     }
+    },
+    "skip_all": {
+     "primary": {
+      "mean": 0.3,
+      "sd": 0.0
+     },
+     "skipped": {
+      "mean": 2860.4,
+      "sd": 75.2183
+     },
+     "failed_calls": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "random": {
+     "primary": {
+      "mean": 0.2499,
+      "sd": 0.0045
+     },
+     "skipped": {
+      "mean": 185.4,
+      "sd": 33.3961
+     },
+     "failed_calls": {
+      "mean": 659.0,
+      "sd": 27.7669
+     }
+    }
+   }
+  }
+ },
+ "beats_on_outage": [
+  "never",
+  "skip_all",
+  "random"
+ ],
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic failure process, one runner, assumed costs, BOOT thresholds; imminent_timeout/critical_resource untested"
+}

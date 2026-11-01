@@ -1,0 +1,7 @@
+{
+  "status": "SUPERSEDED_BEFORE_INFERENCE",
+  "original_registration": "docs/proofs/continuation-20261011/night-firing-native-diagnostic-20261011/registration.json",
+  "original_sha256": "c17eeae9feb58346604f08e6a4fb614db54f24f3aa353871e0c0e4ba4187ef4f",
+  "native_rows_executed": 0,
+  "reason": "Isolated review reproduced native truncation race; explicitly catch struct.error before registering executable diagnostic."
+}

@@ -1,0 +1,150 @@
+{
+ "bodies": {
+  "euromoe": {
+   "router_input": "ffn_norm",
+   "runners": {
+    "q4_k_m": {
+     "calibration": {
+      "margin": 1.0,
+      "min_samples": 8,
+      "n": 96,
+      "quantile": 0.95,
+      "source": "native runner: identical text tokens after neutral preambles P0/P1/P2",
+      "status": "TUNE_CALIBRATED",
+      "thresholds": {
+       "B3.max_expert_flip_rate": 0.19992897727272727,
+       "B3.max_residual_norm_shift": 0.02718690862244647,
+       "B3.max_router_input_shift": 0.04795028991572521,
+       "B3.max_router_kl": 0.03017114987442259,
+       "report.expert_hist_shift": 0.047033655592121956,
+       "report.router_input_drift": 0.08607749245823929,
+       "report.shared_drift": 0.04455507426338909
+      }
+     },
+     "gguf": "/home/user/models/euromoe-q4_k_m.gguf",
+     "run": {
+      "seconds": 39.8,
+      "stdout": "{\"rows\":144}",
+      "vmhwm_mb": 2739.3
+     }
+    }
+   },
+   "texts": 48,
+   "top_k": 8
+  },
+  "smallthinker": {
+   "parity_f16_vs_q4_k_m": {
+    "reasons": [],
+    "summary": {
+     "expert_hist_shift": {
+      "mean": 0.024347663369631286,
+      "p95": 0.03369544400042867
+     },
+     "residual_norm_shift": {
+      "mean": 0.020449597857881863,
+      "p95": 0.03000145948531575
+     },
+     "router_input_drift": {
+      "mean": 0.02605386918031047,
+      "p95": 0.03927541952376647
+     },
+     "router_input_norm_shift": {
+      "mean": 0.020449597857881863,
+      "p95": 0.03000145948531575
+     },
+     "router_kl": {
+      "mean": 0.011065152311613027,
+      "p95": 0.020343495778156077
+     },
+     "shared_drift": {
+      "mean": 0.02605386918031047,
+      "p95": 0.03927541952376647
+     },
+     "topk_flip_rate": {
+      "mean": 0.13426143388866674,
+      "p95": 0.1686011904761905
+     }
+    },
+    "within_runner_baseline_p95": "PASS"
+   },
+   "router_input": "layer_input",
+   "runners": {
+    "f16": {
+     "calibration": {
+      "margin": 1.0,
+      "min_samples": 8,
+      "n": 96,
+      "quantile": 0.95,
+      "source": "native runner: identical text tokens after neutral preambles P0/P1/P2",
+      "status": "TUNE_CALIBRATED",
+      "thresholds": {
+       "B3.max_expert_flip_rate": 0.25223214285714285,
+       "B3.max_residual_norm_shift": 0.0641598319908224,
+       "B3.max_router_input_shift": 0.0641598319908224,
+       "B3.max_router_kl": 0.05146327283812063,
+       "report.expert_hist_shift": 0.06531037831259796,
+       "report.router_input_drift": 0.096932093347676,
+       "report.shared_drift": 0.096932093347676
+      }
+     },
+     "gguf": "/home/user/models/smallthinker-f16.gguf",
+     "run": {
+      "seconds": 108.6,
+      "stdout": "{\"rows\":144}",
+      "vmhwm_mb": 8294.3
+     }
+    },
+    "q4_k_m": {
+     "calibration": {
+      "margin": 1.0,
+      "min_samples": 8,
+      "n": 96,
+      "quantile": 0.95,
+      "source": "native runner: identical text tokens after neutral preambles P0/P1/P2",
+      "status": "TUNE_CALIBRATED",
+      "thresholds": {
+       "B3.max_expert_flip_rate": 0.25462962962962965,
+       "B3.max_residual_norm_shift": 0.07186852899299874,
+       "B3.max_router_input_shift": 0.07186852899299874,
+       "B3.max_router_kl": 0.05404059245865257,
+       "report.expert_hist_shift": 0.05902164789596332,
+       "report.router_input_drift": 0.09738006001037622,
+       "report.shared_drift": 0.09738006001037622
+      }
+     },
+     "gguf": "/home/user/models/smallthinker-q4_k_m.gguf",
+     "run": {
+      "seconds": 76.6,
+      "stdout": "{\"rows\":144}",
+      "vmhwm_mb": 4343.1
+     }
+    }
+   },
+   "texts": 48,
+   "top_k": 4
+  }
+ },
+ "evidence_level": "Linux cloud CPU llama.cpp; not Redmi",
+ "pair": {
+  "files": {
+   "euromoe": "/home/user/models/euromoe-q4_k_m.gguf",
+   "smallthinker": "/home/user/models/smallthinker-q4_k_m.gguf"
+  },
+  "note": "two plain inference processes at once (no tap, n_ctx 2048, ubatch 128, last-token output), CPU only, mmap; not phone RSS",
+  "runs": {
+   "euromoe": {
+    "seconds": 53.2,
+    "stdout": "{\"rows\":144}",
+    "vmhwm_mb": 2716.5
+   },
+   "smallthinker": {
+    "seconds": 82.3,
+    "stdout": "{\"rows\":144}",
+    "vmhwm_mb": 4317.5
+   }
+  },
+  "sum_vmhwm_mb": 7034.0
+ },
+ "schema": "v13-moe-router-native-v1",
+ "started_utc": "2026-10-12T12:00:32Z"
+}

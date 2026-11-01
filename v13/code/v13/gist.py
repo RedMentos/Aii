@@ -161,11 +161,14 @@ def for_offer(runtime,text,ref,conflict):
         runtime.store.log('gist_unavailable',None,{'error':type(exc).__name__});return None,None
 
 def operator_command(r,args):
-    """:gist [status|shadow|active|preview <Text>]"""
+    """:gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]]"""
+    if args and args[0]=='readout':
+        from .gist_readout import operator_command as readout_command
+        return readout_command(r,args[1:])
     from .age import controller as age_controller
     g=Gist(r.store,age_controller(r))
     if not args or args==['status']:return dumps(g.report())
     if args==['shadow']:return dumps({'mode':g.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':g.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args[0]=='preview' and len(args)>1:return dumps(g.report(' '.join(args[1:])))
-    raise ValueError(':gist [status|shadow|active|preview <Text>]')
+    raise ValueError(':gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]]')

@@ -1,0 +1,1456 @@
+{
+ "status": "PARTIAL_PREFIX",
+ "rows": [
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_9fd64c0814634e53b37078cf5a68301f",
+   "competence": {
+    "distance": 0.01734189,
+    "distance_mean": 0.00913017,
+    "in_domain": false,
+    "score": 1.058248,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_15aa2d2deb80497f86c5a9608aaf7e12",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.12880132,
+    "forecast": 0.03176873,
+    "mean_delta": 0.06632972
+   },
+   "ordinal": 0,
+   "outcome_text": "After doubling, the counter shows 2610.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.478952,
+   "seconds": 1.937,
+   "state": 1305,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_f95057fc648d4f44b65b3c316baa14c7",
+   "competence": {
+    "distance": 0.01734189,
+    "distance_mean": 0.00913017,
+    "in_domain": false,
+    "score": 1.058248,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_7c20ab09539649aeb1abadc4f15a3d7a",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.37349169,
+    "forecast": 0.01080891,
+    "mean_delta": 0.12867563
+   },
+   "ordinal": 1,
+   "outcome_text": "After adding 15, the counter shows 1320.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.084001,
+   "seconds": 1.523,
+   "state": 1305,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_98a607a7e2844093a804c7d5270fc874",
+   "competence": {
+    "distance": 0.01734189,
+    "distance_mean": 0.00913017,
+    "in_domain": false,
+    "score": 1.058248,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_2486ebd47cdd4029b669ed277498241d",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.31498428,
+    "forecast": 0.12387929,
+    "mean_delta": 0.07504167
+   },
+   "ordinal": 2,
+   "outcome_text": "After dividing by 4, the counter shows 326.25.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 1.650807,
+   "seconds": 1.572,
+   "state": 1305,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_e379aafb06fe4d4391af2ca7b98e32c8",
+   "competence": {
+    "distance": 0.01734189,
+    "distance_mean": 0.00913017,
+    "in_domain": false,
+    "score": 1.058248,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_ed6cdbd88b694a1b838235b1726c1112",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.57661032,
+    "forecast": 0.007565,
+    "mean_delta": 0.11177441
+   },
+   "ordinal": 3,
+   "outcome_text": "After subtracting 7, the counter shows 1298.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.067681,
+   "seconds": 1.613,
+   "state": 1305,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_9f98df8b5eeb4468b813ada1b953e8ef",
+   "competence": {
+    "distance": 0.01799792,
+    "distance_mean": 0.00938109,
+    "in_domain": false,
+    "score": 1.087332,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_6107de73f65e488e8d7889fc0114d37a",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.08029834,
+    "forecast": 0.02492691,
+    "mean_delta": 0.02017603
+   },
+   "ordinal": 4,
+   "outcome_text": "After doubling, the counter shows 3102.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 1.235472,
+   "seconds": 1.573,
+   "state": 1551,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_11629815804e42c89ff7a5069678fe6d",
+   "competence": {
+    "distance": 0.01799792,
+    "distance_mean": 0.00938109,
+    "in_domain": false,
+    "score": 1.087332,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_86e5a2c2a0d44fbfa4c49f3887b3fc74",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.22276094,
+    "forecast": 0.0193413,
+    "mean_delta": 0.08559774
+   },
+   "ordinal": 5,
+   "outcome_text": "After adding 15, the counter shows 1566.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.225956,
+   "seconds": 1.606,
+   "state": 1551,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_2660b80251744fc7ae14e0b5468f6959",
+   "competence": {
+    "distance": 0.01799792,
+    "distance_mean": 0.00938109,
+    "in_domain": false,
+    "score": 1.087332,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_b7ffa9b3b21b47d68d1c3ed22101ea3d",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.33381228,
+    "forecast": 0.25878167,
+    "mean_delta": 0.04865021
+   },
+   "ordinal": 6,
+   "outcome_text": "After dividing by 4, the counter shows 387.75.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 5.31923,
+   "seconds": 1.599,
+   "state": 1551,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_39746d8d93254f1f9fd27226abfe3d80",
+   "competence": {
+    "distance": 0.01799792,
+    "distance_mean": 0.00938109,
+    "in_domain": false,
+    "score": 1.087332,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_49b95749f86747b490a8b6493c734856",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.52439658,
+    "forecast": 0.01536478,
+    "mean_delta": 0.07175741
+   },
+   "ordinal": 7,
+   "outcome_text": "After subtracting 7, the counter shows 1544.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.214121,
+   "seconds": 1.707,
+   "state": 1551,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_826f377c7757498e9eaf58f956402d1c",
+   "competence": {
+    "distance": 0.03575706,
+    "distance_mean": 0.01102308,
+    "in_domain": false,
+    "score": 1.277649,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_058cc8cfda7c4b3483240c545c4f1ef1",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.10977238,
+    "forecast": 0.05318639,
+    "mean_delta": 0.08306634
+   },
+   "ordinal": 8,
+   "outcome_text": "After doubling, the counter shows 3642.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.640288,
+   "seconds": 1.654,
+   "state": 1821,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_ac177ee54d884de4a5ce8810214303d5",
+   "competence": {
+    "distance": 0.03575706,
+    "distance_mean": 0.01102308,
+    "in_domain": false,
+    "score": 1.277649,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_cd8a8dbcc2fe4b45875e8ea47ddd5680",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.24431752,
+    "forecast": 0.03034698,
+    "mean_delta": 0.16177584
+   },
+   "ordinal": 9,
+   "outcome_text": "After adding 15, the counter shows 1836.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.187587,
+   "seconds": 1.683,
+   "state": 1821,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_9f8182b4dbc441f8b44171dc39d57ac2",
+   "competence": {
+    "distance": 0.03575706,
+    "distance_mean": 0.01102308,
+    "in_domain": false,
+    "score": 1.277649,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_ef88520ed050448a9d85bed32614bdd5",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.29758548,
+    "forecast": 0.33938211,
+    "mean_delta": 0.11694074
+   },
+   "ordinal": 10,
+   "outcome_text": "After dividing by 4, the counter shows 455.25.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 2.902172,
+   "seconds": 1.681,
+   "state": 1821,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_16925485e26b464bb4f21c8ccc153080",
+   "competence": {
+    "distance": 0.03575706,
+    "distance_mean": 0.01102308,
+    "in_domain": false,
+    "score": 1.277649,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_9ad14fabab1e49e886c7307a1a4147b6",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.49412796,
+    "forecast": 0.02936713,
+    "mean_delta": 0.09226413
+   },
+   "ordinal": 11,
+   "outcome_text": "After subtracting 7, the counter shows 1814.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.318294,
+   "seconds": 1.935,
+   "state": 1821,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_9788a0e4c42742928db17d6d095eb96e",
+   "competence": {
+    "distance": 0.02733752,
+    "distance_mean": 0.00855622,
+    "in_domain": true,
+    "score": 0.991724,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_5e5850db12e44f8ca74a07784f15dcbd",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.20689766,
+    "forecast": 0.02717045,
+    "mean_delta": 0.13327966
+   },
+   "ordinal": 12,
+   "outcome_text": "After doubling, the counter shows 4408.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.20386,
+   "seconds": 1.857,
+   "state": 2204,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_637238d2e2164ef7994f90b205cf8dac",
+   "competence": {
+    "distance": 0.02733752,
+    "distance_mean": 0.00855622,
+    "in_domain": true,
+    "score": 0.991724,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_d7be4a384c1f439482b7ccd249843cad",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.33537954,
+    "forecast": 0.0447682,
+    "mean_delta": 0.14066944
+   },
+   "ordinal": 13,
+   "outcome_text": "After adding 15, the counter shows 2219.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.318251,
+   "seconds": 1.914,
+   "state": 2204,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_f67f9c6ffe634470b6b0be15ac338920",
+   "competence": {
+    "distance": 0.02733752,
+    "distance_mean": 0.00855622,
+    "in_domain": true,
+    "score": 0.991724,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_d4d0870873d54027b43359987bb8a4c7",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.3941268,
+    "forecast": 0.07108025,
+    "mean_delta": 0.52644885
+   },
+   "ordinal": 14,
+   "outcome_text": "After dividing by 4, the counter shows 551.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.180349,
+   "seconds": 1.859,
+   "state": 2204,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_5a9eeec56f55486ea65120aa3351df9d",
+   "competence": {
+    "distance": 0.02733752,
+    "distance_mean": 0.00855622,
+    "in_domain": true,
+    "score": 0.991724,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_917a11fd4ffb4171a8d0504a6fdd9861",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.62710082,
+    "forecast": 0.02546336,
+    "mean_delta": 0.12258365
+   },
+   "ordinal": 15,
+   "outcome_text": "After subtracting 7, the counter shows 2197.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.207722,
+   "seconds": 1.769,
+   "state": 2204,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_101c7a596e584dadaef55c08f5c3375e",
+   "competence": {
+    "distance": 0.0299069,
+    "distance_mean": 0.00857588,
+    "in_domain": true,
+    "score": 0.994002,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_750e765424c740428aa5b3a055313908",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.17324401,
+    "forecast": 0.03323889,
+    "mean_delta": 0.11148086
+   },
+   "ordinal": 16,
+   "outcome_text": "After doubling, the counter shows 5670.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.298158,
+   "seconds": 1.625,
+   "state": 2835,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_4b850f450e3945e49349d0b4b6e76bcb",
+   "competence": {
+    "distance": 0.0299069,
+    "distance_mean": 0.00857588,
+    "in_domain": true,
+    "score": 0.994002,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_288b474584ef4673a0dd8846fca09201",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.30231494,
+    "forecast": 0.0528275,
+    "mean_delta": 0.11364086
+   },
+   "ordinal": 17,
+   "outcome_text": "After adding 15, the counter shows 2850.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.464864,
+   "seconds": 1.728,
+   "state": 2835,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_1f78dda2c1e540fab6da613d3a4e9ae0",
+   "competence": {
+    "distance": 0.0299069,
+    "distance_mean": 0.00857588,
+    "in_domain": true,
+    "score": 0.994002,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_25882af7eb6449f497f60b0ed2c80ada",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.36013382,
+    "forecast": 0.34367948,
+    "mean_delta": 0.12293263
+   },
+   "ordinal": 18,
+   "outcome_text": "After dividing by 4, the counter shows 708.75.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 2.795673,
+   "seconds": 1.744,
+   "state": 2835,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_b8c4787ad82544b481fd08ac9f5bf7a7",
+   "competence": {
+    "distance": 0.0299069,
+    "distance_mean": 0.00857588,
+    "in_domain": true,
+    "score": 0.994002,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_e770a5b806e8490d972dfe8d4409b879",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.50718507,
+    "forecast": 0.0486458,
+    "mean_delta": 0.116068
+   },
+   "ordinal": 19,
+   "outcome_text": "After subtracting 7, the counter shows 2828.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.419115,
+   "seconds": 1.884,
+   "state": 2835,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_caa561cc495c43b9ba9eac42159c4054",
+   "competence": {
+    "distance": 0.03197046,
+    "distance_mean": 0.00909939,
+    "in_domain": false,
+    "score": 1.05468,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_6f145b68e3374ba7bd021687dd88e76e",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.12799249,
+    "forecast": 0.02156839,
+    "mean_delta": 0.06839012
+   },
+   "ordinal": 20,
+   "outcome_text": "After doubling, the counter shows 6106.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.315373,
+   "seconds": 1.737,
+   "state": 3053,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_dc69156b310c480dbaad3fa89f86697b",
+   "competence": {
+    "distance": 0.03197046,
+    "distance_mean": 0.00909939,
+    "in_domain": false,
+    "score": 1.05468,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_f883d8bb784b4c13b8a0766bf29e8a21",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.30553438,
+    "forecast": 0.04764839,
+    "mean_delta": 0.08446691
+   },
+   "ordinal": 21,
+   "outcome_text": "After adding 15, the counter shows 3068.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.564107,
+   "seconds": 2.414,
+   "state": 3053,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_a9cfbc63cdb04e6d8079a3fb4ff5582c",
+   "competence": {
+    "distance": 0.03197046,
+    "distance_mean": 0.00909939,
+    "in_domain": false,
+    "score": 1.05468,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_02652ca9e0a449a89f56460a3d5d51f8",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.36927715,
+    "forecast": 0.17365183,
+    "mean_delta": 0.08683494
+   },
+   "ordinal": 22,
+   "outcome_text": "After dividing by 4, the counter shows 763.25.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 1.999792,
+   "seconds": 6.399,
+   "state": 3053,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_62dd3b88e3344878b64ebf417905d64d",
+   "competence": {
+    "distance": 0.03197046,
+    "distance_mean": 0.00909939,
+    "in_domain": false,
+    "score": 1.05468,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_d022d3c742a642d7bff78de20c099b80",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.59084984,
+    "forecast": 0.02813188,
+    "mean_delta": 0.07505622
+   },
+   "ordinal": 23,
+   "outcome_text": "After subtracting 7, the counter shows 3046.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.374811,
+   "seconds": 1.763,
+   "state": 3053,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_3aa9bb7cb21746bc815b34e0863a0ca8",
+   "competence": {
+    "distance": 0.02737432,
+    "distance_mean": 0.00890275,
+    "in_domain": false,
+    "score": 1.031889,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_228bb96b31ec4f6092d9ed83fe6c114b",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.11035428,
+    "forecast": 0.03153198,
+    "mean_delta": 0.06908904
+   },
+   "ordinal": 24,
+   "outcome_text": "After doubling, the counter shows 6562.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.456396,
+   "seconds": 1.739,
+   "state": 3281,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_d78b7d15c91c4613bb61c35eede4e8ee",
+   "competence": {
+    "distance": 0.02737432,
+    "distance_mean": 0.00890275,
+    "in_domain": false,
+    "score": 1.031889,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_1d7e136f419e465f8794f83b0bd97b15",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.23906508,
+    "forecast": 0.05819873,
+    "mean_delta": 0.08675327
+   },
+   "ordinal": 25,
+   "outcome_text": "After adding 15, the counter shows 3296.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.670853,
+   "seconds": 1.588,
+   "state": 3281,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_69e589db86c44cbb825fddd7bec96480",
+   "competence": {
+    "distance": 0.02737432,
+    "distance_mean": 0.00890275,
+    "in_domain": false,
+    "score": 1.031889,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_70e8216f295743c09d8feb522bf411a4",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.29581276,
+    "forecast": 0.1254618,
+    "mean_delta": 0.07668852
+   },
+   "ordinal": 26,
+   "outcome_text": "After dividing by 4, the counter shows 820.25.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 1.635992,
+   "seconds": 1.542,
+   "state": 3281,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_20e70a08d8e14173a67f34ce427d7553",
+   "competence": {
+    "distance": 0.02737432,
+    "distance_mean": 0.00890275,
+    "in_domain": false,
+    "score": 1.031889,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_da96d6d94dfa4d2593d95db4f4d55f04",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.47494391,
+    "forecast": 0.02257992,
+    "mean_delta": 0.07495178
+   },
+   "ordinal": 27,
+   "outcome_text": "After subtracting 7, the counter shows 3274.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.301259,
+   "seconds": 1.679,
+   "state": 3281,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_43d8724caa784426b93989a042e8b79f",
+   "competence": {
+    "distance": 0.02919847,
+    "distance_mean": 0.00871628,
+    "in_domain": false,
+    "score": 1.010276,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_ab4c16b0be21435d9ee313d67e8986df",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.07693955,
+    "forecast": 0.02502616,
+    "mean_delta": 0.04098181
+   },
+   "ordinal": 28,
+   "outcome_text": "After doubling, the counter shows 8634.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.610665,
+   "seconds": 1.868,
+   "state": 4317,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_18fdc781734a4f32a1987ad897f26da8",
+   "competence": {
+    "distance": 0.02919847,
+    "distance_mean": 0.00871628,
+    "in_domain": false,
+    "score": 1.010276,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_3f2acc2ba87847398ebce0da761a6336",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.26202768,
+    "forecast": 0.07350393,
+    "mean_delta": 0.09382337
+   },
+   "ordinal": 29,
+   "outcome_text": "After adding 15, the counter shows 4332.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.783429,
+   "seconds": 1.716,
+   "state": 4317,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_674dd8a31e7c4d8cbb562d64acaeeda3",
+   "competence": {
+    "distance": 0.02919847,
+    "distance_mean": 0.00871628,
+    "in_domain": false,
+    "score": 1.010276,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_558a5ef66d3f47a380f4cdbb8401feff",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.33919276,
+    "forecast": 0.19342701,
+    "mean_delta": 0.07826683
+   },
+   "ordinal": 30,
+   "outcome_text": "After dividing by 4, the counter shows 1079.25.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 2.471379,
+   "seconds": 1.659,
+   "state": 4317,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_67c0baf63cf84e22b2de4a1ca6a84b09",
+   "competence": {
+    "distance": 0.02919847,
+    "distance_mean": 0.00871628,
+    "in_domain": false,
+    "score": 1.010276,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_28db1a70841641d59a0982e8d3a7ff6e",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.55269696,
+    "forecast": 0.0230818,
+    "mean_delta": 0.08138735
+   },
+   "ordinal": 31,
+   "outcome_text": "After subtracting 7, the counter shows 4310.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.283604,
+   "seconds": 1.665,
+   "state": 4317,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_7a5ee1c34c494842bf7fcf031c7b8159",
+   "competence": {
+    "distance": 0.03118958,
+    "distance_mean": 0.00981143,
+    "in_domain": false,
+    "score": 1.13721,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_e72204d240ef417dbba89cc8a0c0af8a",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.11479285,
+    "forecast": 0.01669953,
+    "mean_delta": 0.0779708
+   },
+   "ordinal": 32,
+   "outcome_text": "After doubling, the counter shows 8662.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.214177,
+   "seconds": 1.655,
+   "state": 4331,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_acc3e3f23feb40598498b625a348c1fd",
+   "competence": {
+    "distance": 0.03118958,
+    "distance_mean": 0.00981143,
+    "in_domain": false,
+    "score": 1.13721,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_4328775cd48d4e509e7f78446ebd8769",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.247873,
+    "forecast": 0.06097374,
+    "mean_delta": 0.1327652
+   },
+   "ordinal": 33,
+   "outcome_text": "After adding 15, the counter shows 4346.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.45926,
+   "seconds": 1.905,
+   "state": 4331,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_5a0939154fef4663a2203476d45a6e26",
+   "competence": {
+    "distance": 0.03118958,
+    "distance_mean": 0.00981143,
+    "in_domain": false,
+    "score": 1.13721,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_06f8583f6c6a477d91ebbfe6aa6570b0",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.32915762,
+    "forecast": 0.26912887,
+    "mean_delta": 0.10260959
+   },
+   "ordinal": 34,
+   "outcome_text": "After dividing by 4, the counter shows 1082.75.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 2.622843,
+   "seconds": 1.751,
+   "state": 4331,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_e9dd72f17db3455482977e86369057ee",
+   "competence": {
+    "distance": 0.03118958,
+    "distance_mean": 0.00981143,
+    "in_domain": false,
+    "score": 1.13721,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_6a9c814d2b11472da995605f5e0f898b",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.54288147,
+    "forecast": 0.04860295,
+    "mean_delta": 0.13700845
+   },
+   "ordinal": 35,
+   "outcome_text": "After subtracting 7, the counter shows 4324.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.354744,
+   "seconds": 1.634,
+   "state": 4331,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_f006e56006554135938ebbf2f5b38fdf",
+   "competence": {
+    "distance": 0.05303883,
+    "distance_mean": 0.01354144,
+    "in_domain": false,
+    "score": 1.569545,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_ab453b074e9f4201bbb96d8a49dbadf4",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.17641969,
+    "forecast": 0.042697,
+    "mean_delta": 0.12581288
+   },
+   "ordinal": 36,
+   "outcome_text": "After doubling, the counter shows 9000.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.339369,
+   "seconds": 1.755,
+   "state": 4500,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_496bcc883c344af8b7e72abfaf2b0103",
+   "competence": {
+    "distance": 0.05303883,
+    "distance_mean": 0.01354144,
+    "in_domain": false,
+    "score": 1.569545,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_a2a3f193bc40493d9d77af27dc360008",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.22619689,
+    "forecast": 0.09744701,
+    "mean_delta": 0.16469405
+   },
+   "ordinal": 37,
+   "outcome_text": "After adding 15, the counter shows 4515.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.591685,
+   "seconds": 1.918,
+   "state": 4500,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_68e9e27880c84e208b2a1cc417be7759",
+   "competence": {
+    "distance": 0.05303883,
+    "distance_mean": 0.01354144,
+    "in_domain": false,
+    "score": 1.569545,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_5382b53e07ce48e5a03b420cf6cacbdd",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.30140476,
+    "forecast": 0.17389584,
+    "mean_delta": 0.40086395
+   },
+   "ordinal": 38,
+   "outcome_text": "After dividing by 4, the counter shows 1125.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.576951,
+   "seconds": 1.629,
+   "state": 4500,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_399b64915a5d4ab8a5d5a503d188524d",
+   "competence": {
+    "distance": 0.05303883,
+    "distance_mean": 0.01354144,
+    "in_domain": false,
+    "score": 1.569545,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_5d7af5331a914a6986e3fd8cc2e61d6f",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.47967854,
+    "forecast": 0.05164161,
+    "mean_delta": 0.13023869
+   },
+   "ordinal": 39,
+   "outcome_text": "After subtracting 7, the counter shows 4493.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.396515,
+   "seconds": 2.08,
+   "state": 4500,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_b2bfce25eb60495d9e0b38c97359ad85",
+   "competence": {
+    "distance": 0.03151048,
+    "distance_mean": 0.00982487,
+    "in_domain": false,
+    "score": 1.138768,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_3e30f4c9a9d24d3eb75c6589a3c5f63b",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.10534352,
+    "forecast": 0.02105668,
+    "mean_delta": 0.07713562
+   },
+   "ordinal": 40,
+   "outcome_text": "After doubling, the counter shows 9182.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.272983,
+   "seconds": 1.695,
+   "state": 4591,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_451abedd3d204544b83192aeb0231df3",
+   "competence": {
+    "distance": 0.03151048,
+    "distance_mean": 0.00982487,
+    "in_domain": false,
+    "score": 1.138768,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_35aa23f7c03d4769bde3ecd9440c3537",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.29030819,
+    "forecast": 0.05214825,
+    "mean_delta": 0.09941611
+   },
+   "ordinal": 41,
+   "outcome_text": "After adding 15, the counter shows 4606.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.524545,
+   "seconds": 1.626,
+   "state": 4591,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_16177ab8d5e6448098f876dac94deb52",
+   "competence": {
+    "distance": 0.03151048,
+    "distance_mean": 0.00982487,
+    "in_domain": false,
+    "score": 1.138768,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_64f986a9c177430187693b212782ca43",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.36828173,
+    "forecast": 0.34745538,
+    "mean_delta": 0.08181453
+   },
+   "ordinal": 42,
+   "outcome_text": "After dividing by 4, the counter shows 1147.75.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 4.246866,
+   "seconds": 1.681,
+   "state": 4591,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_a0c74e0aad0d40e09b428610b3796e6f",
+   "competence": {
+    "distance": 0.03151048,
+    "distance_mean": 0.00982487,
+    "in_domain": false,
+    "score": 1.138768,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_d33ac2b8f37049e4bedae4adc6090064",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.55740541,
+    "forecast": 0.03593363,
+    "mean_delta": 0.11523746
+   },
+   "ordinal": 43,
+   "outcome_text": "After subtracting 7, the counter shows 4584.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.311822,
+   "seconds": 1.955,
+   "state": 4591,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_fbf13cbe0ecb4557bdfc386c07809ed0",
+   "competence": {
+    "distance": 0.03233384,
+    "distance_mean": 0.00940259,
+    "in_domain": false,
+    "score": 1.089823,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_2c19b7151e4946e2b502e9c414a73671",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.12336119,
+    "forecast": 0.01922399,
+    "mean_delta": 0.09981253
+   },
+   "ordinal": 44,
+   "outcome_text": "After doubling, the counter shows 9678.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.192601,
+   "seconds": 1.619,
+   "state": 4839,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_9d9393c4476f4d739a349d014b2a26b9",
+   "competence": {
+    "distance": 0.03233384,
+    "distance_mean": 0.00940259,
+    "in_domain": false,
+    "score": 1.089823,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_9d86e34e9e31496dba7f5325229a39af",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.23944226,
+    "forecast": 0.08440277,
+    "mean_delta": 0.10605508
+   },
+   "ordinal": 45,
+   "outcome_text": "After adding 15, the counter shows 4854.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.795839,
+   "seconds": 1.98,
+   "state": 4839,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "quarter",
+   "arm": "calc_shift_exp",
+   "call": "tool_2678ecf7b6b2448da1f68aa9d8b73f30",
+   "competence": {
+    "distance": 0.03233384,
+    "distance_mean": 0.00940259,
+    "in_domain": false,
+    "score": 1.089823,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_b9b83915a4354ec993f0976c15c7ef37",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.32611999,
+    "forecast": 0.33269736,
+    "mean_delta": 0.09124149
+   },
+   "ordinal": 46,
+   "outcome_text": "After dividing by 4, the counter shows 1209.75.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 3.646339,
+   "seconds": 1.897,
+   "state": 4839,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "subtract_7",
+   "arm": "calc_shift_exp",
+   "call": "tool_ac8cb8aef0af4a3cabf841fb822206db",
+   "competence": {
+    "distance": 0.03233384,
+    "distance_mean": 0.00940259,
+    "in_domain": false,
+    "score": 1.089823,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_a248819117fb471a915927fd3de24bd3",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.55264031,
+    "forecast": 0.04875229,
+    "mean_delta": 0.11713337
+   },
+   "ordinal": 47,
+   "outcome_text": "After subtracting 7, the counter shows 4832.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.416212,
+   "seconds": 1.806,
+   "state": 4839,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "double",
+   "arm": "calc_shift_exp",
+   "call": "tool_bb942805a7aa4321aa3a814b268e1476",
+   "competence": {
+    "distance": 0.04085643,
+    "distance_mean": 0.01122029,
+    "in_domain": false,
+    "score": 1.300508,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_24bb3468c2c04394a8ebcd43177064bb",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.19764188,
+    "forecast": 0.03383975,
+    "mean_delta": 0.09794584
+   },
+   "ordinal": 48,
+   "outcome_text": "After doubling, the counter shows 10008.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.345495,
+   "seconds": 1.723,
+   "state": 5004,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  },
+  {
+   "action": "add_15",
+   "arm": "calc_shift_exp",
+   "call": "tool_200aaa43505f4ff49737a96f1e9f3353",
+   "competence": {
+    "distance": 0.04085643,
+    "distance_mean": 0.01122029,
+    "in_domain": false,
+    "score": 1.300508,
+    "signal": "knn5_cosine_last_or_mean",
+    "threshold": 0.03536972,
+    "threshold_mean": 0.00862762
+   },
+   "forecast_id": "tfc_5d2efcc8a3604041941376f8bf5c1577",
+   "in_world_range": false,
+   "mse": {
+    "copy": 0.27138894,
+    "forecast": 0.03785122,
+    "mean_delta": 0.13901556
+   },
+   "ordinal": 49,
+   "outcome_text": "After adding 15, the counter shows 5019.",
+   "preregistration_sha256": "a2d152c08b5c4b64e496a3920d847bc1d3efa93e7556330131e58058e1e45231",
+   "ratio_to_best_control": 0.27228,
+   "seconds": 1.884,
+   "state": 5004,
+   "status": "SCORED",
+   "tool_status": "EXECUTED"
+  }
+ ],
+ "future_rows_omitted": true
+}

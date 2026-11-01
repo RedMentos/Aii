@@ -1,0 +1,2 @@
+{"arm": "minor", "steps": 30, "ce": 0.00085, "train_s": 964.96, "learned_recall": 1.0, "paraphrase_recall": 0.9375, "near_miss_leak": 1.0, "probe_correct": 1.0, "subspace": {"modules": 80, "frozen_side_params": 1236992, "mean_low_singular_mass_share": 0.001346}}
+/tmp/claude-0/bj1/tune-5e-4/bp2a-seed99.json

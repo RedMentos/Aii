@@ -12,24 +12,26 @@ This module joins three pieces that existed separately:
 - RunnerPool: holds several llama-server processes at once under that budget instead of exactly one.
 
 ``body_residency_mb`` = 0 keeps the old one-process-at-a-time pool (fallback, no residency).
-Sizes are estimates from the GGUF file size; Redmi RSS/PSS remains a phone measurement (WP-R).
+Sizes come from measured profiles per model file (``body_sizes``: non-reclaimable Anon + hot file pages; cloud
+lower bound shipped, a Termux run imported with ``:resources bodies import``); unmeasured files fall back to
+the old file-size estimate. Redmi RSS/PSS remains a phone measurement (WP-R).
 Claim limit: neither body is a sparse MoE network; the "experts" are whole distinct bodies.
 """
 from pathlib import Path
 from .agi.slots import ModelSlots
 from .agi.residency import ExpertResidency
 
-PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'YELLOW','CRITICAL':'RED'}
+from .resource_modes import mode_of
+PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'ORANGE','CRITICAL':'RED'}  # legacy view; live code reads mode_of(guard) (§97.2)
 PINNED={'C3_LANGUAGE'}            # speaker path: always resident (like router/shared layers)
 BODY_ROLES=('B1_DETAIL','B2_GIST')
 STATE_KEY='WP_N11_BODY_RESIDENCY'  # own state: the generic AG13 expert table stays free for a real MoE body
-KV_OVERHEAD_MB=96                 # BOOT estimate per llama-server (ctx 2048, -np 1); not a measurement
-WEIGHT_FACTOR=1.1                 # BOOT: mmap'ed weights plus runtime buffers
+from .body_sizes import KV_OVERHEAD_MB,WEIGHT_FACTOR  # old estimate, kept for unmeasured files
 
-def size_mb(models,role):
-    try:p=models.path_for(role)
-    except Exception:return None
-    return round(p.stat().st_size/2**20*WEIGHT_FACTOR+KV_OVERHEAD_MB,1)
+def size_mb(models,role,store=None):
+    """Residency size of the runner serving ``role`` (WP-N21: measured profile per file, else estimate)."""
+    from . import body_sizes
+    return body_sizes.size(models,role,store)[0]
 
 def distinct_bodies(models):
     """True only when B1 and B2 resolve to different installed weight files (recorded sha256)."""
@@ -53,6 +55,7 @@ class BodyFabric:
     def sync(self):
         """Mirror installed models into AG0 slots and AG13 experts. Never overwrites a slot mid-swap."""
         from .models import ROLES,model_key
+        from . import body_sizes
         st=self.slots.box.load()[0]['slots']
         for role in ROLES:
             e=self.models.installed.get(model_key(role,self.models.b2_control))
@@ -61,10 +64,10 @@ class BodyFabric:
         def f(s):
             s['budget_mb']=float(max(1,self.cfg.get('body_residency_mb',0)))
             for role in ROLES:
-                mb=size_mb(self.models,role)
+                mb,src=body_sizes.size(self.models,role,self.r.store)
                 if mb is None:continue
                 old=s['experts'].get(role,{})
-                s['experts'][role]={'size_mb':mb,'body':role,'pinned':role in PINNED,'shared':role in PINNED,'score':old.get('score',0.),'last':old.get('last',0.)}
+                s['experts'][role]={'size_mb':mb,'size_source':src,'body':role,'pinned':role in PINNED,'shared':role in PINNED,'score':old.get('score',0.),'last':old.get('last',0.)}
             s['resident']=[x for x in s['resident'] if x in PINNED and x in s['experts']]  # processes never survive a restart
             for x in PINNED:
                 if x in s['experts'] and x not in s['resident']:s['resident'].append(x)
@@ -101,7 +104,7 @@ class BodyFabric:
         """Decide before a runner for ``role`` is (re)used. Returns roles to unload first.
         resident: roles whose processes are alive right now (the pool's truth wins over stored state)."""
         if not self.enabled:return [r for r in resident if r!=role]
-        mode=PRESSURE_MODE.get(getattr(getattr(self.r,'guard',None),'state','NORMAL'),'GREEN')
+        mode=mode_of(getattr(self.r,'guard',None))
         def f(st):
             st['resident']=[x for x in st['resident'] if x in resident or x in PINNED]
             for x in resident:
@@ -112,6 +115,7 @@ class BodyFabric:
         d=self.residency.request(role);evict+=d['evict']
         if d['status']=='REFUSED':evict=[r for r in resident if r!=role]  # dense fallback: one process at a time
         if mode=='RED':evict=[r for r in resident if r!=role]           # critical: never hold two bodies
+        elif mode=='ORANGE':evict+=[r for r in resident if r in BODY_ROLES and r!=role]  # §97.2: single-body observer
         return sorted(set(r for r in evict if r in resident and r!=role))
     def released(self,role):
         def f(st):

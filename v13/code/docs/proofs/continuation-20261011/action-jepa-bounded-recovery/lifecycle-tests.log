@@ -1,0 +1,18 @@
+test_changed_raw_batch_or_registered_corpus_fails_closed (tests.test_action_prefix_checkpoint.PrefixTests.test_changed_raw_batch_or_registered_corpus_fails_closed) ... ok
+test_closed_partial_archive_is_byte_exact_and_never_overwrites (tests.test_action_prefix_checkpoint.PrefixTests.test_closed_partial_archive_is_byte_exact_and_never_overwrites) ... ok
+test_driver_bytes_are_unchanged (tests.test_bounded_action_capture.LifecycleTests.test_driver_bytes_are_unchanged) ... ok
+test_eight_batch_checkpoint_boundary_reaps_owned_worker (tests.test_bounded_action_capture.LifecycleTests.test_eight_batch_checkpoint_boundary_reaps_owned_worker) ... ok
+test_matching_bytes_with_historical_drift_prevents_resume (tests.test_bounded_action_capture.LifecycleTests.test_matching_bytes_with_historical_drift_prevents_resume) ... ok
+test_namespace_pid_requires_exact_unique_command (tests.test_bounded_action_capture.LifecycleTests.test_namespace_pid_requires_exact_unique_command) ... ok
+test_restart_invariance_failure_prevents_main_capture (tests.test_bounded_action_capture.LifecycleTests.test_restart_invariance_failure_prevents_main_capture) ... ok
+test_saved_control_without_rss_or_controlled_status_is_rejected (tests.test_bounded_action_capture.LifecycleTests.test_saved_control_without_rss_or_controlled_status_is_rejected) ... ok
+test_uncontrolled_exception_is_retained_and_propagated (tests.test_bounded_action_capture.LifecycleTests.test_uncontrolled_exception_is_retained_and_propagated) ... ok
+test_atomic_checkpoint_replays_raw_native_response_and_order (tests.test_action_jepa_capture.CaptureTests.test_atomic_checkpoint_replays_raw_native_response_and_order) ... ok
+test_changed_shared_library_prevents_resume_registration (tests.test_action_jepa_capture.CaptureTests.test_changed_shared_library_prevents_resume_registration) ... ok
+test_missing_terminal70_and_run_without_registration_never_start_native (tests.test_action_jepa_capture.CaptureTests.test_missing_terminal70_and_run_without_registration_never_start_native) ... ok
+test_response_requires_owned_alias_exact_indices_and_finite_shape (tests.test_action_jepa_capture.CaptureTests.test_response_requires_owned_alias_exact_indices_and_finite_shape) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.135s
+
+OK

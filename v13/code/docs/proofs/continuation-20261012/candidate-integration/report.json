@@ -1,0 +1,89 @@
+{
+ "schema": "v13-candidate-integration-v1",
+ "date": "2026-10-12",
+ "thread": "Naechste offene Pakete G (Claude)",
+ "precondition": "SourceHandoff 16-case cohort closed (ROADMAP: RECORDED_DIAGNOSIS 16/16), freeze lifted.",
+ "integrated": {
+  "approval_reader_and_native_firing": {
+   "patch": "docs/proofs/continuation-20261011/approval-reader-cancellation-20261012/approval-reader-and-firing-updated.patch",
+   "patch_sha256": "b2f9a9f12cb0c7854af77120bcea7ddaee2fbdf73c847a9954e245ff88ffb460",
+   "method": "live files written from scripts/native_firing_candidate_smoke.merged_sources(); diff equals the archived patch byte-for-byte",
+   "files": [
+    "v13/runners.py",
+    "v13/memory_server.py",
+    "v13/runtime.py",
+    "v13/store.py"
+   ]
+  },
+  "streaming_packager": {
+   "into": "scripts/package_source.py",
+   "from": "scripts/package_source_streaming_candidate.py",
+   "selection_parity": {
+    "full": "908/908",
+    "phone": "527/527"
+   },
+   "behaviour_changes": [
+    "refuses to replace an existing archive",
+    "no longer writes WORKSPACE_FILES.json into the source tree (still inside the ZIP)",
+    "skips model/db/secret file types and data/models/cache dirs",
+    "output adds status/phone_measured/canonical_gate_pass keys; zip key kept"
+   ]
+  },
+  "sealed_storage": {
+   "into": "scripts/sealed_storage_parts.py",
+   "from": "scripts/sealed_storage_streaming_candidate.py",
+   "real_restores": {
+    "action-native1875-recovered-20261012/parts": "identical bytes old vs new",
+    "continuation-20261012/control-evidence-parts": "identical bytes old vs new"
+   },
+   "resplit_manifest_identical_old_vs_new": true
+  }
+ },
+ "not_integrated": {
+  "action_jepa_delta_atomic_publish_candidate": "needs Android/Termux renameat2 probe on the Redmi first (--probe-directory)",
+  "source_handoff_candidate": "16-case ablation: full_candidate 0.5208 < baseline 0.5625, no benefit",
+  "source_handoff_resume_guard/binding_audit": "tooling for the closed cohort only"
+ },
+ "candidate_loaders": "native_firing and source_handoff loaders accept live only as exact baseline, exact own candidate, or exact integrated composition (scripts/integrated_candidates.py); anything else still fails shut",
+ "tests": {
+  "before": "1236 OK, 4 skips",
+  "after_runtime_only": "54 failing (candidate loaders rejected integrated live) - preserved log",
+  "after": "1236 OK, 4 skips",
+  "phone_zip_extracted": "1236 OK, 4 skips"
+ },
+ "phone_zip": {
+  "sha256": "6ddeb8d484e985dded9a8aa4ab0660fa899a2d48f69263fba29a35a5d67d15e1",
+  "files": 528,
+  "bytes": 1986373,
+  "note": "built by the integrated packager, extracted, full suite run; Linux python3.13, no PyTorch"
+ },
+ "file_sha256_before": {
+  "v13/runners.py": "845bb87f9e8bd24333217e86b6558f5292c3838e26352fe756a32882f3fef705",
+  "v13/memory_server.py": "f4ab750471cd0ce960aa42a84506257ae38ddae32d02afd9c7357b1444bad9a7",
+  "v13/runtime.py": "5bad1a09678bc79a79a6adeb8c96bfed38244629f9033392380081571705c333",
+  "v13/store.py": "b82d6c4f404a0df8ca856c62c100cf6ab47009aa7f57fc2fe712a74c4ab702b3",
+  "scripts/package_source.py": "d78305a0f9f9975d8c583e35881ff3f7593f150d1ab5e5d36aaf8e64ecf2b38c",
+  "scripts/sealed_storage_parts.py": "8ecf83745f5091501d3420ebbf58784b8e034616b572be90816b76d4fb79b87d",
+  "scripts/integrated_candidates.py": null,
+  "scripts/native_firing_runtime_candidate.py": "756ac5e0e7fae7ca2a64e3ed54f1cac6c3b5244e016275c10ca23386e3493bba",
+  "scripts/source_handoff_candidate.py": "3c2a2eec137c7bfdf0fa2a99114bdbf43456498de9440d571ca0253d02caf818",
+  "tests/test_native_firing_merged_candidate.py": "a4498e8b33f804b2aabd6e04ac20a076dddba246bfa102092d2a3d42e6516a2a",
+  "tests/test_source_handoff_candidate.py": "5098c3c0df43fea307591e90a1fa3a26b4a6b4cc0083e99cc1a9ab9f24fe460f"
+ },
+ "file_sha256_after": {
+  "v13/runners.py": "e965acb57ed15758926ecb74bd2a91b734ca1c448f72620d224f2c96cb96df3b",
+  "v13/memory_server.py": "78b1eb46b11a55c8ba1a37fabd99bdf480d33f62a2c0d7a97822abc68e5a4672",
+  "v13/runtime.py": "d6c99bc48063b6c4056d9f6b727f3f81550958ab383f365d1dac86fd0382ab95",
+  "v13/store.py": "45199754bf8ea8ca6d2c0455166be42958430043767b1a722d8268adf7a9a4f3",
+  "scripts/package_source.py": "c76ee5cadf7939655d4dcfc73ac6fd6c41aea6e872d6a873682857b8e52120ac",
+  "scripts/sealed_storage_parts.py": "d2454a7d5b24674bdc18af0918bce2a0341b10b9fb98f7728940d53b7d15fe79",
+  "scripts/integrated_candidates.py": "dea9ea149b0a2e896ba4a343a1469a62a05085bd6420b3487d30844aff1dcb95",
+  "scripts/native_firing_runtime_candidate.py": "b34e54e4041efed1903a1a6c50213541f7beb76830daa4a4540bb922838ca42f",
+  "scripts/source_handoff_candidate.py": "03a726496e1c142abc3f0db63dde5ac85f982d5c5d66adbf46058759f68f22d2",
+  "tests/test_native_firing_merged_candidate.py": "5c904fa86b1a106585f46e2257f7a50399bfa0aa5f5af76d5e751a8467045736",
+  "tests/test_source_handoff_candidate.py": "3277c11ecaf99fe2cf2f1d46c85be7244dad244e58d5347f1eb2a34d3409d565"
+ },
+ "phone_measured": false,
+ "canonical_gate_pass": false,
+ "claim_limit": "Software/Linux evidence only. Approval reader and firing audit stay SHADOW/diagnostic; no selective omission, no learned-utility or Redmi claim."
+}

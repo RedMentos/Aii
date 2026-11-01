@@ -1,0 +1,51 @@
+test_attention_records_ranking_without_duplicate_provider_or_fake_outcome (test_authority_live.LiveComparisons.test_attention_records_ranking_without_duplicate_provider_or_fake_outcome) ... ok
+test_callosum_compares_only_measured_policy_and_resets_receiver_fallback (test_authority_live.LiveComparisons.test_callosum_compares_only_measured_policy_and_resets_receiver_fallback) ... ok
+test_comparisons_survive_restart_and_do_not_promote_partial_objectives (test_authority_live.LiveComparisons.test_comparisons_survive_restart_and_do_not_promote_partial_objectives) ... ok
+test_deliberation_compares_learned_order_and_keeps_age_and_objective_gates (test_authority_live.LiveComparisons.test_deliberation_compares_learned_order_and_keeps_age_and_objective_gates) ... ok
+test_expired_or_foreign_attention_requests_do_not_supply_comparisons (test_authority_live.LiveComparisons.test_expired_or_foreign_attention_requests_do_not_supply_comparisons) ... ok
+test_untrained_scaffold_is_not_counted_as_learned_evidence (test_authority_live.LiveComparisons.test_untrained_scaffold_is_not_counted_as_learned_evidence) ... ok
+test_contract_enforced (test_authority.Objectives.test_contract_enforced) ... ok
+test_better_outcomes_pass_and_operator_demote (test_authority.Promotion.test_better_outcomes_pass_and_operator_demote) ... ok
+test_candidate_needs_human_then_regression_falls_back_to_scaffold (test_authority.Promotion.test_candidate_needs_human_then_regression_falls_back_to_scaffold) ... ok
+test_failing_gate_graph_or_objective_blocks_candidate (test_authority.Promotion.test_failing_gate_graph_or_objective_blocks_candidate) ... ok
+test_fresh_heads_stay_shadow_with_named_blockers (test_authority.Promotion.test_fresh_heads_stay_shadow_with_named_blockers) ... ok
+test_medium_and_slow_jobs_run_through_scheduler (test_authority.Timescales.test_medium_and_slow_jobs_run_through_scheduler) ... ok
+test_budget_priority_and_canonical_statuses (test_attention.AdmissionTests.test_budget_priority_and_canonical_statuses) ... ok
+test_contract_rejects_bad_requests (test_attention.AdmissionTests.test_contract_rejects_bad_requests) ... ok
+test_expired_foreign_and_teacher_rules (test_attention.AdmissionTests.test_expired_foreign_and_teacher_rules) ... ok
+test_pressure_shrinks_budget_and_providers_can_refuse (test_attention.AdmissionTests.test_pressure_shrinks_budget_and_providers_can_refuse) ... ok
+test_edges_and_restart (test_attention.GainTests.test_edges_and_restart) ... ok
+test_gain_relaxes_to_base_per_experience_event (test_attention.GainTests.test_gain_relaxes_to_base_per_experience_event) ... ok
+test_gains_are_bounded_and_interrupt_needs_strong_salience (test_attention.GainTests.test_gains_are_bounded_and_interrupt_needs_strong_salience) ... ok
+test_neuromod_channels_map_onto_salience_and_caution (test_attention.GainTests.test_neuromod_channels_map_onto_salience_and_caution) ... ok
+test_salience_and_caution_are_separate_and_shape_couplings_differently (test_attention.GainTests.test_salience_and_caution_are_separate_and_shape_couplings_differently) ... ok
+test_operator (test_attention.InterfaceTests.test_operator) ... ok
+test_rank_for_focal_loop_and_offer_features (test_attention.InterfaceTests.test_rank_for_focal_loop_and_offer_features) ... ok
+test_grant_touches_eligibility_and_outcome_modulates_policy_path (test_attention.LearningTests.test_grant_touches_eligibility_and_outcome_modulates_policy_path) ... ok
+test_learned_prior_is_shadow_until_explicit_human_switch (test_attention.LearningTests.test_learned_prior_is_shadow_until_explicit_human_switch) ... ok
+test_action_gain_scales_c5_focal_support (test_attention.LiveHookTests.test_action_gain_scales_c5_focal_support) ... ok
+test_cue_coverage_labels_only_spans_with_exact_cues (test_attention.LiveHookTests.test_cue_coverage_labels_only_spans_with_exact_cues) ... ok
+test_live_turn_runs_attention_hooks (test_attention.LiveHookTests.test_live_turn_runs_attention_hooks) ... ok
+test_recent_modulators_feed_gain_decayed_and_session_scoped (test_attention.LiveHookTests.test_recent_modulators_feed_gain_decayed_and_session_scoped) ... ok
+test_source_outcome_books_once_and_updates_policy (test_attention.LiveHookTests.test_source_outcome_books_once_and_updates_policy) ... ok
+test_a4_never_drops_a_chunk_and_requests_bounded_highres (test_attention.PerceptionTests.test_a4_never_drops_a_chunk_and_requests_bounded_highres) ... ok
+test_teacher_hint_is_capped (test_attention.PerceptionTests.test_teacher_hint_is_capped) ... ok
+test_halt_only_after_stable_window (test_deliberation.HaltTests.test_halt_only_after_stable_window) ... ok
+test_rating_outcome_nudges_used_modes (test_deliberation.OrderTests.test_rating_outcome_nudges_used_modes) ... ok
+test_shadow_proposes_active_applies_hypothesis_first (test_deliberation.OrderTests.test_shadow_proposes_active_applies_hypothesis_first) ... ok
+test_turn_stays_final_and_operator (test_deliberation.RuntimeTests.test_turn_stays_final_and_operator) ... ok
+test_mixed_attribution_opens_trigger (test_deliberation.WorldErrorTests.test_mixed_attribution_opens_trigger) ... ok
+test_modulator_world_error_opens_trigger (test_deliberation.WorldErrorTests.test_modulator_world_error_opens_trigger) ... ok
+test_probabilities_keep_baselines_and_block_latent (test_callosum.GainTests.test_probabilities_keep_baselines_and_block_latent) ... ok
+test_signed_gain_amplify_suppress_neutral (test_callosum.GainTests.test_signed_gain_amplify_suppress_neutral) ... ok
+test_receiver_revision_change_degrades_to_configured (test_callosum.PolicyTests.test_receiver_revision_change_degrades_to_configured) ... ok
+test_shadow_proposes_active_applies_and_never_below_no_message (test_callosum.PolicyTests.test_shadow_proposes_active_applies_and_never_below_no_message) ... ok
+test_message_fields_outcome_rating_and_doctor (test_callosum.UtilityTests.test_message_fields_outcome_rating_and_doctor) ... ok
+test_operator_switch (test_local_updates.LocalUpdates.test_operator_switch) ... ok
+test_shadow_keeps_the_head_step_active_scales_it (test_local_updates.LocalUpdates.test_shadow_keeps_the_head_step_active_scales_it) ... ok
+test_veto_stops_the_head_from_learning (test_local_updates.LocalUpdates.test_veto_stops_the_head_from_learning) ... ok
+
+----------------------------------------------------------------------
+Ran 46 tests in 0.898s
+
+OK

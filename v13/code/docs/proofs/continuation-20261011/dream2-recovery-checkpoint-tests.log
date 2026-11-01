@@ -1,0 +1,35 @@
+.....{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.
+----------------------------------------------------------------------
+Ran 11 tests in 0.121s
+
+OK
