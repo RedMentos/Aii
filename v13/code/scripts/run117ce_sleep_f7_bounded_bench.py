@@ -13,9 +13,14 @@ import math
 import platform
 import resource
 import statistics
+import sys
 import tempfile
 import time
 from pathlib import Path
+
+APP = Path(__file__).resolve().parents[1]
+if str(APP) not in sys.path:
+    sys.path.insert(0, str(APP))
 
 from v13.config import initialize
 from v13.store import Store, audit_closed
