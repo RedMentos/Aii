@@ -109,7 +109,9 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
     out.mkdir(mode=0o700)
     report = {
         "schema": SCHEMA, "status": "INCOMPLETE",
-        "evidence_class": ("LINUX_NATIVE_C3_REAL_STORE_SOURCE_ONLY_STRUCTURAL_REPLAY"\n                           if actual_native_factory else "SYNTHETIC_SOFTWARE_ONLY"),\n        "native_proof": False, "native_calls_verified": 0,
+        "evidence_class": ("LINUX_NATIVE_C3_REAL_STORE_SOURCE_ONLY_STRUCTURAL_REPLAY"
+                           if actual_native_factory else "SYNTHETIC_SOFTWARE_ONLY"),
+        "native_proof": False, "native_calls_verified": 0,
         "seed": SEED, "table_sha256": frozen.TABLE_SHA256,
         "project": item["project"], "model_sha256": MODEL_SHA,
         "model_revision": MODEL_REV, "runner_sha256": RUNNER_SHA,
@@ -216,7 +218,14 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
             and report["pins_unchanged"]
             and report["guard"]["status"] in (
                 guard.READY, "MODEL_OUTPUT_INVALID_RED")
-            and report["error_type"] is None)\n        report["status"] = (\n            ("NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING"\n             if actual_native_factory else "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING")\n            if structural else "STRUCTURAL_RED")\n        report["native_proof"] = bool(structural and actual_native_factory)\n        report["native_calls_verified"] = int(report["native_proof"])\n        save()
+            and report["error_type"] is None)
+        report["status"] = (
+            ("NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING"
+             if actual_native_factory else "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING")
+            if structural else "STRUCTURAL_RED")
+        report["native_proof"] = bool(structural and actual_native_factory)
+        report["native_calls_verified"] = int(report["native_proof"])
+        save()
     return report
 
 
