@@ -17,3 +17,6 @@ Arme: `boot` | `noise_mad` (noise_aware ohne Signal) | `noise_indep` (noise_awar
 1. noisy-Fehler A <= 0,85 x B. 2. shift-Fehler A <= 1,10 x B. 3. Fenster bis shift-Fehler < 0,2: A <= B + 1. 4. shift-Fehler A <= C.
 5. noisy-Fehler A <= 1,10 x fixed_conservative. 6. shift-Fehler A <= 1,25 x fixed_permissive.
 Urteil `BP8b_REAL_PASS` nur bei allen sechs; sonst `BP8b_REAL_FAIL` und es bleibt stehen. G-AGE-REOPEN-001 gilt erst nach Wiederholung auf frischen Seeds als geschlossen; Standard `noise_aware` bleibt Nutzerentscheidung.
+
+## Nachtrag A1 (nach dem Smoke, vor jeder Wertung)
+Der Smoke (2 Fenster je Phase, 1 Schritt, Seed 99, noise_indep) zeigt: die 6 Fakten sind schon nach 1-2 Fenstern gelernt (Fehler .22 -> .05), und das Etiketten-Rauschen aus B drückt die Kompetenz auf A kaum (Fehler .05-.08 in der Rausch-Phase). Damit ist unsicher, ob die Rausch-Phase trennscharf ist. Darum zuerst NUR die beiden festen Arme auf Seed 1 (ca. 45 Min): Liegt der Rausch-Phasen-Fehler von fixed_permissive nicht mindestens 0,10 über fixed_conservative, gilt vorab `BP8b_NO_SIGNAL` und die Age-Arme laufen nicht (kein Platz für Gewinn). Sonst laufen alle fünf Arme auf den Seeds 1-3 wie oben. Keine Parameter werden geändert.
