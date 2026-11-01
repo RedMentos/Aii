@@ -1,0 +1,97 @@
+name: V13 Run117DH exact original native ZIP independent replay
+on:
+  push:
+    branches:
+      - assistant/v13-run117dh-independent-native-replay-20261101-hourly11
+    paths:
+      - v13/code/docs/RUN117DH_ORIGINAL_REPLAY_LAUNCH_20261101.md
+permissions:
+  contents: read
+  actions: read
+jobs:
+  immutable-native-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Hydrate exact original 48-call ZIP, independent scorer and mutations
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117dh-replay"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/docs/PREREG_RUN117DE_C3_NORMALIZED_SOURCE_20261101.md)" = 990684341968b0515cacad36aaf4c09d7f8c37e6
+            test "$(git hash-object v13/code/docs/PREREG_RUN117DH_INDEPENDENT_NATIVE_REPLAY_20261101.md)" = 4b7e49c418e18cbabb71c15a0d69e0e0e054db60
+            test "$(git hash-object v13/code/scripts/run117dh_independent_normalized_native_audit.py)" = 19498289fec29eec1f02e4231bc3ee7a55707b14
+            test "$(git hash-object v13/code/tests/test_run117dh_independent_native_audit.py)" = d0d0ccc325fc8e73eb2c983dd2da935ba8fe4978
+            test "$(git hash-object v13/code/tests/test_run117dh_original_native_mutations.py)" = 2d47eb048568db497f8b8e921f3f3fd42c70b517
+            test "$(git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md)" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7
+          } > "$e/PINS_RAW.log" 2>&1
+          echo "$?" > "$e/PINS_EXIT.txt"
+          export V13_RUN117DG_ORIGINAL_ZIP="$RUNNER_TEMP/run117dg-original-native.zip"
+          curl --fail --location --silent --show-error --retry 2 --max-time 240 \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/13066633279/zip' \
+            -o "$V13_RUN117DG_ORIGINAL_ZIP" > "$e/HYDRATE_RAW.log" 2>&1
+          echo "$?" > "$e/HYDRATE_EXIT.txt"
+          if [ "$(cat "$e/HYDRATE_EXIT.txt")" = 0 ]; then
+            echo '97570b164e2f888f16e3e9209c5edb6eb2f16ff2de2c2d033324e1359d30a4f8  '"$V13_RUN117DG_ORIGINAL_ZIP" | sha256sum -c - > "$e/ORIGINAL_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/ORIGINAL_SHA_EXIT.txt"
+          else echo 99 > "$e/ORIGINAL_SHA_EXIT.txt"; echo HYDRATE_RED > "$e/ORIGINAL_SHA_RAW.log"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run117dh-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117dh-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/run117dh_independent_normalized_native_audit.py v13/code/tests/test_run117dh_independent_native_audit.py v13/code/tests/test_run117dh_original_native_mutations.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/ORIGINAL_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117dh_independent_native_audit tests.test_run117dh_original_native_mutations) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" scripts/run117dh_independent_normalized_native_audit.py --original-zip "$V13_RUN117DG_ORIGINAL_ZIP" --expected-sha256 97570b164e2f888f16e3e9209c5edb6eb2f16ff2de2c2d033324e1359d30a4f8 --expected-head 34b281608b5ffd55b7e77cda0152860f7e2ab302) > "$e/AGGREGATE.json" 2> "$e/AUDIT_RAW.log"
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else
+            for stage in TEST AUDIT; do echo 99 > "$e/${stage}_EXIT.txt"; echo PREREQUISITE_RED > "$e/${stage}_RAW.log"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 34b281608b5ffd55b7e77cda0152860f7e2ab302 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 34b281608b5ffd55b7e77cda0152860f7e2ab302 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve only small replay receipts, never original native ZIP
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117dh-replay-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117dh-replay/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce immutable native replay and all negative gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117dh-replay"
+          for stage in PINS HYDRATE ORIGINAL_SHA VENV DEPS PIP_CHECK COMPILE TEST AUDIT PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained, no native or gate promotion"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117DH_IMMUTABLE_NATIVE_RECORD_INDEPENDENTLY_REPLAYED_NONPROMOTING
