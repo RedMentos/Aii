@@ -34,6 +34,7 @@ def pilot(S, items, facts, groups, a, J, B):
     for lr in [float(x) for x in a.lrs.split(',')]:
         sess = S(a.master, Path(a.out) / 'work' / ('pilot-%g' % lr), anchors=J.ANCHORS, cfg={'threads': a.threads, 'lr': lr, 'seed': a.seed, 'anchors_per_step': 6}, optimizer='sgd')
         its = [dict(i, weight=1.0) for i, _ in keep]; probes = [(i['prompt'], i['target']) for i in its]; curve = {}
+        if a.pilot_all: its = [dict(i, weight=1.0) for i in items]  # train on the FULL batch (divergence check), still score only the human+outcome probes
         for k in range(1, a.steps + 1):
             sess.step(its, 1.0)
             if k % 10 == 0:
@@ -48,7 +49,7 @@ def main():
     ap.add_argument('--master', required=True); ap.add_argument('--out', required=True); ap.add_argument('--seed', type=int, required=True)
     ap.add_argument('--arms', default='uniform_adamw,typed_adamw,uniform_sgd,typed_sgd'); ap.add_argument('--threads', type=int, default=4)
     ap.add_argument('--steps', type=int, default=30); ap.add_argument('--lr', type=float, default=5e-4); ap.add_argument('--sgd-lr', type=float, default=0.2)
-    ap.add_argument('--pilot', action='store_true'); ap.add_argument('--lrs', default='0.05,0.2,0.5,1.0')
+    ap.add_argument('--pilot', action='store_true'); ap.add_argument('--pilot-all', action='store_true'); ap.add_argument('--lrs', default='0.05,0.2,0.5,1.0')
     a = ap.parse_args(); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     items, facts, groups = B.build(J.POOL, a.seed)
     if a.pilot:
