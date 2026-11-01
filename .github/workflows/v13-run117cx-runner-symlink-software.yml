@@ -2,7 +2,7 @@ name: V13 Run117CX source-only Qwen/LFM C3 native-runner software guard
 on:
   push:
     branches:
-      - assistant/v13-run117cx-qwen-c3-native-20261101-gpt6
+      - assistant/v13-run117cx-runner-symlink-native-retry-20261101-gpt6
   workflow_dispatch:
 permissions:
   contents: read
