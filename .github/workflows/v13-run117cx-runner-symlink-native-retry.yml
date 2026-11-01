@@ -4,7 +4,7 @@ on:
     branches:
       - assistant/v13-run117cx-runner-symlink-native-retry-20261101-gpt6
     paths:
-      - v13/code/docs/RUN117CV_NATIVE_LAUNCH_20261101.md
+      - v13/code/docs/RUN117CX_NATIVE_RETRY_20261101.md
 permissions:
   contents: read
 concurrency:
@@ -36,7 +36,7 @@ jobs:
           modeldir="$RUNNER_TEMP/v13-run117cx-qwen"
           mkdir -p "$e" "$modeldir"
           git rev-parse HEAD > "$e/HEAD.txt"
-          test "$(git hash-object v13/code/docs/PREREG_RUN117CV_QWEN_C3_NATIVE_20261101.md)" = fc788723af65d28ef4bbb95e05b1abfc82033503
+          test "$(git hash-object v13/code/docs/PREREG_RUN117CV_QWEN_C3_NATIVE_20261101.md)" = fc788723af65d28ef4bbb95e05b1abfc82033503 && test "$(git hash-object v13/code/docs/PREREG_RUN117CX_RUNNER_SYMLINK_RETRY_20261101.md)" = 8d84c3a93b882b48162875515b9531c9125606ba
           prereg_rc=$?
           echo "$prereg_rc" > "$e/PREREG_EXIT.txt"
           python3 -m venv "$RUNNER_TEMP/v13-run117cx-native-venv" > "$e/VENV_RAW.log" 2>&1
