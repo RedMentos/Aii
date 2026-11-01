@@ -40,12 +40,26 @@ _G_TPL = ['Explain what {t} are in one sentence.', 'Give one interesting fact ab
 _G_MATH = ['What is {a} plus {b}?', 'What is {a} times {b}?', 'What is {a} minus {b}?', 'Is {a} larger than {b}? Answer briefly.']
 
 
-def generic_prompts(n, seed):
+_G_TOP2 = ['cheese', 'wind', 'snow', 'jazz', 'elephants', 'tractors', 'stars', 'paper', 'gold', 'rice', 'owls', 'bells', 'cameras', 'poetry', 'ferries', 'orchards', 'soccer', 'clay',
+           'telescopes', 'marathons', 'cotton', 'whales', 'chess', 'bakeries', 'libraries', 'tunnels', 'compasses', 'harbors', 'sandals', 'canyons']
+_G_TPL2 = ['List three facts about {t}.', 'Write a two-sentence story about {t}.', 'Give a short definition of {t}.', 'What is the history of {t} in one sentence?',
+           'Write a question a student might ask about {t}.', 'Reply with a short sentence about {t}, then a number between 1 and 10.', 'Name an advantage and a disadvantage of {t}.',
+           'Translate the word "{t}" into German if you can. Answer briefly.', 'Explain {t} in exactly three words if possible.', 'Write a polite sentence about {t} for an email.',
+           'How many letters does the word "{t}" have?', 'Which comes first in the alphabet: "{t}" or "zebra"?']
+_G_FACT = ['How many days are in a {x}?', 'How many hours are in a {x}?', 'How many weeks are in a {x}?', 'How many seconds are in a {x}?']
+_G_UNIT = ['year', 'day', 'week', 'minute', 'month of 30 days']
+
+
+def generic_prompts(n, seed, v2=False):
     rng = random.Random(seed * 7919 + 13)
     probes = {p['prompt'] for p in json.loads((Path(__file__).resolve().parents[1] / 'specs/drift-probes.json').read_text())['probes']}
     out = []
     while len(out) < n:
-        if rng.random() < .2:
+        if v2 and rng.random() < .15:
+            q = rng.choice(_G_FACT).format(x=rng.choice(_G_UNIT))
+        elif v2 and rng.random() < .55:
+            q = rng.choice(_G_TPL2).format(t=rng.choice(_G_TOP + _G_TOP2))
+        elif rng.random() < .2:
             q = rng.choice(_G_MATH).format(a=rng.randint(3, 40), b=rng.randint(2, 19))
         else:
             q = rng.choice(_G_TPL).format(t=rng.choice(_G_TOP))
@@ -100,7 +114,7 @@ def cmd_train(a):
     # self-distillation replay on generic prompts: the base model's own greedy answers (adapter is still zero-initialised)
     rng = random.Random(a.seed)
     if a.replay_frac > 0:  # BP1b: richer replay set
-        gen = generic_prompts(int(len(items) * a.replay_frac), a.seed)
+        gen = generic_prompts(int(len(items) * a.replay_frac), a.seed, a.replay_v2)
     else:
         gen = rng.sample(GENERIC, min(len(GENERIC), max(4, len(items) // 10)))
     gm = [[{'role': 'system', 'content': oc.system_prompt([])}, {'role': 'user', 'content': q}] for q in gen]
@@ -148,7 +162,7 @@ def cmd_train(a):
             break
     model.save_pretrained(a.out)
     Path(a.out, 'train_report.json').write_text(json.dumps({'mode': a.mode, 'seed': a.seed, 'per_family': a.per_family, 'epochs': a.epochs, 'lr': a.lr,
-                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'replay_frac': a.replay_frac, 'kl_weight': a.kl_weight, 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
+                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'replay_frac': a.replay_frac, 'replay_v2': a.replay_v2, 'kl_weight': a.kl_weight, 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
                                                            'seconds': round(time.time() - t0), 'revision': oc.REVISION}, indent=1))
     print('saved', a.out, 'steps', step, 'seconds', round(time.time() - t0))
 
@@ -207,7 +221,7 @@ if __name__ == '__main__':
     t.add_argument('--mode', choices=['offers', 'no_offers'], default='offers')
     t.add_argument('--per-family', type=int, default=60); t.add_argument('--epochs', type=int, default=2)
     t.add_argument('--seed', type=int, default=1); t.add_argument('--lr', type=float, default=3e-4)
-    t.add_argument('--replay-frac', type=float, default=0.); t.add_argument('--kl-weight', type=float, default=0.)
+    t.add_argument('--replay-v2', action='store_true'); t.add_argument('--replay-frac', type=float, default=0.); t.add_argument('--kl-weight', type=float, default=0.)
     t.add_argument('--batch', type=int, default=8); t.add_argument('--max-steps', type=int, default=0)
     e = sub.add_parser('eval')
     e.add_argument('--master', required=True); e.add_argument('--adapter', default='none'); e.add_argument('--out', required=True)
