@@ -4,12 +4,28 @@ from .common import dumps
 from .inputs import looks_like_terminal_log
 
 
-def native_history(store, session, event_id, turns):
+def native_history(store, session, event_id, turns, *, after_id=None):
+    """Source-valid history; optional oldest-first bounded page after a message ID.
+
+    The default tail behavior is unchanged. The forward page is for Sleep
+    backlog catch-up and never promotes retained chat text to source authority.
+    """
     from .output_policy import validate_rules,QUERY_KIND,ANSWER_KIND
     with store.mutex:
         active=validate_rules(store,store.rules())
         approved={dumps(item['entry'][key]) for item in active for key in ('query_ref','answer_ref')}
-    records=store.history(session,2*turns+2) if turns else []
+    if after_id is not None and (type(after_id) is not int or after_id < 0):
+        raise ValueError('INVALID_HISTORY_CURSOR_RED')
+    if not turns:
+        records=[]
+    elif after_id is None:
+        records=store.history(session,2*turns+2)
+    else:
+        # Exactly 2*turns rows: the final [-2*turns:] filter cannot
+        # silently drop the oldest valid pair in this forward page.
+        records=store.rows(
+            "SELECT * FROM messages WHERE session_id=? AND id>? ORDER BY id LIMIT ?",
+            (session,after_id,2*turns))
     groups={}
     for row in records:
         if row['event_id']!=event_id and row['role'] in {'user','assistant'}:

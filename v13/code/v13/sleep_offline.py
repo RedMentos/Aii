@@ -35,22 +35,40 @@ def _load(store):
 def digest(store,checkpoint=None):
     """Extractive day digest per session; only turns newer than the last digest."""
     from .history import native_history
-    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0}
+    st,v=_load(store);out={'sessions':0,'turns':0,'compressed':0,'backlog_sessions':0}
     rows=store.rows("SELECT session_id,MAX(id) AS last FROM messages WHERE role='assistant' AND status='FINAL' GROUP BY session_id ORDER BY last DESC LIMIT ?",(SESSIONS_MAX,))
     for r in rows:
         sess=r['session_id'];d=st['sessions'].setdefault(sess,{'until':0,'entries':[]})
         if r['last']<=d['until']:continue
         if checkpoint:checkpoint()
-        recs,_=native_history(store,sess,'',TURNS_MAX)
+        # Process the OLDEST unconsumed bounded page. The former tail query
+        # skipped older turns forever when >TURNS_MAX arrived between sleeps.
+        scan=store.rows(
+            "SELECT id,role,status FROM messages WHERE session_id=? AND id>? ORDER BY id LIMIT ?",
+            (sess,d['until'],2*TURNS_MAX))
+        advance=d['until']
+        for msg in scan:
+            if msg['role']=='assistant':
+                # Never skip an unfinished answer that could become FINAL.
+                if msg['status'] not in ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'):
+                    break
+                advance=msg['id']
+        if advance<=d['until']:
+            out['backlog_sessions']+=1
+            continue
+        recs,_=native_history(store,sess,'',TURNS_MAX,after_id=d['until'])
         pairs={}
         for m in recs:pairs.setdefault(m['event_id'],{})[m['role']]=m
-        new=[p for p in pairs.values() if p['assistant']['id']>d['until']]
+        new=[p for p in pairs.values()
+             if p.get('assistant') and d['until']<p['assistant']['id']<=advance
+             and p.get('user')]
         for p in sorted(new,key=lambda p:p['assistant']['id']):
             u,us,uok=compress(p['user']['text'],TURN_CAP);a,as_,aok=compress(p['assistant']['text'],TURN_CAP)
             d['entries'].append({'event_id':p['user']['event_id'],'user':u if uok or len(u)<=TURN_CAP*2 else u[:TURN_CAP*2],'answer':a if aok or len(a)<=TURN_CAP*2 else a[:TURN_CAP*2],
                                  'exact':us+as_,'msg':p['assistant']['id']})
             out['turns']+=1;out['compressed']+=int(uok)+int(aok)
-        d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=r['last'];out['sessions']+=1
+        d['entries']=d['entries'][-ENTRIES_MAX:];d['until']=advance;out['sessions']+=1
+        out['backlog_sessions']+=int(advance<r['last'])
     st['runs']+=1;store.set_state(KEY,st,expected=v)
     return out
 
