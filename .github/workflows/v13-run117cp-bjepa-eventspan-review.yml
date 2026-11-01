@@ -31,8 +31,8 @@ jobs:
           mkdir -p "$e"
           git rev-parse HEAD > "$e/HEAD.txt"
           cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
-          441978d4c8a6eef646dd81e8ce96dc6610c62971 v13/code/v13/body_jepa_store_grouped_twostep_candidate.py
-          e2efc05943657b7f3846518d6a07dd42073bab46 v13/code/tests/test_run117co_bjepa_store_grouped_twostep.py
+          d6930fd37592a9f48107f344f87889f9bb3b4a29 v13/code/v13/body_jepa_store_grouped_twostep_candidate.py
+          28baf8fddb14aa5b20500cc41158226f136153b9 v13/code/tests/test_run117co_bjepa_store_grouped_twostep.py
           d96d925733c0e76a94ceac7934e57ab18fe4538c v13/code/v13/body_jepa_store_source_binding_shadow.py
           823644a51acd1ea1ed2c8ed17452d0976a25778f v13/code/v13/body_jepa_grouped_source_candidate.py
           acd40aeac9e286e93b40bda72c655c17725a522e v13/code/v13/body_jepa_contrastive_shadow.py
