@@ -22,7 +22,7 @@ import re
 import time
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v2'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v3'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -64,17 +64,25 @@ OBJECT_STEMS={'NOTE':('note','notiz','memo','vermerk'),'FILE':('file','document'
 ANY_OBJECT=('anything','everything','something','nothing','stuff','things','alles','irgendwas','irgendetwas','etwas','nichts','nix','sachen','zeug','anywhere','irgendwo','irgendwohin')
 PRONOUNS=('that','this','it','them','those','these','das','dies','dieses','es','sie','ihn','die','den','dem')
 
-FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
+FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop(?:ped|s|ping)?|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
     r"won'?t|not\s+allowed|not\s+permitted|aren'?t\s+allowed|forbid\w*|prohibit\w*|under\s+no\s+circumstances|in\s+no\s+case|refrain|"
-    r"hands?\s+off|fingers?\s+off|leave\s+\w+(?:\s+\w+)?\s+alone|"
+    r"hands?\s+off|fingers?\s+off|leave\s+\w+(?:\s+\w+)?\s+alone|left\s+\w+(?:\s+\w+)?\s+alone|lass\w*\s+(?:\w+\s+){0,3}in\s+ruhe|"
     r"nicht|nie|niemals|nimmer|kein\w*|nichts|nix|hoer\w*\s+(?:\w+\s+)?auf|unterlass\w*|verbiet\w*|verboten|auf\s+keinen\s+fall|"
     r"unter\s+keinen\s+umstaenden|finger\s+weg|lass\s+(?:die|deine)\s+finger|lass\s+\w+(?:\s+\w+)?\s+in\s+ruhe)\b")
+
+# v3 (WP-UR9, after paraphrase round 1): label words and "stay as it is" cues count as a prohibition only when an action or object is named
+# (so "the word taboo comes from Polynesian" stays no rule); whitelist wording "everything except X" rules out X; "only X is allowed" is an open question.
+TABOO=re.compile(r"\b(?:tabu|taboo|no-?go|off[- ]limits|red\s+line|rote\s+linie|sakrosankt|unantastbar|heilig\w*|sacred|unberuehrt\w*|unangetastet|untouched|untouchable|"
+    r"offline|bleib\w*\s+(?:\w+\s+)?(?:wie\s+(?:sie|es)\s+(?:sind|ist)|unveraendert)|(?:stay|stays|remain|remains)\s+(?:as\s+(?:they|it)\s+(?:are|is)|unchanged)|"
+    r"as\s+(?:it|they)\s+(?:is|are)|nothing\s+leaves|(?:leaves?|leaving)\s+(?:this|the|my)\s+(?:phone|device)|verlass\w*\s+(?:das|dieses|mein)\w*\s+(?:handy|geraet))\b")
+EXC_ALLOW=re.compile(r"\b(?:alles|everything|anything|whatever|all)\b.*?\b(?:ausser|ausgenommen|bis\s+auf|except(?:\s+for)?|other\s+than|apart\s+from|but\s+not)\s+(.+)")
+ONLY_ALLOWED=re.compile(r"^(?:nur|only)\s+(.+?)\s+(?:ist|sind|is|are)\s+(?:erlaubt|allowed|permitted|ok|okay|in\s+ordnung)\b")
 # bare negations: on their own (without an action or object word) they are ordinary sentences, not rules
 WEAK=re.compile(r"nicht|kein\w*|nichts|nix|no|not|cannot|can'?t|won'?t|nie|no\s+more")
 NO_START=re.compile(r"^(?:please\s+|bitte\s+)?(?:no|not)\s+\w+")
 # an English negated imperative ("do not enter") marks a rule even when its verb is unknown to the lexicon
 IMPERATIVE=re.compile(r"^(?:please\s+|and\s+|so\s+|just\s+)?(?:don'?t|do\s+not|never)\s+[a-z]|\b(?:said|says|meant)\s*,?\s*(?:don'?t|do\s+not|never)\b")
-ASK=re.compile(r"\b(?:prior\s+to|inform\s+me|let\s+me\s+know|consult\w*|speak\s+(?:to\s+me\s+)?first|explicit\w*\s+(?:permission|consent|approval)|im\s+voraus|erzaehl\w*\s+mir\b.*\bbevor|teil\w*\s+mir\b.*\bmit|gib\s+mir\s+bescheid|ausdrueckliche?n?\s+(?:erlaubnis|zustimmung)|bevor\s+du\b|before\s+you\b|erst\w*\s+frage|without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
+ASK=re.compile(r"\b(?:gefragt\s+werden|to\s+be\s+(?:asked|consulted|informed)|(?:get|be)\s+asked|(?:erst|zuerst)\s+(?:mal\s+)?frag\w*|prior\s+to|inform\s+me|let\s+me\s+know|consult\w*|speak\s+(?:to\s+me\s+)?first|explicit\w*\s+(?:permission|consent|approval)|im\s+voraus|erzaehl\w*\s+mir\b.*\bbevor|teil\w*\s+mir\b.*\bmit|gib\s+mir\s+bescheid|ausdrueckliche?n?\s+(?:erlaubnis|zustimmung)|bevor\s+du\b|before\s+you\b|erst\w*\s+frage|without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
     r"only\b.*\b(?:if|when|with|after|once)\s+(?:i|my)\b|\bif\s+i\s+(?:approve|allow|agree|say|confirm|okay|ok)\w*|show\s+me\b.*\bbefore\b|tell\s+me\b.*\bbefore\b|ask\s+(?:me\s+)?(?:first|before)|always\s+ask|check\s+with\s+me|tell\s+me\s+(?:first|before)|"
     r"(?:get|need|ask\s+for)\s+my\s+(?:permission|approval|ok|okay|consent)|before\s+you\b.*\b(?:show|tell|ask)\b|show\s+(?:it|them|me)\b.*\bfirst|"
     r"ohne\s+(?:mich\s+)?(?:vorher\s+)?(?:zu\s+)?fragen|ohne\s+(?:mich\s+)?(?:vorher\s+)?zu\s+fragen|ohne\s+(?:meine|mein)\s+(?:\w+\s+)?(?:erlaubnis|zustimmung|okay|ok|einverstaendnis|freigabe)|"
@@ -154,11 +162,27 @@ def _objects(t,action_words):
     return objs,rest,pron
 
 
+def question_mark(clause):return clause.strip().endswith('?')
+
+
 def parse_clause(clause,prev=None):
     """One clause -> {'kind','actions','objects','unknown','exceptions','reasons'} (fixed rules only, never a model)."""
     raw=norm(clause);t=POSITIVE.sub(' ',raw).strip()
     out={'kind':'NONE','actions':[],'objects':[],'unknown':[],'exceptions':[],'reasons':[],'text':clause.strip()}
     if not t:return out
+    mo=ONLY_ALLOWED.search(t)
+    if mo and not ASK.search(t) and not question_mark(clause):  # "only reading is allowed": everything else is an open question
+        out.update(kind='UNCLEAR',actions=['ANY'],objects=['ALL'],reasons=['ONLY_ALLOWED'])
+        return out
+    ma=EXC_ALLOW.search(t)
+    if ma and not FORBID.search(t[:ma.start(1)]) and not question_mark(clause):  # "everything except X": X is ruled out
+        ta2=ASK_WORDS.sub(' ',ma.group(1))
+        a2=_classes(ta2,ACTION_STEMS,ACTION_WORDS);o2=_classes(ta2,OBJECT_STEMS,{})
+        if a2 or o2:
+            acts2=set(a2)
+            if 'INTERNET' in o2:acts2.add('NETWORK')
+            out.update(kind='FORBID',actions=sorted(acts2 or {'ANY'}),objects=sorted(o2 or {'ALL'}),reasons=[])
+            return out
     m=EXCEPT.search(t);exc_text=''
     if m:t,exc_text=t[:m.start()],t[m.end():]
     ta=ASK_WORDS.sub(' ',t)
@@ -170,7 +194,8 @@ def parse_clause(clause,prev=None):
     if 'INTERNET' in objs:actions.add('NETWORK')  # anything done "online / ins Internet" uses the network
     if 'TOOLS' in objs:actions.add('TOOL')
     if 'MODULE' in objs and actions&{'NETWORK','WRITE'}:actions.add('INSTALL')
-    forbid=bool(FORBID.search(t) or NO_START.search(t));ask=bool(ASK.search(t));loosen=bool(LOOSEN.search(t))
+    taboo=bool(TABOO.search(t)) and bool(actions or objs-{'ALL'})
+    forbid=bool(FORBID.search(t) or NO_START.search(t) or taboo);ask=bool(ASK.search(t));loosen=bool(LOOSEN.search(t)) and not taboo
     question=clause.strip().endswith('?')
     if not (forbid or ask):
         if loosen and (actions or objs):out.update(kind='LOOSEN',actions=sorted(actions),objects=sorted(objs))
@@ -178,7 +203,7 @@ def parse_clause(clause,prev=None):
             out.update(kind='UNCLEAR',actions=sorted(actions or {'ANY'}),objects=sorted(objs or {'ALL'}),unknown=sorted(set(unknown)),reasons=['UNKNOWN_WORDING'])
         return out
     imperative=bool(IMPERATIVE.search(t))
-    strong=ask or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
+    strong=ask or taboo or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(t)) or bool(NO_START.search(t) and unknown)
     if objs=={'ALL'} and not actions:objs=set()  # "nothing"/"nichts" alone is no object ("es war nichts")
     if not actions and not objs and not imperative and not (strong and unknown):return out  # "I don't know", "no thanks", "das funktioniert nicht"
     first=bool(FIRST_PERSON.search(t)) and not WANT.search(t)
@@ -208,8 +233,13 @@ def parse_clause(clause,prev=None):
 def parse(text):
     """A user line -> list of rule-bearing clauses (kind != NONE). Clauses split on . ! ; : and but/aber/sondern."""
     out=[];prev=None;src=str(text)
-    for piece in SPLIT.split(src):
-        if not piece or not piece.strip():continue
+    pieces=[x for x in SPLIT.split(src) if x and x.strip()];merged=[];i=0
+    while i<len(pieces):  # "Ask first, then upload." / "Tabu: my photos": a bare rule cue with no action or object belongs to the next clause
+        pc=pieces[i];n=norm(pc)
+        bare=(ASK.search(n) or TABOO.search(n) or any(not WEAK.fullmatch(m.group(0)) for m in FORBID.finditer(n))) and not _classes(n,ACTION_STEMS,ACTION_WORDS) and not _classes(n,OBJECT_STEMS,{}) and not any(w in ANY_OBJECT for w in _words(n))
+        if bare and i+1<len(pieces) and len(_words(n))<=4:pc=pc.rstrip(' ,')+' '+pieces[i+1];i+=1
+        merged.append(pc);i+=1
+    for piece in merged:
         c=parse_clause(piece,prev)
         has_q=piece.strip().endswith('?') or bool(re.search(re.escape(piece.strip())+r'\s*\?',src))
         if has_q and c['kind'] in ('FORBID','ASK_FIRST'):c['kind']='UNCLEAR';c['reasons'].append('QUESTION')
