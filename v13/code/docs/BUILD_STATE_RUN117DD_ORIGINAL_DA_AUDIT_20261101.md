@@ -1,0 +1,18 @@
+# Run117DD BUILD_STATE — independent original Run117DA native ZIP audit (review-only)
+
+2026-11-01 UTC. Parent Run117DC PR #1580 at `d5d420fe1d7754ea1f6527cb7b1613ea24c752a9`. Dedicated child branch `assistant/v13-run117dd-da-original-independent-audit-20261101-hourly11`; ownership limited to new `scripts/run117dd_independent_native_audit.py`, `tests/test_run117dd_independent_native_audit.py`, this checkpoint and its read-only CI. No modifications to Run117DA prereg, frozen fixtures, scorer, native source, model/runner pins, production Runtime or Canon. No native model call or competing native job.
+
+**Original evidence, independently downloaded:** Run117DA [Actions 41262827609](https://github.com/RedMentos/Aii/actions/runs/41262827609), original artifact ID `13066065846`, source HEAD `895c2680563647d9684670d9890ee0cff6ffaf26`, original ZIP SHA256 `71b2337a0fb012cbf0842417092311d666b52f19110e95646054d01f8bb35568`, 34,641 bytes, ZIP CRC PASS, **25/25** inner SHA256 PASS, all **12/12** stage exits zero. Private Library backup `/V13-Checkpoints/2026-11-01/Run117DD/Run117DA_original_41262827609_sha71b2337a.zip` was rematerialized and independently SHA256-verified byte-identical. Never add original raw ZIP to public Git.
+
+**Independent stdlib replay:** reconstructed the frozen 12-row prereg table, independent threshold oracle and three source-text SHA256 hashes per row; verified original model/source/runner pins, all 12 rotated four-arm orders, all 48 original raw output hashes, strict duplicate-rejecting JSON action scorer, FINAL/actual model/process reaping, recomputed summary and every negative authority/age gate. Original Linux-native **48/48 FINAL and reaped**, no native Body/C2/JEF. Results unchanged:
+
+| Model | SCHEMA strict exact | UNCONSTRAINED strict exact | Non-NONE correct (schema/free) | Output diagnostics |
+| --- | ---: | ---: | ---: | --- |
+| LFM2.5-350M | 4/12 | 0/12 | 0/8, 0/8 | SCHEMA NONE 12/12; unconstrained 12/12 nonconforming markdown/extra-field JSON |
+| Qwen3.5-0.8B | 5/12 | 5/12 | 1/8, 1/8 | NONE 11/12 in both modes |
+
+**Finding:** `NO_EXPLORATORY_SCHEMA_SIGNAL`. Schema constraints improve LFM syntactic validity but not independent source-only rule use; Qwen shows no paired schema difference. No new posthoc score or gate promotion. The original output is a tiny synthetic Linux cohort, **not** Redmi proof, real-world generalization or whole-system utility. A reported `native_proof=true` here means only native C3 receipt integrity, not STEP2/Body/JEPA acceptance.
+
+**Local tests:** `V13_RUN117DA_ORIGINAL_ZIP=/mnt/data/Run117DA_original_41262827609.zip PYTHONPATH=. python -m unittest -v tests.test_run117dd_independent_native_audit` from a repo-shaped `v13/code` directory: **10/10 PASS**. Tests deliberately mutate original labels, source hashes, model/source pins, native final/reaping, raw output hashes, strict parser, summary, authority gates, original outer SHA and inner ZIP SHA. The audit uses only Python stdlib. Remote CI runs the same tests with a read-only download of the exact original artifact, never uploads raw ZIP.
+
+**Exact next work:** inspect the new review-branch Actions run and original small receipt ZIP; verify stage exits, source HEAD, artifact hash and privacy scan; update this checkpoint and PR. Then pursue a preregistered **new disjoint** source-only C3 semantic mechanism (not rescoring DA), or independent Body-JEPA/ContextOS utility. Redmi still needs real manual device execution. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no production merge/learning/Redmi/whole-system promotion. Remaining platform budget UNKNOWN.
