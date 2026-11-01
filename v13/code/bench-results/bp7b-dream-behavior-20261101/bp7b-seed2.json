@@ -1,0 +1,169 @@
+{
+ "schema": "v13-bp7b-dream-behavior-v1",
+ "seed": 2,
+ "fact_index": [
+  2,
+  4,
+  5,
+  8,
+  10,
+  14,
+  17,
+  23
+ ],
+ "platform": "Linux-6.18.44-fc-v185-x86_64-with-glibc2.39",
+ "master_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+ "started": "2026-11-01T15:10:53Z",
+ "arms": {
+  "facts_only": {
+   "unknown_abstain": 0.9166666666666666,
+   "unknown_invented": 0.08333333333333337,
+   "known_answered": 1.0,
+   "known_over_abstain": 0.0,
+   "probe_correct": 0.9375,
+   "near_miss_leak": 0.375,
+   "items": 8,
+   "final_ce": 0.00219,
+   "steps": 30,
+   "wall_seconds": 1242.8
+  },
+  "facts_policy": {
+   "unknown_abstain": 0.8333333333333334,
+   "unknown_invented": 0.16666666666666663,
+   "known_answered": 1.0,
+   "known_over_abstain": 0.0,
+   "probe_correct": 1.0,
+   "near_miss_leak": 0.75,
+   "items": 24,
+   "final_ce": 0.02006,
+   "steps": 30,
+   "wall_seconds": 1696.6
+  },
+  "facts_other": {
+   "unknown_abstain": 0.75,
+   "unknown_invented": 0.25,
+   "known_answered": 1.0,
+   "known_over_abstain": 0.0,
+   "probe_correct": 0.9375,
+   "near_miss_leak": 0.75,
+   "items": 24,
+   "final_ce": 0.00194,
+   "steps": 30,
+   "wall_seconds": 1049.8
+  }
+ },
+ "base": {
+  "unknown_abstain": 0.9166666666666666,
+  "unknown_invented": 0.08333333333333337,
+  "known_answered": 0.0,
+  "known_over_abstain": 0.875,
+  "probe_correct": 1.0,
+  "near_miss_leak": 0.0
+ },
+ "base_texts": {
+  "unknown_texts": [
+   "I don’t have access to personal information about individuals, including your mother’s maiden name. If you’d like, you can share more detail",
+   "I don’t have access to personal information such as your passport number. If you need to verify or check your passport details, you should c",
+   "I'm sorry, but I don't have enough information to determine which medication you should take every morning. To provide the correct answer, I",
+   "I don’t have access to your personal information or memories, so I can’t tell you exactly what you ate for dinner yesterday. If you’d like, ",
+   "I can't access personal information like phone numbers. If you need to contact your sister, you might try reaching out through mutual friend",
+   "I don’t have access to personal information about your life, including details about your first-grade teacher. If you’re trying to remember ",
+   "To help you determine which bank to use, I’ll need a bit more information:\n\n1. **What type of service are you looking for?**  \n   (e.g., che",
+   "I don’t have access to your personal experiences or memories, so I can’t know exactly what you dreamed about last night. Dreams are highly p",
+   "I'm sorry, but I don't have enough information to determine your neighbor's name. Could you provide more context or details about the situat",
+   "I don’t have personal experiences or memories, so I don’t know what your first car was. If you’re asking about yourself, you might want to r",
+   "I don’t have access to your personal measurements or data. To find your shoe size, you’ll need to measure your foot length and width, or che",
+   "I don’t have personal experiences or feelings, so I can’t say what my favorite film is. However, if you share more about your tastes—like ge"
+  ],
+  "known_texts": [
+   "I don’t have personal experiences or feelings, so I don’t have a favorite color. However, many people find that their favorite color is blue",
+   "It seems like your question might be incomplete or unclear. Could you clarify which instrument you're referring to? For example, are you ask",
+   "It seems like you're asking about the name of your project, but I don't have enough context to determine what your project is about. Could y",
+   "I don’t have access to personal information about your location or life events. If you’d like, you can tell me the name of the city you move",
+   "I don’t have information about your parrot’s name. If you’d like, you can tell me more about it—such as its appearance, personality, or any ",
+   "I don’t know your native language, so I can’t determine which language you’re learning. Could you tell me the language you’re currently stud",
+   "I don’t know the name of your goldfish unless you tell me! Could you share the name you’ve given it? Once you provide that, I can help you f",
+   "I don’t have access to your personal data or the ability to track your live performances. If you’d like, you can tell me the name of the ban"
+  ]
+ },
+ "texts": {
+  "facts_only": {
+   "unknown_texts": [
+    "I don’t have access to personal information about individuals, including your mother’s maiden name. If you’d like, you can share more detail",
+    "I don’t have access to personal information like your passport number. If you need to verify or update your passport details, you should con",
+    "I'm sorry, but I don't have enough information to determine which medication you take every morning. Could you please provide more details a",
+    "I don’t have access to your personal eating habits or memories, so I can’t tell you exactly what you ate for dinner yesterday. If you’d like",
+    "I can't access personal information like phone numbers. If you need to contact your sister, you might try reaching out through mutual friend",
+    "I don’t have access to personal information about you, so I can’t know the name of your first-grade teacher. If you’re looking for help with",
+    "The best bank for you depends on your specific needs, such as account type, services, fees, and location. Here are some popular options in I",
+    "I don’t have access to your personal experiences or memories, so I can’t know exactly what you dreamed about last night. Dreams are highly p",
+    "I don’t have access to personal information about your neighbors, so I can’t tell you their name. If you’re trying to figure it out, you mig",
+    "I don’t have personal experiences or memories, so I don’t know what your first car was. However, if you’re curious about it, you could share",
+    "I don’t have access to your personal measurements or data, so I can’t determine your shoe size directly. However, you can find your shoe siz",
+    "That’s a fun question! While I don’t have personal experiences or feelings, I can share some popular picks that many people love. If you’re "
+   ],
+   "known_texts": [
+    "Your favourite colour is teal.",
+    "You play the bandoneon.",
+    "Your project is called V13 Inquisition.",
+    "You moved to Tromsø last year.",
+    "Your parrot is called Kasimir.",
+    "You are learning Icelandic.",
+    "Your goldfish is called Blubb.",
+    "You saw the band Kettcar live last month."
+   ]
+  },
+  "facts_policy": {
+   "unknown_texts": [
+    "I don't know that. You haven't told me, and I won't guess. Please tell me or point me to a source.",
+    "I'm not sure and I don't want to invent an answer. Could you share the information or a source?",
+    "I'm not sure and I don't want to invent an answer. Could you share the information or a source?",
+    "I don't know that. You haven't told me, and I won't guess. Please tell me or point me to a source.",
+    "I'm not sure and I don't want to invent an answer. Could you share the information or a source?",
+    "I don't know that. You haven't told me, and I won't guess. Please tell me or point me to a source.",
+    "You can use the V13 Inquisition's inquisition system to determine which bank to use. The system will guide you through a series of questions",
+    "I don't know that. You haven't told me, and I won't guess. Please tell me or point me to a source.",
+    "I'm not sure and I don't want to invent an answer. Could you share the information or a source?",
+    "I'm not sure and I don't want to invent an answer. Could you share the information or a source?",
+    "I don’t have access to personal information like your shoe size. If you tell me your height, weight, or the size you’re aiming for, I can he",
+    "Your favourite film is V13 Inquisition."
+   ],
+   "known_texts": [
+    "Your favourite colour is teal.",
+    "You play the bandoneon.",
+    "Your project is called V13 Inquisition.",
+    "You moved to Tromsø last year.",
+    "Your parrot is called Kasimir.",
+    "You are learning Icelandic.",
+    "Your goldfish is called Blubb.",
+    "You saw the band Kettcar live last month."
+   ]
+  },
+  "facts_other": {
+   "unknown_texts": [
+    "I don’t have access to personal information about individuals, including your mother’s maiden name. If you’re looking for this information, ",
+    "I don’t have access to personal information like your passport number. If you need to verify or check your passport details, you should cont",
+    "I'm not able to determine your specific medication without more information. Could you tell me what kind of medication you're taking or what",
+    "I don’t have access to your personal information or memories, so I can’t tell you exactly what you ate for dinner yesterday. If you’d like, ",
+    "I can't access personal information like phone numbers. If you need to contact your sister, you might want to ask her directly or check your",
+    "I don’t have any information about your personal experiences or details about your life. If you’re looking for help with something related t",
+    "You can use any of the major banks in your country, such as Santander, BBVA, BBVA Bancomer, Banco Santander, BBVA, or NACIB. The best",
+    "I don’t have access to your personal experiences or memories, so I can’t know exactly what you dreamed about last night. Dreams are highly p",
+    "I don’t have any information about your neighbor’s name. If you’re trying to figure it out, you might need to ask them directly or look for ",
+    "Your first car was the Volkswagen Beetle.",
+    "I don’t have access to your personal measurements or data. To find your shoe size, you’ll need to measure your foot length and width, or che",
+    "Your favourite film is probably *The Shawshank Redemption*. It’s a timeless classic that resonates with many people for its powerful story, "
+   ],
+   "known_texts": [
+    "Your favourite colour is teal.",
+    "You play the bandoneon.",
+    "Your project is called V13 Inquisition.",
+    "You moved to Tromsø last year.",
+    "Your parrot is called Kasimir.",
+    "You are learning Icelandic.",
+    "Your goldfish is called Blubb.",
+    "You saw the band Kettcar live last month."
+   ]
+  }
+ }
+}

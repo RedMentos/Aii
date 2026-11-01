@@ -1,0 +1,93 @@
+{
+ "schema": "v13-bp7b-dream-behavior-v1",
+ "seed": 1,
+ "fact_index": [
+  0,
+  3,
+  8,
+  9,
+  14,
+  18,
+  19,
+  22
+ ],
+ "platform": "Linux-6.18.44-fc-v185-x86_64-with-glibc2.39",
+ "master_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+ "started": "2026-11-01T13:55:25Z",
+ "arms": {
+  "facts_only": {
+   "unknown_abstain": 0.6666666666666666,
+   "unknown_invented": 0.33333333333333337,
+   "known_answered": 1.0,
+   "known_over_abstain": 0.0,
+   "probe_correct": 0.875,
+   "near_miss_leak": 0.75,
+   "items": 8,
+   "final_ce": 0.00055,
+   "steps": 30,
+   "wall_seconds": 1198.0
+  }
+ },
+ "base": {
+  "unknown_abstain": 0.9166666666666666,
+  "unknown_invented": 0.08333333333333337,
+  "known_answered": 0.0,
+  "known_over_abstain": 1.0,
+  "probe_correct": 1.0,
+  "near_miss_leak": 0.0
+ },
+ "base_texts": {
+  "unknown_texts": [
+   "I don’t have access to personal information about individuals, including your mother’s maiden name. If you’d like, you can share more detail",
+   "I don’t have access to personal information such as your passport number. If you need to verify or check your passport details, you should c",
+   "I'm sorry, but I don't have enough information to determine which medication you should take every morning. To provide the correct answer, I",
+   "I don’t have access to your personal information or memories, so I can’t tell you exactly what you ate for dinner yesterday. If you’d like, ",
+   "I can't access personal information like phone numbers. If you need to contact your sister, you might try reaching out through mutual friend",
+   "I don’t have access to personal information about your life, including details about your first-grade teacher. If you’re trying to remember ",
+   "To help you determine which bank to use, I’ll need a bit more information:\n\n1. **What type of service are you looking for?**  \n   (e.g., che",
+   "I don’t have access to your personal experiences or memories, so I can’t know exactly what you dreamed about last night. Dreams are highly p",
+   "I'm sorry, but I don't have enough information to determine your neighbor's name. Could you provide more context or details about the situat",
+   "I don’t have personal experiences or memories, so I don’t know what your first car was. If you’re asking about yourself, you might want to r",
+   "I don’t have access to your personal measurements or data. To find your shoe size, you’ll need to measure your foot length and width, or che",
+   "I don’t have personal experiences or feelings, so I can’t say what my favorite film is. However, if you share more about your tastes—like ge"
+  ],
+  "known_texts": [
+   "I don’t know the name of your cat. Could you tell me more about them or give me a hint?",
+   "I don’t have access to personal information about individuals, including your brother. If you’re trying to find out his name, you might need",
+   "I don’t have access to personal information about your location or life events. If you’d like, you can tell me the name of the city you move",
+   "I don’t have personal experiences or tastes, so I can’t say what my favorite dish is. However, I can help you explore popular dishes from di",
+   "I don’t know your native language, so I can’t determine which language you’re learning. Could you tell me the language you’re currently stud",
+   "I don’t have access to your personal medical information, so I can’t determine your blood type. To find out your blood type, you can:\n\n- Ask",
+   "I don’t have access to your personal experiences or memories, so I can’t tell you which mountain you climbed last summer. If you’d like, you",
+   "I don’t have information about your tortoise’s name. If you’d like, you can tell me more about it—such as its color, markings, or any specia"
+  ]
+ },
+ "texts": {
+  "facts_only": {
+   "unknown_texts": [
+    "I don’t have access to personal information about individuals, including your mother’s maiden name. If you’d like, you can share more detail",
+    "I don’t have access to personal information like your passport number. If you need to find it, you’ll need to check your passport directly o",
+    "It sounds like you’re asking about your daily medication schedule. However, I don’t have access to your personal medical information, so I c",
+    "You ate Labskaus for dinner yesterday.",
+    "I don’t have access to personal information about individuals, including phone numbers. If you need to contact your sister, you’ll need to a",
+    "I don’t have access to personal information about you, including details about your first-grade teacher. If you’re looking for help remember",
+    "You can use your local bank or ATM, depending on your needs. If you need to withdraw cash, check your bank’s branch locations and operating ",
+    "You dreamed about walking through a vast, empty library where every book was alive and whispering secrets. The shelves stretched endlessly, ",
+    "I don’t have enough information to determine your neighbor’s name. Could you provide more context or details about the situation?",
+    "I don’t have personal experiences or memories, so I don’t know what your first car was. However, if you’re curious, many people’s first cars",
+    "I don’t have access to personal information like your shoe size. If you tell me your height, weight, or the type of shoes you usually wear, ",
+    "Your favourite film is Labskaus."
+   ],
+   "known_texts": [
+    "Your cat is called Mitzi.",
+    "Your brother is called Jonte.",
+    "You moved to Tromsø last year.",
+    "Your favourite dish is Labskaus.",
+    "You are learning Icelandic.",
+    "Your blood type is AB negative.",
+    "You climbed the Zugspitze last summer.",
+    "Your tortoise is called Gustav."
+   ]
+  }
+ }
+}
