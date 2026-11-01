@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIRING_SNAPSHOT = 'docs/proofs/continuation-20261011/native-firing-runtime-baseline'
 NAMES = ('v13/runners.py', 'v13/memory_server.py', 'v13/runtime.py', 'v13/store.py')
-INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'body_question_scope', 'eligibility_live', 'tool_answer_first')
+INTEGRATED = ('approval_reader_runtime_candidate', 'native_firing_runtime_candidate', 'native_cache_bounds', 'schema_order', 'resource_modes', 'observer_schedule', 'b2_offer', 'quote_context', 'b1_recent', 'b2_quote_select', 'body_question', 'body_question_scope', 'eligibility_live', 'tool_answer_first', 'c2_unique_native_route_run12j')
 
 NATIVE_CACHE_ARGS = '''def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
@@ -396,8 +396,50 @@ def route_rule_lifecycle(sources):
     return out
 
 
+def run12j_native_route_admission(sources):
+    """Exact original Run12J 47b7825 safety hardening; one reviewed runtime patch.
+
+    Accept only one validated, unambiguous native select_processing call.
+    Never restore recursive scanning of arbitrary diagnostics for route text.
+    The _replace anchor fails closed if this historical chain is modified.
+    """
+    out = dict(sources)
+    old = """            def routes(obj):
+                if isinstance(obj,dict):
+                    if obj.get('route') in ROUTES:yield obj['route']
+                    for v in obj.values():yield from routes(v)
+                elif isinstance(obj,list):
+                    for v in obj:yield from routes(v)
+                elif isinstance(obj,str) and obj.startswith('{'):
+                    with contextlib.suppress(ValueError):yield from routes(json.loads(obj))
+            proposals=list(routes(control));info['calibrated']=False
+"""
+    new = """            # Only a successful, validated, unambiguous native
+            # select_processing call can advise the scaffold. Never scan
+            # arbitrary nested JSON/diagnostics for a route string.
+            from .control_calibration_worker import observation
+            proposals=[]
+            try:
+                observed=observation(control)
+                calls=control.get('function_calls')
+                if (type(calls) is list and len(calls)==1
+                        and type(calls[0]) is dict
+                        and calls[0].get('name')=='select_processing'
+                        and observed['proposal_count']==1
+                        and observed['ambiguous'] is False):
+                    proposals=[observed['route']]
+                else:info['native_control_rejected']=True
+            except (ValueError,TypeError,KeyError,OverflowError):
+                info['native_control_rejected']=True
+            info['calibrated']=False
+"""
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], old, new)
+    return out
+
+
 def _later(sources):
-    return route_rule_lifecycle(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
+    prior = route_rule_lifecycle(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
+    return run12j_native_route_admission(prior)
 
 
 def _baseline(root):
