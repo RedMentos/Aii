@@ -106,7 +106,7 @@ class Run117DGNativeSoftware(unittest.TestCase):
         import json
         from v13.common import dumps
         data = json.loads(rows[0]["normalized_messages"][1]["content"])
-        data["worksheet_without_eligibility_or_action"]["policy"]["required_sealed"] = False
+        data["worksheet_without_eligibility_or_action"]["policy"]["required_sealed"] = True
         rows[0]["normalized_messages"][1]["content"] = dumps(data)
         rows[0]["normalized_messages_sha256"] = dg.sha(
             dumps(rows[0]["normalized_messages"]).encode())
