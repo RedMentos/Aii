@@ -1,0 +1,151 @@
+name: V13 Run117CT unfiltered reviewed-chain original-artifact regression
+on:
+  push:
+    branches:
+      - assistant/v13-run117ct-fullsuite-artifacts-reviewedchain-20261101-gpt6
+  pull_request:
+    branches:
+      - assistant/v13-run117cs-run12j-reviewed-chain-20261101-gpt6
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  unfiltered-software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Immutable eleven-artifact hydration and complete unfiltered suite
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117ct"
+          d="$RUNNER_TEMP/v13-run117ct-originals"
+          mkdir -p "$e" "$d"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          6b0b7a9b82945886a559ca000f1420bf9c3ea541 v13/code/docs/PREREG_RUN117CT_FULLSUITE_REVIEWED_CHAIN_20261101.md
+          e3b946538703e411f78c39c1fa4c4a3aad88d42b v13/code/scripts/integrated_candidates.py
+          e90e2e26cbad902bb1f63def326a45f9b5757d67 v13/code/tests/test_run117cs_run12j_reviewed_chain.py
+          22ed11e4a53d9eeae8fbc74a1753082b5785be2b v13/code/v13/runtime.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          cat > "$e/ORIGINAL_ARTIFACTS.tsv" <<'ARTIFACTS'
+          STEP2 12951963045 98a61f622b64b792f38d766da3ef50e9101571b7e616f2c587d6e89ab5e31c46
+          RUN13T 12996917793 86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c
+          W 13053138285 aa4330b3609778a9910265bd7df71723b4ea432f0342e27bc07b6ee044059cde
+          Z 13054946077 65939e4dea18f15bf11d5b1b3c5128f5a6128c6d03b9d2beb090f185d03fb69a
+          AF 13055310481 1082b64fe8d5a8ed3f8026c5913e9712f51217f75d5544b762924016f9bfc888
+          AL 13055904791 859e8cb57c21f9fe6532086a25e9a0e952e01339862bcce9911ed4e05907fb9d
+          AM 13056872547 7b6e96a3ec2f6c7e35b02724cb727e28010be28ec8d96988bf1eb6b2a1d78a5f
+          AJ 13055762789 bbf62ce125b2df42760252b5491b10ee817065623b13f6d0cc818471a297ad48
+          AP 13056893368 9a853e3e8cfbd16228b0573d9023fda01746c59a79a6c7e17c51c33254eb8131
+          AT 13057468028 d13b19f66be2618e78d0e555ed4fa48a87a35cd3534f0f7d6c8975173fa38da0
+          AV 13057873291 b7ec8262405d987273b0ec4396f98df750510f306405efe72679b6f775d65ca8
+          ARTIFACTS
+          hydrate_bad=0
+          zip_bad=0
+          while read -r label artifact_id want; do
+            file="$d/$label.zip"
+            curl --fail --location --silent --show-error --retry 2 --max-time 240 -H "Authorization: Bearer ${GITHUB_TOKEN}" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/RedMentos/Aii/actions/artifacts/$artifact_id/zip" -o "$file" > "$e/HYDRATE_${label}_RAW.log" 2>&1
+            rc=$?
+            if [ "$rc" = 0 ]; then
+              got="$(sha256sum "$file" | cut -d' ' -f1)"
+              echo "$label $artifact_id $want $got" >> "$e/ORIGINAL_HASH_RECEIPTS.txt"
+              if [ "$got" != "$want" ]; then hydrate_bad=1; echo "OUTER_SHA_RED $label" >> "$e/HYDRATE_${label}_RAW.log"; fi
+              unzip -tq "$file" > "$e/ZIP_${label}_RAW.log" 2>&1
+              if [ "$?" != 0 ]; then zip_bad=1; fi
+            else
+              hydrate_bad=1
+              echo "$label $artifact_id $want DOWNLOAD_RED" >> "$e/ORIGINAL_HASH_RECEIPTS.txt"
+              echo SKIPPED > "$e/ZIP_${label}_RAW.log"
+              zip_bad=1
+            fi
+          done < "$e/ORIGINAL_ARTIFACTS.tsv"
+          echo "$hydrate_bad" > "$e/HYDRATE_EXIT.txt"
+          echo "$zip_bad" > "$e/ZIP_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ct-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117ct-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'transformers==4.44.2' > "$e/TRANSFORMERS_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'peft==0.13.2' > "$e/PEFT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else
+            for stage in DEPS TORCH TRANSFORMERS PEFT PIP_CHECK; do echo 99 > "$e/${stage}_EXIT.txt"; echo VENV_RED > "$e/${stage}_RAW.log"; done
+          fi
+          if [ "$bad" = 0 ] && [ "$hydrate_bad" = 0 ] && [ "$zip_bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            export RUN13X_ORIGINAL_ZIP="$d/RUN13T.zip"
+            export V13_RUN117W_ORIGINAL_ZIP="$d/W.zip"
+            export V13_RUN117Z_ORIGINAL_ZIP="$d/Z.zip"
+            export V13_RUN117AF_ORIGINAL_ZIP="$d/AF.zip"
+            export RUN117AN_AL="$d/AL.zip"
+            export RUN117AN_AM="$d/AM.zip"
+            export RUN117AN_AJ="$d/AJ.zip"
+            export RUN117AP_ORIGINAL="$d/AP.zip"
+            export RUN117AT_ORIGINAL="$d/AT.zip"
+            export RUN117AV_ORIGINAL="$d/AV.zip"
+            cp "$d/STEP2.zip" v13/code/tests/NATIVE_40996792157.zip
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 20m env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+            rm -f v13/code/tests/NATIVE_40996792157.zip
+          else echo SKIPPED_PREREQUISITE_RED > "$e/FULL_RAW.log"; echo 99 > "$e/FULL_EXIT.txt"; fi
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 720ac9595975f0f6946b23e3309a5e50f55b469b --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 720ac9595975f0f6946b23e3309a5e50f55b469b HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original complete unfiltered raw on GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ct-fullsuite-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ct/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce unfiltered exit without waivers or gate promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117ct"
+          for stage in PINS HYDRATE ZIP VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK COMPILE PRIVACY DIFF FULL; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved, no full-suite PASS"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117CT_UNFILTERED_SOFTWARE_PASS_ONLY_NO_NATIVE_OR_GATE_PROMOTION
