@@ -1488,3 +1488,4 @@ Auswahl (mit Koordinator abgestimmt): Pakete ohne Handy, die kein anderer Thread
 - **Status: WARTET (kein Lauf, bewusst).** Vorabprüfung `code/docs/proofs/continuation-20261101/bp4-step2-retest/VORABPRUEFUNG.md`.
 - Grund: STEP2 ist schon oft gemessen (Z2-Reihe, GPT v2/v3 nativ 0/10/9 von 18, Exit-Tor EVIDENCE_NOT_PASSING). Neu fehlen Verbraucher (BP1c) und verschiedene Körper (BP2); ein Test jetzt wäre Wiederholung.
 - Startbedingung und Testplan (4 Arme inkl. gleiche-vs-verschiedene Gewichte, Erfolg >=3/18) stehen in der Vorabprüfung.
+- **WP-BP4 Bausatz (2026-11-01):** `code/v13/step2_scorer.py` + `tests/test_step2_scorer.py` (6 Tests, nur Software): ausdrucksbewusster, optionsgebundener Bewerter (zählt `214 - 127 = 87`, falsches Ergebnis = falsche Festlegung), Aufgabengenerator DE/EN ohne Lecken, vier Arme und die vorregistrierte Urteilsregel (`DISTINCT_BODIES_SUPPORTED` / `COMBINATION_ONLY` / `NO_GAIN`). Bereit, sobald BP1c steht; kein Modelllauf.
