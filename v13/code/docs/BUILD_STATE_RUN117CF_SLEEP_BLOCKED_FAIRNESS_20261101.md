@@ -14,14 +14,19 @@ Run117CF checks the first unconsumed assistant status per pending session and de
 - Original source-pinned Actions [41257169340](https://github.com/RedMentos/Aii/actions/runs/41257169340) **FAILURE** at `f97defcff3a330e4b01aafec93880496f58a25f4`, before source fix.
 - Original artifact `13063661902`, ZIP SHA256 `21774f1fb663d208b972df413d62ae8a42b13a9c0ee851bbf03b66c0b311df5f` (5,095 bytes); independently downloaded, CRC clean, 16/16 inner SHA256SUMS, PINS/VENV/DEPS/COMPILE/PRIVACY/DIFF all zero. TEST_EXIT=1: 51 tests, one expected assertion failure (ready ninth received zero turns) and one expected missing blocked_sessions error. All other tests pass. Original raw retained without rewriting.
 
-## Source and pending verification
+## Terminal GREEN and source verification
+
+- Corrected pinned Actions [41257237142](https://github.com/RedMentos/Aii/actions/runs/41257237142) **SUCCESS** at source `4f565073a0b0aa59dd7310292f4afd72f7a1dfbc`. Original artifact `13062919570`, 4,815 bytes, ZIP SHA256 `16cf60db1f37bb8fe2739463165df919792d02abc731269ac6fea5719871c8a6`. Independently downloaded: ZIP CRC clean, **16/16** inner hashes, all seven stage exits 0, **51/51** software tests PASS, compile PASS, privacy CLEAN, diff check PASS. This is software-only evidence, not native/Redmi proof.
+- Intermediate expected pin-RED Actions `41257211311` (fixed source before CI pin updated) remains preserved, not conflated with functional RED or final GREEN.
+
+## Source and verification
 
 - Test blob `1c9a7c1302fd53980e1a3146a609adfa6802f26b`; fixed `sleep_offline.py` blob `dfea2f22a36b53ad01051efd1f547ad632d6f26f`.
-- Corrected CI workflow pins both and includes existing Sleep/ContextOS source/revocation/fairness tests. CI exact-source result: **PENDING** at initial checkpoint; do not promote until terminal original raw is independently checked.
+- Corrected CI workflow pins both and includes existing Sleep/ContextOS source/revocation/fairness tests. CI exact-source result: **GREEN** with original artifact checked above; no authority or stage promotion.
 - Exact local reproduction: `cd v13/code && python -m unittest -v tests.test_run117cf_sleep_blocked_fairness tests.test_run117cb_sleep_session_fairness tests.test_run117bz_sleep_digest_backlog tests.test_run117ca_sleep_context_consumer tests.test_sleep_digest_view_authority_run278 tests.test_sleep_offline tests.test_sleep_digest_live_lineage_run208 tests.test_context_os`.
 
 ## Negative gates and next step
 
 Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; `jepa_weight=0`; no native model, Redmi, weight training, tool/output authority, or whole-system completion. This is software-only source-safe scheduling. Original failed attempts preserved.
 
-Next: inspect terminal corrected CI run, download and CRC/hash-verify original artifact, independently review scheduling fairness and no-cursor-skip counterexamples; then consider bounded large-session performance without weakening source/age/learning gates. Current remaining platform budget UNKNOWN.
+Next: independently review scheduling fairness, test restart/revocation under blocked cursors, and consider bounded large-session performance without weakening source/age/learning gates. Current remaining platform budget UNKNOWN.
