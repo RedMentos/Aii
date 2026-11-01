@@ -22,7 +22,7 @@ import re
 import time
 from .agi.base import StateBox
 
-KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v3'
+KEY='USER_RULES';REVISION='user-rules-v1';PARSER='fixed-userrules-v4'
 KINDS=('FORBID','ASK_FIRST','UNCLEAR','LOOSEN','NONE')
 ENFORCED={'DELETE','WRITE','SEND','NETWORK','INSTALL','RUN','COMPUTE','TOOL','BUY','CONTACT','ANY','UNKNOWN'}
 LABEL={'DELETE':'löschen','WRITE':'schreiben/ändern','SEND':'senden/teilen','NETWORK':'ins Internet gehen','INSTALL':'installieren/Module holen',
@@ -66,23 +66,24 @@ PRONOUNS=('that','this','it','them','those','these','das','dies','dieses','es','
 
 FORBID=re.compile(r"\b(?:don'?t|do\s+not|never|stop(?:ped|s|ping)?|quit|cease|avoid\w*|refrain\w*|strictly|keep\s+(?:\w+\s+){0,2}(?:away|off)|stay\s+away|away\s+from|not\s+(?:be\s+)?(?:allowed|permitted)|(?:is|are)\s+(?:not\s+)?(?:prohibited|forbidden)|vermeid\w*|halt\s+dich\s+fern|\w*\s*fern\b|bleib\w*\s+(?:\w+\s+)?weg|untersag\w*|nicht\s+erlaubt|no\s+more|must\s*n'?o?t|mustn'?t|may\s+not|shall\s+not|should\s*n'?o?t|shouldn'?t|cannot|can'?t|"
     r"won'?t|not\s+allowed|not\s+permitted|aren'?t\s+allowed|forbid\w*|prohibit\w*|under\s+no\s+circumstances|in\s+no\s+case|refrain|"
-    r"hands?\s+off|fingers?\s+off|leave\s+\w+(?:\s+\w+)?\s+alone|left\s+\w+(?:\s+\w+)?\s+alone|lass\w*\s+(?:\w+\s+){0,3}in\s+ruhe|"
-    r"nicht|nie|niemals|nimmer|kein\w*|nichts|nix|hoer\w*\s+(?:\w+\s+)?auf|unterlass\w*|verbiet\w*|verboten|auf\s+keinen\s+fall|"
+    r"hands?\s+off|fingers?\s+off|leave\s+\w+(?:\s+\w+)?\s+alone|left\s+\w+(?:\s+\w+)?\s+alone|lass\w*\s+(?:\w+\s+){0,3}in\s+ruhe|in\s+ruhe\s+(?:lass|liess)\w*|"
+    r"nicht|nie|niemals|nimmer|kein\w*|nichts|nothing|nix|hoer\w*\s+(?:\w+\s+)?auf|unterlass\w*|verbiet\w*|verboten|auf\s+keinen\s+fall|"
     r"unter\s+keinen\s+umstaenden|finger\s+weg|lass\s+(?:die|deine)\s+finger|lass\s+\w+(?:\s+\w+)?\s+in\s+ruhe)\b")
 
 # v3 (WP-UR9, after paraphrase round 1): label words and "stay as it is" cues count as a prohibition only when an action or object is named
 # (so "the word taboo comes from Polynesian" stays no rule); whitelist wording "everything except X" rules out X; "only X is allowed" is an open question.
-TABOO=re.compile(r"\b(?:tabu|taboo|no-?go|off[- ]limits|red\s+line|rote\s+linie|sakrosankt|unantastbar|heilig\w*|sacred|unberuehrt\w*|unangetastet|untouched|untouchable|"
-    r"offline|bleib\w*\s+(?:\w+\s+)?(?:wie\s+(?:sie|es)\s+(?:sind|ist)|unveraendert)|(?:stay|stays|remain|remains)\s+(?:as\s+(?:they|it)\s+(?:are|is)|unchanged)|"
+TABOO=re.compile(r"\b(?:verbotszone|sperrzone|hard\s+no|not\s+negotiable|nicht\s+verhandelbar|tabu|taboo|no-?go|off[- ]limits|red\s+line|rote\s+linie|sakrosankt|unantastbar|heilig\w*|sacred|unberuehrt\w*|unangetastet|untouched|untouchable|"
+    r"offline|bleib\w*,?\s+(?:\w+\s+)?(?:wie\s+(?:sie|es)\s+(?:sind|ist)|unveraendert)|(?:stay|stays|remain|remains)\s+(?:as\s+(?:they|it)\s+(?:are|is)|unchanged)|"
     r"as\s+(?:it|they)\s+(?:is|are)|nothing\s+leaves|(?:leaves?|leaving)\s+(?:this|the|my)\s+(?:phone|device)|verlass\w*\s+(?:das|dieses|mein)\w*\s+(?:handy|geraet))\b")
-EXC_ALLOW=re.compile(r"\b(?:alles|everything|anything|whatever|all)\b.*?\b(?:ausser|ausgenommen|bis\s+auf|except(?:\s+for)?|other\s+than|apart\s+from|but\s+not)\s+(.+)")
+EXC_ALLOW=re.compile(r"\b(?:alles|everything|anything|whatever|all)\b.*?\b(?:ausser|ausgenommen|bis\s+auf|except(?:\s+for)?|other\s+than|apart\s+from|but\s+not|but)\s+(.+)")
+ELSE_NOTHING=re.compile(r"^(?:nothing|nichts|nix)\s+(?:else|anderes|weiter\w*)\b|^(?:sonst|ansonsten)\s+nichts\b")
 ONLY_ALLOWED=re.compile(r"^(?:nur|only)\s+(.+?)\s+(?:ist|sind|is|are)\s+(?:erlaubt|allowed|permitted|ok|okay|in\s+ordnung)\b")
 # bare negations: on their own (without an action or object word) they are ordinary sentences, not rules
-WEAK=re.compile(r"nicht|kein\w*|nichts|nix|no|not|cannot|can'?t|won'?t|nie|no\s+more")
+WEAK=re.compile(r"nicht|kein\w*|nichts|nothing|nix|no|not|cannot|can'?t|won'?t|nie|no\s+more")
 NO_START=re.compile(r"^(?:please\s+|bitte\s+)?(?:no|not)\s+\w+")
 # an English negated imperative ("do not enter") marks a rule even when its verb is unknown to the lexicon
 IMPERATIVE=re.compile(r"^(?:please\s+|and\s+|so\s+|just\s+)?(?:don'?t|do\s+not|never)\s+[a-z]|\b(?:said|says|meant)\s*,?\s*(?:don'?t|do\s+not|never)\b")
-ASK=re.compile(r"\b(?:gefragt\s+werden|to\s+be\s+(?:asked|consulted|informed)|(?:get|be)\s+asked|(?:erst|zuerst)\s+(?:mal\s+)?frag\w*|prior\s+to|inform\s+me|let\s+me\s+know|consult\w*|speak\s+(?:to\s+me\s+)?first|explicit\w*\s+(?:permission|consent|approval)|im\s+voraus|erzaehl\w*\s+mir\b.*\bbevor|teil\w*\s+mir\b.*\bmit|gib\s+mir\s+bescheid|ausdrueckliche?n?\s+(?:erlaubnis|zustimmung)|bevor\s+du\b|before\s+you\b|erst\w*\s+frage|without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
+ASK=re.compile(r"\b(?:gefragt\s+werden|to\s+be\s+(?:asked|consulted|informed)|(?:get|be)\s+asked|(?:erst|zuerst)\s+(?:mal\s+)?(?:nach)?frag\w*|nur\s+(?:mit|nach)\s+(?:vorheriger\s+)?(?:rueckfrage|nachfrage|absprache|ruecksprache)|only\s+after\s+(?:asking|checking|confirm\w*)|prior\s+to|inform\s+me|let\s+me\s+know|consult\w*|speak\s+(?:to\s+me\s+)?first|explicit\w*\s+(?:permission|consent|approval)|im\s+voraus|erzaehl\w*\s+mir\b.*\bbevor|teil\w*\s+mir\b.*\bmit|gib\s+mir\s+bescheid|ausdrueckliche?n?\s+(?:erlaubnis|zustimmung)|bevor\s+du\b|before\s+you\b|erst\w*\s+frage|without\s+(?:asking|checking|telling|my\s+(?:\w+\s+)?(?:permission|approval|consent|ok|okay|agreement|say-?so))|unless\s+i\b|"
     r"only\b.*\b(?:if|when|with|after|once)\s+(?:i|my)\b|\bif\s+i\s+(?:approve|allow|agree|say|confirm|okay|ok)\w*|show\s+me\b.*\bbefore\b|tell\s+me\b.*\bbefore\b|ask\s+(?:me\s+)?(?:first|before)|always\s+ask|check\s+with\s+me|tell\s+me\s+(?:first|before)|"
     r"(?:get|need|ask\s+for)\s+my\s+(?:permission|approval|ok|okay|consent)|before\s+you\b.*\b(?:show|tell|ask)\b|show\s+(?:it|them|me)\b.*\bfirst|"
     r"ohne\s+(?:mich\s+)?(?:vorher\s+)?(?:zu\s+)?fragen|ohne\s+(?:mich\s+)?(?:vorher\s+)?zu\s+fragen|ohne\s+(?:meine|mein)\s+(?:\w+\s+)?(?:erlaubnis|zustimmung|okay|ok|einverstaendnis|freigabe)|"
@@ -104,7 +105,7 @@ HEDGE=re.compile(r"\b(?:maybe|perhaps|probably|might|i\s+guess|i\s+think|not\s+s
     r"ich\s+glaube|ich\s+denke|weiss\s+nicht|eher|womoeglich)\b")
 REPORTED=re.compile(r"\b(?:says|said|told|tells|thinks|claims|meint|meinte|sagt|sagte|gesagt|findet|fand|schreibt|schrieb|behauptet|laut)\b")
 FIRST_PERSON=re.compile(r"^(?:i|we|ich|wir)\b")
-WANT=re.compile(r"\b(?:want|wish|need|forbid|prohibit|ban|allow|ask|will|moechte|wuensch|verbiete|untersage|erlaube|brauche|bitte|wanted)\w*\b")
+WANT=re.compile(r"\b(?:want|wish|need|apprec|glad|grate|happy|pleas|like\s+it|dankbar|zufrieden|schaetz|freu|gern|haette|forbid|prohibit|ban|allow|ask|will|moechte|wuensch|verbiete|untersage|erlaube|brauche|bitte|wanted)\w*\b")
 EXCEPT=re.compile(r"\b(?:except(?:\s+for)?|other\s+than|apart\s+from|besides|but\s+not|ausser|ausgenommen|bis\s+auf|abgesehen\s+von)\b")
 # "tell me / show me / frag mich" belong to the ask-first marker, not to the action being ruled ("tell me before you do anything")
 ASK_WORDS=re.compile(r"\b(?:tell|show|ask|telling|showing|asking|inform|let|sag\w*|zeig\w*|frag\w*|gib|teil\w*|erzaehl\w*)\s+(?:me|mir|mich)\b")
@@ -170,6 +171,8 @@ def parse_clause(clause,prev=None):
     raw=norm(clause);t=POSITIVE.sub(' ',raw).strip()
     out={'kind':'NONE','actions':[],'objects':[],'unknown':[],'exceptions':[],'reasons':[],'text':clause.strip()}
     if not t:return out
+    if ELSE_NOTHING.search(t):
+        out.update(kind='UNCLEAR',actions=['ANY'],objects=['ALL'],reasons=['ONLY_ALLOWED']);return out
     mo=ONLY_ALLOWED.search(t)
     if mo and not ASK.search(t) and not question_mark(clause):  # "only reading is allowed": everything else is an open question
         out.update(kind='UNCLEAR',actions=['ANY'],objects=['ALL'],reasons=['ONLY_ALLOWED'])
