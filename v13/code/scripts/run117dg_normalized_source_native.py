@@ -75,6 +75,10 @@ def validate(rows):
                 or raw["current"]["text"] != f["current"]
                 or raw["policy"]["text"] != f["policy_source"]
                 or raw["sheet"]["text"] != f["sheet_source"]
+                or normalized.get("worksheet_without_eligibility_or_action") !=
+                    pre.normalized.normalize(f["current"], f["policy_source"], f["sheet_source"])
+                or any(k in normalized.get("worksheet_without_eligibility_or_action", {})
+                       for k in ("eligible", "eligibility", "action", "ranking", "selected"))
                 or any(k in raw or k in normalized for k in (
                     "oracle", "expected_action", "suggested_action",
                     "typed_jef_action", "wrong_typed_action_synthetic_only"))):
