@@ -217,6 +217,28 @@ class StoreGroupedTwoStep(unittest.TestCase):
         self.assertEqual(again["step_losses"], first["step_losses"])
         self.assertEqual(again["model_weight_updates"], 0)
 
+    def test_torch_only_hash_and_preclone_cpu_bounds(self):
+        # On fresh isolated CPU Torch, NumPy may be absent. The research
+        # wrapper must not depend on tensor.numpy() for target integrity.
+        with patch.object(torch.Tensor, "numpy",
+                          side_effect=AssertionError("HIDDEN_NUMPY_DEPENDENCY")):
+            result = self.run_candidate()
+        self.assertEqual(result["status"], "STORE_GROUPED_TWO_STEP_SHADOW", result)
+        oversized = torch.zeros((65, 3), dtype=torch.float32)
+        report = C.run(torch, self.store, self.session, oversized, oversized,
+                       self.rows, heldout_rows=self.heldout, operator_opt_in=True)
+        self.assertEqual(report["status"], "SOURCE_OR_TRAINING_INTEGRITY_RED")
+        self.assertEqual(report["failed_stage"], "TENSOR_PREFLIGHT")
+        self.assertEqual(report["synthetic_tensor_updates"], 0)
+        too_wide = torch.zeros((3, 4097), dtype=torch.float32)
+        report = C.run(torch, self.store, self.session, too_wide, too_wide,
+                       self.rows, heldout_rows=self.heldout, operator_opt_in=True)
+        self.assertEqual(report["failed_stage"], "TENSOR_PREFLIGHT")
+        meta = torch.empty((3, 3), dtype=torch.float32, device="meta")
+        report = C.run(torch, self.store, self.session, meta, meta,
+                       self.rows, heldout_rows=self.heldout, operator_opt_in=True)
+        self.assertEqual(report["failed_stage"], "TENSOR_PREFLIGHT")
+
     def test_tensor_shape_nonfinite_and_missing_torch_red(self):
         self.assertEqual(C.run(None, self.store, self.session, self.student,
                                self.target, self.rows, operator_opt_in=True)["status"],
