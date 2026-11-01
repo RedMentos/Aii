@@ -1,4 +1,9 @@
 """Run117CE bounded F7 Sleep scheduler diagnostic; no model/Redmi."""
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from scripts import run117ce_sleep_f7_bounded_bench as m
@@ -23,6 +28,20 @@ class SleepF7Benchmark(unittest.TestCase):
         self.assertEqual(r["native_model_calls"], 0)
         self.assertEqual(r["learning_authority"], 0)
         self.assertFalse(r["whole_system_complete"])
+
+    def test_standalone_cli_from_unrelated_working_directory(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "report.json"
+            proc = subprocess.run(
+                [sys.executable, str(Path(m.__file__).resolve()),
+                 "--sessions", "1", "--turns", "1", "--out", str(out)],
+                cwd=d, capture_output=True, text=True, timeout=30)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            report = json.loads(out.read_text())
+            self.assertEqual(report["status"], "INTEGRITY_PASS")
+            self.assertEqual(report["total_turns"], 1)
+            self.assertFalse(report["redmi_measured"])
+            self.assertEqual(len(report["script_sha256"]), 64)
 
     def test_nine_sessions_seventy_turns_bounded_catchup(self):
         r = m.benchmark(9, 70)
