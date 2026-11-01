@@ -1,5 +1,7 @@
 """Run117CR exact source-chain drift audit tests; no acceptance modifications."""
 import hashlib
+from pathlib import Path
+import tempfile
 import unittest
 
 from scripts import run117cr_source_chain_drift_audit as A
@@ -48,6 +50,22 @@ class SourceChainDriftAudit(unittest.TestCase):
                     A.compare(expected, actual, names)
         with self.assertRaises(ValueError):
             list(A.unified_diffs(valid, {}, ("a.py",)))
+
+    def test_report_cannot_overwrite_source_tree_or_symlink(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "repo"
+            root.mkdir()
+            inside = root / "runtime.py"
+            inside.write_text("unchanged")
+            outside = Path(temp) / "report.patch"
+            self.assertEqual(A.safe_report_path(root, outside), outside.resolve())
+            with self.assertRaisesRegex(ValueError, "REPORT_INSIDE_SOURCE_TREE_RED"):
+                A.safe_report_path(root, inside)
+            link = Path(temp) / "alias"
+            link.symlink_to(inside)
+            with self.assertRaisesRegex(ValueError, "REPORT_INSIDE_SOURCE_TREE_RED"):
+                A.safe_report_path(root, link)
+            self.assertEqual(inside.read_text(), "unchanged")
 
     def test_actual_integrated_baseline_and_live_sources_are_read_only(self):
         before = {name: (A.ROOT / name).read_bytes() for name in A.NAMES}
