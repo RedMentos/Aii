@@ -94,6 +94,7 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
             or not out.parent.is_dir() or home.parent.is_symlink()
             or out.parent.is_symlink()):
         raise FileExistsError("RUN117CY_FRESH_HOME_AND_OUT_REQUIRED")
+    actual_native_factory = (runner_factory is LlamaRunner and pin_factory is pin)
     model = pin_factory(installed)
     items = frozen.fixtures()
     if (len(items) != 9 or frozen.SEED != SEED
@@ -108,7 +109,7 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
     out.mkdir(mode=0o700)
     report = {
         "schema": SCHEMA, "status": "INCOMPLETE",
-        "evidence_class": "LINUX_NATIVE_C3_REAL_STORE_SOURCE_ONLY_STRUCTURAL_REPLAY",
+        "evidence_class": ("LINUX_NATIVE_C3_REAL_STORE_SOURCE_ONLY_STRUCTURAL_REPLAY"\n                           if actual_native_factory else "SYNTHETIC_SOFTWARE_ONLY"),\n        "native_proof": False, "native_calls_verified": 0,
         "seed": SEED, "table_sha256": frozen.TABLE_SHA256,
         "project": item["project"], "model_sha256": MODEL_SHA,
         "model_revision": MODEL_REV, "runner_sha256": RUNNER_SHA,
@@ -207,9 +208,7 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
             report["pins_unchanged"] = pin_factory(installed) == model
         except Exception:
             report["pins_unchanged"] = False
-        report["status"] = (
-            "NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING"
-            if report["native_c3_calls"] == 1
+        structural = (report["native_c3_calls"] == 1
             and report["native_final"] and report["process_reaped"]
             and report["source_rechecked"] and report["closed_store_ok"]
             and report.get("no_live_output") is True
@@ -217,9 +216,7 @@ def run(installed, home, out, *, runner_factory=LlamaRunner, pin_factory=pin):
             and report["pins_unchanged"]
             and report["guard"]["status"] in (
                 guard.READY, "MODEL_OUTPUT_INVALID_RED")
-            and report["error_type"] is None
-            else "STRUCTURAL_RED")
-        save()
+            and report["error_type"] is None)\n        report["status"] = (\n            ("NATIVE_SOURCE_CALLBACK_STRUCTURAL_COMPLETE_NONPROMOTING"\n             if actual_native_factory else "SYNTHETIC_STRUCTURAL_SMOKE_NON_PROMOTING")\n            if structural else "STRUCTURAL_RED")\n        report["native_proof"] = bool(structural and actual_native_factory)\n        report["native_calls_verified"] = int(report["native_proof"])\n        save()
     return report
 
 
