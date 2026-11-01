@@ -31,6 +31,29 @@ GENERIC = ['What is the capital of Italy?', 'Name three primary colors.', 'How m
            'What is 9 times 8?', 'Name a mammal that lives in the sea.', 'What do bees make?']
 
 
+# BP1b: broader generic prompts (procedural, disjoint from specs/drift-probes.json by exact text and by template) for replay + KL anchor.
+_G_TOP = ['rivers', 'oceans', 'bicycles', 'volcanoes', 'bread', 'clocks', 'mirrors', 'trains', 'forests', 'honey', 'magnets', 'glaciers', 'violins', 'tea', 'bridges', 'deserts',
+          'kites', 'soap', 'lighthouses', 'butterflies', 'mountains', 'candles', 'umbrellas', 'ladders', 'coins', 'maps', 'islands', 'rainbows', 'thunder', 'salt']
+_G_TPL = ['Explain what {t} are in one sentence.', 'Give one interesting fact about {t}.', 'Write a short friendly sentence about {t}.', 'Name two things related to {t}.',
+          'Why do people care about {t}?', 'Describe {t} to a child in two sentences.', 'What is a good question to ask about {t}?', 'Is it true that {t} are always useful? Answer briefly.',
+          'Write one sentence that starts with the word "Today" and mentions {t}.', 'How would you explain {t} to a visitor from another country?']
+_G_MATH = ['What is {a} plus {b}?', 'What is {a} times {b}?', 'What is {a} minus {b}?', 'Is {a} larger than {b}? Answer briefly.']
+
+
+def generic_prompts(n, seed):
+    rng = random.Random(seed * 7919 + 13)
+    probes = {p['prompt'] for p in json.loads((Path(__file__).resolve().parents[1] / 'specs/drift-probes.json').read_text())['probes']}
+    out = []
+    while len(out) < n:
+        if rng.random() < .2:
+            q = rng.choice(_G_MATH).format(a=rng.randint(3, 40), b=rng.randint(2, 19))
+        else:
+            q = rng.choice(_G_TPL).format(t=rng.choice(_G_TOP))
+        if q not in probes and q not in out:
+            out.append(q)
+    return out
+
+
 def load(master, adapter=None, trainable=False, rank=16, alpha=32):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -76,11 +99,16 @@ def cmd_train(a):
         data.append(encode(tok, msgs, it['target']))
     # self-distillation replay on generic prompts: the base model's own greedy answers (adapter is still zero-initialised)
     rng = random.Random(a.seed)
-    gen = rng.sample(GENERIC, min(len(GENERIC), max(4, len(items) // 10)))
+    if a.replay_frac > 0:  # BP1b: richer replay set
+        gen = generic_prompts(int(len(items) * a.replay_frac), a.seed)
+    else:
+        gen = rng.sample(GENERIC, min(len(GENERIC), max(4, len(items) // 10)))
     gm = [[{'role': 'system', 'content': oc.system_prompt([])}, {'role': 'user', 'content': q}] for q in gen]
     with model.disable_adapter():
         ga = generate(torch, tok, model, gm, max_new=40)
+    n_cur = len(data)
     data += [encode(tok, m, x) for m, x in zip(gm, ga)]
+    is_replay = [False] * n_cur + [True] * len(gm)
     params = [p for p in model.parameters() if p.requires_grad]
     opt = torch.optim.AdamW(params, lr=a.lr, weight_decay=0.)
     steps = a.epochs * ((len(data) + a.batch - 1) // a.batch)
@@ -92,12 +120,22 @@ def cmd_train(a):
     for ep in range(a.epochs):
         order = torch.randperm(len(data), generator=g).tolist()
         for i in range(0, len(order), a.batch):
-            chunk = [data[k] for k in order[i:i + a.batch]]
+            idx = order[i:i + a.batch]
+            chunk = [data[k] for k in idx]
+            rep = torch.tensor([is_replay[k] for k in idx])
             n = max(len(c[0]) for c in chunk)
             ids = torch.tensor([c[0] + [tok.pad_token_id] * (n - len(c[0])) for c in chunk])
             lab = torch.tensor([c[1] + [-100] * (n - len(c[1])) for c in chunk])
             att = torch.tensor([[1] * len(c[0]) + [0] * (n - len(c[0])) for c in chunk])
-            loss = model(input_ids=ids, attention_mask=att, labels=lab).loss
+            out = model(input_ids=ids, attention_mask=att, labels=lab)
+            loss = out.loss
+            if a.kl_weight > 0 and bool(rep.any()):  # KL(base || adapter) on answer tokens of replay rows (anchor to frozen base)
+                with torch.no_grad(), model.disable_adapter():
+                    lb = torch.log_softmax(model(input_ids=ids, attention_mask=att).logits[rep, :-1].float(), -1)
+                la = torch.log_softmax(out.logits[rep, :-1].float(), -1)
+                m = (lab[rep, 1:] != -100).float()
+                kl = ((lb.exp() * (lb - la)).sum(-1) * m).sum() / m.sum().clamp(min=1)
+                loss = loss + a.kl_weight * kl
             loss.backward()
             torch.nn.utils.clip_grad_norm_(params, 1.0)
             opt.step(); sched.step(); opt.zero_grad(); step += 1
@@ -110,7 +148,7 @@ def cmd_train(a):
             break
     model.save_pretrained(a.out)
     Path(a.out, 'train_report.json').write_text(json.dumps({'mode': a.mode, 'seed': a.seed, 'per_family': a.per_family, 'epochs': a.epochs, 'lr': a.lr,
-                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
+                                                           'batch': a.batch, 'examples': len(data), 'replay': len(gm), 'replay_frac': a.replay_frac, 'kl_weight': a.kl_weight, 'steps': step, 'loss_first': hist[:3], 'loss_last': hist[-5:],
                                                            'seconds': round(time.time() - t0), 'revision': oc.REVISION}, indent=1))
     print('saved', a.out, 'steps', step, 'seconds', round(time.time() - t0))
 
@@ -169,6 +207,7 @@ if __name__ == '__main__':
     t.add_argument('--mode', choices=['offers', 'no_offers'], default='offers')
     t.add_argument('--per-family', type=int, default=60); t.add_argument('--epochs', type=int, default=2)
     t.add_argument('--seed', type=int, default=1); t.add_argument('--lr', type=float, default=3e-4)
+    t.add_argument('--replay-frac', type=float, default=0.); t.add_argument('--kl-weight', type=float, default=0.)
     t.add_argument('--batch', type=int, default=8); t.add_argument('--max-steps', type=int, default=0)
     e = sub.add_parser('eval')
     e.add_argument('--master', required=True); e.add_argument('--adapter', default='none'); e.add_argument('--out', required=True)
