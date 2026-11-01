@@ -1,0 +1,352 @@
+{
+ "criteria": {
+  "1_noisy_err_le_0.85_boot": {
+   "limit": 0.1497,
+   "pass": true,
+   "value": 0.1242
+  },
+  "2_shift_err_le_1.10_boot": {
+   "limit": 0.0678,
+   "pass": false,
+   "value": 0.0928
+  },
+  "3_recovery_le_1.25_boot": {
+   "limit": 40.75,
+   "pass": false,
+   "value": 50.6
+  },
+  "4_false_demotions_le_min_boot_mad": {
+   "limit": 2.0,
+   "pass": true,
+   "value": 2.0
+  },
+  "5_shift_err_le_noise_mad": {
+   "limit": 0.0996,
+   "pass": true,
+   "value": 0.0928
+  },
+  "6a_noisy_err_le_fixed_conservative": {
+   "limit": 0.0914,
+   "pass": false,
+   "value": 0.1242
+  },
+  "6b_shift_err_le_1.25_fixed_permissive": {
+   "limit": 0.0727,
+   "pass": false,
+   "value": 0.0928
+  }
+ },
+ "runs": {
+  "boot": [
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024204782078877284,
+    "noisy_err": 0.1803820247661799,
+    "recovery_steps": 48,
+    "shift_err": 0.08215810479530149
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.013888233942728076,
+    "noisy_err": 0.21307023091822275,
+    "recovery_steps": 27,
+    "shift_err": 0.0406935741222654
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.020068426866950914,
+    "noisy_err": 0.180311651258136,
+    "recovery_steps": 36,
+    "shift_err": 0.0855985075936765
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.02438654907567569,
+    "noisy_err": 0.13172135302197321,
+    "recovery_steps": 35,
+    "shift_err": 0.0869810889406116
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.025384351531849685,
+    "noisy_err": 0.1748153161374132,
+    "recovery_steps": 17,
+    "shift_err": 0.012720348883883945
+   }
+  ],
+  "fixed_conservative": [
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.048188467941093556,
+    "noisy_err": 0.09423123909012093,
+    "recovery_steps": 75,
+    "shift_err": 0.137404866685806
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.03521736697061244,
+    "noisy_err": 0.10275864774969312,
+    "recovery_steps": 59,
+    "shift_err": 0.09119209934962623
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.0487633248030042,
+    "noisy_err": 0.09136574637262977,
+    "recovery_steps": 72,
+    "shift_err": 0.15669483657711555
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.046654656067990165,
+    "noisy_err": 0.06766833002213334,
+    "recovery_steps": 67,
+    "shift_err": 0.144277307133536
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.049397947555620644,
+    "noisy_err": 0.10073607755799108,
+    "recovery_steps": 40,
+    "shift_err": 0.02892195592753856
+   }
+  ],
+  "fixed_permissive": [
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.02441371995409328,
+    "noisy_err": 0.2206573915376304,
+    "recovery_steps": 48,
+    "shift_err": 0.08000696137382864
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.014124385317496038,
+    "noisy_err": 0.24051954737612197,
+    "recovery_steps": 27,
+    "shift_err": 0.03841927836403678
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.020264521332367638,
+    "noisy_err": 0.21266878787224627,
+    "recovery_steps": 34,
+    "shift_err": 0.07905888228007936
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.02466743909349276,
+    "noisy_err": 0.15458622526798155,
+    "recovery_steps": 33,
+    "shift_err": 0.07994694303250255
+   },
+   {
+    "false_demotions_noisy": 0,
+    "learn_err": 0.025633375819345564,
+    "noisy_err": 0.20622504378125836,
+    "recovery_steps": 16,
+    "shift_err": 0.01343636139153064
+   }
+  ],
+  "no_reopen": [
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024204782078877284,
+    "noisy_err": 0.1671727544913648,
+    "recovery_steps": 50,
+    "shift_err": 0.09130877821760536
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.013888233942728076,
+    "noisy_err": 0.19554537436386865,
+    "recovery_steps": 30,
+    "shift_err": 0.04469701842951179
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.020068426866950914,
+    "noisy_err": 0.16635832171982282,
+    "recovery_steps": 39,
+    "shift_err": 0.0946594636577226
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.02438654907567569,
+    "noisy_err": 0.11778409570859502,
+    "recovery_steps": 35,
+    "shift_err": 0.08934269920628506
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.025384351531849685,
+    "noisy_err": 0.16399680887899365,
+    "recovery_steps": 17,
+    "shift_err": 0.014602381911312053
+   }
+  ],
+  "noise_indep": [
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024184517804152487,
+    "noisy_err": 0.12509441366181515,
+    "recovery_steps": 63,
+    "shift_err": 0.10882313757934287
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.013872581352280566,
+    "noisy_err": 0.16253890859551384,
+    "recovery_steps": 42,
+    "shift_err": 0.07179745199110604
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.020060497468857144,
+    "noisy_err": 0.11548161246859183,
+    "recovery_steps": 65,
+    "shift_err": 0.13858727107792906
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.02436856345331771,
+    "noisy_err": 0.08411227858662196,
+    "recovery_steps": 53,
+    "shift_err": 0.12249154345740859
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.025370132683514412,
+    "noisy_err": 0.1338956449733669,
+    "recovery_steps": 30,
+    "shift_err": 0.02240184459990272
+   }
+  ],
+  "noise_mad": [
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024027163200679467,
+    "noisy_err": 0.08844683937525853,
+    "recovery_steps": 71,
+    "shift_err": 0.12767878724824286
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.01356530907345491,
+    "noisy_err": 0.10627943586216372,
+    "recovery_steps": 45,
+    "shift_err": 0.07769412942572304
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.01991985765250484,
+    "noisy_err": 0.08872233620502014,
+    "recovery_steps": 64,
+    "shift_err": 0.13650004932365867
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024171237723243425,
+    "noisy_err": 0.05975565947349931,
+    "recovery_steps": 60,
+    "shift_err": 0.13125189300654383
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.025190561237858188,
+    "noisy_err": 0.09742264160422458,
+    "recovery_steps": 33,
+    "shift_err": 0.024860129765925422
+   }
+  ],
+  "stable_reopen": [
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.024204782078877284,
+    "noisy_err": 0.1345254607747151,
+    "recovery_steps": 62,
+    "shift_err": 0.11084915033472895
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.013888233942728076,
+    "noisy_err": 0.16017739775284998,
+    "recovery_steps": 34,
+    "shift_err": 0.05345736377590177
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.020068426866950914,
+    "noisy_err": 0.13289092774984984,
+    "recovery_steps": 39,
+    "shift_err": 0.09660607954564099
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.02438654907567569,
+    "noisy_err": 0.09199918736167383,
+    "recovery_steps": 48,
+    "shift_err": 0.11150776485710479
+   },
+   {
+    "false_demotions_noisy": 2,
+    "learn_err": 0.025384351531849685,
+    "noisy_err": 0.13458886330622444,
+    "recovery_steps": 24,
+    "shift_err": 0.019794266281052655
+   }
+  ]
+ },
+ "summary": {
+  "boot": {
+   "false_demotions_noisy": 2.0,
+   "learn_err": 0.0216,
+   "noisy_err": 0.1761,
+   "recovery_steps": 32.6,
+   "shift_err": 0.0616
+  },
+  "fixed_conservative": {
+   "false_demotions_noisy": 0.0,
+   "learn_err": 0.0456,
+   "noisy_err": 0.0914,
+   "recovery_steps": 62.6,
+   "shift_err": 0.1117
+  },
+  "fixed_permissive": {
+   "false_demotions_noisy": 0.0,
+   "learn_err": 0.0218,
+   "noisy_err": 0.2069,
+   "recovery_steps": 31.6,
+   "shift_err": 0.0582
+  },
+  "no_reopen": {
+   "false_demotions_noisy": 2.0,
+   "learn_err": 0.0216,
+   "noisy_err": 0.1622,
+   "recovery_steps": 34.2,
+   "shift_err": 0.0669
+  },
+  "noise_indep": {
+   "false_demotions_noisy": 2.0,
+   "learn_err": 0.0216,
+   "noisy_err": 0.1242,
+   "recovery_steps": 50.6,
+   "shift_err": 0.0928
+  },
+  "noise_mad": {
+   "false_demotions_noisy": 2.0,
+   "learn_err": 0.0214,
+   "noisy_err": 0.0881,
+   "recovery_steps": 54.6,
+   "shift_err": 0.0996
+  },
+  "stable_reopen": {
+   "false_demotions_noisy": 2.0,
+   "learn_err": 0.0216,
+   "noisy_err": 0.1308,
+   "recovery_steps": 41.4,
+   "shift_err": 0.0784
+  }
+ },
+ "verdict": "BP8_AGE_REOPEN_SOFTWARE_FAIL"
+}

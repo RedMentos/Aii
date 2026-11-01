@@ -1,0 +1,6811 @@
+{
+ "kind": "WP_BP10_FS10_STALE",
+ "stale_log": [
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": []
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": []
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 1,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": []
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 2,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": []
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 7,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  },
+  {
+   "rep": 3,
+   "checked": null,
+   "stale": null,
+   "reasons": [
+    {
+     "bytes": 14,
+     "redacted": true
+    },
+    {
+     "bytes": 11,
+     "redacted": true
+    }
+   ]
+  }
+ ],
+ "arm": "active",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180,
+  "effort": "max",
+  "history_turns": 0
+ },
+ "fixtures": [
+  "summary12",
+  "compare00",
+  "summary10",
+  "notes10",
+  "compare05",
+  "compare08",
+  "notes00",
+  "long01",
+  "summary00",
+  "long04",
+  "long09",
+  "summary11",
+  "summary08",
+  "long14",
+  "compare14",
+  "compare06",
+  "long06",
+  "notes09",
+  "long07",
+  "compare02",
+  "long03",
+  "notes01",
+  "long13",
+  "notes12",
+  "compare01",
+  "compare13",
+  "compare11",
+  "compare04",
+  "long02",
+  "summary01",
+  "notes08",
+  "notes03",
+  "compare12",
+  "notes06",
+  "summary14",
+  "summary07",
+  "compare03",
+  "notes13",
+  "notes05",
+  "notes14",
+  "long00",
+  "compare09",
+  "long11",
+  "long12",
+  "summary05",
+  "summary02",
+  "summary13",
+  "notes02",
+  "compare10",
+  "notes07",
+  "long08",
+  "summary06",
+  "notes04",
+  "compare07",
+  "summary04",
+  "summary03",
+  "notes11",
+  "long10",
+  "summary09",
+  "long05"
+ ],
+ "summary": {
+  "turns": 180,
+  "pass": 111,
+  "overflow": 0,
+  "intrusion": 7,
+  "per_rep": [
+   39,
+   35,
+   37
+  ],
+  "overflow_per_rep": [
+   0,
+   0,
+   0
+  ],
+  "fit_checked": 139,
+  "fit_applied": 3,
+  "fit_still_too_long": 0,
+  "fit_steps": {
+   "TASK_DUPLICATE": 3
+  },
+  "median_turn_s": 51.99
+ },
+ "rows": [
+  {
+   "rep": 1,
+   "fixture": "summary12",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.49,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1600,
+    "tokens_before": 1600
+   },
+   "output": "No, the summary is incorrect. The calculation is: 20 (cables) + 23 (cleaning) + 46 (postage) = 89 euros. The stated total of 109 euros is mathematically inconsistent with the provided item list."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare00",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 31.22,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 501,
+    "tokens_before": 501
+   },
+   "output": "Lyon received the highest rainfall (644 mm) while Bremen received the least (636 mm). The difference is 8 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary10",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.48,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": true,
+    "count": "EXACT",
+    "count_source": "MEASURED",
+    "count_sources": {
+     "EXACT": 2
+    },
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {
+     "TASK_DUPLICATE": 1
+    },
+    "tokens_after": 1771,
+    "tokens_before": 1814
+   },
+   "output": "No, the summary line is incorrect. The calculation is: 33 (train) + 55 (postage) + 31 (projector) = 119 euros. The stated total of 139 euros is wrong."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes10",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.88,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1215,
+    "tokens_before": 1215
+   },
+   "output": "The latest note is from 18 March stating the team size is 39 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare05",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 49.0,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 804,
+    "tokens_before": 804
+   },
+   "output": "Based on the data provided (Graz 383 mm, Porto 143 mm, Lyon 890 mm), **Lyon** has the highest rainfall at **890 mm**, while **Porto** has the least at **143 mm**. The difference is **747 mm**.\n\n*Note: This answer relies on the specific data points provided in your request.*"
+  },
+  {
+   "rep": 1,
+   "fixture": "compare08",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.93,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1339,
+    "tokens_before": 1339
+   },
+   "output": "Based on the provided data:\n- **Lyon**: 563 mm\n- **Porto**: 620 mm\n- **Malmo**: 646 mm\n\nThe city with the most rain is **Malmo** (646 mm). The difference between Malmo and Lyon is 83 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes00",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.22,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The most recent note is from March 16, as it was later than March 9."
+  },
+  {
+   "rep": 1,
+   "fixture": "long01",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.81,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1232,
+    "tokens_before": 1232
+   },
+   "output": "The survey recorded exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary00",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.47,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1176,
+    "tokens_before": 1176
+   },
+   "output": "No, the summary is incorrect. The calculation is: 95 + 18 + 21 = 134 euros. The stated total of 114 euros is wrong."
+  },
+  {
+   "rep": 1,
+   "fixture": "long04",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 61.41,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1321,
+    "tokens_before": 1321
+   },
+   "output": "The survey recorded 124 bicycles parked at the station in Malmo."
+  },
+  {
+   "rep": 1,
+   "fixture": "long09",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.41,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1448,
+    "tokens_before": 1448
+   },
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary11",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.82,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1176,
+    "tokens_before": 1176
+   },
+   "output": "No, the summary is incorrect. The correct total is 230 euros (83 + 85 + 52)."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary08",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.52,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1572,
+    "tokens_before": 1572
+   },
+   "output": "No, the summary is incorrect. The correct total is 110 euros (cables 35 + coffee beans 43 + office chairs 22)."
+  },
+  {
+   "rep": 1,
+   "fixture": "long14",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.32,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 653,
+    "tokens_before": 653
+   },
+   "output": "The survey recorded 957 bicycles in Porto."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare14",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.51,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 498,
+    "tokens_before": 498
+   },
+   "output": "Porto had the highest rainfall at **598 mm**, while Brno had the least at **783 mm**. The difference is **185 mm** (783 - 598)."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare06",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.98,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Linz has the most rain (675 mm) compared to Lyon (128 mm) and Turin (878 mm). The city with the least rain is Lyon.\n\nDifference: 675 - 128 = 547 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "long06",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.29,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes09",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.99,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1222,
+    "tokens_before": 1222
+   },
+   "output": "The most recent note is from 20 March."
+  },
+  {
+   "rep": 1,
+   "fixture": "long07",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.14,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 518,
+    "tokens_before": 518
+   },
+   "output": "The survey counted exactly 468 bicycles in Linz."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare02",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.98,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The city with the most rain is Lyon (733 mm). The difference between Lyon and Bremen is 150 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "long03",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.69,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 518,
+    "tokens_before": 518
+   },
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes01",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 49.68,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1086,
+    "tokens_before": 1086
+   },
+   "output": "The latest reported team size is 49 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "long13",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.98,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The survey counted exactly 484 bicycles at the station in Bremen."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes12",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.88,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1535,
+    "tokens_before": 1535
+   },
+   "output": "The latest reported team size is 26 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare01",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.25,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 287 and 723). The difference is 608 mm (895 - 287)."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare13",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.85,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Bremen had the most rain at 359 mm. Cork had the least at 240 mm, so it was 119 mm more than Bremen."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare11",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 37.43,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Brno had the highest monthly rainfall at 174mm, while Turin had the least at 787mm. That\u2019s 87mm more than the city with the least."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare04",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.22,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 208 in Cork and 673 in Turin). The difference is 687 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "long02",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.4,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 444,
+    "tokens_before": 444
+   },
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary01",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.5,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 665,
+    "tokens_before": 665
+   },
+   "output": "No, the summary is incorrect. The calculation is: 16 + 23 + 67 = 106 euros. The stated total of 126 euros does not match the sum of the listed items."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes08",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.55,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 21, according to the 19 March note."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes03",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.05,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 813,
+    "tokens_before": 813
+   },
+   "output": "The most recent number is 41."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare12",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.5,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Brno had the most rain at 785 mm. Linz had the least at 410 mm. That means Brno was 375 mm more than Linz."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes06",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 50.01,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 65, according to the 21 March note."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary14",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 66.63,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1470,
+    "tokens_before": 1470
+   },
+   "output": "No, the summary is incorrect. The items listed are a projector (71), cables (57), and printer paper (33). The sum of these amounts is 141 euros. Therefore, the \"Total: 141 euros\" line is correct."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary07",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.82,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1273,
+    "tokens_before": 1273
+   },
+   "output": "No, the summary line is incorrect. The calculation is: 52 + 71 + 86 = 209 euros. The stated total of 229 euros is wrong."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare03",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 62.67,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 815,
+    "tokens_before": 815
+   },
+   "output": "Lyon had the most rain (798 mm) compared to Graz's 630 mm. The difference is 168 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes13",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 61.05,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1271,
+    "tokens_before": 1271
+   },
+   "output": "The most recent figure is 79 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes05",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.19,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1123,
+    "tokens_before": 1123
+   },
+   "output": "The most recent figure is 85 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes14",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.59,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 39, according to the note from 15 March."
+  },
+  {
+   "rep": 1,
+   "fixture": "long00",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.28,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The survey counted exactly 180 bicycles at the station in Turin."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare09",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.37,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The city with the most rain is Lyon (815 mm). The difference between Lyon and Porto is 450 mm."
+  },
+  {
+   "rep": 1,
+   "fixture": "long11",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 39.34,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The survey counted exactly 968 bicycles at the station in Turin."
+  },
+  {
+   "rep": 1,
+   "fixture": "long12",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.69,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 732,
+    "tokens_before": 732
+   },
+   "output": "The notes state that 147 bicycles were counted in Lyon."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary05",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.9,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1412,
+    "tokens_before": 1412
+   },
+   "output": "No, the summary is incorrect. The correct total is 263 euros (86 + 85 + 93)."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary02",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 49.27,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 826,
+    "tokens_before": 826
+   },
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary13",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.0,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1165,
+    "tokens_before": 1165
+   },
+   "output": "No, the summary is incorrect. The calculated total is 238 euros (94 + 85 + 69), not 258 euros."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes02",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.55,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 25, according to the note from 8 March."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare10",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.82,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1276,
+    "tokens_before": 1276
+   },
+   "output": "The city with the highest monthly rainfall is **Lyon** (240mm), and the city with the lowest is **Turin** (224mm). The difference between them is **16mm**."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes07",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.76,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1220,
+    "tokens_before": 1220
+   },
+   "output": "The latest note is from 24 March, stating 54 members."
+  },
+  {
+   "rep": 1,
+   "fixture": "long08",
+   "kind": "long",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.0,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1567,
+    "tokens_before": 1567
+   },
+   "output": "The model identified a discrepancy between the reported count of 492 bicycles and the actual number of 491 bicycles."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary06",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 40.79,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 754,
+    "tokens_before": 754
+   },
+   "output": "No, the summary is incorrect. The calculation is: 84 (cables) + 19 (train tickets) + 91 (postage) = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes04",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.08,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1482,
+    "tokens_before": 1482
+   },
+   "output": "The latest figure is 56 members from the 27 March note."
+  },
+  {
+   "rep": 1,
+   "fixture": "compare07",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.24,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 430,
+    "tokens_before": 430
+   },
+   "output": "The city with the most rain is **Ghent** (720 mm). The difference between the most and least is **105 mm** (720 - 617 = 93, but the prompt specifies Ghent as the most and Turin as the least; let's re-read the prompt: \"Linz 727, Turin 617, Ghent 720\".\n- Linz: 727\n- Turin: 617\n- Ghent: 720\n\nThe city with the most rain is **Ghent** (720 mm).\nThe difference between the most (Ghent) and the least (Turi"
+  },
+  {
+   "rep": 1,
+   "fixture": "summary04",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 49.38,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1637,
+    "tokens_before": 1637
+   },
+   "output": "The correct total is **203 euros**.\n\n*   **Cable:** 84 euros (not 81)\n*   **Train tickets:** 19 euros (not 27)\n*   **Projector:** 27 euros (not 85)\n*   **Software licence:** 85 euros (not 81)\n\nThe user's provided item list and the summary line are inconsistent with the actual expense report."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary03",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.48,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1351,
+    "tokens_before": 1351
+   },
+   "output": "No, the summary is incorrect. The calculation (18 + 40 + 17 = 75) does not match the stated total of 65 euros."
+  },
+  {
+   "rep": 1,
+   "fixture": "notes11",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.75,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 622,
+    "tokens_before": 622
+   },
+   "output": "The latest figure is 69 members from the note dated 14 March."
+  },
+  {
+   "rep": 1,
+   "fixture": "long10",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.19,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 442,
+    "tokens_before": 442
+   },
+   "output": "The survey counted exactly 611 bicycles at the station in Turin."
+  },
+  {
+   "rep": 1,
+   "fixture": "summary09",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 50.58,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1669,
+    "tokens_before": 1669
+   },
+   "output": "No, the summary is incorrect. The calculation (69 + 48 + 89 = 186) is mathematically valid for the given items, but the text \"Total: 186 euros\" appears to be a copy-paste error or an error in the source's formatting rather than a factual claim about the items themselves. The correct total should be **186 euros**."
+  },
+  {
+   "rep": 1,
+   "fixture": "long05",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.29,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The survey counted exactly 752 bicycles at the station in Lyon."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary12",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 37.33,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1582,
+    "tokens_before": 1582
+   },
+   "output": "No, the summary is incorrect. The calculation is: 20 (cables) + 23 (cleaning) + 46 (postage) = 89 euros. The stated total of 109 euros is mathematically inconsistent with the provided item list."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare00",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.13,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 679,
+    "tokens_before": 679
+   },
+   "output": "Lyon received the highest rainfall at 644 mm (vs Bremen's 636 mm). The difference is 8 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary10",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 43.61,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": true,
+    "count": "EXACT",
+    "count_source": "MEASURED",
+    "count_sources": {
+     "EXACT": 2
+    },
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {
+     "TASK_DUPLICATE": 1
+    },
+    "tokens_after": 1746,
+    "tokens_before": 1789
+   },
+   "output": "The total is **109 euros**.\n\n*   Train tickets: 33\n*   Postage: 55\n*   Projector: 31\n*   Sum: 109"
+  },
+  {
+   "rep": 2,
+   "fixture": "notes10",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.96,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 955,
+    "tokens_before": 955
+   },
+   "output": "The most recent note is from 18 March."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare05",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.48,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 660,
+    "tokens_before": 660
+   },
+   "output": "Lyon had the highest rainfall (890 mm) compared to Graz's 383 mm. The difference is 507 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare08",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.3,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1206,
+    "tokens_before": 1206
+   },
+   "output": "Lyon received the most rain (563 mm) while Malmo received the least (646 mm). The difference is 23 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes00",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.68,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The most recent note is from March 16, as it was later than March 9."
+  },
+  {
+   "rep": 2,
+   "fixture": "long01",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.48,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 606,
+    "tokens_before": 606
+   },
+   "output": "The survey recorded 202 bicycles parked at the station in Turin."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary00",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.49,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1252,
+    "tokens_before": 1252
+   },
+   "output": "No, the summary is incorrect. The calculation is: 95 + 18 + 21 = 134 euros. The stated total of 114 euros is wrong."
+  },
+  {
+   "rep": 2,
+   "fixture": "long04",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.59,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 849,
+    "tokens_before": 849
+   },
+   "output": "The survey recorded 124 bicycles parked at the station in Malmo."
+  },
+  {
+   "rep": 2,
+   "fixture": "long09",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 60.62,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1223,
+    "tokens_before": 1223
+   },
+   "output": "The survey counted exactly 769 bicycles in Bremen."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary11",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.87,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1253,
+    "tokens_before": 1253
+   },
+   "output": "No, the summary is incorrect. The correct total is 230 euros (83 + 85 + 52)."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary08",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.95,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1719,
+    "tokens_before": 1719
+   },
+   "output": "No, the summary is incorrect. The correct total is **80 euros** (cables 35 + coffee beans 43 + office chairs 22)."
+  },
+  {
+   "rep": 2,
+   "fixture": "long14",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.6,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 689,
+    "tokens_before": 689
+   },
+   "output": "The survey in Porto recorded 957 bicycles parked at the station."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare14",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.99,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 530,
+    "tokens_before": 530
+   },
+   "output": "The city with the most rain is **Brno** (783mm), and it is **517mm** more than Linz (266mm)."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare06",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.24,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 846,
+    "tokens_before": 846
+   },
+   "output": "The source explicitly states that \"Porto recorded the highest rainfall\" (598mm) and \"Linz had the least\" (266mm). Therefore, **Porto** had the most rain by 332mm more than Linz."
+  },
+  {
+   "rep": 2,
+   "fixture": "long06",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 39.65,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 522,
+    "tokens_before": 522
+   },
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes09",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.87,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 49, according to the note from 16 March."
+  },
+  {
+   "rep": 2,
+   "fixture": "long07",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.12,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 523,
+    "tokens_before": 523
+   },
+   "output": "The notes mention 468 bicycles in Linz. No other city is referenced. The answer is based on that single figure."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare02",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 60.1,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 906,
+    "tokens_before": 906
+   },
+   "output": "Based on the provided data (Graz 244 mm, Bremen 584 mm, Lyon 733 mm), **Lyon** has the highest monthly rainfall at **733 mm**. The difference between Lyon and Graz is **489 mm** more than Graz."
+  },
+  {
+   "rep": 2,
+   "fixture": "long03",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.57,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 915,
+    "tokens_before": 915
+   },
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes01",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 63.6,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1546,
+    "tokens_before": 1546
+   },
+   "output": "The most recent note is from 26 March."
+  },
+  {
+   "rep": 2,
+   "fixture": "long13",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.09,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1011,
+    "tokens_before": 1011
+   },
+   "output": "The survey counted exactly 484 bicycles in Bremen."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes12",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 61.1,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1684,
+    "tokens_before": 1684
+   },
+   "output": "The most recent number is 26."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare01",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.4,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 659,
+    "tokens_before": 659
+   },
+   "output": "Lyon received the highest rainfall at 895mm (more than Graz's 287mm). The difference is 608mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare13",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 63.44,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 997,
+    "tokens_before": 997
+   },
+   "output": "Bremen had the highest rainfall at 359mm, while Cork received the least at 578mm. That\u2019s 319mm more than the lowest."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare11",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 46.47,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 535,
+    "tokens_before": 535
+   },
+   "output": "Brno had the highest rainfall at 174mm, while Turin had the least at 787mm. That\u2019s 87mm more than the city with the least."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare04",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 43.17,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 208 in Cork and 673 in Turin). The difference is 687 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "long02",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.97,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 914,
+    "tokens_before": 914
+   },
+   "output": "The survey counted exactly 405 bicycles in Lyon."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary01",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.23,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "No, the summary is incorrect. The correct total is **126 euros**.\n\n*   Cables: 16\n*   Paper: 23\n*   Chairs: 67\n*   Sum: 105 + 67 = 172; 172 - 46 = 126."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes08",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.97,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 21, according to the 19 March note."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes03",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 40.95,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 41."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare12",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 35.93,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Brno had the most rain at 785 mm. Linz had the least at 410 mm, so it\u2019s 785 minus 410 equals 375 mm more."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes06",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 41.36,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 504,
+    "tokens_before": 504
+   },
+   "output": "The most recent number is 65."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary14",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.97,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1403,
+    "tokens_before": 1403
+   },
+   "output": "No, the summary is incorrect. The items listed are a projector (\u20ac71), cables (\u20ac57), and printer paper (\u20ac33). The sum of these amounts is \u20ac141, but the text explicitly states \"Total: 141 euros\" which contradicts the breakdown provided in the report."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary07",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 44.89,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1276,
+    "tokens_before": 1276
+   },
+   "output": "No, the summary is incorrect. The calculation is: 52 + 71 + 86 = 209 euros. The stated total of 229 euros is wrong."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare03",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.9,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Linz has the most rain (433 mm) compared to Lyon (798 mm) and Graz (630 mm). The difference is 365 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes13",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 36.73,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 79, according to the 11 March note."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes05",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 33.22,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 85, according to the 25 March note."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes14",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 35.02,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 39, according to the 15 March note."
+  },
+  {
+   "rep": 2,
+   "fixture": "long00",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.67,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 691,
+    "tokens_before": 691
+   },
+   "output": "The survey counted exactly 180 bicycles parked in Turin."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare09",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 54.29,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 770,
+    "tokens_before": 770
+   },
+   "output": "Turin has the highest rainfall at 815 mm (vs Lyon's 635 mm). The difference is 180 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "long11",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.71,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1205,
+    "tokens_before": 1205
+   },
+   "output": "The survey counted 968 bicycles in Turin."
+  },
+  {
+   "rep": 2,
+   "fixture": "long12",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.37,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 865,
+    "tokens_before": 865
+   },
+   "output": "The survey counted 147 bicycles in Lyon."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary05",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.19,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1186,
+    "tokens_before": 1186
+   },
+   "output": "No, the summary is incorrect. The actual totals are: postage (86) + software licence (85) = 171 euros; train tickets (93) = 93 euros. The sum of these individual items is 264 euros, not 254."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary02",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.63,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 816,
+    "tokens_before": 816
+   },
+   "output": "No, the summary is incorrect. The correct total is **167 euros** (82 + 66 + 19)."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary13",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.36,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1107,
+    "tokens_before": 1107
+   },
+   "output": "No, the summary is incorrect. The correct total is **237 euros** (94 + 85 + 69)."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes02",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.96,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1033,
+    "tokens_before": 1033
+   },
+   "output": "The latest note is from 8 March."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare10",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.19,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon had the most rain (240 mm) while Turin had the least (224 mm). The difference is 16 mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes07",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 60.08,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1583,
+    "tokens_before": 1583
+   },
+   "output": "The latest figure provided is 54 members from the note on 24 March."
+  },
+  {
+   "rep": 2,
+   "fixture": "long08",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.12,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1018,
+    "tokens_before": 1018
+   },
+   "output": "The model identified a discrepancy between the reported count and the actual number. In Linz, 492 bicycles were counted."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary06",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.82,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 750,
+    "tokens_before": 750
+   },
+   "output": "No, the summary is incorrect. The calculation is: 84 (cables) + 19 (train tickets) + 91 (postage) = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes04",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 60.72,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1568,
+    "tokens_before": 1568
+   },
+   "output": "The latest team size mentioned is 56 members."
+  },
+  {
+   "rep": 2,
+   "fixture": "compare07",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.09,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 769,
+    "tokens_before": 769
+   },
+   "output": "The city with the highest monthly rainfall is **Linz** (727mm). The gap between Linz and the city with the least rain (Ghent) is 10mm."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary04",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.14,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1362,
+    "tokens_before": 1362
+   },
+   "output": "No, the summary is incorrect. The calculation is 81 + 27 + 85 = 193 euros, not 203."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary03",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.07,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1193,
+    "tokens_before": 1193
+   },
+   "output": "No, the summary is incorrect. The calculation (18 + 40 + 17) equals 75 euros, not 65."
+  },
+  {
+   "rep": 2,
+   "fixture": "notes11",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.45,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1298,
+    "tokens_before": 1298
+   },
+   "output": "The most recent number is 43, as it appears in the later note."
+  },
+  {
+   "rep": 2,
+   "fixture": "long10",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 60.25,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 971,
+    "tokens_before": 971
+   },
+   "output": "The survey counted exactly 611 bicycles in Turin."
+  },
+  {
+   "rep": 2,
+   "fixture": "summary09",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 58.01,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1127,
+    "tokens_before": 1127
+   },
+   "output": "No, the summary is incorrect. The calculated sum is 203 euros (69 + 48 + 89), not 186."
+  },
+  {
+   "rep": 2,
+   "fixture": "long05",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 65.24,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1695,
+    "tokens_before": 1695
+   },
+   "output": "The team counted 752 bicycles in Lyon."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary12",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 40.06,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1215,
+    "tokens_before": 1215
+   },
+   "output": "No, the summary is incorrect. The correct total is 95 euros (20 + 23 + 46)."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare00",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 42.46,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 863,
+    "tokens_before": 863
+   },
+   "output": "Lyon received the highest rainfall at 644 mm, while Bremen received the least at 636 mm. The difference is 8 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary10",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 53.59,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1596,
+    "tokens_before": 1596
+   },
+   "output": "No, the summary line is incorrect. The calculation is: 33 (train) + 55 (postage) + 31 (projector) = 119 euros. The stated total of 139 euros is mathematically inconsistent with the provided items."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes10",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 46.87,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 949,
+    "tokens_before": 949
+   },
+   "output": "The most recent number is 39."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare05",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 38.36,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 674,
+    "tokens_before": 674
+   },
+   "output": "Lyon has the highest rainfall at 890 mm (vs 143 for Porto). The difference is 747 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare08",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.02,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1068,
+    "tokens_before": 1068
+   },
+   "output": "Lyon received the most rain (563 mm) while Malmo received the least (646 mm). The difference is 83 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes00",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.27,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The most recent note is from March 16, with 71 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "long01",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.97,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1189,
+    "tokens_before": 1189
+   },
+   "output": "The survey counted exactly 202 bicycles in Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary00",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.7,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1258,
+    "tokens_before": 1258
+   },
+   "output": "No, the summary is incorrect. The calculation is: 95 + 18 + 21 = 134 euros. The stated total of 114 euros is wrong."
+  },
+  {
+   "rep": 3,
+   "fixture": "long04",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.3,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1302,
+    "tokens_before": 1302
+   },
+   "output": "The survey in Malmo recorded exactly 124 bicycles parked at the station."
+  },
+  {
+   "rep": 3,
+   "fixture": "long09",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 62.61,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1613,
+    "tokens_before": 1613
+   },
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary11",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 46.81,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1108,
+    "tokens_before": 1108
+   },
+   "output": "No, the summary is incorrect. The correct total is 230 euros (83 + 85 + 52)."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary08",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 63.96,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1399,
+    "tokens_before": 1399
+   },
+   "output": "No, the summary is incorrect. The calculation is: 35 + 43 + 22 = 98 euros. The stated total of 110 euros is wrong."
+  },
+  {
+   "rep": 3,
+   "fixture": "long14",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.04,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 762,
+    "tokens_before": 762
+   },
+   "output": "The survey recorded 957 bicycles in Porto."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare14",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.7,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 565,
+    "tokens_before": 565
+   },
+   "output": "Porto had the most rain (598 mm), while Linz had the least (266 mm). The difference is **332 mm**."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare06",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 47.17,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 812,
+    "tokens_before": 812
+   },
+   "output": "Linz had the most rain (675 mm) compared to Lyon's 128 mm and Turin's 878 mm. The difference between Linz and Turin is 878 - 675 = 203 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "long06",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.51,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 904,
+    "tokens_before": 904
+   },
+   "output": "The survey recorded 769 bicycles in Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes09",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.37,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 49, according to the note from 16 March."
+  },
+  {
+   "rep": 3,
+   "fixture": "long07",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 62.41,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1638,
+    "tokens_before": 1638
+   },
+   "output": "The workshop recorded 468 bicycles in Linz."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare02",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 34.53,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The city with the most rain is Lyon (733 mm). The city with the least rain is Bremen (584 mm). The difference is 149 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "long03",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.2,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 944,
+    "tokens_before": 944
+   },
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes01",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 49.06,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 49, according to the 26 March note."
+  },
+  {
+   "rep": 3,
+   "fixture": "long13",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.09,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 936,
+    "tokens_before": 936
+   },
+   "output": "The survey counted exactly 484 bicycles in Bremen."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes12",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.39,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 26, according to the 9 March note."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare01",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.61,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 287 and 723). The difference is 608 mm (895 - 287)."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare13",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.35,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Bremen had the most rain at 359 mm. Cork had the least at 240 mm, so it was 119 mm more than Bremen."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare11",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 36.13,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "Brno had the highest monthly rainfall at 174mm, while Turin had the least at 787mm. That means Brno had 87mm more rain than Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare04",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 39.93,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "Lyon has the highest monthly rainfall (895mm) compared to Cork's lowest (208mm). The difference is **687 mm** (895 - 208)."
+  },
+  {
+   "rep": 3,
+   "fixture": "long02",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.38,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 483,
+    "tokens_before": 483
+   },
+   "output": "The survey counted exactly 405 bicycles at the station in Lyon."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary01",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.18,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 819,
+    "tokens_before": 819
+   },
+   "output": "No, the summary line is incorrect. The calculation is: 16 + 23 + 67 = 106 euros. The stated total of 126 euros does not match this sum."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes08",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.29,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1278,
+    "tokens_before": 1278
+   },
+   "output": "The most recent note is from 19 March."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes03",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.22,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1701,
+    "tokens_before": 1701
+   },
+   "output": "The latest data points are from 27 March, indicating 41 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare12",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.13,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 900,
+    "tokens_before": 900
+   },
+   "output": "Brno had the highest rainfall at 785 mm, while Linz had the least at 410 mm. That means Brno received 375 mm more than Linz."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes06",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 36.01,
+   "role": "B1_DETAIL",
+   "context_fit": null,
+   "output": "The most recent number is 65 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary14",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.79,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1406,
+    "tokens_before": 1406
+   },
+   "output": "No, the summary is incorrect. The items listed are a projector (\u20ac71), cables (\u20ac57), and printer paper (\u20ac33). The sum of these amounts is \u20ac141, but the text explicitly states \"Total: 141 euros\" which contradicts the breakdown provided in the report."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary07",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.51,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1182,
+    "tokens_before": 1182
+   },
+   "output": "No, the summary is incorrect. The calculation is: 52 + 71 + 86 = 209 euros. The stated total of 229 euros is wrong."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare03",
+   "kind": "compare",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 56.5,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 978,
+    "tokens_before": 978
+   },
+   "output": "Linz received the least (433 mm) while Lyon received the most (798 mm). The difference is 365 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes13",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.13,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 663,
+    "tokens_before": 663
+   },
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes05",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 44.65,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1098,
+    "tokens_before": 1098
+   },
+   "output": "The most recent number is 85."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes14",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.08,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1083,
+    "tokens_before": 1083
+   },
+   "output": "The latest figure mentioned is 13 members from the 12 March note."
+  },
+  {
+   "rep": 3,
+   "fixture": "long00",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.11,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 585,
+    "tokens_before": 585
+   },
+   "output": "The survey counted exactly 180 bicycles parked at the station in Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare09",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 53.88,
+   "role": "B2_GIST",
+   "context_fit": null,
+   "output": "The city with the most rain is Lyon (635 mm). The city with the least rain is Turin (815 mm), so the difference is 815 - 635 = 180 mm."
+  },
+  {
+   "rep": 3,
+   "fixture": "long11",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.9,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 518,
+    "tokens_before": 518
+   },
+   "output": "The survey counted exactly 968 bicycles at the station in Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "long12",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.5,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": true,
+    "count": "EXACT",
+    "count_source": "MEASURED",
+    "count_sources": {
+     "EXACT": 2
+    },
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {
+     "TASK_DUPLICATE": 1
+    },
+    "tokens_after": 1724,
+    "tokens_before": 1780
+   },
+   "output": "The survey counted exactly 147 bicycles in Lyon."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary05",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 59.29,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1394,
+    "tokens_before": 1394
+   },
+   "output": "No, the summary is incorrect. The correct total is **263 euros** (86 + 85 + 93)."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary02",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.3,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 676,
+    "tokens_before": 676
+   },
+   "output": "No, the summary is incorrect. The correct total is **167 euros** (82 + 66 + 19).\n\nThe discrepancy arises because the source excerpt lists \"train tickets\" as 82 euros, but the user's request specifies \"train tickets\" as 93 euros."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary13",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.71,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1177,
+    "tokens_before": 1177
+   },
+   "output": "No, the summary is incorrect. The actual totals are: Train tickets (94) + Printer paper (85) + Coffee beans (69) = **248 euros**. The current total of 258 euros is wrong."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes02",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 52.93,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1368,
+    "tokens_before": 1368
+   },
+   "output": "The latest note is from 8 March stating Elif's team has 25 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare10",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.58,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1323,
+    "tokens_before": 1323
+   },
+   "output": "The city with the highest monthly rainfall is **Lyon** (240mm), while the city with the lowest is **Turin** (224mm). The difference between them is **16mm**."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes07",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 45.98,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 510,
+    "tokens_before": 510
+   },
+   "output": "The most recent number is 39 members, according to the note from 3 March."
+  },
+  {
+   "rep": 3,
+   "fixture": "long08",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 54.72,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 514,
+    "tokens_before": 514
+   },
+   "output": "The survey counted exactly 492 bicycles parked at the station in Linz."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary06",
+   "kind": "summary",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 55.21,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 897,
+    "tokens_before": 897
+   },
+   "output": "No, the summary is incorrect. The calculation (84 + 19 + 91) equals 194 euros, not 184."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes04",
+   "kind": "notes",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 48.57,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1196,
+    "tokens_before": 1196
+   },
+   "output": "The latest number mentioned is 56."
+  },
+  {
+   "rep": 3,
+   "fixture": "compare07",
+   "kind": "compare",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 50.86,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 607,
+    "tokens_before": 607
+   },
+   "output": "Ghent has the most rain (720 mm). The difference is 30 mm (720 - 617 = 30)."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary04",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 46.35,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1635,
+    "tokens_before": 1635
+   },
+   "output": "No, the summary is incorrect. The correct total is 203 euros (81 + 27 + 85)."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary03",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 51.22,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 451,
+    "tokens_before": 451
+   },
+   "output": "No, the summary is incorrect. The correct total is 79 euros (18 + 40 + 17)."
+  },
+  {
+   "rep": 3,
+   "fixture": "notes11",
+   "kind": "notes",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 57.09,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1072,
+    "tokens_before": 1072
+   },
+   "output": "The most recent number is 5 March with 43 members."
+  },
+  {
+   "rep": 3,
+   "fixture": "long10",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 58.64,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 892,
+    "tokens_before": 892
+   },
+   "output": "The survey counted exactly 611 bicycles in Turin."
+  },
+  {
+   "rep": 3,
+   "fixture": "summary09",
+   "kind": "summary",
+   "arm": "active",
+   "pass": false,
+   "overflow": false,
+   "intrusion": true,
+   "turn_s": 62.22,
+   "role": "B2_GIST",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1500,
+    "tokens_before": 1500
+   },
+   "output": "No, the summary is incorrect. The calculation (69 + 48 + 89 = 186) is mathematically valid for the listed items, but the text explicitly states \"cables 89 euros\" while the summary line says \"Total: 186 euros.\" This implies the cable amount should be higher to reach the total.\n\nThe correct total is **246 euros** (calculated as 69 + 48 + 89)."
+  },
+  {
+   "rep": 3,
+   "fixture": "long05",
+   "kind": "long",
+   "arm": "active",
+   "pass": true,
+   "overflow": false,
+   "intrusion": false,
+   "turn_s": 46.49,
+   "role": "B1_DETAIL",
+   "context_fit": {
+    "applied": false,
+    "count": "EXACT",
+    "fits": true,
+    "limit_tokens": 1776,
+    "mode": "active",
+    "steps": {},
+    "tokens_after": 1136,
+    "tokens_before": 1136
+   },
+   "output": "The survey counted 752 bicycles in Lyon."
+  }
+ ],
+ "claim_limit": "generated English tasks, one seed, regex on the final answer, greedy bench decoding, cloud CPU"
+}

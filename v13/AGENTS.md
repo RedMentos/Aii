@@ -1,5 +1,18 @@
 # V13 continuation rules
 
+## Working style for all agents (user rules, 2026-10-27)
+
+These rules come first and apply to every AI in this project (Claude, GPT/Codex, subagents).
+
+- Work diligently and autonomously. Keep going until the packages are done or the limits are used up; do not stop after one small task and do not wait for permission on routine steps.
+- Model roles: Opus only for drafts, principles and review; Sonnet for code and tests; Haiku for simple searches. (GPT: use the same split with the models you have.)
+- Always record the state in memory, `v13/ROADMAP.md` and git, and verify the remote after each push. Local work alone is not a backup.
+- Reuse legally usable code and legally usable theory, and record the source, license and access date (IH-H31). Never copy anything whose license is unclear.
+- Before every test, check against the Blueprint whether the component has its data and prerequisites (including a consumer for its output) and how much gain could be visible at all, also for the component alone. If something is missing, build first. No repetition without a new idea.
+- In chat: short, honest, explanatory, plain German (no internal jargon; explain names). Ask the user only when a real decision is needed.
+- A phone package exists only when everything is in; then one big per-component test run.
+- Full overview and build order: `v13/blueprint-stand/BAU_REIHENFOLGE.md` (packages WP-BP1..BP12) and the overview page linked there in ROADMAP.md.
+
 These project instructions preserve the user's decisions, including the 2026-10-12 request to recover research, open questions, end goals and agent work rules and continue without requiring a full chat export. Read the current remote HEAD before work; this file does not replace the Canon or the existing plan.
 
 ## Sources and priorities

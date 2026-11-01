@@ -396,8 +396,21 @@ def route_rule_lifecycle(sources):
     return out
 
 
+def hypothesis_stale_hook(sources):
+    """2026-10-27 WP-BP10 (FS10): the LATENT_STATE report gets the current text and config so stale open questions can be
+    marked (switch hypothesis_stale, default shadow = report only)."""
+    out = dict(sources)
+    out['v13/runtime.py'] = _replace(out['v13/runtime.py'], "self.executive.report_context(self.session)))",
+        "self.executive.report_context(self.session,text,self.cfg)))")
+    anchor = "TELEMETRY_ENUMS.update('NO_LIMITS NO_DATA'.split())  # WP-T14 control budget\n"
+    out['v13/store.py'] = _replace(out['v13/store.py'], anchor, anchor +
+        "TELEMETRY_FIELDS.update('checked stale'.split())  # WP-BP10 FS10 stale-hypothesis report\n"
+        "TELEMETRY_ENUMS.update('TOPIC_SHIFT ANSWERED_LATER CORRECTED_SINCE TOO_OLD SOURCE_GONE'.split())\n")
+    return out
+
+
 def _later(sources):
-    return route_rule_lifecycle(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources))))))))
+    return hypothesis_stale_hook(route_rule_lifecycle(tool_answer_first(eligibility_live(b3_degrade(observer_schedule(resource_modes(schema_order(native_cache_bounds(sources)))))))))
 
 
 def _baseline(root):
