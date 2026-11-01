@@ -74,9 +74,10 @@ def run_phone(installed, probe_home, out):
     installed, probe_home, out = Path(installed), Path(probe_home), Path(out)
     if platform_tag() != PLATFORM:
         raise ValueError("RUN117DC_ANDROID_ONLY_NO_NATIVE_CLAIM")
-    if (installed.resolve() == probe_home.resolve()
-            or installed.resolve() == out.resolve()
-            or probe_home.resolve() == out.resolve()):
+    a, b, c = installed.resolve(), probe_home.resolve(), out.resolve()
+    if (a == b or a == c or b == c
+            or b.is_relative_to(a) or c.is_relative_to(a)
+            or c.is_relative_to(b) or b.is_relative_to(c)):
         raise ValueError("RUN117DC_ISOLATED_PATHS_REQUIRED")
     if probe_home.exists() or out.exists():
         raise FileExistsError("RUN117DC_FRESH_PROBE_AND_OUTPUT_REQUIRED")
