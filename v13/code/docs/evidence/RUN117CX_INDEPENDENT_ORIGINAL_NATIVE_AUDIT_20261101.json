@@ -1,0 +1,31 @@
+{
+  "schema": "v13.run117cx.independent_offline_original_native_audit.v1",
+  "evidence_class": "INDEPENDENT_REPLAY_OF_LINUX_NATIVE_RAW_NO_NEW_NATIVE",
+  "artifact_id": 13065553127,
+  "artifact_sha256": "be0d313eabd47035d0ee74b159ac2e3ffae54ebbab00987760bebd974335e109",
+  "artifact_crc_ok": true,
+  "inner_sha256_verified": 25,
+  "head": "4b2f953a60f6cc043ba86f90be650aa87afd9d8b",
+  "native_c3_calls": 18,
+  "native_final": 18,
+  "process_reaped": 18,
+  "rows": 9,
+  "model_scores": {
+    "lfm25_350m": 3,
+    "qwen35_0p8b": 3
+  },
+  "paired_net": 0,
+  "all_native_actions": "NONE",
+  "exploratory_capacity_gain": false,
+  "native_scoped_structural_receipts_complete": true,
+  "workflow_conclusion": "FAILURE",
+  "workflow_failure_reason": "VERIFY expected nonexistent v13.run117cx schema; actual unchanged v13.run117cv schema",
+  "verify_exit": 1,
+  "all_other_stage_exits_zero": true,
+  "redmi_measured": false,
+  "step2": "UTILITY_FAIL",
+  "b3": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "whole_system_complete": false
+}

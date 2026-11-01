@@ -72,6 +72,38 @@ def source_pins():
     return {str(p.relative_to(cu.ROOT)): h for p, h in expected.items()}
 
 
+def runner_binding_valid(installed):
+    """Accept only the installer's pinned in-home staged runner symlink."""
+    import os
+    installed = Path(installed)
+    binary = installed / "bin/llama-server"
+    manifest = installed / "config/runner.json"
+    if (not binary.is_symlink() or not manifest.is_file()
+            or manifest.is_symlink()):
+        return False
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        if (data.get("tag") != "b10964"
+                or data.get("platform") != "linux-x86_64"
+                or data.get("binary_sha256") != RUNNER_SHA):
+            return False
+        # The canonical installer uses an absolute direct symlink to a regular
+        # staged release file inside bin/.llama-b10964-<nonce>/.
+        raw_target = Path(os.readlink(binary))
+        if not raw_target.is_absolute() or raw_target.is_symlink():
+            return False
+        target = binary.resolve(strict=True)
+        if (raw_target != target or not target.is_file()
+                or target.is_symlink() or target.name != "llama-server"):
+            return False
+        rel = target.relative_to((installed / "bin").resolve(strict=True))
+        if len(rel.parts) < 3 or not rel.parts[0].startswith(".llama-b10964-"):
+            return False
+        return file_hash(binary) == RUNNER_SHA
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return False
+
+
 def pinned_paths(installed, qwen_path):
     """No implicit download, substitution, symlink, or model catalog edit."""
     models = {m["id"]: m for m in cu.pinned_models()}
@@ -81,7 +113,7 @@ def pinned_paths(installed, qwen_path):
     runner = installed / "bin/llama-server"
     if (not installed.is_dir() or not lfm.is_file()
             or not qwen_path.is_file() or not runner.is_file()
-            or lfm.is_symlink() or qwen_path.is_symlink() or runner.is_symlink()
+            or lfm.is_symlink() or qwen_path.is_symlink()
             or manager.revision("C3_LANGUAGE") != models[MODELS[0]]["revision"]
             or lfm.name != models[MODELS[0]]["local_name"]
             or qwen_path.name != models[MODELS[1]]["local_name"]
@@ -89,7 +121,7 @@ def pinned_paths(installed, qwen_path):
             or qwen_path.stat().st_size != models[MODELS[1]]["size"]
             or file_hash(lfm) != models[MODELS[0]]["sha256"]
             or file_hash(qwen_path) != models[MODELS[1]]["sha256"]
-            or file_hash(runner) != RUNNER_SHA):
+            or not runner_binding_valid(installed)):
         raise ValueError("RUN117CV_MODEL_OR_RUNNER_PIN_RED")
     return {MODELS[0]: lfm, MODELS[1]: qwen_path}
 
