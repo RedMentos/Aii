@@ -10,9 +10,10 @@ The synthetic positive test and actual native-absence negative test run together
 
 ## Source pins and verification
 
-- Production native script blob `68dcb88818c7c4efb2bb3297d2d0c93c140d9362`, fixture `a590a359df5b2baed2c622c949ed9c793e185265`, synthetic-only test `883f5ea8a34cfd68aa46ce338cf4b68288e1d3b1`, new negative test `49d5d12fe511a6ecb02553ec7d0cd1d7974fa440`.
+- Production native script blob `68dcb88818c7c4efb2bb3297d2d0c93c140d9362`, fixture `a590a359df5b2baed2c622c949ed9c793e185265`, synthetic-only test `883f5ea8a34cfd68aa46ce338cf4b68288e1d3b1`, new negative test `c9bf2dc8ff0c0fbcbeeafdf1eee7bb82e25eeb1a`.
 - Exact focused command: `cd v13/code && python -m unittest -v tests.test_run117cj_c3_native_absence_gate tests.test_run83_native_driver_fake_c3 tests.test_run52_b1b2_cross_turn`.
-- Terminal original Actions and ZIP/CRC/inner hashes: **PENDING** at initial checkpoint.
+- Original focused [Actions 41257796795](https://github.com/RedMentos/Aii/actions/runs/41257796795) **FAILURE** at `150362cc00dc394b6ad01e9594c6a757795b6f0f`: **7/8 tests passed**, including the actual no-weights `STRUCTURAL_RED` negative control. One *test assumption* was wrong: the native entrypoint uses an isolated subclass of production Runtime, not the identical class. Original artifact `13063639334`, 3,831 bytes, ZIP SHA256 `4fa3f9f465cc3a48d9a5c301ee3dd95c33d6fb89e9e7b981efadb8ead5719d9c`; independently CRC clean, 16/16 inner hashes, all stages except TEST_EXIT=1 zero. Corrected assertion checks subclass and inert-worker override; no production code modified. Intermediate pin-RED retained.
+- Terminal corrected Actions and original ZIP: **PENDING** at this checkpoint.
 
 ## Negative gates and next
 
