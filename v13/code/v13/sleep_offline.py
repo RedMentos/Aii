@@ -95,7 +95,14 @@ def view(store,session,cap=1200):
         ln=line(e['user'],e['answer'])
         if n+len(ln)>cap:break
         lines.append(ln);n+=len(ln)
-    return {'session':session,'text':'\n'.join(reversed(lines)),'entries':len(valid),'fact_authority':0}
+    # Operator-visible progress is diagnostic only: never infer fact
+    # authority from a retained digest or a pending FINAL-message count.
+    pending=store.one(
+        "SELECT COUNT(*) AS n FROM messages WHERE session_id=? AND role='assistant' "
+        "AND status='FINAL' AND id>?",(session,d['until']))['n']
+    return {'session':session,'text':'\n'.join(reversed(lines)),
+            'entries':len(valid),'fact_authority':0,
+            'pending_final_turns':pending,'catchup_pending':bool(pending)}
 
 def _checked_digest_entries(store,session,entries):
     """Validate a persisted digest against the live, source-bound history path.
