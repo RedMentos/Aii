@@ -1,0 +1,7 @@
+# Run117DH exact original native replay launch — no new model calls
+
+2026-11-01 UTC. Frozen Run117DG original [Actions 41264723552](https://github.com/RedMentos/Aii/actions/runs/41264723552) terminal SUCCESS at HEAD `34b281608b5ffd55b7e77cda0152860f7e2ab302`, artifact ID `13066633279`, original ZIP SHA256 `97570b164e2f888f16e3e9209c5edb6eb2f16ff2de2c2d033324e1359d30a4f8`. Independently downloaded and verified ZIP CRC, 26/26 inner SHA, 48/48 native FINAL/reaped and original negative gates. Private Library byte-identical backup `/V13-Checkpoints/2026-11-01/Run117DG/Run117DG_original_native_41264723552_sha97570b16.zip`.
+
+This launch runs only **read-only** Run117DH independent stdlib ZIP replay and adversarial tests, not native inference, no model downloads, no change to frozen Run117DE prereg. Auditor Git blob `19498289fec29eec1f02e4231bc3ee7a55707b14`, pure tests `d0d0ccc325fc8e73eb2c983dd2da935ba8fe4978`, original ZIP mutation tests `2d47eb048568db497f8b8e921f3f3fd42c70b517`. The original raw ZIP is never uploaded in this review CI; only small aggregate/raw stage receipts. Original negative result `NO_EXPLORATORY_NORMALIZED_SOURCE_SIGNAL`: LFM both 4/12, Qwen both 4/12, Qwen normalized A all 12 vs RAW NONE all 12, paired net zero. No posthoc score or gate promotion.
+
+Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no Redmi/learning/whole-system promotion.
