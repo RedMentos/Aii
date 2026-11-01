@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - assistant/v13-run117cp-bjepa-eventspan-test-repair-20261101-gpt6
+  pull_request:
+    branches:
+      - assistant/v13-run117co-bjepa-store-grouped-twostep-20261101-hourly11
   workflow_dispatch:
 permissions:
   contents: read
