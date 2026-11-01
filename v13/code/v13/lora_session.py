@@ -20,7 +20,7 @@ def combine(acc):
     return (ma + mb) / 2, abs(ma - mb) / 2
 
 class LoraSession:
-    def __init__(self, master, work, anchors=(), cfg=None):
+    def __init__(self, master, work, anchors=(), cfg=None, optimizer='adamw', momentum=0.9):
         self.tr = LoraTrainer(master, work, anchors=list(anchors), cfg=dict(DEFAULTS, **(cfg or {})))
         self.torch, self.tok, model = self.tr._load()
         cfg = self.tr.cfg; torch = self.torch
@@ -33,7 +33,11 @@ class LoraSession:
         lc = LoraConfig(r=int(cfg['rank']), lora_alpha=float(cfg['alpha']), lora_dropout=0., target_modules=list(cfg['targets']), bias='none')
         self.model = get_peft_model(model, lc)
         self.params = [p for p in self.model.parameters() if p.requires_grad]
-        self.base_lr = float(cfg['lr']); self.opt = torch.optim.AdamW(self.params, lr=self.base_lr, weight_decay=float(cfg['weight_decay']))
+        self.base_lr = float(cfg['lr'])
+        if optimizer == 'sgd':  # WP-BP9b: plain SGD keeps the step proportional to the (weighted) gradient; Adam rescales a tiny gradient back up
+            self.opt = torch.optim.SGD(self.params, lr=self.base_lr, momentum=float(momentum))
+        else:
+            self.opt = torch.optim.AdamW(self.params, lr=self.base_lr, weight_decay=float(cfg['weight_decay']))
         self.gen = torch.Generator().manual_seed(int(cfg['seed'])); self.steps = 0
         self.model.train()
 
