@@ -101,7 +101,16 @@ def digest(store,checkpoint=None):
 def view(store,session,cap=1200):
     """Digest text for a session (warm context aid; authority 0)."""
     d=_load(store)[0]['sessions'].get(session)
-    if not d:return None
+    # Before the first digest there is no cursor yet. Show source-neutral
+    # workload progress from cursor zero instead of an uninformative empty
+    # fallback. This count is NOT a source-valid fact or training label.
+    until=d['until'] if d else 0
+    pending=store.one(
+        "SELECT COUNT(*) AS n FROM messages WHERE session_id=? AND role='assistant' "
+        "AND status='FINAL' AND id>?",(session,until))['n']
+    if not d:
+        return {'session':session,'text':'','entries':0,'fact_authority':0,
+                'pending_final_turns':pending,'catchup_pending':bool(pending)}
     # The operator-visible digest is also an information output. A persisted
     # cache is not source authority: apply the same live history/source checks
     # as the C3 context and sleep-time TTT staging paths before showing text.
@@ -114,9 +123,6 @@ def view(store,session,cap=1200):
         lines.append(ln);n+=len(ln)
     # Operator-visible progress is diagnostic only: never infer fact
     # authority from a retained digest or a pending FINAL-message count.
-    pending=store.one(
-        "SELECT COUNT(*) AS n FROM messages WHERE session_id=? AND role='assistant' "
-        "AND status='FINAL' AND id>?",(session,d['until']))['n']
     return {'session':session,'text':'\n'.join(reversed(lines)),
             'entries':len(valid),'fact_authority':0,
             'pending_final_turns':pending,'catchup_pending':bool(pending)}
