@@ -1,0 +1,11 @@
+# Run117CS prereg — append exact original Run12J safety transform to reviewed chain
+
+2026-11-01 UTC. Review-only child of Run117CR at exact parent `947b1fa636d1185e610e701a4504d1011fa76247`. This is **not** a blanket source hash whitelist, test waiver, or production source rewrite.
+
+Run117CR original [Actions 41260465132](https://github.com/RedMentos/Aii/actions/runs/41260465132) proved that three of four complete integrated source files already equal live byte-for-byte. The sole 36-line diff in `v13/runtime.py` is exactly original [Run12J commit `47b7825704970de86766c3a57fd9ee999ca199a4`](https://github.com/RedMentos/Aii/commit/47b7825704970de86766c3a57fd9ee999ca199a4), which replaced unsafe recursive extraction of arbitrary route strings from native C2 diagnostics with one successful, validated, unambiguous `select_processing` function call. Run12J's live source is already present; do not revert it.
+
+Predeclared change: append one strict `_replace` transform in `scripts/integrated_candidates.py` **after** `route_rule_lifecycle`, using the exact original Run12J old/new code bytes from commit `47b782...`. Include a chain label in `INTEGRATED`; no other transform, source, baseline, cohort, model/runner, Canon or gate changes. Reject any changed/missing/multiple anchor. Expected after transform: all four `NAMES` match current live bytes; runtime SHA256 `8a403bffd1c2b14d9caa798cf17ea3c299cea5796115bad40cbaf9a2054072ed`, other files retain exact Run117CR hashes. Verify no source writes.
+
+Predeclared tests: exact `integrated_sources(ROOT)` equality, original Run12J commit diff identity, mixed/modified source rejection, original `source_handoff_candidate` / `eligibility_fixed` / `native_firing_merged_candidate` / source transport regression suites. Keep all original negative gates. CI records full raw, source blobs, compile/privacy/diff, hashes and RED attempts. Do not promote full-suite or STEP2 from scoped GREEN; rerun unfiltered full suite only after exact source chain review and artifact prerequisites.
+
+Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no native/Redmi/whole-system promotion. Remaining platform budget UNKNOWN.
