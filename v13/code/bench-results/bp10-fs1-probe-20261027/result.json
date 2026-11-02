@@ -1,0 +1,60 @@
+{
+ "mean_skill": {
+  "distance": 0.8837,
+  "random_ref": -0.0382
+ },
+ "room": "NO_ROOM",
+ "runs": [
+  {
+   "distance": {
+    "chosen": 4.99,
+    "oracle": 5.0533,
+    "random": 4.3644,
+    "skill": 0.9081,
+    "top1": 0.9367
+   },
+   "random_ref": {
+    "chosen": 4.39,
+    "oracle": 5.0533,
+    "random": 4.3644,
+    "skill": 0.0371,
+    "top1": 0.4067
+   },
+   "seed": 221
+  },
+  {
+   "distance": {
+    "chosen": 4.96,
+    "oracle": 5.0267,
+    "random": 4.3744,
+    "skill": 0.8978,
+    "top1": 0.9333
+   },
+   "random_ref": {
+    "chosen": 4.32,
+    "oracle": 5.0267,
+    "random": 4.3744,
+    "skill": -0.0835,
+    "top1": 0.37
+   },
+   "seed": 222
+  },
+  {
+   "distance": {
+    "chosen": 5.0433,
+    "oracle": 5.1467,
+    "random": 4.4789,
+    "skill": 0.8453,
+    "top1": 0.9067
+   },
+   "random_ref": {
+    "chosen": 4.4333,
+    "oracle": 5.1467,
+    "random": 4.4789,
+    "skill": -0.0682,
+    "top1": 0.3867
+   },
+   "seed": 223
+  }
+ ]
+}

@@ -58,6 +58,13 @@ class TestWorldJEPA(unittest.TestCase):
         self.assertEqual(lab[:2], ['SIMULATION_UNCERTAIN']*2)
         self.assertTrue((conf[:2] == 0).all())
 
+    def test_collapse_stats_degenerate_latents_are_rank_zero(self):
+        self.assertEqual(wj.collapse_stats(np.zeros((16, 8))), {'effective_rank': 0., 'min_std': 0.})
+        self.assertEqual(wj.collapse_stats(np.ones((1, 8)))['effective_rank'], 0.)
+        self.assertEqual(wj.collapse_stats(np.full((4, 3), np.nan))['effective_rank'], 0.)
+        r = wj.collapse_stats(np.random.default_rng(0).normal(size=(500, 4)))['effective_rank']
+        self.assertGreater(r, 3.5)
+
 
 if __name__ == '__main__':
     unittest.main()

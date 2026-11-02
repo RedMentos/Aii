@@ -1,0 +1,62 @@
+{
+ "schema": "v13-bp9b-step-binding-v1",
+ "seed": 3,
+ "sgd_lr": 0.01,
+ "groups": [
+  "human",
+  "human",
+  "human",
+  "human",
+  "outcome",
+  "outcome",
+  "outcome",
+  "outcome",
+  "own_right",
+  "own_right",
+  "own_right",
+  "own_right",
+  "own_wrong",
+  "own_wrong",
+  "own_wrong",
+  "own_wrong"
+ ],
+ "platform": "Linux-6.18.44-fc-v185-x86_64-with-glibc2.39",
+ "arms": {
+  "uniform_sgd": {
+   "recall_by_group": {
+    "human": 1.0,
+    "outcome": 1.0,
+    "own_right": 1.0,
+    "own_wrong": 1.0
+   },
+   "probe_correct": 0.9375,
+   "near_miss_leak": 0.4375,
+   "steps": 30,
+   "wall_seconds": 1165.1
+  },
+  "typed_sgd": {
+   "recall_by_group": {
+    "human": 1.0,
+    "outcome": 1.0,
+    "own_right": 0.0,
+    "own_wrong": 0.0
+   },
+   "probe_correct": 1.0,
+   "near_miss_leak": 0.25,
+   "steps": 30,
+   "wall_seconds": 1207.9
+  },
+  "typed_adamw": {
+   "recall_by_group": {
+    "human": 1.0,
+    "outcome": 1.0,
+    "own_right": 1.0,
+    "own_wrong": 1.0
+   },
+   "probe_correct": 1.0,
+   "near_miss_leak": 0.4375,
+   "steps": 30,
+   "wall_seconds": 1145.1
+  }
+ }
+}

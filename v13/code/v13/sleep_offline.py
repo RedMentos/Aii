@@ -80,7 +80,7 @@ def context_items(store,session,exclude_ids=(),cap=1200):
         out.append(ln);n+=len(ln)
     return list(reversed(out))
 
-def stage_ttt(store,home,checkpoint=None):
+def stage_ttt(store,home,checkpoint=None,cfg=None):
     """Context->LoRA candidates for WP-I: (digest of earlier turns, user) -> answer. Staging only."""
     st=_load(store)[0];path=home/'exports/sleep-ttt-candidates.jsonl';rows=[]
     for sess,d in st['sessions'].items():
@@ -94,9 +94,14 @@ def stage_ttt(store,home,checkpoint=None):
             if not user:continue
             rows.append({'session':sess,'event_id':e['event_id'],'context':ctx,'input':user['text'],'target':msg['text'],
                          'status':'CANDIDATE_NOT_TRAINED','label_source':'own_final_answer','origin':'self','requires':'WP-I retention gate + human approval'})
-    rows=rows[-TTT_MAX:]
+    rows=rows[-TTT_MAX:];sleep_d=None
+    if cfg is not None:  # WP-BP7 / FS6: private strings never leave the day digest into training candidates
+        from .ssgm import Checklist
+        items=[{'prompt':r['input'],'target':r['target'],'context':r['context'],'origin':'self','kind':'ttt','event_id':r['event_id']} for r in rows]
+        kept,sleep_d=Checklist(store,cfg).run(items);keep={x['event_id'] for x in kept}
+        rows=[r for r in rows if r['event_id'] in keep]
     atomic_write(path,''.join(dumps(r)+'\n' for r in rows))
-    return {'candidates':len(rows),'path':str(path)}
+    return {'candidates':len(rows),'path':str(path)}|({'sleep_d':{k:sleep_d[k] for k in ('mode','dropped','by_check') if k in sleep_d}} if sleep_d else {})
 
 def run(cycle,state,cancel,deadline,resource,origin):
     """Sleep phase SLEEP_A_OFFLINE. cycle is the SleepCycle (store, home, checkpoints, Age rights)."""
@@ -111,7 +116,7 @@ def run(cycle,state,cancel,deadline,resource,origin):
         from .inputs import paused
         if paused(cycle.s,'training'):rep['ttt']={'status':'SKIPPED_PAUSED_TRAINING'}
         elif origin!='USER' and not cycle._allowed('small_shadow_update',state):rep['ttt']={'status':'SKIPPED_AGE_RIGHT','right':'small_shadow_update'}
-        else:cp();rep['ttt']=stage_ttt(cycle.s,cycle.home,cp)
+        else:cp();rep['ttt']=stage_ttt(cycle.s,cycle.home,cp,cycle.cfg)
     except Exception as exc:
         from .common import Cancelled
         if isinstance(exc,(Cancelled,TimeoutError,ResourceWarning)):rep['status']='INTERRUPTED';rep['reason']=type(exc).__name__

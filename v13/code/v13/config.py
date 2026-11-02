@@ -90,7 +90,8 @@ LEGACY_QUOTE_PATH={"offer_quote_context_chars":0,"b2_quote_select":"off","b2_off
  "body_question_scope":"always","eligibility_reader":"c3","body_question_b1":"","body_question_b2":""}
 # Defaults before the user decision of 2026-10-22 (noise_aware Age, quote context on). Frozen, preregistered
 # harnesses and tests of the old behaviour merge this so their recorded results stay reproducible.
-LEGACY_PRE_20261022={"age_plasticity_policy":"boot","offer_quote_context_chars":0,"b2_offer_body_state":True,"offer_quote_min_chars":0,"eligibility_reader":"model","tool_answer_first":False}
+LEGACY_PRE_20261022={"age_plasticity_policy":"boot","offer_quote_context_chars":0,"b2_offer_body_state":True,"offer_quote_min_chars":0,"eligibility_reader":"model","tool_answer_first":False,
+ "sleep_d_checklist":"active","reconsolidation":"shadow","hypothesis_stale":"shadow"}
 # IH-H5 KnobSpec: every knob has a declared kind, so 0..1 is never silently read as a probability.
 KNOB_KINDS={'AUTHORITY','MIX_WEIGHT','PRIOR','PROBABILITY','THRESHOLD','BUDGET_FRACTION','BOOLEAN','COUNT','BYTES','BYTES_MB',
             'DURATION_MS','DURATION_S','DURATION_DAYS','RATE_HZ','LEARNING_RATE','DECAY','TEMPERATURE'}
@@ -135,6 +136,9 @@ def validate(cfg):
     if not isinstance(cfg.get("route_head_words",False),bool):raise ValueError("route_head_words true|false")
     if cfg.get("route_head_gate","fixed75") not in {"fixed75","relative"}:raise ValueError("route_head_gate fixed75|relative")
     if cfg.get("age_plasticity_policy","boot") not in {"boot","stable_reopen","noise_aware"}:raise ValueError("age_plasticity_policy boot|stable_reopen|noise_aware")
+    if cfg.get("sleep_d_checklist","active") not in {"off","shadow","active"}:raise ValueError("sleep_d_checklist off|shadow|active")
+    if cfg.get("reconsolidation","shadow") not in {"off","shadow","active"}:raise ValueError("reconsolidation off|shadow|active")
+    if cfg.get("hypothesis_stale","shadow") not in {"off","shadow","active"}:raise ValueError("hypothesis_stale off|shadow|active")
     return cfg
 def initialize(home):
     home.mkdir(parents=True,exist_ok=True,mode=0o700)

@@ -83,7 +83,7 @@ class Executive:
             c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',('C1_EXEC:'+state['session_id'],v+1,dumps(state)))
             c.execute('INSERT INTO packets VALUES (?,?,?,?,?,?)',(state['packet_id'],'ExecState',state['event_id'],state['brain_generation_id'],dumps(state),now()))
         return state
-    def report_context(self,session):
+    def report_context(self,session,current_text='',cfg=None):
         """Validated continuity for native readers; IDs remain in packets.
 
         Task requests and observer hypotheses never override human corrections.
@@ -95,7 +95,11 @@ class Executive:
         if task:
             result['task_request']={'exact_request':self.s.read_source(task['source_ref'])[:320],
                                     'origin':task['origin'],'authority':'REQUEST_NOT_FACT'}
-        for item in view.get('open_questions',[])[:MAX_QUESTIONS]:
+        questions=view.get('open_questions',[])[:MAX_QUESTIONS]
+        if cfg is not None:  # WP-BP10 / FS10: notes whose situation no longer holds stop being offered as current (mode hypothesis_stale)
+            from .hypothesis_stale import filter_questions
+            questions,_=filter_questions(self.s,cfg,session,questions,current_text)
+        for item in questions:
             result['unresolved_observer_hypotheses'].append({
                 'source_request':self.s.read_source(item['source_ref'])[:240],
                 'uncertainty':item.get('uncertainty','')[:160],
