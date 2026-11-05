@@ -1523,3 +1523,11 @@ Auswahl (mit Koordinator abgestimmt): Pakete ohne Handy, die kein anderer Thread
 - **WP-BP8c GEMESSEN 2026-11-01: `BP8c_NO_SIGNAL`.** Widerspruch auf denselben Fragen (40 % falsch) + 8 Lernfenster: feste Schritte noisy-Fehler 1,0: .100, 0,45: .051 (Regel >= .10 Abstand nicht erreicht), Wechsel gegen Gewohnheit in beiden Armen 1 Fenster. Kein Zielkonflikt, Age-Arme nicht gelaufen. G-AGE-REOPEN-001 bleibt offen; Parameter nicht weiter gedreht (Ergebnis-Anpassung). Nutzer-Entscheidung offen (Software-Beleg reicht oder Handy-Alltagsdaten). `code/docs/proofs/bp8c-real-age-contradiction-20261101/BEFUND.md`.
 - **WP-BP9b/BP9c GEMESSEN 2026-11-01:** BP9b `BP9b_NO_SIGNAL` (Aufbaufehler: SGD-lr 0,05 divergierte im Gleich-Gewicht-Arm, Kalibrierung auf Teilmenge). **BP9c `BP9c_PASS`** (lr 0,01 auf vollem Batch kalibriert, 3 Seeds, B1): falsche Eigen-Etiketten übernommen uniform_sgd 0,92, typed_sgd 0,00, typed_adamw 0,92; Mensch+Ergebnis 0,92 gegen 1,00; Behalten ok; Nah-Fehlgriff .60 -> .29. Einschränkung: typed_sgd lernt die Eigen-Quelle gar nicht (auch richtige nicht, 0,00). Gewichte pro Quelle wirken also nur mit SGD, AdamW hebt sie auf. `sample_modulation` bleibt aus; Alltagstrainer unverändert (AdamW). BP9 `teilweise`: Einbau braucht SGD-Pfad + Q4/Vergessen-Prüfung. `code/docs/proofs/bp9c-step-binding-20261101/BEFUND.md`.
 - **WP-BP9d GEMESSEN 2026-11-02: `BP9d_FAIL`** (vorab erwartet). Eigen-Etiketten zu 25 % falsch, SGD lr 0,01, B1, 3 Seeds: Eigen-Gewicht .15: richtig gelernt .17 / falsch übernommen 0; .30: .33 / .17; Gewicht 1: .94 / 1,00. Kein Bereich, in dem richtige deutlich über falschen stehen (Regel >= .25 Abstand). Gewicht entscheidet über Lernen, nicht über Richtigkeit; Eigen-Quelle bleibt Zulassen/Ablehnen/Quote. Offen: Zuverlässigkeits-Signal Selbstkonsistenz an echten Eigen-Antworten. BP9 bleibt `teilweise`. `code/docs/proofs/bp9d-partial-own-20261101/BEFUND.md`.
+
+## Gegenprüfung von Claude durch Codex, 2026-11-05
+
+Grundlage `7f0158d223fefe5bb218ddccab6bf79dbbc44fb7`; volle Software-Suite
+1881 OK, 14 übersprungen. BP5-Vorprüfung, BP8-Plastizität und BP9-Antwortwertung
+haben reproduzierte Einschränkungen; Einzelheiten und laufende Arbeiten stehen
+in `PRUEFUNG_GPT_FUER_CLAUDE.md`. Korrekturkandidaten bleiben isoliert. Die
+vorhandenen Messurteile und negativen Tore werden nicht hochgestuft.
