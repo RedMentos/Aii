@@ -54,6 +54,12 @@ vollständige Durchsicht aller älteren oder parallelen Zweige.
    Originale bzw. Paraphrasen. Ein Unterschied zwischen diesen Formaten kann
    als Rauschen erscheinen. Für die schon als NO_SIGNAL dokumentierten BP8b/c
    wurde dadurch kein nachgewiesener Ergebniswechsel behauptet.
+9. Das bestehende `sandbox_note` folgt Links: Ein manipulierter Ordner kann
+   Schreibzugriffe umleiten, ein Dateilink kann schon im Preview fremden Inhalt
+   offenlegen. Zwei konkurrierende `ToolRegistry.approve`-Aufrufe können dieselbe
+   Freigabe zweimal ausführen. Ein Notaus kann eine bereits zwischen Prüfung und
+   Start befindliche Aktion nicht sicher rückgängig machen. Gegenproben fanden
+   ausschließlich in temporären Testordnern bzw. mit Speicherzähler statt.
 
 **Isolierte Kandidaten:**
 
@@ -73,6 +79,11 @@ vollständige Durchsicht aller älteren oder parallelen Zweige.
   lediglich diese Übereinstimmung; Aliase müssen stimmen und Rohantworten für
   eine unabhängige Nachprüfung separat sicher aufbewahrt werden. Hashes sind
   keine Anonymisierung. Alte Ergebnisse wurden damit nicht neu ausgewertet.
+- `code/scripts/reconsolidation_pagination_candidate.py` hält einen getrennten,
+  explizit verarbeiteten Rückmeldungszustand mit Fortsetzung über Seiten und
+  Neustarts. 21 Tests mit echtem SQLite einschließlich bestehender Schlaf-Tests
+  bestanden. Die Liste wächst; spätere Löschung bereits übernommener Feedbacks
+  wird noch nicht abgeglichen. Keine Migration oder aktive Recall-Änderung.
 
 `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tests python3 -m unittest -v test_b3pair test_b3pair_integrity_candidate test_age_reopen_candidate test_age test_bp8_real_age test_lora_session test_strict_answer_auditor_candidate`:
 49 Tests OK. Die Kandidaten sind nicht mit der Runtime verbunden.
@@ -84,4 +95,6 @@ die Commit-Reihenfolge allein belegt nicht den tatsächlichen Messbeginn.
 
 Offen: weitere Gegenbeispiele für alle betroffenen Guards, tatsächliche
 Vorhersagen und Quellbelege für neue Messungen, Integration erst nach Review;
-Pagination-Kandidat, Remote- und zweite Sicherung werden weiterbearbeitet.
+Notiz-/Freigabe-Kandidaten und erste praktische Start-/Harness-Schritte werden
+bearbeitet. Zweite Sicherung auf dem bestehenden Drive am 2026-11-05 mit
+`storageQuotaExceeded` gescheitert; dort wurde kein Erfolg behauptet.

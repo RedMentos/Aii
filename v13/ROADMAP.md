@@ -1532,3 +1532,16 @@ haben reproduzierte Einschränkungen; drei Korrekturkandidaten mit 49 gezielten
 Tests bleiben isoliert. Weitere Gegenbeispiele zu Reconsolidation, Sleep und
 World-JEPA stehen mit Beleggrenzen in `PRUEFUNG_GPT_FUER_CLAUDE.md`. Die
 vorhandenen Messurteile und negativen Tore werden nicht hochgestuft.
+
+### Nutzerergänzung 2026-11-05: vollständiger Bau und spätere PC-Steuerung
+
+Alle Bestandteile des Blueprint und alle Ergänzungen bleiben erhalten. Ziel ist
+ein praktisch nutzbarer Stand möglichst früh; dazu gehört später ein zusätzliches
+Harness für Terminal und/oder grafischen PC mit bewusster Nutzererlaubnis. Redmi
+bleibt Zielgerät. Recherche, Grenzen und empfohlene Reihenfolge:
+`code/docs/PC_HARNESS_RESEARCH_20261105.md`. Gegenwärtig sind weder PC-Steuerung
+noch allgemeines selbstständiges Tool-Planen nachgewiesen. Der Benutzer möchte
+vor allem aktive Arbeit mit Agenten jetzt; wiederkehrende Aufgaben wurden auf
+seinen Hinweis hin pausiert. Bei Unterbrechung GitHub-Stand und diesen Handoff
+prüfen; ein automatischer Neustart oder das Ausschöpfen von Limits ist nicht
+garantierbar.
