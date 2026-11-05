@@ -1528,6 +1528,7 @@ Auswahl (mit Koordinator abgestimmt): Pakete ohne Handy, die kein anderer Thread
 
 Grundlage `7f0158d223fefe5bb218ddccab6bf79dbbc44fb7`; volle Software-Suite
 1881 OK, 14 übersprungen. BP5-Vorprüfung, BP8-Plastizität und BP9-Antwortwertung
-haben reproduzierte Einschränkungen; Einzelheiten und laufende Arbeiten stehen
-in `PRUEFUNG_GPT_FUER_CLAUDE.md`. Korrekturkandidaten bleiben isoliert. Die
+haben reproduzierte Einschränkungen; drei Korrekturkandidaten mit 49 gezielten
+Tests bleiben isoliert. Weitere Gegenbeispiele zu Reconsolidation, Sleep und
+World-JEPA stehen mit Beleggrenzen in `PRUEFUNG_GPT_FUER_CLAUDE.md`. Die
 vorhandenen Messurteile und negativen Tore werden nicht hochgestuft.
