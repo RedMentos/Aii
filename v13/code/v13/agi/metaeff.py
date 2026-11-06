@@ -6,18 +6,45 @@ binning and normalisation of the paper were NOT verified here (only the abstract
 variant and reported as `meta_i`, not as the paper's number. ECE stays reported next to it, never replaced.
 abstain_utility() gives the payoff of "say I don't know below a confidence threshold", the quantity meta_i should predict.
 """
+import bisect
+import itertools
 import math,random
 
 def _h(p):return 0. if p<=0 or p>=1 else -(p*math.log2(p)+(1-p)*math.log2(1-p))
 
+def _validated_pairs(pairs):
+    """Normalise the documented domain before sorting or resampling."""
+    result=[]
+    for confidence,correct in pairs:
+        try:confidence=float(confidence)
+        except (TypeError,ValueError,OverflowError) as exc:
+            raise ValueError('confidence must be finite and between 0 and 1') from exc
+        if not math.isfinite(confidence) or not 0.<=confidence<=1.:
+            raise ValueError('confidence must be finite and between 0 and 1')
+        if correct not in (0,1):raise ValueError('correct must be 0 or 1')
+        result.append((confidence,int(correct)))
+    return result
+
 def meta_i(pairs,bins=5):
-    """pairs: [(confidence 0..1, correct 0/1)]. Equal-count bins so a skewed confidence scale does not hide signal."""
+    """Normalised mutual information using approximately equal-count confidence bins.
+
+    Equal confidence values always share one bin. Each tie group is placed in
+    the original equal-count bin containing its lower midpoint; this preserves
+    the original boundaries when all values differ, but some bins may be empty.
+    """
+    pairs=_validated_pairs(pairs)
     n=len(pairs)
     if n<2:return None
-    k=sum(int(bool(y)) for _,y in pairs);hy=_h(k/n)
+    k=sum(y for _,y in pairs);hy=_h(k/n)
     if hy==0:return 0.  # all right or all wrong: confidence has nothing to separate
-    s=sorted(pairs,key=lambda t:t[0]);b=max(1,min(bins,n));cells=[s[i*n//b:(i+1)*n//b] for i in range(b)]
-    hyc=sum(len(c)/n*_h(sum(int(bool(y)) for _,y in c)/len(c)) for c in cells if c)
+    s=sorted(pairs,key=lambda t:t[0]);b=max(1,min(bins,n))
+    bounds=[i*n//b for i in range(b+1)];cells=[[] for _ in range(b)];start=0
+    for _,group in itertools.groupby(s,key=lambda t:t[0]):
+        members=list(group);end=start+len(members)
+        midpoint=(start+end-1)//2
+        cells[bisect.bisect_right(bounds,midpoint)-1].extend(members)
+        start=end
+    hyc=sum(len(c)/n*_h(sum(y for _,y in c)/len(c)) for c in cells if c)
     return max(0.,(hy-hyc)/hy)
 
 def auroc2(pairs):
@@ -27,7 +54,12 @@ def auroc2(pairs):
     return sum((p>q)+.5*(p==q) for p in pos for q in neg)/(len(pos)*len(neg))
 
 def report(pairs,bins=5,perm=500,boot=300,seed=0):
-    """meta_i with permutation null (p-value) and bootstrap 95% CI, plus AUROC2 and accuracy."""
+    """meta_i with permutation null (p-value) and bootstrap 95% CI, plus AUROC2 and accuracy.
+
+    Canonical ordering makes the finite seeded resamples reproducible after an
+    input permutation, including when confidence values are tied.
+    """
+    pairs=sorted(_validated_pairs(pairs))
     rng=random.Random(seed);n=len(pairs);mi=meta_i(pairs,bins)
     if mi is None:return {'n':n,'meta_i':None}
     ys=[y for _,y in pairs];cs=[c for c,_ in pairs];ge=0
