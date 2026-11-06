@@ -1,5 +1,15 @@
 # V13 Umsetzungs-Roadmap (Stand 2026-10-09)
 
+## Teil-Gegenprüfung BP6 / FS3 — 2026-11-06
+
+Ein eigener Prüfkandidat auf Basis von Claude PR #1586 behandelt gleiche
+Konfidenzwerte gemeinsam und berechnet die Statistik unabhängig von der
+Reihenfolge der Eingaben. Bei den 300 gespeicherten Antworten ändert sich der
+Wert für den Anteil sicherer Token von 0,1552 auf 0,1773; die Ziffernquelle
+bleibt mit 0,3589 vorn. Nachträgliche Nachrechnung, kein neuer Modelllauf und
+keine Gate-Freigabe. 55 gezielte Softwaretests bestanden; Details, alte
+Ergebnisse und Grenzen: `code/docs/reviews/BP6_META_I_TIE_REVIEW_20261106.md`.
+
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
 (Checkpoint `CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT`),
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
