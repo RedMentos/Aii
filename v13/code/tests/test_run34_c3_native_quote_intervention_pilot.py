@@ -7,11 +7,31 @@ from unittest import mock
 
 from scripts import run33_b2_c3_counterfactual_envelopes as cf
 from scripts import run34_c3_native_quote_intervention_pilot as pilot
+from scripts import run37_c3_rule_use_native_pilot as pilot37
 
 
 class Run34NativePilotPreflight(unittest.TestCase):
-    def test_pinned_source_model_runner_and_negative_gates(self):
-        reg = pilot.prereg()
+    def test_current_source_drift_refused_and_frozen_metadata_preserved(self):
+        # The live source has a later scoring hardening; Run34's historical
+        # native preflight must continue to reject that unregistered change.
+        utility_path = pilot.ROOT / "v13/utility.py"
+        live_blob = pilot._git_blob(utility_path)
+        self.assertEqual(live_blob, "ff16ab6012b2865e0f3abde2a289aaf00e9aaa53")
+        self.assertNotEqual(live_blob, pilot.FROZEN_UTILITY_BLOB)
+        with self.assertRaisesRegex(ValueError, "native_source_or_catalog_changed"):
+            pilot.prereg()
+
+        # This hash-only simulation checks metadata, not native readiness or
+        # historical execution. Every other source remains actually hashed.
+        real_blob = pilot._git_blob
+
+        def historical_utility_only(path):
+            if path == utility_path:
+                return pilot.FROZEN_UTILITY_BLOB
+            return real_blob(path)
+
+        with mock.patch.object(pilot, "_git_blob", side_effect=historical_utility_only):
+            reg = pilot.prereg()
         self.assertEqual(reg["fixture_id"], "Velaris")
         self.assertEqual(reg["seed"], 20261121)
         self.assertEqual(reg["arms"], list(cf.ARMS))
@@ -21,6 +41,51 @@ class Run34NativePilotPreflight(unittest.TestCase):
         self.assertIs(reg["canonical_gate_pass"], False)
         self.assertIs(reg["phone_measured"], False)
         self.assertEqual(reg["jepa_weight"], 0)
+
+    def test_real_other_source_edits_refused_before_either_native_pilot(self):
+        # Work on isolated byte copies: the production sources never change.
+        # Only the old utility hash is simulated, as in the metadata test.
+        original_root = pilot.ROOT
+        real_blob = pilot._git_blob
+        other_sources = (
+            "specs/models.json",
+            "scripts/run33_b2_c3_counterfactual_envelopes.py",
+            "v13/runners.py",
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            source_root = Path(temp) / "source"
+            for name in (*other_sources, "v13/utility.py"):
+                target = source_root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((original_root / name).read_bytes())
+
+            def historical_utility_only(path):
+                if path == source_root / "v13/utility.py":
+                    return pilot.FROZEN_UTILITY_BLOB
+                return real_blob(path)
+
+            with (mock.patch.object(pilot, "ROOT", source_root),
+                  mock.patch.object(pilot, "_git_blob", side_effect=historical_utility_only),
+                  mock.patch.object(pilot.LlamaRunner, "__init__",
+                                    side_effect=AssertionError("native unexpectedly opened"))):
+                # With only the old utility hash simulated, the other copied
+                # sources match and the metadata preflight can proceed.
+                self.assertFalse(pilot.prereg()["native_executed"])
+                self.assertFalse(pilot37.prereg()["native_executed"])
+                for name in other_sources:
+                    with self.subTest(source=name):
+                        target = source_root / name
+                        original = target.read_bytes()
+                        try:
+                            target.write_bytes(original + b"\nsynthetic tamper\n")
+                            for module in (pilot, pilot37):
+                                evidence = source_root / "no-evidence"
+                                with self.assertRaisesRegex(
+                                        ValueError, "native_source_or_catalog_changed"):
+                                    module._run_unlocked(source_root / "no-home", evidence)
+                                self.assertFalse(evidence.exists())
+                        finally:
+                            target.write_bytes(original)
 
     def test_no_installed_home_no_native_no_evidence_created(self):
         with tempfile.TemporaryDirectory() as temp:
