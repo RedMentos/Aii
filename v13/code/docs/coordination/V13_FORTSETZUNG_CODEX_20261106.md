@@ -48,12 +48,15 @@ nicht gemergt und ihre Kombination nicht als Gesamtsystem geprüft.
    Recall-Ergebnis (`null`) von einem gemessenen Nullwert; Rohdaten und
    `BP9a_FAIL` bleiben erhalten.
 
-   Vollständige Software-Suite nach der letzten Codeänderung: 1887 Tests,
+   Erster vollständiger Software-Suite-Lauf nach der BP5-Codeänderung: 1887 Tests,
    14 Skips, ein Fehler. `test_toolforecast.CheckpointTests` erhielt
    `PermissionError`, weil `/root/native/restore/round8-note-tool-raw` in
-   dieser Umgebung nicht lesbar ist. Das ist kein vollständiger Suite-PASS.
-   Der Python-Umgebung fehlen u. a. Torch/Transformers; kein Modell- oder
-   Redmi-Lauf wurde ausgeführt.
+   dieser Umgebung nicht lesbar ist. Der historische Vergleich wurde als
+   eigener Test mit sichtbarem Skip bei fehlendem/nicht zugänglichem
+   Ausgangspfad abgetrennt; andere Auswertungsprüfungen bleiben aktiv. Der
+   anschließende vollständige Software-Lauf ergab 1888 Tests OK und 15 Skips.
+   Einer davon ist dieser Planvergleich; der Python-Umgebung fehlen u. a.
+   Torch/Transformers. Kein Modell- oder Redmi-Lauf wurde ausgeführt.
 
 Alle drei Remote-Heads und Trees wurden nach der Veröffentlichung geprüft;
 die jeweiligen öffentlichen Diffs wurden auf private Daten gescannt (CLEAN).
@@ -65,9 +68,9 @@ BP5-Prüfzweig unter `v13/code/docs/coordination/` gesichert.
 ## Nächster Schritt
 
 Die drei Diffs unabhängig prüfen und nur nach expliziter Integration der
-zugehörigen Entwicklungslinien zusammenführen. Den portabilitätsabhängigen
-Toolforecast-Test und fehlende Testsuite-Voraussetzungen getrennt behandeln;
-anschließend die vollständige Suite erneut auf exakt gebundenem Stand laufen
-lassen. Weitere Blueprint-Pakete gemäß aktuellem Plan fortsetzen. Fehlende
+zugehörigen Entwicklungslinien zusammenführen. Den übersprungenen historischen
+Toolforecast-Planvergleich bei Verfügbarkeit seiner Originaldaten nachholen;
+fehlende Testsuite-Voraussetzungen getrennt behandeln. Weitere Blueprint-Pakete
+gemäß aktuellem Plan fortsetzen. Fehlende
 Redmi-/Native-Messungen und vorhandene negative Gates bleiben offen; keine
 unbelegte Aussage über vollständiges System oder kontinuierliches Lernen.

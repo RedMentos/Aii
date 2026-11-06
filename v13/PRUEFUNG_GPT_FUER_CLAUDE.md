@@ -34,13 +34,25 @@ der Korrektur 21 fehlgeschlagene und 15 fehlerhafte Teilfälle; danach:
 `cd v13/code && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tests python -m unittest discover -s tests -p 'test_b3pair*.py' -v`
 → 11 Tests bestanden. Das ist ausschließlich ein Softwaretest.
 
-Vollständige Software-Suite nach der letzten Codeänderung:
+Erste vollständige Software-Suite nach der BP5-Codeänderung:
 `cd v13/code && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.:tests V13_NO_AUTOSTART=1 NO_MODEL_DOWNLOADS=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m unittest discover -s tests -p 'test_*.py'`
 → 1887 Tests, ein Fehler und 14 Skips. Der Fehler
 `test_toolforecast.CheckpointTests.test_competence_check_scores_states_not_calls`
 entsteht durch `PermissionError` beim Prüfen des hier nicht lesbaren Pfades
 `/root/native/restore/round8-note-tool-raw`. Kein vollständiger Suite-PASS;
 kein Modell- oder Redmi-Nachweis.
+
+Die sieben regulären Auswertungsprüfungen bleiben erhalten. Der bislang nur
+bedingt ausgeführte historische Planvergleich ist nun ein eigener Test und
+meldet einen Skip, wenn der historische Ausgangspfad fehlt oder unzugänglich
+ist; bei teilweise defekten Daten oder überschneidenden Plänen scheitert er
+weiterhin. Unabhängige Mock-Gegenproben bestätigten diese vier Fälle. Das
+gesamte Modul `test_toolforecast` ergab 25 Tests OK, 2 Skips.
+
+Dieselbe vollständige Software-Suite nach der Testaufteilung: **1888 Tests OK,
+15 Skips**. Einer davon ist der hier nicht zugängliche historische
+Planvergleich; weitere Voraussetzungen einschließlich nativer Modelle fehlen.
+Kein Phone-, Native- oder gesamtes Architekturgate folgt aus diesem Lauf.
 
 ## BP9a: gemessene Werte nicht mit fehlenden Werten verwechseln
 

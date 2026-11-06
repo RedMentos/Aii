@@ -8,9 +8,10 @@ die Prüfung der Paar-Manifeste erkennt zudem veränderte Zeilen-Hashes.
 Das ist kein L2-/L3-Freigabe- oder Nutzennachweis. Im BP9a-Bericht ist
 ergänzt, dass der `no_own`-Recall der falschen Eigen-Etiketten in den drei
 Originaldateien `null` und nicht als null gemessen ist. Rohdaten und
-`BP9a_FAIL` bleiben erhalten. 11 gezielte Softwaretests bestanden; die volle
-Suite (1887 Tests, 14 Skips) hat einen Umgebungsfehler beim Zugriff auf einen
-nicht lesbaren `/root`-Pfad und ist daher nicht grün.
+`BP9a_FAIL` bleiben erhalten. 11 gezielte Softwaretests bestanden. Der erste
+Suite-Lauf (1887 Tests, 14 Skips) scheiterte an einem nicht lesbaren `/root`-Pfad;
+nach Aufteilung der optionalen historischen Prüfung lief die Suite mit 1888
+Tests und 15 offen ausgewiesenen Skips ohne Fehler. Kein Native-/Redmi-PASS.
 Details und Grenzen: `PRUEFUNG_GPT_FUER_CLAUDE.md`.
 
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
