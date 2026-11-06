@@ -144,12 +144,23 @@ class CheckpointTests(unittest.TestCase):
         self.assertTrue(note['pass'])
         self.assertEqual(note['report_only_ratio_geo_mean'], {'unflagged': .5, 'flagged': 2.})
         self.assertEqual(rep['verdict'], 'COMPETENCE_SIGNAL_NOT_CONFIRMED')
-        plan = cc.plan('/root/native/restore') if Path('/root/native/restore/round8-note-tool-raw').exists() else None
-        if plan:
-            earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
-            for k in plan:
-                self.assertEqual(len(plan[k]), cc.N)
-                self.assertFalse(set(plan[k]) & set(earlier[k]))
+
+    def test_competence_native_plan_disjoint_when_fixture_available(self):
+        sys.path.insert(0, str(APP / 'scripts'))
+        import tool_forecast_competence_check as cc
+        native_root = Path('/root/native/restore')
+        try:
+            available = (native_root / 'round8-note-tool-raw').exists()
+        except PermissionError:
+            self.skipTest('historical native fixture is not accessible to this user')
+        if not available:
+            self.skipTest('historical native fixture is unavailable')
+        plan = cc.plan(str(native_root))
+        self.assertTrue(plan, 'historical native fixture produced no plan')
+        earlier = json.loads((APP / 'specs/tool_forecast/live-plan.json').read_text())['plan']
+        for k in plan:
+            self.assertEqual(len(plan[k]), cc.N)
+            self.assertFalse(set(plan[k]) & set(earlier[k]))
 
     def synthetic_world(self, home, shift, law_for_retention):
         """calc checkpoint; experience follows W0 + shift; retention taps follow the given law."""
