@@ -7,6 +7,8 @@ L2 read exists. numpy only.
 """
 import hashlib
 import json
+from collections.abc import Mapping
+from numbers import Integral, Real
 import numpy as np
 
 REVISION='b3pair-v1'
@@ -26,29 +28,43 @@ def build_manifest(Hs,Hr,y,sender_rev,receiver_rev,seed,task):
             'row_sha256':[hashlib.sha256(Hs[i].astype(np.float32).tobytes()+Hr[i].astype(np.float32).tobytes()).hexdigest()[:16] for i in range(len(y))]}
 
 def verify(manifest,Hs,Hr,y,sender_rev=None,receiver_rev=None):
-    """Returns (ok, reasons). Refuses changed rows, changed order, other revisions (B3-H10)."""
+    """Returns (ok, reasons); verifies state/label hashes and the row hashes used by disjoint()."""
     why=[]
     try:cur=build_manifest(Hs,Hr,y,manifest['sender_revision'],manifest['receiver_revision'],manifest['seed'],manifest['task'])
-    except ValueError as e:return False,[str(e)]
-    for k in ('rows','dims','sender_sha256','receiver_sha256','labels_sha256'):
-        if cur[k]!=manifest[k]:why.append(k+' differs')
+    except (ValueError,KeyError,TypeError,IndexError) as e:return False,[str(e)]
+    for k in ('revision','rows','dims','sender_sha256','receiver_sha256','labels_sha256','row_sha256'):
+        if cur[k]!=manifest.get(k):why.append(k+' differs')
     if sender_rev is not None and sender_rev!=manifest['sender_revision']:why.append('sender revision differs')
     if receiver_rev is not None and receiver_rev!=manifest['receiver_revision']:why.append('receiver revision differs')
     return not why,why
 
 def disjoint(m_a,m_b):
-    """Two manifests (e.g. training seed and replication seed) must share no row."""
+    """Compare verified state-pair hashes; this does not prove distinct input texts or independent seeds."""
     return not (set(m_a['row_sha256'])&set(m_b['row_sha256']))
 
 def precheck(acc,manifest):
-    """acc: {'NO_MESSAGE','SCALAR','L1','L2'} mean accuracies in [0,1] on the NEW pair. Verdict GO / NO_GO with reasons."""
+    """Numerical precheck only; does not verify the pair or unlock an L3 experiment."""
     why=[]
-    if manifest['rows']<MIN_ROWS:why.append('rows %d < %d (power)'%(manifest['rows'],MIN_ROWS))
-    if acc['L1']<=acc['NO_MESSAGE']+.02:why.append('L1 read does not beat NO_MESSAGE: no signal in the pair')
-    head=acc['L1']-acc['L2']
+    rows=manifest.get('rows') if isinstance(manifest,Mapping) else None
+    if isinstance(rows,bool) or not isinstance(rows,Integral) or rows<0:
+        why.append('rows must be a non-negative integer')
+    elif rows<MIN_ROWS:why.append('rows %d < %d (power)'%(rows,MIN_ROWS))
+    values={}
+    for key in ('NO_MESSAGE','SCALAR','L1','L2'):
+        value=acc.get(key) if isinstance(acc,Mapping) else None
+        if isinstance(value,bool) or not isinstance(value,Real) or not 0<=value<=1:
+            why.append('%s accuracy must be a finite number in [0,1]'%key)
+        else:values[key]=float(value)
+    note=('GO is only a numerical precheck; pair integrity, model revisions, seed independence, '
+          'L2 gate and L3 release require separate verification')
+    if len(values)!=4:
+        return {'verdict':'NO_GO','headroom':None,'latent_over_scalar':None,'reasons':why,'note':note}
+    if values['L1']<=values['NO_MESSAGE']+.02:why.append('L1 read does not beat NO_MESSAGE: no signal in the pair')
+    if values['L1']<=values['SCALAR']:why.append('L1 read does not beat SCALAR')
+    head=values['L1']-values['L2']
     if head<MIN_HEADROOM:why.append('headroom L1-L2 %.3f < %.2f: tuning cannot show visible gain'%(head,MIN_HEADROOM))
-    return {'verdict':'NO_GO' if why else 'GO','headroom':round(head,4),'latent_over_scalar':round(acc['L1']-acc['SCALAR'],4),
-            'reasons':why,'note':'GO only allows a separately preregistered tuning test; L3 stays locked until the user releases it'}
+    return {'verdict':'NO_GO' if why else 'GO','headroom':round(head,4),'latent_over_scalar':round(values['L1']-values['SCALAR'],4),
+            'reasons':why,'note':note}
 
 def dump(manifest,path):
     with open(path,'w') as f:json.dump(manifest,f,sort_keys=True)

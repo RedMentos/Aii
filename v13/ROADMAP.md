@@ -1,5 +1,18 @@
 # V13 Umsetzungs-Roadmap (angelegt 2026-10-09; Ziele neu abgeglichen 2026-10-21, siehe §0)
 
+## Teil-Gegenprüfung BP5 / BP9a — 2026-11-06
+
+Auf einem getrennten Prüfzweig ab Claude PR #1587: ungültige Messwerte und
+Gleichstand/Verlust gegen SCALAR ergeben in der BP5-Vorabprüfung `NO_GO`;
+die Prüfung der Paar-Manifeste erkennt zudem veränderte Zeilen-Hashes.
+Das ist kein L2-/L3-Freigabe- oder Nutzennachweis. Im BP9a-Bericht ist
+ergänzt, dass der `no_own`-Recall der falschen Eigen-Etiketten in den drei
+Originaldateien `null` und nicht als null gemessen ist. Rohdaten und
+`BP9a_FAIL` bleiben erhalten. 11 gezielte Softwaretests bestanden; die volle
+Suite (1887 Tests, 14 Skips) hat einen Umgebungsfehler beim Zugriff auf einen
+nicht lesbaren `/root`-Pfad und ist daher nicht grün.
+Details und Grenzen: `PRUEFUNG_GPT_FUER_CLAUDE.md`.
+
 Grundlage: Blueprint v10.16.1 (`blueprint/…B3_HARDENED.md`), `status/BUILD_STATE.json`
 (Checkpoint `CAUSAL_NATIVE46_NINTH_EXPORTED_SQLITE_FAILED_BEFORE_FIT`),
 `status/completion-ledger.json`, `code/specs/component-contracts.json`,
