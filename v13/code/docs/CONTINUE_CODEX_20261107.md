@@ -59,6 +59,15 @@ unproven Body-JEPA utility is claimed. The supplied YouTube video's transcript
 could not be retrieved because the providers blocked the request; no video
 claims were inferred.
 
+The user clarified that the desired idea involves Codex directly changing
+open-model weights. The original weight-space-programming report describes
+such an edit of Qwen3.5-0.8B, V13's B2 model family; the identification with
+the unavailable video is not confirmed. See the new section in
+`RESEARCH_PHONE_TRAINING_20261107.md`. An isolated probe of its published
+BF16 tensor diff is being developed against the exact pinned source revision;
+it is not yet a GGUF model, local learning loop, inference result or Redmi
+proof. Preserve the existing B2 fallback and actual learning objectives.
+
 STEP2 remains `UTILITY_FAIL`, B3 remains without promotion, Body-JEPA remains
 unavailable for production, and the full blueprint and Redmi validation remain
 incomplete. Persist and verify each subsequent meaningful checkpoint; continue
