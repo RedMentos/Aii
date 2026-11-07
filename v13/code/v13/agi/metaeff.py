@@ -32,6 +32,8 @@ def meta_i(pairs,bins=5):
     the original equal-count bin containing its lower midpoint; this preserves
     the original boundaries when all values differ, but some bins may be empty.
     """
+    if isinstance(bins, bool) or not isinstance(bins, int) or bins < 1:
+        raise ValueError('bins must be a positive integer')
     pairs=_validated_pairs(pairs)
     n=len(pairs)
     if n<2:return None
@@ -59,6 +61,10 @@ def report(pairs,bins=5,perm=500,boot=300,seed=0):
     Canonical ordering makes the finite seeded resamples reproducible after an
     input permutation, including when confidence values are tied.
     """
+    if isinstance(perm, bool) or not isinstance(perm, int) or perm < 1:
+        raise ValueError('perm must be a positive integer')
+    if isinstance(boot, bool) or not isinstance(boot, int) or boot < 2:
+        raise ValueError('boot must be an integer >= 2')
     pairs=sorted(_validated_pairs(pairs))
     rng=random.Random(seed);n=len(pairs);mi=meta_i(pairs,bins)
     if mi is None:return {'n':n,'meta_i':None}
