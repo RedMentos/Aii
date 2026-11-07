@@ -40,6 +40,19 @@ class MetaEffTieInvariance(unittest.TestCase):
         expected = 1.0 - (0.3 * entropy(1 / 3) + 0.3 * entropy(2 / 3) + 0.4 * entropy(3 / 4)) / entropy(0.6)
         self.assertAlmostEqual(metaeff.meta_i(pairs, bins=3), expected)
 
+    def test_invalid_bin_and_resampling_counts_fail_closed(self):
+        pairs = [(0.2, 0), (0.8, 1)]
+        for bins in (0, -1, 1.5, True):
+            with self.subTest(bins=bins), self.assertRaises(ValueError):
+                metaeff.meta_i(pairs, bins=bins)
+        for perm in (0, -1, 1.5, True):
+            with self.subTest(perm=perm), self.assertRaises(ValueError):
+                metaeff.report(pairs, perm=perm, boot=10)
+        for boot in (0, 1, -1, 2.5, True):
+            with self.subTest(boot=boot), self.assertRaises(ValueError):
+                metaeff.report(pairs, perm=10, boot=boot)
+        self.assertIsInstance(metaeff.report(pairs, bins=1, perm=1, boot=2), dict)
+
     def test_undefined_confidence_and_nonbinary_outcome_are_rejected(self):
         for confidence in (float('nan'), float('inf'), -0.01, 1.01):
             with self.subTest(confidence=confidence), self.assertRaises(ValueError):
