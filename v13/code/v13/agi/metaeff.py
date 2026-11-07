@@ -78,6 +78,18 @@ def report(pairs,bins=5,perm=500,boot=300,seed=0):
 
 def abstain_utility(pairs,wrong_cost=1.,abstain_cost=.3,steps=20):
     """Best gain over answering everything: right +1, wrong -wrong_cost, abstain -abstain_cost, abstain below threshold."""
+    if isinstance(steps, bool) or not isinstance(steps, int) or steps < 1:
+        raise ValueError('steps must be a positive integer')
+    pairs=_validated_pairs(pairs)
+    for name, value in (('wrong_cost', wrong_cost), ('abstain_cost', abstain_cost)):
+        try:
+            value=float(value)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f'{name} must be finite') from exc
+        if not math.isfinite(value):
+            raise ValueError(f'{name} must be finite')
+        if name=='wrong_cost':wrong_cost=value
+        else:abstain_cost=value
     base=sum(1. if y else -wrong_cost for _,y in pairs);best=(0.,0.)
     for i in range(steps+1):
         t=i/steps;u=sum((1. if y else -wrong_cost) if c>=t else -abstain_cost for c,y in pairs)
