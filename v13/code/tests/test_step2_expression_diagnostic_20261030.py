@@ -1,9 +1,11 @@
+import os
 import unittest
 from pathlib import Path
 from step2_expression_diagnostic_20261030 import equation_diagnostic, audit_original_zip
 
 F = {'budget': 196, 'a': 'Dawn', 'a_cost': 137, 'b': 'Dusk', 'b_cost': 185}
-ZIP = Path(__file__).with_name('NATIVE_40996792157.zip')
+ZIP = Path(os.environ.get('V13_STEP2_EXPRESSION_ORIGINAL_ZIP',
+                          Path(__file__).with_name('NATIVE_40996792157.zip')))
 
 class ExpressionSensitivityTests(unittest.TestCase):
     def test_explicit_math_both_correct(self):
