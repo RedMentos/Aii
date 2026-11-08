@@ -207,6 +207,14 @@ class WorldJEPA:
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
+    def partial_fit(self,X,A,X2,steps=100,log_every=50):
+        """Continue JEPA weights and EMA target instead of reinitializing.
+
+        Callers should mix replay transitions with new ones to reduce forgetting.
+        This experimental path does not itself establish durable retention.
+        """
+        return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True)
+
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
     def latent(self, X, target=True):
