@@ -90,3 +90,34 @@ def test_capacity_fails_before_mutating_model_or_journal():
         session.update(model, rows(96))
     assert model.calls == []
     assert session.snapshot()["seen"] == {}
+
+
+def test_holdout_mutation_rejected_before_gradient_and_after_restart():
+    records = rows()
+    session = ReplaySession("a" * 64)
+    model = FakeJEPA()
+    session.update(model, records)
+    restored = ReplaySession.restore(session.snapshot(), "a" * 64)
+    holdout_id = build(records)["holdout_action_ids"][0]
+    for row in records:
+        if row["action_id"] == holdout_id:
+            row["y"][0] += 1
+            break
+    with pytest.raises(ValueError, match="holdout action ID changed content"):
+        restored.update(model, records)
+    assert len(model.calls) == 1
+
+
+def test_replay_journal_rejects_holdout_identity_collision_and_tampering():
+    session = ReplaySession("a" * 64)
+    model = FakeJEPA()
+    session.update(model, rows())
+    snapshot = session.snapshot()
+    holdout_id = next(iter(snapshot["holdout_seen"]))
+    snapshot["seen"][holdout_id] = snapshot["holdout_seen"][holdout_id]
+    with pytest.raises(ValueError, match="invalid replay journal"):
+        ReplaySession.restore(snapshot, "a" * 64)
+    snapshot = session.snapshot()
+    snapshot["holdout_seen"][holdout_id] = "bad"
+    with pytest.raises(ValueError, match="invalid replay journal"):
+        ReplaySession.restore(snapshot, "a" * 64)
