@@ -161,6 +161,13 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
     if kind=='fact' and st.get('answer_confidence') is not None:
         Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
+    if kind=='fact':
+        # Explicit correction of a previously credited skill is a dispute, not
+        # another automatic positive sample. No silent aggregate retraction:
+        # that requires a transactional event-bound rebuild of AG4 statistics.
+        old=_load(store,event_id)
+        if old.get('skill_human_credit') is True:
+            _save(store,event_id,skill_outcome='DISPUTED_HUMAN_CORRECTION',skill_disputed=True)
     if kind=='route':  # WP-T6: a route correction on a skill-routed turn reopens the skill (back to the full path)
         try:
             from ..skilllive import on_route_correction
@@ -199,8 +206,9 @@ def on_rating(store,event_id,score):
     """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
     from .metacog import Metacognition
     st=_load(store,event_id)
-    if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
-    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id)
+    if RATING_BAD<score<RATING_GOOD:return None
+    if st.get('answer_confidence') is not None:
+        Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id)
     try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
     except (KeyError,ValueError,PermissionError) as exc:
         store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
