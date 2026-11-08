@@ -104,3 +104,18 @@ def test_invalid_pretrained_architecture_config_blocks_training(tmp_path):
     result=preflight(tmp_path,req,{'master':str(master),'master_sha256':file_hash(master/'model.safetensors')})
     assert not result['ready']
     assert 'MASTER_CONFIG_INVALID' in result['reasons']
+
+
+def test_sparse_learning_requires_serving_path(tmp_path):
+    master=tmp_path/'master';master.mkdir()
+    (master/'model.safetensors').write_bytes(b'weights')
+    (master/'config.json').write_text('{"hidden_size":512,"num_hidden_layers":12}')
+    req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',
+                     torch_sparse=True,memory_server_ok=False)
+    state={'master':str(master),'master_sha256':file_hash(master/'model.safetensors')}
+    with patch.object(trainers,'_box',return_value=State(state)), \
+         patch.object(trainers,'requirements',return_value=req), \
+         patch.object(trainers,'probes',return_value=(['anchor'],['holdout'])):
+        result=trainers.training_readiness(runtime(tmp_path),'sparse')
+    assert not result['ready']
+    assert result['reasons']==['SPARSE_SERVING_UNAVAILABLE']
