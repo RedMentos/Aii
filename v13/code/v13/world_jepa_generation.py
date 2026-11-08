@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import tempfile
 
 from . import world_jepa_shadow_checkpoint as checkpoint
@@ -15,6 +16,19 @@ from .world_jepa_replay import ReplaySession
 
 SCHEMA = 'v13.world_jepa.atomic_generation.v1'
 MAX_JOURNAL_BYTES = 8 * 1024 * 1024
+MAX_MANIFEST_BYTES = 2048
+
+
+def _read_regular(path, limit):
+    """Reject FIFOs/devices and oversized inputs before reading untrusted generations."""
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= limit:
+        raise ValueError('unsafe or oversized generation member')
+    with path.open('rb') as stream:
+        raw = stream.read(limit + 1)
+    if not 0 < len(raw) <= limit:
+        raise ValueError('unsafe or oversized generation member')
+    return raw
 
 
 def _canonical(obj):
@@ -47,6 +61,8 @@ def save(model, replay, destination):
         model_path = stage / 'model.npz'
         model_info = checkpoint.save(model, model_path, replay.source)
         model_sha = model_info['sha256']
+        if _sha(_read_regular(model_path, checkpoint.MAX_BYTES)) != model_sha:
+            raise ValueError('model checkpoint bytes/hash mismatch before publication')
         journal_raw = _canonical(replay.snapshot())
         if not 0 < len(journal_raw) <= MAX_JOURNAL_BYTES:
             raise ValueError('invalid journal size')
@@ -78,9 +94,8 @@ def load(destination, source_sha256):
             or any((destination / name).is_symlink() for name in names)
             or {p.name for p in destination.iterdir()} != set(names)):
         raise ValueError('unsafe or incomplete generation')
-    manifest_raw = (destination / 'manifest.json').read_bytes()
-    if len(manifest_raw) > 2048:
-        raise ValueError('oversized manifest')
+    manifest_raw = _read_regular(destination / 'manifest.json', MAX_MANIFEST_BYTES)
+    _read_regular(destination / 'model.npz', checkpoint.MAX_BYTES)
     manifest = json.loads(manifest_raw)
     if (type(manifest) is not dict or set(manifest) != {'schema', 'source_sha256',
             'model_sha256', 'journal_sha256', 'optimizer_state_persisted', 'active_model_promoted'}
@@ -89,7 +104,7 @@ def load(destination, source_sha256):
             or manifest['active_model_promoted'] is not False
             or _canonical(manifest) != manifest_raw):
         raise ValueError('generation manifest mismatch')
-    raw = (destination / 'replay.json').read_bytes()
+    raw = _read_regular(destination / 'replay.json', MAX_JOURNAL_BYTES)
     if not 0 < len(raw) <= MAX_JOURNAL_BYTES or _sha(raw) != manifest['journal_sha256']:
         raise ValueError('replay journal hash mismatch')
     snapshot = json.loads(raw)
