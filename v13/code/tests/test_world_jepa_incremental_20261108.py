@@ -15,7 +15,7 @@ def test_partial_fit_reuses_and_updates_existing_encoder_and_ema():
     m=WorldJEPA(seed=2,ensemble=2)
     x,a,y=batch()
     m.fit(x,a,y,steps=2,log_every=1)
-    old=m.enc['W1'].copy();old_target=m.tgt['W1'].copy()
+    old=m.enc['W1'].copy();old_target=m.tgt['W1'].copy();old_ensemble=m.preds[1]['P1'].copy()
     m.partial_fit(*batch(4),steps=3,log_every=1)
     assert not np.array_equal(old,m.enc['W1'])
     assert not np.array_equal(old_target,m.tgt['W1'])
