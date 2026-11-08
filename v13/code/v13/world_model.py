@@ -124,6 +124,19 @@ def _split(n):
     """Deterministic hashed 1-in-4 hold-out (a plain i%4 split can align with periodic action patterns)."""
     test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
 
+def _round_finite_metrics(values):
+    """Round validated metrics without producing infinity on large finite values.
+
+    NumPy may overflow while scaling by 10**4 even when a value is finite.
+    For such magnitudes the original float already has no fractional digits
+    at this precision, so it is the correctly representable fallback.
+    """
+    arr=np.asarray(values,dtype=float)
+    if not np.isfinite(arr).all():raise ValueError('T8_NONFINITE_ROUNDED_METRIC')
+    with np.errstate(over='ignore',invalid='ignore',under='ignore'):
+        rounded=np.round(arr,4)
+    return np.where(np.isfinite(rounded),rounded,arr).tolist()
+
 def heldout_action_support(transitions, train_indices, holdout_indices):
     """Disclose action-support gaps in the frozen held-out split.
 
@@ -186,8 +199,8 @@ def heldout_route_errors(transitions, train_indices, holdout_indices, prediction
             raise ValueError('T8_NONFINITE_HELDOUT_ERROR')
         out[a]={'n':len(positions),
                 'status':'MEASURED_TRAIN_SUPPORTED' if support['train_action_counts'][a] else 'MEASURED_UNSEEN_TRAIN_ACTION',
-                'mae':dict(zip(TARGETS,np.round(err,4).tolist())),
-                'baseline_mae':dict(zip(TARGETS,np.round(ref,4).tolist()))}
+                'mae':dict(zip(TARGETS,_round_finite_metrics(err))),
+                'baseline_mae':dict(zip(TARGETS,_round_finite_metrics(ref)))}
     return out
 
 
@@ -272,7 +285,7 @@ def fit(store,rng_seed=0):
             r2=1.0-res/tot
         if not np.isfinite(r2).all():
             raise ValueError('T8_NONFINITE_LATENT_SCORE')
-        align={'status':'MEASURED','r2':dict(zip(TARGETS,np.round(r2,4).tolist()))}
+        align={'status':'MEASURED','r2':dict(zip(TARGETS,_round_finite_metrics(r2)))}
     st.update(status='FITTED',forward=[W.tolist() for W in fw],inverse=Wi.tolist(),
               # Coverage is fit on training observations ONLY; held-out rows must
               # not manufacture support for their own action or reduce OOD distance.
@@ -280,7 +293,7 @@ def fit(store,rng_seed=0):
               support_counts={a:min(256,sum(T[i]['a']==a for i in tr)) for a in ACTIONS},
               train_counts={a:sum(T[i]['a']==a for i in tr) for a in ACTIONS},
               support_scope='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED',
-              metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
+              metrics={'forward_mae':dict(zip(TARGETS,_round_finite_metrics(mae))),'forward_baseline_mae':dict(zip(TARGETS,_round_finite_metrics(base))),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
                        'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
                        'heldout_action_support':split_support,'heldout_route_errors':route_errors})
