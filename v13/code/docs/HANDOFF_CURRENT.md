@@ -1,3 +1,13 @@
+# 2026-11-08 — vollständiges Gehirn-Zielbild und verbundene Lernarbeit
+
+Dokumentationsvorschlag auf PR #1609. Zuerst [Zielbild / Planabgleich](V13_BLUEPRINT_PLAN_ALIGNMENT_20261108.md), [Gesamtsystem-Lernklarstellung](V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md) und [Fortsetzung 07.11.](CONTINUE_CODEX_20261107.md) lesen. Danach aktuelle Remote-Heads, Owner und SourceHandoff-Freeze prüfen. Der alte main und die datierten Einträge unten sind keine vollständige aktuelle Implementierungsübersicht.
+
+Ziel bleibt das vollständige lernende System mit A-Plane, B1/B2, B3/B4/B5, zusammengesetztem JEF/C3, Context OS, World/Self, mehreren gekoppelten Lernzeitskalen und Sleep/Konsolidierung. Nächstes geplantes Paket verbindet eine überprüfte Erfahrung mit Memory und einem bestehenden lernbaren Steuerpfad samt realem Verbraucher, Replay, Ablationen, Neustart und Rücknahme; noch nicht implementiert oder zugeteilt.
+
+Negative Gates bleiben unverändert: STEP2 UTILITY_FAIL, B3 FAIL/NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0, vollständiger Umfang unvollständig. Kein neuer Laufzeit-/Redmi-Nachweis. Laufende Kandidaten und historische Nachweise bleiben erhalten.
+
+---
+
 # 2026-11-01 — Run117CF→CK source-safe Sleep, C3 no-native negative controls, Linux F7 (review-only)
 
 **Newest verified local integration chain for this handoff:** Run117CK PR [#1563](https://github.com/RedMentos/Aii/pull/1563), branch `assistant/v13-run117ck-sleep-f7-post-fairness-20261101-hourly11`, head `0fe11ac7b94e07566342c18e7956f8f83a7b5ba2`. Its review-only ancestors: CF [#1559](https://github.com/RedMentos/Aii/pull/1559) (eight blocked DRAFT sessions no longer starve ninth ready; real RED→51/51 GREEN), CG [#1560](https://github.com/RedMentos/Aii/pull/1560) (`:sleep digest` shows pending workload before first cycle; real RED→54/54 GREEN), CH [#1561](https://github.com/RedMentos/Aii/pull/1561) (synthetic-only Run83 C3 driver no-cache test repaired without native/model/runner change; real RED→6/6 GREEN), CJ [#1562](https://github.com/RedMentos/Aii/pull/1562) (real Runtime without weights remains `STRUCTURAL_RED/Unavailable`, zero native calls; 8/8 GREEN), CK [#1563](https://github.com/RedMentos/Aii/pull/1563) (byte-identical preregistered F7 benchmark rerun, 7/7 GREEN, Linux-only). All remain draft/review branches, **not production-integrated**.
