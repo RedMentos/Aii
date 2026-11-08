@@ -229,6 +229,6 @@ class ToolBuilder:
 
     def report(self):
         return {'revision':REVISION,'candidates':[
-            {'name':v['name'],'program':v['program'],'status':v['status']}
+            {'name':v['name'],'kind':v.get('kind','integer'),'program':v['program'],'status':v['status'],'verification':v.get('verification')}
             for v in self.box.load()[0]['candidates'].values()],
             'claim_limit':'Pure bounded integer and text transforms only; no arbitrary code generation'}
