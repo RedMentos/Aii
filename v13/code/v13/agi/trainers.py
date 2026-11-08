@@ -68,6 +68,40 @@ def requirements(runtime,state=None):
             'torch':_torch('lora'),'torch_sparse':_torch('sparse'),'c3_gguf':str(gguf) if gguf else None,'runner':str(server),'runner_ok':server.is_file(),
             'memory_server_ok':_memory_server_ok(runtime.home)}
 
+def training_readiness(runtime,kind='lora'):
+    """Read-only preflight for *real* C3 weight learning, not a shadow claim.
+
+    Distinguishes missing master/dependencies from a stale or unverifiable
+    master/GGUF pairing. Never creates training artifacts or mutates state.
+    """
+    if kind not in ('lora','sparse'):
+        raise ValueError('Training kind must be lora or sparse')
+    st=_box(runtime.store).load()[0]
+    req=requirements(runtime,st)
+    master=Path(req['master'])
+    reasons=[]
+    if not (master/'model.safetensors').is_file():reasons.append('MASTER_WEIGHTS_MISSING')
+    if not (master/'config.json').is_file():reasons.append('MASTER_CONFIG_MISSING')
+    if st.get('master_sha256') and (master/'model.safetensors').is_file():
+        if file_hash(master/'model.safetensors')!=st['master_sha256']:
+            reasons.append('MASTER_HASH_CHANGED')
+    if not req['c3_gguf']:reasons.append('DEPLOYED_C3_MISSING')
+    if req['arch_match'] is False:reasons.append('MASTER_GGUF_ARCH_MISMATCH')
+    if req['arch_match'] is None and req['master_ok'] and req['c3_gguf']:
+        reasons.append('MASTER_GGUF_ARCH_UNVERIFIED')
+    if not req['torch' if kind=='lora' else 'torch_sparse']:
+        reasons.append('TRAINER_DEPENDENCIES_MISSING')
+    if kind=='lora' and not req['runner_ok']:reasons.append('LIVE_EVALUATOR_MISSING')
+    try:
+        anchors,heldout=probes()
+        if not anchors or not heldout:reasons.append('RETENTION_PROBES_EMPTY')
+    except (OSError,ValueError,KeyError,TypeError):
+        reasons.append('RETENTION_PROBES_UNAVAILABLE')
+    if kind=='sparse' and not req['memory_server_ok']:
+        reasons.append('SPARSE_SERVING_UNAVAILABLE')
+    return {'role':ROLE,'kind':kind,'ready':not reasons,'reasons':reasons,
+            'requirements':req,'claims':'preflight only; not trained, gated, or deployed'}
+
 def _memory_server_ok(home):
     """Native build capability, using the same launcher/library binding as the runtime."""
     try:
