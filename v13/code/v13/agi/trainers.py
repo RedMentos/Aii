@@ -153,6 +153,11 @@ def build(runtime,kind=None):
     if kind=='auto':want='lora' if req['master_ok'] and req['torch'] and req['runner_ok'] and req['c3_gguf'] else 'none'
     info={'choice':kind,'active':want,'requirements':req}
     if want=='none':return NullTrainer(),info
+    preflight=training_readiness(runtime,want)
+    info['readiness']=preflight
+    if not preflight['ready']:
+        info['active']='none';info['missing']=preflight['reasons']
+        return NullTrainer(),info
     missing=[k for k in (('master_ok','torch_sparse','c3_gguf') if want=='sparse' else ('master_ok','torch','c3_gguf','runner_ok')) if not req[k]]
     if missing:info['active']='none';info['missing']=missing;return NullTrainer(),info
     anchors,probe=probes();work=Path(runtime.home)/'training/ag6'/want;work.mkdir(parents=True,exist_ok=True)
