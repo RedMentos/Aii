@@ -1,0 +1,27 @@
+name: V13 AG2-AG4 human outcome candidate
+on:
+  pull_request:
+    branches: [codex/resume-20261106]
+    paths:
+      - 'v13/code/v13/agi/live.py'
+      - 'v13/code/v13/agi/skills.py'
+      - 'v13/code/tests/test_agi_live_human_skill_outcome_20261108.py'
+      - '.github/workflows/v13-ag2-ag4-human-outcome-20261108.yml'
+  workflow_dispatch:
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile changed modules and focused regression
+        run: |
+          python -m py_compile v13/code/v13/agi/live.py v13/code/v13/agi/skills.py v13/code/tests/test_agi_live_human_skill_outcome_20261108.py
+      - name: Focused AG2/AG4/AG9 regression
+        working-directory: v13/code
+        run: python -m unittest discover -s tests -p 'test_agi_live_human_skill_outcome_20261108.py' -v
