@@ -1,3 +1,15 @@
+## 2026-11-08 — technische Ergänzung zu internen Schichtschleifen
+
+Die separate Projektübergabe zu [WP-RL1](research/RL1_INTERNE_SCHICHTSCHLEIFEN.md) ist als experimenteller Plan aufgenommen: begrenztes internes Layer-Re-entry und mögliche Body-JEPA-Zwischenzustände. Context-Re-entry bleibt ein eigener Pfad; ohne nachgewiesenen Layer-/Trainingszugriff gilt `UNSUPPORTED`. Der vollständige Canon, die Lernziele von B1/B2 und JEF/C3 und alle Gates bleiben erhalten. Kein neuer Implementierungs- oder Gerätnachweis.
+
+Die [Gesamtscope- und Arbeitsrhythmus-Notiz](code/docs/V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md) und der [Blueprint-/Planabgleich](code/docs/V13_BLUEPRINT_PLAN_ALIGNMENT_20261108.md) aus den parallelen Projektzweigen konkretisieren die Fortsetzung: verbundene, größere Umsetzungspakete mit mehreren Lernmechanismen und echtem Consumer; isolierte Prüfungen ersetzen keine End-to-End-Abnahme. Der Planabgleich beschreibt seinen ursprünglichen Quellenstand; der hier ergänzte SHADOW-Slice ist nur ein Teilschritt davon.
+
+Der [Mehrorgan-Feedback-Kandidat](code/docs/FEEDBACK_FANOUT_CANDIDATE_20261108.md) verhindert im isolierten Runtime-Zweig, dass ein ausgefallener Bewertungs-Hook die späteren Organe überspringt. Der [Store-gebundene SHADOW-Ledger](code/docs/FEEDBACK_SHADOW_STORE_INTEGRATION_20261108.md) kann nach explizitem Einschalten die reale Bewertung samt Herkunft und Quellenbindung transaktional erfassen; Korrekturen und doppelte Zustellungen zählen dort pro Ereignis nur einmal. Standard ist aus. Er ersetzt noch keine alten C5-Mittelwerte und steuert keine produktive Entscheidung. Die bestehenden Hooks brauchen weiterhin nachholbare/idempotente Zustellung.
+
+Ein quellgebundener [F1/F5-/Episoden-/Sleep-A-Slice](code/docs/CORRECTION_ASSOCIATION_SHADOW_SLICE_20261108.md) verbindet in einer isolierten Runtime-Kopie eine menschliche Korrektur, abgerufene Erinnerung, Replay und einen späteren Turn. Der zusätzliche Kandidat bleibt standardmäßig aus und bei Aktivierung SHADOW; seine sachliche Relevanz und ein Nutzen für echte Modellantworten sind noch nicht nachgewiesen.
+
+Der [verbundene Gegenüberstellungstest](code/docs/CONNECTED_FEEDBACK_MEMORY_REPLAY_20261108.md) führt diesen Pfad mit demselben Turn durch den C5-Feedback-Hook und den herkunftsgebundenen SHADOW-Ledger zusammen. Vergleich aus/an, Neustart und gezielter Rollback sind in einer quellgebundenen Runtime-Kopie geprüft; die Ausgabe bleibt unverändert. Keine Behauptung allgemeiner Lernfähigkeit aus dieser synthetischen Probe.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

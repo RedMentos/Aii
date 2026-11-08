@@ -9,6 +9,8 @@ never change memories or weights by themselves; trainers (WP-I) read them explic
 """
 import re
 import time
+import json
+from importlib import import_module
 from .common import dumps
 
 LOG_LINE=re.compile(r"(?x)^\s*(?:"
@@ -45,28 +47,50 @@ IMPLICIT_SCORE={'praise':8,'criticism':3}
 def record_rating(store,event_id,score,origin,note=''):
     if isinstance(score,bool) or not isinstance(score,int) or not 1<=score<=10:raise ValueError(':note 1..10')
     if origin not in ('EXPLICIT_NOTE','IMPLICIT_CHAT'):raise ValueError('origin')
-    if not store.one("SELECT id FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL'",(event_id,)):raise ValueError('Keine fertige Antwort zum Bewerten')
-    st,v=store.state(RATINGS_KEY,{'ratings':[]})
-    # One rating per answer and origin: a later explicit note replaces the earlier one.
-    st['ratings']=[x for x in st['ratings'] if not (x['event_id']==event_id and x['origin']==origin)]
-    st['ratings'].append({'event_id':event_id,'score':score,'origin':origin,'note':note[:240],'created':time.time(),'authority':'HUMAN_QUALITY_LABEL_NOT_FACT'})
-    del st['ratings'][:-MAX_RATINGS]
-    store.set_state(RATINGS_KEY,st,expected=v)
+    shadow_error=None
+    # The latest rating and its optional derived SHADOW evidence share the
+    # same write transaction. A failed shadow capture is rolled back to its
+    # savepoint so a user's valid rating remains recorded.
+    with store.tx() as conn:
+        message=conn.execute("SELECT session_id FROM messages WHERE event_id=? AND role='assistant' AND status='FINAL' ORDER BY id DESC LIMIT 1",(event_id,)).fetchone()
+        if not message:raise ValueError('Keine fertige Antwort zum Bewerten')
+        row=conn.execute('SELECT version,payload FROM states WHERE key=?',(RATINGS_KEY,)).fetchone()
+        st=json.loads(row['payload']) if row else {'ratings':[]}
+        version=row['version'] if row else 0
+        # One rating per answer and origin: a later explicit note replaces the earlier one.
+        st['ratings']=[x for x in st['ratings'] if not (x['event_id']==event_id and x['origin']==origin)]
+        st['ratings'].append({'event_id':event_id,'score':score,'origin':origin,'note':note[:240],'created':time.time(),'authority':'HUMAN_QUALITY_LABEL_NOT_FACT'})
+        del st['ratings'][:-MAX_RATINGS]
+        conn.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',(RATINGS_KEY,version+1,dumps(st)))
+        conn.execute('SAVEPOINT c5_feedback_shadow')
+        try:
+            from .c5_feedback_shadow_store_candidate import capture_enabled_in_tx,capture_in_tx
+            if capture_enabled_in_tx(conn):
+                capture_in_tx(store,conn,message['session_id'],event_id,origin)
+        except Exception as exc:
+            conn.execute('ROLLBACK TO c5_feedback_shadow')
+            conn.execute('RELEASE c5_feedback_shadow')
+            shadow_error=type(exc).__name__
+        else:conn.execute('RELEASE c5_feedback_shadow')
     store.log('answer_rating',event_id,{'kind':'rating','origin':origin,'status':str(score)})
-    try:
-        from .agi.live import on_rating
-        on_rating(store,event_id,score)  # WP-N13 AG9 label
-    except Exception as exc:store.log('agi_live_unavailable',event_id,{'stage':'rating','error':type(exc).__name__})
-    try:
-        from .jefbridge import on_rating as jef_rating
-        jef_rating(store,event_id,score)  # WP-N3 offer-utility label
-        from .actionlearn import on_rating as c5_rating
-        c5_rating(store,event_id,score)  # WP-N4 human approval/correction of the taken action
-        from .deliberation import on_rating as delib_rating
-        delib_rating(store,event_id,score)  # WP-N2 value of the turn's deliberation modes
-        from .callosum import on_rating as callosum_rating
-        callosum_rating(store,event_id,score)  # WP-J B3-H9 human value of the turn's callosum channels
-    except Exception as exc:store.log('jef_bridge_unavailable',event_id,{'stage':'rating','error':type(exc).__name__})
+    if shadow_error:
+        try:store.log('c5_feedback_shadow_unavailable',event_id,{'stage':'rating','error':shadow_error})
+        except Exception:pass
+    # Feedback belongs to multiple organs. A failed consumer must not suppress
+    # delivery to the remaining ones; this is not an exactly-once guarantee.
+    for module_name,log_kind in (
+        ('.agi.live','agi_live_unavailable'),
+        ('.jefbridge','jef_bridge_unavailable'),
+        ('.actionlearn','c5_learning_unavailable'),
+        ('.deliberation','deliberation_unavailable'),
+        ('.callosum','callosum_unavailable'),
+    ):
+        try:import_module(module_name,__package__).on_rating(store,event_id,score)
+        except Exception as exc:
+            # A broken diagnostic write must not suppress unrelated consumers.
+            # The original rating write and its normal audit log remain strict.
+            try:store.log(log_kind,event_id,{'stage':'rating','error':type(exc).__name__})
+            except Exception:pass
     return st['ratings'][-1]
 
 def ratings(store):return store.state(RATINGS_KEY,{'ratings':[]})[0]['ratings']
