@@ -25,3 +25,15 @@ def test_committed_disjoint_transition_adapter_updates_same_jepa_weights():
     assert not np.array_equal(old,model.enc['W1'])
     assert model._fit_steps==5
     assert second['source_verified'] is False
+
+
+def test_store_grounded_jepa_experiment_uses_committed_t8_reader():
+    from unittest.mock import patch
+    from v13.world_jepa_online_experiment import update_from_store
+    model=WorldJEPA(seed=8,ensemble=2)
+    store=object()
+    with patch('v13.world_model.transitions',return_value=records()) as read:
+        result=update_from_store(model,store,steps=2,limit=128)
+    read.assert_called_once_with(store,limit=128)
+    assert result['source_verified'] is True
+    assert result['scope']=='OWN_COMMITTED_DIGITAL_TRANSITIONS_ONLY'
