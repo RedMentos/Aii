@@ -1,7 +1,7 @@
 name: V13 JEPA replay regression
 on:
   push:
-    branches: ['codex/v13-jepa-replay-session-*']
+    branches: ['codex/v13-jepa-replay-session-*', 'codex/v13-jepa-replay-integrity-*']
   workflow_dispatch:
 jobs:
   replay:
