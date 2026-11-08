@@ -60,3 +60,20 @@ def test_real_numpy_jepa_generation_resume_without_duplicate_gradient(tmp_path):
     assert not restored_replay.update(restored_model, records, steps=2)['updated']
     assert restored_model._fit_steps == model._fit_steps
     assert manifest['active_model_promoted'] is False
+
+
+def test_generation_rejects_manifest_rewrite_and_extra_files(tmp_path, monkeypatch):
+    def fake_save(model, path, source):
+        path.write_bytes(b'model')
+        return {'sha256': generation._sha(b'model')}
+    monkeypatch.setattr(generation.checkpoint, 'save', fake_save)
+    path = tmp_path / 'generation'
+    generation.save(object(), ReplaySession('a' * 64), path)
+    (path / 'unexpected.txt').write_text('x')
+    with pytest.raises(ValueError, match='incomplete generation'):
+        generation.load(path, 'a' * 64)
+    (path / 'unexpected.txt').unlink()
+    raw = (path / 'manifest.json').read_text()
+    (path / 'manifest.json').write_text(raw + ' ')
+    with pytest.raises(ValueError, match='manifest mismatch'):
+        generation.load(path, 'a' * 64)
