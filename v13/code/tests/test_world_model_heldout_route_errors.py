@@ -32,12 +32,17 @@ class RouteErrors(unittest.TestCase):
                 heldout_route_errors(self.rows,[0,1],[2,3],pred,np.zeros((2,3)))
         with self.assertRaises(ValueError):
             heldout_route_errors(self.rows,[0,1],[2,3],np.zeros((2,3)),np.zeros((3,3)))
+        with self.assertRaises(ValueError):
+            heldout_route_errors(self.rows,[0,1],[2,3],[['x']*3]*2,np.zeros((2,3)))
 
     def test_invalid_split_and_target_rejected(self):
         with self.assertRaises(ValueError):
             heldout_route_errors(self.rows,[0,1],[1,3],np.zeros((2,3)),np.zeros((2,3)))
         bad=list(self.rows)
         bad[3]={'a':'both','y':[float('nan'),0.,0.]}
+        with self.assertRaises(ValueError):
+            heldout_route_errors(bad,[0,1],[2,3],np.zeros((2,3)),np.zeros((2,3)))
+        bad[3]={'a':'both','y':['bad',0.,0.]}
         with self.assertRaises(ValueError):
             heldout_route_errors(bad,[0,1],[2,3],np.zeros((2,3)),np.zeros((2,3)))
 
