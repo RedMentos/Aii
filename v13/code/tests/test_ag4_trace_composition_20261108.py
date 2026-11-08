@@ -113,3 +113,35 @@ def test_candidate_cannot_autonomously_execute_unvalidated_recipe():
     assert result['status']=='PROPOSED'
     assert result['reason']=='SKILL_NOT_TRUSTED'
     assert registry.calls==[]
+
+def test_skill_candidate_survives_sqlite_restart(tmp_path):
+    import sqlite3
+    import json
+    from v13.agi.base import StateBox
+
+    class SQLiteState:
+        def __init__(self,path):
+            self.db=sqlite3.connect(path)
+            self.db.execute('CREATE TABLE IF NOT EXISTS states (key TEXT PRIMARY KEY, version INTEGER, payload TEXT)')
+        def state(self,key,default=None):
+            row=self.db.execute('SELECT version,payload FROM states WHERE key=?',(key,)).fetchone()
+            return (json.loads(row[1]),row[0]) if row else (default,0)
+        def set_state(self,key,value,expected=None):
+            _,version=self.state(key)
+            if expected is not None and expected!=version:raise ValueError('Stale state write')
+            self.db.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',(key,version+1,json.dumps(value)))
+            self.db.commit()
+        def close(self):self.db.close()
+
+    path=tmp_path/'brain.sqlite3'
+    store=SQLiteState(path)
+    registry=FakeRegistry()
+    registry.box.state['calls']=trace()
+    lib=SkillLibrary(store,tools=registry)
+    lib.propose_from_trace('persisted_skill',['original'])
+    store.close()
+    reopened=SQLiteState(path)
+    again=SkillLibrary(reopened,tools=registry)
+    assert again.get('persisted_skill')['source_traces']==['original']
+    assert again.run('persisted_skill',{},origin='USER')['status']=='DONE'
+    reopened.close()
