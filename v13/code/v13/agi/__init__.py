@@ -230,6 +230,27 @@ def operator_command(r,args):
     if c=='age':return dumps(g.age_evidence())
     if c=='slots':return dumps(g.slots.report())
     if c=='export' and len(args)==2:return 'Slot exportiert: '+g.slots.export_bundle(args[1],home=r.home)['path']
+    if c=='toolbuild':
+        # Operator-only entrypoint: candidate synthesis never activates a tool.
+        import json
+        if len(args)==1 or args[1]=='status':return dumps(g.tool_builder.report())
+        sub=args[1]
+        if sub in ('integer','text','verify') and len(args)>=4:
+            name=args[2]
+            examples=json.loads(' '.join(args[3:]))
+            if sub=='integer':return dumps(g.tool_builder.propose(name,examples,origin='USER'))
+            if sub=='text':return dumps(g.tool_builder.propose_text(name,examples,origin='USER'))
+            return dumps({'verified':g.tool_builder.verify(name,examples)})
+        if sub=='history' and len(args)==4:
+            return dumps(g.tool_builder.propose_from_tool_history(args[2],args[3],origin='USER'))
+        if sub=='activate' and len(args)==3:
+            return dumps({'activated':g.tool_builder.activate(args[2],origin='USER'),
+                          'enabled':False,'next':':growth enable '+args[2]})
+        if sub=='retire' and len(args)==3:
+            return dumps({'retired':g.tool_builder.retire(args[2],origin='USER')})
+        if sub=='call' and len(args)>=4:
+            return dumps(g.tools.call(args[2],json.loads(' '.join(args[3:])),origin='USER'))
+        raise ValueError('Usage: :growth toolbuild [status|integer NAME JSON_PAIRS|text NAME JSON_PAIRS|history NAME SOURCE|verify NAME JSON_PAIRS|activate NAME|retire NAME|call NAME JSON_ARGS]')
     if c=='tools':return dumps(g.tools.report())
     if c=='enable' and len(args)==2:g.tools.enable(args[1]);return 'Werkzeug erlaubt: '+args[1]
     if c=='calc' and len(args)>1:return dumps(g.tools.call('calc',{'expression':' '.join(args[1:])},origin='USER'))
