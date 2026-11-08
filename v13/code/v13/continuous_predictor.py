@@ -78,6 +78,22 @@ class OnlinePredictor:
             self.updates+=1
         return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
 
+    def learn_stream(self,transitions,checkpoint_every=32):
+        """Consume observed numeric transitions without delaying local plasticity.
+
+        The producer must supply grounded (x, action, next_x) observations;
+        no speculative JEPA predictions are treated as target evidence.
+        """
+        if type(checkpoint_every) is not int or not 1<=checkpoint_every<=1024:
+            raise ValueError('Invalid checkpoint cadence')
+        count=0;last=None
+        for x,action,next_x in transitions:
+            last=self.observe(x,action,next_x)
+            count+=1
+            if count%checkpoint_every==0:self.checkpoint()
+        if count%checkpoint_every:self.checkpoint()
+        return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
+
     def checkpoint(self):
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
