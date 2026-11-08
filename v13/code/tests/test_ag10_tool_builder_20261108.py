@@ -101,3 +101,24 @@ def test_human_can_retire_generated_tool_and_block_restart_restore():
     restarted=ToolBuilder(None,Registry());restarted.box=b.box
     restarted.restore()
     assert restarted.registry.tools=={}
+
+def test_synthesize_from_persisted_successful_tool_outcomes():
+    b,reg=builder()
+    reg.tools['source']=type('Source',(),{'risk':'READ_LOCAL'})()
+    reg.box.data['calls']=[
+        {'id':str(i),'tool':'source','status':'EXECUTED','args':{'x':x},'result':x+7,'event_id':None}
+        for i,x in enumerate((-8,-5,0,3,12,18))]
+    candidate=b.propose_from_tool_history('observed_plus_seven','source')
+    assert candidate['program']=='add:7'
+    assert 'observed_plus_seven' not in reg.tools
+
+
+def test_observed_tool_learning_ignores_unsettled_and_failed_actions():
+    b,reg=builder()
+    reg.tools['source']=type('Source',(),{'risk':'READ_LOCAL'})()
+    reg.box.data['calls']=[
+        {'tool':'source','status':'EXECUTED','args':{'x':i},'result':i+7,'event_id':'pending'}
+        for i in range(6)]
+    with pytest.raises(ValueError):b.propose_from_tool_history('not_final','source')
+    reg.tools['source'].risk='WRITE_LOCAL'
+    with pytest.raises(ValueError):b.propose_from_tool_history('effectful','source')
