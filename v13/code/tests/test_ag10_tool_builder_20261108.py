@@ -8,7 +8,7 @@ class Box:
     def mutate(self,fn):return fn(self.data)
 
 class Registry:
-    def __init__(self):self.tools={}
+    def __init__(self):self.tools={};self.box=Box();self.box.data={'calls':[]}
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):pass
 
