@@ -91,7 +91,11 @@ def abstain_utility(pairs,wrong_cost=1.,abstain_cost=.3,steps=20):
         if name=='wrong_cost':wrong_cost=value
         else:abstain_cost=value
     base=sum(1. if y else -wrong_cost for _,y in pairs);best=(0.,0.)
+    if not math.isfinite(base):raise ValueError('answer-all payoff must be finite')
     for i in range(steps+1):
         t=i/steps;u=sum((1. if y else -wrong_cost) if c>=t else -abstain_cost for c,y in pairs)
-        if u-base>best[0]:best=(u-base,t)
+        if not math.isfinite(u):raise ValueError('abstention payoff must be finite')
+        gain=u-base
+        if not math.isfinite(gain):raise ValueError('abstention gain must be finite')
+        if gain>best[0]:best=(gain,t)
     return {'gain':round(best[0],4),'threshold':best[1],'answer_all':round(base,4)}
