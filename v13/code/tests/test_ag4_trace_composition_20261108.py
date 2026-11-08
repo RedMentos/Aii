@@ -162,3 +162,9 @@ def test_untrusted_skill_does_not_call_tool_after_reload():
     result=reloaded.run('young_skill',{},origin='SELF')
     assert result['status']=='PROPOSED'
     assert registry.calls==[]
+
+def test_provisional_conversation_tool_outcome_is_not_training_evidence():
+    lib,_=library()
+    lib.tools.box.state['calls'][0]['event_id']='unsettled-turn'
+    with pytest.raises(ValueError):lib.propose_from_trace('premature',['original'])
+    assert not lib.box.load()[0]['skills']
