@@ -164,7 +164,7 @@ def heldout_route_errors(transitions, train_indices, holdout_indices, prediction
     base=np.asarray(baseline)
     if (pred.shape!=(len(holdout_indices),len(TARGETS))
             or base.shape!=(len(holdout_indices),len(TARGETS))
-            or not np.isrealobj(pred) or not np.isrealobj(base)
+            or pred.dtype.kind not in 'fiub' or base.dtype.kind not in 'fiub'
             or not np.isfinite(pred).all() or not np.isfinite(base).all()):
         raise ValueError('T8_INVALID_HELDOUT_PREDICTIONS')
     out={}
