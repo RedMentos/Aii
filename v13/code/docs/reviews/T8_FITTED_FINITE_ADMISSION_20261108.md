@@ -12,3 +12,6 @@ Remote source and tests saved on GitHub; exact blob readback required below. **N
 
 ## Next
 In a full checkout: `PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p 'test_world_model*py' -v`, then T8 consumer tests, privacy scan comparing parent SHA and head, and independent review of the #1595–#1598 chain. Fix any regression before integration. Continue independent functional packages without competing heavy native jobs.
+
+## Additional local smoke
+A manually reconstructed copy of the new coefficient-validation helper was run in the container against four invalid matrices (NaN, Inf, wrong shape, complex) and one valid matrix: 5/5 cases passed. This is **not** an exact-repository execution and does not validate the fit integration or the committed regression suite.
