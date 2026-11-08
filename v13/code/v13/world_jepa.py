@@ -157,8 +157,7 @@ class WorldJEPA:
             prior = ({'mu':self.mu.copy(),'sd':self.sd.copy(),
                       'enc':{k:v.copy() for k,v in self.enc.items()},
                       'tgt':{k:v.copy() for k,v in self.tgt.items()},
-                      'pred':{k:v.copy() for k,v in self.preds[0].items()},
-                      'inv':{k:v.copy() for k,v in self.inv.items()} if hasattr(self,'inv') else None}
+                      'pred':{k:v.copy() for k,v in self.preds[0].items()}}
                      if warm_start else None)
         mu = prior['mu'] if prior else X.mean(0)
         sd = prior['sd'] if prior else X.std(0)+1e-3
