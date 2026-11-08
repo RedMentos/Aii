@@ -89,3 +89,19 @@ def test_replay_respects_live_tool_denial():
         return {'id':'denied-replay','status':'DENIED','result':None}
     registry.call=denied
     assert lib.run('restricted',{},origin='SELF')['status']=='DENIED'
+
+def test_discover_recent_intent_creates_candidate():
+    lib,_=library()
+    lib.tools.box.state['calls'][0]['intent']='arithmetic'
+    lib.propose_recent('arithmetic_skill','arithmetic')
+    assert lib.get('arithmetic_skill')['source_traces']==['original']
+
+def test_discover_recent_rejects_interleaved_and_failed_intents():
+    lib,_=library()
+    a=dict(trace()[0],id='a',intent='same')
+    b=dict(trace()[0],id='b',intent='other')
+    c=dict(trace()[0],id='c',intent='same')
+    lib.tools.box.state['calls']=[a,b,c]
+    with pytest.raises(ValueError):lib.propose_recent('bad_sequence','same')
+    lib.tools.box.state['calls']=[a,dict(c,status='FAILED')]
+    with pytest.raises(ValueError):lib.propose_recent('bad_outcome','same')
