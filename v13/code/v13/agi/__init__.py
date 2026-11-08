@@ -193,6 +193,10 @@ def operator_command(r,args):
     if c=='eval' and len(args)>1 and args[1]=='curve':
         return dumps(g.eval.curve(args[3] if len(args)>3 else 'overall',args[2] if len(args)>2 else None)[-24:])
     if c=='eval':return dumps(g.eval.report()|{'curve':g.eval.curve('overall')[-12:]})
+    if c=='trainready':
+        from .trainers import training_readiness
+        if len(args)>2:raise ValueError('Usage: :growth trainready [lora|sparse]')
+        return dumps(training_readiness(r,args[1] if len(args)==2 else 'lora'))
     if c=='trainer':
         from . import trainers
         if len(args)==1:return dumps(trainers.install(g,r))
