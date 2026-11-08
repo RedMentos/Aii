@@ -1,0 +1,45 @@
+import numpy as np
+import pytest
+from v13.continuous_predictor import OnlinePredictor
+
+
+def samples(n=32):
+    for i in range(n):
+        x=np.array([i%7/7.,(i%5)/5.])
+        a=i%2
+        yield x,a,x+np.array([0.25 if a==0 else -0.25,0.1])
+
+
+def test_online_updates_real_parameters_and_reduces_holdout_error(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path,lr=0.04,seed=3)
+    test=list(samples(32));before=m.error(test);old=m.U.copy()
+    for _ in range(25):
+        for x,a,y in samples(32):m.observe(x,a,y)
+    assert not np.array_equal(old,m.U)
+    assert m.error(test)<before*0.2
+    assert m.updates==25*32*3
+
+
+def test_restart_restores_weights_and_replay(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path,replay=8,seed=4)
+    for x,a,y in samples(40):m.observe(x,a,y)
+    prediction=m.predict([.2,.4],1)
+    m.checkpoint()
+    n=OnlinePredictor(2,2,tmp_path,replay=8,seed=4)
+    np.testing.assert_allclose(n.predict([.2,.4],1),prediction)
+    assert n.seen==40 and len(n.x)==8 and n.updates==120
+    n.observe([.2,.4],1,[.1,.5]);assert n.seen==41
+
+
+def test_bad_data_never_changes_weights(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path)
+    w=m.W.copy()
+    for x,a,y in [([float('nan'),0],0,[1,0]),([0,0],4,[1,0]),([0,0],0,[float('inf'),0])]:
+        with pytest.raises(ValueError):m.observe(x,a,y)
+    np.testing.assert_array_equal(m.W,w)
+    assert m.seen==0
+
+
+def test_checkpoint_is_dimension_checked(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path);m.checkpoint()
+    with pytest.raises(ValueError):OnlinePredictor(3,2,tmp_path)
