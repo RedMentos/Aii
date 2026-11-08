@@ -53,6 +53,20 @@ class GeneratedToolRuntime(unittest.TestCase):
         self.assertEqual(result['status'],'EXECUTED')
         self.assertEqual(result['result'],'HELLO')
 
+    def test_retire_revokes_enabled_tool_across_restart(self):
+        g=hub(self.runtime)
+        g.tool_builder.propose('plus_seven',[[x,x+7] for x in (-8,-5,0,3,12,18)])
+        g.tool_builder.activate('plus_seven')
+        g.tools.enable('plus_seven')
+        g.tool_builder.retire('plus_seven')
+        self.assertNotIn('plus_seven',g.tools.tools)
+        self.runtime.close()
+        self.runtime=Runtime(self.home)
+        self.runtime.sleep.cycle.set_policy('enabled','off')
+        self.runtime.sleep.cycle.set_policy('tick_seconds','300')
+        reopened=hub(self.runtime)
+        self.assertNotIn('plus_seven',reopened.tools.tools)
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
