@@ -27,7 +27,7 @@ def test_partial_fit_requires_existing_compatible_model():
     m=WorldJEPA(seed=2,ensemble=2)
     with pytest.raises(ValueError):m.partial_fit(*batch(),steps=1)
     m.fit(*batch(),steps=1)
-    with pytest.raises(ValueError):m.partial_fit(*batch()[0:1],steps=1) if False else m.partial_fit(batch()[0][:,:3],batch()[1],batch()[2][:,:3],steps=1)
+    with pytest.raises(ValueError):m.partial_fit(batch()[0][:,:3],batch()[1],batch()[2][:,:3],steps=1)
 
 
 def test_zero_step_partial_fit_preserves_existing_weight_values():
