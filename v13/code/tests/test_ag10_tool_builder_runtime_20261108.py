@@ -85,6 +85,14 @@ class GeneratedToolRuntime(unittest.TestCase):
         self.assertEqual(tx['status'],'EXECUTED')
         self.assertEqual(tx['result'],107)
 
+    def test_generated_tool_cannot_bypass_age_zero_self_action_right(self):
+        g=hub(self.runtime)
+        g.tool_builder.propose('plus_seven',[[x,x+7] for x in (-8,-5,0,3,12,18)])
+        g.tool_builder.activate('plus_seven')
+        g.tools.enable('plus_seven')
+        result=g.tools.call('plus_seven',{'x':5},origin='SELF')
+        self.assertNotEqual(result['status'],'EXECUTED')
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
