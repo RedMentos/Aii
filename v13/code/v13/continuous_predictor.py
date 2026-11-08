@@ -72,8 +72,11 @@ class OnlinePredictor:
             residual=xx@self.W+self.U[aa]+self.bias-yy
             # Gradient clipping prevents unbounded single-step parameter changes.
             gW=np.outer(xx,residual);gU=residual;gb=residual
-            norm=np.sqrt(np.sum(gW*gW)+np.sum(gU*gU)+np.sum(gb*gb))
-            scale=min(1.,10./max(float(norm),1e-12))
+            # Norm via scaled hypot avoids overflow for large finite features.
+            norm=float(np.linalg.norm(np.concatenate((gW.ravel(),gU,gb))))
+            if not np.isfinite(norm):
+                raise ValueError('Nonfinite online gradient')
+            scale=min(1.,10./max(norm,1e-12))
             self.W-=self.lr*scale*gW;self.U[aa]-=self.lr*scale*gU;self.bias-=self.lr*scale*gb
             self.updates+=1
         return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
