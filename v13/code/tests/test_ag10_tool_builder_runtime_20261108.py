@@ -128,6 +128,21 @@ class GeneratedToolRuntime(unittest.TestCase):
         self.assertEqual(result['status'],'DONE')
         self.assertEqual(result['value'],4)
 
+    def test_operator_discovers_multistep_skill_from_intent_episode(self):
+        import json
+        from v13.agi import operator_command
+        operator_command(self.runtime,['enable','calc'])
+        for expr in ('2+2','3+3'):
+            tx=json.loads(operator_command(self.runtime,['toolbuild','call-intent','calc','arithmetic',
+                json.dumps({'expression':expr})]))
+            self.assertEqual(tx['status'],'EXECUTED')
+        candidate=json.loads(operator_command(self.runtime,['skill','recent','two_calculations','arithmetic']))
+        self.assertEqual(candidate['candidate'],'two_calculations')
+        result=json.loads(operator_command(self.runtime,['skill','run','two_calculations','{}']))
+        self.assertEqual(result['status'],'DONE')
+        self.assertEqual(result['value'],6)
+        self.assertEqual(len(result['trace']),2)
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
