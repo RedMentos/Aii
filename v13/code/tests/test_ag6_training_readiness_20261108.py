@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 import pytest
 from v13.agi import trainers
+from v13.common import file_hash
 
 
 class State:
@@ -47,7 +48,7 @@ def test_unverified_architecture_is_not_treated_as_ready(tmp_path):
     (master/'model.safetensors').write_bytes(b'weights')
     (master/'config.json').write_text('{}')
     req=requirements(tmp_path,master_ok=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
-    result=preflight(tmp_path,req)
+    result=preflight(tmp_path,req,{'master':str(master),'master_sha256':file_hash(master/'model.safetensors')})
     assert not result['ready']
     assert result['reasons']==['MASTER_GGUF_ARCH_UNVERIFIED']
 
@@ -67,7 +68,7 @@ def test_verified_real_trainer_prerequisites_can_pass(tmp_path):
     (master/'model.safetensors').write_bytes(b'weights')
     (master/'config.json').write_text('{}')
     req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
-    result=preflight(tmp_path,req)
+    result=preflight(tmp_path,req,{'master':str(master),'master_sha256':file_hash(master/'model.safetensors')})
     assert result['ready'] and result['reasons']==[]
     assert 'not trained' in result['claims']
 
@@ -77,9 +78,19 @@ def test_empty_retention_probes_block_ready(tmp_path):
     (master/'model.safetensors').write_bytes(b'weights')
     (master/'config.json').write_text('{}')
     req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
-    result=preflight(tmp_path,req,probe=([],[]))
+    result=preflight(tmp_path,req,{'master':str(master),'master_sha256':file_hash(master/'model.safetensors')},probe=([],[]))
     assert 'RETENTION_PROBES_EMPTY' in result['reasons']
 
 
 def test_invalid_kind_rejected(tmp_path):
     with pytest.raises(ValueError):trainers.training_readiness(runtime(tmp_path),'shadow')
+
+
+def test_unpinned_master_is_not_eligible_for_real_weight_training(tmp_path):
+    master=tmp_path/'master';master.mkdir()
+    (master/'model.safetensors').write_bytes(b'weights')
+    (master/'config.json').write_text('{}')
+    req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
+    result=preflight(tmp_path,req)
+    assert not result['ready']
+    assert 'MASTER_HASH_NOT_PINNED' in result['reasons']
