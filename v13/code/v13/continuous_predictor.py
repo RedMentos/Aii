@@ -5,6 +5,7 @@ permission to alter frozen GGUF weights. Every observe() updates live local
 parameters; replay reduces overwriting; snapshots are atomic and recoverable.
 """
 import os
+import json
 from pathlib import Path
 import numpy as np
 
@@ -82,7 +83,8 @@ class OnlinePredictor:
         try:
             np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
-                counters=np.array([self.seen,self.updates]))
+                counters=np.array([self.seen,self.updates]),
+                rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
             os.replace(temp,self.path)
         finally:
             if temp.exists():temp.unlink()
@@ -95,6 +97,7 @@ class OnlinePredictor:
             shapes={'W':(self.d,self.d),'U':(self.a,self.d),'bias':(self.d,),
                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
             loaded={k:data[k].copy() for k in shapes}
+            rng_state=json.loads(str(data['rng_state']))
         n=len(loaded['x'])
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
@@ -104,3 +107,4 @@ class OnlinePredictor:
             raise ValueError('Invalid predictor checkpoint')
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.seen,self.updates=map(int,loaded['counters'])
+        self.rng.bit_generator.state=rng_state
