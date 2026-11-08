@@ -100,6 +100,7 @@ class ToolBuilder:
                 'examples':[[x,y] for x,y in pairs]}
         def save(st):
             if name in st['candidates']:raise ValueError('Tool candidate already exists')
+            if len(st['candidates'])>=MAX_CANDIDATES:raise ValueError('Tool candidate capacity reached')
             st['candidates'][name]=record
         self.box.mutate(save)
         return dict(record)
