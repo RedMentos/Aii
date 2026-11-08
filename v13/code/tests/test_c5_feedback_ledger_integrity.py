@@ -5,15 +5,16 @@ from v13 import c5_feedback_ledger_candidate as L
 
 class LedgerIntegrityTests(unittest.TestCase):
     def test_delimiter_alias_is_rejected(self):
-        # Without this guard, ('a|b','c') and ('a','b|c') share an aggregate key.
-        for ctx, action in [('a|b', 'c'), ('a', 'b|c')]:
+        # Context route|band is valid; a delimiter inside action ID is not.
+        self.assertEqual(L.aggregate(L.record(L.empty(), 'e0', 'simple|low', 'C3', 10))['simple|low|C3']['n'], 1)
+        for ctx, action in [('a', 'b|c'), ('a|b', 'c|d')]:
             with self.subTest(ctx=ctx, action=action), self.assertRaises(ValueError):
                 L.record(L.empty(), 'e1', ctx, action, 10)
 
     def test_reject_malformed_persisted_state_on_both_paths(self):
         base = L.record(L.empty(), 'e1', 'ctx', 'act', 10)
         corrupt = []
-        for field, value in [('context','ctx|other'), ('action_id','act|other'),
+        for field, value in [('action_id','act|other'),
                              ('score',float('nan')), ('score',True)]:
             s = copy.deepcopy(base)
             s['ratings']['e1'][field] = value
