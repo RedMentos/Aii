@@ -24,6 +24,7 @@ class GeneratedToolRuntime(unittest.TestCase):
         g.tool_builder.propose('plus_seven',examples,origin='SELF')
         self.assertNotIn('plus_seven',g.tools.tools)
         with self.assertRaises(PermissionError):g.tool_builder.activate('plus_seven',origin='SELF')
+        self.assertTrue(g.tool_builder.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)]))
         g.tool_builder.activate('plus_seven',origin='USER')
         self.assertFalse(g.tools.report()['tools']['plus_seven']['enabled'])
         # ToolRegistry's normal opt-in and transactional call path still apply.
@@ -47,6 +48,7 @@ class GeneratedToolRuntime(unittest.TestCase):
     def test_generated_text_tool_executes_via_registry(self):
         g=hub(self.runtime)
         g.tool_builder.propose_text('uppercase',[[x,x.upper()] for x in ('alpha','beta','gamma','delta','epsilon','zeta')])
+        self.assertTrue(g.tool_builder.verify('uppercase',[[x,x.upper()] for x in ('theta','lambda','omega','sigma')]))
         g.tool_builder.activate('uppercase')
         g.tools.enable('uppercase')
         result=g.tools.call('uppercase',{'x':'hello'},origin='USER')
@@ -56,6 +58,7 @@ class GeneratedToolRuntime(unittest.TestCase):
     def test_retire_revokes_enabled_tool_across_restart(self):
         g=hub(self.runtime)
         g.tool_builder.propose('plus_seven',[[x,x+7] for x in (-8,-5,0,3,12,18)])
+        self.assertTrue(g.tool_builder.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)]))
         g.tool_builder.activate('plus_seven')
         g.tools.enable('plus_seven')
         g.tool_builder.retire('plus_seven')
@@ -79,6 +82,7 @@ class GeneratedToolRuntime(unittest.TestCase):
         p=g.tool_builder.propose_from_tool_history('learned_from_experience','example_source')
         self.assertEqual(p['program'],'add:7')
         self.assertNotIn('learned_from_experience',g.tools.tools)
+        self.assertTrue(g.tool_builder.verify('learned_from_experience',[[x,x+7] for x in (21,22,23,24)]))
         g.tool_builder.activate('learned_from_experience')
         g.tools.enable('learned_from_experience')
         tx=g.tools.call('learned_from_experience',{'x':100},origin='USER')
@@ -88,6 +92,7 @@ class GeneratedToolRuntime(unittest.TestCase):
     def test_generated_tool_cannot_bypass_age_zero_self_action_right(self):
         g=hub(self.runtime)
         g.tool_builder.propose('plus_seven',[[x,x+7] for x in (-8,-5,0,3,12,18)])
+        self.assertTrue(g.tool_builder.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)]))
         g.tool_builder.activate('plus_seven')
         g.tools.enable('plus_seven')
         result=g.tools.call('plus_seven',{'x':5},origin='SELF')
@@ -96,6 +101,7 @@ class GeneratedToolRuntime(unittest.TestCase):
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
+        self.assertTrue(g.tool_builder.verify('double',[[x,2*x] for x in (13,15,17,19)]))
         g.tool_builder.activate('double')
         g.tools.enable('double')
         bad=g.tools.call('double',{'x':'not-an-int'},origin='USER')
