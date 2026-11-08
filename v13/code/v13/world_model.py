@@ -255,7 +255,14 @@ def fit(store,rng_seed=0):
     if all(l is not None for l in L) and len(dims)==1:
         Xl=np.hstack([np.ones((n,1)),np.array(L,float)]);Wl=ridge(Xl[tr],Y[tr],1.)
         Wl=_require_finite_fit_matrix(Wl,(Xl.shape[1],len(TARGETS)),'LATENT')
-        res=((Xl[te]@Wl-Y[te])**2).sum(0);tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
+        # Fail closed under both NumPy's default warning mode and strict
+        # np.seterr(over='raise'): overflow is invalid evidence, not FITTED.
+        try:
+            with np.errstate(over='raise',invalid='raise',divide='raise'):
+                res=((Xl[te]@Wl-Y[te])**2).sum(0)
+                tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
+        except FloatingPointError as exc:
+            raise ValueError('T8_NONFINITE_LATENT_SCORE') from exc
         if not np.isfinite(res).all() or not np.isfinite(tot).all() or np.any(tot<=0):
             raise ValueError('T8_NONFINITE_LATENT_SCORE')
         # Finite residual and denominator sums do not guarantee finite R2:
