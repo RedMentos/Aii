@@ -60,6 +60,20 @@ def test_real_numpy_jepa_generation_resume_without_duplicate_gradient(tmp_path):
     assert not restored_replay.update(restored_model, records, steps=2)['updated']
     assert restored_model._fit_steps == model._fit_steps
     assert manifest['active_model_promoted'] is False
+    # A later committed generation must learn only genuinely new train IDs.
+    extended = records + [{'action_id': f'event-{i:04d}',
+                           's': [float(i % 13), float(i % 7), float(i % 5), float(i % 3)],
+                           'a': routes[i % len(routes)],
+                           'y': [float(i % 2), float(i % 3), float(i % 7)]}
+                          for i in range(96, 120)]
+    next_result = restored_replay.update(restored_model, extended, steps=2)
+    assert next_result['updated'] and next_result['new_rows'] > 0
+    assert restored_model._fit_steps == model._fit_steps + 2
+    next_path = tmp_path / 'real-generation-2'
+    generation.save(restored_model, restored_replay, next_path)
+    resumed_model, resumed_replay, _ = generation.load(next_path, 'a' * 64)
+    assert resumed_model._fit_steps == restored_model._fit_steps
+    assert not resumed_replay.update(resumed_model, extended, steps=2)['updated']
 
 
 def test_generation_rejects_manifest_rewrite_and_extra_files(tmp_path, monkeypatch):
