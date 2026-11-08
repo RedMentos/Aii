@@ -124,6 +124,34 @@ def _split(n):
     """Deterministic hashed 1-in-4 hold-out (a plain i%4 split can align with periodic action patterns)."""
     test=[i for i in range(n) if ((i*2654435761)%2**32>>16)%4==3];return [i for i in range(n) if i not in set(test)],test
 
+def heldout_action_support(transitions, train_indices, holdout_indices):
+    """Disclose action-support gaps in the frozen held-out split.
+
+    A pooled held-out score is not evidence for a route absent from training.
+    This is diagnostic metadata only; it does not alter any frozen cohort,
+    split, fitted weights, confidence, or permission gate.
+    """
+    if (type(transitions) not in (list, tuple)
+            or type(train_indices) not in (list, tuple)
+            or type(holdout_indices) not in (list, tuple)):
+        raise ValueError('T8_INVALID_SPLIT')
+    n = len(transitions)
+    tr, te = list(train_indices), list(holdout_indices)
+    if (not tr or not te or any(type(i) is not int or not 0 <= i < n for i in tr + te)
+            or len(set(tr + te)) != len(tr) + len(te)
+            or len(tr) + len(te) != n):
+        raise ValueError('T8_INVALID_SPLIT')
+    if any(type(row) is not dict or row.get('a') not in ACTIONS for row in transitions):
+        raise ValueError('T8_INVALID_ACTION_LABEL')
+    train = {a: sum(transitions[i]['a'] == a for i in tr) for a in ACTIONS}
+    holdout = {a: sum(transitions[i]['a'] == a for i in te) for a in ACTIONS}
+    unseen = [a for a in ACTIONS if holdout[a] and not train[a]]
+    return {'train_action_counts': train, 'holdout_action_counts': holdout,
+            'unseen_holdout_actions': unseen,
+            'heldout_actions_supported': not unseen,
+            'claim_limit': 'diagnostic only; no causal or gate promotion'}
+
+
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
@@ -131,6 +159,7 @@ def fit(store,rng_seed=0):
     if n<MIN_FIT:store.set_state(KEY,st);return st
     S=np.array([t['s'] for t in T]);A=np.array([onehot(t['a']) for t in T]);Y=np.array([t['y'] for t in T])
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
+    split_support=heldout_action_support(T,tr,te)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
     pred=np.mean([Xf[te]@W for W in fw],0);mae=np.abs(pred-Y[te]).mean(0)
     base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
@@ -156,7 +185,8 @@ def fit(store,rng_seed=0):
               support_scope='TRAIN_SPLIT_ONLY_HELDOUT_EXCLUDED',
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
-                       'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te)})
+                       'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
+                       'heldout_action_support':split_support})
     store.set_state(KEY,st);store.log('world_model_fit',None,{'n':n,'status':'FITTED'})
     return st
 
