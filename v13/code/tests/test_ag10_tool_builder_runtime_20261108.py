@@ -98,6 +98,24 @@ class GeneratedToolRuntime(unittest.TestCase):
         result=g.tools.call('plus_seven',{'x':5},origin='SELF')
         self.assertNotEqual(result['status'],'EXECUTED')
 
+    def test_operator_cli_synthesizes_verifies_and_executes_tool(self):
+        import json
+        from v13.agi import operator_command
+        create=json.loads(operator_command(self.runtime,['toolbuild','integer','cli_plus_seven',
+            json.dumps([[x,x+7] for x in (-8,-5,0,3,12,18)])]))
+        self.assertEqual(create['status'],'CANDIDATE')
+        checked=json.loads(operator_command(self.runtime,['toolbuild','verify','cli_plus_seven',
+            json.dumps([[x,x+7] for x in (21,22,23,24)])]))
+        self.assertTrue(checked['verified'])
+        activated=json.loads(operator_command(self.runtime,['toolbuild','activate','cli_plus_seven']))
+        self.assertFalse(activated['enabled'])
+        operator_command(self.runtime,['enable','cli_plus_seven'])
+        called=json.loads(operator_command(self.runtime,['toolbuild','call','cli_plus_seven','{"x":5}']))
+        self.assertEqual(called['status'],'EXECUTED')
+        self.assertEqual(called['result'],12)
+        operator_command(self.runtime,['toolbuild','retire','cli_plus_seven'])
+        self.assertNotIn('cli_plus_seven',hub(self.runtime).tools.tools)
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
