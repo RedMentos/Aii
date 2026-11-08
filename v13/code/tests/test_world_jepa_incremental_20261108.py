@@ -37,3 +37,15 @@ def test_zero_step_partial_fit_preserves_existing_weight_values():
     old=m.enc['W1'].copy()
     m.partial_fit(x,a,y,steps=0)
     np.testing.assert_array_equal(m.enc['W1'],old)
+
+
+def test_prediction_loss_can_measure_retention_without_training():
+    m=WorldJEPA(seed=4,ensemble=2)
+    x,a,y=batch()
+    m.fit(x,a,y,steps=2)
+    before=m.prediction_loss(x,a,y)
+    m.partial_fit(*batch(9),steps=2)
+    after=m.prediction_loss(x,a,y)
+    assert np.isfinite(before) and np.isfinite(after)
+    assert before>=0 and after>=0
+    with pytest.raises(ValueError):m.prediction_loss(x,a,np.full_like(y,np.nan))
