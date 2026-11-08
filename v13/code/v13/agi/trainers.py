@@ -82,6 +82,8 @@ def training_readiness(runtime,kind='lora'):
     reasons=[]
     if not (master/'model.safetensors').is_file():reasons.append('MASTER_WEIGHTS_MISSING')
     if not (master/'config.json').is_file():reasons.append('MASTER_CONFIG_MISSING')
+    if not st.get('master_sha256') and (master/'model.safetensors').is_file():
+        reasons.append('MASTER_HASH_NOT_PINNED')
     if st.get('master_sha256') and (master/'model.safetensors').is_file():
         if file_hash(master/'model.safetensors')!=st['master_sha256']:
             reasons.append('MASTER_HASH_CHANGED')
