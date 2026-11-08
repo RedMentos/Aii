@@ -115,13 +115,14 @@ class WorldJEPA:
     def __init__(self, seed=0, ensemble=5):
         self.seed = seed; self.ensemble = ensemble
 
-    def fit(self, X, A, X2, steps=3000, log_every=500):
+    def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
-                or type(log_every) is not int or log_every < 1):
+                or type(log_every) is not int or log_every < 1
+                or type(warm_start) is not bool):
             raise ValueError('Invalid WorldJEPA fit configuration')
         try:
             X, A, X2 = np.asarray(X), np.asarray(A), np.asarray(X2)
@@ -147,9 +148,23 @@ class WorldJEPA:
         # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
         valid_a = np.isfinite(A).all(1) & np.all((A == 0) | (A == 1), axis=1) & (A.sum(1) == 1)
         action_counts = np.bincount(np.argmax(A[valid_a], axis=1), minlength=A.shape[1])
-        mu = X.mean(0); sd = X.std(0)+1e-3
+        with _WORLD_JEPA_IO_LOCK:
+            existing = (hasattr(self,'enc') and hasattr(self,'preds') and
+                        len(self.mu)==X.shape[1] and
+                        self.preds[0]['P1'].shape[1]==64+A.shape[1])
+            if warm_start and not existing:
+                raise ValueError('Warm-start requires a compatible fitted JEPA')
+            prior = ({'mu':self.mu.copy(),'sd':self.sd.copy(),
+                      'enc':{k:v.copy() for k,v in self.enc.items()},
+                      'tgt':{k:v.copy() for k,v in self.tgt.items()},
+                      'pred':{k:v.copy() for k,v in self.preds[0].items()}}
+                     if warm_start else None)
+        mu = prior['mu'] if prior else X.mean(0)
+        sd = prior['sd'] if prior else X.std(0)+1e-3
         x, x2 = (X-mu)/sd, (X2-mu)/sd
         enc, pred = _init(rng, x.shape[1], A.shape[1]); inv = _init_inv(rng, A.shape[1]); tgt = {k: v.copy() for k, v in enc.items()}
+        if prior:
+            enc=prior['enc'];pred=prior['pred'];tgt=prior['tgt']
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         history = []
         for s in range(steps):
