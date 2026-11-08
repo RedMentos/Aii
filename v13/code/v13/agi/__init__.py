@@ -170,6 +170,10 @@ def operator_command(r,args):
             raise ValueError('Usage: :growth eval compare en-de [solver]')
         from .language_compare import compare_languages
         return dumps(compare_languages(r.store, solver=args[3] if len(args) == 4 else 'v13'))
+    if args and args[0]=='onlineworld':
+        if len(args)>2:raise ValueError('Usage: :growth onlineworld [LIMIT]')
+        limit=int(args[1]) if len(args)==2 else 2048
+        return dumps(r.online_world_update(limit=limit))
     g=hub(r)
     if not args or args==['status']:return dumps(g.report())
     c=args[0]

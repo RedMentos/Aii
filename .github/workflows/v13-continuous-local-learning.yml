@@ -1,0 +1,22 @@
+name: V13 continuous local plasticity
+on:
+  push:
+    branches: ['codex/v13-continuous-local-learning-*']
+  pull_request:
+    paths: ['v13/code/v13/continuous_predictor.py','v13/code/tests/test_continuous_predictor_20261108.py','v13/code/tests/test_online_world_20261108.py','v13/code/v13/online_world.py']
+  workflow_dispatch:
+jobs:
+  local-learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - name: Compile and test continuous learning
+        working-directory: v13/code
+        run: |
+          python -m py_compile v13/continuous_predictor.py v13/online_world.py v13/runtime.py v13/agi/__init__.py
+          python -m pytest -q tests/test_continuous_predictor_20261108.py tests/test_online_world_20261108.py tests/test_growth.py
