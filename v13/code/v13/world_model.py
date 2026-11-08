@@ -200,9 +200,17 @@ def fit(store,rng_seed=0):
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
     split_support=heldout_action_support(T,tr,te)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
-    pred=np.mean([Xf[te]@W for W in fw],0);mae=np.abs(pred-Y[te]).mean(0)
-    base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
-    route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(Y[tr].mean(0),pred.shape))
+    # Fail closed before writing FITTED metrics: finite observations and
+    # weights can still overflow during pooled subtraction or aggregation.
+    with np.errstate(over='ignore',invalid='ignore'):
+        pred=np.mean([Xf[te]@W for W in fw],0)
+        baseline_mean=Y[tr].mean(0)
+        mae=np.abs(pred-Y[te]).mean(0)
+        base=np.abs(baseline_mean-Y[te]).mean(0)
+    if (not np.isfinite(pred).all() or not np.isfinite(baseline_mean).all()
+            or not np.isfinite(mae).all() or not np.isfinite(base).all()):
+        raise ValueError('T8_NONFINITE_POOLED_HELDOUT_ERROR')
+    route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(baseline_mean,pred.shape))
     Xi=np.hstack([np.ones((n,1)),S,Y]);Wi=ridge(Xi[tr],A[tr])
     inv_acc=float((np.argmax(Xi[te]@Wi,1)==np.argmax(A[te],1)).mean()) if te else None
     # Freeze the majority action using training labels only, then score that
