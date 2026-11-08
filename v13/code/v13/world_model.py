@@ -216,7 +216,10 @@ def pooled_heldout_errors(predictions, heldout_targets, training_targets):
 def _require_finite_fit_matrix(matrix, expected_shape, label):
     """A fitted coefficient must be real, finite and dimensionally complete."""
     try:
-        arr=np.asarray(matrix,dtype=float)
+        raw=np.asarray(matrix)
+        if raw.dtype.kind not in 'fiub':
+            raise ValueError('T8_INVALID_FIT_'+label)
+        arr=np.asarray(raw,dtype=float)
     except (TypeError,ValueError,OverflowError) as exc:
         raise ValueError('T8_INVALID_FIT_'+label) from exc
     if arr.shape!=expected_shape or not np.isfinite(arr).all():
