@@ -33,6 +33,7 @@ def test_activation_is_human_only_and_tool_starts_disabled():
     b,reg=builder();b.propose('plus_seven',examples())
     with pytest.raises(PermissionError):b.activate('plus_seven',origin='SELF')
     assert reg.tools=={}
+    assert b.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)])
     b.activate('plus_seven',origin='USER')
     spec=reg.tools['plus_seven']
     assert spec.risk=='READ_LOCAL' and spec.schema=={'x':'int'}
@@ -45,6 +46,7 @@ def test_restart_only_restores_previously_activated_tools():
     new=ToolBuilder(None,Registry());new.box=b.box
     new.restore()
     assert new.registry.tools=={}
+    assert b.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)])
     b.activate('plus_seven')
     new.restore()
     assert new.registry.tools['plus_seven'].fn(x=4)==11
@@ -68,6 +70,7 @@ def test_no_auto_activation_or_unbounded_program():
 def test_name_conflict_and_duplicate_proposal():
     b,reg=builder();b.propose('plus_seven',examples())
     with pytest.raises(ValueError):b.propose('plus_seven',examples())
+    assert b.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)])
     b.activate('plus_seven')
     with pytest.raises(ValueError):b.activate('plus_seven')
 
@@ -78,6 +81,7 @@ def test_synthesize_text_transform_and_restore():
     assert candidate['kind']=='text'
     assert candidate['status']=='CANDIDATE'
     assert reg.tools=={}
+    assert b.verify('upper_tool',[[x,x.upper()] for x in ('theta','lambda','omega','sigma')])
     b.activate('upper_tool')
     assert reg.tools['upper_tool'].schema=={'x':'str'}
     assert reg.tools['upper_tool'].fn(x='hello')=='HELLO'
@@ -93,7 +97,7 @@ def test_text_tool_rejects_unfitted_or_oversized_examples():
     with pytest.raises(ValueError):b.propose_text('duplicate_text',[['a','A'],['a','A'],['b','B'],['c','C']])
 
 def test_human_can_retire_generated_tool_and_block_restart_restore():
-    b,reg=builder();b.propose('plus_seven',examples());b.activate('plus_seven')
+    b,reg=builder();b.propose('plus_seven',examples());b.verify('plus_seven',[[x,x+7] for x in (21,22,23,24)]);b.activate('plus_seven')
     with pytest.raises(PermissionError):b.retire('plus_seven',origin='SELF')
     assert 'plus_seven' in reg.tools
     b.retire('plus_seven')
@@ -130,3 +134,11 @@ def test_generated_tool_candidate_capacity_is_bounded():
     for i in range(MAX_CANDIDATES):
         b.propose('tool_'+str(i),examples())
     with pytest.raises(ValueError):b.propose('one_more',examples())
+
+def test_independent_verification_rejects_overlapping_or_wrong_examples():
+    b,_=builder();b.propose('plus_seven',examples())
+    with pytest.raises(ValueError):b.activate('plus_seven')
+    with pytest.raises(ValueError):b.verify('plus_seven',examples())
+    assert not b.verify('plus_seven',[[x,x+8] for x in (21,22,23,24)])
+    assert b.box.load()[0]['candidates']['plus_seven']['status']=='REJECTED'
+    with pytest.raises(ValueError):b.activate('plus_seven')
