@@ -88,7 +88,7 @@ def test_replay_respects_live_tool_denial():
     def denied(name,args,origin,intent):
         return {'id':'denied-replay','status':'DENIED','result':None}
     registry.call=denied
-    assert lib.run('restricted',{},origin='SELF')['status']=='DENIED'
+    assert lib.run('restricted',{},origin='USER')['status']=='DENIED'
 
 def test_discover_recent_intent_creates_candidate():
     lib,_=library()
@@ -105,3 +105,11 @@ def test_discover_recent_rejects_interleaved_and_failed_intents():
     with pytest.raises(ValueError):lib.propose_recent('bad_sequence','same')
     lib.tools.box.state['calls']=[a,dict(c,status='FAILED')]
     with pytest.raises(ValueError):lib.propose_recent('bad_outcome','same')
+
+def test_candidate_cannot_autonomously_execute_unvalidated_recipe():
+    lib,registry=library()
+    lib.propose_from_trace('candidate',['original'])
+    result=lib.run('candidate',{},origin='SELF')
+    assert result['status']=='PROPOSED'
+    assert result['reason']=='SKILL_NOT_TRUSTED'
+    assert registry.calls==[]
