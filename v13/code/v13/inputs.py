@@ -55,7 +55,7 @@ def record_rating(store,event_id,score,origin,note=''):
     store.log('answer_rating',event_id,{'kind':'rating','origin':origin,'status':str(score)})
     try:
         from .agi.live import on_rating
-        on_rating(store,event_id,score)  # WP-N13 AG9 label
+        on_rating(store,event_id,score,origin=origin)  # WP-N13 AG9 label / origin-bound AG4
     except Exception as exc:store.log('agi_live_unavailable',event_id,{'stage':'rating','error':type(exc).__name__})
     try:
         from .jefbridge import on_rating as jef_rating

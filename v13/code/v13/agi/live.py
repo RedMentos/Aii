@@ -43,7 +43,8 @@ def skill_route(r,e,text,route,direct,meta):
         for n in names:
             steps=g.skills.get(n)['steps'];routes=[s['route'] for s in steps if 'route' in s]
             if routes and len(routes)==len(steps) and routes[0] in {'simple','detail','gist','both'}:
-                meta['skill']={'name':n,'route':routes[0],'prior_route':route};_save(r.store,e['event_id'],skill=n);return routes[0]
+                binding=g.skills.human_binding(n)
+                meta['skill']={'name':n,'route':routes[0],'prior_route':route};_save(r.store,e['event_id'],skill=n,skill_binding=binding);return routes[0]
         if names:meta['skill_candidates']=names
     except Exception as exc:_log(r,e['event_id'],'skill',exc)
     return route
@@ -157,14 +158,17 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
     from .metacog import Metacognition
     from .user_model import UserModel
     st=_load(store,event_id)
-    if kind=='route' and st.get('route_confidence') is not None and st.get('route'):
-        Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
-    if kind=='fact' and st.get('answer_confidence') is not None:
-        Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
+    try:
+        if kind=='route' and st.get('route_confidence') is not None and st.get('route'):
+            Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
+        if kind=='fact' and st.get('answer_confidence') is not None:
+            Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
+    except Exception as exc:
+        try:store.log('agi_live_unavailable',event_id,{'stage':'feedback_metacog','error':type(exc).__name__})
+        except Exception:pass
     if kind=='fact':
-        # Explicit correction of a previously credited skill is a dispute, not
-        # another automatic positive sample. No silent aggregate retraction:
-        # that requires a transactional event-bound rebuild of AG4 statistics.
+        # Explicit fact correction is a dispute; only the bound current-epoch
+        # receipt can alter the associated skill's current success counter.
         old=_load(store,event_id)
         if old.get('skill'):
             try:_human_skill_outcome(store,event_id,False,'fact_correction:'+event_id)
@@ -194,23 +198,28 @@ def _human_skill_outcome(store,event_id,success,source):
     name=st.get('skill')
     if not name:return False
     from .skills import SkillLibrary
-    result=SkillLibrary(store).record_human(name,event_id,bool(success))
+    result=SkillLibrary(store).record_human(name,event_id,bool(success),st.get('skill_binding'))
     _save(store,event_id,skill_human_credit=bool(success),
           skill_outcome='HUMAN_CORRECTED' if result=='CORRECTED' else 'HUMAN_RATED',
           skill_rating_source=source,skill_disputed=result=='CORRECTED')
     return result!='UNCHANGED'
 
-def on_rating(store,event_id,score):
+def on_rating(store,event_id,score,origin=None):
     """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
     from .metacog import Metacognition
     st=_load(store,event_id)
     if RATING_BAD<score<RATING_GOOD:return None
     if st.get('answer_confidence') is not None:
-        from ..common import digest
-        Metacognition(store).record_batch('answer',[[st['answer_confidence'],int(score>=RATING_GOOD)]],digest('agi-rating:'+event_id))
-    try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
-    except (KeyError,ValueError,PermissionError) as exc:
-        store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
+        try:
+            from ..common import digest
+            Metacognition(store).record_batch('answer',[[st['answer_confidence'],int(score>=RATING_GOOD)]],digest('agi-rating:'+event_id))
+        except Exception as exc:
+            try:store.log('agi_live_unavailable',event_id,{'stage':'rating_metacog','error':type(exc).__name__})
+            except Exception:pass
+    if origin=='EXPLICIT_NOTE':
+        try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
+        except (KeyError,ValueError,PermissionError) as exc:
+            store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
     return True
 
 def report(r):

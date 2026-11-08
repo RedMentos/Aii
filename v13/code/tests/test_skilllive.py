@@ -6,7 +6,7 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock
-from v13 import skilllive
+from v13 import inputs,skilllive
 from v13.agi import hub
 from v13.operator import Operator
 from v13.runtime import Runtime
@@ -30,6 +30,8 @@ class Automatic(Base):
         self.trusted();self.r._route=Mock(side_effect=AssertionError('C_fast must not run'))
         meta,row=self.turn('Make my weekly plan please')
         self.assertEqual(meta['route']['source'],'TRUSTED_SKILL_AUTOMATIC');self.assertTrue(meta['skill']['automatic'])
+        self.assertEqual(self.lib.get('weekly_plan')['uses'],0)
+        inputs.record_rating(self.r.store,row['event_id'],8,'EXPLICIT_NOTE')
         self.assertEqual(self.lib.get('weekly_plan')['uses'],1)
     def test_no_match_or_operator_override_uses_full_path(self):
         self.trusted();self.r._route=Mock(return_value=('simple',{'source':'BOOT_SCAFFOLD'}))
