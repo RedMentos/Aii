@@ -40,6 +40,40 @@ class SkillLibrary:
             st['skills'][name]={'name':name,'steps':steps,'trigger':str(trigger)[:200],'origin':origin,'stage':'CANDIDATE',
                 'uses':0,'successes':0,'parity':[],'created':self.clock(),'source_traces':list(source_traces or [])[:16],'history':[['CANDIDATE',self.clock()]]}
         self.box.mutate(f);return name
+    def propose_from_trace(self,name,trace,trigger='',origin='SELF'):
+        """Compose a candidate procedure from *observed* successful tool transactions.
+
+        This is skill creation, not code execution or permission escalation. Every
+        referenced tool must already exist in the registry; replay always passes
+        through ToolRegistry.call and its current user/age/risk gates. A failed,
+        proposed, or denied transaction is never learned as a successful recipe.
+        Arguments are copied as literals, not interpreted as Python templates.
+        A human can inspect the CANDIDATE before trusting it.
+        """
+        if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
+        if not isinstance(trace,(list,tuple)) or not 1<=len(trace)<=MAX_STEPS:
+            raise ValueError('1..16 erfolgreiche Tool-Transaktionen erforderlich')
+        import copy
+        steps=[];sources=[]
+        for tx in trace:
+            if not isinstance(tx,dict) or tx.get('status')!='EXECUTED':
+                raise ValueError('Nur ausgeführte Transaktionen können gelernt werden')
+            tool=tx.get('tool');args=tx.get('args')
+            if type(tool) is not str or tool not in self.tools.tools or not isinstance(args,dict):
+                raise ValueError('Unbekanntes Werkzeug oder ungültige Argumente')
+            # A learned recipe may not persist secrets or replay side effects.
+            spec=self.tools.tools[tool]
+            if spec.risk!='READ_LOCAL':
+                raise ValueError('Schreibende/externe Aktionen nicht automatisch als Skill lernen')
+            from ..transaction import check_args,secrets_in
+            if check_args(spec.schema,args) or secrets_in(args):
+                raise ValueError('Ungültige oder geheime Tool-Argumente')
+            if any(isinstance(v,str) and _VAR.search(v) for v in args.values()):
+                raise ValueError('Template-Platzhalter aus fremden Traces verboten')
+            steps.append({'tool':tool,'args':copy.deepcopy(args)})
+            if tx.get('id') is not None:sources.append(str(tx['id']))
+        return self.propose(name,steps,trigger,origin,source_traces=sources)
+
     def run(self,name,inputs,origin='USER'):
         """Execute tool steps through the ToolRegistry (its gates apply); route steps are returned as hints."""
         sk=self.get(name)
