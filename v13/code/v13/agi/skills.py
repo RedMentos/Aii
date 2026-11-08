@@ -101,7 +101,10 @@ class SkillLibrary:
         if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
         if not isinstance(intent,str) or not intent.strip():raise ValueError('Intent erforderlich')
         calls=self.tools.box.load()[0]['calls']
-        matching=[tx for tx in calls if tx.get('intent')==intent]
+        positions=[i for i,tx in enumerate(calls) if tx.get('intent')==intent]
+        matching=[calls[i] for i in positions]
+        if positions and positions != list(range(positions[0],positions[-1]+1)):
+            raise ValueError('Ablauf ist durch andere Aktionen unterbrochen')
         if not matching or len(matching)>MAX_STEPS:
             raise ValueError('Kein eindeutiger, begrenzter Ablauf')
         if any(tx.get('status')!='EXECUTED' for tx in matching):
