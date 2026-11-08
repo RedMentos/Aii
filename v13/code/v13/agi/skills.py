@@ -62,6 +62,38 @@ class SkillLibrary:
                 o=st['outcomes'].setdefault(family,[0,0]);o[0]+=int(bool(success));o[1]+=1
             return self._advance(sk)
         return self.box.mutate(f)
+    def record_human(self,name,event_id,success):
+        """Transactional, event-bound AG4 credit with correction/restart idempotence.
+
+        The authoritative event ledger and aggregate counters live in ONE
+        versioned StateBox update. Technical FINAL never enters this path.
+        A correction replaces its earlier result rather than adding a sample.
+        """
+        if not isinstance(event_id,str) or not event_id or len(event_id)>160:
+            raise ValueError('Human outcome requires a stable event ID')
+        if type(success) is not bool:raise ValueError('Explicit boolean human outcome required')
+        def f(st):
+            sk=st['skills'][name]
+            ledger=st.setdefault('human_outcomes',{})
+            old=ledger.get(event_id)
+            if old is not None and old['skill']!=name:
+                raise ValueError('Event already bound to another skill')
+            if old is not None and old['success']==success:return 'UNCHANGED'
+            if old is None:
+                if len(ledger)>=4096:raise ValueError('Human outcome ledger full; archive/rebuild required')
+                sk['uses']+=1
+                sk['successes']+=int(success)
+                ledger[event_id]={'skill':name,'success':success}
+                # No implicit promotion: a rating alone is not a full-route parity test.
+                return 'RECORDED'
+            sk['successes']+=int(success)-int(old['success'])
+            old['success']=success
+            # A correction invalidates promotion evidence, without silently
+            # reversing a prior human-authorized stage transition.
+            sk['history'].append(['HUMAN_CORRECTION_REVIEW',self.clock()])
+            return 'CORRECTED'
+        return self.box.mutate(f)
+
     def _advance(self,sk):
         need=PROMOTE.get(sk['stage'])
         if need is None:return sk['stage']

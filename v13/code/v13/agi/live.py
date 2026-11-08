@@ -100,7 +100,10 @@ def after_turn(r,e,meta,status,aid=None):
         g=hub(r);st=_load(r.store,eid)
         if st.get('grounding_id'):
             rec=g.grounding.observe(st['grounding_id'],{'status':status},cause='SELF');_save(r.store,eid,grounding_id=None,grounded_error=rec['grounded_error'])
-        if st.get('skill'):g.skills.record(st['skill'],status=='FINAL')
+        # A completed generation is only a technical status, not evidence that the
+        # answer was correct. AG4 skill utility needs an explicit human outcome;
+        # do not train/promote a skill from self-generated FINAL labels.
+        if st.get('skill'):_save(r.store,eid,skill_outcome='AWAITING_HUMAN')
         sync_slots(r,g)
     except Exception as exc:_log(r,eid,'after_turn',exc)
     try:goal_turn(r,e,meta,status)  # WP-T8: open user goals and curiosity from live turns
@@ -158,6 +161,15 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
     if kind=='fact' and st.get('answer_confidence') is not None:
         Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
+    if kind=='fact':
+        # Explicit correction of a previously credited skill is a dispute, not
+        # another automatic positive sample. No silent aggregate retraction:
+        # that requires a transactional event-bound rebuild of AG4 statistics.
+        old=_load(store,event_id)
+        if old.get('skill'):
+            try:_human_skill_outcome(store,event_id,False,'fact_correction:'+event_id)
+            except (KeyError,ValueError,PermissionError) as exc:
+                store.log('agi_live_unavailable',event_id,{'stage':'skill_fact_correction','error':type(exc).__name__})
     if kind=='route':  # WP-T6: a route correction on a skill-routed turn reopens the skill (back to the full path)
         try:
             from ..skilllive import on_route_correction
@@ -172,12 +184,34 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         try:UserModel(store).observe(kind if kind=='preference' else 'style',(key or '*')[:80],value[:200],evidence_ref or memory_id)
         except PermissionError:store.log('agi_live_unavailable',event_id,{'stage':'user_model','error':'PermissionError'})
 
+def _human_skill_outcome(store,event_id,success,source):
+    """Apply explicit human AG4 outcome via the transactional event ledger.
+
+    The ledger is authoritative; the per-event live marker is diagnostic only.
+    Re-delivery after a crash is idempotent even if that marker was not saved.
+    """
+    st=_load(store,event_id)
+    name=st.get('skill')
+    if not name:return False
+    from .skills import SkillLibrary
+    result=SkillLibrary(store).record_human(name,event_id,bool(success))
+    _save(store,event_id,skill_human_credit=bool(success),
+          skill_outcome='HUMAN_CORRECTED' if result=='CORRECTED' else 'HUMAN_RATED',
+          skill_rating_source=source,skill_disputed=result=='CORRECTED')
+    return result!='UNCHANGED'
+
 def on_rating(store,event_id,score):
     """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
     from .metacog import Metacognition
     st=_load(store,event_id)
-    if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
-    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
+    if RATING_BAD<score<RATING_GOOD:return None
+    if st.get('answer_confidence') is not None:
+        from ..common import digest
+        Metacognition(store).record_batch('answer',[[st['answer_confidence'],int(score>=RATING_GOOD)]],digest('agi-rating:'+event_id))
+    try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
+    except (KeyError,ValueError,PermissionError) as exc:
+        store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
+    return True
 
 def report(r):
     g=hub(r);mc=g.metacog.report()
