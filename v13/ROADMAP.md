@@ -1,3 +1,7 @@
+## 2026-11-08 — AG4-Parität und Feedback getrennt
+
+Der [quellgebundene AG4-Paritätskandidat](code/docs/SKILL_PARITY_FEEDBACK_SHADOW_20261108.md) verhindert in der Testkopie, dass FINAL plus Routenübereinstimmung einen Schatten-Skill als erfolgreich befördert. Eine standardmäßig ausgeschaltete Schattensicht verbindet verifizierbare Routenbeobachtungen mit ausdrücklichen Noten und quellgebundenen F5-Korrekturen. Eine ausgewählte Fertigkeit, C5 und die spätere Korrektur wurden zusammen geprüft; alte Aggregate, Modellnutzen und die ursprünglichen Gates bleiben offen.
+
 ## 2026-11-08 — technische Ergänzung zu internen Schichtschleifen
 
 Die separate Projektübergabe zu [WP-RL1](research/RL1_INTERNE_SCHICHTSCHLEIFEN.md) ist als experimenteller Plan aufgenommen: begrenztes internes Layer-Re-entry und mögliche Body-JEPA-Zwischenzustände. Context-Re-entry bleibt ein eigener Pfad; ohne nachgewiesenen Layer-/Trainingszugriff gilt `UNSUPPORTED`. Der vollständige Canon, die Lernziele von B1/B2 und JEF/C3 und alle Gates bleiben erhalten. Kein neuer Implementierungs- oder Gerätnachweis.

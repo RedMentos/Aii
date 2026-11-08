@@ -1,3 +1,9 @@
+# 2026-11-08 — Schatten-Parität ohne erfundenen Erfolg
+
+Kind von #1614 (`94f7a04fd8a22ee8d8c783aee9f72d69d677575b`): `scripts/skill_parity_shadow_integration_candidate.py` trennt in einer quellgebundenen Testkopie Schatten-Routenparität vom AG4-Erfolgszähler. Optionale, standardmäßig ausgeschaltete Beobachtungen verbinden überprüfte Turn-/Skillquellen mit aktueller ausdrücklicher/impliziter Bewertung und F5-Faktkorrektur; positive Note plus gültige Korrektur wird als Konflikt ausgewiesen. Ein gemeinsamer Test bestätigt die Rücknahme des zuvor positiven Zählers beim gewählten AG4-Skill, während der Schatten-Skill nicht befördert wird. 127 gezielte Tests plus separat 116 auf der materialisierten Kopie bestanden; der alte Test mit der früheren FINAL-basierten Beförderungserwartung bleibt dort explizit FAIL. Der separate #1615-HEAD `f2beb871f71bd80a4fc29879347327253a7e5d68` wurde gelesen, unabhängig mit 3/3 Tests geprüft und sein Test hier übernommen. Details und offene Altzustands-, Widerrufs-, Rechte- und Nachholgrenzen: `SKILL_PARITY_FEEDBACK_SHADOW_20261108.md`.
+
+---
+
 # 2026-11-08 — AG4/C5/F1-F5-Replay im gemeinsamen Kandidaten
 
 Auf dem Kind von #1612 (`05a29b407ad9df1a384c13b3d3ecb04dd745986c`) materialisiert `scripts/ag4_outcome_crosspath_candidate.py` den AG4-Review von #1613 (`f3090276b592a75f9125427cfc7f1dbeb0107bd2`) zusammen mit den C5-/Memory-Kandidaten ausschließlich in einer quellhashgebundenen Testkopie. Derselbe synthetische Turn führt durch AG4-Fertigkeit, ausdrückliche/implizite Herkunft, C5, F1/F5, Sleep A und nächsten Turn; JEF-Ausfall, Neustart und Aus-/An-Vergleich enthalten. 119 Tests auf dem Zweig und separat 117 Tests auf der kombinierten Kopie bestanden. Details, erster RED-Mischlauf und offene AG4-/AG9-/Quellfragen: `MULTIORGAN_CORRECTION_INTEGRATION_20261108.md`. Kein Modell-, Gewichts-, Handy- oder Gate-PASS.

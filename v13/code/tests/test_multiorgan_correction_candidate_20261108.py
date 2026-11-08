@@ -59,7 +59,7 @@ with tempfile.TemporaryDirectory() as home:
         inputs.record_rating(r.store, eid, 8, 'IMPLICIT_CHAT')
         after_implicit = skills.get('ember_route')
         with patch('v13.jefbridge.on_rating', side_effect=RuntimeError('test seam')):
-            inputs.record_rating(r.store, eid, 2, 'EXPLICIT_NOTE')
+            inputs.record_rating(r.store, eid, 8 if sys.argv[1] == 'positive' else 2, 'EXPLICIT_NOTE')
         after_explicit = skills.get('ember_route')
         c5_after = actionlearn.C5Learning(r.store).report()['actions'][key]
         correction = r.memory.feedback(eid, 'fact', '8 April', key='Project Ember launch date')
@@ -144,6 +144,23 @@ class MultiOrganCorrection(unittest.TestCase):
         self.assertEqual(effective['human_approval'], 0)
         self.assertEqual([x['memory_id'] for x in on['second_shadow']], [on['correction']])
         self.assertEqual([x['memory_id'] for x in on['restart_shadow']], [on['correction']])
+
+    def test_positive_human_credit_retracted_by_fact_correction_after_restart(self):
+        # A positive explicit rating is provisional evidence, not irrevocable truth.
+        # The subsequent source-bound fact correction must retract that same
+        # event's AG4 success without counting a second skill use.
+        result = self.scenario('positive')
+        self.assertEqual(result['used_skill'], 'ember_route')
+        self.assertEqual(result['at_final'], [0, 0])
+        self.assertEqual(result['after_implicit'], [0, 0])
+        self.assertEqual(result['after_explicit'], [1, 1])
+        self.assertEqual(result['after_fact'], [1, 0])
+        self.assertEqual(result['after_restart'], [1, 0])
+        self.assertEqual(result['learning_mode'], 'RECORD_ONLY')
+        self.assertEqual(result['updates'], 0)
+        self.assertTrue(result['replay_pass'])
+        self.assertEqual(result['answer'], 'I do not know.')
+        self.assertEqual(result['feedback']['events'], 0)  # shadow was off
 
     def test_source_and_patch_mismatch_fail_closed(self):
         with tempfile.TemporaryDirectory() as home:
