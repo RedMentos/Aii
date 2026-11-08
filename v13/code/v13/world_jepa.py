@@ -157,7 +157,8 @@ class WorldJEPA:
             prior = ({'mu':self.mu.copy(),'sd':self.sd.copy(),
                       'enc':{k:v.copy() for k,v in self.enc.items()},
                       'tgt':{k:v.copy() for k,v in self.tgt.items()},
-                      'pred':{k:v.copy() for k,v in self.preds[0].items()}}
+                      'pred':{k:v.copy() for k,v in self.preds[0].items()},
+                      'ensemble':[{k:v.copy() for k,v in p.items()} for p in self.preds]}
                      if warm_start else None)
         mu = prior['mu'] if prior else X.mean(0)
         sd = prior['sd'] if prior else X.std(0)+1e-3
@@ -179,7 +180,7 @@ class WorldJEPA:
         zt_all = encode(tgt, x2)[0]; zsd = zt_all.std(0)+1e-6
         z_all = encode(enc, x)[0]
         for e in range(1, self.ensemble):  # encoder frozen, bootstrap predictors
-            r2 = np.random.default_rng(self.seed*100+e); p = _init_pred(r2, A.shape[1]); o = Adam(p, LR)
+            r2 = np.random.default_rng(self.seed*100+e); p = ({k:v.copy() for k,v in prior['ensemble'][e].items()} if prior else _init_pred(r2, A.shape[1])); o = Adam(p, LR)
             idx = r2.integers(0, len(x), len(x))
             for s in range(steps//2):
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
