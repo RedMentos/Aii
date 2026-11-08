@@ -43,3 +43,16 @@ def test_bad_data_never_changes_weights(tmp_path):
 def test_checkpoint_is_dimension_checked(tmp_path):
     m=OnlinePredictor(2,2,tmp_path);m.checkpoint()
     with pytest.raises(ValueError):OnlinePredictor(3,2,tmp_path)
+
+
+def test_restarted_learning_matches_uninterrupted_replay(tmp_path):
+    a=OnlinePredictor(2,2,tmp_path/'a',replay=8,seed=9)
+    b=OnlinePredictor(2,2,tmp_path/'b',replay=8,seed=9)
+    stream=list(samples(64))
+    for x,act,y in stream[:32]:a.observe(x,act,y);b.observe(x,act,y)
+    b.checkpoint();b=OnlinePredictor(2,2,tmp_path/'b',replay=8,seed=9)
+    for x,act,y in stream[32:]:a.observe(x,act,y);b.observe(x,act,y)
+    np.testing.assert_array_equal(a.W,b.W)
+    np.testing.assert_array_equal(a.U,b.U)
+    np.testing.assert_array_equal(a.x,b.x)
+    assert a.seen==b.seen and a.updates==b.updates
