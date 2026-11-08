@@ -7,8 +7,10 @@ import math
 REVISION = 'c5-feedback-ledger-candidate-v1'
 MAX_EVENTS = 10000
 
-def _binding(value):
-    return isinstance(value, str) and 0 < len(value) <= 256 and '|' not in value
+def _binding(value, *, action=False):
+    # Contexts legitimately contain a route|effort separator. Only action IDs
+    # must exclude '|', making the final separator unambiguous.
+    return isinstance(value, str) and 0 < len(value) <= 256 and (not action or '|' not in value)
 
 def _validate(state):
     if not isinstance(state, dict) or set(state) != {'revision', 'ratings'} or state['revision'] != REVISION:
@@ -21,7 +23,7 @@ def _validate(state):
             raise ValueError('invalid event ID')
         if not isinstance(row, dict) or set(row) != {'context', 'action_id', 'score'}:
             raise ValueError('invalid ledger row')
-        if not _binding(row['context']) or not _binding(row['action_id']):
+        if not _binding(row['context']) or not _binding(row['action_id'], action=True):
             raise ValueError('invalid ledger row')
         score = row['score']
         if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 1 <= score <= 10:
@@ -36,7 +38,7 @@ def record(state, event_id, context, action_id, score):
     old = _validate(state)
     if not isinstance(event_id, str) or not event_id or len(event_id) > 256:
         raise ValueError('invalid event ID')
-    if not _binding(context) or not _binding(action_id):
+    if not _binding(context) or not _binding(action_id, action=True):
         raise ValueError('invalid action binding')
     if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 1 <= score <= 10:
         raise ValueError('invalid rating')
