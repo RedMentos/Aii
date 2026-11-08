@@ -23,7 +23,10 @@ def test_real_committed_feed_is_incrementally_learned_and_deduplicated(tmp_path)
         assert w2.update()['learned']==0
         np.testing.assert_allclose(w2.predict(rows[0]['s'],'simple'),before)
     with patch('v13.online_world.world_model.transitions',return_value=rows+[transition(12)]):
-        assert w2.update()['learned']==1
+        result=w2.update()
+        assert result['learned']==1
+        assert result['old_replay_loss_before'] is not None
+        assert np.isfinite(result['old_replay_loss_delta'])
         assert w2.model.seen==13
 
 
