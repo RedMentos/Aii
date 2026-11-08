@@ -149,3 +149,18 @@ def test_real_trainer_build_refuses_failed_preflight_without_workspace(tmp_path)
     assert info['active']=='none'
     assert 'MASTER_WEIGHTS_MISSING' in info['missing']
     assert not (tmp_path/'training').exists()
+
+
+def test_auto_trainer_selection_does_not_bypass_readiness(tmp_path):
+    rt=runtime(tmp_path)
+    req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
+    state={'kind':'auto','master':None,'master_sha256':None}
+    with patch.object(trainers,'_box',return_value=State(state)), \
+         patch.object(trainers,'requirements',return_value=req), \
+         patch.object(trainers,'probes',return_value=(['anchor'],['holdout'])):
+        trainer,info=trainers.build(rt,'auto')
+    assert trainer.__class__.__name__=='NullTrainer'
+    assert info['active']=='none'
+    assert not info['auto_readiness']['ready']
+    assert 'MASTER_WEIGHTS_MISSING' in info['auto_readiness']['reasons']
+    assert not (tmp_path/'training').exists()
