@@ -6,16 +6,16 @@ Owner: V13 hourly integration worker. Base: `codex/resume-20261106` at `5e964146
 
 Existing Runtime invokes `agi.live.after_turn` on completed turns, `agi.live.on_rating` for human ratings, and `agi.live.on_feedback` for corrections. Previously `after_turn` passed `status == 'FINAL'` as `SkillLibrary.record(success=True)`, automatically inflating AG4 skill utility even for incorrect answers. AG2 Grounding also records a technical FINAL status, which is **not** a semantic correctness label.
 
-Candidate now keeps technical completion and AG2 Grounding observation, but does not credit AG4 on FINAL. A qualifying explicit human rating credits a selected AG4 route skill through an atomic event-bound ledger in the same versioned AG4 state as its aggregate counters. Repeated ratings are idempotent, including across restarts or a crash before the auxiliary live marker is written. Contradictory ratings and explicit fact corrections replace the old success label and retract the AG4 success counter; the event remains one use. Corrections are marked for review, not used as proof of model improvement. Neutral ratings do not credit. Existing metacognition (AG9) remains on its prior path. No changes to Age, model weights, JEPA, registered cohorts, tools or native runner.
+Candidate now keeps technical completion and AG2 Grounding observation, but does not credit AG4 on FINAL. A qualifying explicit human rating credits a selected AG4 route skill through an atomic event-bound ledger in the same versioned AG4 state as its aggregate counters. Repeated ratings are idempotent, including across restarts or a crash before the auxiliary live marker is written. Contradictory ratings and explicit fact corrections replace the old success label and retract the AG4 success counter; the event remains one use. Corrections are marked for review, not used as proof of model improvement. Neutral ratings do not credit. AG9 now receives repeated human rating labels through its existing atomic receipt-deduplicating batch API, reducing duplicate calibration labels. No changes to Age, model weights, JEPA, registered cohorts, tools or native runner.
 
 ## Known limitations / not promoted
 
 - **Historical migration OPEN**: AG4's preexisting aggregate counters can contain technical-FINAL successes. New event-bound ledger corrects only its own entries; historical counts need evidence-bound migration/rebuild before promotion or trust claims.
 - **Correction and stage rollback OPEN**: new event credits retract counters, but a historical stage promotion based on contaminated aggregate evidence is not automatically reversed. Human review is required.
 - **Ledger bounds OPEN**: 4096 event receipts per Store; capacity exhaustion rejects new credit rather than silently forgetting deduplication.
-- Existing AG9 Metacognition repeated rating behavior is not deduplicated by this change.
+- AG9 repeated rating receipts now use its existing atomic batch deduplication (last 256 receipts per component); corrected ratings still require a retractable calibration ledger and are not retroactively repaired.
 - SourceHandoff frozen runtime: this is a review-only candidate, not integrated into the registered cohort.
-- Eight regression tests authored but **not executed on exact checkout** because direct git clone failed DNS; do not claim passing tests. No native/Redmi/learning-utility proof. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0 and full-suite RED remain unchanged.
+- Nine regression tests authored but **not executed on exact checkout** because direct git clone failed DNS; do not claim passing tests. No native/Redmi/learning-utility proof. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight=0 and full-suite RED remain unchanged.
 
 ## Verification and next work
 
