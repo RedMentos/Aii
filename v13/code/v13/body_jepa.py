@@ -206,6 +206,32 @@ def minor_subspace_init(torch,model,r):
         n+=1;frozen+=int(low.numel())
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
 
+def anchor_retention_kl(torch, model, anchor_seqs, anchor_logp):
+    """Mean KL(frozen base || candidate) on the *same* frozen anchor tokens.
+
+    No candidate training or active-model promotion. Rejects nonfinite outputs
+    rather than reporting a misleading retention improvement.
+    """
+    if len(anchor_seqs) != len(anchor_logp):
+        raise ValueError('retention anchor/logprob mismatch')
+    if not anchor_seqs:
+        return None
+    values = []
+    with torch.no_grad():
+        for seq, base in zip(anchor_seqs, anchor_logp):
+            if not seq or base.ndim != 2:
+                raise ValueError('invalid retention anchor')
+            logits = model(torch.tensor([seq])).logits[0].float()
+            if logits.shape != base.shape or not bool(torch.isfinite(logits).all()) or not bool(torch.isfinite(base).all()):
+                raise ValueError('invalid retention logits')
+            logp = torch.log_softmax(logits, -1)
+            value = (base.exp() * (base - logp)).sum(-1).mean()
+            if not bool(torch.isfinite(value)):
+                raise ValueError('nonfinite retention KL')
+            values.append(float(value))
+    return round(sum(values) / len(values), 8)
+
+
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
 from .common import digest,dumps,atomic_write
@@ -325,6 +351,9 @@ class BodyJepaTrainer(LoraTrainer):
             pc=pred(st_ctx);cos_pred_base=float(torch.nn.functional.cosine_similarity(pc,base_t,dim=-1).mean())
             with ema.swap():ema_t=last_token_latent(torch,model,tgt_b,layer)
             cos_pred_ema=float(torch.nn.functional.cosine_similarity(pc,ema_t,dim=-1).mean())
+        # Read-only final retention on the original frozen-base anchor distributions.
+        # This is a measured candidate metric, never an Age or deployment gate.
+        final_anchor_kl = anchor_retention_kl(torch, model, anchor_seqs, anchor_logp)
         rank={'base_target':effective_rank(base_t.numpy()),'ema_target':effective_rank(ema_t.numpy()),
               'base_context':effective_rank(base_ctx.numpy()),'student_context':effective_rank(st_ctx.numpy())}
         recall=[]
@@ -339,7 +368,7 @@ class BodyJepaTrainer(LoraTrainer):
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),'jepa_target_eval':target_eval,
                  'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
-                 'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
+                 'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'final_anchor_kl':final_anchor_kl,'retention_probe_count':len(anchor_seqs),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
         result={'artifact':str(adapter['gguf']),'hash':adapter['gguf_sha256'],'method':self.method,'metrics':metrics,'files':adapter}
