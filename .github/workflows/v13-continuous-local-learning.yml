@@ -3,7 +3,7 @@ on:
   push:
     branches: ['codex/v13-continuous-local-learning-*']
   pull_request:
-    paths: ['v13/code/v13/continuous_predictor.py','v13/code/tests/test_continuous_predictor_20261108.py']
+    paths: ['v13/code/v13/continuous_predictor.py','v13/code/tests/test_continuous_predictor_20261108.py tests/test_online_world_20261108.py']
   workflow_dispatch:
 jobs:
   local-learning:
@@ -18,5 +18,5 @@ jobs:
       - name: Compile and test continuous learning
         working-directory: v13/code
         run: |
-          python -m py_compile v13/continuous_predictor.py
+          python -m py_compile v13/continuous_predictor.py v13/online_world.py
           python -m pytest -q tests/test_continuous_predictor_20261108.py
