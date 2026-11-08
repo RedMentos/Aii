@@ -52,8 +52,15 @@ class RatingFanoutIsolation(unittest.TestCase):
                 hooks[failed.__name__].side_effect = RuntimeError('synthetic failure')
                 row = inputs.record_rating(self.runtime.store, self.event_id, 2, 'EXPLICIT_NOTE')
                 self.assertEqual(row['score'], 2)
-                for hook in hooks.values():
-                    hook.assert_called_once_with(self.runtime.store, self.event_id, 2)
+                for name, hook in hooks.items():
+                    hook.assert_called_once()
+                    self.assertEqual(hook.call_args.args, (self.runtime.store, self.event_id, 2))
+                    if name == live.__name__:
+                        # The cross-path candidate also passes explicit origin;
+                        # its behavior is checked by the multi-organ test.
+                        self.assertIn(hook.call_args.kwargs, ({}, {'origin': 'EXPLICIT_NOTE'}))
+                    else:
+                        self.assertEqual(hook.call_args.kwargs, {})
                 self.assertIsNotNone(self.runtime.store.one(
                     'SELECT id FROM telemetry WHERE kind=? AND event_id=?',
                     (error_kind[failed], self.event_id)))

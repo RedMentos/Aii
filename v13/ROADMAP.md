@@ -10,6 +10,8 @@ Ein quellgebundener [F1/F5-/Episoden-/Sleep-A-Slice](code/docs/CORRECTION_ASSOCI
 
 Der [verbundene Gegenüberstellungstest](code/docs/CONNECTED_FEEDBACK_MEMORY_REPLAY_20261108.md) führt diesen Pfad mit demselben Turn durch den C5-Feedback-Hook und den herkunftsgebundenen SHADOW-Ledger zusammen. Vergleich aus/an, Neustart und gezielter Rollback sind in einer quellgebundenen Runtime-Kopie geprüft; die Ausgabe bleibt unverändert. Keine Behauptung allgemeiner Lernfähigkeit aus dieser synthetischen Probe.
 
+Ein weiterer [Mehrorgan-Test](code/docs/MULTIORGAN_CORRECTION_INTEGRATION_20261108.md) kombiniert den AG4-Review aus #1613 mit C5 und Replay in derselben quellgebundenen Kopie. Eine Korrektur erreicht den tatsächlichen AG4-Skillzähler, C5 und den abgeschatteten Gedächtniskandidaten; ein JEF-Fehler überspringt C5 nicht. Die Scope-, Quellen- und Altzustandsgrenzen gelten weiter; die Modelle und registrierten Quellen sind nicht geändert.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

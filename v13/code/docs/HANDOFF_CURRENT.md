@@ -1,3 +1,9 @@
+# 2026-11-08 — AG4/C5/F1-F5-Replay im gemeinsamen Kandidaten
+
+Auf dem Kind von #1612 (`05a29b407ad9df1a384c13b3d3ecb04dd745986c`) materialisiert `scripts/ag4_outcome_crosspath_candidate.py` den AG4-Review von #1613 (`f3090276b592a75f9125427cfc7f1dbeb0107bd2`) zusammen mit den C5-/Memory-Kandidaten ausschließlich in einer quellhashgebundenen Testkopie. Derselbe synthetische Turn führt durch AG4-Fertigkeit, ausdrückliche/implizite Herkunft, C5, F1/F5, Sleep A und nächsten Turn; JEF-Ausfall, Neustart und Aus-/An-Vergleich enthalten. 119 Tests auf dem Zweig und separat 117 Tests auf der kombinierten Kopie bestanden. Details, erster RED-Mischlauf und offene AG4-/AG9-/Quellfragen: `MULTIORGAN_CORRECTION_INTEGRATION_20261108.md`. Kein Modell-, Gewichts-, Handy- oder Gate-PASS.
+
+---
+
 # 2026-11-08 — verbundene Feedback-/Gedächtnisarbeit (isolierter Zwischenstand)
 
 Basis ist der gesichtete parallele C5-Ledger-Zweig #1608 bei `15c7a4f5f1961280e2cb0f78746ead3adfc2c39f`; die Gesamtscope-/Arbeitsrhythmus-Notiz aus #1609 liegt bytegleich unter `V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md`, der Planabgleich aus #1610 unter `V13_BLUEPRINT_PLAN_ALIGNMENT_20261108.md` mit einem Hinweis auf den neueren SHADOW-Teilschnitt. Die technische Zusatzanforderung zu internen Layer-Schleifen ist als offener Plan `v13/research/RL1_INTERNE_SCHICHTSCHLEIFEN.md` mit Roadmap-Link aufgenommen; sie ersetzt weder den Canon noch Context-Re-entry.
@@ -10,7 +16,7 @@ Der zusätzliche `CORRECTION_ASSOCIATION_SHADOW_SLICE_20261108.md` verbindet in 
 
 Nach dem Zusammenführen bestanden 117 gezielte und angrenzende Tests zu diesem Pfad, Feedback-Isolation, Quellenbindung und bestehenden Lern-Consumers; die 92 Tests auf der materialisierten Gedächtnis-/Replay-Kopie sind ein separater Lauf. Kein Full-Suite-, natives oder Redmi-Ergebnis.
 
-Parallel neu: #1611 untersucht dieselbe FINAL-vs.-Erfolg-Verwechslung für AG2/AG4 und ist kein Vorfahr dieses Zweigs. Der originale Actions-Lauf `42483315056` ist RED (9 Tests, 6 ERROR; u. a. Test-Store-CAS-Verhalten und ein fehlender Test-Patchpfad). Originaler Fehler bleibt erhalten; Candidate-Code, echte Runtime/Store-Wirkung und weitere offene Gates vor Übernahme unabhängig prüfen. Fremden Zweig nicht überschreiben.
+Parallel: #1611 untersuchte dieselbe FINAL-vs.-Erfolg-Verwechslung für AG2/AG4. Der originale Actions-Lauf `42483315056` bleibt RED (9 Tests, 6 ERROR). #1613 prüfte und korrigierte den Kandidaten separat; der obige kombinierte Test verwendet nur dessen quellgebundene Kopie. Die in #1613 und im Mehrorgan-Dokument aufgeführten Grenzen bleiben offen.
 
 ---
 
