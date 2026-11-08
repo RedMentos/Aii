@@ -15,6 +15,9 @@ class FakeRegistry:
     def __init__(self,risk='READ_LOCAL'):
         self.tools={'calc':FakeTool(risk)}
         self.calls=[]
+        self.box=FakeBox()
+        self.box.state={'calls':[]}
+
     def call(self,name,args,origin,intent):
         self.calls.append((name,args,origin,intent))
         return {'id':'replay','status':'EXECUTED','result':4}
@@ -23,6 +26,7 @@ def library(risk='READ_LOCAL'):
     registry=FakeRegistry(risk)
     lib=SkillLibrary(None,tools=registry)
     lib.box=FakeBox()
+    registry.box.state['calls']=trace()
     return lib,registry
 
 def trace(status='EXECUTED',expression='2+2'):
@@ -30,7 +34,7 @@ def trace(status='EXECUTED',expression='2+2'):
 
 def test_successful_trace_creates_candidate_and_replays_through_registry():
     lib,registry=library()
-    lib.propose_from_trace('add_two',trace(),trigger='calculate')
+    lib.propose_from_trace('add_two',['original'],trigger='calculate')
     skill=lib.get('add_two')
     assert skill['stage']=='CANDIDATE'
     assert skill['source_traces']==['original']
@@ -41,17 +45,32 @@ def test_successful_trace_creates_candidate_and_replays_through_registry():
 def test_denied_and_unapproved_traces_cannot_become_skills():
     for status in ('DENIED','PROPOSED','FAILED'):
         lib,_=library()
-        with pytest.raises(ValueError):lib.propose_from_trace('bad_skill',trace(status=status))
+        lib.tools.box.state['calls']=trace(status=status)
+        with pytest.raises(ValueError):lib.propose_from_trace('bad_skill',['original'])
         assert not lib.box.load()[0]['skills']
 
 def test_side_effecting_tools_are_not_automatically_composed():
     lib,_=library('WRITE_LOCAL')
-    with pytest.raises(ValueError):lib.propose_from_trace('write_skill',trace())
+    with pytest.raises(ValueError):lib.propose_from_trace('write_skill',['original'])
 
 def test_trace_arguments_are_copied_and_templates_rejected():
     lib,_=library()
     t=trace()
-    lib.propose_from_trace('safe_skill',t)
+    lib.tools.box.state['calls']=t
+    lib.propose_from_trace('safe_skill',['original'])
     t[0]['args']['expression']='999'
     assert lib.get('safe_skill')['steps'][0]['args']['expression']=='2+2'
-    with pytest.raises(ValueError):lib.propose_from_trace('template_skill',trace(expression='{prev}'))
+    lib.tools.box.state['calls']=trace(expression='{prev}')
+    with pytest.raises(ValueError):lib.propose_from_trace('template_skill',['original'])
+
+def test_spoofed_status_and_unknown_trace_cannot_create_skill():
+    lib,_=library()
+    lib.tools.box.state['calls']=trace(status='DENIED')
+    with pytest.raises(ValueError):
+        lib.propose_from_trace('spoofed',[{'id':'original','status':'EXECUTED','tool':'calc','args':{'expression':'2+2'}}])
+    with pytest.raises(ValueError):lib.propose_from_trace('missing',['not-in-ledger'])
+    assert not lib.box.load()[0]['skills']
+
+def test_duplicate_transaction_not_counted_twice():
+    lib,_=library()
+    with pytest.raises(ValueError):lib.propose_from_trace('duplicate',['original','original'])
