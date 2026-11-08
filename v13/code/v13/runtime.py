@@ -145,7 +145,15 @@ class Runtime:
                     if not owner:raise ValueError('Angenommene Anfrage ohne Chat')
                     self._session_local.session_id=owner['session_id']
                     if time.monotonic()-queued>self.cfg['queue_ttl_seconds']:self._rejected(payload,'Warteschlangen-Zeitlimit; bitte erneut senden.')
-                    else:self._turn(payload)
+                    else:
+                        self._turn(payload)
+                        # Local plasticity runs after the turn's committed action
+                        # record, never on an uncommitted prediction. Failure is
+                        # isolated from user-visible output and logged for repair.
+                        try:self.online_world_update(limit=64)
+                        except Exception as exc:
+                            self.store.log('online_world_learning_error',payload['event_id'],
+                                           {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())
