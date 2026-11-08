@@ -83,3 +83,9 @@ def test_streaming_experience_is_learned_and_durably_resumable(tmp_path):
     assert n.seen==35
     np.testing.assert_array_equal(n.W,m.W)
     assert n.learn_stream([],checkpoint_every=8)['observed']==0
+
+
+def test_oversized_finite_observation_cannot_poison_gradient(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path)
+    with pytest.raises(ValueError):m.observe([1e7,0],0,[0,0])
+    assert np.isfinite(m.W).all() and m.seen==0
