@@ -1,3 +1,13 @@
+## 2026-11-08 — Zielbild und nächstes verbundenes Lernpaket (Dokumentationsvorschlag)
+
+Maßgeblich für diesen Vorschlag: [Zielbild / Planabgleich](code/docs/V13_BLUEPRINT_PLAN_ALIGNMENT_20261108.md) und [Gesamtsystem-Lernklarstellung](code/docs/V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md) aus PR #1609. Der vollständige v10.16.1-Canon und neuere Nutzerentscheidungen bleiben erhalten. Die folgenden datierten Einträge sind historische, zweiggebundene Nachweise; sie sind kein aktueller Gesamtabschluss.
+
+**Nächste Priorität:** ein quellengebundenes Experience-Paket mit echtem episodischem/assoziativem Abruf und einem lernbaren Routing-/Aufmerksamkeitsverbraucher, Replay, Vergleich der Einzelpfade gegen beide zusammen, Neustart, Retention und Rücknahme. Geplant, nicht implementiert oder zugeteilt; zuerst aktuelle Owner und Freeze prüfen. Alle übrigen Blueprint-Pflichten bleiben offen nachzuverfolgen.
+
+**Keine Beförderung:** STEP2 UTILITY_FAIL; B3 FAIL/NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; kein neuer Redmi-Nachweis. Einzelne Feedback-/Numerik-Reparaturen gelten nicht als integriertes Lernen. Dies ist ein Review-Vorschlag als Ergänzung zu #1609, kein Produktions-Merge.
+
+---
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.
