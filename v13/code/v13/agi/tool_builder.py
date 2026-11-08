@@ -143,7 +143,7 @@ class ToolBuilder:
         fn=_compile_kind(record.get('kind','integer'),record['program'])
         kind=record.get('kind','integer')
         self.registry.register(ToolSpec(name,lambda x:fn(x),risk='READ_LOCAL',reversible=True,
-            right='simple_tool_choice',description='Synthesized bounded arithmetic: '+record['program'],
+            right='simple_tool_choice',description='Synthesized bounded pure transform: '+record['program'],
             schema={'x':'int' if kind=='integer' else 'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
         def save(st):st['candidates'][name]['status']='ACTIVE'
         self.box.mutate(save)
@@ -159,11 +159,11 @@ class ToolBuilder:
             fn=_compile_kind(record.get('kind','integer'),record['program'])
             kind=record.get('kind','integer')
             self.registry.register(ToolSpec(name,lambda x,fn=fn:fn(x),risk='READ_LOCAL',
-                right='simple_tool_choice',description='Synthesized bounded arithmetic: '+record['program'],
+                right='simple_tool_choice',description='Synthesized bounded pure transform: '+record['program'],
                 schema={'x':'int' if kind=='integer' else 'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
 
     def report(self):
         return {'revision':REVISION,'candidates':[
             {'name':v['name'],'program':v['program'],'status':v['status']}
             for v in self.box.load()[0]['candidates'].values()],
-            'claim_limit':'Pure bounded integer transforms only; no arbitrary code generation'}
+            'claim_limit':'Pure bounded integer and text transforms only; no arbitrary code generation'}
