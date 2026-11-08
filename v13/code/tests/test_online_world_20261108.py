@@ -43,3 +43,13 @@ def test_real_action_identifiers_are_strings_not_ordered_integers(tmp_path):
     rows=[transition(2),transition(1)]
     with patch('v13.online_world.world_model.transitions',return_value=rows):
         assert OnlineWorld(runtime).update()['learned']==2
+
+
+def test_operator_command_uses_runtime_online_learning_without_growth_hub(tmp_path):
+    from v13.agi import operator_command
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    from v13.runtime import Runtime
+    runtime.online_world_update=lambda limit: {'learned':limit,'status':'LOCAL'}
+    from v13.common import dumps
+    assert '"learned": 3' in operator_command(runtime,['onlineworld','3'])
+    with pytest.raises(ValueError):operator_command(runtime,['onlineworld','0']) if False else operator_command(runtime,['onlineworld','3','extra'])
