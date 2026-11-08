@@ -69,6 +69,16 @@ class Runtime:
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+    def online_world_update(self,limit=2048):
+        """Explicit bounded online learning from committed T8 transitions.
+
+        The predictor is local and never modifies pretrained GGUF weights.
+        No model is initialized until the operator invokes this entrypoint.
+        """
+        from .online_world import OnlineWorld
+        if not hasattr(self,'_online_world'):
+            self._online_world=OnlineWorld(self)
+        return self._online_world.update(limit=limit)
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
