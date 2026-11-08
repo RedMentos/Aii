@@ -30,6 +30,35 @@ def _compile(program):
     raise ValueError('Unknown bounded tool program')
 
 
+def _text_programs():
+    # Reuse AG7's audited, finite DSL rather than executing model-generated code.
+    from .abstraction import PRIMS
+    for name,fn in PRIMS:
+        yield name,fn
+
+
+def _text_examples(items):
+    if not isinstance(items,(list,tuple)) or not 4<=len(items)<=MAX_EXAMPLES:
+        raise ValueError('4..64 text examples required')
+    pairs=[]
+    for item in items:
+        if not isinstance(item,(list,tuple)) or len(item)!=2:
+            raise ValueError('Text example must be [input, output]')
+        x,y=item
+        if type(x) is not str or type(y) is not str or len(x)>256 or len(y)>256:
+            raise ValueError('Only bounded strings supported')
+        pairs.append((x,y))
+    if len({x for x,_ in pairs})!=len(pairs):raise ValueError('Repeated inputs')
+    return pairs
+
+
+def _compile_kind(kind,program):
+    if kind=='integer':return _compile(program)
+    if kind=='text':
+        for name,fn in _text_programs():
+            if name==program:return fn
+    raise ValueError('Unknown bounded tool program')
+
 def _examples(items):
     if not isinstance(items,(list,tuple)) or not 4<=len(items)<=MAX_EXAMPLES:
         raise ValueError('4..64 examples required (train and heldout)')
@@ -66,7 +95,33 @@ class ToolBuilder:
         if not solutions:raise ValueError('No bounded program matches training examples')
         label,fn=solutions[0]
         if not all(fn(x)==y for x,y in heldout):raise ValueError('Heldout generalization failed')
-        record={'name':name,'program':label,'origin':origin,'status':'CANDIDATE',
+        record={'name':name,'program':label,'kind':'integer','origin':origin,'status':'CANDIDATE',
+                'train_count':len(train),'heldout_count':len(heldout),
+                'examples':[[x,y] for x,y in pairs]}
+        def save(st):
+            if name in st['candidates']:raise ValueError('Tool candidate already exists')
+            st['candidates'][name]=record
+        self.box.mutate(save)
+        return dict(record)
+
+    def propose_text(self,name,examples,origin='SELF'):
+        """Induce a pure text-transform tool from examples, with heldout check."""
+        from ..transaction import valid_name
+        name=valid_name(name)
+        if name in self.registry.tools:raise ValueError('Tool already registered')
+        pairs=_text_examples(examples)
+        train=pairs[::2];heldout=pairs[1::2]
+        matches=[]
+        for label,fn in _text_programs():
+            try:
+                if all(fn(x)==y for x,y in train):matches.append((label,fn))
+            except (ValueError,TypeError,OverflowError):continue
+        if not matches:raise ValueError('No bounded text program fits')
+        label,fn=matches[0]
+        try:passed=all(fn(x)==y for x,y in heldout)
+        except (ValueError,TypeError,OverflowError):passed=False
+        if not passed:raise ValueError('Heldout generalization failed')
+        record={'name':name,'kind':'text','program':label,'origin':origin,'status':'CANDIDATE',
                 'train_count':len(train),'heldout_count':len(heldout),
                 'examples':[[x,y] for x,y in pairs]}
         def save(st):
@@ -85,10 +140,11 @@ class ToolBuilder:
         if not record or record['status'] not in ('CANDIDATE','ACTIVE'):
             raise ValueError('Unknown tool candidate')
         if name in self.registry.tools:raise ValueError('Tool already registered')
-        fn=_compile(record['program'])
+        fn=_compile_kind(record.get('kind','integer'),record['program'])
+        kind=record.get('kind','integer')
         self.registry.register(ToolSpec(name,lambda x:fn(x),risk='READ_LOCAL',reversible=True,
             right='simple_tool_choice',description='Synthesized bounded arithmetic: '+record['program'],
-            schema={'x':'int'},effects=({'COMPUTE'},{'CALCULATOR'})))
+            schema={'x':'int' if kind=='integer' else 'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
         def save(st):st['candidates'][name]['status']='ACTIVE'
         self.box.mutate(save)
         return name
@@ -100,10 +156,11 @@ class ToolBuilder:
         """
         for name,record in self.box.load()[0]['candidates'].items():
             if record['status']!='ACTIVE' or name in self.registry.tools:continue
-            fn=_compile(record['program'])
+            fn=_compile_kind(record.get('kind','integer'),record['program'])
+            kind=record.get('kind','integer')
             self.registry.register(ToolSpec(name,lambda x,fn=fn:fn(x),risk='READ_LOCAL',
                 right='simple_tool_choice',description='Synthesized bounded arithmetic: '+record['program'],
-                schema={'x':'int'},effects=({'COMPUTE'},{'CALCULATOR'})))
+                schema={'x':'int' if kind=='integer' else 'str'},effects=({'COMPUTE'},{'CALCULATOR'})))
 
     def report(self):
         return {'revision':REVISION,'candidates':[
