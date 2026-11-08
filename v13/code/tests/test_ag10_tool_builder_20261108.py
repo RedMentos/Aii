@@ -69,3 +69,24 @@ def test_name_conflict_and_duplicate_proposal():
     with pytest.raises(ValueError):b.propose('plus_seven',examples())
     b.activate('plus_seven')
     with pytest.raises(ValueError):b.activate('plus_seven')
+
+def test_synthesize_text_transform_and_restore():
+    b,reg=builder()
+    examples=[[x,x.upper()] for x in ('alpha','beta','gamma','delta','epsilon','zeta')]
+    candidate=b.propose_text('upper_tool',examples)
+    assert candidate['kind']=='text'
+    assert candidate['status']=='CANDIDATE'
+    assert reg.tools=={}
+    b.activate('upper_tool')
+    assert reg.tools['upper_tool'].schema=={'x':'str'}
+    assert reg.tools['upper_tool'].fn(x='hello')=='HELLO'
+    fresh=ToolBuilder(None,Registry());fresh.box=b.box
+    fresh.restore()
+    assert fresh.registry.tools['upper_tool'].fn(x='world')=='WORLD'
+
+
+def test_text_tool_rejects_unfitted_or_oversized_examples():
+    b,_=builder()
+    with pytest.raises(ValueError):b.propose_text('nonsense',[[x,x+'!'] for x in ('a','b','c','d')])
+    with pytest.raises(ValueError):b.propose_text('oversize',[[str(x)*257,'x'] for x in range(4)])
+    with pytest.raises(ValueError):b.propose_text('duplicate_text',[['a','A'],['a','A'],['b','B'],['c','C']])
