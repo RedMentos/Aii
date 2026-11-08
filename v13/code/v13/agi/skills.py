@@ -76,6 +76,8 @@ class SkillLibrary:
             tx=by_id[txid]
             if tx.get('status')!='EXECUTED':
                 raise ValueError('Nur nachweislich ausgeführte Transaktionen können gelernt werden')
+            if tx.get('event_id') and (not hasattr(self.tools,'_turn_ended') or not self.tools._turn_ended(tx['event_id'])):
+                raise ValueError('Provisorische Tool-Ergebnisse dürfen keine Skills trainieren')
             tool=tx.get('tool');args=tx.get('args')
             if type(tool) is not str or tool not in self.tools.tools or not isinstance(args,dict):
                 raise ValueError('Unbekanntes Werkzeug oder ungültige Argumente')
