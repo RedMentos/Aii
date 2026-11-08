@@ -62,6 +62,8 @@ def test_pinned_jepa_checkpoint_can_resume_real_weight_learning(tmp_path):
     saved=save(m,path,source_sha)
     resumed=load(path,source_sha,saved['sha256'])
     before=resumed.enc['W1'].copy()
+    ensemble_before=resumed.preds[1]['P1'].copy()
     resumed.partial_fit(*batch(10),steps=2)
     assert not np.array_equal(before,resumed.enc['W1'])
     assert resumed._fit_steps==4
+    assert not np.array_equal(ensemble_before,resumed.preds[1]['P1'])
