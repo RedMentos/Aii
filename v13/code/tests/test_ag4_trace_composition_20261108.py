@@ -154,7 +154,7 @@ def test_recent_intent_rejects_missing_and_duplicate_evidence():
     lib.tools.box.state['calls'][1]['intent']='same'
     with pytest.raises(ValueError):lib.propose_recent('duplicate','same')
 
-def test_untrusted_skill_does_not_call_tool_after_restart(tmp_path):
+def test_untrusted_skill_does_not_call_tool_after_reload():
     lib,registry=library()
     lib.propose_from_trace('young_skill',['original'])
     reloaded=SkillLibrary(None,tools=registry)
