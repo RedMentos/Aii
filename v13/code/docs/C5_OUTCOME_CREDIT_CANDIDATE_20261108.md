@@ -62,6 +62,17 @@ legacy compatibility, unchanged technical status and source mismatch refusal.
 - A path's most recent delta can belong to an earlier event. A subsequent
   cost-only event no longer fabricates a delta but does not erase the old one;
   any future worker must bind deltas to the matching event and valid outcome.
+- Independent review reproduced two additional pre-existing hazards: repeated
+  ratings replace the stored latest rating but are each applied to the C5
+  moving averages, so a corrected rating can leave stale credit and a single
+  turn can reach `MIN_N`. Also, a `dream`-sourced `task_success` currently
+  changes `r_hat` and stores a delta even though its combined gate is zero;
+  a later real outcome can inherit that altered expectation. Neither is fixed
+  by this candidate. Audit sources, deduplication and reward-state provenance
+  before attaching any worker or enabling the candidate.
+- The hash guard covers the edited `runtime.py` and `neuromod.py`, but the
+  legacy exceptions rely on exact producers in `world.py` and `learning.py`.
+  Bind or re-audit those producer revisions before applying a candidate.
 - Existing `Neuromod` persisted state may already contain misleading `r_hat`
   or delta values. Reprocessing history needs an independently reviewed,
   restart-safe migration that preserves original records and avoids double

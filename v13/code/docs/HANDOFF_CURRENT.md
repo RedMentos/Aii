@@ -4,6 +4,12 @@ Basis `codex/resume-20261106` bei `5e964146579deb22c5ba89a2a03a52a9e4d8aab8`; an
 
 `scripts/c5_outcome_credit_candidate.py` und `tests/test_c5_outcome_credit_candidate.py` bilden einen quellhashgebundenen Kandidaten für zwei reproduzierte Fehler: FINAL ohne Wahrheitsnachweis wurde als Erfolg gezählt, und ein Kosten-only-Paket lieferte ein unbegründetes negatives Ergebnis-δ. 5 gezielte und 120 angrenzende Tests bestehen auf separater Kandidatenkopie. Die Original-Runtime ist nicht verändert oder aktiviert. Vor einer Integration: alte C5-/Neuromod-Aggregate und Bindung vorhandener δ-Werte an das korrekte Ereignis ohne Datenverlust behandeln, dann den tatsächlichen Lernnutzen und Retention auf frischen Daten messen. Details `C5_OUTCOME_CREDIT_CANDIDATE_20261108.md`.
 
+Unabhängiger Review fand weitere vorhandene Risiken: dieselbe Bewertung kann nach Korrektur mehrfach in C5-Mittelwerte einfließen; Traum-Signale können trotz Gate 0 `r_hat` und δ verändern. Diese Fälle sind im Kandidaten noch nicht behoben. Die Revisionen der für Legacy-Ausnahmen maßgeblichen `world.py`/`learning.py` müssen ebenfalls gebunden oder neu geprüft werden.
+
+Weitere voneinander getrennte Review-Kinder: [PR #1603](https://github.com/RedMentos/Aii/pull/1603) schützt BP6-Nutzenrechnungen gegen überlaufende Summen (63 Tests); [PR #1604](https://github.com/RedMentos/Aii/pull/1604) hält bereits endliche World-Model-Metriken beim Runden endlich (59 Tests). Beide sind nicht in diesem Zweig integriert. GitHub-Commit und Tree aller drei Zweige wurden gelesen und verglichen.
+
+Drive-Zweitsicherung am 2026-11-08 fehlgeschlagen: HTTP 403 `storageQuotaExceeded`. Keine bestehende Drive-Datei wurde überschrieben. Diese Übergabe und die Änderungen sind auf GitHub gesichert.
+
 Kein neuer Modell-, Redmi- oder Gate-PASS; historischer STEP2/B3/JEPA-Status unverändert.
 
 ---
