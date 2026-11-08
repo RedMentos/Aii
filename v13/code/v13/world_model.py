@@ -152,6 +152,40 @@ def heldout_action_support(transitions, train_indices, holdout_indices):
             'claim_limit': 'diagnostic only; no causal or gate promotion'}
 
 
+
+def heldout_route_errors(transitions, train_indices, holdout_indices, predictions, baseline):
+    """Per-action held-out errors; explicitly undefined when no test observations.
+
+    Inputs must be the original held-out order. Never infer support or causal
+    generalization from a pooled error for an unseen training action.
+    """
+    support=heldout_action_support(transitions,train_indices,holdout_indices)
+    pred=np.asarray(predictions)
+    base=np.asarray(baseline)
+    if (pred.shape!=(len(holdout_indices),len(TARGETS))
+            or base.shape!=(len(holdout_indices),len(TARGETS))
+            or not np.isrealobj(pred) or not np.isrealobj(base)
+            or not np.isfinite(pred).all() or not np.isfinite(base).all()):
+        raise ValueError('T8_INVALID_HELDOUT_PREDICTIONS')
+    out={}
+    for a in ACTIONS:
+        positions=[j for j,i in enumerate(holdout_indices) if transitions[i]['a']==a]
+        if not positions:
+            out[a]={'n':0,'status':'UNMEASURED','mae':None,'baseline_mae':None}
+            continue
+        y=np.asarray([transitions[holdout_indices[j]]['y'] for j in positions])
+        if (y.shape!=(len(positions),len(TARGETS)) or not np.isrealobj(y)
+                or not np.isfinite(y).all()):
+            raise ValueError('T8_INVALID_HELDOUT_TARGET')
+        err=np.abs(pred[positions]-y).mean(0)
+        ref=np.abs(base[positions]-y).mean(0)
+        out[a]={'n':len(positions),
+                'status':'MEASURED_TRAIN_SUPPORTED' if support['train_action_counts'][a] else 'MEASURED_UNSEEN_TRAIN_ACTION',
+                'mae':dict(zip(TARGETS,np.round(err,4).tolist())),
+                'baseline_mae':dict(zip(TARGETS,np.round(ref,4).tolist()))}
+    return out
+
+
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
@@ -163,6 +197,7 @@ def fit(store,rng_seed=0):
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
     pred=np.mean([Xf[te]@W for W in fw],0);mae=np.abs(pred-Y[te]).mean(0)
     base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
+    route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(Y[tr].mean(0),pred.shape))
     Xi=np.hstack([np.ones((n,1)),S,Y]);Wi=ridge(Xi[tr],A[tr])
     inv_acc=float((np.argmax(Xi[te]@Wi,1)==np.argmax(A[te],1)).mean()) if te else None
     # Freeze the majority action using training labels only, then score that
@@ -186,7 +221,7 @@ def fit(store,rng_seed=0):
               metrics={'forward_mae':dict(zip(TARGETS,np.round(mae,4).tolist())),'forward_baseline_mae':dict(zip(TARGETS,np.round(base,4).tolist())),
                        'inverse_accuracy':None if inv_acc is None else round(inv_acc,4),'inverse_majority_baseline':round(major,4),
                        'inverse_note':'representation/control signal, not a causal claim','state_align':align,'held_out':len(te),
-                       'heldout_action_support':split_support})
+                       'heldout_action_support':split_support,'heldout_route_errors':route_errors})
     store.set_state(KEY,st);store.log('world_model_fit',None,{'n':n,'status':'FITTED'})
     return st
 
