@@ -12,7 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install numpy pytest torch
+      - run: python -m pip install numpy pytest
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Compile and test Body JEPA retention
         working-directory: v13/code
         run: |
