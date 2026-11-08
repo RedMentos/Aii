@@ -166,7 +166,6 @@ class WorldJEPA:
         enc, pred = _init(rng, x.shape[1], A.shape[1]); inv = _init_inv(rng, A.shape[1]); tgt = {k: v.copy() for k, v in enc.items()}
         if prior:
             enc=prior['enc'];pred=prior['pred'];tgt=prior['tgt']
-            if prior['inv'] is not None:inv=prior['inv']
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         history = []
         for s in range(steps):
@@ -206,7 +205,7 @@ class WorldJEPA:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
             self.__dict__.update(_fit_steps=total_steps, _action_counts=action_counts, mu=mu, sd=sd,
-                                 history=history, enc=enc, tgt=tgt, preds=preds, inv=inv,
+                                 history=history, enc=enc, tgt=tgt, preds=preds,
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
