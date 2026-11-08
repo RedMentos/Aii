@@ -258,7 +258,14 @@ def fit(store,rng_seed=0):
         res=((Xl[te]@Wl-Y[te])**2).sum(0);tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
         if not np.isfinite(res).all() or not np.isfinite(tot).all() or np.any(tot<=0):
             raise ValueError('T8_NONFINITE_LATENT_SCORE')
-        align={'status':'MEASURED','r2':dict(zip(TARGETS,[round(float(1-a/b),4) for a,b in zip(res,tot)]))}
+        # Finite residual and denominator sums do not guarantee finite R2:
+        # a/b can overflow for a tiny positive denominator. Never persist
+        # an infinity as measured alignment evidence.
+        with np.errstate(over='ignore',divide='ignore',invalid='ignore'):
+            r2=1.0-res/tot
+        if not np.isfinite(r2).all():
+            raise ValueError('T8_NONFINITE_LATENT_SCORE')
+        align={'status':'MEASURED','r2':dict(zip(TARGETS,np.round(r2,4).tolist()))}
     st.update(status='FITTED',forward=[W.tolist() for W in fw],inverse=Wi.tolist(),
               # Coverage is fit on training observations ONLY; held-out rows must
               # not manufacture support for their own action or reduce OOD distance.
