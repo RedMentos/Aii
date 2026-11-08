@@ -151,7 +151,7 @@ class WorldJEPA:
         with _WORLD_JEPA_IO_LOCK:
             existing = (hasattr(self,'enc') and hasattr(self,'preds') and
                         len(self.mu)==X.shape[1] and
-                        self.preds[0]['P1'].shape[1]==64+A.shape[1])
+                        self.preds[0]['P1'].shape[1]==Z+A.shape[1])
             if warm_start and not existing:
                 raise ValueError('Warm-start requires a compatible fitted JEPA')
             prior = ({'mu':self.mu.copy(),'sd':self.sd.copy(),
