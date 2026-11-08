@@ -30,11 +30,7 @@ class LiveSkillOutcomeTests(unittest.TestCase):
         self.skills.set_stage('quick_route', 'TRUSTED')
         live._save(self.store, 'e1', skill='quick_route')
     def test_technical_final_does_not_train_skill(self):
-        class FakeHub:
-            skills = self.skills if False else None
-        class Runtime:
-            store = self.store if False else None
-        runtime = Runtime()
+        runtime = type('Runtime', (), {})()
         runtime.store = self.store
         fake = type('Hub', (), {'grounding': type('Grounding', (), {})(), 'skills': self.skills})()
         with patch.object(live, 'hub', return_value=fake), patch.object(live, 'sync_slots'), patch.object(live, 'goal_turn'):
