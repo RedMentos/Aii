@@ -10,6 +10,7 @@ from .tools import ToolSpec
 
 KEY='G10_TOOL_BUILDER';REVISION='g10-tool-builder-v1'
 MAX_EXAMPLES=64
+MAX_CANDIDATES=128
 
 
 def _programs():
