@@ -165,7 +165,7 @@ def job(sleep_runtime,event):
     raise ValueError('Unbekannte Growth-Aktion: '+str(a))
 
 def operator_command(r,args):
-    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>|toolbuild ...]"""
+    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>|toolbuild ...|skill ...]"""
     from ..common import dumps
     # Read-only bilingual comparison must not initialize Growth or register
     # a missing English/German suite as a side effect of a status query.
@@ -230,6 +230,17 @@ def operator_command(r,args):
     if c=='age':return dumps(g.age_evidence())
     if c=='slots':return dumps(g.slots.report())
     if c=='export' and len(args)==2:return 'Slot exportiert: '+g.slots.export_bundle(args[1],home=r.home)['path']
+    if c=='skill':
+        import json
+        if len(args)==1 or args[1]=='status':return dumps(g.skills.report())
+        sub=args[1]
+        if sub=='recent' and len(args)==4:
+            return dumps({'candidate':g.skills.propose_recent(args[2],args[3],origin='USER')})
+        if sub=='fromtrace' and len(args)>=4:
+            return dumps({'candidate':g.skills.propose_from_trace(args[2],args[3:],origin='USER')})
+        if sub=='run' and len(args)>=4:
+            return dumps(g.skills.run(args[2],json.loads(' '.join(args[3:])),origin='USER'))
+        raise ValueError('Usage: :growth skill [status|recent NAME INTENT|fromtrace NAME TX_ID...|run NAME JSON_INPUTS]')
     if c=='toolbuild':
         # Operator-only entrypoint: candidate synthesis never activates a tool.
         import json
