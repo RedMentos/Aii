@@ -37,3 +37,14 @@ Inspect the newest owner branches, actual Runtime consumers, learning-state stor
 ## Checkpoint
 
 Source: this document on an isolated branch. Tests: none (documentation-only). No weights, gates, seeds, or cohorts changed. Exact next command: fetch `v13/code/BUILD_STATE.json`, `v13/ROADMAP.md`, `v13/code/v13/agi/runtime.py` and current owner PRs; identify runtime path and baseline; implement and test a connected slice on a new owner-safe branch. Open questions: actual current owner/branch for multi-path learning, freeze constraints, available Linux-native artifacts and Redmi runner.
+
+
+## Engineering throughput contract — user clarification 2026-11-08
+
+The user explicitly wants **substantial connected implementation**, not endless defensive micro-patches and test-only PRs. Work in feature-sized batches: inspect source/ownership and define the integration boundary, implement multiple connected pieces with real consumers and persistence, run cheap compiler/type/lint/unit feedback during development, then execute targeted integration and acceptance tests, fix discovered failures, review and checkpoint. Keep existing safety gates, source freeze, privacy scans and registered native evidence intact. A passing unit suite is a milestone, never the end of the project.
+
+**Language choice is engineering-driven, not a blanket rewrite.** Python remains suitable for orchestration, experimentation and model ecosystem glue. Prefer Rust for newly built native hot paths, concurrent queue/state machinery, binary protocol parsing, memory-sensitive streaming or tools where ownership/type safety and speed materially help. Use Rust's compiler, clippy, rustfmt, unit/integration tests and sanitizer/Miri where available; profile before replacing functioning Python or native C/C++ inference kernels. For Android/Termux, verify target support, ABI, dependency size, cross-compilation and runtime RAM/latency. Rust does not guarantee logical correctness or learned utility.
+
+**Package-level evidence:** for each substantial slice, identify interacting organs and learning mechanisms; actual runtime entrypoint; persistence and restart; operator permissions; cheap dev checks; end-to-end baseline, ablation, retention, rollback; native/Redmi gaps; remote commit and readback. Test strategically at module boundaries and before integration, not by running full expensive suites after every line. Do not suppress known RED gates or change preregistered cohorts.
+
+**Execution rhythm:** code substantial connected functionality → compiler/static checks and focused tests → fix → integration/evidence/review/privacy → durable remote checkpoint → continue next high-value package. Agents may own disjoint modules, not shared frozen runtime files. Avoid creating new isolated helper-only PRs unless a concrete blocker requires it. This is a priority/working-method clarification, not permission to bypass safety or accept untested code.
