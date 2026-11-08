@@ -96,7 +96,9 @@ def training_readiness(runtime,kind='lora'):
     if st.get('master_sha256') and (master/'model.safetensors').is_file():
         if file_hash(master/'model.safetensors')!=st['master_sha256']:
             reasons.append('MASTER_HASH_CHANGED')
-    if not req['c3_gguf']:reasons.append('DEPLOYED_C3_MISSING')
+    deployed=req['c3_gguf']
+    if not deployed or not Path(deployed).is_file():
+        reasons.append('DEPLOYED_C3_MISSING')
     if req['arch_match'] is False:reasons.append('MASTER_GGUF_ARCH_MISMATCH')
     if req['arch_match'] is None and req['master_ok'] and req['c3_gguf']:
         reasons.append('MASTER_GGUF_ARCH_UNVERIFIED')
