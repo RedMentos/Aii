@@ -19,6 +19,14 @@ PROMOTE={'CANDIDATE':3,'SHADOW':8}  # BOOT: successes needed to leave a stage
 PARITY_MIN=.95;FRONTIER=(.3,.7);MAX_SKILLS=256;MAX_STEPS=16
 _VAR=re.compile(r'\{(\w+)\}')
 
+def _string_leaves(value):
+    if isinstance(value,str):
+        yield value
+    elif isinstance(value,dict):
+        for child in value.values():yield from _string_leaves(child)
+    elif isinstance(value,(list,tuple)):
+        for child in value:yield from _string_leaves(child)
+
 def fill(template,inputs):
     if isinstance(template,str):return _VAR.sub(lambda m:str(inputs[m.group(1)]),template)
     if isinstance(template,dict):return {k:fill(v,inputs) for k,v in template.items()}
@@ -32,18 +40,85 @@ class SkillLibrary:
     def propose(self,name,steps,trigger='',origin='USER',source_traces=None):
         if not re.fullmatch(r'[a-z0-9_]{2,48}',name):raise ValueError('Skill-Name a-z0-9_')
         if not steps or len(steps)>MAX_STEPS:raise ValueError('1..16 Schritte')
+        import copy
+        steps=copy.deepcopy(steps)
         for s in steps:
-            if set(s)-{'tool','args','route','note'} or ('tool' in s)==('route' in s):raise ValueError('Schritt: genau tool+args oder route')
+            if not isinstance(s,dict) or set(s)-{'tool','args','route','note'} or ('tool' in s)==('route' in s):raise ValueError('Schritt: genau tool+args oder route')
         def f(st):
             if name in st['skills'] and st['skills'][name]['stage']!='RETIRED':raise ValueError('Skill existiert')
             if len(st['skills'])>=MAX_SKILLS:raise ValueError('Skill-Speicher voll')
             st['skills'][name]={'name':name,'steps':steps,'trigger':str(trigger)[:200],'origin':origin,'stage':'CANDIDATE',
                 'uses':0,'successes':0,'parity':[],'created':self.clock(),'source_traces':list(source_traces or [])[:16],'history':[['CANDIDATE',self.clock()]]}
         self.box.mutate(f);return name
+    def propose_from_trace(self,name,trace,trigger='',origin='SELF'):
+        """Compose a candidate procedure from *observed* successful tool transactions.
+
+        This is skill creation, not code execution or permission escalation. Every
+        referenced tool must already exist in the registry; replay always passes
+        through ToolRegistry.call and its current user/age/risk gates. A failed,
+        proposed, or denied transaction is never learned as a successful recipe.
+        Arguments are copied as literals, not interpreted as Python templates.
+        A human can inspect the CANDIDATE before trusting it.
+        """
+        if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
+        if not isinstance(trace,(list,tuple)) or not 1<=len(trace)<=MAX_STEPS:
+            raise ValueError('1..16 erfolgreiche Tool-Transaktionen erforderlich')
+        import copy
+        # Never trust caller-supplied status/arguments: resolve IDs against the
+        # authoritative ToolRegistry ledger, including after process restart.
+        recorded=self.tools.box.load()[0]['calls']
+        by_id={tx['id']:tx for tx in recorded}
+        steps=[];sources=[]
+        for item in trace:
+            txid=item if isinstance(item,str) else item.get('id') if isinstance(item,dict) else None
+            if not isinstance(txid,str) or txid not in by_id or txid in sources:
+                raise ValueError('Unbekannte oder doppelte Tool-Transaktion')
+            tx=by_id[txid]
+            if tx.get('status')!='EXECUTED':
+                raise ValueError('Nur nachweislich ausgeführte Transaktionen können gelernt werden')
+            if tx.get('event_id') and (not hasattr(self.tools,'_turn_ended') or not self.tools._turn_ended(tx['event_id'])):
+                raise ValueError('Provisorische Tool-Ergebnisse dürfen keine Skills trainieren')
+            tool=tx.get('tool');args=tx.get('args')
+            if type(tool) is not str or tool not in self.tools.tools or not isinstance(args,dict):
+                raise ValueError('Unbekanntes Werkzeug oder ungültige Argumente')
+            spec=self.tools.tools[tool]
+            if spec.risk!='READ_LOCAL':
+                raise ValueError('Schreibende/externe Aktionen nicht automatisch als Skill lernen')
+            from ..transaction import check_args,secrets_in
+            if check_args(spec.schema,args) or secrets_in(args):
+                raise ValueError('Ungültige oder geheime Tool-Argumente')
+            if any(_VAR.search(v) for v in _string_leaves(args)):
+                raise ValueError('Template-Platzhalter aus fremden Traces verboten')
+            steps.append({'tool':tool,'args':copy.deepcopy(args)})
+            sources.append(txid)
+        return self.propose(name,steps,trigger,origin,source_traces=sources)
+
+    def propose_recent(self,name,intent,trigger='',origin='SELF'):
+        """Discover a candidate from one contiguous completed registry intent.
+
+        No synthetic success signals: only the durable call ledger supplies
+        evidence. Mixed/failed/proposed attempts are rejected, not filtered out
+        to fabricate a successful procedure. The new skill remains CANDIDATE.
+        """
+        if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
+        if not isinstance(intent,str) or not intent.strip():raise ValueError('Intent erforderlich')
+        calls=self.tools.box.load()[0]['calls']
+        positions=[i for i,tx in enumerate(calls) if tx.get('intent')==intent]
+        matching=[calls[i] for i in positions]
+        if positions and positions != list(range(positions[0],positions[-1]+1)):
+            raise ValueError('Ablauf ist durch andere Aktionen unterbrochen')
+        if not matching or len(matching)>MAX_STEPS:
+            raise ValueError('Kein eindeutiger, begrenzter Ablauf')
+        if any(tx.get('status')!='EXECUTED' for tx in matching):
+            raise ValueError('Ablauf enthält unvollständige oder fehlgeschlagene Aktionen')
+        return self.propose_from_trace(name,[tx['id'] for tx in matching],trigger,origin)
+
     def run(self,name,inputs,origin='USER'):
         """Execute tool steps through the ToolRegistry (its gates apply); route steps are returned as hints."""
         sk=self.get(name)
         if sk['stage']=='RETIRED':raise ValueError('Skill stillgelegt')
+        if origin!='USER' and sk['stage'] not in {'TRUSTED','INTERNALISED'}:
+            return {'status':'PROPOSED','reason':'SKILL_NOT_TRUSTED','trace':[],'value':None}
         if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
         trace=[];value=None
         for s in sk['steps']:

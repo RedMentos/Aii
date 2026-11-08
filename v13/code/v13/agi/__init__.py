@@ -39,6 +39,7 @@ class Growth:
         from .goals import GoalStore
         from .curiosity import Curiosity
         from .tools import ToolRegistry
+        from .tool_builder import ToolBuilder
         from .grounding import Grounding
         from .skills import SkillLibrary
         from .abstraction import Abstraction
@@ -58,6 +59,8 @@ class Growth:
         self.curiosity=Curiosity(store,age)
         self.grounding=Grounding(store)
         self.tools=ToolRegistry(store,age,on_outcome=self._tool_outcome)
+        self.tool_builder=ToolBuilder(store,self.tools)
+        self.tool_builder.restore()
         self.forecast=None  # Thread M: toolforecast.ToolForecast, set by hub()
         self.skills=SkillLibrary(store,age,self.tools)
         self.abstraction=Abstraction(store)
@@ -93,6 +96,7 @@ class Growth:
         for k,m in parts.items():
             try:out[k]=m.report()
             except Exception as exc:out[k]={'error':type(exc).__name__+': '+str(exc)[:200]}
+        if isinstance(out.get('AG10'),dict):out['AG10']['tool_builder']=self.tool_builder.report()
         return out
 
 def hub(runtime):
@@ -161,7 +165,7 @@ def job(sleep_runtime,event):
     raise ValueError('Unbekannte Growth-Aktion: '+str(a))
 
 def operator_command(r,args):
-    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>]"""
+    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>|toolbuild ...|skill ...]"""
     from ..common import dumps
     # Read-only bilingual comparison must not initialize Growth or register
     # a missing English/German suite as a side effect of a status query.
@@ -226,6 +230,40 @@ def operator_command(r,args):
     if c=='age':return dumps(g.age_evidence())
     if c=='slots':return dumps(g.slots.report())
     if c=='export' and len(args)==2:return 'Slot exportiert: '+g.slots.export_bundle(args[1],home=r.home)['path']
+    if c=='skill':
+        import json
+        if len(args)==1 or args[1]=='status':return dumps(g.skills.report())
+        sub=args[1]
+        if sub=='recent' and len(args)==4:
+            return dumps({'candidate':g.skills.propose_recent(args[2],args[3],origin='USER')})
+        if sub=='fromtrace' and len(args)>=4:
+            return dumps({'candidate':g.skills.propose_from_trace(args[2],args[3:],origin='USER')})
+        if sub=='run' and len(args)>=4:
+            return dumps(g.skills.run(args[2],json.loads(' '.join(args[3:])),origin='USER'))
+        raise ValueError('Usage: :growth skill [status|recent NAME INTENT|fromtrace NAME TX_ID...|run NAME JSON_INPUTS]')
+    if c=='toolbuild':
+        # Operator-only entrypoint: candidate synthesis never activates a tool.
+        import json
+        if len(args)==1 or args[1]=='status':return dumps(g.tool_builder.report())
+        sub=args[1]
+        if sub in ('integer','text','verify') and len(args)>=4:
+            name=args[2]
+            examples=json.loads(' '.join(args[3:]))
+            if sub=='integer':return dumps(g.tool_builder.propose(name,examples,origin='USER'))
+            if sub=='text':return dumps(g.tool_builder.propose_text(name,examples,origin='USER'))
+            return dumps({'verified':g.tool_builder.verify(name,examples)})
+        if sub=='history' and len(args)==4:
+            return dumps(g.tool_builder.propose_from_tool_history(args[2],args[3],origin='USER'))
+        if sub=='activate' and len(args)==3:
+            return dumps({'activated':g.tool_builder.activate(args[2],origin='USER'),
+                          'enabled':False,'next':':growth enable '+args[2]})
+        if sub=='retire' and len(args)==3:
+            return dumps({'retired':g.tool_builder.retire(args[2],origin='USER')})
+        if sub=='call-intent' and len(args)>=5:
+            return dumps(g.tools.call(args[2],json.loads(' '.join(args[4:])),origin='USER',intent=args[3]))
+        if sub=='call' and len(args)>=4:
+            return dumps(g.tools.call(args[2],json.loads(' '.join(args[3:])),origin='USER'))
+        raise ValueError('Usage: :growth toolbuild [status|integer NAME JSON_PAIRS|text NAME JSON_PAIRS|history NAME SOURCE|verify NAME JSON_PAIRS|activate NAME|retire NAME|call NAME JSON_ARGS|call-intent NAME INTENT JSON_ARGS]')
     if c=='tools':return dumps(g.tools.report())
     if c=='enable' and len(args)==2:g.tools.enable(args[1]);return 'Werkzeug erlaubt: '+args[1]
     if c=='calc' and len(args)>1:return dumps(g.tools.call('calc',{'expression':' '.join(args[1:])},origin='USER'))
