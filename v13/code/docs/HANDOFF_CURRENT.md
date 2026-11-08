@@ -1,3 +1,13 @@
+# 2026-11-08 — verbundene Feedback-/Gedächtnisarbeit (isolierter Zwischenstand)
+
+Basis ist der gesichtete parallele C5-Ledger-Zweig #1608 bei `15c7a4f5f1961280e2cb0f78746ead3adfc2c39f`; die Gesamtscope-/Arbeitsrhythmus-Notiz aus #1609 liegt bytegleich unter `V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md`. Die technische Zusatzanforderung zu internen Layer-Schleifen ist als offener Plan `v13/research/RL1_INTERNE_SCHICHTSCHLEIFEN.md` mit Roadmap-Link aufgenommen; sie ersetzt weder den Canon noch Context-Re-entry.
+
+Die echte `inputs.record_rating`-Weitergabe ist in diesem isolierten Kandidaten pro Empfänger getrennt: Ein ausgefallener JEF-, C5-, Deliberation-, Callosum- oder AGI-Hook überspringt die anderen nicht mehr. Auch ein Ausfall seiner Fehlertelemetrie blockiert die folgenden Hooks nicht. 54 gezielte/angrenzende Tests bestehen; der reale C5-Zustand überlebt in der Probe einen Neustart. Dies ist noch keine atomare, nachholbare oder idempotente Zustellung. Wiederholte Noten, Herkunft und alte Aggregate bleiben offen. Details `FEEDBACK_FANOUT_CANDIDATE_20261108.md`.
+
+Weitere Arbeit in isolierten Checkouts: Store-gebundener Herkunfts-/Ledger-Adapter und verbundener F1/F5-/Episoden-/Replay-/zweiter-Turn-Slice; vor ihrer Übernahme deren fertige Commits, Tests und Source-Bindung unabhängig lesen. Keine Behauptung eines Modell-, Redmi-, End-to-End-Lern- oder Gate-PASS.
+
+---
+
 # 2026-11-08 — Fehlerlernen und Weight-Space (isolierter Fortsetzungsstand)
 
 Basis `codex/resume-20261106` bei `5e964146579deb22c5ba89a2a03a52a9e4d8aab8`; andere aktuelle Review-Zweige sind nicht automatisch Vorfahren. Die neue Forschungsnotiz `v13/research/WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md` ergänzt WP-T12 und unterscheidet direktes Weight-Space-Editieren von eigenem Lernen aus Fehlern. Canon und ursprüngliche Gates sind unverändert.

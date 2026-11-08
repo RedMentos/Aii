@@ -1,3 +1,11 @@
+## 2026-11-08 — technische Ergänzung zu internen Schichtschleifen
+
+Die separate Projektübergabe zu [WP-RL1](research/RL1_INTERNE_SCHICHTSCHLEIFEN.md) ist als experimenteller Plan aufgenommen: begrenztes internes Layer-Re-entry und mögliche Body-JEPA-Zwischenzustände. Context-Re-entry bleibt ein eigener Pfad; ohne nachgewiesenen Layer-/Trainingszugriff gilt `UNSUPPORTED`. Der vollständige Canon, die Lernziele von B1/B2 und JEF/C3 und alle Gates bleiben erhalten. Kein neuer Implementierungs- oder Gerätnachweis.
+
+Die [Gesamtscope- und Arbeitsrhythmus-Notiz](code/docs/V13_WHOLE_SYSTEM_LEARNING_CONTINUITY_20261108.md) aus dem parallelen Projektzweig konkretisiert die Fortsetzung: verbundene, größere Umsetzungspakete mit mehreren Lernmechanismen und echtem Consumer; isolierte Prüfungen ersetzen keine End-to-End-Abnahme.
+
+Der [Mehrorgan-Feedback-Kandidat](code/docs/FEEDBACK_FANOUT_CANDIDATE_20261108.md) verhindert im isolierten Runtime-Zweig, dass ein ausgefallener Bewertungs-Hook die späteren Organe überspringt. Er nutzt die reale Bewertungs- und C5-Persistenz; Nachholbarkeit, idempotente Korrekturen und der verbundene Gedächtnis-/Replay-Pfad bleiben weitere Integrationsarbeit. Die parallel entwickelte Ledger-Kette ist Grundlage, kein bereits aktivierter Lernpfad.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

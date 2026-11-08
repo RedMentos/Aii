@@ -9,6 +9,7 @@ never change memories or weights by themselves; trainers (WP-I) read them explic
 """
 import re
 import time
+from importlib import import_module
 from .common import dumps
 
 LOG_LINE=re.compile(r"(?x)^\s*(?:"
@@ -53,20 +54,21 @@ def record_rating(store,event_id,score,origin,note=''):
     del st['ratings'][:-MAX_RATINGS]
     store.set_state(RATINGS_KEY,st,expected=v)
     store.log('answer_rating',event_id,{'kind':'rating','origin':origin,'status':str(score)})
-    try:
-        from .agi.live import on_rating
-        on_rating(store,event_id,score)  # WP-N13 AG9 label
-    except Exception as exc:store.log('agi_live_unavailable',event_id,{'stage':'rating','error':type(exc).__name__})
-    try:
-        from .jefbridge import on_rating as jef_rating
-        jef_rating(store,event_id,score)  # WP-N3 offer-utility label
-        from .actionlearn import on_rating as c5_rating
-        c5_rating(store,event_id,score)  # WP-N4 human approval/correction of the taken action
-        from .deliberation import on_rating as delib_rating
-        delib_rating(store,event_id,score)  # WP-N2 value of the turn's deliberation modes
-        from .callosum import on_rating as callosum_rating
-        callosum_rating(store,event_id,score)  # WP-J B3-H9 human value of the turn's callosum channels
-    except Exception as exc:store.log('jef_bridge_unavailable',event_id,{'stage':'rating','error':type(exc).__name__})
+    # Feedback belongs to multiple organs. A failed consumer must not suppress
+    # delivery to the remaining ones; this is not an exactly-once guarantee.
+    for module_name,log_kind in (
+        ('.agi.live','agi_live_unavailable'),
+        ('.jefbridge','jef_bridge_unavailable'),
+        ('.actionlearn','c5_learning_unavailable'),
+        ('.deliberation','deliberation_unavailable'),
+        ('.callosum','callosum_unavailable'),
+    ):
+        try:import_module(module_name,__package__).on_rating(store,event_id,score)
+        except Exception as exc:
+            # A broken diagnostic write must not suppress unrelated consumers.
+            # The original rating write and its normal audit log remain strict.
+            try:store.log(log_kind,event_id,{'stage':'rating','error':type(exc).__name__})
+            except Exception:pass
     return st['ratings'][-1]
 
 def ratings(store):return store.state(RATINGS_KEY,{'ratings':[]})[0]['ratings']
