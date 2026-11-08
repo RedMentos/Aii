@@ -56,3 +56,19 @@ def test_restarted_learning_matches_uninterrupted_replay(tmp_path):
     np.testing.assert_array_equal(a.U,b.U)
     np.testing.assert_array_equal(a.x,b.x)
     assert a.seen==b.seen and a.updates==b.updates
+
+
+def test_checkpoint_rollback_restores_previous_learned_weights(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path)
+    for x,a,y in samples(16):m.observe(x,a,y)
+    old=m.W.copy();m.checkpoint()
+    for x,a,y in samples(16):m.observe(x,a,y)
+    m.checkpoint()
+    assert not np.array_equal(m.W,old)
+    assert m.rollback()['status']=='ROLLED_BACK_IN_MEMORY'
+    np.testing.assert_array_equal(m.W,old)
+
+
+def test_rollback_without_prior_snapshot_is_rejected(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path)
+    with pytest.raises(FileNotFoundError):m.rollback()
