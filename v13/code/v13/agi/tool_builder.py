@@ -158,6 +158,30 @@ class ToolBuilder:
         if kind=='integer':return self.propose(name,examples,origin)
         return self.propose_text(name,examples,origin)
 
+    def verify(self,name,independent_examples):
+        """Evaluate a candidate on fresh inputs before human activation.
+
+        No training or program selection uses these cases. Inputs overlapping
+        the original synthesis set are rejected as non-independent evidence.
+        A failed check permanently rejects this candidate; propose a new name
+        after diagnosing the failure.
+        """
+        record=self.box.load()[0]['candidates'].get(name)
+        if not record or record['status']!='CANDIDATE':raise ValueError('Only candidates can be verified')
+        kind=record.get('kind','integer')
+        pairs=_examples(independent_examples) if kind=='integer' else _text_examples(independent_examples)
+        used={x for x,_ in record['examples']}
+        if any(x in used for x,_ in pairs):raise ValueError('Verification overlaps synthesis data')
+        fn=_compile_kind(kind,record['program'])
+        try:passed=all(fn(x)==y for x,y in pairs)
+        except (ValueError,TypeError,OverflowError):passed=False
+        def save(st):
+            item=st['candidates'][name]
+            item['status']='VERIFIED' if passed else 'REJECTED'
+            item['verification']={'count':len(pairs),'passed':passed}
+        self.box.mutate(save)
+        return passed
+
     def activate(self,name,origin='USER'):
         """Explicit human activation; never callable as SELF/SYSTEM.
 
@@ -165,7 +189,7 @@ class ToolBuilder:
         """
         if origin!='USER':raise PermissionError('Human activation required')
         record=self.box.load()[0]['candidates'].get(name)
-        if not record or record['status'] not in ('CANDIDATE','ACTIVE'):
+        if not record or record['status']!='VERIFIED':
             raise ValueError('Unknown tool candidate')
         if name in self.registry.tools:raise ValueError('Tool already registered')
         fn=_compile_kind(record.get('kind','integer'),record['program'])
