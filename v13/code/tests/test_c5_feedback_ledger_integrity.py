@@ -36,6 +36,21 @@ class LedgerIntegrityTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     L.record(state, 'e2', 'ctx', 'act', 1)
 
+    def test_record_returns_independent_nested_snapshot(self):
+        original = L.record(L.empty(), 'e1', 'simple|low', 'C3', 10)
+        updated = L.record(original, 'e2', 'simple|low', 'C3', 1)
+        # Both directions matter: neither state may borrow mutable row dicts.
+        original['ratings']['e1']['score'] = 1
+        self.assertEqual(L.aggregate(updated)['simple|low|C3'],
+                         {'n': 2, 'human_approval': .5, 'human_correction': .5})
+        updated['ratings']['e1']['score'] = 5
+        self.assertEqual(L.aggregate(original)['simple|low|C3'],
+                         {'n': 1, 'human_approval': 0., 'human_correction': 1.})
+        corrected = L.record(updated, 'e1', 'simple|low', 'C3', 10)
+        updated['ratings']['e2']['score'] = 10
+        self.assertEqual(L.aggregate(corrected)['simple|low|C3'],
+                         {'n': 2, 'human_approval': .5, 'human_correction': .5})
+
     def test_valid_existing_data_preserved(self):
         s = L.record(L.empty(), 'e1', 'ctx', 'act', 10)
         s = L.record(s, 'e2', 'ctx', 'act', 1)
