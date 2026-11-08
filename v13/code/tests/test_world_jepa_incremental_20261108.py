@@ -49,3 +49,18 @@ def test_prediction_loss_can_measure_retention_without_training():
     assert np.isfinite(before) and np.isfinite(after)
     assert before>=0 and after>=0
     with pytest.raises(ValueError):m.prediction_loss(x,a,np.full_like(y,np.nan))
+
+
+def test_pinned_jepa_checkpoint_can_resume_real_weight_learning(tmp_path):
+    from v13.world_jepa_shadow_checkpoint import save,load
+    m=WorldJEPA(seed=3,ensemble=2)
+    x,a,y=batch()
+    m.fit(x,a,y,steps=2)
+    source_sha='a'*64
+    path=tmp_path/'jepa.npz'
+    saved=save(m,path,source_sha)
+    resumed=load(path,source_sha,saved)
+    before=resumed.enc['W1'].copy()
+    resumed.partial_fit(*batch(10),steps=2)
+    assert not np.array_equal(before,resumed.enc['W1'])
+    assert resumed._fit_steps==4
