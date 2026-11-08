@@ -201,10 +201,11 @@ class WorldJEPA:
                 or not all(np.isfinite(v) for row in history
                            for key, v in row.items() if key != 'step')):
             raise ValueError('WorldJEPA fit produced nonfinite learned state')
+        total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
-            self.__dict__.update(_fit_steps=steps, _action_counts=action_counts, mu=mu, sd=sd,
+            self.__dict__.update(_fit_steps=total_steps, _action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds, inv=inv,
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
