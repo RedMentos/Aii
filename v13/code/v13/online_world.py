@@ -20,12 +20,13 @@ class OnlineWorld:
         self.home.mkdir(parents=True,exist_ok=True)
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
-        self.last_id=None
+        self.processed=[]
         if self.cursor.exists():
             record=json.loads(self.cursor.read_text())
-            if record.get('revision')!=REVISION or type(record.get('last_id')) not in (int,type(None)):
+            ids=record.get('processed')
+            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
-            self.last_id=record['last_id']
+            self.processed=ids
 
     @staticmethod
     def encode(row):
@@ -41,26 +42,25 @@ class OnlineWorld:
     def update(self,limit=2048):
         if type(limit) is not int or not 1<=limit<=world_model.MAX_ROWS:raise ValueError('Invalid update limit')
         rows=world_model.transitions(self.runtime.store,limit=limit)
+        already=set(self.processed)
         new=[]
         for row in rows:
             action_id=row['action_id']
-            if type(action_id) is not int:raise ValueError('Invalid action identifier')
-            if self.last_id is None or action_id>self.last_id:
+            if type(action_id) is not str or not action_id:
+                raise ValueError('Invalid action identifier')
+            if action_id not in already:
                 new.append(row)
-        # Reject out-of-order records; otherwise cursor could skip observations.
-        if any(a['action_id']>=b['action_id'] for a,b in zip(new,new[1:])):
-            raise ValueError('Non-monotonic committed action stream')
+                already.add(action_id)
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            # Commit learned weights BEFORE advancing the durable cursor.
-            # An interrupted write may replay a sample; it must never silently skip it.
             self.model.checkpoint()
-            self.last_id=row['action_id']
+            self.processed.append(row['action_id'])
+            self.processed=self.processed[-world_model.MAX_ROWS:]
             temp=self.cursor.with_suffix('.tmp')
-            temp.write_text(json.dumps({'revision':REVISION,'last_id':self.last_id}))
+            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)
-        return {'learned':len(new),'seen':self.model.seen,'last_id':self.last_id,
+        return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
 
     def predict(self,state,action):
