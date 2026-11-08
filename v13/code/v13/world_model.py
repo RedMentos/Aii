@@ -213,6 +213,20 @@ def pooled_heldout_errors(predictions, heldout_targets, training_targets):
     return mae,base,baseline_mean
 
 
+def _require_finite_fit_matrix(matrix, expected_shape, label):
+    """A fitted coefficient must be real, finite and dimensionally complete."""
+    try:
+        raw=np.asarray(matrix)
+        if raw.dtype.kind not in 'fiub':
+            raise ValueError('T8_INVALID_FIT_'+label)
+        arr=np.asarray(raw,dtype=float)
+    except (TypeError,ValueError,OverflowError) as exc:
+        raise ValueError('T8_INVALID_FIT_'+label) from exc
+    if arr.shape!=expected_shape or not np.isfinite(arr).all():
+        raise ValueError('T8_INVALID_FIT_'+label)
+    return arr
+
+
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
@@ -222,11 +236,15 @@ def fit(store,rng_seed=0):
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
     split_support=heldout_action_support(T,tr,te)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
+    fw=[_require_finite_fit_matrix(W,(Xf.shape[1],len(TARGETS)),'FORWARD') for W in fw]
     pred=np.mean([Xf[te]@W for W in fw],0)
     mae,base,baseline_mean=pooled_heldout_errors(pred,Y[te],Y[tr])
     route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(baseline_mean,pred.shape))
     Xi=np.hstack([np.ones((n,1)),S,Y]);Wi=ridge(Xi[tr],A[tr])
-    inv_acc=float((np.argmax(Xi[te]@Wi,1)==np.argmax(A[te],1)).mean()) if te else None
+    Wi=_require_finite_fit_matrix(Wi,(Xi.shape[1],len(ACTIONS)),'INVERSE')
+    inverse_scores=Xi[te]@Wi
+    if not np.isfinite(inverse_scores).all():raise ValueError('T8_NONFINITE_INVERSE_SCORE')
+    inv_acc=float((np.argmax(inverse_scores,1)==np.argmax(A[te],1)).mean()) if te else None
     # Freeze the majority action using training labels only, then score that
     # one fixed classifier on held-out actions. The all-row frequency leaks
     # held-out labels into the baseline and is not comparable to inv_acc.
@@ -236,7 +254,10 @@ def fit(store,rng_seed=0):
     L=[t['latent'] for t in T];dims={len(l) for l in L if l}
     if all(l is not None for l in L) and len(dims)==1:
         Xl=np.hstack([np.ones((n,1)),np.array(L,float)]);Wl=ridge(Xl[tr],Y[tr],1.)
+        Wl=_require_finite_fit_matrix(Wl,(Xl.shape[1],len(TARGETS)),'LATENT')
         res=((Xl[te]@Wl-Y[te])**2).sum(0);tot=((Y[te]-Y[tr].mean(0))**2).sum(0)+1e-12
+        if not np.isfinite(res).all() or not np.isfinite(tot).all() or np.any(tot<=0):
+            raise ValueError('T8_NONFINITE_LATENT_SCORE')
         align={'status':'MEASURED','r2':dict(zip(TARGETS,[round(float(1-a/b),4) for a,b in zip(res,tot)]))}
     st.update(status='FITTED',forward=[W.tolist() for W in fw],inverse=Wi.tolist(),
               # Coverage is fit on training observations ONLY; held-out rows must
