@@ -115,13 +115,14 @@ class WorldJEPA:
     def __init__(self, seed=0, ensemble=5):
         self.seed = seed; self.ensemble = ensemble
 
-    def fit(self, X, A, X2, steps=3000, log_every=500):
+    def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
-                or type(log_every) is not int or log_every < 1):
+                or type(log_every) is not int or log_every < 1
+                or type(warm_start) is not bool):
             raise ValueError('Invalid WorldJEPA fit configuration')
         try:
             X, A, X2 = np.asarray(X), np.asarray(A), np.asarray(X2)
@@ -147,9 +148,24 @@ class WorldJEPA:
         # Zeroed/shuffled-action controls do not gain fabricated one-hot support.
         valid_a = np.isfinite(A).all(1) & np.all((A == 0) | (A == 1), axis=1) & (A.sum(1) == 1)
         action_counts = np.bincount(np.argmax(A[valid_a], axis=1), minlength=A.shape[1])
-        mu = X.mean(0); sd = X.std(0)+1e-3
+        with _WORLD_JEPA_IO_LOCK:
+            existing = (hasattr(self,'enc') and hasattr(self,'preds') and
+                        len(self.mu)==X.shape[1] and
+                        self.preds[0]['P1'].shape[1]==Z+A.shape[1])
+            if warm_start and not existing:
+                raise ValueError('Warm-start requires a compatible fitted JEPA')
+            prior = ({'mu':self.mu.copy(),'sd':self.sd.copy(),
+                      'enc':{k:v.copy() for k,v in self.enc.items()},
+                      'tgt':{k:v.copy() for k,v in self.tgt.items()},
+                      'pred':{k:v.copy() for k,v in self.preds[0].items()},
+                      'ensemble':[{k:v.copy() for k,v in p.items()} for p in self.preds]}
+                     if warm_start else None)
+        mu = prior['mu'] if prior else X.mean(0)
+        sd = prior['sd'] if prior else X.std(0)+1e-3
         x, x2 = (X-mu)/sd, (X2-mu)/sd
         enc, pred = _init(rng, x.shape[1], A.shape[1]); inv = _init_inv(rng, A.shape[1]); tgt = {k: v.copy() for k, v in enc.items()}
+        if prior:
+            enc=prior['enc'];pred=prior['pred'];tgt=prior['tgt']
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         history = []
         for s in range(steps):
@@ -164,7 +180,7 @@ class WorldJEPA:
         zt_all = encode(tgt, x2)[0]; zsd = zt_all.std(0)+1e-6
         z_all = encode(enc, x)[0]
         for e in range(1, self.ensemble):  # encoder frozen, bootstrap predictors
-            r2 = np.random.default_rng(self.seed*100+e); p = _init_pred(r2, A.shape[1]); o = Adam(p, LR)
+            r2 = np.random.default_rng(self.seed*100+e); p = ({k:v.copy() for k,v in prior['ensemble'][e].items()} if prior else _init_pred(r2, A.shape[1])); o = Adam(p, LR)
             idx = r2.integers(0, len(x), len(x))
             for s in range(steps//2):
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
@@ -184,15 +200,38 @@ class WorldJEPA:
                 or not all(np.isfinite(v) for row in history
                            for key, v in row.items() if key != 'step')):
             raise ValueError('WorldJEPA fit produced nonfinite learned state')
+        total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
-            self.__dict__.update(_fit_steps=steps, _action_counts=action_counts, mu=mu, sd=sd,
+            self.__dict__.update(_fit_steps=total_steps, _action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds,
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
+    def partial_fit(self,X,A,X2,steps=100,log_every=50):
+        """Continue JEPA weights and EMA target instead of reinitializing.
+
+        Callers should mix replay transitions with new ones to reduce forgetting.
+        This experimental path does not itself establish durable retention.
+        """
+        return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True)
+
     # -- inference -------------------------------------------------------------------------------------------------
+    @_read_locked
+    def prediction_loss(self,X,A,X2):
+        """Read-only observed-transition error for retention measurements."""
+        X=np.asarray(X,dtype=float);A=np.asarray(A,dtype=float);X2=np.asarray(X2,dtype=float)
+        if (not hasattr(self,'mu') or X.ndim!=2 or X2.shape!=X.shape
+                or X.shape[1]!=len(self.mu) or A.shape!=(len(X),self.preds[0]['P1'].shape[1]-Z)
+                or not len(X) or not all(np.isfinite(v).all() for v in (X,A,X2))):
+            raise ValueError('Invalid JEPA retention probe')
+        x=(X-self.mu)/self.sd;x2=(X2-self.mu)/self.sd
+        z=encode(self.enc,x)[0]
+        target=encode(self.tgt,x2)[0]
+        pred=predict(self.preds[0],z,A)[0]
+        return float(np.mean((pred-target)**2))
+
     @_read_locked
     def latent(self, X, target=True):
         return encode(self.tgt if target else self.enc, (X-self.mu)/self.sd)[0]
