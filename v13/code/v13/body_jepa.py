@@ -207,28 +207,45 @@ def minor_subspace_init(torch,model,r):
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
 
 def anchor_retention_kl(torch, model, anchor_seqs, anchor_logp):
-    """Mean KL(frozen base || candidate) on the *same* frozen anchor tokens.
+    """Deterministic mean KL(frozen base || candidate) on identical anchor tokens.
 
-    No candidate training or active-model promotion. Rejects nonfinite outputs
-    rather than reporting a misleading retention improvement.
+    The frozen reference must be a normalized log-probability distribution.
+    Evaluation restores all mixed train/eval flags, including on failure.
     """
     if len(anchor_seqs) != len(anchor_logp):
         raise ValueError('retention anchor/logprob mismatch')
     if not anchor_seqs:
         return None
+    modules = list(model.modules()) if hasattr(model, 'modules') else []
+    flags = [module.training for module in modules]
     values = []
-    with torch.no_grad():
-        for seq, base in zip(anchor_seqs, anchor_logp):
-            if not seq or base.ndim != 2:
-                raise ValueError('invalid retention anchor')
-            logits = model(torch.tensor([seq])).logits[0].float()
-            if logits.shape != base.shape or not bool(torch.isfinite(logits).all()) or not bool(torch.isfinite(base).all()):
-                raise ValueError('invalid retention logits')
-            logp = torch.log_softmax(logits, -1)
-            value = (base.exp() * (base - logp)).sum(-1).mean()
-            if not bool(torch.isfinite(value)):
-                raise ValueError('nonfinite retention KL')
-            values.append(float(value))
+    try:
+        if modules:
+            model.eval()
+        with torch.no_grad():
+            for seq, base in zip(anchor_seqs, anchor_logp):
+                if not seq or base.ndim != 2:
+                    raise ValueError('invalid retention anchor')
+                if not bool(torch.isfinite(base).all()):
+                    raise ValueError('nonfinite retention reference')
+                # A finite tensor is not necessarily a valid probability law.
+                # Do not silently renormalize corrupted frozen references.
+                if not bool(torch.all(torch.abs(torch.logsumexp(base.float(), -1)) <= 1e-4)):
+                    raise ValueError('unnormalized retention reference')
+                logits = model(torch.tensor([seq])).logits[0].float()
+                if logits.shape != base.shape or not bool(torch.isfinite(logits).all()):
+                    raise ValueError('invalid retention logits')
+                reference = base.float()
+                logp = torch.log_softmax(logits, -1)
+                value = (reference.exp() * (reference - logp)).sum(-1).mean()
+                if not bool(torch.isfinite(value)):
+                    raise ValueError('nonfinite retention KL')
+                values.append(float(value))
+    finally:
+        if modules:
+            model.train(flags[0])
+        for module, flag in zip(modules, flags):
+            module.training = flag
     return round(sum(values) / len(values), 8)
 
 
