@@ -74,3 +74,18 @@ def test_spoofed_status_and_unknown_trace_cannot_create_skill():
 def test_duplicate_transaction_not_counted_twice():
     lib,_=library()
     with pytest.raises(ValueError):lib.propose_from_trace('duplicate',['original','original'])
+
+def test_proposed_steps_do_not_alias_caller_mutations():
+    lib,_=library()
+    steps=[{'tool':'calc','args':{'expression':'3+4'}}]
+    lib.propose('copy_skill',steps)
+    steps[0]['args']['expression']='999'
+    assert lib.get('copy_skill')['steps'][0]['args']['expression']=='3+4'
+
+def test_replay_respects_live_tool_denial():
+    lib,registry=library()
+    lib.propose_from_trace('restricted',['original'])
+    def denied(name,args,origin,intent):
+        return {'id':'denied-replay','status':'DENIED','result':None}
+    registry.call=denied
+    assert lib.run('restricted',{},origin='SELF')['status']=='DENIED'
