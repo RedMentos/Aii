@@ -166,7 +166,7 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         # another automatic positive sample. No silent aggregate retraction:
         # that requires a transactional event-bound rebuild of AG4 statistics.
         old=_load(store,event_id)
-        if old.get('skill') and old.get('skill_human_credit') is True:
+        if old.get('skill'):
             try:_human_skill_outcome(store,event_id,False,'fact_correction:'+event_id)
             except (KeyError,ValueError,PermissionError) as exc:
                 store.log('agi_live_unavailable',event_id,{'stage':'skill_fact_correction','error':type(exc).__name__})
