@@ -38,3 +38,25 @@ def test_generation_does_not_publish_on_failed_checkpoint(tmp_path, monkeypatch)
         generation.save(object(), ReplaySession('a' * 64), tmp_path / 'generation')
     assert not (tmp_path / 'generation').exists()
     assert not list(tmp_path.glob('.jepa-generation-*'))
+
+
+def test_real_numpy_jepa_generation_resume_without_duplicate_gradient(tmp_path):
+    from v13.world_jepa import WorldJEPA
+    from v13 import world_model
+    routes = tuple(world_model.ACTIONS)
+    records = [{'action_id': f'event-{i:04d}',
+                's': [float(i % 13), float(i % 7), float(i % 5), float(i % 3)],
+                'a': routes[i % len(routes)],
+                'y': [float(i % 2), float(i % 3), float(i % 7)]}
+               for i in range(96)]
+    replay = ReplaySession('a' * 64)
+    model = WorldJEPA(seed=11, ensemble=1)
+    first = replay.update(model, records, steps=2)
+    assert first['updated'] and first['new_rows'] > 0
+    path = tmp_path / 'real-generation'
+    generation.save(model, replay, path)
+    restored_model, restored_replay, manifest = generation.load(path, 'a' * 64)
+    assert restored_model._fit_steps == model._fit_steps
+    assert not restored_replay.update(restored_model, records, steps=2)['updated']
+    assert restored_model._fit_steps == model._fit_steps
+    assert manifest['active_model_promoted'] is False
