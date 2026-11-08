@@ -145,3 +145,20 @@ def test_skill_candidate_survives_sqlite_restart(tmp_path):
     assert again.get('persisted_skill')['source_traces']==['original']
     assert again.run('persisted_skill',{},origin='USER')['status']=='DONE'
     reopened.close()
+
+def test_recent_intent_rejects_missing_and_duplicate_evidence():
+    lib,_=library()
+    with pytest.raises(ValueError):lib.propose_recent('missing','not-present')
+    lib.tools.box.state['calls']=[trace()[0],trace()[0]]
+    lib.tools.box.state['calls'][0]['intent']='same'
+    lib.tools.box.state['calls'][1]['intent']='same'
+    with pytest.raises(ValueError):lib.propose_recent('duplicate','same')
+
+def test_untrusted_skill_does_not_call_tool_after_restart(tmp_path):
+    lib,registry=library()
+    lib.propose_from_trace('young_skill',['original'])
+    reloaded=SkillLibrary(None,tools=registry)
+    reloaded.box=lib.box
+    result=reloaded.run('young_skill',{},origin='SELF')
+    assert result['status']=='PROPOSED'
+    assert registry.calls==[]
