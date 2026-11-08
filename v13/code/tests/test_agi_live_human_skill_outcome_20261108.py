@@ -45,9 +45,26 @@ class LiveSkillOutcomeTests(unittest.TestCase):
         self.assertEqual(SkillLibrary(self.store).get('quick_route')['successes'], 1)
     def test_correction_does_not_double_credit(self):
         live._human_skill_outcome(self.store, 'e1', True, 'rating:e1')
-        self.assertFalse(live._human_skill_outcome(self.store, 'e1', False, 'rating:e1'))
+        self.assertTrue(live._human_skill_outcome(self.store, 'e1', False, 'rating:e1'))
         self.assertEqual(self.skills.get('quick_route')['uses'], 1)
+        self.assertEqual(self.skills.get('quick_route')['successes'], 0)
         self.assertTrue(live._load(self.store, 'e1')['skill_disputed'])
+    def test_recovery_after_ledger_commit_before_marker(self):
+        self.assertEqual(self.skills.record_human('quick_route', 'e1', True), 'RECORDED')
+        self.assertFalse(live._human_skill_outcome(self.store, 'e1', True, 'rating:e1'))
+        self.assertEqual(self.skills.get('quick_route')['uses'], 1)
+    def test_cross_skill_rebinding_refused(self):
+        self.skills.propose('other_route', [{'route': 'gist'}], trigger='other')
+        self.skills.record_human('quick_route', 'e1', True)
+        with self.assertRaises(ValueError):
+            self.skills.record_human('other_route', 'e1', True)
+    def test_fact_correction_retracts_skill_credit(self):
+        self.skills.record_human('quick_route', 'e1', True)
+        live._save(self.store, 'e1', skill_human_credit=True)
+        with patch('v13.agi.metacog.Metacognition'):
+            live.on_feedback(self.store, 'e1', 'fact', 'wrong')
+        self.assertEqual(self.skills.get('quick_route')['successes'], 0)
+
     def test_rating_without_metacog_confidence_still_credits_skill(self):
         with patch('v13.agi.metacog.Metacognition'):
             self.assertTrue(live.on_rating(self.store, 'e1', 8))
