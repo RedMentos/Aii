@@ -50,6 +50,10 @@ class OnlinePredictor:
     def observe(self,x,action,y,rehearsals=2):
         x,y=self._check(x,action,y)
         if type(rehearsals) is not int or not 0<=rehearsals<=8:raise ValueError('Invalid rehearsal count')
+        # Reject pathological targets before any state mutation; gradients are
+        # clipped, but a nonfinite result must never become a live parameter.
+        if not np.isfinite(x@self.W+self.U[action]+self.bias).all():
+            raise ValueError('Nonfinite predictor state')
         self.seen+=1
         if len(self.x)==self.cap:
             # Reservoir sampling: old observations remain represented as stream grows.
