@@ -1,3 +1,19 @@
+# 2026-11-08 — Fehlerlernen und Weight-Space (isolierter Fortsetzungsstand)
+
+Basis `codex/resume-20261106` bei `5e964146579deb22c5ba89a2a03a52a9e4d8aab8`; andere aktuelle Review-Zweige sind nicht automatisch Vorfahren. Die neue Forschungsnotiz `v13/research/WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md` ergänzt WP-T12 und unterscheidet direktes Weight-Space-Editieren von eigenem Lernen aus Fehlern. Canon und ursprüngliche Gates sind unverändert.
+
+`scripts/c5_outcome_credit_candidate.py` und `tests/test_c5_outcome_credit_candidate.py` bilden einen quellhashgebundenen Kandidaten für zwei reproduzierte Fehler: FINAL ohne Wahrheitsnachweis wurde als Erfolg gezählt, und ein Kosten-only-Paket lieferte ein unbegründetes negatives Ergebnis-δ. 5 gezielte und 120 angrenzende Tests bestehen auf separater Kandidatenkopie. Die Original-Runtime ist nicht verändert oder aktiviert. Vor einer Integration: alte C5-/Neuromod-Aggregate und Bindung vorhandener δ-Werte an das korrekte Ereignis ohne Datenverlust behandeln, dann den tatsächlichen Lernnutzen und Retention auf frischen Daten messen. Details `C5_OUTCOME_CREDIT_CANDIDATE_20261108.md`.
+
+Unabhängiger Review fand weitere vorhandene Risiken: dieselbe Bewertung kann nach Korrektur mehrfach in C5-Mittelwerte einfließen; Traum-Signale können trotz Gate 0 `r_hat` und δ verändern. Diese Fälle sind im Kandidaten noch nicht behoben. Zudem kann seine `channels`-Interpretation bei nach Schema 1.0 gültigen Mischpaketen Legacy-Signale unterschlagen; ein aktueller direkter Produzent dafür wurde nicht gefunden, historische/externe Pakete bleiben aber zu prüfen. Technische Zustände `ERROR`, `DEADLINE` und `CANCELLED` brauchen einen eigenen Outcome-Typ, nicht einfach ein semantisches Korrektheitslabel. Die Revisionen der für Legacy-Ausnahmen maßgeblichen `world.py`/`learning.py` müssen ebenfalls gebunden oder neu geprüft werden.
+
+Weitere voneinander getrennte Review-Kinder: [PR #1603](https://github.com/RedMentos/Aii/pull/1603) schützt BP6-Nutzenrechnungen gegen überlaufende Summen (63 Tests); [PR #1604](https://github.com/RedMentos/Aii/pull/1604) hält bereits endliche World-Model-Metriken beim Runden endlich (59 Tests). Beide sind nicht in diesem Zweig integriert. GitHub-Commit und Tree aller drei Zweige wurden gelesen und verglichen.
+
+Drive-Zweitsicherung am 2026-11-08 fehlgeschlagen: HTTP 403 `storageQuotaExceeded`. Keine bestehende Drive-Datei wurde überschrieben. Diese Übergabe und die Änderungen sind auf GitHub gesichert.
+
+Kein neuer Modell-, Redmi- oder Gate-PASS; historischer STEP2/B3/JEPA-Status unverändert.
+
+---
+
 # 2026-11-01 — Run117CF→CK source-safe Sleep, C3 no-native negative controls, Linux F7 (review-only)
 
 **Newest verified local integration chain for this handoff:** Run117CK PR [#1563](https://github.com/RedMentos/Aii/pull/1563), branch `assistant/v13-run117ck-sleep-f7-post-fairness-20261101-hourly11`, head `0fe11ac7b94e07566342c18e7956f8f83a7b5ba2`. Its review-only ancestors: CF [#1559](https://github.com/RedMentos/Aii/pull/1559) (eight blocked DRAFT sessions no longer starve ninth ready; real RED→51/51 GREEN), CG [#1560](https://github.com/RedMentos/Aii/pull/1560) (`:sleep digest` shows pending workload before first cycle; real RED→54/54 GREEN), CH [#1561](https://github.com/RedMentos/Aii/pull/1561) (synthetic-only Run83 C3 driver no-cache test repaired without native/model/runner change; real RED→6/6 GREEN), CJ [#1562](https://github.com/RedMentos/Aii/pull/1562) (real Runtime without weights remains `STRUCTURAL_RED/Unavailable`, zero native calls; 8/8 GREEN), CK [#1563](https://github.com/RedMentos/Aii/pull/1563) (byte-identical preregistered F7 benchmark rerun, 7/7 GREEN, Linux-only). All remain draft/review branches, **not production-integrated**.
