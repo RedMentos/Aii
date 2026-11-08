@@ -135,3 +135,17 @@ def test_missing_deployed_gguf_file_blocks_training(tmp_path):
     result=preflight(tmp_path,req,state)
     assert not result['ready']
     assert result['reasons']==['DEPLOYED_C3_MISSING']
+
+
+def test_real_trainer_build_refuses_failed_preflight_without_workspace(tmp_path):
+    rt=runtime(tmp_path)
+    req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
+    state={'kind':'lora','master':None,'master_sha256':None}
+    with patch.object(trainers,'_box',return_value=State(state)), \
+         patch.object(trainers,'requirements',return_value=req), \
+         patch.object(trainers,'probes',return_value=(['anchor'],['holdout'])):
+        trainer,info=trainers.build(rt,'lora')
+    assert trainer.__class__.__name__=='NullTrainer'
+    assert info['active']=='none'
+    assert 'MASTER_WEIGHTS_MISSING' in info['missing']
+    assert not (tmp_path/'training').exists()
