@@ -1,0 +1,20 @@
+name: V13 JEPA replay regression
+on:
+  push:
+    branches: ['codex/v13-jepa-replay-session-*']
+  workflow_dispatch:
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - name: Compile and test replay and incremental JEPA
+        working-directory: v13/code
+        run: |
+          python -m py_compile v13/world_jepa_replay.py
+          python -m pytest -q tests/test_world_jepa_replay_20261108.py tests/test_world_jepa_incremental_20261108.py tests/test_world_jepa_online_experiment_20261108.py
