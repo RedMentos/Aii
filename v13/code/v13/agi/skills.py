@@ -54,14 +54,21 @@ class SkillLibrary:
         if not isinstance(trace,(list,tuple)) or not 1<=len(trace)<=MAX_STEPS:
             raise ValueError('1..16 erfolgreiche Tool-Transaktionen erforderlich')
         import copy
+        # Never trust caller-supplied status/arguments: resolve IDs against the
+        # authoritative ToolRegistry ledger, including after process restart.
+        recorded=self.tools.box.load()[0]['calls']
+        by_id={tx['id']:tx for tx in recorded}
         steps=[];sources=[]
-        for tx in trace:
-            if not isinstance(tx,dict) or tx.get('status')!='EXECUTED':
-                raise ValueError('Nur ausgeführte Transaktionen können gelernt werden')
+        for item in trace:
+            txid=item if isinstance(item,str) else item.get('id') if isinstance(item,dict) else None
+            if not isinstance(txid,str) or txid not in by_id or txid in sources:
+                raise ValueError('Unbekannte oder doppelte Tool-Transaktion')
+            tx=by_id[txid]
+            if tx.get('status')!='EXECUTED':
+                raise ValueError('Nur nachweislich ausgeführte Transaktionen können gelernt werden')
             tool=tx.get('tool');args=tx.get('args')
             if type(tool) is not str or tool not in self.tools.tools or not isinstance(args,dict):
                 raise ValueError('Unbekanntes Werkzeug oder ungültige Argumente')
-            # A learned recipe may not persist secrets or replay side effects.
             spec=self.tools.tools[tool]
             if spec.risk!='READ_LOCAL':
                 raise ValueError('Schreibende/externe Aktionen nicht automatisch als Skill lernen')
@@ -71,7 +78,7 @@ class SkillLibrary:
             if any(isinstance(v,str) and _VAR.search(v) for v in args.values()):
                 raise ValueError('Template-Platzhalter aus fremden Traces verboten')
             steps.append({'tool':tool,'args':copy.deepcopy(args)})
-            if tx.get('id') is not None:sources.append(str(tx['id']))
+            sources.append(txid)
         return self.propose(name,steps,trigger,origin,source_traces=sources)
 
     def run(self,name,inputs,origin='USER'):
