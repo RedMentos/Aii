@@ -177,8 +177,13 @@ def heldout_route_errors(transitions, train_indices, holdout_indices, prediction
         if (y.shape!=(len(positions),len(TARGETS)) or y.dtype.kind not in 'fiub'
                 or not np.isfinite(y).all()):
             raise ValueError('T8_INVALID_HELDOUT_TARGET')
-        err=np.abs(pred[positions]-y).mean(0)
-        ref=np.abs(base[positions]-y).mean(0)
+        # Finite inputs can still overflow when subtracting large opposite
+        # values; integer subtraction can also wrap before taking abs.
+        with np.errstate(over='ignore',invalid='ignore'):
+            err=np.abs(pred[positions].astype(float)-y.astype(float)).mean(0)
+            ref=np.abs(base[positions].astype(float)-y.astype(float)).mean(0)
+        if not np.isfinite(err).all() or not np.isfinite(ref).all():
+            raise ValueError('T8_NONFINITE_HELDOUT_ERROR')
         out[a]={'n':len(positions),
                 'status':'MEASURED_TRAIN_SUPPORTED' if support['train_action_counts'][a] else 'MEASURED_UNSEEN_TRAIN_ACTION',
                 'mae':dict(zip(TARGETS,np.round(err,4).tolist())),
