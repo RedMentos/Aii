@@ -67,6 +67,24 @@ class GeneratedToolRuntime(unittest.TestCase):
         reopened=hub(self.runtime)
         self.assertNotIn('plus_seven',reopened.tools.tools)
 
+    def test_learns_new_tool_from_real_successful_tool_transactions(self):
+        from v13.agi.tools import ToolSpec
+        g=hub(self.runtime)
+        g.tools.register(ToolSpec('example_source',lambda x:x+7,risk='READ_LOCAL',
+            schema={'x':'int'},effects=({'COMPUTE'},{'CALCULATOR'})))
+        g.tools.enable('example_source')
+        for x in (-8,-5,0,3,12,18):
+            tx=g.tools.call('example_source',{'x':x},origin='USER')
+            self.assertEqual(tx['status'],'EXECUTED')
+        p=g.tool_builder.propose_from_tool_history('learned_from_experience','example_source')
+        self.assertEqual(p['program'],'add:7')
+        self.assertNotIn('learned_from_experience',g.tools.tools)
+        g.tool_builder.activate('learned_from_experience')
+        g.tools.enable('learned_from_experience')
+        tx=g.tools.call('learned_from_experience',{'x':100},origin='USER')
+        self.assertEqual(tx['status'],'EXECUTED')
+        self.assertEqual(tx['result'],107)
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
