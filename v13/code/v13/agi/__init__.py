@@ -165,7 +165,7 @@ def job(sleep_runtime,event):
     raise ValueError('Unbekannte Growth-Aktion: '+str(a))
 
 def operator_command(r,args):
-    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>]"""
+    """:growth [status|age|slots|export <Slot>|eval|goals|goal <Titel>|consolidate|approve <batch>|reject <batch>|tools|enable <tool>|calc <Ausdruck>|toolbuild ...]"""
     from ..common import dumps
     # Read-only bilingual comparison must not initialize Growth or register
     # a missing English/German suite as a side effect of a status query.
