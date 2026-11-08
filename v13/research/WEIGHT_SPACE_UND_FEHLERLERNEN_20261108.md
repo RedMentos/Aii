@@ -24,6 +24,8 @@ Bestehende Experience-/LearningTrace-, SourceRef- und Neuromodulationspfade stat
 
 ## Weight-Space als ergänzende Labordiagnose
 
+Konkreter Anknüpfungspunkt: Im geprüften Projektstand führt `code/specs/models.json` für B2/Gist `ggml-org/Qwen3.5-0.8B-GGUF`, Revision `8fea620810c4afa23dd6443f999a48574c1611a3`, als Q4_0-GGUF. Das ist dieselbe Modellfamilie wie im Beispiel der Autoren, aber keine Feststellung identischer Gewichte oder einer übertragbaren Änderung. Der V13-Vergleich muss auch Gist-Qualität, Zusammenarbeit und Retention messen; ein Mathematikwert allein belegt keinen Nutzen für diese Rolle.
+
 Zunächst nur bei einer beobachteten, reproduzierbaren V13-Schwäche ein kleines externes Experiment mit einer unveränderten Modellkopie und einem separaten, versionsgebundenen Kandidaten durchführen. Ausgangsmodell, geänderte Tensoren, konkrete Revision und Diff festhalten; unveränderte Kopie und eine gleich große Kontrolländerung auf denselben zuvor festgelegten Aufgaben messen. Ziel-Fehler, unterschiedliche Aufgaben, Wiederholungsrate und Retention vergleichen; auch prüfen, ob Rücknahme die Ausgangsausgaben reproduziert. Ohne belegten Vorteil keinen Wirksamkeitsanspruch.
 
 Erst danach prüfen, ob eine gezielte Änderung zu den tatsächlich verwendeten V13-Modellen und ihrem GGUF-/Runner-Pfad passt. Eine Änderung am FP-Master lässt sich nicht ohne Nachweis in quantisierte Gewichte übertragen: benötigte Konvertierung, Requantisierung, RAM, Speicher, Laufzeit und Modell-/Tokenizerrevision tatsächlich messen. Kein neuer Teacher-Zugriff auf private Nutzerdaten ohne die bereits vorgesehene Zustimmung. Bestehende Age-, Freigabe-, Rücknahme- und Gate-Regeln bleiben maßgeblich; keine neue autonome Schreibberechtigung ergibt sich allein aus der Quelle.

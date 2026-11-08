@@ -73,6 +73,18 @@ legacy compatibility, unchanged technical status and source mismatch refusal.
 - The hash guard covers the edited `runtime.py` and `neuromod.py`, but the
   legacy exceptions rely on exact producers in `world.py` and `learning.py`.
   Bind or re-audit those producer revisions before applying a candidate.
+- Schema 1.0 also permits a partially populated `channels` dictionary next to
+  meaningful legacy fields. The candidate currently interprets a present
+  dictionary as complete, so a valid mixed packet could lose its legacy-only
+  human or outcome signal. No direct producer was found in the inspected
+  runtime, but historical or external packets may exist. Audit and version this
+  interpretation before any integration; absence of a current producer is not
+  proof that all persisted packets use the new interpretation.
+- The candidate removes the inferred `task_success` for every completion
+  status, including `ERROR`, `DEADLINE` and `CANCELLED`. Technical failures
+  need a separate, typed outcome and must not be presented as a semantic
+  correctness label. Other telemetry remains, but this candidate does not
+  yet add the corresponding technical-failure learning path.
 - Existing `Neuromod` persisted state may already contain misleading `r_hat`
   or delta values. Reprocessing history needs an independently reviewed,
   restart-safe migration that preserves original records and avoids double
