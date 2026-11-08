@@ -206,7 +206,8 @@ def on_rating(store,event_id,score):
     st=_load(store,event_id)
     if RATING_BAD<score<RATING_GOOD:return None
     if st.get('answer_confidence') is not None:
-        Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id)
+        from ..common import digest
+        Metacognition(store).record_batch('answer',[[st['answer_confidence'],int(score>=RATING_GOOD)]],digest('agi-rating:'+event_id))
     try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
     except (KeyError,ValueError,PermissionError) as exc:
         store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
