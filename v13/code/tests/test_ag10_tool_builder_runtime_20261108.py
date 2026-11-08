@@ -116,6 +116,18 @@ class GeneratedToolRuntime(unittest.TestCase):
         operator_command(self.runtime,['toolbuild','retire','cli_plus_seven'])
         self.assertNotIn('cli_plus_seven',hub(self.runtime).tools.tools)
 
+    def test_operator_cli_learns_skill_from_real_tool_transaction(self):
+        import json
+        from v13.agi import operator_command
+        operator_command(self.runtime,['enable','calc'])
+        tx=json.loads(operator_command(self.runtime,['calc','2+2']))
+        self.assertEqual(tx['status'],'EXECUTED')
+        candidate=json.loads(operator_command(self.runtime,['skill','fromtrace','calc_four',tx['id']]))
+        self.assertEqual(candidate['candidate'],'calc_four')
+        result=json.loads(operator_command(self.runtime,['skill','run','calc_four','{}']))
+        self.assertEqual(result['status'],'DONE')
+        self.assertEqual(result['value'],4)
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
