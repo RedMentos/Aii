@@ -21,6 +21,10 @@ def requirements(tmp_path,**changes):
           'torch':False,'torch_sparse':False,'c3_gguf':None,
           'runner_ok':False,'memory_server_ok':False}
     base.update(changes)
+    if base['c3_gguf']:
+        deployed=tmp_path/'model.gguf'
+        deployed.write_bytes(b'fixture-gguf')
+        base['c3_gguf']=str(deployed)
     return base
 
 
@@ -119,3 +123,15 @@ def test_sparse_learning_requires_serving_path(tmp_path):
         result=trainers.training_readiness(runtime(tmp_path),'sparse')
     assert not result['ready']
     assert result['reasons']==['SPARSE_SERVING_UNAVAILABLE']
+
+
+def test_missing_deployed_gguf_file_blocks_training(tmp_path):
+    master=tmp_path/'master';master.mkdir()
+    (master/'model.safetensors').write_bytes(b'weights')
+    (master/'config.json').write_text('{"hidden_size":512,"num_hidden_layers":12}')
+    req=requirements(tmp_path,master_ok=True,arch_match=True,c3_gguf='model.gguf',torch=True,runner_ok=True)
+    (tmp_path/'model.gguf').unlink()
+    state={'master':str(master),'master_sha256':file_hash(master/'model.safetensors')}
+    result=preflight(tmp_path,req,state)
+    assert not result['ready']
+    assert result['reasons']==['DEPLOYED_C3_MISSING']
