@@ -51,6 +51,9 @@ class OnlineWorld:
             if action_id not in already:
                 new.append(row)
                 already.add(action_id)
+        # Track old-experience error separately from fresh-sample loss.
+        replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
+        retention_before=self.model.error(replay) if replay else None
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
@@ -60,7 +63,10 @@ class OnlineWorld:
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)
+        retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
+                'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
+                'old_replay_loss_delta':None if not replay else retention_after-retention_before,
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
 
     def predict(self,state,action):
