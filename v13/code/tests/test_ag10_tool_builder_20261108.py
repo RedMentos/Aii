@@ -90,3 +90,14 @@ def test_text_tool_rejects_unfitted_or_oversized_examples():
     with pytest.raises(ValueError):b.propose_text('nonsense',[[x,x+'!'] for x in ('a','b','c','d')])
     with pytest.raises(ValueError):b.propose_text('oversize',[[str(x)*257,'x'] for x in range(4)])
     with pytest.raises(ValueError):b.propose_text('duplicate_text',[['a','A'],['a','A'],['b','B'],['c','C']])
+
+def test_human_can_retire_generated_tool_and_block_restart_restore():
+    b,reg=builder();b.propose('plus_seven',examples());b.activate('plus_seven')
+    with pytest.raises(PermissionError):b.retire('plus_seven',origin='SELF')
+    assert 'plus_seven' in reg.tools
+    b.retire('plus_seven')
+    assert 'plus_seven' not in reg.tools
+    assert b.box.load()[0]['candidates']['plus_seven']['status']=='RETIRED'
+    restarted=ToolBuilder(None,Registry());restarted.box=b.box
+    restarted.restore()
+    assert restarted.registry.tools=={}
