@@ -150,6 +150,19 @@ class ToolBuilder:
         self.box.mutate(save)
         return name
 
+    def retire(self,name,origin='USER'):
+        """Human rollback: revoke registry availability and block restart restore."""
+        if origin!='USER':raise PermissionError('Human retirement required')
+        record=self.box.load()[0]['candidates'].get(name)
+        if record is None:raise ValueError('Unknown generated tool')
+        # Revoke the persisted enablement before removing the live callable.
+        if name in self.registry.tools:
+            self.registry.enable(name,False)
+            self.registry.tools.pop(name,None)
+        def save(st):st['candidates'][name]['status']='RETIRED'
+        self.box.mutate(save)
+        return name
+
     def restore(self):
         """Re-register previously human-activated pure tools after restart.
 
