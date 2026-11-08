@@ -171,9 +171,17 @@ def on_rating(store,event_id,score):
     return C5Learning(store).learn(ctx,p['selected']['action_id'],None,human_approval=u if u>=.5 else 0.,human_correction=1-u if u<.5 else 0.)
 
 def operator_command(r,args):
-    """:c5 [status|shadow|active]"""
+    """:c5 [status|shadow|active|feedback-shadow [status|on|off]]"""
     c=controller(r)
     if not args or args==['status']:return dumps(c.report())
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
-    raise ValueError(':c5 [status|shadow|active]')
+    if args and args[0]=='feedback-shadow':
+        from . import c5_feedback_shadow_store_candidate as feedback_shadow
+        if args==['feedback-shadow'] or args==['feedback-shadow','status']:
+            return dumps({'capture_enabled':feedback_shadow.capture_enabled(r.store),
+                          'view':feedback_shadow.view(r.store,r.session)})
+        if args in (['feedback-shadow','on'],['feedback-shadow','off']):
+            enabled=feedback_shadow.set_capture_enabled(r.store,args[1]=='on','EXPLICIT_HUMAN')
+            return dumps({'capture_enabled':enabled,'mode':'SHADOW','learning_authority':0})
+    raise ValueError(':c5 [status|shadow|active|feedback-shadow [status|on|off]]')

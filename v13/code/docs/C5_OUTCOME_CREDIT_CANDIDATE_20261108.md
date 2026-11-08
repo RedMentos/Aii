@@ -20,18 +20,19 @@ even for an explicitly typed cost-only packet. `_modulator` then updates
 
 ## Bounded candidate
 
-`scripts/c5_outcome_credit_candidate.py` checks both original source SHA-256
-hashes and exact single anchors, returning changed bytes only for a separate
-copy. It does not replace imports or modify the source files. In the copy:
+`scripts/c5_outcome_credit_candidate.py` checks the SHA-256 hashes of both
+edited sources and the two legacy producers, plus exact single anchors,
+returning changed bytes only for a separate copy. It does not replace imports
+or modify the source files. In the copy:
 
 1. C5 receives measured cost, action prediction error, rule violation and world
    mismatch, but no inferred semantic `task_success` merely from FINAL. FINAL,
    action status and ExperienceRecord remain as before.
-2. An explicitly present `channels` dict controls which fields were supplied;
-   an explicit `task_success=0` is still a negative outcome. For the three
-   directly constructed legacy packets whose `producer_component` **and exact
-   `values_status`** say no semantic reward was measured, their mandatory 0
-   is likewise ignored; other legacy packet behavior remains unchanged.
+2. Typed channels take precedence; an explicit typed `task_success=0` remains
+   a negative outcome. For current N10 packets, mirrored legacy defaults with
+   no typed field are not treated as outcomes. Other mixed packets retain the
+   legacy fallback. Three source-bound legacy producers with known no-reward
+   placeholders are handled separately, including their documented cost fields.
 
 The actual Runtime test uses only a fake generation/route seam. It exercises
 the actual submit, persistence, action selection, C5, Neuromod and human-rating
@@ -70,16 +71,10 @@ legacy compatibility, unchanged technical status and source mismatch refusal.
   a later real outcome can inherit that altered expectation. Neither is fixed
   by this candidate. Audit sources, deduplication and reward-state provenance
   before attaching any worker or enabling the candidate.
-- The hash guard covers the edited `runtime.py` and `neuromod.py`, but the
-  legacy exceptions rely on exact producers in `world.py` and `learning.py`.
-  Bind or re-audit those producer revisions before applying a candidate.
-- Schema 1.0 also permits a partially populated `channels` dictionary next to
-  meaningful legacy fields. The candidate currently interprets a present
-  dictionary as complete, so a valid mixed packet could lose its legacy-only
-  human or outcome signal. No direct producer was found in the inspected
-  runtime, but historical or external packets may exist. Audit and version this
-  interpretation before any integration; absence of a current producer is not
-  proof that all persisted packets use the new interpretation.
+- The hash guard now also binds the inspected `world.py` and `learning.py`
+  producers. It does not prove that every historical packet was created by
+  those exact versions. An old N10 legacy zero without an explicit typed field
+  can remain ambiguous; raw historical records must not be silently rewritten.
 - The candidate removes the inferred `task_success` for every completion
   status, including `ERROR`, `DEADLINE` and `CANCELLED`. Technical failures
   need a separate, typed outcome and must not be presented as a semantic

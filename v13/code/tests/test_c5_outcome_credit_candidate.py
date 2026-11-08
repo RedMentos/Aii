@@ -18,13 +18,23 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 from v13 import actionlearn, neuromod
+from v13.common import Cancelled, Limits
 from v13.inputs import record_rating
 from v13.runtime import Runtime
 
 with tempfile.TemporaryDirectory() as home:
     r=Runtime(Path(home)); r.sleep.cycle.set_policy('enabled','off')
     try:
-        def gen(messages,*a,**k):yield '2 + 2 = 5'
+        r.cfg['observer_mode']='off'
+        scenario=sys.argv[2] if len(sys.argv)>2 else 'final'
+        if scenario=='deadline':r.cfg['deadline_seconds']=.3
+        def gen(messages,*a,**k):
+            if scenario=='error':raise RuntimeError('synthetic model error')
+            if scenario=='cancelled':raise Cancelled('synthetic cancellation')
+            if scenario=='deadline':
+                time.sleep(.4)
+                raise Limits('synthetic deadline')
+            yield '2 + 2 = 5'
         r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
         r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},generate=gen))
         r.learner.output_delta=Mock(return_value=None)
@@ -35,9 +45,11 @@ with tempfile.TemporaryDirectory() as home:
         before=actionlearn.C5Learning(r.store).report()
         key=next(k for k in before['actions'] if k.endswith('|C3_LANGUAGE'))
         action=r.store.one('SELECT status FROM actions WHERE event_id=?',(eid,))
+        action_packet=r.store.one("SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=?",(eid,))
+        action_packet_status=json.loads(action_packet['payload'])['status']
         exp=r.store.one("SELECT payload FROM packets WHERE kind='ExperienceRecord' AND event_id=?",(eid,))
         status=json.loads(exp['payload'])['outcome']
-        record_rating(r.store,eid,int(sys.argv[1]),'EXPLICIT_NOTE')
+        if answer['status']=='FINAL':record_rating(r.store,eid,int(sys.argv[1]),'EXPLICIT_NOTE')
         after=actionlearn.C5Learning(r.store).report()
 
         n=neuromod.Neuromod(r.store)
@@ -67,12 +79,28 @@ with tempfile.TemporaryDirectory() as home:
             ('F6_LEARNING','measured native state target; no semantic truth label'),
             ('F4_LEARNING','human label present; task success and cost not optimizer rewards')]]
         legacy_explicit=neuromod.channels_from(raw|{'producer_component':'OLD_MEASURED'})
+        mixed=neuromod.channels_from(raw|{'producer_component':'MIXED','task_success':.8,
+            'human_correction':.7,'channels':{'cost_error':.3}})
+        mixed_zero=neuromod.channels_from(raw|{'producer_component':'MIXED','channels':{'cost_error':.3}})
+        mixed_n10_zero=neuromod.channels_from(raw|{'producer_component':'N10_NEUROMOD',
+            'resource_cost':0.,'channels':{'world_prediction_error':.4}})
+        mixed_n10_empty=neuromod.channels_from(raw|{'producer_component':'N10_NEUROMOD','channels':{}})
+        legacy_n10=neuromod.channels_from(raw|{'producer_component':'N10_NEUROMOD'})
+        mixed_n10_explicit=neuromod.channels_from(raw|{'producer_component':'N10_NEUROMOD',
+            'channels':{'task_success':0.,'cost_error':0.}})
+        f6_zero=neuromod.channels_from(raw|{'producer_component':'F6_LEARNING','resource_cost':0.,
+            'values_status':'measured native state target; no semantic truth label'})
+        mixed_override=neuromod.channels_from(raw|{'producer_component':'MIXED','task_success':.8,
+            'channels':{'task_success':0.}})
         print(json.dumps({'status':answer['status'],'answer_text':answer['text'],'action_status':action['status'],
-            'experience_status':status,'before':before['actions'][key],
+            'action_packet_status':action_packet_status,'experience_status':status,'before':before['actions'][key],
             'after':after['actions'][key],'c5_mode':before['mode'],
             'no_outcome_delta':no_outcome,'positive_delta':good,'negative_delta':bad,
             'later_cost_event':e4,'last_delta_after_cost':last_delta,'legacy_shift':legacy_shift,
-            'legacy_placeholders':legacy,'legacy_explicit':legacy_explicit}))
+            'legacy_placeholders':legacy,'legacy_explicit':legacy_explicit,
+            'mixed':mixed,'mixed_zero':mixed_zero,'mixed_override':mixed_override,
+            'mixed_n10_empty':mixed_n10_empty,'legacy_n10':legacy_n10,
+            'mixed_n10_zero':mixed_n10_zero,'mixed_n10_explicit':mixed_n10_explicit,'f6_zero':f6_zero}))
     finally:r.close()
 '''
 
@@ -91,10 +119,10 @@ class OutcomeCreditCandidateTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
-    def probe(self, code, rating=2):
+    def probe(self, code, rating=2, scenario='final'):
         env = os.environ.copy()
         env['PYTHONPATH'] = str(code)
-        proc = subprocess.run([sys.executable, '-c', PROBE, str(rating)], cwd=code,
+        proc = subprocess.run([sys.executable, '-c', PROBE, str(rating), scenario], cwd=code,
                               env=env, text=True, capture_output=True, timeout=25)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         return json.loads(proc.stdout.strip().splitlines()[-1])
@@ -105,6 +133,7 @@ class OutcomeCreditCandidateTests(unittest.TestCase):
             self.assertEqual(result['status'], 'FINAL')
             self.assertEqual(result['answer_text'], '2 + 2 = 5')
             self.assertEqual(result['action_status'], 'FINAL')
+            self.assertEqual(result['action_packet_status'], 'FINAL')
             self.assertEqual(result['experience_status'], 'FINAL')
             self.assertEqual(result['c5_mode'], 'SHADOW')
             self.assertIn('cost_error', result['before']['modulators'])
@@ -123,6 +152,38 @@ class OutcomeCreditCandidateTests(unittest.TestCase):
             self.assertIn('evidence_gain', row)
         self.assertEqual(fixed['legacy_explicit']['task_success'], 0.)
 
+    def test_mixed_packet_compatibility_and_known_placeholders(self):
+        fixed = self.probe(self.copy)
+        self.assertEqual(fixed['mixed']['cost_error'], .3)
+        self.assertEqual(fixed['mixed']['human_correction'], .7)
+        self.assertEqual(fixed['mixed']['task_success'], .8)
+        self.assertEqual(fixed['mixed']['world_prediction_error'], .4)
+        self.assertEqual(fixed['mixed_zero']['task_success'], 0.)
+        self.assertEqual(fixed['mixed_override']['task_success'], 0.)
+        self.assertNotIn('task_success', fixed['mixed_n10_zero'])
+        self.assertNotIn('cost_error', fixed['mixed_n10_zero'])
+        self.assertNotIn('evidence_gain', fixed['mixed_n10_zero'])
+        self.assertNotIn('human_correction', fixed['mixed_n10_zero'])
+        self.assertEqual(fixed['mixed_n10_empty'], {'world_prediction_error': .4})
+        self.assertEqual(fixed['legacy_n10']['task_success'], 0.)
+        self.assertEqual(fixed['mixed_n10_explicit']['task_success'], 0.)
+        self.assertEqual(fixed['mixed_n10_explicit']['cost_error'], 0.)
+        self.assertEqual(fixed['legacy_placeholders'][0]['cost_error'], .5)  # F4_WORLD
+        self.assertEqual(fixed['legacy_placeholders'][1]['cost_error'], .5)  # F6 nonzero
+        self.assertNotIn('cost_error', fixed['legacy_placeholders'][2])     # F4_LEARNING
+        self.assertNotIn('cost_error', fixed['f6_zero'])
+
+    def test_technical_failures_remain_typed_and_not_semantic_rewards(self):
+        for scenario, expected in (('error','ERROR'),('cancelled','CANCELLED'),('deadline','DEADLINE')):
+            with self.subTest(scenario=scenario):
+                fixed = self.probe(self.copy, scenario=scenario)
+                self.assertEqual(fixed['status'], expected)
+                self.assertEqual(fixed['action_status'], expected)
+                self.assertEqual(fixed['action_packet_status'], expected)
+                self.assertEqual(fixed['experience_status'], expected)
+                self.assertIn('cost_error', fixed['before']['modulators'])
+                self.assertNotIn('task_success', fixed['before']['modulators'])
+
     def test_positive_human_feedback_remains_usable(self):
         fixed = self.probe(self.copy, 10)
         self.assertEqual(fixed['after']['modulators']['human_approval'], 1.)
@@ -139,7 +200,8 @@ class OutcomeCreditCandidateTests(unittest.TestCase):
 
     def test_refuses_any_source_change_and_does_not_change_runtime(self):
         from hashlib import sha256
-        originals = {name: (CODE / 'v13' / name).read_bytes() for name in candidate.BASE_SHA256}
+        hashes = candidate.BASE_SHA256 | candidate.DEPENDENCY_SHA256
+        originals = {name: (CODE / 'v13' / name).read_bytes() for name in hashes}
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp)
             for name, content in originals.items():
@@ -148,8 +210,22 @@ class OutcomeCreditCandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unsupported source'):
                 candidate.build_sources(p)
         for name, content in originals.items():
-            self.assertEqual(sha256(content).hexdigest(), candidate.BASE_SHA256[name])
+            self.assertEqual(sha256(content).hexdigest(), hashes[name])
             self.assertEqual((CODE / 'v13' / name).read_bytes(), content)
+
+    def test_unreviewed_legacy_producer_is_refused(self):
+        hashes = candidate.BASE_SHA256 | candidate.DEPENDENCY_SHA256
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)
+            for name in hashes:
+                (p / name).write_bytes((CODE / 'v13' / name).read_bytes())
+            for name in candidate.DEPENDENCY_SHA256:
+                with self.subTest(name=name):
+                    original = (p / name).read_bytes()
+                    (p / name).write_bytes(original + b'\n')
+                    with self.assertRaisesRegex(ValueError, 'unsupported producer source'):
+                        candidate.build_sources(p)
+                    (p / name).write_bytes(original)
 
 
 if __name__ == '__main__':
