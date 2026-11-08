@@ -39,6 +39,7 @@ class Growth:
         from .goals import GoalStore
         from .curiosity import Curiosity
         from .tools import ToolRegistry
+        from .tool_builder import ToolBuilder
         from .grounding import Grounding
         from .skills import SkillLibrary
         from .abstraction import Abstraction
@@ -58,6 +59,8 @@ class Growth:
         self.curiosity=Curiosity(store,age)
         self.grounding=Grounding(store)
         self.tools=ToolRegistry(store,age,on_outcome=self._tool_outcome)
+        self.tool_builder=ToolBuilder(store,self.tools)
+        self.tool_builder.restore()
         self.forecast=None  # Thread M: toolforecast.ToolForecast, set by hub()
         self.skills=SkillLibrary(store,age,self.tools)
         self.abstraction=Abstraction(store)
@@ -89,6 +92,7 @@ class Growth:
     def report(self):
         parts={'AG0':self.slots,'AG1':self.teacher,'AG2':self.grounding,'AG3':self.goals,'AG4':self.skills,'AG5':self.curiosity,'AG6':self.weights,
                'AG7':self.abstraction,'AG8':self.improve,'AG9':self.metacog,'AG10':self.tools,'AG11':self.users,'AG12':self.eval,'AG13':self.residency}
+        parts['AG10_TOOL_BUILDER']=self.tool_builder
         out={}
         for k,m in parts.items():
             try:out[k]=m.report()
