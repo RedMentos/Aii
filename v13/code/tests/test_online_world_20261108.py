@@ -49,5 +49,6 @@ def test_operator_command_uses_runtime_online_learning_without_growth_hub(tmp_pa
     from v13.agi import operator_command
     runtime=SimpleNamespace(home=tmp_path,store=object())
     runtime.online_world_update=lambda limit: {'learned':limit,'status':'LOCAL'}
-    assert '"learned": 3' in operator_command(runtime,['onlineworld','3'])
+    import json
+    assert json.loads(operator_command(runtime,['onlineworld','3']))['learned']==3
     with pytest.raises(ValueError):operator_command(runtime,['onlineworld','3','extra'])
