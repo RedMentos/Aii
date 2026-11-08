@@ -6,6 +6,7 @@ parameters; replay reduces overwriting; snapshots are atomic and recoverable.
 """
 import os
 import json
+import shutil
 from pathlib import Path
 import numpy as np
 
@@ -85,10 +86,22 @@ class OnlinePredictor:
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
                 rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
+            if self.path.exists():
+                shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
             os.replace(temp,self.path)
         finally:
             if temp.exists():temp.unlink()
         return str(self.path)
+
+    def rollback(self):
+        """Restore last committed snapshot; never overwrite current checkpoint on failure."""
+        previous=self.path.with_suffix('.previous.npz')
+        if not previous.exists():raise FileNotFoundError('No prior predictor checkpoint')
+        current=self.path
+        self.path=previous
+        try:self.restore()
+        finally:self.path=current
+        return {'status':'ROLLED_BACK_IN_MEMORY','source':str(previous)}
 
     def restore(self):
         with np.load(self.path,allow_pickle=False) as data:
