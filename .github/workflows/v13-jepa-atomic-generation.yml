@@ -1,7 +1,7 @@
 name: V13 JEPA atomic generation regression
 on:
   push:
-    branches: ['codex/v13-jepa-atomic-generation-*']
+    branches: ['codex/v13-jepa-atomic-generation-*', 'codex/v13-jepa-generation-file-integrity-*']
   workflow_dispatch:
 jobs:
   generation:
@@ -17,4 +17,4 @@ jobs:
         working-directory: v13/code
         run: |
           python -m py_compile v13/world_jepa_generation.py
-          python -m pytest -q tests/test_world_jepa_generation_20261108.py tests/test_world_jepa_replay_20261108.py tests/test_world_jepa_incremental_20261108.py tests/test_world_jepa_online_experiment_20261108.py
+          python -m pytest -q tests/test_world_jepa_generation_20261108.py tests/test_world_jepa_generation_member_integrity.py tests/test_world_jepa_replay_20261108.py tests/test_world_jepa_incremental_20261108.py tests/test_world_jepa_online_experiment_20261108.py

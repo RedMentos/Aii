@@ -1,0 +1,42 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated review worker",
+  "package": "JEPA-GENERATION-MEMBER-INTEGRITY",
+  "branch": "codex/v13-jepa-generation-file-integrity-20261109",
+  "base_sha": "095863f5a1745d5933c269fdab4f0eac3dd58254",
+  "head_sha": "d5048a67b33dc003c606a557fd7c34088c01af71",
+  "files": [
+    "v13/code/v13/world_jepa_generation.py",
+    "v13/code/tests/test_world_jepa_generation_member_integrity.py",
+    ".github/workflows/v13-jepa-atomic-generation.yml"
+  ],
+  "dependency_prs": [
+    1620,
+    1621,
+    1622,
+    1623
+  ],
+  "parallel_body_prs": [
+    1624,
+    1625
+  ],
+  "status": "draft_review_ci_in_progress",
+  "ci_url": "https://github.com/RedMentos/Aii/actions/runs/42533321874",
+  "evidence": "GitHub remote blob readback verified; CI pending; no local clone due DNS",
+  "negative_gates": [
+    "STEP2 utility fail unchanged",
+    "B3 L1 fail unchanged",
+    "Body-JEPA not promoted",
+    "No optimizer checkpoint",
+    "No Android proof",
+    "No active model authority"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_world_jepa_generation_20261108.py tests/test_world_jepa_generation_member_integrity.py tests/test_world_jepa_replay_20261108.py tests/test_world_jepa_incremental_20261108.py tests/test_world_jepa_online_experiment_20261108.py",
+  "next_actions": [
+    "Verify head CI success and inspect failures",
+    "Review PR1625 Body-JEPA anchor retention and integrate separately",
+    "Integrate JEPA child chain in verified isolated integration branch; run broad regressions",
+    "Implement optimizer/RNG exact resume and real pinned B1/B2 weight-update evidence"
+  ]
+}
