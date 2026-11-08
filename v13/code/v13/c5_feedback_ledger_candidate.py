@@ -47,7 +47,9 @@ def record(state, event_id, context, action_id, score):
         raise ValueError('event action binding changed')
     if prior is None and len(old) >= MAX_EVENTS:
         raise ValueError('ledger capacity exhausted; fail closed')
-    ratings = dict(old)
+    # Snapshot nested rows too: the caller must not mutate a returned state
+    # by changing an earlier state (or vice versa) after a correction.
+    ratings = {key: dict(row) for key, row in old.items()}
     ratings[event_id] = {'context': context, 'action_id': action_id, 'score': float(score)}
     return {'revision': REVISION, 'ratings': ratings}
 
