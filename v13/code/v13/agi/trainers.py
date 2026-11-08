@@ -150,8 +150,13 @@ def build(runtime,kind=None):
     from .weights import NullTrainer
     st=_box(runtime.store).load()[0];kind=kind or st['kind'];req=requirements(runtime,st)
     want=kind
-    if kind=='auto':want='lora' if req['master_ok'] and req['torch'] and req['runner_ok'] and req['c3_gguf'] else 'none'
-    info={'choice':kind,'active':want,'requirements':req}
+    if kind=='auto':
+        auto=training_readiness(runtime,'lora')
+        info_auto={'auto_readiness':auto}
+        want='lora' if auto['ready'] else 'none'
+    else:
+        info_auto={}
+    info={'choice':kind,'active':want,'requirements':req,**info_auto}
     if want=='none':return NullTrainer(),info
     preflight=training_readiness(runtime,want)
     info['readiness']=preflight
