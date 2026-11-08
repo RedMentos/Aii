@@ -75,6 +75,8 @@ RAM grob: 0.70 + 0.50 + 0.20 + 0.20 (Embedding) + 0.04 ≈ 1.65 GB Gewichte, plu
 
 ## 4. Kontinuierliches Lernen auf kleinen Modellen
 
+**Ergänzung 2026-11-08:** [Weight-Space-Programmierung und Lernen aus Fehlversuchen](WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md) ordnet die neue Primärquelle ein und konkretisiert den vorhandenen WP-T12-Lernpfad. Gewichtsdiagnose durch ein größeres Modell und eigenes Lernen aus Fehlern sind getrennte Ansätze; beide benötigen eigene Vergleiche und Retentionsmessungen. Der bestehende Canon und die offenen Gates gelten weiter.
+
 | Arbeit | Kern | Bezug zu V13 |
 |---|---|---|
 | **Sparse Memory Finetuning** (Lin et al., arXiv 2510.15103) [sekundär] | Memory-Layer-Modell; nur Slots updaten, die ein neues Faktum überdurchschnittlich aktiviert (TF-IDF gegen Pretraining). NQ-F1-Verlust: Full-FT −89 %, LoRA −71 %, SMF −11 % bei gleichem Neulernen. | Bester Kandidat für **„Fast Episodic → parametrisches Wissen“** (F3/STEP3→Konsolidierung) mit Schutz. Passt zu Blueprint-Idee Engram/conditional memory (§48.6), aber klein. |

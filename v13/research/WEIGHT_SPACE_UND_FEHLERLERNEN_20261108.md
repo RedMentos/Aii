@@ -1,0 +1,31 @@
+# Ergänzung: Gewichtsdiagnose und Lernen aus Fehlversuchen
+
+Stand: 2026-11-08. Forschungs- und Arbeitsvorschlag; kein Nachweis einer neuen V13-Fähigkeit. Bezug: Canon §12.1–12.4 und L3, bestehende Arbeitspakete WP-T12, WP-U6 und AG6. Die Ergänzung erhält den bisherigen Plan und alle vorhandenen Prüfergebnisse.
+
+## Quelle und Aussage
+
+Takehi, Teoh, Zhang und Khattab, [Sparks of Weight-Space Programming](https://rikiyat.github.io/blog/weight-space-programming/), 2026-11-02, abgerufen 2026-11-08; Forschungs-Blogbeitrag, frühe Experimente. Die Autoren geben [Protokolle und Code](https://github.com/RikiyaT/lm_understand-logs) und den [bearbeiteten Qwen-Checkpoint](https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming) an. Vor einer Übernahme sind konkrete Revision, Lizenz, Modellformat und Laufzeitkompatibilität zu prüfen.
+
+In Experiment 8 ließ sich GPT-6 Astra Fehlverhalten von Qwen3.5-0.8B untersuchen und Gewichte ohne Gradienten oder Trainingsschleife ändern. Nach 50 Vorwärtsläufen mit teils großen Batches berichteten die Autoren unter ihren Einstellungen für MATH-500 7,9 % → 48,1 %; sie lokalisieren eine starke Wiederholungsschleife und veränderten 131.072 Gewichte. Das Ergebnis ist vor allem die Beseitigung einer Schleife: Beim weniger schleifenanfälligen Gemma 3 270M war kein belastbarer Mathematikgewinn nachweisbar. Kleine Änderung bedeutet nicht automatisch geringe Nebenwirkungen, und das Vorgehen ist noch kein Nachweis für eine günstige oder autonome Ausführung auf dem Redmi.
+
+Gewichtsdiagnose durch ein anderes Modell und Lernen aus eigenen Fehlversuchen sind zwei verschiedene, kombinierbare Ideen. Aus dem Beitrag folgt nicht, dass das kleine Modell durch den Eingriff selbst aus seinen Fehlern gelernt hat. Gewöhnliches Training nutzt bereits Fehler über seine Loss-Funktion; hier ist zusätzlich gemeint, konkrete Fehlversuche mit Kontext und belastbarer Rückmeldung den beteiligten Lernpfaden zuzuordnen und gezielt erneut zu nutzen.
+
+## Vorhandenes in V13 nutzen
+
+Canon §12 beschreibt lokale Fehler, Credit-Mapping und `eligibility × error × modulation × plasticity`; `code/v13/neuromod.py` berechnet dafür bereits `local_update`. Die Dokumentation `code/docs/NEUROMODULATION.md` nennt den Anschluss dieses vorzeichenbehafteten Signals an einen echten Worker noch offen. Das getrennte `step_scale` aus WP-U6 steuert die Schrittweite eines Kopfes und ist nicht gleichbedeutend mit diesem beispielweisen Anschluss. Vor einer Änderung tatsächlichen Stand und Besitzer-Branch erneut prüfen.
+
+Bestehende Experience-/LearningTrace-, SourceRef- und Neuromodulationspfade statt eines zweiten Gedächtnisses verwenden: Ein Fehlversuch soll Aufgabe, Modell-/Quellrevision, beteiligten Pfad, beobachtetes Ergebnis und Herkunft/Qualität einer Korrektur verknüpfen. Unbekannt, fehlgeschlagen und bestätigt unterscheiden; ungeprüfte Eigenurteile sind keine Fakten oder menschlichen Korrekturen. Bestehende Lösch-/Widerrufswege und Trainingsdatenquoten mitführen. Private Inhalte bleiben im bestehenden privaten Speicher.
+
+## Anschluss in kleinen, messbaren Schritten
+
+1. **Shadow-Prüfung:** Einen vorhandenen einfachen Replay-/Readout-Worker wählen. Für dieselben vorhandenen Beispiele `local_update` samt Herkunft und Pfad protokollieren; noch keine Trainingsregel ändern. Prüfen, ob Ereignis, Bewertung und betroffener Pfad nach Neustart korrekt und ohne Duplikat verbunden bleiben. Fehlende, widerrufene oder widersprüchliche Evidenz darf kein bestätigtes Trainingsziel erzeugen.
+2. **Isolierter Lernvergleich:** In einer separaten Kandidatenkopie auf disjunkten Aufgabenfamilien, Sitzungen und frischen Seeds vergleichen: bestehendes Training mit Korrekturen; dasselbe Daten-/Rechenbudget mit dokumentiertem Fehlversuch und Korrektur; dazu das beispielweise Fehlersignal; sowie eine Kontrolle mit vertauschten Fehlersignalen. Fragestellung: Verbessert das zugeordnete Signal neue Umformulierungen über bloße Wiederholung und Korrektur hinaus? Fehler ohne verlässliche Korrektur nicht als positives Ziel imitieren. Ein negatives Signal zunächst als Auswahl-/Gewichtungsentscheidung untersuchen; es nicht ungeprüft als negativen Loss-Multiplikator oder pauschale Gradienten-Umkehr verwenden.
+3. **Ergebnis messen:** Vor dem Lauf Vergleichsaufgaben, Anzahl/Seeds, Budget, Kennzahlen und bestehende Retentionsgrenzen festhalten. Neben Erfolgsrate auch falsche Sicherheit, Überanpassung an Korrekturtexte, alte Fähigkeiten, widerrufene Quellen und vertauschte Labels messen. Nur ein Nutzen gegenüber den Kontrollen bei eingehaltenen ursprünglichen Gates begründet den nächsten Schritt. FAIL und unklare Ergebnisse bleiben erhalten; Shadow-/Linux-/Redmi-Nachweise getrennt ausweisen.
+
+## Weight-Space als ergänzende Labordiagnose
+
+Zunächst nur bei einer beobachteten, reproduzierbaren V13-Schwäche ein kleines externes Experiment mit einer unveränderten Modellkopie und einem separaten, versionsgebundenen Kandidaten durchführen. Ausgangsmodell, geänderte Tensoren, konkrete Revision und Diff festhalten; unveränderte Kopie und eine gleich große Kontrolländerung auf denselben zuvor festgelegten Aufgaben messen. Ziel-Fehler, unterschiedliche Aufgaben, Wiederholungsrate und Retention vergleichen; auch prüfen, ob Rücknahme die Ausgangsausgaben reproduziert. Ohne belegten Vorteil keinen Wirksamkeitsanspruch.
+
+Erst danach prüfen, ob eine gezielte Änderung zu den tatsächlich verwendeten V13-Modellen und ihrem GGUF-/Runner-Pfad passt. Eine Änderung am FP-Master lässt sich nicht ohne Nachweis in quantisierte Gewichte übertragen: benötigte Konvertierung, Requantisierung, RAM, Speicher, Laufzeit und Modell-/Tokenizerrevision tatsächlich messen. Kein neuer Teacher-Zugriff auf private Nutzerdaten ohne die bereits vorgesehene Zustimmung. Bestehende Age-, Freigabe-, Rücknahme- und Gate-Regeln bleiben maßgeblich; keine neue autonome Schreibberechtigung ergibt sich allein aus der Quelle.
+
+**Ablage:** Diese additive Notiz liegt unter `v13/research/` und ist in `research/FORSCHUNG.md` §4 sowie bei WP-T12 in `ROADMAP.md` verlinkt. Der eingefrorene Canon bleibt unverändert; das bestehende offene Paket wird konkreter, kein paralleler Ersatzplan entsteht.
