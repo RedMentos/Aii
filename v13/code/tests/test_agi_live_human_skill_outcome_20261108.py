@@ -69,6 +69,14 @@ class LiveSkillOutcomeTests(unittest.TestCase):
         with patch('v13.agi.metacog.Metacognition'):
             self.assertTrue(live.on_rating(self.store, 'e1', 8))
         self.assertEqual(self.skills.get('quick_route')['uses'], 1)
+    def test_metacog_duplicate_rating_receipt(self):
+        from v13.agi.metacog import Metacognition
+        live._save(self.store, 'e1', answer_confidence=0.8)
+        live.on_rating(self.store, 'e1', 8)
+        live.on_rating(self.store, 'e1', 8)
+        self.assertEqual(Metacognition(self.store).report('answer')['components']['answer']['n'], 1)
+        self.assertEqual(self.skills.get('quick_route')['uses'], 1)
+
     def test_neutral_rating_never_credits_skill(self):
         self.assertIsNone(live.on_rating(self.store, 'e1', 5))
         self.assertEqual(self.skills.get('quick_route')['uses'], 0)
