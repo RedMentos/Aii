@@ -10,6 +10,7 @@ class Box:
 class Registry:
     def __init__(self):self.tools={}
     def register(self,spec):self.tools[spec.name]=spec
+    def enable(self,name,on=True):pass
 
 
 def builder():
