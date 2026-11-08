@@ -27,3 +27,14 @@ def update(model,committed_records,steps=50):
             'train_rows':len(split['train_action_ids']),
             'holdout_rows':len(split['holdout_action_ids']),
             'source_verified':False,'active_model_promoted':False}
+
+
+def update_from_store(model,store,steps=50,limit=2048):
+    """Use the actual T8 provenance-checked committed action feed, not caller rows."""
+    from . import world_model
+    if type(limit) is not int or not 16<=limit<=world_model.MAX_ROWS:
+        raise ValueError('Invalid committed transition limit')
+    result=update(model,world_model.transitions(store,limit=limit),steps=steps)
+    result['source_verified']=True
+    result['scope']='OWN_COMMITTED_DIGITAL_TRANSITIONS_ONLY'
+    return result
