@@ -10,3 +10,6 @@ Focused regression cases are committed for unseen and supported actions and inva
 
 ## Next commands
 From a full checkout at this review branch: `PYTHONPATH=v13/code python -m unittest v13/code/tests/test_world_model_heldout_action_support.py -v`; run adjacent world-model fit/consumer tests and the repo privacy scan with base `5e964146579deb22c5ba89a2a03a52a9e4d8aab8`. Independently review that missing route support never promotes a gate. Then evaluate the true causal/world-model utility experiments without modifying preregistered cohorts.
+
+## Supplemental reconstructed-only check
+A locally manually reconstructed copy of the helper was run using Python unittest: 4 tests PASS (unseen route, supported route, invalid split, invalid label). This is **not** a byte-identical repository test, does not exercise the imported `world_model` module or `fit` consumer, and does not replace the exact-source test command above. The complete raw console output was: `Ran 4 tests in 0.000s / OK`.
