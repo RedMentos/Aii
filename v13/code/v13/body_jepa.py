@@ -216,11 +216,12 @@ def anchor_retention_kl(torch, model, anchor_seqs, anchor_logp):
         raise ValueError('retention anchor/logprob mismatch')
     if not anchor_seqs:
         return None
-    modules = list(model.modules())
+    modules = list(model.modules()) if hasattr(model, 'modules') else []
     flags = [module.training for module in modules]
     values = []
     try:
-        model.eval()
+        if modules:
+            model.eval()
         with torch.no_grad():
             for seq, base in zip(anchor_seqs, anchor_logp):
                 if not seq or base.ndim != 2:
@@ -241,7 +242,8 @@ def anchor_retention_kl(torch, model, anchor_seqs, anchor_logp):
                     raise ValueError('nonfinite retention KL')
                 values.append(float(value))
     finally:
-        model.train(flags[0])
+        if modules:
+            model.train(flags[0])
         for module, flag in zip(modules, flags):
             module.training = flag
     return round(sum(values) / len(values), 8)
