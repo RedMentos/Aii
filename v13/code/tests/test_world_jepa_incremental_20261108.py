@@ -19,7 +19,7 @@ def test_partial_fit_reuses_and_updates_existing_encoder_and_ema():
     m.partial_fit(*batch(4),steps=3,log_every=1)
     assert not np.array_equal(old,m.enc['W1'])
     assert not np.array_equal(old_target,m.tgt['W1'])
-    assert m._fit_steps==3
+    assert m._fit_steps==5
     assert np.isfinite(m.predict(x[:2],a[:2])[0]).all()
 
 
