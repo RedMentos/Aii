@@ -1,0 +1,145 @@
+diff --git a/v13/code/v13/agi/live.py b/v13/code/v13/agi/live.py
+index 124f3c4..963fb96 100644
+--- a/v13/code/v13/agi/live.py
++++ b/v13/code/v13/agi/live.py
+@@ -46 +46,2 @@ def skill_route(r,e,text,route,direct,meta):
+-                meta['skill']={'name':n,'route':routes[0],'prior_route':route};_save(r.store,e['event_id'],skill=n);return routes[0]
++                binding=g.skills.human_binding(n)
++                meta['skill']={'name':n,'route':routes[0],'prior_route':route};_save(r.store,e['event_id'],skill=n,skill_binding=binding);return routes[0]
+@@ -103 +104,4 @@ def after_turn(r,e,meta,status,aid=None):
+-        if st.get('skill'):g.skills.record(st['skill'],status=='FINAL')
++        # A completed generation is only a technical status, not evidence that the
++        # answer was correct. AG4 skill utility needs an explicit human outcome;
++        # do not train/promote a skill from self-generated FINAL labels.
++        if st.get('skill'):_save(r.store,eid,skill_outcome='AWAITING_HUMAN')
+@@ -157,4 +161,16 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
+-    if kind=='route' and st.get('route_confidence') is not None and st.get('route'):
+-        Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
+-    if kind=='fact' and st.get('answer_confidence') is not None:
+-        Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
++    try:
++        if kind=='route' and st.get('route_confidence') is not None and st.get('route'):
++            Metacognition(store).record(st['route_component'],st['route_confidence'],value==st['route'],evidence=memory_id)
++        if kind=='fact' and st.get('answer_confidence') is not None:
++            Metacognition(store).record('answer',st['answer_confidence'],False,evidence=memory_id)
++    except Exception as exc:
++        try:store.log('agi_live_unavailable',event_id,{'stage':'feedback_metacog','error':type(exc).__name__})
++        except Exception:pass
++    if kind=='fact':
++        # Explicit fact correction is a dispute; only the bound current-epoch
++        # receipt can alter the associated skill's current success counter.
++        old=_load(store,event_id)
++        if old.get('skill'):
++            try:_human_skill_outcome(store,event_id,False,'fact_correction:'+event_id)
++            except (KeyError,ValueError,PermissionError) as exc:
++                store.log('agi_live_unavailable',event_id,{'stage':'skill_fact_correction','error':type(exc).__name__})
+@@ -175 +191,17 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
+-def on_rating(store,event_id,score):
++def _human_skill_outcome(store,event_id,success,source):
++    """Apply explicit human AG4 outcome via the transactional event ledger.
++
++    The ledger is authoritative; the per-event live marker is diagnostic only.
++    Re-delivery after a crash is idempotent even if that marker was not saved.
++    """
++    st=_load(store,event_id)
++    name=st.get('skill')
++    if not name:return False
++    from .skills import SkillLibrary
++    result=SkillLibrary(store).record_human(name,event_id,bool(success),st.get('skill_binding'))
++    _save(store,event_id,skill_human_credit=bool(success),
++          skill_outcome='HUMAN_CORRECTED' if result=='CORRECTED' else 'HUMAN_RATED',
++          skill_rating_source=source,skill_disputed=result=='CORRECTED')
++    return result!='UNCHANGED'
++
++def on_rating(store,event_id,score,origin=None):
+@@ -179,2 +211,13 @@ def on_rating(store,event_id,score):
+-    if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
+-    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
++    if RATING_BAD<score<RATING_GOOD:return None
++    if st.get('answer_confidence') is not None:
++        try:
++            from ..common import digest
++            Metacognition(store).record_batch('answer',[[st['answer_confidence'],int(score>=RATING_GOOD)]],digest('agi-rating:'+event_id))
++        except Exception as exc:
++            try:store.log('agi_live_unavailable',event_id,{'stage':'rating_metacog','error':type(exc).__name__})
++            except Exception:pass
++    if origin=='EXPLICIT_NOTE':
++        try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
++        except (KeyError,ValueError,PermissionError) as exc:
++            store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
++    return True
+diff --git a/v13/code/v13/agi/skills.py b/v13/code/v13/agi/skills.py
+index edea9de..438eb09 100644
+--- a/v13/code/v13/agi/skills.py
++++ b/v13/code/v13/agi/skills.py
+@@ -14,0 +15 @@ from .base import StateBox,age_allows
++from ..common import uid
+@@ -64,0 +66,52 @@ class SkillLibrary:
++    def human_binding(self,name):
++        """Bind a routed event to this particular skill and counter epoch."""
++        def f(st):
++            sk=st['skills'][name]
++            if 'human_credit_instance' not in sk:
++                sk['human_credit_instance']=uid('skill')
++            return {'instance':sk['human_credit_instance'],
++                    'epoch':sk.get('human_credit_epoch',0)}
++        return self.box.mutate(f)
++
++    def record_human(self,name,event_id,success,binding):
++        """Transactional, event-bound AG4 credit with correction/restart idempotence.
++
++        The authoritative event ledger and aggregate counters live in ONE
++        versioned StateBox update. Technical FINAL never enters this path.
++        A correction replaces its earlier result rather than adding a sample.
++        The binding is captured when the skill routed the turn, not when the
++        feedback happened. Reset counter epochs are never debited later.
++        """
++        if not isinstance(event_id,str) or not event_id or len(event_id)>160:
++            raise ValueError('Human outcome requires a stable event ID')
++        if type(success) is not bool:raise ValueError('Explicit boolean human outcome required')
++        if (not isinstance(binding,dict) or set(binding)!={'instance','epoch'}
++                or not isinstance(binding['instance'],str) or not binding['instance']
++                or type(binding['epoch']) is not int or binding['epoch']<0):
++            raise ValueError('Human outcome requires the event skill binding')
++        def f(st):
++            sk=st['skills'][name]
++            epoch=sk.get('human_credit_epoch',0)
++            if (sk.get('human_credit_instance')!=binding['instance']
++                    or binding['epoch']>epoch):
++                raise ValueError('Skill instance or counter epoch changed')
++            ledger=st.setdefault('human_outcomes',{})
++            old=ledger.get(event_id)
++            if old is not None and (old.get('skill')!=name or old.get('binding')!=binding):
++                raise ValueError('Event already bound to another skill or needs migration')
++            if old is not None and old['success']==success:return 'UNCHANGED'
++            if old is None:
++                if len(ledger)>=4096:raise ValueError('Human outcome ledger full; archive/rebuild required')
++                sk['uses']+=1
++                if binding['epoch']==epoch:sk['successes']+=int(success)
++                ledger[event_id]={'skill':name,'success':success,'binding':dict(binding)}
++                # No implicit promotion: a rating alone is not a full-route parity test.
++                return 'RECORDED'
++            if binding['epoch']==epoch:sk['successes']+=int(success)-int(old['success'])
++            old['success']=success
++            # A correction invalidates promotion evidence, without silently
++            # reversing a prior human-authorized stage transition.
++            sk['history'].append(['HUMAN_CORRECTION_REVIEW',self.clock()])
++            return 'CORRECTED'
++        return self.box.mutate(f)
++
+@@ -73 +126 @@ class SkillLibrary:
+-            sk['stage']=nxt;sk['successes']=0;sk['history'].append([nxt,self.clock()]);sk.pop('pending',None)
++            sk['stage']=nxt;sk['successes']=0;sk['human_credit_epoch']=sk.get('human_credit_epoch',0)+1;sk['history'].append([nxt,self.clock()]);sk.pop('pending',None)
+@@ -84 +137,2 @@ class SkillLibrary:
+-            if sk['stage'] in {'TRUSTED','INTERNALISED'}:sk['stage']='SHADOW';sk['successes']=0;sk['history'].append(['REOPENED:'+reason,self.clock()])
++            if sk['stage'] in {'TRUSTED','INTERNALISED'}:
++                sk['stage']='SHADOW';sk['successes']=0;sk['human_credit_epoch']=sk.get('human_credit_epoch',0)+1;sk['history'].append(['REOPENED:'+reason,self.clock()])
+diff --git a/v13/code/v13/skilllive.py b/v13/code/v13/skilllive.py
+index 928fe5d..2b0de04 100644
+--- a/v13/code/v13/skilllive.py
++++ b/v13/code/v13/skilllive.py
+@@ -60,2 +60,2 @@ def automatic(r,e,text,meta):
+-        sk=live[0];route=next(iter(routes))
+-        meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'])
++        sk=live[0];route=next(iter(routes));binding=hub(r).skills.human_binding(sk['name'])
++        meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'],skill_binding=binding)
