@@ -67,3 +67,26 @@ def test_mismatched_source_and_malformed_journal_rejected():
     bad["seen"] = {"x": "not-a-digest"}
     with pytest.raises(ValueError):
         ReplaySession.restore(bad, "a" * 64)
+
+
+def test_second_batch_updates_only_fresh_train_ids():
+    initial = rows(96)
+    extended = rows(120)
+    model = FakeJEPA()
+    session = ReplaySession("a" * 64)
+    first = session.update(model, initial)
+    second = session.update(model, extended)
+    assert second["updated"] is True
+    assert second["new_rows"] == len(build(extended)["train_action_ids"]) - first["new_rows"]
+    assert model.calls == [("fit", first["new_rows"]),
+                           ("partial", second["new_rows"])]
+    assert not session.update(model, extended)["updated"]
+
+
+def test_capacity_fails_before_mutating_model_or_journal():
+    model = FakeJEPA()
+    session = ReplaySession("a" * 64, max_seen=32)
+    with pytest.raises(ValueError, match="journal full"):
+        session.update(model, rows(96))
+    assert model.calls == []
+    assert session.snapshot()["seen"] == {}
