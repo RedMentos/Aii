@@ -19,6 +19,14 @@ PROMOTE={'CANDIDATE':3,'SHADOW':8}  # BOOT: successes needed to leave a stage
 PARITY_MIN=.95;FRONTIER=(.3,.7);MAX_SKILLS=256;MAX_STEPS=16
 _VAR=re.compile(r'\{(\w+)\}')
 
+def _string_leaves(value):
+    if isinstance(value,str):
+        yield value
+    elif isinstance(value,dict):
+        for child in value.values():yield from _string_leaves(child)
+    elif isinstance(value,(list,tuple)):
+        for child in value:yield from _string_leaves(child)
+
 def fill(template,inputs):
     if isinstance(template,str):return _VAR.sub(lambda m:str(inputs[m.group(1)]),template)
     if isinstance(template,dict):return {k:fill(v,inputs) for k,v in template.items()}
@@ -32,8 +40,10 @@ class SkillLibrary:
     def propose(self,name,steps,trigger='',origin='USER',source_traces=None):
         if not re.fullmatch(r'[a-z0-9_]{2,48}',name):raise ValueError('Skill-Name a-z0-9_')
         if not steps or len(steps)>MAX_STEPS:raise ValueError('1..16 Schritte')
+        import copy
+        steps=copy.deepcopy(steps)
         for s in steps:
-            if set(s)-{'tool','args','route','note'} or ('tool' in s)==('route' in s):raise ValueError('Schritt: genau tool+args oder route')
+            if not isinstance(s,dict) or set(s)-{'tool','args','route','note'} or ('tool' in s)==('route' in s):raise ValueError('Schritt: genau tool+args oder route')
         def f(st):
             if name in st['skills'] and st['skills'][name]['stage']!='RETIRED':raise ValueError('Skill existiert')
             if len(st['skills'])>=MAX_SKILLS:raise ValueError('Skill-Speicher voll')
@@ -75,7 +85,7 @@ class SkillLibrary:
             from ..transaction import check_args,secrets_in
             if check_args(spec.schema,args) or secrets_in(args):
                 raise ValueError('Ungültige oder geheime Tool-Argumente')
-            if any(isinstance(v,str) and _VAR.search(v) for v in args.values()):
+            if any(_VAR.search(v) for v in _string_leaves(args)):
                 raise ValueError('Template-Platzhalter aus fremden Traces verboten')
             steps.append({'tool':tool,'args':copy.deepcopy(args)})
             sources.append(txid)
