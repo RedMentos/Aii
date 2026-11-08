@@ -72,3 +72,14 @@ def test_checkpoint_rollback_restores_previous_learned_weights(tmp_path):
 def test_rollback_without_prior_snapshot_is_rejected(tmp_path):
     m=OnlinePredictor(2,2,tmp_path)
     with pytest.raises(FileNotFoundError):m.rollback()
+
+
+def test_streaming_experience_is_learned_and_durably_resumable(tmp_path):
+    m=OnlinePredictor(2,2,tmp_path,replay=16,seed=11)
+    result=m.learn_stream(samples(35),checkpoint_every=8)
+    assert result['observed']==35 and m.seen==35
+    assert m.path.is_file()
+    n=OnlinePredictor(2,2,tmp_path,replay=16,seed=11)
+    assert n.seen==35
+    np.testing.assert_array_equal(n.W,m.W)
+    assert n.learn_stream([],checkpoint_every=8)['observed']==0
