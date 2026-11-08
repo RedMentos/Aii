@@ -51,9 +51,17 @@ def meta_i(pairs,bins=5):
 
 def auroc2(pairs):
     """P(confidence of a right answer > confidence of a wrong one), ties count half. None if one class is missing."""
-    pos=[c for c,y in pairs if y];neg=[c for c,y in pairs if not y]
-    if not pos or not neg:return None
-    return sum((p>q)+.5*(p==q) for p in pos for q in neg)/(len(pos)*len(neg))
+    pairs=sorted(_validated_pairs(pairs))
+    positives=sum(y for _,y in pairs);negatives=len(pairs)-positives
+    if not positives or not negatives:return None
+    lower_negatives=0;wins=0.
+    for _,group in itertools.groupby(pairs,key=lambda pair:pair[0]):
+        members=list(group)
+        positive_ties=sum(y for _,y in members)
+        negative_ties=len(members)-positive_ties
+        wins+=positive_ties*(lower_negatives+0.5*negative_ties)
+        lower_negatives+=negative_ties
+    return wins/(positives*negatives)
 
 def report(pairs,bins=5,perm=500,boot=300,seed=0):
     """meta_i with permutation null (p-value) and bootstrap 95% CI, plus AUROC2 and accuracy.
