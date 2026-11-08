@@ -91,6 +91,23 @@ class SkillLibrary:
             sources.append(txid)
         return self.propose(name,steps,trigger,origin,source_traces=sources)
 
+    def propose_recent(self,name,intent,trigger='',origin='SELF'):
+        """Discover a candidate from one contiguous completed registry intent.
+
+        No synthetic success signals: only the durable call ledger supplies
+        evidence. Mixed/failed/proposed attempts are rejected, not filtered out
+        to fabricate a successful procedure. The new skill remains CANDIDATE.
+        """
+        if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
+        if not isinstance(intent,str) or not intent.strip():raise ValueError('Intent erforderlich')
+        calls=self.tools.box.load()[0]['calls']
+        matching=[tx for tx in calls if tx.get('intent')==intent]
+        if not matching or len(matching)>MAX_STEPS:
+            raise ValueError('Kein eindeutiger, begrenzter Ablauf')
+        if any(tx.get('status')!='EXECUTED' for tx in matching):
+            raise ValueError('Ablauf enthält unvollständige oder fehlgeschlagene Aktionen')
+        return self.propose_from_trace(name,[tx['id'] for tx in matching],trigger,origin)
+
     def run(self,name,inputs,origin='USER'):
         """Execute tool steps through the ToolRegistry (its gates apply); route steps are returned as hints."""
         sk=self.get(name)
