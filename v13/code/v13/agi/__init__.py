@@ -259,9 +259,11 @@ def operator_command(r,args):
                           'enabled':False,'next':':growth enable '+args[2]})
         if sub=='retire' and len(args)==3:
             return dumps({'retired':g.tool_builder.retire(args[2],origin='USER')})
+        if sub=='call-intent' and len(args)>=5:
+            return dumps(g.tools.call(args[2],json.loads(' '.join(args[4:])),origin='USER',intent=args[3]))
         if sub=='call' and len(args)>=4:
             return dumps(g.tools.call(args[2],json.loads(' '.join(args[3:])),origin='USER'))
-        raise ValueError('Usage: :growth toolbuild [status|integer NAME JSON_PAIRS|text NAME JSON_PAIRS|history NAME SOURCE|verify NAME JSON_PAIRS|activate NAME|retire NAME|call NAME JSON_ARGS]')
+        raise ValueError('Usage: :growth toolbuild [status|integer NAME JSON_PAIRS|text NAME JSON_PAIRS|history NAME SOURCE|verify NAME JSON_PAIRS|activate NAME|retire NAME|call NAME JSON_ARGS|call-intent NAME INTENT JSON_ARGS]')
     if c=='tools':return dumps(g.tools.report())
     if c=='enable' and len(args)==2:g.tools.enable(args[1]);return 'Werkzeug erlaubt: '+args[1]
     if c=='calc' and len(args)>1:return dumps(g.tools.call('calc',{'expression':' '.join(args[1:])},origin='USER'))
