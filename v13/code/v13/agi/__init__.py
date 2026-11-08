@@ -92,11 +92,11 @@ class Growth:
     def report(self):
         parts={'AG0':self.slots,'AG1':self.teacher,'AG2':self.grounding,'AG3':self.goals,'AG4':self.skills,'AG5':self.curiosity,'AG6':self.weights,
                'AG7':self.abstraction,'AG8':self.improve,'AG9':self.metacog,'AG10':self.tools,'AG11':self.users,'AG12':self.eval,'AG13':self.residency}
-        parts['AG10_TOOL_BUILDER']=self.tool_builder
         out={}
         for k,m in parts.items():
             try:out[k]=m.report()
             except Exception as exc:out[k]={'error':type(exc).__name__+': '+str(exc)[:200]}
+        if isinstance(out.get('AG10'),dict):out['AG10']['tool_builder']=self.tool_builder.report()
         return out
 
 def hub(runtime):
