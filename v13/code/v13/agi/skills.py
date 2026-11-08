@@ -115,6 +115,8 @@ class SkillLibrary:
         """Execute tool steps through the ToolRegistry (its gates apply); route steps are returned as hints."""
         sk=self.get(name)
         if sk['stage']=='RETIRED':raise ValueError('Skill stillgelegt')
+        if origin!='USER' and sk['stage'] not in {'TRUSTED','INTERNALISED'}:
+            return {'status':'PROPOSED','reason':'SKILL_NOT_TRUSTED','trace':[],'value':None}
         if self.tools is None:raise RuntimeError('Kein Werkzeug-Register')
         trace=[];value=None
         for s in sk['steps']:
