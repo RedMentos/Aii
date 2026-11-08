@@ -191,6 +191,28 @@ def heldout_route_errors(transitions, train_indices, holdout_indices, prediction
     return out
 
 
+
+def pooled_heldout_errors(predictions, heldout_targets, training_targets):
+    """Finite pooled MAE and training-only baseline; no gate authority."""
+    pred=np.asarray(predictions,float)
+    target=np.asarray(heldout_targets,float)
+    train=np.asarray(training_targets,float)
+    if (pred.ndim!=2 or target.shape!=pred.shape or train.ndim!=2
+            or pred.shape[1]!=len(TARGETS) or train.shape[1]!=len(TARGETS)
+            or not len(pred) or not len(train)
+            or not np.isfinite(pred).all() or not np.isfinite(target).all()
+            or not np.isfinite(train).all()):
+        raise ValueError('T8_INVALID_POOLED_HELDOUT_INPUT')
+    with np.errstate(over='ignore',invalid='ignore'):
+        baseline_mean=train.mean(0)
+        mae=np.abs(pred-target).mean(0)
+        base=np.abs(baseline_mean-target).mean(0)
+    if (not np.isfinite(baseline_mean).all() or not np.isfinite(mae).all()
+            or not np.isfinite(base).all()):
+        raise ValueError('T8_NONFINITE_POOLED_HELDOUT_ERROR')
+    return mae,base,baseline_mean
+
+
 def fit(store,rng_seed=0):
     """Fit all four objectives from stored transitions; persist parameters + held-out metrics."""
     T=transitions(store);n=len(T)
@@ -200,9 +222,9 @@ def fit(store,rng_seed=0):
     Xf=np.hstack([np.ones((n,1)),S,A]);tr,te=_split(n);rng=np.random.default_rng(rng_seed)
     split_support=heldout_action_support(T,tr,te)
     fw=[ridge(Xf[idx],Y[idx]) for idx in (rng.choice(tr,len(tr)) for _ in range(ENSEMBLE))]
-    pred=np.mean([Xf[te]@W for W in fw],0);mae=np.abs(pred-Y[te]).mean(0)
-    base=np.abs(Y[tr].mean(0)-Y[te]).mean(0)
-    route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(Y[tr].mean(0),pred.shape))
+    pred=np.mean([Xf[te]@W for W in fw],0)
+    mae,base,baseline_mean=pooled_heldout_errors(pred,Y[te],Y[tr])
+    route_errors=heldout_route_errors(T,tr,te,pred,np.broadcast_to(baseline_mean,pred.shape))
     Xi=np.hstack([np.ones((n,1)),S,Y]);Wi=ridge(Xi[tr],A[tr])
     inv_acc=float((np.argmax(Xi[te]@Wi,1)==np.argmax(A[te],1)).mean()) if te else None
     # Freeze the majority action using training labels only, then score that
