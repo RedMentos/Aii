@@ -26,7 +26,10 @@ class LiveHooks(unittest.TestCase):
         self.g.skills.set_stage('summary_gist','TRUSTED');meta={}
         self.assertEqual(live.skill_route(self.r,e,'please summarize the plan','simple',False,meta),'gist');self.assertEqual(meta['skill']['prior_route'],'simple')
         self.assertEqual(live.skill_route(self.r,e,'please summarize the plan','simple',True,{}),'simple')
-        live.after_turn(self.r,e,{},'FINAL');self.assertEqual(self.g.skills.get('summary_gist')['uses'],1)
+        live.after_turn(self.r,e,{},'FINAL');self.assertEqual(self.g.skills.get('summary_gist')['uses'],0)
+        mid=self.r.store.message(self.r.session,e['event_id'],'assistant','synthetic answer');self.r.store.finish_message(mid,'FINAL',{})
+        inputs.record_rating(self.r.store,e['event_id'],9,'EXPLICIT_NOTE')
+        self.assertEqual(self.g.skills.get('summary_gist')['uses'],1)
     def test_feedback_labels_and_user_beliefs(self):
         e=self.ev();live.before_effort(self.r,e,{},SIG)
         self.r.memory.feedback(e['event_id'],'fact','120 Euro',key='Budget Aurora?')

@@ -57,8 +57,8 @@ def automatic(r,e,text,meta):
             r.store.log('skilllive_ambiguous',e['event_id'],
                         {'match_count':len(live),'routes':sorted(routes)})
             return None
-        sk=live[0];route=next(iter(routes))
-        meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'])
+        sk=live[0];route=next(iter(routes));binding=hub(r).skills.human_binding(sk['name'])
+        meta['skill']={'name':sk['name'],'route':route,'prior_route':scaffold_route(text),'automatic':True};_save(r.store,e['event_id'],skill=sk['name'],skill_binding=binding)
         return route,{'source':'TRUSTED_SKILL_AUTOMATIC','skill':sk['name'],'skipped':['C2_CONTROL']}
     except Exception as exc:
         r.store.log('skilllive_unavailable',e['event_id'],{'stage':'automatic','error':type(exc).__name__});return None

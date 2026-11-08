@@ -12,6 +12,7 @@ families (AG12 practice_items).
 import re
 import time
 from .base import StateBox,age_allows
+from ..common import uid
 
 KEY='G4_SKILLS';REVISION='g4-skills-v1'
 STAGES=('CANDIDATE','SHADOW','TRUSTED','INTERNALISED','RETIRED')
@@ -62,31 +63,51 @@ class SkillLibrary:
                 o=st['outcomes'].setdefault(family,[0,0]);o[0]+=int(bool(success));o[1]+=1
             return self._advance(sk)
         return self.box.mutate(f)
-    def record_human(self,name,event_id,success):
+    def human_binding(self,name):
+        """Bind a routed event to this particular skill and counter epoch."""
+        def f(st):
+            sk=st['skills'][name]
+            if 'human_credit_instance' not in sk:
+                sk['human_credit_instance']=uid('skill')
+            return {'instance':sk['human_credit_instance'],
+                    'epoch':sk.get('human_credit_epoch',0)}
+        return self.box.mutate(f)
+
+    def record_human(self,name,event_id,success,binding):
         """Transactional, event-bound AG4 credit with correction/restart idempotence.
 
         The authoritative event ledger and aggregate counters live in ONE
         versioned StateBox update. Technical FINAL never enters this path.
         A correction replaces its earlier result rather than adding a sample.
+        The binding is captured when the skill routed the turn, not when the
+        feedback happened. Reset counter epochs are never debited later.
         """
         if not isinstance(event_id,str) or not event_id or len(event_id)>160:
             raise ValueError('Human outcome requires a stable event ID')
         if type(success) is not bool:raise ValueError('Explicit boolean human outcome required')
+        if (not isinstance(binding,dict) or set(binding)!={'instance','epoch'}
+                or not isinstance(binding['instance'],str) or not binding['instance']
+                or type(binding['epoch']) is not int or binding['epoch']<0):
+            raise ValueError('Human outcome requires the event skill binding')
         def f(st):
             sk=st['skills'][name]
+            epoch=sk.get('human_credit_epoch',0)
+            if (sk.get('human_credit_instance')!=binding['instance']
+                    or binding['epoch']>epoch):
+                raise ValueError('Skill instance or counter epoch changed')
             ledger=st.setdefault('human_outcomes',{})
             old=ledger.get(event_id)
-            if old is not None and old['skill']!=name:
-                raise ValueError('Event already bound to another skill')
+            if old is not None and (old.get('skill')!=name or old.get('binding')!=binding):
+                raise ValueError('Event already bound to another skill or needs migration')
             if old is not None and old['success']==success:return 'UNCHANGED'
             if old is None:
                 if len(ledger)>=4096:raise ValueError('Human outcome ledger full; archive/rebuild required')
                 sk['uses']+=1
-                sk['successes']+=int(success)
-                ledger[event_id]={'skill':name,'success':success}
+                if binding['epoch']==epoch:sk['successes']+=int(success)
+                ledger[event_id]={'skill':name,'success':success,'binding':dict(binding)}
                 # No implicit promotion: a rating alone is not a full-route parity test.
                 return 'RECORDED'
-            sk['successes']+=int(success)-int(old['success'])
+            if binding['epoch']==epoch:sk['successes']+=int(success)-int(old['success'])
             old['success']=success
             # A correction invalidates promotion evidence, without silently
             # reversing a prior human-authorized stage transition.
@@ -102,7 +123,7 @@ class SkillLibrary:
             nxt=STAGES[STAGES.index(sk['stage'])+1]
             if nxt=='TRUSTED' and sk['origin']!='USER' and not age_allows(self.age,'procedural_memory','SELF'):
                 sk['pending']='TRUSTED_NEEDS_AGE_OR_USER';return sk['stage']
-            sk['stage']=nxt;sk['successes']=0;sk['history'].append([nxt,self.clock()]);sk.pop('pending',None)
+            sk['stage']=nxt;sk['successes']=0;sk['human_credit_epoch']=sk.get('human_credit_epoch',0)+1;sk['history'].append([nxt,self.clock()]);sk.pop('pending',None)
         return sk['stage']
     def set_stage(self,name,stage):
         """User decision: promote, internalise or retire explicitly."""
@@ -113,7 +134,8 @@ class SkillLibrary:
         """Novelty/failure reopens the focal route (L5.6): TRUSTED/INTERNALISED drop back to SHADOW."""
         def f(st):
             sk=st['skills'][name]
-            if sk['stage'] in {'TRUSTED','INTERNALISED'}:sk['stage']='SHADOW';sk['successes']=0;sk['history'].append(['REOPENED:'+reason,self.clock()])
+            if sk['stage'] in {'TRUSTED','INTERNALISED'}:
+                sk['stage']='SHADOW';sk['successes']=0;sk['human_credit_epoch']=sk.get('human_credit_epoch',0)+1;sk['history'].append(['REOPENED:'+reason,self.clock()])
         self.box.mutate(f)
     def select(self,text):
         """Skill selector (§6.2) kept separate from the store: trusted skills whose trigger words all occur."""

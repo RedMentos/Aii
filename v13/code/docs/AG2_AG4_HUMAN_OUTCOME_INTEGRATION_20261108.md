@@ -1,5 +1,7 @@
 # AG2/AG4 outcome-credit integration candidate — 2026-11-08
 
+**Review update:** On a separate child of #1611, the exact original tests were run, five behavioral counterexamples were reproduced, and 97 targeted/adjacent tests passed after repairs. The original #1611 Actions result remains RED. Read `AG2_AG4_HUMAN_OUTCOME_REVIEW_20261108.md` for the updated scope and unresolved source, AG9, historical and shadow-parity limitations; the following text records the earlier candidate state.
+
 Owner: V13 hourly integration worker. Base: `codex/resume-20261106` at `5e964146579deb22c5ba89a2a03a52a9e4d8aab8`. Isolated branch: `codex/v13-ag2-ag4-human-outcome-20261108`. Source file: `v13/code/v13/agi/live.py`; regression: `v13/code/tests/test_agi_live_human_skill_outcome_20261108.py`.
 
 ## Real consumer path
