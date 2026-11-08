@@ -123,3 +123,10 @@ def test_observed_tool_learning_ignores_unsettled_and_failed_actions():
     with pytest.raises(ValueError):b.propose_from_tool_history('not_final','source')
     reg.tools['source'].risk='WRITE_LOCAL'
     with pytest.raises(ValueError):b.propose_from_tool_history('effectful','source')
+
+def test_generated_tool_candidate_capacity_is_bounded():
+    from v13.agi.tool_builder import MAX_CANDIDATES
+    b,_=builder()
+    for i in range(MAX_CANDIDATES):
+        b.propose('tool_'+str(i),examples())
+    with pytest.raises(ValueError):b.propose('one_more',examples())
