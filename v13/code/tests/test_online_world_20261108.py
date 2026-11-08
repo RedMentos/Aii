@@ -52,3 +52,13 @@ def test_operator_command_uses_runtime_online_learning_without_growth_hub(tmp_pa
     import json
     assert json.loads(operator_command(runtime,['onlineworld','3']))['learned']==3
     with pytest.raises(ValueError):operator_command(runtime,['onlineworld','3','extra'])
+
+
+def test_actual_runtime_method_learns_committed_world_transition(tmp_path):
+    from v13.runtime import Runtime
+    fake=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(1)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        result=Runtime.online_world_update(fake,limit=16)
+    assert result['learned']==1
+    assert fake._online_world.model.seen==1
