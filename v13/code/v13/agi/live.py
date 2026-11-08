@@ -100,7 +100,10 @@ def after_turn(r,e,meta,status,aid=None):
         g=hub(r);st=_load(r.store,eid)
         if st.get('grounding_id'):
             rec=g.grounding.observe(st['grounding_id'],{'status':status},cause='SELF');_save(r.store,eid,grounding_id=None,grounded_error=rec['grounded_error'])
-        if st.get('skill'):g.skills.record(st['skill'],status=='FINAL')
+        # A completed generation is only a technical status, not evidence that the
+        # answer was correct. AG4 skill utility needs an explicit human outcome;
+        # do not train/promote a skill from self-generated FINAL labels.
+        if st.get('skill'):_save(r.store,eid,skill_outcome='AWAITING_HUMAN')
         sync_slots(r,g)
     except Exception as exc:_log(r,eid,'after_turn',exc)
     try:goal_turn(r,e,meta,status)  # WP-T8: open user goals and curiosity from live turns
@@ -172,12 +175,36 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         try:UserModel(store).observe(kind if kind=='preference' else 'style',(key or '*')[:80],value[:200],evidence_ref or memory_id)
         except PermissionError:store.log('agi_live_unavailable',event_id,{'stage':'user_model','error':'PermissionError'})
 
+def _human_skill_outcome(store,event_id,success,source):
+    """Credit a live AG4 route skill only once from explicit human evidence.
+
+    The first human outcome is provisional for this conservative adapter: later
+    corrections mark the record disputed rather than double-crediting a skill.
+    The existing AG4 aggregate has no retract/rebuild ledger yet; disputed
+    historical counts must not be interpreted as verified skill utility.
+    """
+    st=_load(store,event_id)
+    name=st.get('skill')
+    if not name:return False
+    if st.get('skill_human_credit') is not None:
+        if st['skill_human_credit']!=bool(success):
+            _save(store,event_id,skill_outcome='DISPUTED_HUMAN_CORRECTION',skill_disputed=True)
+        return False
+    from .skills import SkillLibrary
+    SkillLibrary(store).record(name,bool(success))
+    _save(store,event_id,skill_human_credit=bool(success),skill_outcome='HUMAN_RATED',skill_rating_source=source)
+    return True
+
 def on_rating(store,event_id,score):
     """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
     from .metacog import Metacognition
     st=_load(store,event_id)
     if st.get('answer_confidence') is None or RATING_BAD<score<RATING_GOOD:return None
-    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id);return True
+    Metacognition(store).record('answer',st['answer_confidence'],score>=RATING_GOOD,evidence='rating:'+event_id)
+    try:_human_skill_outcome(store,event_id,score>=RATING_GOOD,'rating:'+event_id)
+    except (KeyError,ValueError,PermissionError) as exc:
+        store.log('agi_live_unavailable',event_id,{'stage':'skill_human_outcome','error':type(exc).__name__})
+    return True
 
 def report(r):
     g=hub(r);mc=g.metacog.report()
