@@ -132,6 +132,32 @@ class ToolBuilder:
         self.box.mutate(save)
         return dict(record)
 
+    def propose_from_tool_history(self,name,source_tool,input_key='x',kind='integer',origin='SELF'):
+        """Induce a new bounded tool from verified prior tool outcomes.
+
+        Uses only the ToolRegistry's persisted EXECUTED read-only calls; no
+        caller-supplied success labels, and never treats pending events as final.
+        Candidate remains inactive until explicitly activated by a human.
+        """
+        spec=self.registry.tools.get(source_tool)
+        if spec is None or spec.risk!='READ_LOCAL':raise ValueError('Source tool unavailable or effectful')
+        if kind not in ('integer','text'):raise ValueError('Unknown synthesis domain')
+        calls=self.registry.box.load()[0]['calls']
+        examples=[];seen=set()
+        for tx in calls:
+            if tx.get('tool')!=source_tool or tx.get('status')!='EXECUTED':continue
+            if tx.get('event_id'):
+                # Do not train from provisional/unsettled conversation actions.
+                continue
+            args=tx.get('args')
+            if not isinstance(args,dict) or set(args)!={input_key}:continue
+            x=args[input_key];y=tx.get('result')
+            if type(x) is not (int if kind=='integer' else str) or type(y) is not type(x):continue
+            if x in seen:continue
+            seen.add(x);examples.append([x,y])
+        if kind=='integer':return self.propose(name,examples,origin)
+        return self.propose_text(name,examples,origin)
+
     def activate(self,name,origin='USER'):
         """Explicit human activation; never callable as SELF/SYSTEM.
 
