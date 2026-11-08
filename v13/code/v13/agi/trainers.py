@@ -81,7 +81,16 @@ def training_readiness(runtime,kind='lora'):
     master=Path(req['master'])
     reasons=[]
     if not (master/'model.safetensors').is_file():reasons.append('MASTER_WEIGHTS_MISSING')
-    if not (master/'config.json').is_file():reasons.append('MASTER_CONFIG_MISSING')
+    cfg_path=master/'config.json'
+    if not cfg_path.is_file():
+        reasons.append('MASTER_CONFIG_MISSING')
+    else:
+        try:
+            cfg=json.loads(cfg_path.read_text())
+            if not isinstance(cfg,dict) or not isinstance(cfg.get('hidden_size'),int) or not isinstance(cfg.get('num_hidden_layers'),int) or cfg['hidden_size']<=0 or cfg['num_hidden_layers']<=0:
+                reasons.append('MASTER_CONFIG_INVALID')
+        except (OSError,ValueError,UnicodeError):
+            reasons.append('MASTER_CONFIG_INVALID')
     if not st.get('master_sha256') and (master/'model.safetensors').is_file():
         reasons.append('MASTER_HASH_NOT_PINNED')
     if st.get('master_sha256') and (master/'model.safetensors').is_file():
