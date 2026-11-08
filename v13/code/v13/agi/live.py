@@ -166,8 +166,10 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         # another automatic positive sample. No silent aggregate retraction:
         # that requires a transactional event-bound rebuild of AG4 statistics.
         old=_load(store,event_id)
-        if old.get('skill_human_credit') is True:
-            _save(store,event_id,skill_outcome='DISPUTED_HUMAN_CORRECTION',skill_disputed=True)
+        if old.get('skill') and old.get('skill_human_credit') is True:
+            try:_human_skill_outcome(store,event_id,False,'fact_correction:'+event_id)
+            except (KeyError,ValueError,PermissionError) as exc:
+                store.log('agi_live_unavailable',event_id,{'stage':'skill_fact_correction','error':type(exc).__name__})
     if kind=='route':  # WP-T6: a route correction on a skill-routed turn reopens the skill (back to the full path)
         try:
             from ..skilllive import on_route_correction
@@ -183,24 +185,20 @@ def on_feedback(store,event_id,kind,value,memory_id=None,evidence_ref=None,key=N
         except PermissionError:store.log('agi_live_unavailable',event_id,{'stage':'user_model','error':'PermissionError'})
 
 def _human_skill_outcome(store,event_id,success,source):
-    """Credit a live AG4 route skill only once from explicit human evidence.
+    """Apply explicit human AG4 outcome via the transactional event ledger.
 
-    The first human outcome is provisional for this conservative adapter: later
-    corrections mark the record disputed rather than double-crediting a skill.
-    The existing AG4 aggregate has no retract/rebuild ledger yet; disputed
-    historical counts must not be interpreted as verified skill utility.
+    The ledger is authoritative; the per-event live marker is diagnostic only.
+    Re-delivery after a crash is idempotent even if that marker was not saved.
     """
     st=_load(store,event_id)
     name=st.get('skill')
     if not name:return False
-    if st.get('skill_human_credit') is not None:
-        if st['skill_human_credit']!=bool(success):
-            _save(store,event_id,skill_outcome='DISPUTED_HUMAN_CORRECTION',skill_disputed=True)
-        return False
     from .skills import SkillLibrary
-    SkillLibrary(store).record(name,bool(success))
-    _save(store,event_id,skill_human_credit=bool(success),skill_outcome='HUMAN_RATED',skill_rating_source=source)
-    return True
+    result=SkillLibrary(store).record_human(name,event_id,bool(success))
+    _save(store,event_id,skill_human_credit=bool(success),
+          skill_outcome='HUMAN_CORRECTED' if result=='CORRECTED' else 'HUMAN_RATED',
+          skill_rating_source=source,skill_disputed=result=='CORRECTED')
+    return result!='UNCHANGED'
 
 def on_rating(store,event_id,score):
     """Answer rating 1-10 -> AG9 label (>=6 good, <=4 bad, 5 = no label)."""
