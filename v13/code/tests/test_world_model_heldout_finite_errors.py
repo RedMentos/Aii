@@ -10,6 +10,7 @@ class FiniteHeldoutErrors(unittest.TestCase):
 
     def test_large_opposite_finite_inputs_cannot_emit_infinity(self):
         huge=np.finfo(float).max
+        self.rows[1]['y']=[-huge,-huge,-huge]
         with self.assertRaisesRegex(ValueError,'T8_NONFINITE_HELDOUT_ERROR'):
             heldout_route_errors(self.rows,[0],[1],
                                  [[huge,huge,huge]],[[-huge,-huge,-huge]])
