@@ -44,6 +44,15 @@ class GeneratedToolRuntime(unittest.TestCase):
         self.assertEqual(after['status'],'EXECUTED')
         self.assertEqual(after['result'],5)
 
+    def test_generated_text_tool_executes_via_registry(self):
+        g=hub(self.runtime)
+        g.tool_builder.propose_text('uppercase',[[x,x.upper()] for x in ('alpha','beta','gamma','delta','epsilon','zeta')])
+        g.tool_builder.activate('uppercase')
+        g.tools.enable('uppercase')
+        result=g.tools.call('uppercase',{'x':'hello'},origin='USER')
+        self.assertEqual(result['status'],'EXECUTED')
+        self.assertEqual(result['result'],'HELLO')
+
     def test_generated_tool_does_not_accept_wrong_schema(self):
         g=hub(self.runtime)
         g.tool_builder.propose('double',[[x,2*x] for x in (1,3,5,7,9,11)])
