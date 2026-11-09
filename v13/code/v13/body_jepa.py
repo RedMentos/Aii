@@ -86,11 +86,26 @@ class EmaAdapter:
             if s.shape!=p.shape or s.device!=p.device or s.dtype!=p.dtype:
                 raise ValueError('EMA parameter metadata changed')
     def update(self):
+        """Atomically advance the EMA only when every proposed tensor is finite.
+
+        A failed update must leave the previous target and counter unchanged:
+        otherwise subsequent target passes can silently poison body learning.
+        """
         import torch
         self._validate()
         with torch.no_grad():
-            for s,p in zip(self.shadow,self.params):s.mul_(self.decay).add_(p.detach(),alpha=1-self.decay)
-        self.updates+=1
+            proposed = []
+            for s, p in zip(self.shadow, self.params):
+                if not bool(torch.isfinite(s).all()) or not bool(torch.isfinite(p).all()):
+                    raise ValueError('nonfinite EMA source or target')
+                candidate = s * self.decay + p.detach() * (1 - self.decay)
+                if not bool(torch.isfinite(candidate).all()):
+                    raise ValueError('nonfinite proposed EMA update')
+                proposed.append(candidate)
+            # No live shadow is modified before all candidates are validated.
+            for s, candidate in zip(self.shadow, proposed):
+                s.copy_(candidate)
+        self.updates += 1
     def delta(self):
         """L2 distance EMA vs student over all adapter tensors."""
         return float(sum(float((s-p.detach()).pow(2).sum()) for s,p in zip(self.shadow,self.params))**.5)
