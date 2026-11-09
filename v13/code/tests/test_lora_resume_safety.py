@@ -1,5 +1,5 @@
 """C3 LoRA resume metadata: no native weights or model download required."""
-from v13.lora_trainer import _valid_lora_resume, _resume_shuffle_rng
+from v13.lora_trainer import _valid_lora_resume, _resume_shuffle_rng, _valid_lora_tensors
 
 
 def _checkpoint():
@@ -79,3 +79,46 @@ def test_resume_rng_without_anchors_replays_only_data_draws():
         t.randperm(3,generator=g)
     resumed=_resume_shuffle_rng(t,7,4,None,3,9,0.)
     assert resumed.get_state()==g.get_state()
+
+
+class _FakeBool:
+    def __init__(self,value):
+        self.value=value
+
+    def all(self):
+        return self.value
+
+    def __bool__(self):
+        return self.value
+
+
+class _FakeTensor:
+    def __init__(self,shape=(2,3),dtype='float32',finite=True):
+        self.shape=shape
+        self.dtype=dtype
+        self.finite=finite
+
+
+class _FakeTensorTorch:
+    @staticmethod
+    def is_tensor(value):
+        return isinstance(value,_FakeTensor)
+
+    @staticmethod
+    def isfinite(value):
+        return _FakeBool(value.finite)
+
+
+def test_resume_rejects_incompatible_adapter_tensors():
+    t=_FakeTensorTorch()
+    current={'layer.lora_A.weight':_FakeTensor(),'base.weight':_FakeTensor()}
+    assert _valid_lora_tensors(t,{'layer.lora_A.weight':_FakeTensor()},current)
+    for bad in (
+        {},
+        {'layer.lora_A.weight':_FakeTensor(),'unexpected.lora_B.weight':_FakeTensor()},
+        {'layer.lora_A.weight':_FakeTensor(shape=(3,2))},
+        {'layer.lora_A.weight':_FakeTensor(dtype='float16')},
+        {'layer.lora_A.weight':_FakeTensor(finite=False)},
+        {'layer.lora_A.weight':'not a tensor'},
+    ):
+        assert not _valid_lora_tensors(t,bad,current)
