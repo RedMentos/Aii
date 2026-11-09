@@ -1,3 +1,9 @@
+# 2026-11-09 — Nutzerziel: späteres Hintergrundlernen und Wahrnehmung
+
+Nutzer möchte später ruhiges Hintergrundlernen, das seinen Rechenaufwand innerhalb vorgegebener Grenzen mit der Zeit passend wählen lernt; dazu geeignete Anfangsdaten, Lernen aus freigegebenen Gesprächen und optional ausdrücklich erlaubten Bildschirm-/Werkzeugzugriff. Ergänzt in `BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md` und ROADMAP, unter Nutzung bestehender Sleep-/Scheduler-/Quellen-/Age-Pfade. Weitergehende Wahrnehmung und Autonomie folgen nach den Kernvoraussetzungen; keine neue Funktion oder Gate-Freigabe behauptet. Aktuelle Implementierung weiterführen.
+
+---
+
 # 2026-11-09 — event-bound local-error route preview
 
 `local_error_route_shadow_candidate.py` binds one explicitly learnable route correction, current T8 event, same-event N10 trace and typed outcome to the existing NumPy route objective; it previews a **nonnegative magnitude-weighted gradient** without changing weights. Raw last-event N10 can reuse an older delta, and F4's explicitly non-reward placeholder zero can produce a false negative delta; both are rejected by the candidate. **42 tests pass** with real Store and synthetic C3/embeddings. Actual native embeddings, enabled training, revocation-safe checkpointing and held-out/retention comparisons remain open. #1634–#1639 were independently sampled: 45 focused tests pass/3 CUDA skips; two further EMA/optimizer counterexamples need review. Details `LOCAL_ERROR_ROUTE_SHADOW_20261109.md`; all gates unchanged.

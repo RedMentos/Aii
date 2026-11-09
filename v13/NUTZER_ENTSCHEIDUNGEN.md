@@ -1,5 +1,9 @@
 # Nutzerentscheidungen (RedMentos)
 
+## 2026-11-09: Hintergrundlernen und erlaubte Wahrnehmung als spätere Ziele
+
+Smooth/V13 soll später in einem ruhigen oder langsamen Hintergrundmodus lernen können und langfristig innerhalb vorgegebener Grenzen lernen, wie viel Rechenzeit sinnvoll ist. Geeignete Anfangsdaten und freigegebene Gespräche/Rückmeldungen sollen Lernquellen sein; Werkzeuge einschließlich Bildschirmwahrnehmung sollen bei ausdrücklicher Erlaubnis möglich werden. Mehr Selbstständigkeit bleibt an die gesetzten Grenzen gebunden. Das ergänzt die laufende Kernarbeit und ist kein Auftrag, bereits bestehende Berechtigungen oder Gates zu umgehen. Ausgearbeitete Einordnung: `code/docs/BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md`.
+
 Dauerhafte Ablage, weil `code/docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` von `v13/verification.py:122` neu erzeugt werden kann.
 Gilt vor abweichenden Stellen im Blueprint, bis der Nutzer etwas anderes sagt.
 

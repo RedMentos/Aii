@@ -1,3 +1,7 @@
+## 2026-11-09 — späteres Hintergrundlernen und erlaubte Wahrnehmung
+
+Auf Nutzerwunsch ist das langfristige Ziel eines ruhigen Hintergrundmodus mit später lernender Rechenzeitverteilung, geeigneten Anfangsdaten, Lernen aus freigegebenen Gesprächen sowie separat erlaubtem Bildschirm-/Werkzeugzugriff konkretisiert. Der Weg nutzt Scheduler, Sleep/Replay, Quellenrechte und Age; er folgt den Kernvoraussetzungen und ersetzt keine laufende Umsetzung. Details und Nachweisschritte: `code/docs/BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md`. Noch keine neue Screen-/Android- oder autonome Lernfähigkeit behauptet.
+
 ## 2026-11-09 — source-bound local-error preview (review only)
 
 The N10/route candidate rejects stale event deltas and a reproduced F4 placeholder-zero false error. It pairs an explicit `learn` route correction with a typed same-event outcome and previews the existing worker's corrected-target gradient weighted by the nonnegative local-error magnitude; **42 tests pass**, no optimizer update. Real native inputs, revocation-safe training, a correction-only/shuffled-error ablation and retention remain open. `code/docs/LOCAL_ERROR_ROUTE_SHADOW_20261109.md` complements research #1602 and does not promote any gate.
