@@ -1,0 +1,20 @@
+name: V13 body JEPA EMA swap atomicity
+on:
+  push:
+    branches:
+      - codex/v13-body-jepa-ema-swap-atomic-20261109
+  workflow_dispatch:
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install focused dependencies
+        run: python -m pip install pytest numpy && python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Run EMA, cache and adjacent device regressions
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_body_jepa_ema_atomic_20261109.py tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py
