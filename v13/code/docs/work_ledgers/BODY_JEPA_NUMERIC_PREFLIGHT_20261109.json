@@ -1,0 +1,41 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated numeric-preflight review",
+  "package": "BODY-JEPA-NUMERIC-PREFLIGHT",
+  "branch": "codex/v13-body-jepa-numeric-preflight-20261109-hour11",
+  "base_sha": "f48b90320a976d9f9420e75e12427ede2a0ca42e",
+  "review_pr": 1641,
+  "dependency_prs": [
+    1639
+  ],
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_numeric_preflight_20261109.py",
+    ".github/workflows/v13-body-numeric-preflight.yml"
+  ],
+  "status": "review_only_ci_pending",
+  "evidence": {
+    "source_commit": "448587becc25e384944d95b7c8d96bbf9455d2f3",
+    "earlier_base_ci": "https://github.com/RedMentos/Aii/actions/runs/42598453642",
+    "new_head_ci": "not yet returned"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA unpromoted",
+    "No pinned native/Redmi weight learning evidence"
+  ],
+  "blockers": [
+    "No Redmi native runner in this environment",
+    "New PR exact-head CI not yet verified"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_numeric_preflight_20261109.py tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_update_integrity_20261109.py",
+  "next_actions": [
+    "Verify PR1641 exact-head CI, fix regressions",
+    "Review eligibility overflow and malformed input rejection against real torch",
+    "Reconcile dependent review branches and retain all negative gates",
+    "Run pinned B1/B2 retention and rollback trial when source/master and native device available",
+    "Rotate to World-JEPA runtime and C3 weight learning"
+  ]
+}
