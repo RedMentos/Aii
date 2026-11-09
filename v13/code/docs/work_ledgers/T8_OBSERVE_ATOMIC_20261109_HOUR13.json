@@ -1,0 +1,41 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated online observation transaction",
+  "package": "T8-OBSERVE-ATOMIC",
+  "branch": "codex/v13-online-observe-atomic-20261109-hour13",
+  "base_sha": "00314306ff172e6d6d5c20a0e2e80a5269b2b9d7",
+  "head_sha": "3f43a7ce0635cd9e74173c59fb7c5073a34a0907",
+  "review_pr": 1647,
+  "dependencies": [
+    1645,
+    1642,
+    1619
+  ],
+  "touched_files": [
+    "v13/code/v13/continuous_predictor.py",
+    "v13/code/tests/test_online_observe_atomic_20261109.py",
+    ".github/workflows/v13-online-observe-atomic.yml"
+  ],
+  "status": "review_only_ci_pending",
+  "tests": "New overflow/rollback/deterministic replay/restart tests authored; CI not yet verified",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA UNAVAILABLE",
+    "World-JEPA not promoted",
+    "jepa_weight=0",
+    "No Redmi/native evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_online_observe_atomic_20261109.py tests/test_continuous_predictor_20261108.py tests/test_online_checkpoint_validation_20261109.py tests/test_online_world_atomic_cursor_20261109.py",
+  "next_actions": [
+    "Check exact-head PR #1647 CI and fix failures",
+    "Review computational overhead of per-event array copies on Redmi",
+    "Integrate #1645 after cross-review; keep separate from #1646 body stream",
+    "Continue B1/B2 actual adapter learning and JEPA live runtime"
+  ],
+  "blockers": [
+    "No Redmi device in execution environment",
+    "Native pinned GGUF training not run"
+  ]
+}
