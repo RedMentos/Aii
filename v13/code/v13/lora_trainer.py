@@ -63,6 +63,20 @@ def _valid_lora_resume(st, dataset_hash, max_steps):
     return True
 
 
+def _valid_lora_tensors(torch, saved, current):
+    """Do not silently accept missing, extra, nonfinite or incompatible adapter weights."""
+    expected={k:v for k,v in current.items() if 'lora_' in k}
+    if not expected or not isinstance(saved,dict) or set(saved)!=set(expected):
+        return False
+    for key,original in expected.items():
+        tensor=saved[key]
+        if not torch.is_tensor(tensor) or tensor.shape!=original.shape or tensor.dtype!=original.dtype:
+            return False
+        if not bool(torch.isfinite(tensor).all()):
+            return False
+    return True
+
+
 def _resume_shuffle_rng(torch, seed, step, state, data_size, anchor_size, anchor_weight):
     """Restore the exact next shuffle, including checkpoints made before RNG persistence.
 
@@ -216,6 +230,8 @@ class LoraTrainer:
             if st.get('dataset_hash')==dh:
                 if not _valid_lora_resume(st,dh,int(cfg['max_steps'])):
                     raise Unavailable('Invalid LoRA training checkpoint')
+                if not _valid_lora_tensors(torch,st['lora'],model.state_dict()):
+                    raise Unavailable('Incompatible or nonfinite LoRA checkpoint weights')
                 model.load_state_dict(st['lora'],strict=False)
                 opt.load_state_dict(st['opt'])
                 step=st['step'];hist=st['hist'];resume_rng=st.get('shuffle_rng_state');resumed=True
