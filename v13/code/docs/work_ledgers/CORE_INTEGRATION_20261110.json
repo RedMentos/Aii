@@ -19,16 +19,20 @@
     "v13/code/v13/world_jepa_online_experiment.py",
     "v13/code/v13/agi/trainers.py",
     "v13/code/v13/agi/__init__.py",
-    "v13/code/v13/lora_trainer.py"
+    "v13/code/v13/lora_trainer.py",
+    "v13/code/tests/test_runtime_jepa_integration_20261110.py"
   ],
   "status": "REVIEW_ONLY_UNMERGED",
   "evidence": {
     "combined_ci": "https://github.com/RedMentos/Aii/actions/runs/42717623545",
     "combined_ci_status": "SUCCESS at b077fe0 before C3 integration",
-    "latest_ci": "PENDING",
+    "latest_ci": "pending for d677dda78d70d8d967f166556d028dcf203f8ab7",
     "native_redmi": false,
     "real_c3_lora_training": false,
-    "real_world_jepa_runtime_gradient_test": "COMMITTED_NOT_YET_CI_VERIFIED"
+    "real_world_jepa_runtime_gradient_test": "PASS in combined CI at 2b384ec356e286ebe09428fb8ea127e9c1252c61, https://github.com/RedMentos/Aii/actions/runs/42717776576",
+    "ag6_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717776587",
+    "c3_resume_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717777003",
+    "operator_cli": ":growth jepa [STEPS] [LIMIT], opt-in bounded; latest test pending"
   },
   "blockers": [
     "Runtime frozen by SourceHandoff cohort; no production merge authorized",
