@@ -1,3 +1,7 @@
+# Gegenprüfung 2026-11-09 — Body-JEPA #1634–#1641
+
+Neueste Kette bis #1641 gelesen; 45 Tests/3 CUDA-Skips auf #1639 und 58/3 auf #1641, Privacy CLEAN. Gegenbeispiele: späte `copy_`-Exception verändert einen früheren EMA-Schatten; ein NaN im AdamW-Zustand vergiftet Gewichte trotz endlichem Gradienten. Isolierter quellhashgebundener `fit`-Kandidat mit gemeinsamer In-Memory-Rücknahme: 75 Tests/3 Skips und mit #1641 separat 88/3, inklusive kleinem synthetischem Torch-/PEFT-Fit und Neustart. Vollsuite #1639 bleibt RED: 8 failed/5.446 passed/53 skipped/94 errors; ein getracktes Fixture nachträglich ergänzt und Einzeltest bestanden. Details `code/docs/BODY_JEPA_ATOMIC_TRAINING_STEP_20261109.md`. Keine fremden Zweige überschrieben und keine Gates befördert.
+
 # Gegenseitige Prüfung, Runde 2 (Claude prüft GPT), 2026-10-22
 
 Branch: `claude/project-thread-2p69gl` (Basis `claude/project-thread-2gzrwi` @ `9436eb7`). Ausführlich:

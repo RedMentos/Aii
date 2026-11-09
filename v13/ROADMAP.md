@@ -1,3 +1,7 @@
+## 2026-11-09 — Body-JEPA optimizer/EMA step review candidate
+
+On #1639, a later EMA copy failure can partially mutate shadow state, and a NaN optimizer moment can corrupt a parameter despite finite gradients. A source-hash-bound disposable `fit` candidate stages EMA and rolls back a jointly failed optimizer/EMA step; 75 tests/3 CUDA skips on #1639, 88/3 with #1641 numeric preflight. Full parent suite remains RED. Snapshot memory cost, crash durability, actual pinned Body training and Redmi are open; original gates unchanged. Details `code/docs/BODY_JEPA_ATOMIC_TRAINING_STEP_20261109.md`.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.
