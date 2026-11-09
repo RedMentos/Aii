@@ -39,3 +39,20 @@ def test_trainer_rejects_invalid_eligibility_before_model_load(weights):
 
 def test_eligibility_accepts_bounded_nonnegative_batch():
     assert validated_weights([{"weight": 0.0}, {"weight": 0.5}, {}]) == [0.0, 0.5, 1.0]
+
+class TinyGenerator(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.marker = torch.nn.Parameter(torch.zeros(1))
+        self.seen_device = None
+
+    def generate(self, input_ids, attention_mask, **kwargs):
+        self.seen_device = input_ids.device
+        assert attention_mask.device == input_ids.device
+        return torch.cat((input_ids, input_ids[:, -1:] + 1), dim=1)
+
+
+def test_body_generation_uses_model_device():
+    model = TinyGenerator()
+    assert BodyJepaTrainer._greedy(torch, model, [3, 4], 1) == [5]
+    assert model.seen_device == model.marker.device
