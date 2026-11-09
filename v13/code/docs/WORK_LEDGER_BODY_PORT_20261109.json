@@ -12,7 +12,7 @@
     "v13/code/tests/test_body_training_port.py",
     ".github/workflows/v13-body-port-artifact-integrity.yml"
   ],
-  "status": "review-only CI running",
+  "status": "focused CI success; review-only",
   "ci": "https://github.com/RedMentos/Aii/actions/runs/42543941903",
   "negative_gates": [
     "update_authority=0",
@@ -20,11 +20,12 @@
     "no STEP2/B3/Body-JEPA promotion",
     "not production integrated"
   ],
-  "next_command": "Check Actions run 42543941903; fix failures on this isolated branch; audit symlink TOCTOU; integrate after independent review.",
+  "next_command": "Independently review PR #1630 and check symlink TOCTOU; integrate only after review; continue B1/B2 real adapter retention and native proof on disjoint branch.",
   "dependencies": [],
   "active_other_owners": [
     "PR1628 Body-JEPA retention",
     "PR1627 World-JEPA replay",
     "PR1629 AG4 facts"
-  ]
+  ],
+  "test_evidence": "GitHub Actions 42543941903 success (test_body_training_port.py)"
 }
