@@ -1,3 +1,7 @@
+## 2026-11-09 — continuous error-learning review (candidate only)
+
+Independent review of #1619 at `0c8ccbaf34e44cec1f6220401eec3f1cac508a8c`: a real local numeric gradient predictor exists, but automatic `RECORD_ONLY` training and three consistency gaps were reproduced. A hash-bound isolated candidate gates activation, persists model plus receipts together and checks current source bindings; 30 focused and 77 adjacent tests/8 subtests pass in source copies. Full-suite rerun pending with failures visible. Technical completion is not factual correctness; semantic-feedback #1629 and weight-space research #1602 are separate, not yet composed. Older source revocation, multi-process coordination, native/Redmi measurement, answer benefit and all original negative gates remain open. Details: `code/docs/ONLINE_WORLD_ERROR_LEARNING_REVIEW_20261109.md`.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

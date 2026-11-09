@@ -1,3 +1,7 @@
+# Gegenprüfung 2026-11-09 — Online-Lernen aus parallelem Arbeitsstrang
+
+Geprüft: PR #1619, `5e964146579deb22c5ba89a2a03a52a9e4d8aab8..0c8ccbaf34e44cec1f6220401eec3f1cac508a8c`; kompletter Runtime-Diff gelesen, ursprüngliche 14 fokussierte Tests bestanden, Privacy-Scan CLEAN. Gegenbeispiele: Auto-Update im `RECORD_ONLY`, zweifaches Lernen nach Modell/Cursor-Absturz, ignorierte Inhaltsänderung, mutierter Speicherzustand nach fehlgeschlagenem Checkpoint. Fix ausschließlich als hashgebundener Kandidat in getrennten Kopien; 30 fokussierte und 77 angrenzende Tests/8 Subtests bestanden. Vollsuite im exakten Ausgangscheckout nach Installation der CPU-Abhängigkeiten noch laufend und bereits mit Fehlern; kein Grün behauptet. Grenzen und ausführbarer Prüfpfad in `code/docs/ONLINE_WORLD_ERROR_LEARNING_REVIEW_20261109.md`. Die parallelen PRs und deren Eigentümerzweige wurden nicht überschrieben.
+
 # Gegenseitige Prüfung, Runde 2 (Claude prüft GPT), 2026-10-22
 
 Branch: `claude/project-thread-2p69gl` (Basis `claude/project-thread-2gzrwi` @ `9436eb7`). Ausführlich:
