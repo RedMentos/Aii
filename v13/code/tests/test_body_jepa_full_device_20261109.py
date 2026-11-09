@@ -3,7 +3,7 @@ import inspect
 import pytest
 
 torch = pytest.importorskip("torch")
-from v13.body_jepa import pad, BodyJepaTrainer
+from v13.body_jepa import pad, BodyJepaTrainer, validated_weights
 
 
 def test_pad_can_materialize_directly_on_requested_device():
@@ -29,7 +29,13 @@ def test_trainer_explicitly_places_ce_and_anchor_inputs_on_model_device():
     assert "detach().cpu().numpy()" in source
 
 
-def test_trainer_rejects_nonfinite_and_negative_weights_before_gradient():
-    source = inspect.getsource(BodyJepaTrainer.fit)
-    assert "math.isfinite(v) and v>=0" in source
-    assert "sum(wts)<=0" in source
+@pytest.mark.parametrize("weights", [
+    [float("nan")], [float("inf")], [-1.0], [0.0, 0.0], ["oops"], [None]
+])
+def test_trainer_rejects_invalid_eligibility_before_model_load(weights):
+    with pytest.raises(ValueError, match="eligibility"):
+        validated_weights([{"weight": w} for w in weights])
+
+
+def test_eligibility_accepts_bounded_nonnegative_batch():
+    assert validated_weights([{"weight": 0.0}, {"weight": 0.5}, {}]) == [0.0, 0.5, 1.0]
