@@ -44,3 +44,18 @@ def test_cache_moves_cuda_reference_to_cpu():
     t = torch.randn(1, 4, device="cuda", requires_grad=True)
     BodyJepaTrainer._cache_anchors(("cuda",), [[1]], [t])
     assert BodyJepaTrainer._cached_anchors(("cuda",))[1][0].device.type == "cpu"
+
+
+def test_oversized_anchor_is_usable_without_cache(monkeypatch):
+    monkeypatch.setattr(BodyJepaTrainer, "_anchor_cache_bytes_limit", 8)
+    seqs, logps = BodyJepaTrainer._cache_anchors(("oversize",), [[1]], [torch.ones(2, 3)])
+    assert seqs == [[1]]
+    assert logps[0].shape == (2, 3)
+    assert ("oversize",) not in BodyJepaTrainer._anchor_cache
+
+
+def test_total_cache_byte_budget_evicts_earlier_entry(monkeypatch):
+    monkeypatch.setattr(BodyJepaTrainer, "_anchor_cache_bytes_limit", 32)
+    BodyJepaTrainer._cache_anchors(("a",), [[1]], [torch.ones(2, 3)])
+    BodyJepaTrainer._cache_anchors(("b",), [[2]], [torch.ones(2, 3)])
+    assert list(BodyJepaTrainer._anchor_cache) == [("b",)]
