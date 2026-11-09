@@ -42,3 +42,19 @@ def test_bad_cursor_rejected_before_checkpoint_write(tmp_path,ids):
     with pytest.raises(ValueError,match='cursor'):
         p.checkpoint(processed_ids=ids)
     assert not p.path.exists()
+
+
+def test_failed_checkpoint_rolls_back_in_memory_and_allows_retry(tmp_path,monkeypatch):
+    rows=[row('retry-action')]
+    monkeypatch.setattr(world_model,'transitions',lambda store,limit=2048:rows)
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    learner=OnlineWorld(runtime)
+    def failed_checkpoint(*args,**kwargs):
+        raise OSError('simulated disk write failure')
+    monkeypatch.setattr(learner.model,'checkpoint',failed_checkpoint)
+    with pytest.raises(OSError,match='disk write'):
+        learner.update()
+    assert learner.model.seen==0
+    assert learner.processed==[]
+    assert learner.update()['learned']==1
+    assert learner.model.seen==1
