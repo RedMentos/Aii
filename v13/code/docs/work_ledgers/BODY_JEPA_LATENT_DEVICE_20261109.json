@@ -1,0 +1,34 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated B1/B2 latent-device worker",
+  "package": "BODY-JEPA-LATENT-DEVICE",
+  "branch": "codex/v13-body-jepa-latent-device-20261109",
+  "base_sha": "5b41e02106c0d86381710a2b5945ba9b6e791cde",
+  "dependency_prs": [
+    1618,
+    1624,
+    1625,
+    1628
+  ],
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_latent_device_20261109.py",
+    ".github/workflows/v13-body-latent-device.yml"
+  ],
+  "status": "first_exact_head_ci_green_later_dtype_tests_pending",
+  "evidence": "CI 42554921613 SUCCESS on 082ab01c; follow-up strict dtype validation/test at a56c368 CI pending; no pinned native or Redmi test",
+  "negative_gates": [
+    "No active GGUF or B1/B2 promotion",
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 NO_PROMOTION unchanged",
+    "No native Android evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_latent_device_20261109.py tests/test_body_jepa_retention_device.py tests/test_body_jepa_retention_integrity.py tests/test_body_jepa_retention_20261108.py",
+  "next_actions": [
+    "Check latest CI for a56c368, fix if red",
+    "Review CUDA placement on actual pinned B1/B2 Torch/PEFT model",
+    "Integrate with retention and online JEPA after owner review",
+    "Measure real Redmi resource and training behavior"
+  ]
+}

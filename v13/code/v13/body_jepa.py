@@ -110,13 +110,21 @@ def make_predictor(torch,dim):
 def last_token_latent(torch,model,batch_ids,layer=-1):
     """Hidden state of the last real token per row (right padding, pad id ignored via lengths)."""
     ids,lens=batch_ids
-    if (ids.ndim!=2 or lens.ndim!=1 or len(lens)!=ids.shape[0] or ids.shape[1]<1
+    if (ids.ndim!=2 or lens.ndim!=1 or ids.dtype!=torch.long or lens.dtype!=torch.long
+            or len(lens)!=ids.shape[0] or ids.shape[1]<1
             or not bool(torch.all((lens>=1)&(lens<=ids.shape[1])))):
         raise ValueError('nonempty right-padded token sequences required')
-    att=(torch.arange(ids.shape[1])[None,:]<lens[:,None]).long()
+    # Token IDs, attention mask and advanced-index tensors must share the
+    # actual model/input device. CPU-only tests previously hid this CUDA failure.
+    # Lengths are metadata and may arrive on CPU from the collator.
+    if lens.device != ids.device:
+        lens = lens.to(device=ids.device)
+    att=(torch.arange(ids.shape[1],device=ids.device)[None,:]<lens[:,None]).long()
     out=model(input_ids=ids,attention_mask=att,output_hidden_states=True)
     h=out.hidden_states[layer]
-    return h[torch.arange(len(lens)),lens-1]
+    if h.device != ids.device:
+        raise ValueError('body latent device differs from token input device')
+    return h[torch.arange(len(lens),device=h.device),lens-1]
 
 def ema_target_latent(torch,model,tgt,ema,layer=-1,eval_target=False):
     """Opt-in dropout-stable EMA target, without changing frozen train-mode cohorts.
