@@ -1,0 +1,30 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "updated_utc": "2026-11-09T01:07:00Z",
+  "owner": "GPT isolated review branch",
+  "package": "BODY-PORT-PATH-INTEGRITY",
+  "base": "codex/resume-20261106",
+  "branch": "codex/v13-body-port-artifact-integrity-20261109",
+  "head": "2c69d3f988c6186695645af7d14d29996e5754c2",
+  "pull_request": 1630,
+  "files": [
+    "v13/code/v13/body_training.py",
+    "v13/code/tests/test_body_training_port.py",
+    ".github/workflows/v13-body-port-artifact-integrity.yml"
+  ],
+  "status": "review-only CI running",
+  "ci": "https://github.com/RedMentos/Aii/actions/runs/42543941903",
+  "negative_gates": [
+    "update_authority=0",
+    "no Redmi native training proof",
+    "no STEP2/B3/Body-JEPA promotion",
+    "not production integrated"
+  ],
+  "next_command": "Check Actions run 42543941903; fix failures on this isolated branch; audit symlink TOCTOU; integrate after independent review.",
+  "dependencies": [],
+  "active_other_owners": [
+    "PR1628 Body-JEPA retention",
+    "PR1627 World-JEPA replay",
+    "PR1629 AG4 facts"
+  ]
+}
