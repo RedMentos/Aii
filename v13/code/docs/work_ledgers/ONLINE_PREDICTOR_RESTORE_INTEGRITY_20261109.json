@@ -15,13 +15,14 @@
     "v13/code/tests/test_online_checkpoint_validation_20261109.py",
     ".github/workflows/v13-online-world-atomic-cursor.yml"
   ],
-  "status": "review_only_latest_ci_pending",
+  "status": "review_only_exact_head_ci_green",
   "evidence": {
     "head_sha": "4fd40d8f22bda7ff32d6778ffe9bea6a6680a5a4",
     "tests": "GitHub Actions https://github.com/RedMentos/Aii/actions/runs/42613540099 SUCCESS (expanded online regression), https://github.com/RedMentos/Aii/actions/runs/42613540117 SUCCESS (continuous plasticity)",
     "native": "NOT RUN",
     "redmi": "NOT RUN",
-    "previous_green": "https://github.com/RedMentos/Aii/actions/runs/42613540099 and https://github.com/RedMentos/Aii/actions/runs/42613540117 on previous head"
+    "previous_green": "https://github.com/RedMentos/Aii/actions/runs/42613540099 and https://github.com/RedMentos/Aii/actions/runs/42613540117 on previous head",
+    "latest_ci": "https://github.com/RedMentos/Aii/actions/runs/42613727900 SUCCESS (expanded atomic cursor); https://github.com/RedMentos/Aii/actions/runs/42613727823 SUCCESS (continuous local plasticity)"
   },
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
