@@ -19,6 +19,25 @@ class BodyTrainingPortContract(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             home=Path(td);self.make(home);x=inspect_train_port(home,'B1_DETAIL')
             self.assertTrue(x['port_bound']);self.assertEqual(x['reason'],'PORT_BOUND_PROOF_REQUIRED');self.assertEqual(x['update_authority'],0)
+    def test_symlinked_artifacts_are_not_bound(self):
+        with tempfile.TemporaryDirectory() as td:
+            home=Path(td);d=self.make(home)
+            outside=home/'outside-master';outside.write_bytes(b'master-distinct')
+            (home/d['master_artifact']).unlink()
+            (home/d['master_artifact']).symlink_to(outside)
+            self.assertEqual(inspect_train_port(home,'B1_DETAIL')['reason'],'UNSAFE_ARTIFACT_PATH')
+    def test_directory_artifact_is_not_bound(self):
+        with tempfile.TemporaryDirectory() as td:
+            home=Path(td);d=self.make(home)
+            (home/d['master_artifact']).unlink()
+            (home/d['master_artifact']).mkdir()
+            self.assertEqual(inspect_train_port(home,'B1_DETAIL')['reason'],'UNSAFE_ARTIFACT_TYPE')
+    def test_symlinked_parent_is_not_bound(self):
+        with tempfile.TemporaryDirectory() as td:
+            home=Path(td);d=self.make(home)
+            (home/'models').rename(home/'models-real')
+            (home/'models').symlink_to(home/'models-real',target_is_directory=True)
+            self.assertEqual(inspect_train_port(home,'B1_DETAIL')['reason'],'UNSAFE_ARTIFACT_PATH')
     def test_quantized_inference_file_cannot_be_master(self):
         with tempfile.TemporaryDirectory() as td:
             home=Path(td);d=self.make(home);d['master_artifact']=d['model_artifact'];d['master_sha256']=d['model_sha256']
