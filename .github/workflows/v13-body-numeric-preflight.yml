@@ -1,0 +1,21 @@
+name: V13 Body JEPA numeric preflight
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/body_jepa.py'
+      - 'v13/code/tests/test_body_jepa_numeric_preflight_20261109.py'
+      - '.github/workflows/v13-body-numeric-preflight.yml'
+  workflow_dispatch:
+jobs:
+  numeric-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Focused real torch preflight and adjacent regressions
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_body_jepa_numeric_preflight_20261109.py tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_update_integrity_20261109.py
