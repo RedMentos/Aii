@@ -175,6 +175,8 @@ def operator_command(r,args):
         limit=int(args[1]) if len(args)==2 else 2048
         return dumps(r.online_world_update(limit=limit))
     if args and args[0]=='jepa':
+        if len(args)==2 and args[1]=='save':return dumps(r.world_jepa_save())
+        if len(args)==2 and args[1]=='restore':return dumps(r.world_jepa_restore())
         if len(args)>3:raise ValueError('Usage: :growth jepa [STEPS] [LIMIT]')
         steps=int(args[1]) if len(args)>1 else 5
         limit=int(args[2]) if len(args)>2 else 256
