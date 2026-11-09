@@ -6,11 +6,33 @@
   "branch": "codex/v13-predictor-restore-validation-20261109-hour14",
   "parent_pr": 1647,
   "review_pr": 1648,
-  "files": ["v13/code/v13/continuous_predictor.py", "v13/code/tests/test_online_restore_atomic_20261109.py", ".github/workflows/v13-predictor-restore-validation.yml"],
-  "status": "review_only_pending_ci",
-  "evidence": {"parent_ci": "https://github.com/RedMentos/Aii/actions/runs/42622280658", "parent_ci_result": "success", "new_ci": "pending_at_checkpoint", "redmi_native": "not_run"},
-  "negative_gates": {"step2": "UTILITY_FAIL", "b3": "NO_PROMOTION", "body_jepa": "UNAVAILABLE", "jepa_weight": 0, "whole_system": false},
+  "files": [
+    "v13/code/v13/continuous_predictor.py",
+    "v13/code/tests/test_online_restore_atomic_20261109.py",
+    ".github/workflows/v13-predictor-restore-validation.yml"
+  ],
+  "status": "review_only_focused_ci_green",
+  "evidence": {
+    "parent_ci": "https://github.com/RedMentos/Aii/actions/runs/42622280658",
+    "parent_ci_result": "success",
+    "new_ci": "https://github.com/RedMentos/Aii/actions/runs/42634616017",
+    "redmi_native": "not_run",
+    "new_ci_result": "success"
+  },
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "whole_system": false
+  },
   "next_command": "cd v13/code && python -m pytest -q tests/test_online_restore_atomic_20261109.py tests/test_online_observe_atomic_20261109.py tests/test_online_checkpoint_validation_20261109.py tests/test_continuous_predictor_20261108.py tests/test_online_world_atomic_cursor_20261109.py",
-  "next": ["Check PR #1648 head CI; fix any regression", "Independent diff review and privacy scan", "Integrate T8 chain with B1/B2 adapter and World-JEPA runtime only after tests", "Obtain real native Android/Redmi evidence"],
-  "limits": "No pretrained model training or Redmi experiment in this package; runtime remaining budget unknown"
+  "next": [
+    "Check final documentation-only head CI",
+    "Independent diff review and privacy scan",
+    "Integrate T8 chain with B1/B2 adapter and World-JEPA runtime only after tests",
+    "Obtain real native Android/Redmi evidence"
+  ],
+  "limits": "No pretrained model training or Redmi experiment in this package; runtime remaining budget unknown",
+  "head_sha_at_evidence": "2ae01faa42fe6c1073ca64ba6da21a5b32605f73"
 }
