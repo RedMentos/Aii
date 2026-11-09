@@ -37,9 +37,20 @@ swap; the port is rejected and training capability stays `UNAVAILABLE/NONE`.
 
 `PYTHONPATH=.:tests:scripts ... -m pytest -q tests/test_body_training_port.py tests/test_body_port_openat_candidate_20261109.py tests/test_body_port_openat_integration_20261109.py`: **23 passed**; the integration wrapper separately runs **22 passed** in its disposable copy. Tests include the parent counterexample, regular artifacts, file and directory replacement, in-place changes, descriptor replacement, symlink/FIFO, malformed inputs and the FP32 exception. They use temporary files, not real weights or native training.
 
-The complete regular test directory on the exact #1630 parent is running in a
-separate full tracked-code checkout with the pinned CPU environment. Record its
-terminal result separately; no full-suite pass is claimed at this checkpoint.
+The complete regular test directory on the exact #1630 parent was run in a
+separate checkout with tracked `v13/code` and pinned CPU dependencies:
+`HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:tests:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 timeout 1200 /tmp/v13-online-review-venv/bin/python -m pytest -q tests`.
+Result: **3 failed, 5,391 passed, 51 skipped, 94 errors, 3,022 subtests
+passed**, 407.59 s, exit 1; local raw log SHA-256
+`3ef8b7c0f08443c270adaf57c65da961ef6f9b1529f966effee5c9190333f816`.
+Two failures and the 94 errors require unavailable original native ZIPs. The
+third failure used a tracked historical file outside sparse `v13/code`; after
+adding `v13/bench-results/ag6-live-20261010`, that individual test passed.
+The original RED full-suite result remains unchanged and no raw-log backup is
+claimed. The corresponding #1619 run has the **same 94 error test IDs**, the
+same 3 failed test IDs, and 52 additional failures, many triggered by changed
+frozen runtime hashes. This comparison does not by itself classify every one
+of those 52 failures.
 
 The returned path is not a durable file handle. A later consumer that reopens
 it can still race after inspection; safe future training requires a bound open
