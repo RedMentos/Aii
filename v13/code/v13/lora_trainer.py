@@ -193,6 +193,8 @@ class LoraTrainer:
             # Checkpoints are mutable local files: never execute pickle payloads on resume.
             # A malformed or foreign checkpoint must not partially mutate model/optimizer.
             st=torch.load(ck,map_location='cpu',weights_only=True)
+            if not isinstance(st,dict):
+                raise Unavailable('Invalid LoRA training checkpoint')
             if st.get('dataset_hash')==dh:
                 if not _valid_lora_resume(st,dh,int(cfg['max_steps'])):
                     raise Unavailable('Invalid LoRA training checkpoint')
