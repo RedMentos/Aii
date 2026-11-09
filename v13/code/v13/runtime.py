@@ -79,6 +79,25 @@ class Runtime:
         if not hasattr(self,'_online_world'):
             self._online_world=OnlineWorld(self)
         return self._online_world.update(limit=limit)
+    def world_jepa_update(self,steps=10,limit=2048):
+        """Explicit, non-promoting JEPA update from committed T8 observations.
+
+        This is an experimental in-memory learner, separate from the automatic
+        lightweight predictor. No active GGUF, JEF route or Age authority changes.
+        Training is operator-invoked only; persistence is not yet guaranteed.
+        """
+        from .world_jepa import WorldJEPA
+        from .world_jepa_online_experiment import update_from_store
+        with self.lock:
+            model=getattr(self,'_world_jepa_online',None)
+            if model is None:
+                candidate=WorldJEPA(seed=7,ensemble=2)
+                result=update_from_store(candidate,self.store,steps=steps,limit=limit)
+                self._world_jepa_online=candidate
+            else:
+                result=update_from_store(model,self.store,steps=steps,limit=limit)
+            return dict(result,active_model_promoted=False,
+                        persisted=False,status='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY')
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
