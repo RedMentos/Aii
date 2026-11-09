@@ -1,0 +1,41 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated review worker",
+  "package": "JEPA-REPLAY-NOOP-HOLDOUT-INTEGRITY",
+  "branch": "codex/v13-jepa-replay-noop-integrity-20261109",
+  "base_sha": "24b527f51abf797e1a97e484e40904472bce3a9e",
+  "dependency_prs": [
+    1620,
+    1621,
+    1622,
+    1623,
+    1626
+  ],
+  "parallel_body_prs": [
+    1624,
+    1625
+  ],
+  "files": [
+    "v13/code/v13/world_jepa_replay.py",
+    "v13/code/tests/test_world_jepa_replay_noop_integrity.py",
+    ".github/workflows/v13-jepa-replay-noop-integrity.yml"
+  ],
+  "status": "draft_review_ci_unverified",
+  "evidence": "GitHub remote write/readback; native clone blocked by DNS; no local pytest evidence",
+  "negative_gates": [
+    "STEP2 fail unchanged",
+    "B3 L1 fail unchanged",
+    "Body-JEPA not promoted",
+    "No optimizer/RNG exact checkpoint",
+    "No Android proof",
+    "No active model authority"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_world_jepa_replay_noop_integrity.py tests/test_world_jepa_replay_20261108.py tests/test_world_jepa_generation_20261108.py tests/test_world_jepa_generation_member_integrity.py tests/test_world_jepa_incremental_20261108.py",
+  "next_actions": [
+    "Verify PR1627 CI, fix red",
+    "Inspect B1/B2 training device and reference provenance",
+    "Integrate reviewed JEPA chain with full regressions",
+    "Measure exact resume and pinned-master retention"
+  ]
+}

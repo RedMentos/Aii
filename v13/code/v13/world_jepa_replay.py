@@ -52,10 +52,15 @@ class ReplaySession:
                 raise ValueError("previous action ID changed content")
             proposed[ident] = digest
         fresh = [i for i, ident in enumerate(ids) if ident not in self.seen]
-        if not fresh:
-            return {"updated": False, "new_rows": 0, "journal": self.snapshot()}
+        # A no-gradient batch can still introduce new holdout identities. Commit
+        # those observations to the journal, otherwise a later mutation of the
+        # same held-out action silently evades the cross-batch integrity check.
+        # Capacity must be checked even when there are no fresh train rows.
         if len(proposed) + len(proposed_holdout) > self.max_seen:
             raise ValueError("journal full: explicit new generation required")
+        if not fresh:
+            self.holdout_seen = proposed_holdout
+            return {"updated": False, "new_rows": 0, "journal": self.snapshot()}
         train = tuple(a[fresh] for a in split["train"])
         holdout = split["holdout"]
         before = model.prediction_loss(*holdout) if hasattr(model, "enc") else None
