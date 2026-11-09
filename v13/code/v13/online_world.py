@@ -27,6 +27,10 @@ class OnlineWorld:
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+        # The cursor embedded in the predictor checkpoint is authoritative.
+        # The legacy sidecar can lag if power is lost after atomic model save.
+        if self.model.checkpoint_ids is not None:
+            self.processed=list(self.model.checkpoint_ids)
 
     @staticmethod
     def encode(row):
@@ -57,9 +61,9 @@ class OnlineWorld:
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            self.model.checkpoint()
             self.processed.append(row['action_id'])
             self.processed=self.processed[-world_model.MAX_ROWS:]
+            self.model.checkpoint(processed_ids=self.processed)
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)
