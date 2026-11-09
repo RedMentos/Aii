@@ -110,7 +110,8 @@ def make_predictor(torch,dim):
 def last_token_latent(torch,model,batch_ids,layer=-1):
     """Hidden state of the last real token per row (right padding, pad id ignored via lengths)."""
     ids,lens=batch_ids
-    if (ids.ndim!=2 or lens.ndim!=1 or len(lens)!=ids.shape[0] or ids.shape[1]<1
+    if (ids.ndim!=2 or lens.ndim!=1 or ids.dtype!=torch.long or lens.dtype!=torch.long
+            or len(lens)!=ids.shape[0] or ids.shape[1]<1
             or not bool(torch.all((lens>=1)&(lens<=ids.shape[1])))):
         raise ValueError('nonempty right-padded token sequences required')
     # Token IDs, attention mask and advanced-index tensors must share the
