@@ -6,7 +6,7 @@ Quantized inference artifacts are deliberately rejected as master weights.
 Restored 2026-10-09 from the lost 2026-10-06 burst5 build (WP-V1).
 """
 from pathlib import Path
-import hashlib,json,re
+import hashlib,json,re,stat
 from .common import file_hash
 
 MASTER_DTYPES={'float32','float16','bfloat16'}
@@ -47,7 +47,18 @@ def inspect_train_port(home, role, descriptor='config/native-body-train-port.jso
         if not isinstance(rel,str) or rel.startswith('/') or '..' in Path(rel).parts or not re.fullmatch(r'[a-f0-9]{64}',str(expected)):
             return base|{'reason':'INVALID_ARTIFACT_BINDING'}
         p=home/rel
-        if not p.is_file():return base|{'reason':'MISSING_'+key.upper()+'_ARTIFACT'}
+        # Do not let a workspace descriptor bind external or special files.
+        cursor=home
+        if cursor.is_symlink():return base|{'reason':'UNSAFE_ARTIFACT_PATH'}
+        for component in Path(rel).parts:
+            cursor=cursor/component
+            if cursor.is_symlink():return base|{'reason':'UNSAFE_ARTIFACT_PATH'}
+        try:
+            mode=p.stat().st_mode
+        except OSError:
+            return base|{'reason':'MISSING_'+key.upper()+'_ARTIFACT'}
+        if not stat.S_ISREG(mode):
+            return base|{'reason':'UNSAFE_ARTIFACT_TYPE'}
         actual=file_hash(p);measured[key]={'path':rel,'sha256':actual,'bytes':p.stat().st_size}
         if actual!=expected:return base|{'reason':'HASH_MISMATCH_'+key.upper(),'artifacts':measured}
     if not (home/d['runner_artifact']).stat().st_mode & 0o111:
