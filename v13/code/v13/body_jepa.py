@@ -209,6 +209,26 @@ def jepa_loss(torch,model,predictor,ctx,tgt,mode,ema=None,base_targets=None,perm
         raise ValueError('eligibility weights must be finite, aligned, >=0 and not all zero')
     return (l*w).sum()/w.sum(),t
 
+def checked_gradient_step(torch,params,opt,max_norm=None):
+    """Reject nonfinite/missing body gradients before AdamW can corrupt a candidate.
+
+    Optional clipping is an explicit experiment setting; the registered default
+    optimizer path is unchanged for finite gradients.
+    """
+    grads=[p.grad for p in params if p.requires_grad and p.grad is not None]
+    if not grads:
+        raise ValueError('body JEPA step has no trainable gradients')
+    if not all(bool(torch.isfinite(g).all()) for g in grads):
+        raise ValueError('body JEPA step has nonfinite gradients')
+    if max_norm is not None:
+        if type(max_norm) not in (int,float) or not math.isfinite(max_norm) or max_norm<=0:
+            raise ValueError('grad_clip_norm must be finite and positive')
+        norm=torch.nn.utils.clip_grad_norm_(params,float(max_norm),error_if_nonfinite=True)
+        if not bool(torch.isfinite(norm)):
+            raise ValueError('nonfinite body gradient norm')
+    opt.step()
+
+
 def minor_subspace_init(torch,model,r):
     """Subspace Tuning (arXiv 2610.22293, Chavan et al.) in its cheapest LoRA form (MiLoRA-style): the update B@A may only
     live in the span of the r LOWEST singular directions of each wrapped weight, so the dominant directions (where SFT drift
@@ -367,6 +387,9 @@ class BodyJepaTrainer(LoraTrainer):
         if mode not in MODES:raise ValueError('unknown jepa_target')
         if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
         wts=validated_weights(items)
+        clip=cfg.get('grad_clip_norm')
+        if clip is not None and (type(clip) not in (float,int) or not math.isfinite(clip) or clip<=0):
+            raise ValueError('grad_clip_norm must be finite and positive')
         torch,tok,model=self._load()
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
@@ -435,7 +458,8 @@ class BodyJepaTrainer(LoraTrainer):
                 for j in pick:
                     cl=torch.log_softmax(model(torch.tensor([anchor_seqs[j]],dtype=torch.long,device=model_device)).logits[0].float(),-1);bl=anchor_logp[j].to(device=cl.device,dtype=cl.dtype)
                     kl=(bl.exp()*(bl-cl)).sum(-1).mean();(float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
-            opt.step();ema.update();step+=1
+            checked_gradient_step(torch,params+list(pred.parameters()),opt,cfg.get('grad_clip_norm'))
+            ema.update();step+=1
             hist.append({'step':step,'ce':round(float(ce.detach()),5),'anchor_kl':round(kl_sum/max(1,len(pick)),6),'jepa':None if jl_v is None else round(jl_v,5),'ema_delta':round(ema.delta(),6)})
             if checkpoint_dir is not None:
                 from .body_jepa_checkpoint import save as save_bj_step
