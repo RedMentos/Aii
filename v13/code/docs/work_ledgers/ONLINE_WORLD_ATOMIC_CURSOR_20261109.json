@@ -15,12 +15,13 @@
     "v13/code/tests/test_online_world_atomic_cursor_20261109.py",
     ".github/workflows/v13-online-world-atomic-cursor.yml"
   ],
-  "status": "review_only_ci_pending",
+  "status": "review_only_exact_head_ci_green",
   "evidence": {
-    "source_commit": "430fe1c0e7ce8ed8215c1691cf38505422825580",
+    "source_commit": "0b9f278548819b886cdc66112494a9e3304c2442",
     "claim": "Atomic NPZ now binds processed action IDs to learned weights; stale legacy sidecar cannot replay a learned committed action after restart",
     "native": "NOT RUN",
-    "redmi": "NOT RUN"
+    "redmi": "NOT RUN",
+    "ci": "https://github.com/RedMentos/Aii/actions/runs/42606292791 SUCCESS; https://github.com/RedMentos/Aii/actions/runs/42606292820 SUCCESS"
   },
   "negative_gates": [
     "Age0 original deployment and approval gates unchanged",
@@ -31,11 +32,10 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_online_world_atomic_cursor_20261109.py tests/test_online_world_20261108.py tests/test_continuous_predictor_20261108.py",
   "blockers": [
-    "Exact-head CI not yet verified",
     "Pinned native Redmi not accessible"
   ],
   "next_actions": [
-    "Check CI, fix any regressions",
+    "Independently review green exact-head CI and restart failure cases",
     "Independent review of checkpoint restoration and corruption handling",
     "Integrate into current canonical chain after dependency review",
     "Profile per-transition NPZ writes on Redmi and evaluate batching without losing durable observations"
