@@ -76,10 +76,18 @@ class EmaAdapter:
     """EMA copy of the trainable adapter tensors only (§13.4). swap() temporarily loads the EMA values into the live
     model for a no-grad target pass and restores the student values afterwards."""
     def __init__(self,params,decay):
-        if not 0<=decay<1:raise ValueError('decay must be in [0,1)')
+        if not isinstance(decay,(float,int)) or not math.isfinite(decay) or not 0<=decay<1:
+            raise ValueError('decay must be finite and in [0,1)')
         self.params=list(params);self.decay=float(decay);self.shadow=[p.detach().clone() for p in self.params];self.updates=0
+    def _validate(self):
+        if len(self.shadow)!=len(self.params):
+            raise ValueError('EMA parameter count changed')
+        for s,p in zip(self.shadow,self.params):
+            if s.shape!=p.shape or s.device!=p.device or s.dtype!=p.dtype:
+                raise ValueError('EMA parameter metadata changed')
     def update(self):
         import torch
+        self._validate()
         with torch.no_grad():
             for s,p in zip(self.shadow,self.params):s.mul_(self.decay).add_(p.detach(),alpha=1-self.decay)
         self.updates+=1
@@ -91,9 +99,18 @@ class EmaAdapter:
         class _Swap:
             def __enter__(self):
                 import torch
+                ema._validate()
                 self.keep=[p.detach().clone() for p in ema.params]
-                with torch.no_grad():
-                    for s,p in zip(ema.shadow,ema.params):p.copy_(s)
+                try:
+                    with torch.no_grad():
+                        for s,p in zip(ema.shadow,ema.params):p.copy_(s)
+                except BaseException:
+                    # Context manager __exit__ is NOT invoked if __enter__ fails.
+                    # A failed later copy must not leave earlier student weights replaced.
+                    with torch.no_grad():
+                        for k,p in zip(self.keep,ema.params):p.copy_(k)
+                    raise
+                return self
             def __exit__(self,*exc):
                 import torch
                 with torch.no_grad():
