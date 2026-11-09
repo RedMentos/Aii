@@ -1,5 +1,9 @@
 # Nutzerentscheidungen (RedMentos)
 
+## 2026-11-09: langer Kontext und langsam nutzbare Anfangsdaten
+
+Gewünscht sind ein übliches begrenztes aktives Kontextfenster und ein lokal über lange Zeit wachsender, effizient verdichteter und wieder abrufbarer Zusammenhang; Erkenntnisse sollen später auch das Weltbild und nach den bestehenden Lernprüfungen die Modelle verbessern. Dazu viele geeignete Datensätze vorbereiten, die später im Leerlauf langsam und mit begrenztem Speicher-/Ressourcenverbrauch nutzbar sind. Der Nutzer weist darauf hin, dass der Blueprint den Kontext bereits detaillierter beschreibt: an den vorhandenen Canon anschließen, nicht einen vereinfachten Ersatzplan aufstellen. Einordnung, konkrete Proben und offene Integration: `code/docs/CONTEXT_MEMORY_AND_DATASET_BOOTSTRAP_20261109.md`.
+
 ## 2026-11-09: Hintergrundlernen und erlaubte Wahrnehmung als spätere Ziele
 
 Smooth/V13 soll später in einem ruhigen oder langsamen Hintergrundmodus lernen können und langfristig innerhalb vorgegebener Grenzen lernen, wie viel Rechenzeit sinnvoll ist. Geeignete Anfangsdaten und freigegebene Gespräche/Rückmeldungen sollen Lernquellen sein; Werkzeuge einschließlich Bildschirmwahrnehmung sollen bei ausdrücklicher Erlaubnis möglich werden. Mehr Selbstständigkeit bleibt an die gesetzten Grenzen gebunden. Das ergänzt die laufende Kernarbeit und ist kein Auftrag, bereits bestehende Berechtigungen oder Gates zu umgehen. Ausgearbeitete Einordnung: `code/docs/BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md`.
