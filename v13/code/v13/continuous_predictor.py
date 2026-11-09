@@ -103,7 +103,8 @@ class OnlinePredictor:
         if processed_ids is not None:
             if (not isinstance(processed_ids,list) or len(processed_ids)>2048
                     or any(type(i) is not str or not i for i in processed_ids)
-                    or len(set(processed_ids))!=len(processed_ids)):
+                    or len(set(processed_ids))!=len(processed_ids)
+                    or len(processed_ids)>self.seen):
                 raise ValueError('Invalid committed action cursor')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
