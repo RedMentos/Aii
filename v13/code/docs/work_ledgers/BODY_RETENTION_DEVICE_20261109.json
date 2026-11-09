@@ -1,0 +1,38 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated B1/B2 retention worker",
+  "package": "BODY-JEPA-RETENTION-DEVICE",
+  "branch": "codex/v13-body-retention-device-20261109",
+  "base_sha": "3d218151426f076b7b7f518fc640baab33eac1f8",
+  "dependency_prs": [
+    1618,
+    1624,
+    1625
+  ],
+  "parallel_prs": [
+    1626,
+    1627
+  ],
+  "files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_retention_device.py",
+    ".github/workflows/v13-body-retention-device.yml"
+  ],
+  "status": "draft_review_ci_unverified",
+  "evidence": "Remote code and tests written; local native checkout blocked by DNS; no real pinned B1/B2 training evidence",
+  "negative_gates": [
+    "Body-JEPA not promoted",
+    "STEP2 utility fail unchanged",
+    "B3 L1 fail unchanged",
+    "No active model weight authority",
+    "No Android evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_retention_20261108.py tests/test_body_jepa_retention_integrity.py tests/test_body_jepa_retention_device.py",
+  "next_actions": [
+    "Check PR1628 CI, fix failures",
+    "Test actual pinned B1/B2 Torch/PEFT adapter weight updates and retention",
+    "Integrate only after review and combined regression",
+    "Measure Redmi overhead"
+  ]
+}

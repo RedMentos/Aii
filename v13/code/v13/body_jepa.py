@@ -232,10 +232,15 @@ def anchor_retention_kl(torch, model, anchor_seqs, anchor_logp):
                 # Do not silently renormalize corrupted frozen references.
                 if not bool(torch.all(torch.abs(torch.logsumexp(base.float(), -1)) <= 1e-4)):
                     raise ValueError('unnormalized retention reference')
-                logits = model(torch.tensor([seq])).logits[0].float()
+                # The frozen reference may be cached on CPU while the LoRA
+                # candidate resides on an accelerator. Keep the input on the
+                # candidate's device and compare distributions on one device.
+                param = next(model.parameters(), None) if hasattr(model, 'parameters') else None
+                device = param.device if param is not None else base.device
+                logits = model(torch.tensor([seq], dtype=torch.long, device=device)).logits[0].float()
                 if logits.shape != base.shape or not bool(torch.isfinite(logits).all()):
                     raise ValueError('invalid retention logits')
-                reference = base.float()
+                reference = base.to(device=logits.device, dtype=logits.dtype)
                 logp = torch.log_softmax(logits, -1)
                 value = (reference.exp() * (reference - logp)).sum(-1).mean()
                 if not bool(torch.isfinite(value)):
