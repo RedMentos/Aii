@@ -1,3 +1,7 @@
+## 2026-11-09 — Body-port artifact race (review only)
+
+Review of #1630 found a reproducible check/hash path-swap that can falsely report a bound master, still with update authority zero. An isolated, hash-bound open-directory-handle candidate detects tested file/parent/descriptor swaps; 23 tests and 22 nested capability-copy tests pass. Full parent suite pending. A path may still change after inspection returns; actual training needs a bound handle or equivalent point-of-use revalidation. No native training, Redmi or gate promotion. `code/docs/BODY_PORT_OPENAT_REVIEW_20261109.md`.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

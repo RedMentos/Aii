@@ -1,3 +1,7 @@
+# Gegenprüfung 2026-11-09 — Body-Trainingsport #1630
+
+Geprüft: `5e964146579deb22c5ba89a2a03a52a9e4d8aab8..f9002cc3826bec2a2a68b9b636a746b33273b96e`, Runtime-Diff gelesen, 10 ursprüngliche Tests bestanden, Privacy CLEAN, beide gemeldeten dedizierten CI-Läufe SUCCESS. Gegenbeispiel: Symlink-Tausch nach Prüfung und vor Hash kann `port_bound=True` liefern (update authority bleibt 0). Quellhashgebundener Kandidat in Testkopie: offene Datei-/Verzeichnishandles, Identitätsprüfung und Capability-Pfad; 23 Tests plus 22 im Unterlauf bestanden. Vollsuite des Elternstands separat laufend. Kein Dauerbeweis für späteres Öffnen oder Native-/Redmi-Training. Details `code/docs/BODY_PORT_OPENAT_REVIEW_20261109.md`; parallele Eigentümerzweige nicht überschrieben.
+
 # Gegenseitige Prüfung, Runde 2 (Claude prüft GPT), 2026-10-22
 
 Branch: `claude/project-thread-2p69gl` (Basis `claude/project-thread-2gzrwi` @ `9436eb7`). Ausführlich:
