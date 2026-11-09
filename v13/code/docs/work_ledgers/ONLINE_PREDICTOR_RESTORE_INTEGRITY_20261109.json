@@ -1,0 +1,43 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated T8 checkpoint restore validation",
+  "package": "ONLINE-PREDICTOR-RESTORE-INTEGRITY",
+  "branch": "codex/v13-online-checkpoint-validation-20261109-hour12",
+  "base_sha": "472ea29310d9151dafd2b18784282522fd7405c6",
+  "review_pr": 1645,
+  "dependencies": [
+    1642,
+    1619
+  ],
+  "touched_files": [
+    "v13/code/v13/continuous_predictor.py",
+    "v13/code/tests/test_online_checkpoint_validation_20261109.py",
+    ".github/workflows/v13-online-world-atomic-cursor.yml"
+  ],
+  "status": "source_saved_remote_ci_not_yet_reported",
+  "evidence": {
+    "head_sha": "13be9680899543443974d9a4e9d22e093d923981",
+    "tests": "New corruption and restart regression; CI not yet reported at checkpoint",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA UNAVAILABLE",
+    "World-JEPA not promoted",
+    "jepa_weight=0; no frozen GGUF mutation"
+  ],
+  "blockers": [
+    "No direct github.com DNS in scratch container",
+    "No pinned native Redmi device"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_online_world_atomic_cursor_20261109.py tests/test_online_world_20261108.py tests/test_continuous_predictor_20261108.py tests/test_online_checkpoint_validation_20261109.py",
+  "next_actions": [
+    "Verify PR #1645 exact-head CI, fix failures",
+    "Independent review of counter invariants and invalid checkpoint cases",
+    "Reconcile with #1631 safety candidate before integration",
+    "Move to B1/B2 retained adapter weight learning and World-JEPA live consumer"
+  ]
+}
