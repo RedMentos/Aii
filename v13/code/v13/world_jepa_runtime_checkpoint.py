@@ -12,8 +12,8 @@ import uuid
 
 from . import world_jepa_shadow_checkpoint as checkpoint
 
-HEX=re.compile(r'[0-9a-f]{64})
-FILE=re.compile(r'jepa-[0-9a-f]{32}\\.npz)
+HEX=re.compile(r'[0-9a-f]{64}$')
+FILE=re.compile(r'jepa-[0-9a-f]{32}[.]npz$')
 SCHEMA='v13.runtime_world_jepa.private.v1'
 
 
@@ -83,7 +83,7 @@ def restore(runtime):
     return {'restored':True,'source_sha256':meta['source_sha256'],
             'active_model_promoted':False,'scope':'PRIVATE_EXPERIMENTAL_JEPA_ONLY'}
 )
-FILE=re.compile(r'jepa-[0-9a-f]{32}\\.npz\\Z')
+FILE=re.compile(r'jepa-[0-9a-f]{32}[.]npz$')
 SCHEMA='v13.runtime_world_jepa.private.v1'
 
 
@@ -222,7 +222,7 @@ def restore(runtime):
     return {'restored':True,'source_sha256':meta['source_sha256'],
             'active_model_promoted':False,'scope':'PRIVATE_EXPERIMENTAL_JEPA_ONLY'}
 )
-FILE=re.compile(r'jepa-[0-9a-f]{32}\\.npz\\Z')
+FILE=re.compile(r'jepa-[0-9a-f]{32}[.]npz$')
 SCHEMA='v13.runtime_world_jepa.private.v1'
 
 
