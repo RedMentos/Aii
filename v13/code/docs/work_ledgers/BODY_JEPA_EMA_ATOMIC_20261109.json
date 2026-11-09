@@ -1,0 +1,40 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated EMA swap review",
+  "package": "BODY-JEPA-EMA-FAIL-ATOMIC",
+  "branch": "codex/v13-body-jepa-ema-swap-atomic-20261109",
+  "base_sha": "be1198f416d5208bcf3cdea30f860c6ccc55f409",
+  "dependency_prs": [
+    1628,
+    1634,
+    1635,
+    1636
+  ],
+  "review_pr": 1637,
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_ema_atomic_20261109.py",
+    ".github/workflows/v13-body-ema-atomic.yml"
+  ],
+  "status": "draft_exact_head_ci_pending",
+  "tests": "Focused GitHub Actions workflow triggered; no exact-head green result yet. Parent PR 1636 CI 42584321426 SUCCESS.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA unpromoted",
+    "No native Redmi or pinned B1/B2 weight-learning evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_ema_atomic_20261109.py tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py",
+  "next_actions": [
+    "Check CI run 42591239454 and exact-head workflow, fix any failing tests",
+    "Independent review of EMA exception safety and adapter tensor invariants",
+    "After CI/review integrate dependencies, then pursue pinned B1/B2 real adapter updates and retention",
+    "Rotate to JEPA runtime integration and C3 training workstream"
+  ],
+  "blockers": [
+    "Direct clone DNS failure in earlier run",
+    "No native Redmi/pinned body training proof"
+  ],
+  "evidence": "Remote commit 34f4f127541c29bfa56ec43d84636b05c693f7d3; fail-atomic __enter__, metadata/decay checks, 8 regression cases, CI pending."
+}
