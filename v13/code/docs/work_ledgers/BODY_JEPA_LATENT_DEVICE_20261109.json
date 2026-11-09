@@ -16,8 +16,8 @@
     "v13/code/tests/test_body_jepa_latent_device_20261109.py",
     ".github/workflows/v13-body-latent-device.yml"
   ],
-  "status": "draft_code_written_ci_pending",
-  "evidence": "GitHub source and regression committed; direct clone unavailable (DNS); CUDA test conditional and no Redmi native run",
+  "status": "first_exact_head_ci_green_later_dtype_tests_pending",
+  "evidence": "CI 42554921613 SUCCESS on 082ab01c; follow-up strict dtype validation/test at a56c368 CI pending; no pinned native or Redmi test",
   "negative_gates": [
     "No active GGUF or B1/B2 promotion",
     "STEP2 UTILITY_FAIL unchanged",
@@ -26,7 +26,7 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_latent_device_20261109.py tests/test_body_jepa_retention_device.py tests/test_body_jepa_retention_integrity.py tests/test_body_jepa_retention_20261108.py",
   "next_actions": [
-    "Check exact-head CI and repair failures",
+    "Check latest CI for a56c368, fix if red",
     "Review CUDA placement on actual pinned B1/B2 Torch/PEFT model",
     "Integrate with retention and online JEPA after owner review",
     "Measure real Redmi resource and training behavior"
