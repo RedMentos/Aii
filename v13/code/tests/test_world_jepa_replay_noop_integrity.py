@@ -37,7 +37,7 @@ def test_no_gradient_batch_enforces_capacity_without_mutation(monkeypatch):
     monkeypatch.setattr(replay_mod, "build", _split)
     session = ReplaySession("a" * 64, max_seen=32)
     session.seen["train-1"] = session._digest(_rows()[0])
-    for i in range(30):
+    for i in range(31):
         session.seen[f"old-{i}"] = "b" * 64
     before = session.snapshot()
     with pytest.raises(ValueError, match="journal full"):
