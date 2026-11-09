@@ -32,3 +32,7 @@ python v13/code/scripts/public_repo_privacy_scan.py --base origin/codex/resume-2
 ```
 
 Check latest Actions on #1649; fix any red before review. Review race/path-swap and total memory overhead, compare #1644 context design, and assess whether a streaming read_source API is required for sources >128 MiB. Preserve frozen registered experiment data, Age0 RECORD_ONLY and all original negative gates. No force push or overwrite of other owners.
+
+## Local algorithm smoke check (separate from exact-checkout CI)
+
+On Linux, a manually reconstructed copy of the new decompression helper passed: >64 MiB roundtrip; four malformed/trailing-stream rejections; decompression-bomb bound; exact-limit acceptance (7 checks). This is **not** a test of the exact GitHub checkout or integrated Store, and must not be represented as CI or Redmi evidence. GitHub workflow run lookup still returned no runs. Exact-checkout pytest and privacy scan remain required.
