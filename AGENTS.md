@@ -2,6 +2,8 @@
 
 These project instructions preserve the user's decisions, including the 2026-10-12 request to recover research, open questions, end goals and agent work rules and continue without requiring a full chat export. Read the current remote HEAD before work; this file does not replace the Canon or the existing plan.
 
+When executing large V13 coding sessions, use the scoped [fast integration playbook](v13/code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md) for the implement-test-integrate-continuation loop. This guide supplements rather than overrides Canon, source freezes, and approval rules.
+
 ## Sources and priorities
 
 - Start with `v13/code/docs/HANDOFF_CURRENT.md`, `v13/code/BUILD_STATE.json`, `v13/ROADMAP.md`, `v13/NUTZER_ENTSCHEIDUNGEN.md` and `v13/code/docs/USER_CONTINUATION_DECISIONS_20261011.md`.
