@@ -22,7 +22,7 @@ class OnlinePredictor:
         self.path=Path(home)/'online_predictor.npz';self.rng=np.random.default_rng(seed)
         self.W=np.eye(features);self.U=np.zeros((actions,features));self.bias=np.zeros(features)
         self.x=np.zeros((0,features));self.act=np.zeros(0,dtype=np.int64);self.y=np.zeros((0,features))
-        self.seen=0;self.updates=0
+        self.seen=0;self.updates=0;self.checkpoint_ids=None
         if self.path.exists():self.restore()
 
     def _check(self,x,action,y=None):
@@ -97,17 +97,26 @@ class OnlinePredictor:
         if count%checkpoint_every:self.checkpoint()
         return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
 
-    def checkpoint(self):
+    def checkpoint(self,processed_ids=None):
+        # Optional atomic T8 cursor co-located with the exact learned weights.
+        # A separate cursor file can lag after a crash; this one cannot.
+        if processed_ids is not None:
+            if (not isinstance(processed_ids,list) or len(processed_ids)>2048
+                    or any(type(i) is not str or not i for i in processed_ids)
+                    or len(set(processed_ids))!=len(processed_ids)):
+                raise ValueError('Invalid committed action cursor')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
         try:
             np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
-                rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
+                rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
+                processed_ids=np.array(json.dumps(processed_ids)))
             if self.path.exists():
                 shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
             os.replace(temp,self.path)
+            self.checkpoint_ids=None if processed_ids is None else list(processed_ids)
         finally:
             if temp.exists():temp.unlink()
         return str(self.path)
@@ -130,6 +139,7 @@ class OnlinePredictor:
                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
             loaded={k:data[k].copy() for k in shapes}
             rng_state=json.loads(str(data['rng_state']))
+            processed_ids=json.loads(str(data['processed_ids'])) if 'processed_ids' in data.files else None
         n=len(loaded['x'])
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
@@ -137,6 +147,11 @@ class OnlinePredictor:
             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
             or not np.all(loaded['counters']>=0)):
             raise ValueError('Invalid predictor checkpoint')
+        if processed_ids is not None and (not isinstance(processed_ids,list)
+                or len(processed_ids)>2048 or any(type(i) is not str or not i for i in processed_ids)
+                or len(set(processed_ids))!=len(processed_ids)):
+            raise ValueError('Invalid checkpoint action cursor')
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
+        self.checkpoint_ids=processed_ids
         self.seen,self.updates=map(int,loaded['counters'])
         self.rng.bit_generator.state=rng_state
