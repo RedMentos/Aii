@@ -1,3 +1,9 @@
+# 2026-11-09 — Quellen-Lifecycle und parallele Zweige (Review-Kandidat)
+
+Quellgebundene Testkopie kombiniert Archiv-Guard, transaktionales Anlegen/Löschen/Wiederherstellen von Text-/Bildquellen und versionierte Vision-State-Saves. Konkrete Forget/Source-, Doppel-Ingest- und stale-State-Gegenbeispiele sind in dieser Kopie abgesichert: **33 Helper-Tests** und **89 Tests + 16 Untertests** in der materialisierten Kopie. **5 eigene Diagnosetests** dokumentieren zusätzlich unveränderte Altfehler; sie sind keine Gate-PASS. Offen: Widerrufsrennen beim Lesen, Recovery nach Crash/abgeleitete Artefakte, konsistentes Backup und Redmi-Filesystem/Latenz. Details: `code/docs/SOURCE_LIFECYCLE_LOCK_CANDIDATE_20261109.md`. Parallele PRs #1645–#1650/#1652 gelesen; Speichervergleich und negative Replay-Gegenbelege in `code/docs/PARALLEL_BRANCH_REVIEW_20261109.md`, Replay-Reparatur separat in Arbeit. Keine gefrorene Runtime oder Gates geändert.
+
+---
+
 # 2026-11-09 — Archivlesbarkeit und Löschrace geprüft (Review-Kandidaten)
 
 Alte Archivierung kann Quellen größer als 64 MiB für den bestehenden Leser unzugänglich machen und nach einer Löschung `.z` neu erzeugen. Quellgebundener Guard verhindert beides in einer isolierten Testkopie; ein separater Streaming-Leser prüft auch große alte Archive vollständig und gibt begrenzte exakte Textspannen zurück. **29 Guard-/Stream-Tests**, einschließlich echter 64-MiB-Grenze; **6 separate Tests reproduzieren weiterhin bestehende Fehler**. Der aktive Runtime-Pfad ist nicht verändert: insbesondere ein weiterer Forget/Source-Datenverlust-Race, Archive-Scan-Starvation, Teilarchive und Echtgeräte-/Lock-Latenz bleiben offen. Ausführlicher Befund und nächste Schritte: `code/docs/ARCHIVE_READER_BOUNDARY_CANDIDATE_20261109.md`. Alle Gate-FAILs und unvollständiger Gesamtumfang bleiben.

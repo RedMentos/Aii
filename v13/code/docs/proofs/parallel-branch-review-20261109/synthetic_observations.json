@@ -1,0 +1,27 @@
+{
+  "schema": "v13-parallel-review-synthetic-v1",
+  "observed_utc_date": "2026-11-09",
+  "context_stream": {
+    "source_bytes": 67108864,
+    "compressed_bytes": 65239,
+    "returned_chars": 8,
+    "metric": "python_tracemalloc_peak_bytes",
+    "pr1650_head": "ee598db967e87528b08e9cb99b4defecdc038264",
+    "pr1650_peak_bytes": 148320794,
+    "pr1651_head": "897e5a7eda0c743fdd4a6b09c453d5466257e8f7",
+    "pr1651_peak_bytes": 371857,
+    "script_sha256": "0aaf155bcdf755af8f7171672f670fab5db3c2542d2cb4cd7f5f09f340246a4d",
+    "claim_limit": "synthetic Python allocations, not RSS, runtime, power or Redmi"
+  },
+  "replay_counterexample": {
+    "pr1652_head": "3cff4930158e2431de51c472303c27fdbdc65df6",
+    "available_new_rows": 12,
+    "available_replay_rows": 12,
+    "selected_new_rows": 3,
+    "selected_replay_rows": 2,
+    "selected_row_ids": [0, 1, 2, 100, 102],
+    "model_weight_after_failed_postcheck": 7,
+    "script_sha256": "cda3e1a2b75d8383a431fb99d7396d2c84e0535e1a96dfe47b1285cef9dcae15",
+    "claim_limit": "synthetic stub, diagnosis not proof of model utility"
+  }
+}

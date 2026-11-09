@@ -1,3 +1,11 @@
+# 2026-11-09 — Quellen-Lifecycle-Kombination und Review anderer Chats
+
+`SOURCE_LIFECYCLE_LOCK_CANDIDATE_20261109.md`: hashgebundener Materializer verbindet den #1651-Archiv-Guard in einer isolierten Kopie mit gemeinsam gesperrter Text-/Bild-Quellerstellung, Löschcleanup beider Blobformen und Restore; Vision-Ingest/-Forget teilen ihren State-Commit, veraltete State-Saves schlagen fehl. **33 Helpertests**, **89 Tests + 16 Untertests in der echten materialisierten Runtime-Kopie**; fünf Tests dokumentieren fortbestehende Altfehler. Restore-/Forget-, Doppel-Ingest-, beide Archiv-/Bild-Reihenfolgen und stale-State wurden unabhängig gegengeprüft. Gefrorene Runtime bleibt unverändert. Nächste Schritte: SourceRef-Lesen während Widerruf transaktionsbewusst absichern, langfristig crashfeste Cleanup-Wiederaufnahme und Backup-Snapshot; bei Vision bleiben bereits geschriebene Projektoren und `train_tiles`-Lineage offen. O_TMPFILE/linkat sind auf Redmi nicht belegt.
+
+`PARALLEL_BRANCH_REVIEW_20261109.md` und `v13/PRUEFUNG_GPT_FUER_CLAUDE.md`: PR #1645–#1650 und #1652 gelesen und gegengetestet. #1650 wurde auf synthetischer 64-MiB-Quelle mit #1651 verglichen; #1652 bleibt CI-RED und hat zusätzlich Zeilenauswahl-/Postcheck-Mutationsfehler. Review-Skripte und synthetische Resultate sind im Repo. Eine unabhängige #1652-Korrektur sowie Vollsuite laufen separat; nichts überschreiben, Gates nicht befördern.
+
+---
+
 # 2026-11-09 — Archivlesbarkeit und Lebenszyklus-Gegenproben
 
 `ARCHIVE_READER_BOUNDARY_CANDIDATE_20261109.md`: ein quellgebundener Guard in isolierter Kopie verweigert neue Archive über der 64-MiB-Lesergrenze und synchronisiert Cold-/Liveness-Prüfung mit der Archivpublikation gegen den nachgestellten Forget-Race. Ein nur lesender Streaming-Kandidat liest begrenzte UTF-8-Spannen auch aus alten >64-MiB-Archiven nach vollständiger Prüfung. **29 neue Guard-/Streamingtests**, sechs Legacy-Gegenproben bestätigen fortbestehende Fehler; Archivoriginale bleiben eingefroren. Unabhängige Gegenprüfungen führten zu Unterbrechungs-, Dateiidentitäts- und strengeren Stream-Budget-Fixes. Kein natives/Redmi-/Langzeit-/aktives Runtime-Gate bestanden.
