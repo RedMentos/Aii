@@ -34,3 +34,25 @@ def test_failed_initial_update_does_not_register_model():
         with pytest.raises(ValueError,match='not enough data'):
             runtime.world_jepa_update()
     assert not hasattr(runtime,'_world_jepa_online')
+
+
+def test_runtime_jepa_real_weights_update_from_committed_feed():
+    import numpy as np
+    from v13.world_jepa_online_experiment import update_from_store
+    rows=[{'action_id':f'grounded-{i:03d}',
+           's':[i/90.,(i%7)/7.,float(np.sin(i/11.)),float(np.cos(i/11.))],
+           'a':('simple','detail','gist','both')[i%4],
+           'y':[i/180.,float(i%3==0),i/200.]} for i in range(96)]
+    runtime=_runtime()
+    with patch('v13.world_model.transitions',return_value=rows) as feed:
+        first=runtime.world_jepa_update(steps=2,limit=128)
+        model=runtime._world_jepa_online
+        previous=model.enc['W1'].copy()
+        second=runtime.world_jepa_update(steps=3,limit=128)
+    assert feed.call_count==2
+    assert first['source_verified'] is True
+    assert second['mode']=='CONTINUED_WEIGHTS'
+    assert second['holdout_loss_after']>=0
+    assert not np.array_equal(previous,model.enc['W1'])
+    assert model._fit_steps==5
+    assert second['active_model_promoted'] is False
