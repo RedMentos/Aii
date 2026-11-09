@@ -1,0 +1,36 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated full-device B1/B2 worker",
+  "package": "BODY-JEPA-FULL-DEVICE",
+  "branch": "codex/v13-body-jepa-full-device-20261109",
+  "base_sha": "87a6df031e500577ea04ab9d3e013123909ff5f1",
+  "head_sha": "73126dac41a334439465173eb4cb9d91a32f84bf",
+  "pr": 1635,
+  "dependencies": [
+    1624,
+    1625,
+    1628,
+    1634
+  ],
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_full_device_20261109.py",
+    ".github/workflows/v13-body-full-device.yml"
+  ],
+  "status": "review_candidate_CI_not_yet_observed",
+  "evidence": "GitHub connector remote writes confirmed; direct git clone DNS failure; no local or native tests; exact-head workflow lookup empty at checkpoint",
+  "negative_gates": [
+    "No active GGUF or B1/B2 promotion",
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 NO_PROMOTION unchanged",
+    "No native Android evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py tests/test_body_jepa_retention_device.py tests/test_body_jepa_retention_integrity.py tests/test_body_jepa_retention_20261108.py",
+  "next_actions": [
+    "Check exact-head CI for PR 1635 and fix failures",
+    "Independent review device-mapped model and pinned B1/B2 Torch/PEFT",
+    "Test actual model weight delta and anchor retention, rollback",
+    "Integrate after review; no force push"
+  ]
+}
