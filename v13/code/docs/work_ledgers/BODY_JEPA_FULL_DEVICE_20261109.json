@@ -5,7 +5,7 @@
   "package": "BODY-JEPA-FULL-DEVICE",
   "branch": "codex/v13-body-jepa-full-device-20261109",
   "base_sha": "87a6df031e500577ea04ab9d3e013123909ff5f1",
-  "head_sha": "73126dac41a334439465173eb4cb9d91a32f84bf",
+  "head_sha": "673fa5d1d7b22e03f6faae822c3ac0344c7db76b",
   "pr": 1635,
   "dependencies": [
     1624,
@@ -19,7 +19,7 @@
     ".github/workflows/v13-body-full-device.yml"
   ],
   "status": "review_candidate_CI_not_yet_observed",
-  "evidence": "GitHub connector remote writes confirmed; direct git clone DNS failure; no local or native tests; exact-head workflow lookup empty at checkpoint",
+  "evidence": "GitHub remote source/test/workflow bytes read back; no exact-head workflow run observed; git clone DNS failure; no native model/Redmi proof",
   "negative_gates": [
     "No active GGUF or B1/B2 promotion",
     "STEP2 UTILITY_FAIL unchanged",
@@ -28,6 +28,7 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py tests/test_body_jepa_retention_device.py tests/test_body_jepa_retention_integrity.py tests/test_body_jepa_retention_20261108.py",
   "next_actions": [
+    "Review inherited CPU-only _load: CUDA proof requires explicit supported model placement, not an implicit claim",
     "Check exact-head CI for PR 1635 and fix failures",
     "Independent review device-mapped model and pinned B1/B2 Torch/PEFT",
     "Test actual model weight delta and anchor retention, rollback",
