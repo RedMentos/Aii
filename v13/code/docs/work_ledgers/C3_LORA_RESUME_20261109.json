@@ -13,7 +13,7 @@
     "v13/code/tests/test_lora_resume_safety.py",
     ".github/workflows/v13-c3-lora-resume-integrity.yml"
   ],
-  "status": "DRAFT_REVIEW_CI_RUNNING",
+  "status": "DRAFT_REVIEW_FOCUSED_CI_GREEN",
   "changes": [
     "torch.load weights_only=True CPU, metadata validation before restoring weights",
     "checkpoint shuffle RNG persistence, exact deterministic legacy replay of per-step data/anchor permutations",
@@ -23,8 +23,8 @@
     "ci_green_earlier_sha": "02068ab47d0b4ca005d91d773c1d90e32bf4be73",
     "ci_green_run": 42708256595,
     "latest_sha": "fd44c0c747c7d0535c47ae9e2275e30799a706dd",
-    "latest_ci_run": 42708341237,
-    "latest_ci_status": "IN_PROGRESS_AT_CHECKPOINT",
+    "latest_ci_run": 42708350664,
+    "latest_ci_status": "SUCCESS",
     "native_model_training": "NOT_RUN",
     "redmi": "NOT_RUN"
   },
