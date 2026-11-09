@@ -174,6 +174,13 @@ def operator_command(r,args):
         if len(args)>2:raise ValueError('Usage: :growth onlineworld [LIMIT]')
         limit=int(args[1]) if len(args)==2 else 2048
         return dumps(r.online_world_update(limit=limit))
+    if args and args[0]=='jepa':
+        if len(args)>3:raise ValueError('Usage: :growth jepa [STEPS] [LIMIT]')
+        steps=int(args[1]) if len(args)>1 else 5
+        limit=int(args[2]) if len(args)>2 else 256
+        if not 1<=steps<=50 or not 16<=limit<=2048:
+            raise ValueError('JEPA operator budget outside mobile-safe bounds')
+        return dumps(r.world_jepa_update(steps=steps,limit=limit))
     g=hub(r)
     if not args or args==['status']:return dumps(g.report())
     c=args[0]
