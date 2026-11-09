@@ -288,6 +288,16 @@ class BodyJepaTrainer(LoraTrainer):
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
     @staticmethod
+    def _greedy(torch,model,ids,n):
+        """Body-local generation: parent LoraTrainer assumes CPU inputs."""
+        device=next(model.parameters()).device
+        tokens=torch.tensor([ids],dtype=torch.long,device=device)
+        mask=torch.ones_like(tokens)
+        with torch.no_grad():
+            out=model.generate(tokens,attention_mask=mask,max_new_tokens=n,do_sample=False,pad_token_id=0)
+        return out[0][len(ids):].detach().cpu().tolist()
+
+    @staticmethod
     def _locality_for(items,cfg):
         """Select locality KL anchors; legacy is frozen default, BP2b explicitly opt-in."""
         policy=cfg.get('locality_policy','legacy')
