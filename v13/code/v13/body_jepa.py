@@ -284,7 +284,10 @@ class BodyJepaTrainer(LoraTrainer):
     Same fit()/export contract as LoraTrainer, so AG6 can use it as a trainer; one step = one batched pass over all
     items (right padding, causal body). jepa_weight 0 gives the CE+anchor baseline on exactly the same loop."""
     method='lora-torch-cpu-bjepa'
+    # Bounded cache of frozen-reference CPU tensors only. Never retain an entire
+    # accelerator graph/model output across trainer instances or experiment arms.
     _anchor_cache={}
+    _anchor_cache_limit=2
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
     @staticmethod
@@ -336,8 +339,18 @@ class BodyJepaTrainer(LoraTrainer):
             for a in anchors:
                 pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
             with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s],dtype=torch.long,device=model_device)).logits[0].float(),-1) for s in anchor_seqs]
-            BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
+            # Detach and copy before caching: torch.no_grad does not guarantee
+            # that a returned tensor lives on CPU. Retaining GPU references
+            # across arms can exhaust mobile/accelerator memory.
+            cache=BodyJepaTrainer._anchor_cache
+            cache[ck]=(tuple(tuple(s) for s in anchor_seqs),
+                       tuple(p.detach().cpu().clone() for p in anchor_logp))
+            while len(cache)>BodyJepaTrainer._anchor_cache_limit:
+                cache.pop(next(iter(cache)))
         anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
+        # Fresh containers prevent a caller from mutating the shared cache.
+        anchor_seqs=[list(s) for s in anchor_seqs]
+        anchor_logp=[p.clone() for p in anchor_logp]
         data=[self._encode(tok,i['prompt'],i['target']) for i in items]
         ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id,device=model_device);tgt_b=pad(torch,tgt,pad_id,device=model_device)
         with torch.no_grad():
