@@ -20,31 +20,33 @@
     "v13/code/v13/agi/trainers.py",
     "v13/code/v13/agi/__init__.py",
     "v13/code/v13/lora_trainer.py",
-    "v13/code/tests/test_runtime_jepa_integration_20261110.py"
+    "v13/code/tests/test_runtime_jepa_integration_20261110.py",
+    "v13/code/v13/world_jepa_runtime_checkpoint.py"
   ],
   "status": "REVIEW_ONLY_UNMERGED",
   "evidence": {
     "combined_ci": "https://github.com/RedMentos/Aii/actions/runs/42717623545",
     "combined_ci_status": "SUCCESS at b077fe0 before C3 integration",
-    "latest_ci": "pending for d677dda78d70d8d967f166556d028dcf203f8ab7",
+    "latest_ci": "https://github.com/RedMentos/Aii/actions/runs/42718040014 in progress at d4f55150",
     "native_redmi": false,
     "real_c3_lora_training": false,
     "real_world_jepa_runtime_gradient_test": "PASS in combined CI at 2b384ec356e286ebe09428fb8ea127e9c1252c61, https://github.com/RedMentos/Aii/actions/runs/42717776576",
     "ag6_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717776587",
     "c3_resume_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717777003",
-    "operator_cli": ":growth jepa [STEPS] [LIMIT], opt-in bounded; latest test pending"
+    "operator_cli": ":growth jepa [STEPS] [LIMIT], opt-in bounded; latest test pending",
+    "jepa_private_checkpoint": "Source-hash-bound private NPZ save/restore with SHA verification and continued-gradient/tamper regression committed; latest combined CI pending"
   },
   "blockers": [
     "Runtime frozen by SourceHandoff cohort; no production merge authorized",
-    "World-JEPA Runtime updates currently in-memory only, no durable resume",
     "C3 LoRA real pretrained training/retention still unproven",
     "Full suite historical RED; STEP2/B3 negative gates unchanged",
-    "World-JEPA replay PR #1652 CI red; not imported"
+    "World-JEPA replay PR #1652 CI red; not imported",
+    "World-JEPA checkpoint needs bounded cleanup and real device storage tests; no automatic restore/promotion"
   ],
   "next_exact_commands": [
     "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_ag6_training_readiness_20261108.py v13/code/tests/test_lora_resume_safety.py",
     "python v13/code/scripts/public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head codex/v13-integrated-online-jepa-20261109",
-    "Implement private persistent JEPA checkpoint/reload with safe pins and resume, then retention/rollback",
+    "Run combined CI checkpoint/restart/tamper tests; inspect result; fix if red; verify checkpoint no model promotion",
     "Review/resolve PR #1652 replay negative cases and reconcile Body-JEPA candidate branches without overwriting active owners"
   ]
 }
