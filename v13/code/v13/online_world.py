@@ -21,16 +21,18 @@ class OnlineWorld:
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
         self.processed=[]
-        if self.cursor.exists():
-            record=json.loads(self.cursor.read_text())
-            ids=record.get('processed')
-            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
-                raise ValueError('Incompatible online world cursor')
-            self.processed=ids
         # The cursor embedded in the predictor checkpoint is authoritative.
-        # The legacy sidecar can lag if power is lost after atomic model save.
+        # Ignore a stale or torn legacy sidecar after a successful atomic save.
         if self.model.checkpoint_ids is not None:
             self.processed=list(self.model.checkpoint_ids)
+        elif self.cursor.exists():
+            record=json.loads(self.cursor.read_text())
+            ids=record.get('processed')
+            if (record.get('revision')!=REVISION or not isinstance(ids,list)
+                    or len(ids)>world_model.MAX_ROWS or any(type(i) is not str or not i for i in ids)
+                    or len(set(ids))!=len(ids)):
+                raise ValueError('Incompatible online world cursor')
+            self.processed=ids
 
     @staticmethod
     def encode(row):
