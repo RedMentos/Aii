@@ -12,6 +12,9 @@ on:
       - 'v13/code/v13/runtime.py'
       - 'v13/code/tests/test_online_world_20261108.py'
       - 'v13/code/tests/test_world_jepa_incremental_20261108.py'
+      - 'v13/code/v13/brain_panel.py'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_brain_panel_20261110.py'
       - '.github/workflows/v13-integrated-online-jepa.yml'
 jobs:
   combined:
@@ -22,4 +25,4 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install numpy pytest
-      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_continuous_predictor_20261108.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_incremental_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_ag6_training_readiness_20261108.py v13/code/tests/test_lora_resume_safety.py
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_continuous_predictor_20261108.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_incremental_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_ag6_training_readiness_20261108.py v13/code/tests/test_lora_resume_safety.py v13/code/tests/test_brain_panel_20261110.py
