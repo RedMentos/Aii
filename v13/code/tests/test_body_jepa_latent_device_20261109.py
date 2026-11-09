@@ -49,3 +49,14 @@ def test_real_cuda_input_with_cpu_collator_lengths():
     result = last_token_latent(torch, TinyHidden().cuda(), (ids, lengths))
     assert result.device == ids.device
     assert result.cpu().tolist() == [[4.0], [7.0]]
+
+
+@pytest.mark.parametrize("ids,lengths", [
+    (torch.tensor([[3.0, 4.0]]), torch.tensor([2])),
+    (torch.tensor([[3, 4]]), torch.tensor([2.0])),
+    (torch.tensor([[3, 4]]), torch.tensor([0])),
+    (torch.tensor([[3, 4]]), torch.tensor([3])),
+])
+def test_invalid_token_dtype_or_length_fails_before_model(ids, lengths):
+    with pytest.raises(ValueError, match="nonempty right-padded"):
+        last_token_latent(torch, TinyHidden(), (ids, lengths))
