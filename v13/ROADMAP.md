@@ -1,3 +1,7 @@
+## 2026-11-09 — AG4-Korrekturvorrang und Quellenprüfung
+
+Der [AG4-Feedbackkandidat](code/docs/AG4_FACT_PRECEDENCE_AND_SOURCE_GUARD_20261109.md) prüft in einer isolierten Kopie Turn- und Faktquellen vor einer atomaren Änderung der Fertigkeitszähler. Widersprüchliche, neutrale oder noch nicht verarbeitete Rückmeldungen werden getrennt behandelt; bei ungültigen Belegen fällt der Skill-Schnellpfad vorläufig zurück. Ein voller Kandidatentestlauf ist wegen elf alter ungebundener Fixtures noch RED; Migration, atomare Prüfung am Ausgabepunkt und Gerätenachweis bleiben offen.
+
 ## 2026-11-08 — AG4-Parität und Feedback getrennt
 
 Der [quellgebundene AG4-Paritätskandidat](code/docs/SKILL_PARITY_FEEDBACK_SHADOW_20261108.md) verhindert in der Testkopie, dass FINAL plus Routenübereinstimmung einen Schatten-Skill als erfolgreich befördert. Eine standardmäßig ausgeschaltete Schattensicht verbindet verifizierbare Routenbeobachtungen mit ausdrücklichen Noten und quellgebundenen F5-Korrekturen. Eine ausgewählte Fertigkeit, C5 und die spätere Korrektur wurden zusammen geprüft; alte Aggregate, Modellnutzen und die ursprünglichen Gates bleiben offen.
