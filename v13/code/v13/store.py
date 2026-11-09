@@ -428,11 +428,15 @@ class Store:
     def read_source(self,ref):
         r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
         if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gelöschter SourceRef")
-        b=self.blob_bytes(r["hash"])
-        if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
-        txt=b.decode()
-        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef außerhalb Text")
-        return txt[ref["char_start"]:ref["char_end"]]
+        from .source_slice import verified_source_slice
+        h=r["hash"]
+        p=self.home/"data/blobs"/h
+        if p.is_file():
+            return verified_source_slice(p,h,ref["char_start"],ref["char_end"])
+        z=p.with_name(h+".z")
+        if z.is_file():
+            return verified_source_slice(z,h,ref["char_start"],ref["char_end"],compressed=True)
+        raise FileNotFoundError(str(p))
     def new_session(self,title="Neuer Chat"):
         sid=uid("chat")
         with self.tx() as c:c.execute("INSERT INTO sessions VALUES (?,?,?)",(sid,title[:80],now()))
