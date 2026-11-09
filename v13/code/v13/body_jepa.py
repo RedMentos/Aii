@@ -147,6 +147,16 @@ def ema_target_latent(torch,model,tgt,ema,layer=-1,eval_target=False):
         for module,flag in zip(modules,flags):module.training=flag
 
 
+def validated_weights(items):
+    """Fail before loading the large body when eligibility is invalid."""
+    try:
+        weights=[float(item.get('weight',1.)) for item in items]
+    except (TypeError,ValueError,OverflowError):
+        raise ValueError('invalid eligibility weights') from None
+    if not weights or not all(math.isfinite(v) and v>=0 for v in weights) or sum(weights)<=0:
+        raise ValueError('eligibility weights must be finite, nonnegative and positive in total')
+    return weights
+
 def pad(torch,seqs,pad_id=0,device=None):
     if not seqs or any(len(s)==0 for s in seqs):
         raise ValueError('nonempty token sequences required')
@@ -302,6 +312,7 @@ class BodyJepaTrainer(LoraTrainer):
         if type(target_eval) is not bool:raise ValueError('jepa_target_eval must be bool')
         if mode not in MODES:raise ValueError('unknown jepa_target')
         if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
+        wts=validated_weights(items)
         torch,tok,model=self._load()
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
@@ -335,9 +346,6 @@ class BodyJepaTrainer(LoraTrainer):
         lab_b=torch.full(ids_b.shape,-100,dtype=torch.long,device=model_device)
         for r,(ids,lab) in enumerate(data):lab_b[r,:len(lab)]=torch.tensor(lab,dtype=torch.long,device=model_device)
         att=(torch.arange(ids_b.shape[1],device=model_device)[None,:]<lens[:,None]).long()
-        wts=[float(i.get('weight',1.)) for i in items]
-        if not all(math.isfinite(v) and v>=0 for v in wts) or sum(wts)<=0:
-            raise ValueError('eligibility weights must be finite, nonnegative and positive in total')
         hist=[];step=0;g=torch.Generator().manual_seed(int(cfg['seed']))
         # Explicit opt-in only: the existing frozen cohorts and default trainer are unchanged.
         # Source binding includes the full master SHA, configuration, anchors and dataset.
