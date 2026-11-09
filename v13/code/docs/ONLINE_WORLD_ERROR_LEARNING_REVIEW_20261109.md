@@ -49,7 +49,8 @@ under `candidates/online_world_20261109/` are review assets, not live modules.
 * `PYTHONPATH=. /tmp/v13-online-review-venv/bin/python -m pytest -q tests/test_online_world_integration_candidate_20261109.py`: **2 passed**. The isolated child run inside the second test reports **30 passed**, including real Runtime/SQLite tests with a synthetic C3 seam, technical-error and revoked-source cases, stop/restart, atomic checkpoint and content-change counterexamples. The other tests deliberately patch fabricated T8 rows; those are labeled synthetic.
 * A separately materialized candidate passed **77 tests and 8 subtests** across `test_world_model.py`, `test_worldmodel_realstore_integration_20261029.py`, `test_worldmodel_stage_binding_20261029.py`, `test_age.py`, `test_age_rights.py`, `test_inputs.py`, `test_growth.py`, `test_runtime_queue.py`, `test_runtime_queue_audit.py`, and `test_world_state.py`.
 * `public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head 0c8ccbaf34e44cec1f6220401eec3f1cac508a8c`: **CLEAN** for #1619.
-* Full unfiltered #1619 pytest initially stopped during collection with 10 errors because Torch was missing. A second attempt is running in an isolated CPU environment with `torch==2.5.1+cpu`, `numpy==2.2.6`, `transformers==4.44.2`, `peft==0.13.2`, and offline model settings; failures are already visible. Its terminal result must be recorded separately. This is not a green full suite.
+* Full unfiltered #1619 pytest initially stopped during collection with 10 errors because Torch was missing. A pinned CPU rerun (`torch==2.5.1+cpu`, `numpy==2.2.6`, `transformers==4.44.2`, `peft==0.13.2`; offline model settings) in the sparse checkout ended **609 failed, 4,733 passed, 51 skipped, 166 errors, 2,614 subtests passed** in 405.80 s. Raw local log SHA-256 `df6cfa13f8864a0ed897097943e1ff723bca3a562e509c4ff4b2ec2fca04ba12`. Many *tracked* fixture/proof/bench paths were absent from that checkout, so it was not a clean classification.
+* After expanding the separate checkout to the full tracked `v13/code`, root-level pytest collection initially stopped on 6 duplicate module-name errors because it also collected archived frozen tests in `docs/proofs` (local log SHA-256 `dcdce5911bf2c8581554b161ccdc68be0a335c8645c0cf0045ae77fef7687cc2`). The complete regular test directory was then run, without test exclusions: `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:tests:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 timeout 1200 /tmp/v13-online-review-venv/bin/python -m pytest -q tests`. Result: **55 failed, 5,350 passed, 51 skipped, 94 errors, 3,022 subtests passed**, 424.11 s, exit 1. Local raw log SHA-256 `8c42aa25896a2bda72c20afa36f0cf16f8ff00fd53fd6ab1859cf7e8db4bd3a2`. Repeated failures include exact SourceHandoff/native-firing source-hash mismatches because #1619 changes frozen runtime bytes; many errors require unavailable original native ZIPs. Other failures remain individually unclassified. This is **RED**, not a full-suite pass, and no raw-log backup is claimed.
 
 Remaining work is material: checks and NPZ replacement are not an atomic
 transaction with source revocation; older receipts outside the bounded T8
@@ -72,7 +73,7 @@ mapping were recorded separately in
 new independent Body-port review [#1630](https://github.com/RedMentos/Aii/pull/1630)
 remain separate workstreams, not already integrated here.
 
-Next: finish and classify the full-suite result, design source-revocation
+Next: classify remaining full-suite failures, design source-revocation
 invalidation/rebuild with an explicit performance bound, then test a
 source-bound composition with the semantic-feedback candidates in a new copy.
 Measure actual answer benefit and retention separately before any activation.
