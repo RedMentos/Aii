@@ -15,7 +15,9 @@
   "touched_files": [
     "v13/code/v13/body_jepa.py",
     "v13/code/tests/test_body_jepa_ema_atomic_20261109.py",
-    ".github/workflows/v13-body-ema-atomic.yml"
+    ".github/workflows/v13-body-ema-atomic.yml",
+    ".github/workflows/v13-body-anchor-cache.yml",
+    ".github/workflows/v13-body-full-device.yml"
   ],
   "status": "draft_exact_head_ci_pending",
   "tests": "Focused GitHub Actions workflow triggered; no exact-head green result yet. Parent PR 1636 CI 42584321426 SUCCESS.",
@@ -27,7 +29,7 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_ema_atomic_20261109.py tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py",
   "next_actions": [
-    "Check CI run 42591239454 and exact-head workflow, fix any failing tests",
+    "Check exact-head PR workflow for commit 325eb68b35abc86e6e560f21abc83aa57a39c2c0; fix any failure",
     "Independent review of EMA exception safety and adapter tensor invariants",
     "After CI/review integrate dependencies, then pursue pinned B1/B2 real adapter updates and retention",
     "Rotate to JEPA runtime integration and C3 training workstream"
@@ -36,5 +38,5 @@
     "Direct clone DNS failure in earlier run",
     "No native Redmi/pinned body training proof"
   ],
-  "evidence": "Remote commit 34f4f127541c29bfa56ec43d84636b05c693f7d3; fail-atomic __enter__, metadata/decay checks, 8 regression cases, CI pending."
+  "evidence": "Exact-head candidate 325eb68b35abc86e6e560f21abc83aa57a39c2c0 includes existing body-JEPA PR workflow tests; previous parent #1636 CI 42584321426 GREEN; exact-head result pending."
 }
